@@ -9,8 +9,8 @@
 		<version>2.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.drajer.fhir</groupId>
-	<artifactId>fhir-R4-client</artifactId>
+	<groupId>com.drajer.plandefinition</groupId>
+	<artifactId>plandefinition-processor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>fhir-R4-client</name>
 	<description>FHIR client project to access FHIR REST end points</description>
