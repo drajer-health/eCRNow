@@ -11,7 +11,10 @@ import javax.annotation.PostConstruct;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,18 +62,41 @@ public class PlandefinitionProcessor {
 			List<BundleEntryComponent> bundleEntries = esrdBundle.getEntry();
 			ValueSet valueSet = null;
 			List<UsageContext> usageContextList;
+			PlanDefinition planDefinition = null;
+			List<PlanDefinitionActionComponent> actions = null;
+			List<TriggerDefinition> triggerDefinitionsList = null;
 			for (BundleEntryComponent bundleEntry : bundleEntries) {
 				if (Optional.ofNullable(bundleEntry).isPresent()) {
 					if (bundleEntry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
 						valueSet = (ValueSet) bundleEntry.getResource();
 						usageContextList = valueSet.getUseContext();
-
-						for (UsageContext usageContext : usageContextList) {
-							if (Optional.ofNullable(usageContext).isPresent()) {
-								if (usageContext.getValueCodeableConcept() != null) {
-									if (usageContext.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
-										System.out.println("Processing value set with id : " + valueSet.getId());
-										valueSetService.createValueSet(valueSet);
+						
+						if (!usageContextList.isEmpty()) {
+							for (UsageContext usageContext : usageContextList) {
+								if (Optional.ofNullable(usageContext).isPresent()) {
+									if (usageContext.getValueCodeableConcept() != null) {
+										if (usageContext.getValueCodeableConcept().getText()
+												.equalsIgnoreCase("COVID-19")) {
+											System.out.println("Processing value set with id : " + valueSet.getId());
+											valueSetService.createValueSet(valueSet);
+										}
+									}
+								}
+							}
+						}else {
+							valueSetService.createValueSetGrouper(valueSet);
+						}
+					}else if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
+						planDefinition = (PlanDefinition) bundleEntry.getResource();
+						actions = planDefinition.getAction();
+						if (actions != null && actions.size() > 0) {
+							for (PlanDefinitionActionComponent action : actions) {
+								if (action.getId().equals("match-trigger")) {
+									triggerDefinitionsList = action.getTrigger();
+									if (triggerDefinitionsList != null && triggerDefinitionsList.size() > 0) {
+										for (TriggerDefinition triggerDefinition : triggerDefinitionsList) {
+											valueSetService.createPlanDefinitionAction(triggerDefinition);
+										}
 									}
 								}
 							}
