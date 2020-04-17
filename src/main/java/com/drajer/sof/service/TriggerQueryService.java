@@ -3,11 +3,12 @@ package com.drajer.sof.service;
 import java.util.Date;
 
 import com.drajer.sof.model.FhirData;
+import com.drajer.sof.model.LaunchDetails;
 
 public class TriggerQueryService implements AbstractQueryService {
 
 	@Override
-	public FhirData getData(String patId, String encId, Date start, Date end) {
+	public FhirData getData(LaunchDetails detail, Date start, Date end) {
 		
 		
 		// TODO Auto-generated method stub
@@ -18,12 +19,12 @@ public class TriggerQueryService implements AbstractQueryService {
 				
 				// Data to be pulled.
 				
-				// Get Encounters for Patient based on encId. (Create a method to get encounters)
-				// If encId is null, find encounters within the start and end time provided.
+				// Step 1: Get Encounters for Patient based on encId. (Create a method to get encounters)
+				// If encId is null, find encounters for patient within the start and end time provided.
 				// Add to the bundle.
 				// As you are adding to the bundle within Fhir Data, add the codeable concept also to the list of encounterCodes.
 
-				// Get Conditions for Patient (Write a method)
+				// Step 2: Get Conditions for Patient (Write a method)
 				// Filter the conditions based on encounter Reference if Encounter Reference is present.
 				// If encounter is not present, then filter based on times (Start and end, if Condition time is between start and end times) -- Do this later.
 				// Add to the bundle
