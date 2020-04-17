@@ -9,12 +9,12 @@
 		<version>2.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.drajer.plandefinition</groupId>
-	<artifactId>plandefinition-processor</artifactId>
+	<groupId>com.drajer.ecrnow</groupId>
+	<artifactId>ecr-now</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>fhir-R4-client</name>
 	<packaging>war</packaging>
-	<description>FHIR client project to access FHIR REST end points</description>
+	<description>FHIR client project to perform electronic case reporting (ecr)</description>
 
 	<properties>
 		<java.version>1.8</java.version>
