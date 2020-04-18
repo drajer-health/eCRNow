@@ -2,48 +2,72 @@ package com.drajer.sof.model;
 
 import java.util.List;
 
-import org.hl7.fhir.r4.model.CodeableConcept;
+import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 
 public abstract class FhirData {
 
-	List<CodeableConcept>   conditionCodes;
-	List<CodeableConcept>	labResultCodes;
-	List<CodeableConcept>	medicationCodes;
-	List<CodeableConcept>	diagnosticOrderCodes;
-	List<CodeableConcept> 	encounterCodes;
-	
-	public List<CodeableConcept> getConditionCodes() {
+	List<CodeableConceptDt> conditionCodes;
+	List<CodeableConceptDt> labResultCodes;
+	List<CodeableConceptDt> medicationCodes;
+	List<CodeableConceptDt> diagnosticOrderCodes;
+	List<CodeableConceptDt> encounterCodes;
+	List<CodeableConceptDt> immuniationCodes;
+	List<CodeableConceptDt> diagnosticReportCodes;
+
+	public List<CodeableConceptDt> getConditionCodes() {
 		return conditionCodes;
 	}
-	public void setConditionCodes(List<CodeableConcept> conditionCodes) {
+
+	public void setConditionCodes(List<CodeableConceptDt> conditionCodes) {
 		this.conditionCodes = conditionCodes;
 	}
-	public List<CodeableConcept> getLabResultCodes() {
+
+	public List<CodeableConceptDt> getLabResultCodes() {
 		return labResultCodes;
 	}
-	public void setLabResultCodes(List<CodeableConcept> labResultCodes) {
+
+	public void setLabResultCodes(List<CodeableConceptDt> labResultCodes) {
 		this.labResultCodes = labResultCodes;
 	}
-	public List<CodeableConcept> getMedicationCodes() {
+
+	public List<CodeableConceptDt> getMedicationCodes() {
 		return medicationCodes;
 	}
-	public void setMedicationCodes(List<CodeableConcept> medicationCodes) {
+
+	public void setMedicationCodes(List<CodeableConceptDt> medicationCodes) {
 		this.medicationCodes = medicationCodes;
 	}
-	public List<CodeableConcept> getDiagnosticOrderCodes() {
+
+	public List<CodeableConceptDt> getDiagnosticOrderCodes() {
 		return diagnosticOrderCodes;
 	}
-	public void setDiagnosticOrderCodes(List<CodeableConcept> diagnosticOrderCodes) {
+
+	public void setDiagnosticOrderCodes(List<CodeableConceptDt> diagnosticOrderCodes) {
 		this.diagnosticOrderCodes = diagnosticOrderCodes;
 	}
-	public List<CodeableConcept> getEncounterCodes() {
+
+	public List<CodeableConceptDt> getEncounterCodes() {
 		return encounterCodes;
 	}
-	public void setEncounterCodes(List<CodeableConcept> encounterCodes) {
+
+	public void setEncounterCodes(List<CodeableConceptDt> encounterCodes) {
 		this.encounterCodes = encounterCodes;
 	}
-	
-	
-	
-	
+
+	public List<CodeableConceptDt> getImmuniationCodes() {
+		return immuniationCodes;
+	}
+
+	public void setImmuniationCodes(List<CodeableConceptDt> immuniationCodes) {
+		this.immuniationCodes = immuniationCodes;
+	}
+
+	public List<CodeableConceptDt> getDiagnosticReportCodes() {
+		return diagnosticReportCodes;
+	}
+
+	public void setDiagnosticReportCodes(List<CodeableConceptDt> diagnosticReportCodes) {
+		this.diagnosticReportCodes = diagnosticReportCodes;
+	}
+
 }

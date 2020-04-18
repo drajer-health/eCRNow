@@ -22,7 +22,7 @@ class App extends Component {
         {/* <ClientDetails /> */}
         <div className="main">
           <Container>
-            <Router basename={'/plandefinition-processor'}>
+            <Router basename={'/ecr-now'}>
               {/* <Router> */}
               <Switch>
                 <Route

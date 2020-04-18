@@ -40,15 +40,15 @@ public class RefreshTokenScheduler {
 	ThreadPoolTaskScheduler taskScheduler;
 
 	@Autowired
-	ResourceData resourceData;
+	FhirContextInitializer resourceData;
 
 	private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
 	public void scheduleJob(LaunchDetails authDetails) {
 		logger.info("Scheduling Job to Get AccessToken");
 		long minutes = TimeUnit.SECONDS.toMinutes(authDetails.getExpiry());
-		// String cronExpression = "* "+"0/"+minutes+" * * * ?";
-		String cronExpression = "0/60 * * * * ?";
+		String cronExpression = "0 "+"0/"+minutes+" * * * ?";
+		// String cronExpression = "0/60 * * * * ?";
 		CronTrigger cronTrigger = new CronTrigger(cronExpression);
 		taskScheduler.schedule(new RunnableTask(authDetails), cronTrigger);
 		logger.info("Job Scheduled to get AccessToken for every " + minutes + " minutes for Client: "
@@ -113,7 +113,7 @@ public class RefreshTokenScheduler {
 			logger.error("Error in Updating the AccessToken value into database: " + e.getMessage());
 		}
 
-		getResourcesData(existingAuthDetails);
+		// getResourcesData(existingAuthDetails);
 
 	}
 
