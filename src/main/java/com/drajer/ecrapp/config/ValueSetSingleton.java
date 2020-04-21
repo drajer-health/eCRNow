@@ -32,5 +32,8 @@ public class ValueSetSingleton {
 	public void setValueSets(Set<ValueSet> valueSets) {
 		this.valueSets = valueSets;
 	}
+	
+	private ValueSetSingleton() {
+	}
 
 }
