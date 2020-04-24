@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import {
   Alert,
   Row,
-  Col,
-  Tooltip
+  Col
 } from 'react-bootstrap';
 import './Authorizations.css';
-
-const tooltip = <Tooltip id="tooltip">Configuration Settings</Tooltip>;
 
 class Authorizations extends Component {
   constructor(props) {
@@ -213,92 +210,11 @@ class Authorizations extends Component {
         return response.json();
       })
       .then(result => {
-        const patientData = result;
-        const extensions = patientData.extension;
-        const patientInformation = {
-          patientId: patientData.id,
-          patientFirstName: patientData.name[0].given[0],
-          patientLastName: patientData.name[0].family[0],
-          address: patientData.address[0].line[0],
-          city: patientData.address[0].city,
-          state: patientData.address[0].state,
-          zip: patientData.address[0].postalCode,
-          dateOfBirth: patientData.birthDate
-        };
-        var keyName;
-        if (extensions) {
-          extensions.forEach(item => {
-            if (
-              item.url === 'http://hl7.org/fhir/StructureDefinition/us-core-race'
-            ) {
-              patientInformation['race'] =
-                item.valueCodeableConcept.coding[0].display;
-            }
-
-            if (
-              item.url ===
-              'http://hl7.org/fhir/StructureDefinition/us-core-ethnicity'
-            ) {
-              patientInformation['ethnicity'] =
-                item.valueCodeableConcept.coding[0].display;
-            }
-          });
-        }
-        const patient = {
-          resourceType: 'Patient',
-          formData: patientInformation
-        };
-        if (patientData.careProvider) {
-          const practitioner = patientData.careProvider;
-          const practitionerURL = practitioner[0].reference;
-          this.getPractitionerData(practitionerURL);
-        }
-      });
-  }
-
-  getPractitionerData(practitionerURL) {
-    fetch(practitionerURL + '?_format=json', {
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer ' + this.state.access_token
-      }
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(result => {
-        const providerData = result;
-        const providerInformation = {
-          providerFirstName: providerData.name.given[0],
-          providerLastName: providerData.name.family[0]
-        };
-        var keyName;
-        for (keyName in providerInformation) {
-          this.validators.step1.validators[keyName].state =
-            providerInformation[keyName];
-        }
-        const provider = {
-          resourceType: 'Practitioner',
-          formData: providerInformation,
-          validators: this.validators.step1.validators
-        };
+        console.log("Received Patient Data==============>" + JSON.stringify(result));
       });
   }
 
   render() {
-    const btnStyles = {
-      width: '100%',
-      backgroundColor: '#33454D',
-      borderColor: '#33454D',
-      boxShadow: '0 8px 6px -6px #ccc',
-      borderRadius: '25px'
-    };
-    // const requestTypes = [
-    //   {
-    //     value: 'InPatient Authorization',
-    //     label: 'InPatient Authorization'
-    //   }
-    // ];
     const setShow = () => this.setState({ isAuthorized: false });
     return (
       <div className="authorizations">

@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Container } from 'react-bootstrap';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Header from './Layout/Header/Header';
 import Authorizations from './Views/Authorizations/Authorizations';
-import ReactNotification from 'react-notifications-component';
 
 class App extends Component {
   constructor() {
@@ -19,28 +17,13 @@ class App extends Component {
     return (
       <div className="App">
         <Header />
-        {/* <ClientDetails /> */}
         <div className="main">
           <Container>
-            <Router basename={'/ecr-now'}>
-              {/* <Router> */}
-              <Switch>
-                <Route
-                  exact
-                  path="/"
-                  // component={Authorizations}
-                  render={props => (
-                    <Authorizations
-                      {...props}
-                      authData={this.state}
-                    />
-                  )}
-                />
-              </Switch>
-            </Router>
+            <Authorizations
+              authData={this.state}
+            />
           </Container>
         </div>
-        <ReactNotification />
       </div>
     );
   }
