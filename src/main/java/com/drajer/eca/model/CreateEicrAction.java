@@ -32,11 +32,8 @@ public class CreateEicrAction extends AbstractAction {
 	@Autowired
 	TriggerQueryService triggerQueryService;
 	
+	@Autowired
 	LoadingQueryService loadingQueryService;
-	
-	public CreateEicrAction() {
-		loadingQueryService = new LoadingQueryService();
-	}
 	
 	@Override
 	public void print() {

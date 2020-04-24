@@ -37,6 +37,9 @@ public class LaunchController {
 	@Autowired
 	LoadingQueryService loadingQueryService;
 	
+	@Autowired
+	WorkflowService     workflowService;
+	
 	@CrossOrigin
 	@RequestMapping("launchDetails/{tokenId}")
     public LaunchDetails getClientById(@PathVariable("tokenId") Integer tokenId) {
@@ -57,7 +60,7 @@ public class LaunchController {
 		tokenScheduler.scheduleJob(launchDetails);
 		
 		// Kick off the Launch Event Processing
-		WorkflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
+		workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
 		
         return launchDetails;
     }

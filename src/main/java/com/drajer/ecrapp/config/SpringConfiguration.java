@@ -10,7 +10,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 
 @Configuration
-@ComponentScan(basePackages = {"com.drajer.ecrapp", "com.drajer.ersd", "com.drajer.sof"})
+@ComponentScan(basePackages = {"com.drajer.ecrapp", "com.drajer.ersd", "com.drajer.sof", "com.drajer.eca"})
 public class SpringConfiguration {
 	
 	public static final String ersdFhirBaseServer = "https://ersd.aimsplatform.org/api/fhir";
