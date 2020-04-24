@@ -44,7 +44,7 @@ public class LoadingQueryService implements AbstractQueryService {
 
 	@Override
 	public FhirData getData(LaunchDetails launchDetails, Date start, Date end) {
-
+		
 		Bundle bundle = new Bundle();
 		Dstu2FhirData dstu2FhirData = new Dstu2FhirData();
 		// Access the Token Details and pull the data based on service
@@ -234,6 +234,6 @@ public class LoadingQueryService implements AbstractQueryService {
 			logger.info("Bundle Entry Size====>" + dstu2FhirData.getData().getEntry().size());
 
 		}
-		return null;
+		return dstu2FhirData;
 	}
 }

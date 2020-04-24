@@ -176,7 +176,7 @@ public class TriggerQueryService implements AbstractQueryService {
 			// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 			
 		}
-		return null;
+		return dstu2FhirData;
 	}
 	
 }
