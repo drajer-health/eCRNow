@@ -1,11 +1,42 @@
 package com.drajer.eca.model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.sof.model.Dstu2FhirData;
+import com.drajer.sof.model.FhirData;
+import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.service.LoadingQueryService;
+import com.drajer.sof.service.TriggerQueryService;
+
+import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+
+@Service
 public class CreateEicrAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(CreateEicrAction.class);
+	
+	@Autowired
+	TriggerQueryService triggerQueryService;
+	
+	LoadingQueryService loadingQueryService;
+	
+	public CreateEicrAction() {
+		loadingQueryService = new LoadingQueryService();
+	}
 	
 	@Override
 	public void print() {
@@ -17,8 +48,82 @@ public class CreateEicrAction extends AbstractAction {
 	
 	@Override
 	public void execute(Object obj) {
-		// TODO Auto-generated method stub
 
+		if(obj instanceof LaunchDetails) {
+			
+			logger.info(" Obtained Launch Details ");
+			LaunchDetails details = (LaunchDetails)obj;
+			
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			Date start = null;
+			Date end = null;
+			
+			try {
+				start = formatter.parse("2019-02-13");
+				end = formatter.parse("2019-02-14");
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			// Call the Loading Queries.
+			if(loadingQueryService != null ) { 
+				
+			logger.info(" Getting necessary data from Loading Queries ");
+			FhirData data = loadingQueryService.getData(details, start, end);
+			
+			String eICR = null;
+			
+			if(data != null && data instanceof Dstu2FhirData) {
+				
+				Dstu2FhirData dstu2Data = (Dstu2FhirData)data;
+				eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+				
+				Bundle bundle = dstu2Data.getData();
+				if(bundle != null) {
+					
+					List<Entry> entries = bundle.getEntry();
+					
+					for(Entry ent : entries) {
+						
+						// Create Doc Header
+						
+						// Populate Patient 
+						if(ent.getResource() instanceof Patient) {
+							
+							Patient p = (Patient)ent.getResource();
+							logger.info(" Patient ID = " + p.getIdentifier().get(0).getSystem());
+							logger.info(" Patient ID = " + p.getIdentifier().get(0).getValue());
+							
+							logger.info(" Patient ID = " + p.getNameFirstRep().getFamilyAsSingleString());
+							logger.info(" Patient ID = " + p.getNameFirstRep().getGivenAsSingleString());
+							
+							logger.info(" Patient Address =  " + p.getAddressFirstRep().getLineFirstRep());
+							logger.info(" Patient Address =  " + p.getAddressFirstRep().getCity());
+							logger.info(" Patient Address =  " + p.getAddressFirstRep().getState());
+							
+							logger.info(" Patient Address =  " + p.getAddressFirstRep().getPostalCode());
+							
+						}
+					}
+					
+					
+				}
+				
+			}
+				
+			logger.info(" ************ START EiCR ************ " + "\n");
+				
+			logger.info(eICR);
+				
+			logger.info(" ************ END EiCR ************ " + "\n");
+				
+		}
+			
+			
+		}
 	}
 
 }

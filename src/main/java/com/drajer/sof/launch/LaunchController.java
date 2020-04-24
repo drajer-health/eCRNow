@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.drajer.eca.model.EventTypes;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
@@ -52,6 +55,10 @@ public class LaunchController {
     public LaunchDetails createAuthToken(@RequestBody LaunchDetails launchDetails) {
 		authDetailsService.saveOrUpdate(launchDetails);
 		tokenScheduler.scheduleJob(launchDetails);
+		
+		// Kick off the Launch Event Processing
+		WorkflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
+		
         return launchDetails;
     }
 	

@@ -16,13 +16,17 @@ import com.drajer.sof.utils.FhirContextInitializer;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
 import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
+import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Component
@@ -51,7 +55,16 @@ public class TriggerQueryService implements AbstractQueryService {
 			logger.info("Initializing Client");
 			IGenericClient client = fhirContextInitializer.createClient(context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
 			
-			
+			// GET Patient Details and Add to Bundle
+			try {
+				logger.info("Get Patient Data");
+				Patient patient = (Patient) fhirContextInitializer.getResouceById(launchDetails, client, context, "Patient", launchDetails.getLaunchPatientId());
+				Entry patientEntry = new Entry();
+				patientEntry.setResource(patient);
+				bundle.addEntry(patientEntry);
+			}catch(Exception e) {
+				logger.error("Error in getting Patient Data");
+			}
 			// Step 1: Get Encounters for Patient based on encId. (Create a method to get encounters)
 			// If encId is null, find encounters for patient within the start and end time provided.
 			// Add to the bundle.
@@ -60,6 +73,17 @@ public class TriggerQueryService implements AbstractQueryService {
 			try {
 				logger.info("Get Encounter Data");
 				encounter = dstu2ResourcesData.getEncounterData(context, client, launchDetails,dstu2FhirData, start, end);
+				if(encounter.getParticipant() != null) {
+					List<Participant> participants = encounter.getParticipant();
+					for(Participant participant: participants) {
+						if(participant.getIndividual() != null) {
+							ResourceReferenceDt practitionerReference = participant.getIndividual();
+							Practitioner practitioner = (Practitioner) fhirContextInitializer.getResouceById(launchDetails, client, context, "Practitioner", practitionerReference.getReference().getIdPart());
+							Entry practitionerEntry = new Entry().setResource(practitioner);
+							bundle.addEntry(practitionerEntry);	
+						}
+					}
+				}
 				Entry encounterEntry = new Entry().setResource(encounter);
 				bundle.addEntry(encounterEntry);	
 			}catch(Exception e) {
@@ -149,6 +173,7 @@ public class TriggerQueryService implements AbstractQueryService {
 			
 			dstu2FhirData.setData(bundle);
 			logger.info("Bundle Entry Size====>"+ dstu2FhirData.getData().getEntry().size());
+			// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 			
 		}
 		return null;

@@ -63,7 +63,7 @@ public class FhirContextInitializer {
 		return client;
 	}
 
-	protected IBaseResource getResouceById(LaunchDetails authDetails, IGenericClient genericClient, FhirContext context,
+	public IBaseResource getResouceById(LaunchDetails authDetails, IGenericClient genericClient, FhirContext context,
 			String resourceName, String resourceId) {
 		IBaseResource resource = null;
 		try {

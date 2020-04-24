@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
@@ -16,6 +17,7 @@ import com.drajer.sof.utils.FhirContextInitializer;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
 import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
@@ -23,7 +25,10 @@ import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
+import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Component
@@ -52,6 +57,18 @@ public class LoadingQueryService implements AbstractQueryService {
 			IGenericClient client = fhirContextInitializer.createClient(context, launchDetails.getEhrServerURL(),
 					launchDetails.getAccessToken());
 
+			// GET Patient Details and Add to Bundle
+			try {
+				logger.info("Get Patient Data");
+				Patient patient = (Patient) fhirContextInitializer.getResouceById(launchDetails, client, context,
+						"Patient", launchDetails.getLaunchPatientId());
+				Entry patientEntry = new Entry();
+				patientEntry.setResource(patient);
+				bundle.addEntry(patientEntry);
+			} catch (Exception e) {
+				logger.error("Error in getting Patient Data");
+			}
+
 			// Step 1: Get Encounters for Patient based on encId. (Create a method to get
 			// encounters)
 			// If encId is null, find encounters for patient within the start and end time
@@ -64,6 +81,17 @@ public class LoadingQueryService implements AbstractQueryService {
 				logger.info("Get Encounter Data");
 				encounter = dstu2ResourcesData.getEncounterData(context, client, launchDetails, dstu2FhirData, start,
 						end);
+				if(encounter.getParticipant() != null) {
+					List<Participant> participants = encounter.getParticipant();
+					for(Participant participant: participants) {
+						if(participant.getIndividual() != null) {
+							ResourceReferenceDt practitionerReference = participant.getIndividual();
+							Practitioner practitioner = (Practitioner) fhirContextInitializer.getResouceById(launchDetails, client, context, "Practitioner", practitionerReference.getReference().getIdPart());
+							Entry practitionerEntry = new Entry().setResource(practitioner);
+							bundle.addEntry(practitionerEntry);	
+						}
+					}
+				}
 				Entry encounterEntry = new Entry().setResource(encounter);
 				bundle.addEntry(encounterEntry);
 			} catch (Exception e) {
@@ -180,8 +208,8 @@ public class LoadingQueryService implements AbstractQueryService {
 			// diagnostic Reports time is between start and end times) -- Do this later.
 			// Add to the bundle
 			try {
-				List<DiagnosticReport> diagnosticReportList = dstu2ResourcesData.getDiagnosticReportData(context, client,
-						launchDetails, dstu2FhirData, encounter, start, end);
+				List<DiagnosticReport> diagnosticReportList = dstu2ResourcesData.getDiagnosticReportData(context,
+						client, launchDetails, dstu2FhirData, encounter, start, end);
 				logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
 				for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 					Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);

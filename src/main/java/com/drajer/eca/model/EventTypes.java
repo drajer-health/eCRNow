@@ -9,6 +9,15 @@ public final class EventTypes {
 		SUBSCRIPTION_NOTIFICATION
 	}
 	
+	public static enum JobStatus {
+		
+		NOT_STARTED,
+		SCHEDULED,
+		IN_PROGRESS,
+		COMPLETED,
+		ABORTED
+	}
+	
 /*	public static enum ActionTriggerTypes {
 		
 		// These are based on FHIR Trigger Types

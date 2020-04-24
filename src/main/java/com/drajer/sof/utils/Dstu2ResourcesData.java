@@ -148,7 +148,7 @@ public class Dstu2ResourcesData {
 		}
 		return encounter;
 	}
-
+	
 	public List<Condition> getConditionData(FhirContext context, IGenericClient client, LaunchDetails launchDetails,
 			Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
 		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Condition");
