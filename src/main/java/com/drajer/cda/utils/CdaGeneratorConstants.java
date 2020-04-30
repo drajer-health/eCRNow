@@ -1,5 +1,7 @@
 package com.drajer.cda.utils;
 
+import org.javatuples.Pair;
+
 public class CdaGeneratorConstants {
 	
 	// XML Related
@@ -34,7 +36,48 @@ public class CdaGeneratorConstants {
     // CCDA Header Related Information
     public static String CDA_DOC_ROOT = "2.16.840.1.113883.1.3";
     public static String CDA_DOC_EXT = "POCD_HD000040";
-    public static String US_REALM_HEADER = "2.16.840.1.113883.10.20.22.1.1";
+    public static String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
+    public static String US_REALM_HEADER_EXT = "2015-08-01";
+    public static String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
+    public static String PUBLIC_HEALTH_EXT = "2016-12-01";
+    public static String PH_DOC_CODE = "55751-2";
+    public static String PH_DOC_DISPLAY_NAME = "Initial Public Health Case Report";
+    public static String PH_REPORT_TITLE = "Initial Public Health Case Report";
+    
+    
+    // FHIR Types 
+    
+    
+    // FHIR Value Set URLS and values
+    public static String FHIR_IDTYPE_SYSTEM = "http://hl7.org/fhir/v2/0203";
+    public static String FHIR_ARGO_RACE_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-race";
+    public static String FHIR_ARGO_ETHNICITY_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity";
+    public static String FHIR_ARGO_BIRTHSEX_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex";
+    public static String OMB_RACE_CATEGORY_URL = "ombCategory";
+    public static String OMB_RACE_DETAILED_URL = "detailed";
+    public static String FHIR_NPI_URL = "http://hl7.org/fhir/sid/us-npi";
+    public static String FHIR_CPT_URL = "http://www.ama-assn.org/go/cpt";
+    public static String FHIR_SNOMED_URL = "http://snomed.info/sct";
+    public static String FHIR_ICD10_CM_URL = "http://hl7.org/fhir/sid/icd-10-cm";
+    public static String FHIR_ICD9_CM_URL = "http://hl7.org/fhir/sid/icd-9-cm";
+    public static String FHIR_LOINC_URL = "http://loinc.org";
+    
+    public static String FHIR_SERVICE_DELIVERY_TYPE_URL = "http://terminology.hl7.org/ValueSet/v3-ServiceDeliveryLocationRoleType";
+    public static String FHIR_CONDITION_CATEGORY_URL = "http://hl7.org/fhir/condition-category";
+    public static String FHIR_CONDITION_PROBLEM_CATEGORY = "problem";
+    public static String FHIR_CONDITION_HEALTH_CONCERN_CATEGORY = "health-concern";
+    public static String FHIR_LAB_RESULT_CATEGORY = "labortatory";
+    public static String FHIR_OBSERVATION_CATEGORY_URL = "http://hl7.org/fhir/observation-category";
+    public static String FHIR_DIAG_REPORT_CATEGORY = "LAB";
+    public static String FHIR_DIAG_REPORT_CATEGORY_URL = "http://hl7.org/fhir/ValueSet/diagnostic-service-sections";
+       
+    public static String FHIR_MR_IDTYPE_CODE = "MR";
+    public static String CDA_MALE_CODE = "M";
+    public static String CDA_FEMALE_CODE = "F";
+    public static String CDA_UNK_GENDER = "UN";
+    
+    
+    
     public static String CCDA_CCD_TEMPLATE_ID1 = "2.16.840.1.113883.10.20.22.1.1";
     public static String CCDA_CCD_TEMPLATE_ID1_EXT = "2015-08-01";
     public static String JUNE_2014_RELEASE_EXT = "2014-06-09";
@@ -166,8 +209,7 @@ public class CdaGeneratorConstants {
     public static String NOTES_SECTION_CODE = "11488-4";
     public static String NOTES_SECTION_CODE_DISPLAY_NAME = "Consultation Note";
     public static String NOTES_SECTION_TITLE = "CONSULTATION NOTES";
-    public static String NOTES_CODE_FOR_NCQA = "371530004";
-    public static String NOTES_CODE_FOR_NCQA_TEXT = "Clinical consultation report";
+
 
 
     // Procedure Related Information
@@ -393,9 +435,7 @@ public class CdaGeneratorConstants {
     public static String AUTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.155";
     public static String AUTH_TEMPLATE_ID_EXT = "2017-08-01";
 
-    // NCQA Related
-    public static String NCQA_OID = "2.16.840.1.113883.3.464.1005.1";
-    public static String NCQA_OID_EXT = "001";
+
 
     // CodeSystems
     public static String LOINC_CODESYSTEM_OID = "2.16.840.1.113883.6.1";
@@ -433,7 +473,8 @@ public class CdaGeneratorConstants {
     public static String NUBC_CODE_SYSTEM_DISPLAY_NAME = "National Uniform Billing Committee (NUBC)";
     public static String HL7_SERVICE_LOCATION_CODESYSTEM = "2.16.840.1.113883.6.259";
     public static String HL7_SERVICE_LOCATION_CODESYSTEM_NAME = "HL7 Healthcare Service Location";
-
+    public static String SERVICE_DELIVERY_LOCATION_CODESYSTEM = "2.16.840.1.11388 3.5.111";
+    public static String SERVICE_DELIVERY_LOCATION_CODESYSTEM_NAME = "ServiceDelveryLocationRoleType";
 
     // Value Sets
     public static String CONFIDENTIALITY_CODE = "N";
@@ -484,8 +525,10 @@ public class CdaGeneratorConstants {
     public static String TYPE_CODE_CONS = "CSM";
     public static String TYPE_CODE_LOC = "LOC";
     public static String TYPE_CODE_PRD = "PRD";
+    public static String US_REALM_CODE_VAL = "US";
 
     // Element Names
+    public static String REALM_CODE_EL_NAME = "realmCode";
     public static String ENTRY_REL_NAME = "entryRelationship";
     public static String CODE_EL_NAME = "code";
     public static String TARGET_SITE_CODE_EL_NAME = "targetSiteCode";
@@ -493,6 +536,7 @@ public class CdaGeneratorConstants {
     public static String METHOD_CODE_EL_NAME = "methodCode";
     public static String TITLE_EL_NAME = "title";
     public static String SET_ID_EL_NAME = "setId";
+    public static String VERSION_EL_NAME = "versionNumber";
     public static String CONFIDENTIALITY_EL_NAME = "confidentialityCode";
     public static String LANGUAGE_CODE_EL_NAME = "languageCode";
     public static String RECORD_TARGET_EL_NAME = "recordTarget";
@@ -564,6 +608,12 @@ public class CdaGeneratorConstants {
     public static String REP_CUST_ORG_EL_NAME = "representedCustodianOrganization";
     public static String ASSIGNED_PERSON_EL_NAME = "assignedPerson";
     public static String REP_ORG_EL_NAME = "representedOrganization";
+    public static String ENCOMPASSING_ENC_EL_NAME = "encompassingEncounter";
+    public static String COMPONENT_OF_EL_NAME = "componentOf";
+    public static String RESP_PARTY_EL_NAME = "responsibleParty";
+    public static String LOCATION_EL_NAME = "location";
+    public static String HEALTHCARE_FACILITY_EL_NAME = "healthCareFacility";
+    public static String SERVICE_PROVIDER_ORG_EL_NAME = "serviceProviderOrganization";
     public static String PRIORITY_CODE_EL_NAME = "priorityCode";
     public static String INFORMATION_RECIPIENT_EL_NAME = "informationRecipient";
     public static String INTENDED_RECIPIENT_EL_NAME = "intendedRecipient";
@@ -605,7 +655,7 @@ public class CdaGeneratorConstants {
     public static String NF_NA = "NA";
     public static String NF_UNK = "UNK";
     public static String NF_OTH = "OTH";
-    public static String NCQA_PROV = "NCQA Provider";
+
 
     // Data Types
     public static String CD_TYPE = "CD";
@@ -676,5 +726,31 @@ public class CdaGeneratorConstants {
     public static String DEVICE_TABLE_COL_2_TITLE = "Device Date";
     public static String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
     public static String UNKNOWN_VALUE = "Unknown";
+    
+    public static Pair<String, String> getCodeSystemFromUrl(String url) {
+    	
+    	if(url.contentEquals(CdaGeneratorConstants.FHIR_SNOMED_URL)) {   		
+    		return new Pair<String,String>(CdaGeneratorConstants.SNOMED_CODESYSTEM_OID, CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME);  		
+    	}
+    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_CPT_URL)) {
+    		return new Pair<String,String>(CdaGeneratorConstants.CPT_CODESYSTEM_OID, CdaGeneratorConstants.CPT_CODESYSTEM_NAME);  
+    	}
+    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_ICD10_CM_URL)) {
+    		return new Pair<String,String>(CdaGeneratorConstants.ICD10_CM_CODESYSTEM_OID, CdaGeneratorConstants.ICD10_CM_CODESYSTEM_NAME);  
+    	}
+    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_ICD9_CM_URL)) {
+    		return new Pair<String,String>(CdaGeneratorConstants.ICD9_CM_CODESYSTEM_OID, CdaGeneratorConstants.ICD9_CM_CODESYSTEM_NAME);  
+    	}
+    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_LOINC_URL)) {
+    		return new Pair<String,String>(CdaGeneratorConstants.LOINC_CODESYSTEM_OID, CdaGeneratorConstants.LOINC_CODESYSTEM_NAME);  
+    	}
+    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_SERVICE_DELIVERY_TYPE_URL)) {
+    		return new Pair<String,String>(CdaGeneratorConstants.SERVICE_DELIVERY_LOCATION_CODESYSTEM, CdaGeneratorConstants.SERVICE_DELIVERY_LOCATION_CODESYSTEM_NAME);
+    	}
+    	else {
+        	return new Pair<String, String>("", "");
+    	}
+    	  	
+    }
 
 }

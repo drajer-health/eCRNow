@@ -78,36 +78,6 @@ public class CreateEicrAction extends AbstractAction {
 				Dstu2FhirData dstu2Data = (Dstu2FhirData)data;
 				eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
 				
-				Bundle bundle = dstu2Data.getData();
-				if(bundle != null) {
-					
-					List<Entry> entries = bundle.getEntry();
-					
-					for(Entry ent : entries) {
-						
-						// Create Doc Header
-						
-						// Populate Patient 
-						if(ent.getResource() instanceof Patient) {
-							
-							Patient p = (Patient)ent.getResource();
-							logger.info(" Patient ID = " + p.getIdentifier().get(0).getSystem());
-							logger.info(" Patient ID = " + p.getIdentifier().get(0).getValue());
-							
-							logger.info(" Patient ID = " + p.getNameFirstRep().getFamilyAsSingleString());
-							logger.info(" Patient ID = " + p.getNameFirstRep().getGivenAsSingleString());
-							
-							logger.info(" Patient Address =  " + p.getAddressFirstRep().getLineFirstRep());
-							logger.info(" Patient Address =  " + p.getAddressFirstRep().getCity());
-							logger.info(" Patient Address =  " + p.getAddressFirstRep().getState());
-							
-							logger.info(" Patient Address =  " + p.getAddressFirstRep().getPostalCode());
-							
-						}
-					}
-					
-					
-				}
 				
 			}
 				

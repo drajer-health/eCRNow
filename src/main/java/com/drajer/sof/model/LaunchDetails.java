@@ -47,7 +47,6 @@ public class LaunchDetails {
 	private String scope;
 
 	@Column(name = "last_updated_ts", nullable = false)
-	//@UpdateTimestamp
 	@CreationTimestamp
 	private Date lastUpdated;
 
@@ -65,6 +64,45 @@ public class LaunchDetails {
 
 	@Column(name = "status", nullable = true) // Status can be active or completed.
 	private String status;
+	
+	@Column(name = "aa_id", nullable = true) // Status can be active or completed.
+	private String 			assigningAuthorityId;
+	
+	@Column(name = "set_id", nullable = true) // Status can be active or completed.
+	private String 			setId;
+	
+	@Column(name = "ver_number", nullable = true) // Status can be active or completed.
+	private String 			versionNumber;
+	
+	@Column(name = "direct_user", nullable = true) // Status can be active or completed.
+	private String 			directUser;
+	
+	@Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
+	private String 			directPwd;
+
+	public String getAssigningAuthorityId() {
+		return assigningAuthorityId;
+	}
+
+	public void setAssigningAuthorityId(String assigningAuthorityId) {
+		this.assigningAuthorityId = assigningAuthorityId;
+	}
+
+	public String getSetId() {
+		return setId;
+	}
+
+	public void setSetId(String setId) {
+		this.setId = setId;
+	}
+
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+
+	public void setVersionNumber(String versionNumber) {
+		this.versionNumber = versionNumber;
+	}
 
 	public Integer getId() {
 		return id;

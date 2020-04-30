@@ -227,7 +227,11 @@ public class PlanDefinitionProcessor {
 			
 			if(acts != null) {
 				ActionRepo.getInstance().setActions(acts);
+				
+				ActionRepo.getInstance().setupTriggerBasedActions();
+				
 				ActionRepo.getInstance().print();
+				
 			}
 		}
 	}

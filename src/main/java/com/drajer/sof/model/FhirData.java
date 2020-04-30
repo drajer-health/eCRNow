@@ -13,7 +13,7 @@ public abstract class FhirData {
 	List<CodeableConceptDt> encounterCodes;
 	List<CodeableConceptDt> immuniationCodes;
 	List<CodeableConceptDt> diagnosticReportCodes;
-
+	
 	public List<CodeableConceptDt> getConditionCodes() {
 		return conditionCodes;
 	}

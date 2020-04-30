@@ -1,30 +1,43 @@
 package com.drajer.cda.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uhn.fhir.model.dstu2.composite.AddressDt;
+import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
+import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
+import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 
 public class CdaGeneratorUtils {
+	
+	public static final Logger logger = LoggerFactory.getLogger(CdaGeneratorUtils.class);
 
-	public static String getGUID()
+	public static String getGuid()
 	{
-		// return System.Guid.NewGuid().toString();
-		return null;
+		return java.util.UUID.randomUUID().toString();
 	}
 
 	public static String getCurrentDate()
 	{
-		// return (System.DateTime.Now.Year.toString() + System.DateTime.Now.Month.toString("d2") + System.DateTime.Now.Day.toString("d2"));
-		return null;
+		// SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+		
+		SimpleDateFormat formatter= new SimpleDateFormat("yyyyMMdd");
+		Date date = new Date(System.currentTimeMillis());
+		return formatter.format(date);
 	}
 
 	public static String getCurrentDateTime()
 	{
-		//     return (System.DateTime.Now.Year.toString() + System.DateTime.Now.Month.toString("d2") + System.DateTime.Now.Day.toString("d2")
-		//                + System.DateTime.Now.Hour.toString("d2") + System.DateTime.Now.Minute.toString("d2") + System.DateTime.Now.Second.toString("d2"));
-
-		return null;
+		SimpleDateFormat formatter= new SimpleDateFormat("yyyyMMddHHmmss");
+		Date date = new Date(System.currentTimeMillis());
+		return formatter.format(date);
 	} 
 
 	public static String getXmlForStartElement(String name)
@@ -63,30 +76,27 @@ public class CdaGeneratorUtils {
 		return s;
 	}
 
-	public static String getXmlHeaderForCCDDocument()
+	public static String getXmlHeaderForClinicalDocument()
 	{
 		String xmlHeader = CdaGeneratorConstants.DOC_HEADER_XML + CdaGeneratorConstants.CLINICAL_DOC_HEADER_XML;
-
+		
+		xmlHeader += getXmlForCD(CdaGeneratorConstants.REALM_CODE_EL_NAME, CdaGeneratorConstants.US_REALM_CODE_VAL);
+		
+		xmlHeader += CdaGeneratorConstants.START_XMLTAG + "typeId root=" + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CDA_DOC_ROOT
+						+ CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "extension=" + CdaGeneratorConstants.DOUBLE_QUOTE
+						+ CdaGeneratorConstants.CDA_DOC_EXT + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		
+		xmlHeader += getXmlForTemplateId(CdaGeneratorConstants.US_REALM_HEADER_TEMPLATE_ID, CdaGeneratorConstants.US_REALM_HEADER_EXT);
+		xmlHeader += getXmlForTemplateId(CdaGeneratorConstants.PUBLIC_HEALTH_TEMPLATE_ID, CdaGeneratorConstants.PUBLIC_HEALTH_EXT);
+		
 		return xmlHeader;
 	}
 
-	public static String getXmlHeaderForQRDACategoryIDocument()
-	{
-		String xmlHeader = CdaGeneratorConstants.DOC_HEADER_XML + CdaGeneratorConstants.CLINICAL_DOC_HEADER_XML;
+	
 
-		return xmlHeader;
-	}
-
-	public static String getEndXMLHeaderForCCDDocument()
+	public static String getEndXMLHeaderForCdaDocument()
 	{
 		return CdaGeneratorConstants.END_HEADER_CLINICAL_DOC;
-	}
-
-	public static String getRealmCodeXML()
-	{
-		String s = CdaGeneratorConstants.START_XMLTAG + "realmCode code=" + CdaGeneratorConstants.DOUBLE_QUOTE + "US"
-				+ CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-		return s;
 	}
 
 	public static String getXmlForTemplateId(String input)
@@ -112,7 +122,7 @@ public class CdaGeneratorUtils {
 
 	public static String getXmlForIIUsingGuid()
 	{
-		String s = CdaGeneratorConstants.START_XMLTAG + "id root=" + CdaGeneratorConstants.DOUBLE_QUOTE + getGUID() + CdaGeneratorConstants.DOUBLE_QUOTE +
+		String s = CdaGeneratorConstants.START_XMLTAG + "id root=" + CdaGeneratorConstants.DOUBLE_QUOTE + getGuid() + CdaGeneratorConstants.DOUBLE_QUOTE +
 				CdaGeneratorConstants.END_XMLTAG_NEWLN;
 		return s;
 	}
@@ -193,6 +203,13 @@ public class CdaGeneratorUtils {
 				CdaGeneratorConstants.END_XMLTAG_NEWLN;
 		return s;
 	}
+	
+	public static String getXmlForValue(String elName, String val)
+	{
+		String s = CdaGeneratorConstants.START_XMLTAG + elName + CdaGeneratorConstants.SPACE + "value=" + CdaGeneratorConstants.DOUBLE_QUOTE + val + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		return s;
+	}
 
 	public static String getXmlForNullCD(String cdName, String code)
 	{
@@ -245,6 +262,14 @@ public class CdaGeneratorUtils {
 				"\n";
 		return s;
 	}
+	
+	public static String getXmlForNFText(String elName, String nf)
+	{
+		String s = CdaGeneratorConstants.START_XMLTAG + elName + CdaGeneratorConstants.SPACE + "nullFlavor=" + 
+				CdaGeneratorConstants.DOUBLE_QUOTE + nf + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.FORWARD_SLASH + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET +
+				"\n";
+		return s;
+	}
 
 	public static String getXmlForSDTCElement(String elName, String value)
 	{
@@ -257,6 +282,25 @@ public class CdaGeneratorUtils {
 	{
 		String s = CdaGeneratorConstants.START_XMLTAG + elName + CdaGeneratorConstants.SPACE + "value=" + CdaGeneratorConstants.DOUBLE_QUOTE +
 				value + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		return s;
+	}
+	
+	public static String getXmlForEffectiveTime(String elName, Date value)
+	{
+		String s = "";
+		if(value != null) {
+			SimpleDateFormat formatter= new SimpleDateFormat("yyyyMMdd");
+			String val = formatter.format(value);
+			
+			s += CdaGeneratorConstants.START_XMLTAG + elName + CdaGeneratorConstants.SPACE + "value=" + CdaGeneratorConstants.DOUBLE_QUOTE +
+					val + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+			
+		}
+		else {
+			s += CdaGeneratorConstants.START_XMLTAG + elName + CdaGeneratorConstants.SPACE + "nullFlavor=" + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.NF_NI + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		}
+		
 		return s;
 	}
 
@@ -277,10 +321,22 @@ public class CdaGeneratorUtils {
 
 	public static String getXmlForTelecom(String telName, String telNo, String use)
 	{
-		String s = CdaGeneratorConstants.START_XMLTAG + telName + CdaGeneratorConstants.SPACE + "value="
-				+ CdaGeneratorConstants.DOUBLE_QUOTE + "tel:(" + telNo.substring(0, 3) + ")" + telNo.substring(3, 3) + "-"
-				+ telNo.substring(6, 4) + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "use=" +
-				CdaGeneratorConstants.DOUBLE_QUOTE + use + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		String s = "";
+		
+		if(!StringUtils.isEmpty(use) && 
+		   telNo.length() == 10) {
+			
+			s += CdaGeneratorConstants.START_XMLTAG + telName + CdaGeneratorConstants.SPACE + "value="
+					+ CdaGeneratorConstants.DOUBLE_QUOTE + "tel:(" + telNo.substring(0, 3) + ")" + telNo.substring(3, 6) + "-"
+					+ telNo.substring(6, 10) + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "use=" +
+					CdaGeneratorConstants.DOUBLE_QUOTE + use + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		}
+		else {
+			
+			s += CdaGeneratorConstants.START_XMLTAG + telName + CdaGeneratorConstants.SPACE + "value="
+					+ CdaGeneratorConstants.DOUBLE_QUOTE + "tel:(" + telNo.substring(0, 3) + ")" + telNo.substring(3, 3) + "-"
+					+ telNo.substring(6, 4) + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		}
 
 		return s;
 	}
@@ -309,35 +365,6 @@ public class CdaGeneratorUtils {
 			s += getXmlForTemplateId(CdaGeneratorConstants.CCDA_CCD_TEMPLATE_ID1);
 			s += getXmlForTemplateId(CdaGeneratorConstants.CCDA_CCD_TEMPLATE_ID2);
 		}
-
-		return s;
-	}
-
-	public static String getQRDACategoryIHeaderTemplatesXML()
-	{
-		String s = CdaGeneratorConstants.START_XMLTAG + "typeId root=" + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CDA_DOC_ROOT
-				+ CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "extension=" + CdaGeneratorConstants.DOUBLE_QUOTE
-				+ CdaGeneratorConstants.CDA_DOC_EXT + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-
-		s += getXmlForTemplateId(CdaGeneratorConstants.US_REALM_HEADER, CdaGeneratorConstants.JUNE_2014_RELEASE_EXT);
-		s += getXmlForTemplateId(CdaGeneratorConstants.QRDA_CAT_I_TEMPLATEID, CdaGeneratorConstants.DEC_2014_RELEASE_EXT);
-		s += getXmlForTemplateId(CdaGeneratorConstants.QDM_QRDA_CAT_I_TEMPLATEID, CdaGeneratorConstants.DEC_2014_RELEASE_EXT);
-		s += getXmlForTemplateId(CdaGeneratorConstants.CMS_QRDA_CAT_I_TEMPLATEID, CdaGeneratorConstants.JULY_2015_RELEASE_EXT);
-
-		return s;
-	}
-
-	public static String getR51QRDACategoryIHeaderTemplatesXML()
-	{
-		String s = CdaGeneratorConstants.START_XMLTAG + "typeId root=" + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CDA_DOC_ROOT
-				+ CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "extension=" + CdaGeneratorConstants.DOUBLE_QUOTE
-				+ CdaGeneratorConstants.CDA_DOC_EXT + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-
-		// Add the right extensions for R51
-		s += getXmlForTemplateId(CdaGeneratorConstants.US_REALM_HEADER, "2015-08-01");
-		s += getXmlForTemplateId(CdaGeneratorConstants.QRDA_CAT_I_TEMPLATEID, "2017-08-01");
-		s += getXmlForTemplateId(CdaGeneratorConstants.QDM_QRDA_CAT_I_TEMPLATEID, "2018-10-01");
-		s += getXmlForTemplateId(CdaGeneratorConstants.CMS_QRDA_CAT_I_TEMPLATEID, "2019-02-01");
 
 		return s;
 	}
@@ -435,6 +462,27 @@ public class CdaGeneratorUtils {
 
 		return s;
 	}
+	
+	public static String getXmlForIVL_TS(String elName, Date low, Date high)
+	{
+		String s = "";
+		if(low != null && high != null) {
+			s += CdaGeneratorUtils.getXmlForStartElement(elName)
+						+ CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
+						+ CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high)
+						+ CdaGeneratorUtils.getXmlForEndElement(elName);
+		}
+		else if(low != null) {
+			s += CdaGeneratorUtils.getXmlForStartElement(elName)
+					+ CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
+					+ CdaGeneratorUtils.getXmlForEndElement(elName);
+		}
+		else {
+			s += CdaGeneratorUtils.getXmlForNullEffectiveTime(elName, CdaGeneratorConstants.NF_NI);
+		}
+
+		return s;
+	}
 
 	public static String getXmlForValueIVL_TS(String elName, String low, String high)
 	{
@@ -524,6 +572,32 @@ public class CdaGeneratorUtils {
 					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
 					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
 					CdaGeneratorConstants.END_XMLTAG_NEWLN;
+			return s;
+		}
+	}
+	
+	public static String getXmlForValueCDWithoutEndTag(String code, String codeSystem, String codeSystemName, String displayName)
+	{
+		if (!StringUtils.isEmpty(displayName))
+		{
+			String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+					CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CD_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "code=" + CdaGeneratorConstants.DOUBLE_QUOTE + code + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "displayName=" + CdaGeneratorConstants.DOUBLE_QUOTE + displayName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+
+			return s;
+		}
+		else
+		{
+			String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+					CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CD_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "code=" + CdaGeneratorConstants.DOUBLE_QUOTE + code + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
 			return s;
 		}
 	}
@@ -784,5 +858,6 @@ public class CdaGeneratorUtils {
 				"\n";
 		return s;
 	}
+	
 
 }
