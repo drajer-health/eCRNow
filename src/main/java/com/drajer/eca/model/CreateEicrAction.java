@@ -46,6 +46,8 @@ public class CreateEicrAction extends AbstractAction {
 	@Override
 	public void execute(Object obj) {
 
+		logger.info(" Executing Match Trigger Action ");
+		
 		if(obj instanceof LaunchDetails) {
 			
 			logger.info(" Obtained Launch Details ");

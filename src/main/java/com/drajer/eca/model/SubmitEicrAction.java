@@ -18,6 +18,8 @@ public class SubmitEicrAction extends AbstractAction {
 	public void execute(Object obj) {
 		// TODO Auto-generated method stub
 
+		logger.info(" Executing Submit Eicr Action ");
+		
 	}
 
 }

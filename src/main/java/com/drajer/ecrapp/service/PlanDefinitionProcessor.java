@@ -106,7 +106,7 @@ public class PlanDefinitionProcessor {
 			List<TriggerDefinition> triggerDefinitionsList = null;
 			Set<ValueSet> covidValuesets = new HashSet<>();
 			Set<ValueSet> valuesets = new HashSet<>();
-			Map<EventTypes.EcrActionTypes, List<AbstractAction> > acts = new HashMap<EventTypes.EcrActionTypes, List<AbstractAction> >();
+			Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts = new HashMap<EventTypes.EcrActionTypes, Set<AbstractAction> >();
 
 			for (BundleEntryComponent bundleEntry : bundleEntries) {
 				
@@ -259,7 +259,7 @@ public class PlanDefinitionProcessor {
 		return bundle;
 	}
 	
-	private void populateActionData(AbstractAction act, Map<EventTypes.EcrActionTypes, List<AbstractAction> > acts, PlanDefinitionActionComponent action, EventTypes.EcrActionTypes type) {
+	private void populateActionData(AbstractAction act, Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts, PlanDefinitionActionComponent action, EventTypes.EcrActionTypes type) {
 		
 		act.setActionId(action.getId());
 		
@@ -285,7 +285,7 @@ public class PlanDefinitionProcessor {
 			logger.info(" Map contained " + type.toString() + ", so added to map resulting in size " + acts.size());
 		}
 		else {
-			List<AbstractAction> aa = new ArrayList<AbstractAction>();
+			Set<AbstractAction> aa = new HashSet<AbstractAction>();
 			aa.add(act);
 			acts.put(type, aa);
 			
@@ -293,7 +293,7 @@ public class PlanDefinitionProcessor {
 		}
 	}
 	
-	private void processTriggerDefinitions(List<TriggerDefinition> tdlist, AbstractAction act, Map<EventTypes.EcrActionTypes, List<AbstractAction> > acts) {
+	private void processTriggerDefinitions(List<TriggerDefinition> tdlist, AbstractAction act, Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts) {
 		
 		if (tdlist != null && tdlist.size() > 0) {
 			
@@ -397,7 +397,7 @@ public class PlanDefinitionProcessor {
 		
 	}
 	
-	private void processConditions(List<PlanDefinitionActionConditionComponent> condlist, AbstractAction act, Map<EventTypes.EcrActionTypes, List<AbstractAction> > acts) {
+	private void processConditions(List<PlanDefinitionActionConditionComponent> condlist, AbstractAction act, Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts) {
 		
 		if (condlist != null && condlist.size() > 0) {
 			
@@ -418,7 +418,7 @@ public class PlanDefinitionProcessor {
 		}
 	}
 
-	private void processRelatedActions(List<PlanDefinitionActionRelatedActionComponent> rdlist, AbstractAction act, Map<EventTypes.EcrActionTypes, List<AbstractAction> > acts) {
+	private void processRelatedActions(List<PlanDefinitionActionRelatedActionComponent> rdlist, AbstractAction act, Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts) {
 		
 		if (rdlist != null && rdlist.size() > 0) {
 			
@@ -444,13 +444,13 @@ public class PlanDefinitionProcessor {
 		}
 	}
 	
-	private AbstractAction getActionById(String actId, Map<EventTypes.EcrActionTypes, List<AbstractAction> > acts) {
+	private AbstractAction getActionById(String actId, Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts) {
 		
 		if(acts != null && acts.size() > 0) {
 			
-			for(Map.Entry<EventTypes.EcrActionTypes, List<AbstractAction> > ent : acts.entrySet() ) {
+			for(Map.Entry<EventTypes.EcrActionTypes, Set<AbstractAction> > ent : acts.entrySet() ) {
 				
-				List<AbstractAction> aa = ent.getValue();
+				Set<AbstractAction> aa = ent.getValue();
 				
 				if(aa != null && aa.size() > 0) {
 					

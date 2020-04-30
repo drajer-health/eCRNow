@@ -19,6 +19,7 @@ public class CloseOutEicrAction extends AbstractAction {
 	public void execute(Object obj) {
 		// TODO Auto-generated method stub
 
+		logger.info(" Executing Close Out Eicr Action ");
 	}
 	
 	

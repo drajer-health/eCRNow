@@ -3,6 +3,7 @@ package com.drajer.eca.model;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,9 +23,9 @@ public class ActionRepo {
 	
 	private static ActionRepo instance;
 	
-	private Map<EcrActionTypes, List<AbstractAction> > actions;
+	private Map<EcrActionTypes, Set<AbstractAction> > actions;
 	
-	private Map<TriggerType, List<AbstractAction> >	   actionsByTriggers;
+	private Map<TriggerType, Set<AbstractAction> >	   actionsByTriggers;
 	
 	TriggerQueryService triggerQueryService;
 	
@@ -39,13 +40,13 @@ public class ActionRepo {
 		return instance;
 	}
 	
-	public Map<TriggerType, List<AbstractAction>> getActionsByTriggers() {
+	public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
 		return actionsByTriggers;
 	}
 
 
 
-	public void setActionsByTriggers(Map<TriggerType, List<AbstractAction>> actionsByTriggers) {
+	public void setActionsByTriggers(Map<TriggerType, Set<AbstractAction>> actionsByTriggers) {
 		this.actionsByTriggers = actionsByTriggers;
 	}
 
@@ -75,13 +76,13 @@ public class ActionRepo {
 
 
 
-	public Map<EcrActionTypes, List<AbstractAction>> getActions() {
+	public Map<EcrActionTypes, Set<AbstractAction>> getActions() {
 		return actions;
 	}
 
 
 
-	public void setActions(Map<EcrActionTypes, List<AbstractAction>> actions) {
+	public void setActions(Map<EcrActionTypes, Set<AbstractAction>> actions) {
 		this.actions = actions;
 		
 	}
@@ -90,9 +91,9 @@ public class ActionRepo {
 		
 		if(actions != null) {
 			
-			for(Map.Entry<EcrActionTypes, List<AbstractAction> > ent : actions.entrySet()) {
+			for(Map.Entry<EcrActionTypes, Set<AbstractAction> > ent : actions.entrySet()) {
 				
-				List<AbstractAction> aa = ent.getValue();
+				Set<AbstractAction> aa = ent.getValue();
 				
 				if(aa != null) {
 					
@@ -104,7 +105,7 @@ public class ActionRepo {
 						if(td != null && td.size() > 0) {
 							
 							if(actionsByTriggers == null)
-								actionsByTriggers = new HashMap<TriggerType, List<AbstractAction> >();
+								actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction> >();
 								
 							for(ActionData ad : td) {
 								
@@ -114,7 +115,7 @@ public class ActionRepo {
 									
 								}
 								else {
-									List<AbstractAction> la = new ArrayList<AbstractAction>();
+									Set<AbstractAction> la = new HashSet<AbstractAction>();
 									la.add(a);
 									
 									actionsByTriggers.put(ad.getTriggerType(), la);
@@ -133,7 +134,7 @@ public class ActionRepo {
 						if(ts != null && ts.size() > 0) {
 							
 							if(actionsByTriggers == null)
-								actionsByTriggers = new HashMap<TriggerType, List<AbstractAction> >();
+								actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction> >();
 								
 							for(TimingSchedule tsd : ts) {
 								
@@ -143,7 +144,7 @@ public class ActionRepo {
 									
 								}
 								else {
-									List<AbstractAction> la = new ArrayList<AbstractAction>();
+									Set<AbstractAction> la = new HashSet<AbstractAction>();
 									la.add(a);
 									
 									actionsByTriggers.put(tsd.getTriggerType(), la);
@@ -175,14 +176,20 @@ public class ActionRepo {
 		
 		if(actions != null) {
 			
-			for(Map.Entry<EcrActionTypes, List<AbstractAction> > ent : actions.entrySet()) {
+			for(Map.Entry<EcrActionTypes, Set<AbstractAction> > ent : actions.entrySet()) {
 				
-				List<AbstractAction> aa = ent.getValue();
+				
+				logger.info(" Printing Eicr Action Type : " + ent.getKey().toString());
+				
+				Set<AbstractAction> aa = ent.getValue();
 				
 				if(aa != null) {
 					
 					for(AbstractAction a : aa) {
-						a.print();
+						
+						logger.info(" Action that will be executed " + a.toString());
+						
+						// a.print();
 					}
 				}	
 			}
@@ -194,14 +201,20 @@ public class ActionRepo {
 		
 		if(actionsByTriggers != null) {
 			
-			for(Map.Entry<TriggerType, List<AbstractAction> > ent : actionsByTriggers.entrySet()) {
+			for(Map.Entry<TriggerType, Set<AbstractAction> > ent : actionsByTriggers.entrySet()) {
 				
-				List<AbstractAction> aa = ent.getValue();
+				logger.info(" Printing Trigger for Action " + ent.getKey().toString());
+				
+				
+				Set<AbstractAction> aa = ent.getValue();
 				
 				if(aa != null) {
 					
 					for(AbstractAction a : aa) {
-						a.print();
+						
+						logger.info(" Action that will be executed " + a.toString());
+						
+						// a.print();
 					}
 				}
 			}

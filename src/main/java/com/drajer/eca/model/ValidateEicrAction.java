@@ -17,6 +17,8 @@ public class ValidateEicrAction extends AbstractAction {
 	@Override
 	public void execute(Object obj) {
 		// TODO Auto-generated method stub
+		
+		logger.info(" Executing Validate Eicr Action ");
 
 	}
 

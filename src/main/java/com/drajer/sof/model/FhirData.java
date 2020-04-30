@@ -70,4 +70,26 @@ public abstract class FhirData {
 		this.diagnosticReportCodes = diagnosticReportCodes;
 	}
 
+	public List<CodeableConceptDt> getCodesForExpression(String expression) {
+		
+		if(expression.contains("Condition")) {
+			return conditionCodes;
+		}
+		else if(expression.contains("Medication")) {
+			return medicationCodes;
+		}
+		else if(expression.contains("Observation")) {
+			return labResultCodes;
+		}
+		else if(expression.contains("Immunization")) {
+			return immuniationCodes;
+		}
+		else if(expression.contains("ServiceRequest")) {
+			return diagnosticOrderCodes;
+		}
+		else {
+			return null;
+		}
+		
+	}
 }

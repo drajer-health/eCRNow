@@ -18,6 +18,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 	public void execute(Object obj) {
 		// TODO Auto-generated method stub
 
+		logger.info(" Executing Periodic Update Action ");
 	}
 
 }
