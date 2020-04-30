@@ -25,9 +25,11 @@ import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
+import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
+import ca.uhn.fhir.model.dstu2.resource.Encounter.Location;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
@@ -88,7 +90,24 @@ public class LoadingQueryService implements AbstractQueryService {
 							ResourceReferenceDt practitionerReference = participant.getIndividual();
 							Practitioner practitioner = (Practitioner) fhirContextInitializer.getResouceById(launchDetails, client, context, "Practitioner", practitionerReference.getReference().getIdPart());
 							Entry practitionerEntry = new Entry().setResource(practitioner);
-							bundle.addEntry(practitionerEntry);	
+							bundle.addEntry(practitionerEntry);
+						}
+					}
+				}
+				if(encounter.getServiceProvider() != null) {
+					ResourceReferenceDt organizationReference = encounter.getServiceProvider();
+					Organization organization = (Organization) fhirContextInitializer.getResouceById(launchDetails, client, context, "Organization", organizationReference.getReference().getIdPart());
+					Entry organizationEntry = new Entry().setResource(organization);
+					bundle.addEntry(organizationEntry);	
+				}
+				if(encounter.getLocation() != null) {
+					List<Location> enocunterLocations = encounter.getLocation();
+					for(Location location: enocunterLocations) {
+						if(location.getLocation() != null) {
+							ResourceReferenceDt locationReference = location.getLocation();
+							ca.uhn.fhir.model.dstu2.resource.Location locationResource = (ca.uhn.fhir.model.dstu2.resource.Location) fhirContextInitializer.getResouceById(launchDetails, client, context, "Location", locationReference.getReference().getIdPart());
+							Entry locationEntry = new Entry().setResource(locationResource);
+							bundle.addEntry(locationEntry);		
 						}
 					}
 				}
@@ -232,6 +251,7 @@ public class LoadingQueryService implements AbstractQueryService {
 
 			dstu2FhirData.setData(bundle);
 			logger.info("Bundle Entry Size====>" + dstu2FhirData.getData().getEntry().size());
+			// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 
 		}
 		return dstu2FhirData;

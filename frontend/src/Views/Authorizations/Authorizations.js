@@ -173,11 +173,16 @@ class Authorizations extends Component {
       scope: window.SCOPES,
       launchPatientId: this.state.patientId,
       fhirVersion: this.state.fhirVersion,
-      encounterId: this.state.encounterId
+      encounterId: this.state.encounterId,
+      assigningAuthorityId: window.OID,
+      setId: this.state.patientId + "+" + this.state.encounterId,
+      versionNumber: window.VERSION_NUMBER,
+      directUser: window.DIRECT_USER,
+      directPwd: window.DIRECT_PWD
     };
     console.log(clientInfo);
 
-    fetch(window.Client_EndPoint, {
+    fetch(window.Client_EndPoint + "launchDetails", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

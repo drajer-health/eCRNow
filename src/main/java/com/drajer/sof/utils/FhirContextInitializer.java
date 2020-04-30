@@ -69,10 +69,10 @@ public class FhirContextInitializer {
 		try {
 			logger.info("Getting " + resourceName + " data");
 			resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
-			logger.info(resourceName + ":::::::::::::::::" + context.newJsonParser().encodeResourceToString(resource));
+			// logger.info(resourceName + ":::::::::::::::::" + context.newJsonParser().encodeResourceToString(resource));
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error in getting " + resourceName + " resource by Patient Id: " + resourceId);
+			// e.printStackTrace();
+			logger.error("Error in getting " + resourceName + " resource by Id: " + resourceId);
 		}
 		return resource;
 	}

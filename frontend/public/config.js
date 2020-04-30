@@ -7,11 +7,16 @@ var SCOPES = 'launch,online_access,offline_access,user/Patient.read,user/Conditi
 
 // Cerner R4
 // var CLIENT_ID = '43252fc8-16aa-45cc-b946-571642ed7b5d';
-// var SCOPES = 'launch,online_access,user/Patient.read,user/Condition.read,user/Encounter.read,user/MedicationRequest.read,user/Observation.read,patient/Patient.read,patient/Condition.read,patient/Encounter.read,patient/MedicationRequest.read,patient/Observation.read';
+// var SCOPES = 'launch,online_access,user/Patient.read,user/Condition.read,user/Encounter.read,user/MedicationRequest.read,user/Observation.read,user/Immunization.read,user/Organization.read,user/Practitioner.read,patient/Patient.read,patient/Condition.read,patient/Encounter.read,patient/MedicationRequest.read,patient/Observation.read,patient/Immunization.read,patient/Organization.read';
 
 // AllScripts
 // var CLIENT_ID = '7f407628-e786-46d6-bba7-52c489e62b77';
 // var SCOPES = 'launch,online_access,offline_access';
 
 // Client Endpoint
-var Client_EndPoint = 'http://localhost:8081/launchDetails';
+var Client_EndPoint = 'http://localhost:8081/';
+
+var OID = "1.1.1.1.1.1.1";
+var DIRECT_USER = "test@test.com";
+var DIRECT_PWD = "test";
+var VERSION_NUMBER = "1";

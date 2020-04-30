@@ -224,4 +224,20 @@ public class LaunchDetails {
 		this.status = stat;
 	}
 
+	public String getDirectUser() {
+		return directUser;
+	}
+
+	public void setDirectUser(String directUser) {
+		this.directUser = directUser;
+	}
+
+	public String getDirectPwd() {
+		return directPwd;
+	}
+
+	public void setDirectPwd(String directPwd) {
+		this.directPwd = directPwd;
+	}
+
 }
