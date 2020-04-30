@@ -21,7 +21,7 @@ import com.drajer.ecrapp.config.JSONObjectUserType;
 @Entity
 @Table(name = "launch_details")
 @DynamicUpdate
-@TypeDefs({@TypeDef(name= "StringJsonObject", typeClass = JSONObjectUserType.class)})
+@TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
 public class LaunchDetails {
 
 	@Id
@@ -55,6 +55,12 @@ public class LaunchDetails {
 	@Column(name = "last_updated_ts", nullable = false)
 	@CreationTimestamp
 	private Date lastUpdated;
+	
+	@Column(name = "start_date", nullable = true)
+	private Date startDate;
+	
+	@Column(name = "end_date", nullable = true)
+	private Date endDate;
 
 	@Column(name = "refresh_token", nullable = true, columnDefinition = "TEXT")
 	private String refreshToken;
@@ -71,21 +77,21 @@ public class LaunchDetails {
 	@Column(name = "status", nullable = true) // Status can be active or completed.
 	@Type(type = "StringJsonObject")
 	private String status;
-	
+
 	@Column(name = "aa_id", nullable = true) // Status can be active or completed.
-	private String 			assigningAuthorityId;
-	
+	private String assigningAuthorityId;
+
 	@Column(name = "set_id", nullable = true) // Status can be active or completed.
-	private String 			setId;
-	
+	private String setId;
+
 	@Column(name = "ver_number", nullable = true) // Status can be active or completed.
-	private String 			versionNumber;
-	
+	private String versionNumber;
+
 	@Column(name = "direct_user", nullable = true) // Status can be active or completed.
-	private String 			directUser;
-	
+	private String directUser;
+
 	@Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
-	private String 			directPwd;
+	private String directPwd;
 
 	public String getAssigningAuthorityId() {
 		return assigningAuthorityId;
@@ -162,7 +168,7 @@ public class LaunchDetails {
 	public String getUserId() {
 		return userId;
 	}
-	
+
 	public String getStatus() {
 		return status;
 	}
@@ -193,6 +199,22 @@ public class LaunchDetails {
 
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public String getRefreshToken() {
@@ -226,7 +248,7 @@ public class LaunchDetails {
 	public void setEncounterId(String encounterId) {
 		this.encounterId = encounterId;
 	}
-	
+
 	public void setStatus(String stat) {
 		this.status = stat;
 	}

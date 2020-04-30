@@ -150,12 +150,26 @@ class Authorizations extends Component {
           patientId: body.patient,
           tokenUrl: params.tokenurl,
           userId: body.user,
-          fhirVersion: params.fhirVersion,
-          encounterId: body.encounter
+          fhirVersion: params.fhirVersion
         });
+        if (body.encounter) {
+          this.setState({
+            encounterId: body.encounter
+          });
+          this.getEncounterData();
+        } else {
+          this.setState({
+            encounterId: "Unknown",
+            encounterStartDate: this.getStartDate(),
+            encounterEndDate: this.getEndDate()
+          });
+          this.submitClientDetails();
+        }
         console.log(this.state);
         this.getResourcesData();
-        this.submitClientDetails();
+        // setTimeout(() => {
+
+        // }, 3000);
       });
   }
 
@@ -178,7 +192,9 @@ class Authorizations extends Component {
       setId: this.state.patientId + "+" + this.state.encounterId,
       versionNumber: window.VERSION_NUMBER,
       directUser: window.DIRECT_USER,
-      directPwd: window.DIRECT_PWD
+      directPwd: window.DIRECT_PWD,
+      startDate: this.state.encounterStartDate,
+      endDate: this.state.encounterEndDate
     };
     console.log(clientInfo);
 
@@ -215,8 +231,77 @@ class Authorizations extends Component {
         return response.json();
       })
       .then(result => {
-        console.log("Received Patient Data==============>" + JSON.stringify(result));
+        // console.log("Received Patient Data==============>" + JSON.stringify(result));
       });
+  }
+
+  getEncounterData() {
+    fetch(
+      this.state.baseURL + '/Encounter/' + this.state.encounterId + '?_format=json',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + this.state.access_token
+        }
+      }
+    )
+      .then(response => {
+        return response.json();
+      })
+      .then(result => {
+        const encounter = result;
+        if (encounter.period) {
+          const period = encounter.period;
+          if (period.start) {
+            this.setState({
+              encounterStartDate: period.start
+            });
+          } else {
+            this.setState({
+              encounterStartDate: this.getStartDate()
+            });
+          }
+
+          if (period.end) {
+            this.setState({
+              encounterEndDate: period.end
+            });
+          } else {
+            this.setState({
+              encounterEndDate: this.getEndDate()
+            });
+          }
+        }
+        this.submitClientDetails();
+      });
+  }
+
+  getStartDate() {
+    const startDate = new Date();
+    startDate.setHours(startDate.getHours() - 3);
+    const year = startDate.getFullYear();
+    const currentMonth = startDate.getMonth() + 1;
+    const month = startDate.getMonth() < 10 ? "0" + currentMonth : startDate.getMonth();
+    const date = startDate.getDate() < 10 ? "0" + startDate.getDate() : startDate.getDate();
+    const hours = startDate.getHours() < 10 ? "0" + startDate.getHours() : startDate.getHours();
+    const minutes = startDate.getMinutes() < 10 ? "0" + startDate.getMinutes() : startDate.getMinutes();
+    const seconds = startDate.getSeconds() < 10 ? "0" + startDate.getSeconds() : startDate.getSeconds();
+    console.log(year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + ".000Z");
+    return year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + ".000Z";
+  }
+
+  getEndDate() {
+    const endDate = new Date();
+    endDate.setHours(endDate.getHours() + 30);
+    const year = endDate.getFullYear();
+    const currentMonth = endDate.getMonth() + 1;
+    const month = endDate.getMonth() < 10 ? "0" + currentMonth : endDate.getMonth();
+    const date = endDate.getDate() < 10 ? "0" + endDate.getDate() : endDate.getDate();
+    const hours = endDate.getHours() < 10 ? "0" + endDate.getHours() : endDate.getHours();
+    const minutes = endDate.getMinutes() < 10 ? "0" + endDate.getMinutes() : endDate.getMinutes();
+    const seconds = endDate.getSeconds() < 10 ? "0" + endDate.getSeconds() : endDate.getSeconds();
+    console.log(year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + ".000Z");
+    return year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + ".000Z";
   }
 
   render() {
