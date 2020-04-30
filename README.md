@@ -1,5 +1,5 @@
-# eCRNow 
-The PlanDefinition Processor reads the eRSD JSON bundle and creates the valuesets on the R4 DB. The eRSD file is being downloaded and is saved in directory. The location of the file has to be specified as a parameter in application.properties file
+# eCR Now Background
+The purpose of the eCR Now FHIR App is to enable vendors to perform eCR reporting for COVID-19 for sites which do not currently have eCR reporting implemented via other mechanisms that are currently supported by the public health agencies. 
 
 ## Instructions to run this project ##
 
