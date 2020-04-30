@@ -58,7 +58,7 @@ Change the database user name, password to reflect the database that was created
 
 Change the ERSD File location to reflect where to find the ersd file that contains the trigger code definitions.
 
-Chnage the logfile location to reflect where you want to log the data.
+Change the logfile location to reflect where you want to log the data.
 
 **Frontend:** 
 
