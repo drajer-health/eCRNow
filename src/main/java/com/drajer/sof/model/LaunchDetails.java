@@ -11,11 +11,17 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.drajer.ecrapp.config.JSONObjectUserType;
 
 @Entity
 @Table(name = "launch_details")
 @DynamicUpdate
+@TypeDefs({@TypeDef(name= "StringJsonObject", typeClass = JSONObjectUserType.class)})
 public class LaunchDetails {
 
 	@Id
@@ -63,6 +69,7 @@ public class LaunchDetails {
 	private String encounterId;
 
 	@Column(name = "status", nullable = true) // Status can be active or completed.
+	@Type(type = "StringJsonObject")
 	private String status;
 	
 	@Column(name = "aa_id", nullable = true) // Status can be active or completed.
