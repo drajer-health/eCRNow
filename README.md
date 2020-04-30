@@ -51,14 +51,20 @@ The following technologies should have been installed on your machine where you 
 3. Configuration Changes: 
 
 **Backend:** 
+
 File: src/main/resources/application.properties
+
 Change the database user name, password to reflect the database that was created in step 2 above. 
 Change the ERSD File location to reflect where to find the ersd file that contains the trigger code definitions.
 
 **Frontend:** 
+
 File: eCRNow/frontend/public/config.js
+
 **CLIENT_ID:** This should be the value of **Client Id** received when you registered the app with the specific EHR sandbox.
+
 **SCOPES:** This is a comma seperated list of scopes that was selected as part of the app registration. 
+
 **Client_EndPoint:** Update this value when the application is being deployed to a test or production server with the right URL. To run and test in local machine, you can use the existing value.
 
 ```
@@ -68,7 +74,9 @@ var Client_Endpoint = 'http://localhost:8081/';
 ```
 
 File: eCRNow/frontend/.env
+
 **PUBLIC_URL:** Update this value when the application is being deployed to a test or production server with the right URL. To run and test in local machine, you can use the existing value.
+
 ```PUBLIC_URL=http://localhost:8081```
 
 4. Build the App by running the following maven command.
