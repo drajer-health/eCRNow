@@ -78,6 +78,12 @@ public class CdaEicrGenerator {
 							logger.info(" Bundle contains Lab Results ");
 							data.getLabResults().add((Observation)ent.getResource());
 						}
+						else if(obs.getCategory() != null &&
+						   obs.getCategory().getCodingFirstRep() != null &&
+						   obs.getCategory().getCodingFirstRep().getCode() != null ) {
+							logger.info( "Code for Observation Category =  " + obs.getCategory().getCodingFirstRep().getCode());
+							
+						}
 						
 						// Compare Code for Travel Obs 
 						

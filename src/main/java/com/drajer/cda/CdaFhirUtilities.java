@@ -16,6 +16,9 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
+import ca.uhn.fhir.model.api.IDatatype;
+import ca.uhn.fhir.model.base.composite.BaseCodingDt;
+import ca.uhn.fhir.model.base.composite.BaseQuantityDt;
 import ca.uhn.fhir.model.dstu2.composite.AddressDt;
 import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
@@ -24,6 +27,7 @@ import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
 import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
+import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Location;
@@ -38,6 +42,8 @@ import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ParticipantTypeEnum;
 import ca.uhn.fhir.model.primitive.BoundCodeDt;
+import ca.uhn.fhir.model.primitive.CodeDt;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 
 public class CdaFhirUtilities {
@@ -228,7 +234,7 @@ public class CdaFhirUtilities {
 		}
 		else {
 			
-			logger.info(" Did not find the Address for the patient ");
+			logger.info(" Did not find the Address ");
 			addrString.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
 			
 			addrString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -449,7 +455,7 @@ public class CdaFhirUtilities {
 		
 		StringBuilder sb = new StringBuilder(200);
 		
-		if(codes.size() > 0) {
+		if(codes != null && codes.size() > 0) {
 			
 			Boolean first = true;
 			for(CodingDt c : codes) {
@@ -530,6 +536,22 @@ public class CdaFhirUtilities {
 		return sb.toString();
 	}
 	
+	public static String getQuantityXml(QuantityDt dt, String elName, Boolean valFlag) {
+		
+		StringBuilder sb = new StringBuilder(200);
+		
+		if(dt != null) {
+			
+			sb.append(CdaGeneratorUtils.getXmlForQuantity(elName, dt.getValue().toString(), dt.getUnit(), valFlag));
+			
+		}
+		else {
+			sb.append(CdaGeneratorUtils.getXmlForNullValuePQ(CdaGeneratorConstants.NF_NI));
+		}
+		
+		return sb.toString();
+	}
+	
 	public static String getGenderXml(BoundCodeDt<AdministrativeGenderEnum> gender) {
 		
 		String s = "";
@@ -605,5 +627,125 @@ public class CdaFhirUtilities {
 			
 		return nameString.toString();
 	}
+	
+	public static String getStringForIDataType(IDatatype dt) {
+		
+		if(dt != null) {
+			
+			String val = "";
+			if(dt instanceof CodingDt) {
+				CodingDt cd = (CodingDt)dt;
+				
+				if(cd.getCodeElement() != null &&
+				   cd.getSystemElement() != null) {
+					
+					val += cd.getSystemElement().getValue() + CdaGeneratorConstants.PIPE + cd.getCodeElement().getValue();
+				}
+				
+			}
+			else if(dt instanceof BaseQuantityDt) {
+				
+				QuantityDt qt = (QuantityDt)dt;
+				
+				if(qt.getValueElement() != null && 
+				   qt.getSystemElement() != null && 
+				   qt.getUnit() != null) {
+					
+					val += qt.getValueElement().getValueAsString() + CdaGeneratorConstants.PIPE + qt.getSystemElement().getValueAsString() + CdaGeneratorConstants.PIPE
+							+ qt.getUnit();
+				}
+				
+			}
+			else if(dt instanceof DateTimeDt) {
+				
+				DateTimeDt d = (DateTimeDt)dt;
+				
+				val += d.getValueAsString();
+				
+			}
+			else if(dt instanceof PeriodDt) {
+				PeriodDt pt = (PeriodDt)dt;
+				
+				if(pt.getStart() != null && 
+						pt.getEnd() != null) {
+					val += pt.getStart().toString() + CdaGeneratorConstants.PIPE + pt.getEnd().toString();
+				}
+				else if(pt.getStart() != null) {
+					val += pt.getStart().toString();
+				}		
+			}
+			else if(dt instanceof CodeDt) {
+				
+				CodeDt cd = (CodeDt)dt;
+				
+				val += cd.getValue();
+			}
+			
+			return val;
+			
+		}
+		
+			
+		logger.info(" Printing the class name " + dt.getClass());
+		return CdaGeneratorConstants.UNKNOWN_VALUE;
+	
+ 	}
+	
+	
+	
+	public static String getIDataTypeXml(IDatatype dt, String elName, Boolean valFlag) {
+		
+		if(dt != null) {
+			
+			String val = "";
+			if(dt instanceof CodingDt) {
+				CodingDt cd = (CodingDt)dt;
+				
+				List<CodingDt> cds = new ArrayList<CodingDt>();
+				cds.add(cd);
+				if(!valFlag)
+					val += getCodingXml(cds,elName);
+				else
+					val += getCodingXmlForValue(cds,elName);
+				
+			}
+			else if(dt instanceof QuantityDt) {
+				
+				QuantityDt qt = (QuantityDt)dt;
+				
+				val += getQuantityXml(qt, elName, valFlag);
+				
+			}
+			else if(dt instanceof DateTimeDt) {
+				
+				DateTimeDt d = (DateTimeDt)dt;
+				
+				val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
+				
+			}
+			else if(dt instanceof PeriodDt) {
+				PeriodDt pt = (PeriodDt)dt;
+				
+				val += getPeriodXml(pt, elName);
+			}
+			else if(dt instanceof CodeDt) {
+				
+				CodeDt cd = (CodeDt)dt;
+				
+				if(!valFlag)
+					val += CdaGeneratorUtils.getNFXMLFoElement(elName, CdaGeneratorConstants.NF_NI);
+				else
+					val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
+			}
+			
+			return val;
+			
+		}
+		
+			
+		logger.info(" Printing the class name " + dt.getClass());
+		return CdaGeneratorConstants.UNKNOWN_VALUE;
+	
+ 	}
 
 }

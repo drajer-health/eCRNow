@@ -1,5 +1,6 @@
 package com.drajer.cda.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 
 public class CdaGeneratorConstants {
@@ -13,6 +14,7 @@ public class CdaGeneratorConstants {
     public static String BACKWARD_SLASH = "\\";
     public static String DOUBLE_QUOTE = "\"";
     public static String SPACE = " ";
+    public static String PIPE = "|";
     public static String COLON = ":";
     public static String HYPHEN = "-";
     public static String EQUALS = "=";
@@ -66,7 +68,7 @@ public class CdaGeneratorConstants {
     public static String FHIR_CONDITION_CATEGORY_URL = "http://hl7.org/fhir/condition-category";
     public static String FHIR_CONDITION_PROBLEM_CATEGORY = "problem";
     public static String FHIR_CONDITION_HEALTH_CONCERN_CATEGORY = "health-concern";
-    public static String FHIR_LAB_RESULT_CATEGORY = "labortatory";
+    public static String FHIR_LAB_RESULT_CATEGORY = "laboratory";
     public static String FHIR_OBSERVATION_CATEGORY_URL = "http://hl7.org/fhir/observation-category";
     public static String FHIR_DIAG_REPORT_CATEGORY = "LAB";
     public static String FHIR_DIAG_REPORT_CATEGORY_URL = "http://hl7.org/fhir/ValueSet/diagnostic-service-sections";
@@ -93,6 +95,17 @@ public class CdaGeneratorConstants {
     public static String QDM_QRDA_CAT_I_TEMPLATEID = "2.16.840.1.113883.10.20.24.1.2";
     public static String CMS_QRDA_CAT_I_TEMPLATEID = "2.16.840.1.113883.10.20.24.1.3";
     public static String JULY_2015_RELEASE_EXT = "2015-07-01";
+    
+    // Reason for Visit and History of Present Illnees
+    public static String REASON_FOR_VISIT_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.12";
+    public static String REASON_FOR_VISIT_SEC_CODE = "29299-5";
+    public static String REASON_FOR_VISIT_SEC_CODE_NAME = "Reason For Visit";
+    public static String REASON_FOR_VISIT_SEC_TITLE = "Reason For Visit";
+    
+    public static String HISTORY_OF_PRESENT_ILLNESS_SEC_TEMPLATE_ID = "1.3.6.1.4.1.19376.1.5.3.1.3.4";
+    public static String HISTORY_OF_PRESENT_ILLNESS_SEC_CODE = "10164-2";
+    public static String HISTORY_OF_PRESENT_ILLNESS_SEC_CODE_NAME = "History of Present Illness";
+    public static String HISTORY_OF_PRESENT_ILLNESS_SEC_TITLE = "History of Present Illness";
 
     // Encounter Related Information
     public static String EO_ENC_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.22";
@@ -279,6 +292,11 @@ public class CdaGeneratorConstants {
     public static String MED_SEC_CODE = "10160-0";
     public static String MED_SEC_NAME = "History of Medication Use";
     public static String MED_SEC_TITLE = "MEDICATIONS";
+    public static String MED_ADM_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.38";
+    public static String MED_ADM_SEC_TEMPLATE_ID_EXT = "2014-06-09";
+    public static String MED_ADM_SEC_CODE = "29549-3";
+    public static String MED_ADM_SEC_TITLE = "Medications Administered";
+    public static String MED_ADM_SEC_NAME = "Medications Administered";
     public static String MED_ENTRY_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.16";
     public static String MED_ENTRY_TEMPLATE_ID_EXT = "2014-06-09";
     public static String MED_SUPPLY_ORDER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.17";
@@ -374,7 +392,7 @@ public class CdaGeneratorConstants {
     public static String CAREPLAN_SEC_TEMPLATE_ID_EXT = "2014-06-09";
     public static String CAREPLAN_SEC_CODE = "18776-5";
     public static String CAREPLAN_SEC_NAME = "Treatment Plan";
-    public static String CAREPLAN_SEC_TITLE = "CARE PLAN";
+    public static String CAREPLAN_SEC_TITLE = "Plan of Treatment";
 
     // Immunizations Related Information
     public static String IMMUNIZATION_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.2.1";
@@ -729,7 +747,10 @@ public class CdaGeneratorConstants {
     
     public static Pair<String, String> getCodeSystemFromUrl(String url) {
     	
-    	if(url.contentEquals(CdaGeneratorConstants.FHIR_SNOMED_URL)) {   		
+        if(StringUtils.isEmpty(url)) {
+        	return new Pair<String, String>("", "");
+        }
+        else if(url.contentEquals(CdaGeneratorConstants.FHIR_SNOMED_URL)) {   		
     		return new Pair<String,String>(CdaGeneratorConstants.SNOMED_CODESYSTEM_OID, CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME);  		
     	}
     	else if(url.contentEquals(CdaGeneratorConstants.FHIR_CPT_URL)) {

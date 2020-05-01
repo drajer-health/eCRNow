@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.drajer.eca.model.AbstractAction;
@@ -30,8 +31,16 @@ public class WorkflowService {
 	
 	private final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
 	
-	@Autowired
-	CreateEicrAction     act;
+	//@Autowired
+	// CreateEicrAction     act;
+	
+	/*
+	 *  These are other services that the action classes use and we are storing it once for all of them instead
+	 *  of using it class variables which can be injected.
+ 	 *  We could do injection if we do not use NEW operator , but the ERSD processor will use new to create instead of Spring context, hence Autowired
+ 	 *   variables cannot be injected into this class or the action classes.
+	 */
+	
 	
 	@Autowired
 	TriggerQueryService triggerQueryService;
@@ -43,12 +52,17 @@ public class WorkflowService {
 	LaunchService 	    launchService;
 	
 	@Autowired
+	ThreadPoolTaskScheduler taskScheduler;
+	
+	@Autowired
 	ObjectMapper		mapper;
 	
 	@PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
 		ActionRepo.getInstance().setTriggerQueryService(triggerQueryService);
+		ActionRepo.getInstance().setLaunchService(launchService);
+		ActionRepo.getInstance().setTaskScheduler(taskScheduler);
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -166,7 +180,7 @@ public class WorkflowService {
 			
 			
 			// Till the above is fixed..just invoke the act.
-			act.execute(details);
+			//act.execute(details);
 			
 			
 			

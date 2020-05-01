@@ -12,9 +12,11 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
+import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
 
@@ -27,9 +29,17 @@ public class ActionRepo {
 	
 	private Map<TriggerType, Set<AbstractAction> >	   actionsByTriggers;
 	
+	// These are other services that the action classes use and we are storing it once for all of them instead
+	// of using it class variables which can be injected.
+	// We could do injection if we do not use NEW operator , but the ERSD processor will use new to create intead of
+	// Spring context, hence Autowired variables cannot be injected into this class or the action classes.
 	TriggerQueryService triggerQueryService;
 	
 	LoadingQueryService loadingQueryService;
+	
+	LaunchService		launchService;
+	
+	ThreadPoolTaskScheduler taskScheduler;
 	
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
@@ -39,12 +49,30 @@ public class ActionRepo {
 		}
 		return instance;
 	}
+
 	
-	public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
-		return actionsByTriggers;
+	public ThreadPoolTaskScheduler getTaskScheduler() {
+		return taskScheduler;
+	}
+
+	public void setTaskScheduler(ThreadPoolTaskScheduler taskScheduler) {
+		this.taskScheduler = taskScheduler;
 	}
 
 
+
+
+	public LaunchService getLaunchService() {
+		return launchService;
+	}
+
+	public void setLaunchService(LaunchService launchService) {
+		this.launchService = launchService;
+	}
+
+	public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
+		return actionsByTriggers;
+	}
 
 	public void setActionsByTriggers(Map<TriggerType, Set<AbstractAction>> actionsByTriggers) {
 		this.actionsByTriggers = actionsByTriggers;

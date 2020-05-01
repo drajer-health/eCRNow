@@ -27,12 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CreateEicrAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(CreateEicrAction.class);
-
-	@Autowired
-	ThreadPoolTaskScheduler taskScheduler;
-
-	@Autowired
-	LaunchService launchService;
+	
+	public CreateEicrAction() {
+		
+		// taskScheduler = new ThreadPoolTaskScheduler();
+	}
 
 	@Override
 	public void print() {
@@ -66,6 +65,8 @@ public class CreateEicrAction extends AbstractAction {
 				e1.printStackTrace();
 			}
 
+			logger.info(" Create Eicr State " + details.getStatus());
+			
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			Date start = null;
 			Date end = null;
@@ -83,6 +84,7 @@ public class CreateEicrAction extends AbstractAction {
 			Boolean conditionsMet = true;
 			if (getPreConditions() != null && getPreConditions().size() > 0) {
 
+				logger.info(" Checking on PreConditions ");
 				List<AbstractCondition> conds = getPreConditions();
 
 				for (AbstractCondition cond : conds) {
@@ -97,6 +99,8 @@ public class CreateEicrAction extends AbstractAction {
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;
 			if (conditionsMet) {
+				
+				logger.info(" PreConditions have been Met ");
 
 				if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 
@@ -124,24 +128,30 @@ public class CreateEicrAction extends AbstractAction {
 			// job was scheduled already.
 			if (relatedActsDone) {
 
-				if (state.getCreateEicrStatus().getJobStatus() != JobStatus.NOT_STARTED) {
+				if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
+					
+					logger.info(" Related Actions Done and this job has not started ");
 					if (getTimingData() != null && getTimingData().size() > 0) {
+						
+						logger.info(" Timing Data is present ");
 						List<TimingSchedule> tsjobs = getTimingData();
 
 						for (TimingSchedule ts : tsjobs) {
 
-							// TBD : Setup job after testing so that we can test faster.
-
-							state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-							
+							// TBD : Setup job using TS Timing after testing so that we can test faster.
+							// For now setup a default job with 10 seconds.
 							try {
+								
+								scheduleJob(details.getId(), ts);
+								state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 								details.setStatus(mapper.writeValueAsString(state));
-								scheduleJob(details.getId());
+								
 								return;
 							} catch (JsonProcessingException e) { // TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
+							
 						}
 
 					}
@@ -175,8 +185,8 @@ public class CreateEicrAction extends AbstractAction {
 
 				logger.info(" **** Printing Eicr **** ");
 
-				// logger.info(eICR);
-				// ;
+				logger.info(eICR);
+				
 
 				logger.info(" **** End Printing Eicr **** ");
 			}
@@ -196,7 +206,7 @@ public class CreateEicrAction extends AbstractAction {
 		public void run() {
 			try {
 				logger.info("Get Launch Details from Database using Id==============>" + launchDetailsId);
-				LaunchDetails launchDetails = launchService.getAuthDetailsById(launchDetailsId);
+				LaunchDetails launchDetails = ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
 				execute(launchDetails);
 				logger.info("Starting the Thread");
 				Thread.currentThread().interrupt();
@@ -206,9 +216,9 @@ public class CreateEicrAction extends AbstractAction {
 		}
 	}
 
-	public void scheduleJob(Integer launchDetailsId) {
+	public void scheduleJob(Integer launchDetailsId, TimingSchedule ts) {
 		logger.info("Scheduling Job to Get Data from FHIR Server");
-		taskScheduler.schedule(new ExecuteJob(launchDetailsId), new Date().toInstant().plusSeconds(10));
+		ActionRepo.getInstance().getTaskScheduler().schedule(new ExecuteJob(launchDetailsId), new Date().toInstant().plusSeconds(10));
 		logger.info("Job Scheduled to get Data after 10 seconds");
 	}
 

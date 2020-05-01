@@ -39,6 +39,18 @@ public class CdaGeneratorUtils {
 		Date date = new Date(System.currentTimeMillis());
 		return formatter.format(date);
 	} 
+	
+	public static String getStringForDate(Date d) {
+		
+		if(d != null) {			
+			SimpleDateFormat formatter= new SimpleDateFormat("yyyyMMddHHmmss");
+			return formatter.format(d);
+		}
+		else {
+			
+			return CdaGeneratorConstants.UNKNOWN_VALUE;			
+		}
+	}
 
 	public static String getXmlForStartElement(String name)
 	{
@@ -531,6 +543,22 @@ public class CdaGeneratorUtils {
 
 		return s;
 	}
+	
+	public static String getXmlForPIVL_TS(String elName, String frequencyInHours) {
+	
+		String s = "";
+		s += CdaGeneratorConstants.START_XMLTAG + elName + CdaGeneratorConstants.SPACE +
+				CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.PIVL_TS_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.SPACE + "institutionSpecified=" + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CCDA_TRUE + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.SPACE + "operator=" + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.RIGHT_ANGLE_BRACKET + "\n" +
+				CdaGeneratorConstants.START_XMLTAG + "period value=" + CdaGeneratorConstants.DOUBLE_QUOTE +
+				frequencyInHours + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "unit=" + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.HOURS_UNITS_NAME + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN
+				+ CdaGeneratorUtils.getXmlForEndElement(elName);
+
+		return s;
+	}
 
 	public static String getXmlForPIVL_TS(String elName, int frequency)
 	{
@@ -702,6 +730,16 @@ public class CdaGeneratorUtils {
 
 		return s;
 	}
+	
+	public static String getXmlForQuantity(String elName, String value, String units, Boolean valFlag)
+	{
+		if(valFlag) {
+			return getXmlForValuePQ(value,units);
+		}
+		
+		return getXmlForQuantity(elName, value);
+
+	}
 
 	public static String getXmlForValuePQ(String value, String units)
 	{
@@ -709,6 +747,16 @@ public class CdaGeneratorUtils {
 				CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.PQ_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
 				CdaGeneratorConstants.SPACE + "value=" + CdaGeneratorConstants.DOUBLE_QUOTE + value + CdaGeneratorConstants.DOUBLE_QUOTE +
 				CdaGeneratorConstants.SPACE + "unit=" + CdaGeneratorConstants.DOUBLE_QUOTE + units + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+		return s;
+	}
+	
+	public static String getXmlForNullValuePQ(String nf)
+	{
+		String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+				CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.PQ_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+				CdaGeneratorConstants.SPACE + "nullFlavor=" + CdaGeneratorConstants.DOUBLE_QUOTE + nf + CdaGeneratorConstants.DOUBLE_QUOTE +
 				CdaGeneratorConstants.END_XMLTAG_NEWLN;
 
 		return s;
