@@ -33,6 +33,7 @@ public class ActionRepo {
 	// of using it class variables which can be injected.
 	// We could do injection if we do not use NEW operator , but the ERSD processor will use new to create intead of
 	// Spring context, hence Autowired variables cannot be injected into this class or the action classes.
+	
 	TriggerQueryService triggerQueryService;
 	
 	LoadingQueryService loadingQueryService;

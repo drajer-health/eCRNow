@@ -27,11 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CreateEicrAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(CreateEicrAction.class);
-	
-	public CreateEicrAction() {
-		
-		// taskScheduler = new ThreadPoolTaskScheduler();
-	}
 
 	@Override
 	public void print() {
@@ -41,11 +36,10 @@ public class CreateEicrAction extends AbstractAction {
 		logger.info(" **** End Printing CreateEicrAction **** ");
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void execute(Object obj) {
 
-		logger.info(" Executing Match Trigger Action ");
+		logger.info(" Executing Create Eicr Action ");
 
 		if (obj instanceof LaunchDetails) {
 
@@ -66,19 +60,6 @@ public class CreateEicrAction extends AbstractAction {
 			}
 
 			logger.info(" Create Eicr State " + details.getStatus());
-			
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			Date start = null;
-			Date end = null;
-
-			try {
-				start = formatter.parse("2019-02-13");
-				end = formatter.parse("2019-02-14");
-
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -122,83 +103,83 @@ public class CreateEicrAction extends AbstractAction {
 						}
 					}
 				}
-			}
+				
+				// Check Timing Data , Dont check if the state is already scheduled meaning the
+				// job was scheduled already.
+				if (relatedActsDone) {
 
-			// Check Timing Data , Dont check if the state is already scheduled meaning the
-			// job was scheduled already.
-			if (relatedActsDone) {
-
-				if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
-					
-					logger.info(" Related Actions Done and this job has not started ");
-					if (getTimingData() != null && getTimingData().size() > 0) {
+					if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 						
-						logger.info(" Timing Data is present ");
-						List<TimingSchedule> tsjobs = getTimingData();
+						logger.info(" Related Actions Done and this job has not started ");
+						if (getTimingData() != null && getTimingData().size() > 0) {
+							
+							logger.info(" Timing Data is present ");
+							List<TimingSchedule> tsjobs = getTimingData();
 
-						for (TimingSchedule ts : tsjobs) {
+							for (TimingSchedule ts : tsjobs) {
 
-							// TBD : Setup job using TS Timing after testing so that we can test faster.
-							// For now setup a default job with 10 seconds.
-							try {
+								// TBD : Setup job using TS Timing after testing so that we can test faster.
+								// For now setup a default job with 10 seconds.
+								try {
+									
+									scheduleJob(details.getId(), ts);
+									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+									details.setStatus(mapper.writeValueAsString(state));
+									
+									// No need to continue as the job will execute.
+									return;
+								} catch (JsonProcessingException e) { // TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
 								
-								scheduleJob(details.getId(), ts);
-								state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-								details.setStatus(mapper.writeValueAsString(state));
-								
-								return;
-							} catch (JsonProcessingException e) { // TODO Auto-generated catch block
-								e.printStackTrace();
 							}
 
-							
+						}
+					}
+					
+					// Call the Loading Queries and create eICR.
+					if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+
+						logger.info(" Getting necessary data from Loading Queries ");
+						FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
+
+						String eICR = null;
+
+						if (data != null && data instanceof Dstu2FhirData) {
+
+							Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
+							eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+
+							state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+							try {
+								details.setStatus(mapper.writeValueAsString(state));
+							} catch (JsonProcessingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 
-					}
-				}
+						logger.info(" **** Printing Eicr **** ");
 
-			}
+						logger.info(eICR);
+						
 
-			// Do not expect the trigger data to be present for CreateEicr
-			// Call the Loading Queries and create eICR.
-			if (ActionRepo.getInstance().getLoadingQueryService() != null) {
-
-				logger.info(" Getting necessary data from Loading Queries ");
-				FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, start, end);
-
-				String eICR = null;
-
-				if (data != null && data instanceof Dstu2FhirData) {
-
-					Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-					eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
-
-					state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-					try {
-						details.setStatus(mapper.writeValueAsString(state));
-					} catch (JsonProcessingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.info(" **** End Printing Eicr **** ");
 					}
 
 				}
-
-				logger.info(" **** Printing Eicr **** ");
-
-				logger.info(eICR);
 				
-
-				logger.info(" **** End Printing Eicr **** ");
 			}
 
 		}
 	}
 
-	class ExecuteJob implements Runnable {
+	class CreateEicrExecuteJob implements Runnable {
 
 		public Integer launchDetailsId;
 
-		public ExecuteJob(Integer launchDetailsId) {
+		public CreateEicrExecuteJob(Integer launchDetailsId) {
 			this.launchDetailsId = launchDetailsId;
 		}
 
@@ -218,7 +199,7 @@ public class CreateEicrAction extends AbstractAction {
 
 	public void scheduleJob(Integer launchDetailsId, TimingSchedule ts) {
 		logger.info("Scheduling Job to Get Data from FHIR Server");
-		ActionRepo.getInstance().getTaskScheduler().schedule(new ExecuteJob(launchDetailsId), new Date().toInstant().plusSeconds(10));
+		ActionRepo.getInstance().getTaskScheduler().schedule(new CreateEicrExecuteJob(launchDetailsId), new Date().toInstant().plusSeconds(10));
 		logger.info("Job Scheduled to get Data after 10 seconds");
 	}
 

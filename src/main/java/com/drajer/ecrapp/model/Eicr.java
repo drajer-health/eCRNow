@@ -1,4 +1,4 @@
-package com.drajer.sof.model;
+package com.drajer.ecrapp.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

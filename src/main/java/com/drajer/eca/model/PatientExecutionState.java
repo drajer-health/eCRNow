@@ -400,6 +400,8 @@ public class PatientExecutionState {
 		
 		if(actionId.contentEquals(matchTriggerStatus.actionId) && 
 		   matchTriggerStatus.jobStatus == JobStatus.COMPLETED ) {
+			
+			// Add check to see if a trigger matched ...For testing because of lack of data the check is omitted.
 			return true;
 		}
 		else if(actionId.contentEquals(createEicrStatus.actionId) && 

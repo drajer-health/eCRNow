@@ -12,9 +12,9 @@
 	<groupId>com.drajer.ecrnow</groupId>
 	<artifactId>ecr-now</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>fhir-R4-client</name>
+	<name>eCR Now FHIR App</name>
 	<packaging>war</packaging>
-	<description>FHIR client project to perform electronic case reporting (ecr)</description>
+	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -111,6 +111,74 @@
   			<artifactId>commons-collections4</artifactId>
   			<version>4.4</version>
 		</dependency>
+		
+		<!--  Schematron Validator -->
+		<dependency>
+  			<groupId>com.helger</groupId>
+  			<artifactId>ph-schematron-validator</artifactId>
+  			<version>5.6.0</version>
+		</dependency>
+		
+		<!--  Direct Dependencies -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+	<!--  <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency> -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>dsn</artifactId>
+			<version>1.4.7</version>
+		</dependency>
+	<!--  <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.7.21</version>
+		</dependency> -->
+
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.6</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
+		</dependency>
+		
+		<!-- Spring Boot Test -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

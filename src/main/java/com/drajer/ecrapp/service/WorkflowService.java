@@ -31,8 +31,6 @@ public class WorkflowService {
 	
 	private final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
 	
-	//@Autowired
-	// CreateEicrAction     act;
 	
 	/*
 	 *  These are other services that the action classes use and we are storing it once for all of them instead
@@ -40,8 +38,6 @@ public class WorkflowService {
  	 *  We could do injection if we do not use NEW operator , but the ERSD processor will use new to create instead of Spring context, hence Autowired
  	 *   variables cannot be injected into this class or the action classes.
 	 */
-	
-	
 	@Autowired
 	TriggerQueryService triggerQueryService;
 	

@@ -60,25 +60,12 @@ public class MatchTriggerAction extends AbstractAction {
 				e1.printStackTrace();
 			}
 			
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			Date start = null;
-			Date end = null;
-			
-			try {
-				start = formatter.parse("2019-02-13");
-				end = formatter.parse("2019-02-14");
-				
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 			// Call the Trigger Queries.
 			if(ActionRepo.getInstance().getTriggerQueryService() != null ) { 
 							
 				
 				logger.info(" Getting necessary data from Trigger Queries ");
-				FhirData data = ActionRepo.getInstance().getTriggerQueryService().getData(details, start, end);
+				FhirData data = ActionRepo.getInstance().getTriggerQueryService().getData(details, details.getStartDate(), details.getEndDate());
 						
 				if(data != null && data instanceof Dstu2FhirData) {
 							
