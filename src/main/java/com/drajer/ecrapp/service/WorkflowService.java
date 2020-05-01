@@ -14,6 +14,8 @@ import com.drajer.eca.model.AbstractAction;
 import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.CreateEicrAction;
 import com.drajer.eca.model.EventTypes;
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
+import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.LaunchDetails;
@@ -40,6 +42,9 @@ public class WorkflowService {
 	@Autowired
 	LaunchService 	    launchService;
 	
+	@Autowired
+	ObjectMapper		mapper;
+	
 	@PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
@@ -53,10 +58,8 @@ public class WorkflowService {
 			// Identify the appropriate actions and execute it from the Action Repo.
 			logger.info(" SOF Launch for Patient : " + details.getLaunchPatientId() + " and Encounter : " + details.getEncounterId());
 			
-			// Use Action Repo to get the events that we need to fire.
-			
+			// Setup Execution State.
 			PatientExecutionState oldstate = new PatientExecutionState(details.getLaunchPatientId(), details.getEncounterId());
-			ObjectMapper mapper = new ObjectMapper();
 			
 			try {
 				details.setStatus(mapper.writeValueAsString(oldstate));
@@ -67,9 +70,68 @@ public class WorkflowService {
 			
 			logger.info("State = " + details.getStatus());
 			
+			
+			// Use Action Repo to get the events that we need to fire.			
 			ActionRepo repo = ActionRepo.getInstance();
+						
+			// Get Actions for Trigger Matching.
+			if(repo.getActions() != null && 
+					repo.getActions().containsKey(EcrActionTypes.MATCH_TRIGGER)) {
+				
+				Set<AbstractAction> actions = repo.getActions().get(EcrActionTypes.MATCH_TRIGGER);
+
+				if(actions.size() > 0) {
+					oldstate.getMatchTriggerStatus().setJobStatus(JobStatus.IN_PROGRESS);
+
+					try {
+						details.setStatus(mapper.writeValueAsString(oldstate));
+						launchService.saveOrUpdate(details);
+					} catch (JsonProcessingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				
+				for(AbstractAction act : actions) {					
+					// Execute the event.
+					act.execute(details);
+				}
+				
+				// Update state for next action
+				launchService.saveOrUpdate(details);
+			}
+			
+			// Get Actions for Creation.
+			if(repo.getActions() != null && 
+					repo.getActions().containsKey(EcrActionTypes.CREATE_EICR)) {
+				
+				Set<AbstractAction> actions = repo.getActions().get(EcrActionTypes.CREATE_EICR);
+
+				for(AbstractAction act : actions) {					
+					// Execute the event.
+					act.execute(details);
+				}
+				
+				// Update state for next action
+				launchService.saveOrUpdate(details);
+			}
+			
+			
+			
+			// Get Actions for Close out.
+			
+			// Get Actions for Validation.
+			
+			// Get Actions for Submission.
+			
+			
 			// kickofff Data Changed triggers
-			if(repo.getActionsByTriggers() != null && 
+			/* 
+			 * We can use the logic below to make it a generic pipeline for event processing.
+			 * For now implement the above order of trigger matching, creation and close out.
+			 * 
+			 * if(repo.getActionsByTriggers() != null && 
 			   repo.getActionsByTriggers().containsKey(TriggerType.DATACHANGED) && 
 			   repo.getActionsByTriggers().get(TriggerType.DATACHANGED) != null) {
 				
@@ -100,7 +162,7 @@ public class WorkflowService {
 					launchService.saveOrUpdate(details);
 
 				}
-			}
+			} */
 			
 			
 			// Till the above is fixed..just invoke the act.

@@ -12,11 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 
@@ -41,6 +45,20 @@ public class MatchTriggerAction extends AbstractAction {
 			
 			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails)obj;
+			
+			ObjectMapper mapper = new ObjectMapper();
+			PatientExecutionState state = null;
+			
+			try {
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+				state.getMatchTriggerStatus().setActionId(getActionId());
+			} catch (JsonMappingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			Date start = null;
@@ -103,12 +121,29 @@ public class MatchTriggerAction extends AbstractAction {
 									logger.info(" Number of Matched Codes = " + intersection.size());
 									
 									// For Testing purposes until we get test data assume the data has matched and continue processing.
+									state.getMatchTriggerStatus().setTriggerMatchStatus(true);
+									state.getMatchTriggerStatus().getMatchedCodes().addAll(intersection);
+								}
+								else {
+									
+									logger.info(" No Matched codes found for path ");
+									// no need to change state..
 								}
 								
 							}
 						}
 						
-					}							
+					}
+					
+					
+					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+					
+					try {
+						details.setStatus(mapper.writeValueAsString(state));
+					} catch (JsonProcessingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 

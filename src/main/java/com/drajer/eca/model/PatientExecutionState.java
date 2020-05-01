@@ -9,49 +9,278 @@ import com.drajer.eca.model.EventTypes.JobStatus;
 public class PatientExecutionState {
 	
 	// We could refactor this into one class as we move forward.
-	private class MatchTriggerStatus {
+	public class MatchTriggerStatus {
 		
+		private String 					actionId;
 		private EventTypes.JobStatus    jobStatus;
-		private Boolean					triggerMatchStatus;
+		private Boolean					triggerMatchStatus; // Did anything match or not
 		private Set<String>				matchedCodes;
+		
+		
+		public String getActionId() {
+			return actionId;
+		}
+		public void setActionId(String actionId) {
+			this.actionId = actionId;
+		}
+		public EventTypes.JobStatus getJobStatus() {
+			return jobStatus;
+		}
+		public void setJobStatus(EventTypes.JobStatus jobStatus) {
+			this.jobStatus = jobStatus;
+		}
+		public Boolean getTriggerMatchStatus() {
+			return triggerMatchStatus;
+		}
+		public void setTriggerMatchStatus(Boolean triggerMatchStatus) {
+			this.triggerMatchStatus = triggerMatchStatus;
+		}
+		public Set<String> getMatchedCodes() {
+			return matchedCodes;
+		}
+		public void setMatchedCodes(Set<String> matchedCodes) {
+			this.matchedCodes = matchedCodes;
+		}
+		
+		public MatchTriggerStatus() {
+			actionId = "";
+			matchedCodes = new HashSet<String>();
+			triggerMatchStatus = false;
+			jobStatus = JobStatus.NOT_STARTED;
+		}
 	}
 	
-	private class CreateEicrStatus {
+	public class CreateEicrStatus {
 		
+		private String 					actionId;
 		private EventTypes.JobStatus    jobStatus;
 		private Boolean					eicrCreated;
 		private String					eICRId;
+		
+		
+		public String getActionId() {
+			return actionId;
+		}
+		public void setActionId(String actionId) {
+			this.actionId = actionId;
+		}
+		public EventTypes.JobStatus getJobStatus() {
+			return jobStatus;
+		}
+		public void setJobStatus(EventTypes.JobStatus jobStatus) {
+			this.jobStatus = jobStatus;
+		}
+		public Boolean getEicrCreated() {
+			return eicrCreated;
+		}
+		public void setEicrCreated(Boolean eicrCreated) {
+			this.eicrCreated = eicrCreated;
+		}
+		public String geteICRId() {
+			return eICRId;
+		}
+		public void seteICRId(String eICRId) {
+			this.eICRId = eICRId;
+		}
+		
+		public CreateEicrStatus() {
+			
+			actionId = "";
+			jobStatus = JobStatus.NOT_STARTED;
+			eicrCreated = false;
+			eICRId = "";
+		}
+		
 	}
 	
-	private class PeriodicUpdateEicrStatus {
+	public class PeriodicUpdateEicrStatus {
 		
+		private String 					actionId;
 		private EventTypes.JobStatus    jobStatus;
 		private Boolean					eicrUpdated;
 		private String					eICRId;
+		
+		
+		public String getActionId() {
+			return actionId;
+		}
+		public void setActionId(String actionId) {
+			this.actionId = actionId;
+		}
+		public EventTypes.JobStatus getJobStatus() {
+			return jobStatus;
+		}
+		public void setJobStatus(EventTypes.JobStatus jobStatus) {
+			this.jobStatus = jobStatus;
+		}
+		public Boolean getEicrUpdated() {
+			return eicrUpdated;
+		}
+		public void setEicrUpdated(Boolean eicrUpdated) {
+			this.eicrUpdated = eicrUpdated;
+		}
+		public String geteICRId() {
+			return eICRId;
+		}
+		public void seteICRId(String eICRId) {
+			this.eICRId = eICRId;
+		}
+		
+		public PeriodicUpdateEicrStatus() {
+			actionId = "";
+			jobStatus = JobStatus.NOT_STARTED;
+			eicrUpdated = false;
+			eICRId = "";
+		}
+		
 	}
 	
-	private class CloseOutEicrStatus {
+	public class CloseOutEicrStatus {
 		
+		private String 					actionId;
 		private EventTypes.JobStatus    jobStatus;
 		private Boolean					eicrClosed;
 		private String					eICRId;
+		
+		
+		public String getActionId() {
+			return actionId;
+		}
+		public void setActionId(String actionId) {
+			this.actionId = actionId;
+		}
+		public EventTypes.JobStatus getJobStatus() {
+			return jobStatus;
+		}
+		public void setJobStatus(EventTypes.JobStatus jobStatus) {
+			this.jobStatus = jobStatus;
+		}
+		public Boolean getEicrClosed() {
+			return eicrClosed;
+		}
+		public void setEicrClosed(Boolean eicrClosed) {
+			this.eicrClosed = eicrClosed;
+		}
+		public String geteICRId() {
+			return eICRId;
+		}
+		public void seteICRId(String eICRId) {
+			this.eICRId = eICRId;
+		}
+		
+		public CloseOutEicrStatus() {
+			actionId = "";
+			jobStatus = JobStatus.NOT_STARTED;
+			eicrClosed = false;
+			eICRId = "";
+		}
+		
+		
 	}
 	
-	private class ValidateEicrStatus {
+	public class ValidateEicrStatus {
 		
+		private String 					actionId;
 		private EventTypes.JobStatus    jobStatus;
 		private Boolean					eicrValidated;
 		private String					eICRId;
 		private Date					validationTime;
+		
+		
+		public String getActionId() {
+			return actionId;
+		}
+		public void setActionId(String actionId) {
+			this.actionId = actionId;
+		}
+		public EventTypes.JobStatus getJobStatus() {
+			return jobStatus;
+		}
+		public void setJobStatus(EventTypes.JobStatus jobStatus) {
+			this.jobStatus = jobStatus;
+		}
+		public Boolean getEicrValidated() {
+			return eicrValidated;
+		}
+		public void setEicrValidated(Boolean eicrValidated) {
+			this.eicrValidated = eicrValidated;
+		}
+		public String geteICRId() {
+			return eICRId;
+		}
+		public void seteICRId(String eICRId) {
+			this.eICRId = eICRId;
+		}
+		public Date getValidationTime() {
+			return validationTime;
+		}
+		public void setValidationTime(Date validationTime) {
+			this.validationTime = validationTime;
+		}
+		
+		public ValidateEicrStatus() {
+			actionId = "";
+			jobStatus = JobStatus.NOT_STARTED;
+			eicrValidated = false;
+			eICRId = "";
+			
+		}
+		
 	}
 	
-	private class SubmitEicrStatus {
+	public class SubmitEicrStatus {
 		
+		private String 					actionId;
 		private EventTypes.JobStatus    jobStatus;
 		private Boolean					eicrSubmitted;
 		private String					eICRId;
 		private Date					submittedTime;
 		private String					transportUsed;
+		
+		
+		public String getActionId() {
+			return actionId;
+		}
+		public void setActionId(String actionId) {
+			this.actionId = actionId;
+		}
+		public EventTypes.JobStatus getJobStatus() {
+			return jobStatus;
+		}
+		public void setJobStatus(EventTypes.JobStatus jobStatus) {
+			this.jobStatus = jobStatus;
+		}
+		public Boolean getEicrSubmitted() {
+			return eicrSubmitted;
+		}
+		public void setEicrSubmitted(Boolean eicrSubmitted) {
+			this.eicrSubmitted = eicrSubmitted;
+		}
+		public String geteICRId() {
+			return eICRId;
+		}
+		public void seteICRId(String eICRId) {
+			this.eICRId = eICRId;
+		}
+		public Date getSubmittedTime() {
+			return submittedTime;
+		}
+		public void setSubmittedTime(Date submittedTime) {
+			this.submittedTime = submittedTime;
+		}
+		public String getTransportUsed() {
+			return transportUsed;
+		}
+		public void setTransportUsed(String transportUsed) {
+			this.transportUsed = transportUsed;
+		}
+		
+		public SubmitEicrStatus() {
+			actionId = "";
+			jobStatus = JobStatus.NOT_STARTED;
+			eicrSubmitted = false;
+			eICRId = "";
+		}
 	}
 	
 	String 							patientId;
@@ -69,28 +298,144 @@ public class PatientExecutionState {
 		encounterId = enId;
 		
 		matchTriggerStatus = new MatchTriggerStatus();
-		matchTriggerStatus.jobStatus = JobStatus.NOT_STARTED;
-		matchTriggerStatus.triggerMatchStatus = false;
-		matchTriggerStatus.matchedCodes = new HashSet<String>();
 		
 		createEicrStatus = new CreateEicrStatus();
-		createEicrStatus.jobStatus = JobStatus.NOT_STARTED;
-		createEicrStatus.eicrCreated = false;
-		createEicrStatus.eICRId = "";
 		
 		// Ignore Periodic Updates for now.
 		periodicUpdateStatus = new HashSet<PeriodicUpdateEicrStatus>();
 		
 		closeOutEicrStatus = new CloseOutEicrStatus();
-		closeOutEicrStatus.jobStatus = JobStatus.NOT_STARTED;
-		closeOutEicrStatus.eicrClosed = false;
-		closeOutEicrStatus.eICRId = "";
 		
 		validateEicrStatus = new HashSet<ValidateEicrStatus>();
-		submitEicrStatus = new HashSet<SubmitEicrStatus>();
 		
+		submitEicrStatus = new HashSet<SubmitEicrStatus>();
 		
 	}
 	
+	public PatientExecutionState() {
+		
+		patientId = "";
+		encounterId = "";
+		
+		matchTriggerStatus = new MatchTriggerStatus();
+		
+		createEicrStatus = new CreateEicrStatus();
+		
+		// Ignore Periodic Updates for now.
+		periodicUpdateStatus = new HashSet<PeriodicUpdateEicrStatus>();
+		
+		closeOutEicrStatus = new CloseOutEicrStatus();
+		
+		validateEicrStatus = new HashSet<ValidateEicrStatus>();
+		
+		submitEicrStatus = new HashSet<SubmitEicrStatus>();
+		
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getEncounterId() {
+		return encounterId;
+	}
+
+	public void setEncounterId(String encounterId) {
+		this.encounterId = encounterId;
+	}
+
+	public MatchTriggerStatus getMatchTriggerStatus() {
+		return matchTriggerStatus;
+	}
+
+	public void setMatchTriggerStatus(MatchTriggerStatus matchTriggerStatus) {
+		this.matchTriggerStatus = matchTriggerStatus;
+	}
+
+	public CreateEicrStatus getCreateEicrStatus() {
+		return createEicrStatus;
+	}
+
+	public void setCreateEicrStatus(CreateEicrStatus createEicrStatus) {
+		this.createEicrStatus = createEicrStatus;
+	}
+
+	public Set<PeriodicUpdateEicrStatus> getPeriodicUpdateStatus() {
+		return periodicUpdateStatus;
+	}
+
+	public void setPeriodicUpdateStatus(Set<PeriodicUpdateEicrStatus> periodicUpdateStatus) {
+		this.periodicUpdateStatus = periodicUpdateStatus;
+	}
+
+	public CloseOutEicrStatus getCloseOutEicrStatus() {
+		return closeOutEicrStatus;
+	}
+
+	public void setCloseOutEicrStatus(CloseOutEicrStatus closeOutEicrStatus) {
+		this.closeOutEicrStatus = closeOutEicrStatus;
+	}
+
+	public Set<ValidateEicrStatus> getValidateEicrStatus() {
+		return validateEicrStatus;
+	}
+
+	public void setValidateEicrStatus(Set<ValidateEicrStatus> validateEicrStatus) {
+		this.validateEicrStatus = validateEicrStatus;
+	}
+
+	public Set<SubmitEicrStatus> getSubmitEicrStatus() {
+		return submitEicrStatus;
+	}
+
+	public void setSubmitEicrStatus(Set<SubmitEicrStatus> submitEicrStatus) {
+		this.submitEicrStatus = submitEicrStatus;
+	}
+	
+	public Boolean hasActionCompleted(String actionId) {
+		
+		if(actionId.contentEquals(matchTriggerStatus.actionId) && 
+		   matchTriggerStatus.jobStatus == JobStatus.COMPLETED ) {
+			return true;
+		}
+		else if(actionId.contentEquals(createEicrStatus.actionId) && 
+				   createEicrStatus.jobStatus == JobStatus.COMPLETED) {
+			return true;
+		}
+		else if(actionId.contentEquals(closeOutEicrStatus.actionId) && 
+				closeOutEicrStatus.jobStatus == JobStatus.COMPLETED) {
+			return true;	
+		}
+		
+		for(PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
+			
+			if(actionId.contentEquals(pd.actionId) && 
+					pd.jobStatus == JobStatus.COMPLETED) {
+				return true;
+			}	
+		}
+		
+		for(ValidateEicrStatus vs : validateEicrStatus) {
+				
+				if(actionId.contentEquals(vs.actionId) && 
+						vs.jobStatus == JobStatus.COMPLETED) {
+					return true;
+				}
+		}
+		
+		for(SubmitEicrStatus ss : submitEicrStatus) {
+			
+			if(actionId.contentEquals(ss.actionId) && 
+					ss.jobStatus == JobStatus.COMPLETED) {
+				return true;
+			}	
+		}
+				
+		return false;
+	}
 	
 }

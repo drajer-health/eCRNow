@@ -95,6 +95,12 @@
 		
 		<!-- Java stuff -->
 		<dependency>
+   			<groupId>com.fasterxml.jackson.core</groupId>
+   			<artifactId>jackson-databind</artifactId>
+   			<version>2.10.3</version>
+		</dependency>
+
+		<dependency>
     		<groupId>org.javatuples</groupId>
     		<artifactId>javatuples</artifactId>
     		<version>1.2</version>
