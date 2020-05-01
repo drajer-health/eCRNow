@@ -122,23 +122,30 @@ public class CreateEicrAction extends AbstractAction {
 			// Check Timing Data , Dont check if the state is already scheduled meaning the job was scheduled already.
 			if(relatedActsDone) {
 				
-				if(getTimingData() != null && getTimingData().size() > 0) {
+				if(state.getCreateEicrStatus().getJobStatus() != JobStatus.NOT_STARTED) {
 					
-					List<TimingSchedule> tsjobs = getTimingData();
-					
-					for(TimingSchedule ts : tsjobs) {
-						
-						// TBD : Setup job after testing so that we can test faster.
-						
-						state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-						try {
-							details.setStatus(mapper.writeValueAsString(state));
-						} catch (JsonProcessingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+					if(getTimingData() != null && getTimingData().size() > 0) {
+
+						List<TimingSchedule> tsjobs = getTimingData();
+
+						for(TimingSchedule ts : tsjobs) {
+
+							// TBD : Setup job after testing so that we can test faster.
+
+							state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+
+							try {
+								details.setStatus(mapper.writeValueAsString(state));
+							} catch (JsonProcessingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+
+
 						}
+
 					}
-					
 				}
 				
 			}
