@@ -316,19 +316,15 @@ class Authorizations extends Component {
         >
           Application has been authorized with EHR successfully.
         </Alert>
-        <div className="requests">
+        <div className="requests text-center">
           <Row>
-            <Col md="7">
-              <h2>Electronic Case Reporting App</h2>
-            </Col>
             <Col>
-
+              <p>This "splash screen" will only be present if the eCR Now App has not been automatically launched. It is preferable to launch the App with an automated process at the start of encounters that does not have this user interface, does not impact healthcare provider workflow, and insures consistent operation. Specific launch implementation will depend on the EHR. The launch API is detailed in the available implementation specifications.</p>
+              <p>In the circumstance that automated launching cannot be accomplished, this text can be replaced with an appropriate message.</p>
             </Col>
           </Row>
-          <hr />
         </div>
-        <div className="centeredDiv">
-          <p style={{ "float": "left", "marginTop": "5px" }}>This is a Test Page. Hit Ok to Proceed.</p>
+        <div className="centeredDiv text-center">
           <button
             className="btn btn-primary submitBtn"
             type="button"

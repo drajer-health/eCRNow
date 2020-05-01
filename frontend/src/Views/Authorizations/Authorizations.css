@@ -1,5 +1,5 @@
 .authorizations {
-    margin-top: 30px;
+    margin-top: 100px;
 }
 
 .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
@@ -17,7 +17,7 @@
     border-color: #005eaa !important;
     box-shadow: 0 8px 6px -6px #ccc !important;
     border-radius: 5px !important;
-    margin-left: 30px;
+    /* margin-left: 30px; */
     min-width: 50px;
 }
 
