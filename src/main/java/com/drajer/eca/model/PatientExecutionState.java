@@ -440,4 +440,30 @@ public class PatientExecutionState {
 		return false;
 	}
 	
+	public Set<Integer> getEicrIdForCompletedActions(String actionId) {
+		
+		Set<Integer> ids = new HashSet<Integer>();
+		
+		if(actionId.contentEquals(createEicrStatus.actionId) && 
+				   createEicrStatus.jobStatus == JobStatus.COMPLETED) {
+			
+			ids.add(Integer.valueOf(createEicrStatus.eICRId));
+		}
+		
+		if(actionId.contentEquals(closeOutEicrStatus.actionId) && 
+				closeOutEicrStatus.jobStatus == JobStatus.COMPLETED) {
+			ids.add(Integer.valueOf(closeOutEicrStatus.eICRId));	
+		}
+		
+		for(PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
+			
+			if(actionId.contentEquals(pd.actionId) && 
+					pd.jobStatus == JobStatus.COMPLETED) {
+				ids.add(Integer.valueOf(pd.eICRId));
+			}	
+		}
+				
+		return ids;
+	}
+	
 }

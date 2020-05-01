@@ -16,6 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
+import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -42,6 +43,10 @@ public class ActionRepo {
 	
 	ThreadPoolTaskScheduler taskScheduler;
 	
+	EicrRRService		eicrRRService;
+	
+	String 				schematronFileLocation;
+	
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
 	public static ActionRepo getInstance() {
@@ -50,8 +55,24 @@ public class ActionRepo {
 		}
 		return instance;
 	}
-
 	
+	
+	public String getSchematronFileLocation() {
+		return schematronFileLocation;
+	}
+
+	public void setSchematronFileLocation(String schematronFileLocation) {
+		this.schematronFileLocation = schematronFileLocation;
+	}
+
+	public EicrRRService getEicrRRService() {
+		return eicrRRService;
+	}
+
+	public void setEicrRRService(EicrRRService eicrRRService) {
+		this.eicrRRService = eicrRRService;
+	}
+
 	public ThreadPoolTaskScheduler getTaskScheduler() {
 		return taskScheduler;
 	}

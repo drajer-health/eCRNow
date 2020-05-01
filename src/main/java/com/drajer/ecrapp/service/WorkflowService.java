@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,13 @@ public class WorkflowService {
 	ThreadPoolTaskScheduler taskScheduler;
 	
 	@Autowired
+	EicrRRService			eicrRRService;
+	
+	@Autowired
 	ObjectMapper		mapper;
+	
+	@Value("${schematron.file.location}")
+	String schematronFileLocation;
 	
 	@PostConstruct
 	public void initializeActionRepo() {
@@ -59,6 +66,8 @@ public class WorkflowService {
 		ActionRepo.getInstance().setTriggerQueryService(triggerQueryService);
 		ActionRepo.getInstance().setLaunchService(launchService);
 		ActionRepo.getInstance().setTaskScheduler(taskScheduler);
+		ActionRepo.getInstance().setEicrRRService(eicrRRService);
+		ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -125,18 +134,55 @@ public class WorkflowService {
 				
 				// Update state for next action
 				launchService.saveOrUpdate(details);
-			}
-			
-			
+			}			
 			
 			// Get Actions for Close out.
+			if(repo.getActions() != null && 
+					repo.getActions().containsKey(EcrActionTypes.CLOSE_OUT_EICR)) {
+				
+				Set<AbstractAction> actions = repo.getActions().get(EcrActionTypes.CLOSE_OUT_EICR);
+
+				for(AbstractAction act : actions) {					
+					// Execute the event.
+					act.execute(details);
+				}
+				
+				// Update state for next action
+				launchService.saveOrUpdate(details);
+			}			
 			
 			// Get Actions for Validation.
+			if(repo.getActions() != null && 
+					repo.getActions().containsKey(EcrActionTypes.VALIDATE_EICR)) {
+				
+				Set<AbstractAction> actions = repo.getActions().get(EcrActionTypes.VALIDATE_EICR);
+
+				for(AbstractAction act : actions) {					
+					// Execute the event.
+					act.execute(details);
+				}
+				
+				// Update state for next action
+				launchService.saveOrUpdate(details);
+			}			
 			
 			// Get Actions for Submission.
+			if(repo.getActions() != null && 
+					repo.getActions().containsKey(EcrActionTypes.SUBMIT_EICR)) {
+				
+				Set<AbstractAction> actions = repo.getActions().get(EcrActionTypes.SUBMIT_EICR);
+
+				for(AbstractAction act : actions) {					
+					// Execute the event.
+					act.execute(details);
+				}
+				
+				// Update state for next action
+				launchService.saveOrUpdate(details);
+			}			
 			
 			
-			// kickofff Data Changed triggers
+			// kickofff Data Changed triggers  -- This can be used in the future for developing a more subscription based launch.
 			/* 
 			 * We can use the logic below to make it a generic pipeline for event processing.
 			 * For now implement the above order of trigger matching, creation and close out.

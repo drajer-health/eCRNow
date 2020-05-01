@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.drajer.cda.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -59,7 +60,7 @@ public class CreateEicrAction extends AbstractAction {
 				e1.printStackTrace();
 			}
 
-			logger.info(" Create Eicr State " + details.getStatus());
+			logger.info(" Create Eicr State : : Launch Details State before execution :" + details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -89,6 +90,7 @@ public class CreateEicrAction extends AbstractAction {
 
 					for (RelatedAction ract : racts) {
 
+						// Check for all actions AFTER which this action has to be executed for completion.
 						if (ract.getRelationship() == ActionRelationshipType.AFTER) {
 
 							// check if the action is completed.
@@ -107,13 +109,18 @@ public class CreateEicrAction extends AbstractAction {
 				// Check Timing Data , Dont check if the state is already scheduled meaning the
 				// job was scheduled already.
 				if (relatedActsDone) {
+					
+					logger.info(" All Related Actions are completed ");
 
+					// Timing constraints are applicable if this job has not started, once it is started
+					// the State Machine has to manage the execution.
 					if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 						
 						logger.info(" Related Actions Done and this job has not started ");
+						
 						if (getTimingData() != null && getTimingData().size() > 0) {
 							
-							logger.info(" Timing Data is present ");
+							logger.info(" Timing Data is present , so create a job based on timing data.");
 							List<TimingSchedule> tsjobs = getTimingData();
 
 							for (TimingSchedule ts : tsjobs) {
@@ -126,9 +133,9 @@ public class CreateEicrAction extends AbstractAction {
 									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 									details.setStatus(mapper.writeValueAsString(state));
 									
-									// No need to continue as the job will execute.
+									// No need to continue as the job will take over execution.
 									return;
-								} catch (JsonProcessingException e) { // TODO Auto-generated catch block
+								} catch (JsonProcessingException e) { 
 									e.printStackTrace();
 								}
 
@@ -136,8 +143,13 @@ public class CreateEicrAction extends AbstractAction {
 							}
 
 						}
+						
+						logger.info(" Job Not Scheduled since there is no timing data ");
 					}
 					
+					logger.info(" Creating the EICR since the job has started ");
+					
+					// Since the job has started, Execute the job.
 					// Call the Loading Queries and create eICR.
 					if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
@@ -150,8 +162,17 @@ public class CreateEicrAction extends AbstractAction {
 
 							Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
 							eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
-
+							
+							// Create the object for persistence.
+							Eicr ecr = new Eicr();
+							ecr.setData(eICR);
+							ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+							
+					
+							state.getCreateEicrStatus().setEicrCreated(true);
+							state.getCreateEicrStatus().seteICRId(ecr.getId().toString());
 							state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+							
 							try {
 								details.setStatus(mapper.writeValueAsString(state));
 							} catch (JsonProcessingException e) {

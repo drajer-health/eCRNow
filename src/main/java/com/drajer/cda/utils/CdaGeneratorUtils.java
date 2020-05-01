@@ -98,6 +98,7 @@ public class CdaGeneratorUtils {
 						+ CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "extension=" + CdaGeneratorConstants.DOUBLE_QUOTE
 						+ CdaGeneratorConstants.CDA_DOC_EXT + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
 		
+		xmlHeader += getXmlForTemplateId(CdaGeneratorConstants.US_REALM_HEADER_TEMPLATE_ID);
 		xmlHeader += getXmlForTemplateId(CdaGeneratorConstants.US_REALM_HEADER_TEMPLATE_ID, CdaGeneratorConstants.US_REALM_HEADER_EXT);
 		xmlHeader += getXmlForTemplateId(CdaGeneratorConstants.PUBLIC_HEALTH_TEMPLATE_ID, CdaGeneratorConstants.PUBLIC_HEALTH_EXT);
 		

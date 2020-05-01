@@ -16,7 +16,7 @@ var SCOPES = 'launch,online_access,offline_access,user/Patient.read,user/Conditi
 // Client Endpoint
 var Client_EndPoint = 'http://localhost:8081/';
 
-var OID = "1.1.1.1.1.1.1";
+var OID = "2.16.840.1.113883.1.1.1.1.1";
 var DIRECT_USER = "test@test.com";
 var DIRECT_PWD = "test";
 var VERSION_NUMBER = "1";

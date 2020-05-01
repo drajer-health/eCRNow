@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.drajer.cda.CdaEicrGenerator;
 import com.drajer.eca.model.CreateEicrAction.CreateEicrExecuteJob;
 import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -55,7 +56,7 @@ public class CloseOutEicrAction extends AbstractAction {
 				e1.printStackTrace();
 			}
 
-			logger.info(" Close Out Eicr State " + details.getStatus());
+			logger.info(" Close Out Eicr State : : Launch Details State before execution :" + details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -99,75 +100,93 @@ public class CloseOutEicrAction extends AbstractAction {
 						}
 					}
 				}
-			}
+				
+				// Check Timing Data , Dont check if the state is already scheduled meaning the
+				// job was scheduled already.
+				if (relatedActsDone) {
 
-			// Check Timing Data , Dont check if the state is already scheduled meaning the
-			// job was scheduled already.
-			if (relatedActsDone) {
-
-				if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
-					
-					logger.info(" Related Actions Done and this job has not started ");
-					if (getTimingData() != null && getTimingData().size() > 0) {
+					if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 						
-						logger.info(" Timing Data is present ");
-						List<TimingSchedule> tsjobs = getTimingData();
+						logger.info(" Related Actions Done and this job has not started ");
+						
+						if (getTimingData() != null && getTimingData().size() > 0) {
+							
+							logger.info(" Timing Data is present ");
+							List<TimingSchedule> tsjobs = getTimingData();
 
-						for (TimingSchedule ts : tsjobs) {
+							for (TimingSchedule ts : tsjobs) {
 
-							// TBD : Setup job using TS Timing after testing so that we can test faster.
-							// For now setup a default job with 10 seconds.
-							try {
+								// TBD : Setup job using TS Timing after testing so that we can test faster.
+								// For now setup a default job with 10 seconds.
+								try {
+									
+									logger.info(" Job being scheduled for CloseOut EICR ");
+									scheduleJob(details.getId(), ts);
+									state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+									details.setStatus(mapper.writeValueAsString(state));
+									
+									return;
+								} catch (JsonProcessingException e) { // TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
 								
-								scheduleJob(details.getId(), ts);
-								state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-								details.setStatus(mapper.writeValueAsString(state));
-								
-								return;
-							} catch (JsonProcessingException e) { // TODO Auto-generated catch block
-								e.printStackTrace();
 							}
 
+						}
+						
+						logger.info(" Job Not Scheduled since there is no timing data ");
+					}
+					
+					logger.info(" Job has started, so just execution is necessary ");
+					
+					// Since the job has started, Execute the job.
+					// Call the Loading Queries and create eICR.
+					if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+
+						logger.info(" Getting necessary data from Loading Queries ");
+						FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
+
+						String eICR = null;
+
+						if (data != null && data instanceof Dstu2FhirData) {
+
+							Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
 							
+							// Need to increment version Number since it is for the same patient. 
+							// Add details.incrementVersion method.
+							
+							eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+							
+							// Create the object for persistence.
+							Eicr ecr = new Eicr();
+							ecr.setData(eICR);
+							ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+							
+					
+							state.getCloseOutEicrStatus().setEicrClosed(true);
+							state.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
+							state.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+							
+							try {
+								details.setStatus(mapper.writeValueAsString(state));
+							} catch (JsonProcessingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 
-					}
-				}
+						logger.info(" **** Printing Eicr **** ");
 
-			}
+						logger.info(eICR);
+						
 
-			// Do not expect the trigger data to be present for CreateEicr
-			// Call the Loading Queries and create eICR.
-			if (ActionRepo.getInstance().getLoadingQueryService() != null) {
-
-				logger.info(" Getting necessary data from Loading Queries ");
-				FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
-
-				String eICR = null;
-
-				if (data != null && data instanceof Dstu2FhirData) {
-
-					Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-					eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
-
-					state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-					try {
-						details.setStatus(mapper.writeValueAsString(state));
-					} catch (JsonProcessingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.info(" **** End Printing Eicr **** ");
 					}
 
 				}
 
-				logger.info(" **** Printing Eicr **** ");
-
-				logger.info(eICR);
-				
-
-				logger.info(" **** End Printing Eicr **** ");
 			}
-
 		}
 	}
 	

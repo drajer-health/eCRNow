@@ -74,10 +74,10 @@ public class PlanDefinitionProcessor {
 	@Qualifier("valueSetServiceImpl")
 	ValueSetService valueSetService;
 
-	@Value("${esrd.file.location}")
-	String esrdFileLocation;
+	@Value("${ersd.file.location}")
+	String ersdFileLocation;
 
-	@Value("${esrd.covid19}")
+	@Value("${ersd.covid19}")
 	Boolean covid;
 	
 	private final Logger logger = LoggerFactory.getLogger(PlanDefinitionProcessor.class);
@@ -241,7 +241,7 @@ public class PlanDefinitionProcessor {
 		InputStream in = null;
 		Bundle bundle = null;
 		try {
-			in = new FileInputStream(new File(esrdFileLocation));
+			in = new FileInputStream(new File(ersdFileLocation));
 			if (in != null) {
 				bundle = jsonParser.parseResource(Bundle.class, in);
 			}

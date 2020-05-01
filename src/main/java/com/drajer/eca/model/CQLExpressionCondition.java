@@ -11,8 +11,12 @@ public class CQLExpressionCondition extends AbstractCondition {
 
 	@Override
 	public Boolean evaluate(Object obj) {
+		
 		// TODO Auto-generated method stub
-		return null;
+		
+		// In the future a CQL Engine can be plugged in here to evaluate CQL Expressions.
+		
+		return true;
 	}
 
 	public String getExpression() {
