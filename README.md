@@ -57,7 +57,7 @@ File: src/main/resources/application.properties
 Change the database user name, password to reflect the database that was created in step 2 above. 
 
 Change the ERSD File location to reflect where to find the eRSD file that contains the trigger code definitions.
-The ERSD file can be downloaded by registering for an account at : ersd.aimsplatform.org 
+The ERSD file can be downloaded by registering for an account at : http://ersd.aimsplatform.org 
 Currently this link only works state-side and if you are out of country, please contact us to figure out how we can get you a copy of it through the right means.
 
 Change the Schematron File location to reflect where to find the actual eICR Schematron.
