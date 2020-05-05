@@ -57,13 +57,13 @@ public class ValidateEicrAction extends AbstractAction {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			
 
 			logger.info(" Validate Eicr State : Launch Details State before execution :" + details.getStatus());
 			
 			
 			if (getRelatedActions() != null && getRelatedActions().size() > 0) {
+				
+				logger.info(" Validation actions to be performed based on other related actions ");
 
 				List<RelatedAction> racts = getRelatedActions();
 
@@ -84,55 +84,73 @@ public class ValidateEicrAction extends AbstractAction {
 							// Get the eICR for the Action Completed after which validation has to be run.
 							Set<Integer> ids = state.getEicrIdForCompletedActions(actionId);
 							
-							for(Integer id : ids) {
-								
-								logger.info(" Found eICR with Id " + id  +" to validate ");
-								
-								Eicr ecrToValidate = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
-								
-								Boolean validationResult = false;
-								final ISchematronResource aResSCH = SchematronResourceSCH.fromFile(ActionRepo.getInstance().getSchematronFileLocation());
-								
-								  if (!aResSCH.isValidSchematron ()) {
-								    
-									  logger.info(" *** Cannot Validate since Schematron is not valid ** ");
-								    
-								  }
-								  else {
-									  
-									  SchematronOutputType output = null;
-									  try {
-										  output = aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrToValidate.getData())));
-									  } catch (Exception e) {
-										// TODO Auto-generated catch block
-										  e.printStackTrace();
-									  }
-									  								  
-									  if(output != null && output.getNsPrefixInAttributeValuesCount() > 0) {
-										  logger.info(" Total # of Failed assertions " + output.getNsPrefixInAttributeValuesCount());
-										  validationResult = false;
-									  }
-										  
-									  else 
-										  validationResult = true;
-									  
-								  }
-								  
-								  // Add a validate object every time.
-								  PatientExecutionState.ValidateEicrStatus validate = state.new ValidateEicrStatus();
-								  validate.setActionId(getActionId());
-								  validate.seteICRId(id.toString());
-								  validate.setEicrValidated(validationResult);
-								  validate.setJobStatus(JobStatus.COMPLETED);
-								  validate.setValidationTime(new Date());
-								  state.getValidateEicrStatus().add(validate);
-							}
+							validateEicrs(details, state, ids);
 							
 						}
 					}
+					else {
+						logger.info(" This action is not dependent on the action relationship : " + ract.getRelationship() + ", Action Id = " + ract.getRelatedAction().getActionId());
+					}
 				}
 			}
+			else {
+				
+				logger.info(" No related actions, so validate all Eicrs that are ready for validation ");
+				
+				Set<Integer> ids = state.getEicrsReadyForValidation();
+				
+				validateEicrs(details, state, ids);
+				
+				
+			}
 		}
+	}
+	
+	public void validateEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+	
+		for(Integer id : ids) {
+			
+			logger.info(" Found eICR with Id " + id  +" to validate ");
+			
+			Eicr ecrToValidate = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
+			
+			Boolean validationResult = false;
+			final ISchematronResource aResSCH = SchematronResourceSCH.fromFile(ActionRepo.getInstance().getSchematronFileLocation());
+			
+			  if (!aResSCH.isValidSchematron ()) {
+			    
+				  logger.info(" *** Cannot Validate since Schematron is not valid ** ");		    
+			  }
+			  else {
+				  
+				  SchematronOutputType output = null;
+				  try {
+					  output = aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrToValidate.getData())));
+				  } catch (Exception e) {
+					// TODO Auto-generated catch block
+					  e.printStackTrace();
+				  }
+				  								  
+				  if(output != null && output.getNsPrefixInAttributeValuesCount() > 0) {
+					  logger.info(" Total # of Failed assertions " + output.getNsPrefixInAttributeValuesCount());
+					  validationResult = false;
+				  }					  
+				  else {
+					  validationResult = true;
+				  }
+				  
+			  }
+			  
+			  // Add a validate object every time.
+			  PatientExecutionState.ValidateEicrStatus validate = state.new ValidateEicrStatus();
+			  validate.setActionId(getActionId());
+			  validate.seteICRId(id.toString());
+			  validate.setEicrValidated(validationResult);
+			  validate.setJobStatus(JobStatus.COMPLETED);
+			  validate.setValidationTime(new Date());
+			  state.getValidateEicrStatus().add(validate);
+		}
+		
 	}
 
 }

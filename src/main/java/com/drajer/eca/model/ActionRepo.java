@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.ecrapp.service.EicrRRService;
+import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -45,6 +46,8 @@ public class ActionRepo {
 	
 	EicrRRService		eicrRRService;
 	
+	DirectEicrSender 	directTransport;
+	
 	String 				schematronFileLocation;
 	
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
@@ -56,7 +59,14 @@ public class ActionRepo {
 		return instance;
 	}
 	
-	
+	public DirectEicrSender getDirectTransport() {
+		return directTransport;
+	}
+
+	public void setDirectTransport(DirectEicrSender directTransport) {
+		this.directTransport = directTransport;
+	}
+
 	public String getSchematronFileLocation() {
 		return schematronFileLocation;
 	}

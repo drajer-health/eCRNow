@@ -466,4 +466,38 @@ public class PatientExecutionState {
 		return ids;
 	}
 	
+	public Set<Integer> getEicrsReadyForValidation() {
+		
+		Set<Integer> ids = new HashSet<Integer>();
+		
+		// Get the EICRs already validated. 
+		Set<Integer> valIds = new HashSet<Integer>();
+		Set<ValidateEicrStatus> vals = this.getValidateEicrStatus();
+		for(ValidateEicrStatus val : vals) {
+			
+			// Collect the Ids.
+			valIds.add(Integer.valueOf(val.geteICRId()));
+		}
+		
+		if(this.getCreateEicrStatus().getJobStatus() == JobStatus.COMPLETED && 
+		   !valIds.contains(Integer.valueOf(this.getCreateEicrStatus().geteICRId()))) {
+			ids.add(Integer.valueOf(this.getCreateEicrStatus().geteICRId()));
+		}
+			
+		if(this.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED && 
+				   !valIds.contains(Integer.valueOf(this.getCloseOutEicrStatus().geteICRId()))) {
+			ids.add(Integer.valueOf(getCloseOutEicrStatus().eICRId));	
+		}
+		
+		for(PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
+			
+			if(	pd.jobStatus == JobStatus.COMPLETED && 
+					   !valIds.contains(Integer.valueOf(pd.geteICRId()))) {
+				ids.add(Integer.valueOf(pd.eICRId));
+			}	
+		}
+		
+		return ids;
+	}
+	
 }

@@ -44,6 +44,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
 	@Override
 	public Object receiveRespone(Object obj) {
+		
 		// TODO Auto-generated method stub
 		
 		
@@ -66,7 +67,7 @@ public class DirectResponseReceiver extends RRReceiver {
 				
 				String mId = null;
 
-				DirectEicrSender util = new DirectEicrSender();
+				//DirectEicrSender util = new DirectEicrSender();
 				//Reading properties file
 				Properties prop = new Properties();
 				String path = "./application.properties";
@@ -144,7 +145,7 @@ public class DirectResponseReceiver extends RRReceiver {
 								
 									
 									//Sending email with results
-									util.sendMail(prop.getProperty("host"),prop.getProperty("username"), prop.getProperty("password"),senderAddress,iss,filename);
+								//	util.sendMail(prop.getProperty("host"),prop.getProperty("username"), prop.getProperty("password"),senderAddress,iss,filename);
 									logger.info("Email with results sent to "+senderAddress);
 								}
 							}
@@ -157,7 +158,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
 				}
 				
-				util.deleteMail(prop.getProperty("host"),prop.getProperty("username"), prop.getProperty("password"));
+				// util.deleteMail(prop.getProperty("host"),prop.getProperty("username"), prop.getProperty("password"));
 				
 
 			}  catch (Exception e) {

@@ -20,6 +20,7 @@ import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
@@ -55,6 +56,9 @@ public class WorkflowService {
 	EicrRRService			eicrRRService;
 	
 	@Autowired
+	DirectEicrSender		directTansport;
+	
+	@Autowired
 	ObjectMapper		mapper;
 	
 	@Value("${schematron.file.location}")
@@ -68,6 +72,7 @@ public class WorkflowService {
 		ActionRepo.getInstance().setTaskScheduler(taskScheduler);
 		ActionRepo.getInstance().setEicrRRService(eicrRRService);
 		ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
+		ActionRepo.getInstance().setDirectTransport(directTansport);
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {

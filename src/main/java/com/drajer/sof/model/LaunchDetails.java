@@ -86,12 +86,34 @@ public class LaunchDetails {
 
 	@Column(name = "ver_number", nullable = true) // Status can be active or completed.
 	private String versionNumber;
+	
+	@Column(name = "direct_host", nullable = true) // Status can be active or completed.
+	private String directHost;
 
 	@Column(name = "direct_user", nullable = true) // Status can be active or completed.
 	private String directUser;
 
 	@Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
 	private String directPwd;
+	
+	@Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
+	private String directRecipient;
+	
+	public String getDirectHost() {
+		return directHost;
+	}
+
+	public void setDirectHost(String directHost) {
+		this.directHost = directHost;
+	}
+
+	public String getDirectRecipient() {
+		return directRecipient;
+	}
+
+	public void setDirectRecipient(String directRecipient) {
+		this.directRecipient = directRecipient;
+	}
 
 	public String getAssigningAuthorityId() {
 		return assigningAuthorityId;

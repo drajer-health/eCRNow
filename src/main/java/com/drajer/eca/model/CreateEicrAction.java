@@ -3,9 +3,11 @@ package com.drajer.eca.model;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.drajer.cda.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -102,6 +105,38 @@ public class CreateEicrAction extends AbstractAction {
 										" Action " + actionId + " is not completed , hence this action has to wait ");
 								relatedActsDone = false;
 							}
+							else {
+								
+								logger.info(" Action has been completed " + actionId);
+								
+								// Check if there is any timing constraint that needs to be handled.
+								if(ract.getDuration() != null && 
+								   state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
+									
+									// Duration is not null, meaning that the create action has to be delayed by the duration.
+									logger.info(" Schedule the job as needed ");
+								
+									try {
+										
+										scheduleJob(details.getId(), ract.getDuration());
+										state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+										details.setStatus(mapper.writeValueAsString(state));
+										
+										// No need to continue as the job will take over execution.
+										return;
+									} catch (JsonProcessingException e) { 
+										e.printStackTrace();
+									}
+								}
+								else {
+									
+									logger.info( " No need to scheuled job as it has already been scheduled or completed. ");
+								}
+							}
+						}
+						else {
+							logger.info(" Action " + ract.getRelatedAction().getActionId() + " is related via " + ract.getRelationship());
+							
 						}
 					}
 				}
@@ -146,47 +181,51 @@ public class CreateEicrAction extends AbstractAction {
 						
 						logger.info(" Job Not Scheduled since there is no timing data ");
 					}
+					else if (state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
 					
-					logger.info(" Creating the EICR since the job has started ");
-					
-					// Since the job has started, Execute the job.
-					// Call the Loading Queries and create eICR.
-					if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+						// Do this only if the job is scheduled.
 
-						logger.info(" Getting necessary data from Loading Queries ");
-						FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
+						logger.info(" Creating the EICR since the job has started ");
 
-						String eICR = null;
+						// Since the job has started, Execute the job.
+						// Call the Loading Queries and create eICR.
+						if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
-						if (data != null && data instanceof Dstu2FhirData) {
+							logger.info(" Getting necessary data from Loading Queries ");
+							FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
 
-							Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-							eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
-							
-							// Create the object for persistence.
-							Eicr ecr = new Eicr();
-							ecr.setData(eICR);
-							ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-							
-					
-							state.getCreateEicrStatus().setEicrCreated(true);
-							state.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-							state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-							
-							try {
-								details.setStatus(mapper.writeValueAsString(state));
-							} catch (JsonProcessingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							String eICR = null;
+
+							if (data != null && data instanceof Dstu2FhirData) {
+
+								Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
+								eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+
+								// Create the object for persistence.
+								Eicr ecr = new Eicr();
+								ecr.setData(eICR);
+								ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+
+
+								state.getCreateEicrStatus().setEicrCreated(true);
+								state.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+								state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+
+								try {
+									details.setStatus(mapper.writeValueAsString(state));
+								} catch (JsonProcessingException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
+
+							logger.info(" **** Printing Eicr **** ");
+
+							logger.info(eICR);
+
+
+							logger.info(" **** End Printing Eicr **** ");
 						}
-
-						logger.info(" **** Printing Eicr **** ");
-
-						logger.info(eICR);
-						
-
-						logger.info(" **** End Printing Eicr **** ");
 					}
 
 				}
@@ -220,8 +259,21 @@ public class CreateEicrAction extends AbstractAction {
 
 	public void scheduleJob(Integer launchDetailsId, TimingSchedule ts) {
 		logger.info("Scheduling Job to Get Data from FHIR Server");
+		
+		Instant t = new Date().toInstant().plusSeconds(10);
 		ActionRepo.getInstance().getTaskScheduler().schedule(new CreateEicrExecuteJob(launchDetailsId), new Date().toInstant().plusSeconds(10));
-		logger.info("Job Scheduled to get Data after 10 seconds");
+		logger.info("Job Scheduled to create CREATE EICR at " + t.toString());
+	}
+	
+	public void scheduleJob(Integer launchDetailsId, Duration d) {
+		
+		logger.info("Scheduling Job to Get Data from FHIR Server");
+		
+		Instant t = ApplicationUtils.convertDurationToInstant(d);
+		
+		ActionRepo.getInstance().getTaskScheduler().schedule(new CreateEicrExecuteJob(launchDetailsId), t);
+		
+		logger.info("Job Scheduled to create CREATE EICR after " + t.toString());
 	}
 
 }
