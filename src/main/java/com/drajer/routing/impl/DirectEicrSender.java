@@ -67,10 +67,10 @@ public class DirectEicrSender extends EicrSender {
 			InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 			
 			try {
-			//	sendMail(details.getDirectHost(), details.getDirectUser(), details.getDirectPwd(), details.getDirectRecipient(), is, DirectEicrSender.FILE_NAME);
+				// sendMail(details.getDirectHost(), details.getDirectUser(), details.getDirectPwd(), details.getDirectRecipient(), is, DirectEicrSender.FILE_NAME);
 				
 				// For testing purposes..use site.
-				sendMail("ttpds2.sitenv.org", "hisp-testing@ttpds2.sitenv.org", "hisptestingpass", "hisp-testing@direct.ett.healthit.gov", is, DirectEicrSender.FILE_NAME);
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
