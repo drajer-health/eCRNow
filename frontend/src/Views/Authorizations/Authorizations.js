@@ -5,6 +5,7 @@ import {
   Col
 } from 'react-bootstrap';
 import './Authorizations.css';
+import { store } from 'react-notifications-component';
 
 class Authorizations extends Component {
   constructor(props) {
@@ -17,12 +18,51 @@ class Authorizations extends Component {
     this.state['code'] = this.getParamValue('code');
     this.state['state'] = this.getParamValue('state');
     this.state['patientId'] = '';
+    this.clientDetails = {};
     if (this.state.launch && this.state.baseURL) {
-      this.authorizeWithServer(this.state.baseURL);
+      this.getClientDetails(this.state.baseURL);
     }
     if (this.state.code && this.state.state) {
       this.getAuthorizeToken(this.state.code, this.state.state);
     }
+  }
+
+  geturl() {
+    var protocol, context, host, strurl;
+    protocol = window.location.protocol;
+    host = window.location.host;
+    // port = window.location.port;
+    context = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+    strurl = protocol + "//" + host + context;
+    return strurl;
+  };
+
+  getClientDetails(baseURL) {
+    fetch(this.geturl() + "/api/clientDetails?url=" + baseURL)
+      .then(function (response) {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          store.addNotification({
+            title: '' + response.status + '',
+            message: 'UnAuthorized. The Server is not registered.',
+            type: 'danger',
+            insert: 'bottom',
+            container: 'bottom-right',
+            animationIn: ['animated', 'fadeIn'],
+            animationOut: ['animated', 'fadeOut'],
+            dismiss: {
+              duration: 5000,
+              click: true,
+              onScreen: true
+            }
+          });
+        }
+      }).then(result => {
+        console.log(result);
+        this.clientDetails = result;
+        this.authorizeWithServer();
+      });
   }
 
   getParamValue(variable) {
@@ -35,12 +75,12 @@ class Authorizations extends Component {
       }
     }
   }
-  authorizeWithServer(baseURL) {
+  authorizeWithServer() {
     var state = Math.round(Math.random() * 100000000).toString();
-    const clientid = window.CLIENT_ID;
+    const clientid = this.clientDetails.clientId;
     const redirecturi = window.location.href.split('?')[0];
-    const scope = window.SCOPES;
-    const strURL = decodeURIComponent(this.state.baseURL);
+    const scopes = this.clientDetails.scopes;
+    const strURL = decodeURIComponent(this.clientDetails.fhirServerBaseURL);
     var fhirVersion = '';
     if (strURL) {
       fetch(strURL + '/metadata?_format=json')
@@ -80,13 +120,14 @@ class Authorizations extends Component {
             redirecturi: redirecturi,
             tokenurl: this.state.tokenurl,
             strurl: strURL,
-            scope: window.SCOPES,
+            scopes: this.clientDetails.scopes,
             launch: this.state.launch,
-            fhirVersion: fhirVersion
+            fhirVersion: fhirVersion,
+            clientDetails: this.clientDetails
           });
           this.fhirOAuth(
             clientid,
-            scope,
+            scopes,
             redirecturi,
             this.state.authurl,
             strURL,
@@ -96,7 +137,7 @@ class Authorizations extends Component {
     }
   }
 
-  fhirOAuth(clientId, scope, redirectURI, authorizeURL, baseURL, state) {
+  fhirOAuth(clientId, scopes, redirectURI, authorizeURL, baseURL, state) {
     var path = authorizeURL + '?';
     var queryParams = [
       'response_type=code',
@@ -104,7 +145,7 @@ class Authorizations extends Component {
       'redirect_uri=' + redirectURI,
       'launch=' + this.state.launch,
       'state=' + state,
-      'scope=' + window.SCOPES,
+      'scope=' + scopes,
       'aud=' + this.state.baseURL
     ];
     var query = queryParams.join('&');
@@ -115,6 +156,8 @@ class Authorizations extends Component {
 
   getAuthorizeToken(code, state) {
     var params = JSON.parse(sessionStorage[state]);
+    console.log(params.clientDetails);
+    this.clientDetails = params.clientDetails;
     const tokenParams = {
       grant_type: 'authorization_code',
       code: code,
@@ -152,6 +195,7 @@ class Authorizations extends Component {
           userId: body.user,
           fhirVersion: params.fhirVersion
         });
+        console.log(this.clientDetails);
         if (body.encounter) {
           this.setState({
             encounterId: body.encounter
@@ -160,8 +204,8 @@ class Authorizations extends Component {
         } else {
           this.setState({
             encounterId: "Unknown",
-            encounterStartDate: this.getStartDate(),
-            encounterEndDate: this.getEndDate()
+            encounterStartDate: this.getStartDate(Number(this.clientDetails.encounterStartThreshold)),
+            encounterEndDate: this.getEndDate(Number(this.clientDetails.encounterEndThreshold))
           });
           this.submitClientDetails();
         }
@@ -176,7 +220,7 @@ class Authorizations extends Component {
   submitClientDetails() {
     console.log(this.state);
     const clientInfo = {
-      clientId: window.CLIENT_ID,
+      clientId: this.clientDetails.clientId,
       ehrServerURL: this.state.baseURL,
       authUrl: this.state.authUrl,
       tokenUrl: this.state.tokenUrl,
@@ -184,21 +228,23 @@ class Authorizations extends Component {
       refreshToken: this.state.refreshToken,
       userId: this.state.userId,
       expiry: this.state.expiry,
-      scope: window.SCOPES,
+      scope: this.clientDetails.scopes,
       launchPatientId: this.state.patientId,
       fhirVersion: this.state.fhirVersion,
       encounterId: this.state.encounterId,
-      assigningAuthorityId: window.OID,
+      assigningAuthorityId: this.clientDetails.assigningAuthorityId,
       setId: this.state.patientId + "+" + this.state.encounterId,
-      versionNumber: window.VERSION_NUMBER,
-      directUser: window.DIRECT_USER,
-      directPwd: window.DIRECT_PWD,
-      startDate: this.state.encounterStartDate,
-      endDate: this.state.encounterEndDate
+      versionNumber: "1",
+      directUser: this.clientDetails.directUser,
+      directPwd: this.clientDetails.directPwd,
+      startDate: Date.parse(this.state.encounterStartDate),
+      endDate: Date.parse(this.state.encounterEndDate),
+      directHost: this.clientDetails.directHost,
+      directRecipient: this.clientDetails.directRecipientAddress
     };
     console.log(clientInfo);
 
-    fetch(window.Client_EndPoint + "launchDetails", {
+    fetch(this.geturl() + "/api/launchDetails", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -206,7 +252,24 @@ class Authorizations extends Component {
       body: JSON.stringify(clientInfo)
     })
       .then(response => {
-        return response.json();
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          store.addNotification({
+            title: '' + response.status + '',
+            message: 'Error in Saving Launch Details.',
+            type: 'danger',
+            insert: 'bottom',
+            container: 'bottom-right',
+            animationIn: ['animated', 'fadeIn'],
+            animationOut: ['animated', 'fadeOut'],
+            dismiss: {
+              duration: 5000,
+              click: true,
+              onScreen: true
+            }
+          });
+        }
       })
       .then(body => {
         console.log(body);
@@ -228,10 +291,29 @@ class Authorizations extends Component {
       }
     )
       .then(response => {
-        return response.json();
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          store.addNotification({
+            title: '' + response.status + '',
+            message: 'Error in Getting Patient Details.',
+            type: 'danger',
+            insert: 'bottom',
+            container: 'bottom-right',
+            animationIn: ['animated', 'fadeIn'],
+            animationOut: ['animated', 'fadeOut'],
+            dismiss: {
+              duration: 5000,
+              click: true,
+              onScreen: true
+            }
+          });
+          return;
+        }
+
       })
       .then(result => {
-        // console.log("Received Patient Data==============>" + JSON.stringify(result));
+        console.log("Received Patient Data==============>" + JSON.stringify(result));
       });
   }
 
@@ -246,7 +328,26 @@ class Authorizations extends Component {
       }
     )
       .then(response => {
-        return response.json();
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          store.addNotification({
+            title: '' + response.status + '',
+            message: 'Error in Getting Encounter Details.',
+            type: 'danger',
+            insert: 'bottom',
+            container: 'bottom-right',
+            animationIn: ['animated', 'fadeIn'],
+            animationOut: ['animated', 'fadeOut'],
+            dismiss: {
+              duration: 5000,
+              click: true,
+              onScreen: true
+            }
+          });
+          return;
+        }
+
       })
       .then(result => {
         const encounter = result;
@@ -258,7 +359,7 @@ class Authorizations extends Component {
             });
           } else {
             this.setState({
-              encounterStartDate: this.getStartDate()
+              encounterStartDate: this.getStartDate(Number(this.clientDetails.encounterStartThreshold))
             });
           }
 
@@ -268,7 +369,7 @@ class Authorizations extends Component {
             });
           } else {
             this.setState({
-              encounterEndDate: this.getEndDate()
+              encounterEndDate: this.getEndDate(Number(this.clientDetails.encounterEndThreshold))
             });
           }
         }
@@ -276,9 +377,9 @@ class Authorizations extends Component {
       });
   }
 
-  getStartDate() {
+  getStartDate(startThreshold) {
     const startDate = new Date();
-    startDate.setHours(startDate.getHours() - 3);
+    startDate.setHours(startDate.getHours() - startThreshold);
     const year = startDate.getFullYear();
     const currentMonth = startDate.getMonth() + 1;
     const month = startDate.getMonth() < 10 ? "0" + currentMonth : startDate.getMonth();
@@ -290,9 +391,9 @@ class Authorizations extends Component {
     return year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + ".000Z";
   }
 
-  getEndDate() {
+  getEndDate(endThreshold) {
     const endDate = new Date();
-    endDate.setHours(endDate.getHours() + 30);
+    endDate.setHours(endDate.getHours() + endThreshold);
     const year = endDate.getFullYear();
     const currentMonth = endDate.getMonth() + 1;
     const month = endDate.getMonth() < 10 ? "0" + currentMonth : endDate.getMonth();
@@ -328,11 +429,27 @@ class Authorizations extends Component {
           <button
             className="btn btn-primary submitBtn"
             type="button"
+          // onClick={() => {
+          //   store.addNotification({
+          //     title: 'Success',
+          //     message: 'Client Details are saved successfully.',
+          //     type: 'success',
+          //     insert: 'bottom',
+          //     container: 'bottom-right',
+          //     animationIn: ['animated', 'fadeIn'],
+          //     animationOut: ['animated', 'fadeOut'],
+          //     dismiss: {
+          //       duration: 5000,
+          //       click: true,
+          //       onScreen: true
+          //     }
+          //   });
+          // }}
           >
             Ok
                         </button>
         </div>
-      </div>
+      </div >
     );
   }
 }

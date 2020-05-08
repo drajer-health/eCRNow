@@ -25,61 +25,54 @@ import com.drajer.sof.service.TriggerQueryService;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 
 @RestController
-@RequestMapping("/")
 public class LaunchController {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(LaunchController.class);
 
 	@Autowired
 	LaunchService authDetailsService;
-	
+
 	@Autowired
 	RefreshTokenScheduler tokenScheduler;
-	
+
 	@Autowired
 	TriggerQueryService triggerQueryService;
-	
+
 	@Autowired
 	LoadingQueryService loadingQueryService;
-	
+
 	@Autowired
-	WorkflowService     workflowService;
-	
+	WorkflowService workflowService;
+
 	@CrossOrigin
-	@RequestMapping("launchDetails/{tokenId}")
-    public LaunchDetails getClientById(@PathVariable("tokenId") Integer tokenId) {
-        return authDetailsService.getAuthDetailsById(tokenId);
-    }
-	
-//	@CrossOrigin
-//	@GetMapping("/clients")
-//    public List<Client> getAllClients() {
-//        return clientRepository.findAll();
-//    }
-	
+	@RequestMapping("/api/launchDetails/{tokenId}")
+	public LaunchDetails getClientById(@PathVariable("tokenId") Integer tokenId) {
+		return authDetailsService.getAuthDetailsById(tokenId);
+	}
+
 	// POST method to create a Client
 	@CrossOrigin
-	@RequestMapping(value = "launchDetails", method = RequestMethod.POST)
-    public LaunchDetails createAuthToken(@RequestBody LaunchDetails launchDetails) {
-		
+	@RequestMapping(value = "/api/launchDetails", method = RequestMethod.POST)
+	public LaunchDetails createAuthToken(@RequestBody LaunchDetails launchDetails) {
+
 		logger.info(" Saving Launch Context");
 		authDetailsService.saveOrUpdate(launchDetails);
-		
+
 		logger.info("Scheduling refresh token job ");
 		tokenScheduler.scheduleJob(launchDetails);
-		
+
 		// Kick off the Launch Event Processing
 		logger.info("Invoking SOF Launch workflow event handler ");
 		workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
-		
-        return launchDetails;
-    }
-	
+
+		return launchDetails;
+	}
+
 	@CrossOrigin
-	@RequestMapping("triggerQueryService/{tokenId}")
+	@RequestMapping("/api/triggerQueryService/{tokenId}")
 	public String triggerDataFromEHR(@PathVariable("tokenId") Integer tokenId) {
 		LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(tokenId);
-		SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Date start = ft.parse("2012-02-19");
 			triggerQueryService.getData(launchDetails, start, new Date());
@@ -87,15 +80,15 @@ public class LaunchController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return "Success";
 	}
-	
+
 	@CrossOrigin
-	@RequestMapping("loadingQueryService/{tokenId}")
+	@RequestMapping("/api/loadingQueryService/{tokenId}")
 	public String loadingDataFromEHR(@PathVariable("tokenId") Integer tokenId) {
 		LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(tokenId);
-		SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Date start = ft.parse("2012-02-19");
 			loadingQueryService.getData(launchDetails, start, new Date());
@@ -103,7 +96,7 @@ public class LaunchController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return "Success";
 	}
 }

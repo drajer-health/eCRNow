@@ -16,3 +16,13 @@
     padding-top: 24px;
     padding-left: 20px;
 }
+
+h1{
+    font-size: 36px;
+}
+
+@media only screen and (max-width: 960px) {
+  h1 {
+    font-size: 24px;
+  }
+}

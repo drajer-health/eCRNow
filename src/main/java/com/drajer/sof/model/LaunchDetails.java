@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -57,9 +59,11 @@ public class LaunchDetails {
 	private Date lastUpdated;
 	
 	@Column(name = "start_date", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
 	
 	@Column(name = "end_date", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
 	@Column(name = "refresh_token", nullable = true, columnDefinition = "TEXT")
