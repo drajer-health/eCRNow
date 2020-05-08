@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.drajer.eca.model.EventTypes;
+import com.drajer.eca.model.MatchTriggerAction;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.sof.model.LaunchDetails;
@@ -24,6 +27,8 @@ import com.drajer.sof.utils.RefreshTokenScheduler;
 @RestController
 @RequestMapping("/")
 public class LaunchController {
+	
+	private final Logger logger = LoggerFactory.getLogger(LaunchController.class);
 
 	@Autowired
 	LaunchService authDetailsService;
@@ -56,10 +61,15 @@ public class LaunchController {
 	@CrossOrigin
 	@RequestMapping(value = "launchDetails", method = RequestMethod.POST)
     public LaunchDetails createAuthToken(@RequestBody LaunchDetails launchDetails) {
+		
+		logger.info(" Saving Launch Context");
 		authDetailsService.saveOrUpdate(launchDetails);
+		
+		logger.info("Scheduling refresh token job ");
 		tokenScheduler.scheduleJob(launchDetails);
 		
 		// Kick off the Launch Event Processing
+		logger.info("Invoking SOF Launch workflow event handler ");
 		workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
 		
         return launchDetails;

@@ -43,7 +43,6 @@ public class MatchTriggerAction extends AbstractAction {
 		
 		if(obj instanceof LaunchDetails) {
 			
-			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails)obj;
 			
 			ObjectMapper mapper = new ObjectMapper();
@@ -53,12 +52,25 @@ public class MatchTriggerAction extends AbstractAction {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getMatchTriggerStatus().setActionId(getActionId());
 			} catch (JsonMappingException e1) {
-				// TODO Auto-generated catch block
+
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				
+				throw new RuntimeException(msg);
+				
 			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch block
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				
+				throw new RuntimeException(msg);
 			}
+			
+			// Execute the Match Trigger Action, even if it completed, because it could be invoked multiple times from 
+			// other EICR Actions.
+			logger.info(" Executing Match Trigger Action , Prior Execution State : = " + details.getStatus());
 			
 			// Call the Trigger Queries.
 			if(ActionRepo.getInstance().getTriggerQueryService() != null ) { 
@@ -86,20 +98,19 @@ public class MatchTriggerAction extends AbstractAction {
 						
 						for(ActionData ad: codePaths) {
 							
-							logger.info(" Found Action Data for Matching Trigger Codes for : " + ad.getPath());
+							logger.info(" Need to match Trigger Codes for : " + ad.getPath());
+							
 							List<CodeableConceptDt> ptCodes = dstu2Data.getCodesForExpression(ad.getPath());
 							
 							if(ptCodes != null && ptCodes.size() > 0) {
 								
-								logger.info(" Found Patient Codes of " + ptCodes.size() + " to match.");
+								logger.info(" Found a Total # of " + ptCodes.size() + " codes found for Patient." + ad.getPath());
 								
 								Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
 								
-								logger.info(" Found Patient Codes of " + codesToMatch.size() + " to match.");
-								
 								Set<String> codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsString();
 								
-								logger.info(" Number of Trigger Codes to match against " + codesToMatchAgainst.size() + " to match.");
+								logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching");
 								
 								Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
 								
@@ -113,13 +124,20 @@ public class MatchTriggerAction extends AbstractAction {
 								}
 								else {
 									
-									logger.info(" No Matched codes found for path ");
-									// no need to change state..
+									logger.info(" No Matched codes found for : " + ad.getPath());
+									state.getMatchTriggerStatus().setTriggerMatchStatus(false);
 								}
 								
 							}
 						}
 						
+					}
+					else {
+						
+						String msg = "No Trigger Data to match trigger Codes.";
+						logger.error(msg);
+						
+						throw new RuntimeException(msg);
 					}
 					
 					// Job is completed, even if it did not match.
@@ -130,12 +148,38 @@ public class MatchTriggerAction extends AbstractAction {
 					try {
 						details.setStatus(mapper.writeValueAsString(state));
 					} catch (JsonProcessingException e) {
-						// TODO Auto-generated catch block
+					
+						String msg = "Unable to update execution state";
+						logger.error(msg);
 						e.printStackTrace();
+						
+						throw new RuntimeException(msg);
 					}
 				}
+				else {
+					
+					String msg = "No Fhir Data retrieved to match trigger Codes.";
+					logger.error(msg);
+					
+					throw new RuntimeException(msg);
+				}
+			}
+			else {
+				
+				String msg = "System Startup Issue, Spring Injection not functioning properly, trigger service is null.";
+				logger.error(msg);
+				
+				throw new RuntimeException(msg);
 			}
 
+		}
+		else {
+			
+			String msg = "Invalid Object passed to Execute method, Launch Details expected, found : " + obj.getClass().getName();
+			logger.error(msg);
+			
+			throw new RuntimeException(msg);
+			
 		}
 	}
 }

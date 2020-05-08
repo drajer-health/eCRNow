@@ -16,8 +16,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
@@ -43,11 +45,10 @@ public class CreateEicrAction extends AbstractAction {
 	@Override
 	public void execute(Object obj) {
 
-		logger.info(" Executing Create Eicr Action ");
+		logger.info(" **** START Executing Create Eicr Action **** ");
 
 		if (obj instanceof LaunchDetails) {
 
-			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) obj;
 			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
@@ -56,20 +57,26 @@ public class CreateEicrAction extends AbstractAction {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getCreateEicrStatus().setActionId(getActionId());
 			} catch (JsonMappingException e1) {
-				// TODO Auto-generated catch block
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				
+				throw new RuntimeException(msg); 
 			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch block
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				
+				throw new RuntimeException(msg);
 			}
 
-			logger.info(" Create Eicr State : : Launch Details State before execution :" + details.getStatus());
+			logger.info(" Executing Create Eicr Action , Prior Execution State : = " + details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
 			if (getPreConditions() != null && getPreConditions().size() > 0) {
 
-				logger.info(" Checking on PreConditions ");
+				logger.info(" Evaluating PreConditions ");
 				List<AbstractCondition> conds = getPreConditions();
 
 				for (AbstractCondition cond : conds) {
@@ -85,7 +92,7 @@ public class CreateEicrAction extends AbstractAction {
 			Boolean relatedActsDone = true;
 			if (conditionsMet) {
 				
-				logger.info(" PreConditions have been Met ");
+				logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
 				if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 
@@ -114,18 +121,24 @@ public class CreateEicrAction extends AbstractAction {
 								   state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 									
 									// Duration is not null, meaning that the create action has to be delayed by the duration.
-									logger.info(" Schedule the job as needed ");
+									logger.info(" Schedule the job for Create EICR based on the duration.");
 								
 									try {
 										
-										scheduleJob(details.getId(), ract.getDuration());
+										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR);
 										state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 										details.setStatus(mapper.writeValueAsString(state));
 										
 										// No need to continue as the job will take over execution.
+										
+										logger.info(" **** END Executing Create Eicr Action **** ");
 										return;
 									} catch (JsonProcessingException e) { 
+										String msg = "Unable to read/write execution state";
+										logger.error(msg);
 										e.printStackTrace();
+										
+										throw new RuntimeException(msg);
 									}
 								}
 								else {
@@ -141,7 +154,7 @@ public class CreateEicrAction extends AbstractAction {
 					}
 				}
 				
-				// Check Timing Data , Dont check if the state is already scheduled meaning the
+				// Check Timing Data , No need to check if the state is already scheduled meaning the
 				// job was scheduled already.
 				if (relatedActsDone) {
 					
@@ -151,7 +164,7 @@ public class CreateEicrAction extends AbstractAction {
 					// the State Machine has to manage the execution.
 					if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 						
-						logger.info(" Related Actions Done and this job has not started ");
+						logger.info(" Related Actions Done and this action has not started ");
 						
 						if (getTimingData() != null && getTimingData().size() > 0) {
 							
@@ -164,14 +177,19 @@ public class CreateEicrAction extends AbstractAction {
 								// For now setup a default job with 10 seconds.
 								try {
 									
-									scheduleJob(details.getId(), ts);
+									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR);
 									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 									details.setStatus(mapper.writeValueAsString(state));
 									
 									// No need to continue as the job will take over execution.
+									logger.info(" **** End Executing Create Eicr Action **** ");
 									return;
 								} catch (JsonProcessingException e) { 
+									String msg = "Unable to read/write execution state";
+									logger.error(msg);
 									e.printStackTrace();
+									
+									throw new RuntimeException(msg);
 								}
 
 								
@@ -179,13 +197,12 @@ public class CreateEicrAction extends AbstractAction {
 
 						}
 						
-						logger.info(" Job Not Scheduled since there is no timing data ");
+						logger.info(" No job to schedule since there is no timing data ");
 					}
 					else if (state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
 					
 						// Do this only if the job is scheduled.
-
-						logger.info(" Creating the EICR since the job has started ");
+						logger.info(" Creating the EICR since the job has been scheduled ");
 
 						// Since the job has started, Execute the job.
 						// Call the Loading Queries and create eICR.
@@ -214,66 +231,63 @@ public class CreateEicrAction extends AbstractAction {
 								try {
 									details.setStatus(mapper.writeValueAsString(state));
 								} catch (JsonProcessingException e) {
-									// TODO Auto-generated catch block
+									
+									String msg = "Unable to update execution state";
+									logger.error(msg);
 									e.printStackTrace();
+									
+									throw new RuntimeException(msg);
 								}
+								
+								logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
+
+								logger.info(eICR);
+
+								logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+							}
+							else {
+								
+								String msg = "No Fhir Data retrieved to CREATE EICR.";
+								logger.error(msg);
+								
+								throw new RuntimeException(msg);
 							}
 
-							logger.info(" **** Printing Eicr **** ");
-
-							logger.info(eICR);
-
-
-							logger.info(" **** End Printing Eicr **** ");
+							
 						}
+						else {
+							
+							String msg = "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
+							logger.error(msg);
+							
+							throw new RuntimeException(msg);
+						}
+					}
+					else {
+						logger.info(" EICR job is in a state of " + state.getCreateEicrStatus().getJobStatus() + " , due to which EICR will not be created. ");
 					}
 
 				}
+				else {
+					logger.info(" Related Actions are not completed, hence EICR will not be created. ");
+				}
 				
 			}
-
-		}
-	}
-
-	class CreateEicrExecuteJob implements Runnable {
-
-		public Integer launchDetailsId;
-
-		public CreateEicrExecuteJob(Integer launchDetailsId) {
-			this.launchDetailsId = launchDetailsId;
-		}
-
-		@Override
-		public void run() {
-			try {
-				logger.info("Get Launch Details from Database using Id==============>" + launchDetailsId);
-				LaunchDetails launchDetails = ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
-				execute(launchDetails);
-				logger.info("Starting the Thread");
-				Thread.currentThread().interrupt();
-			} catch (Exception e) {
-				logger.info("Error in Getting Data=====>" + e.getMessage());
+			else {
+				
+				logger.info(" Conditions not met, hence EICR will not be created. ");
 			}
 		}
-	}
-
-	public void scheduleJob(Integer launchDetailsId, TimingSchedule ts) {
-		logger.info("Scheduling Job to Get Data from FHIR Server");
+		else {
+			
+			String msg = "Invalid Object passed to Execute method, Launch Details expected, found : " + obj.getClass().getName();
+			logger.error(msg);
+			
+			throw new RuntimeException(msg);
+			
+		}
 		
-		Instant t = new Date().toInstant().plusSeconds(10);
-		ActionRepo.getInstance().getTaskScheduler().schedule(new CreateEicrExecuteJob(launchDetailsId), new Date().toInstant().plusSeconds(10));
-		logger.info("Job Scheduled to create CREATE EICR at " + t.toString());
-	}
-	
-	public void scheduleJob(Integer launchDetailsId, Duration d) {
-		
-		logger.info("Scheduling Job to Get Data from FHIR Server");
-		
-		Instant t = ApplicationUtils.convertDurationToInstant(d);
-		
-		ActionRepo.getInstance().getTaskScheduler().schedule(new CreateEicrExecuteJob(launchDetailsId), t);
-		
-		logger.info("Job Scheduled to create CREATE EICR after " + t.toString());
+		logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
 	}
 
 }

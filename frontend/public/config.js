@@ -2,7 +2,8 @@
 // var CLIENT_ID = 'b1dc8673-d4f9-4ae8-bafb-d57b3c21d48d';
 
 // Cerner DSTU2
-var CLIENT_ID = 'b9565774-f550-4a25-8d4a-feec53d8ebe6';
+//var CLIENT_ID = '3b791e6c-5190-4638-b785-bd63a71ef61a';
+var CLIENT_ID = '16d88e99-9b57-46bc-87ff-b058c4d786fb';
 var SCOPES = 'launch,online_access,offline_access,user/Patient.read,user/Condition.read,user/Encounter.read,user/MedicationAdministration.read,user/MedicationOrder.read,user/MedicationStatement.read,user/Observation.read,user/Immunization.read,user/DiagnosticReport.read,user/Practitioner.read,patient/Patient.read,patient/Condition.read,patient/Encounter.read,patient/MedicationAdministration.read,patient/MedicationOrder.read,patient/MedicationStatement.read,patient/Observation.read,patient/Immunization.read,patient/DiagnosticReport.read';
 
 // Cerner R4
