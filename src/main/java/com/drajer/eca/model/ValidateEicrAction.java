@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
@@ -39,11 +40,10 @@ public class ValidateEicrAction extends AbstractAction {
 	@Override
 	public void execute(Object obj) {
 		
-		logger.info(" Executing Validate Eicr Action ");
+		logger.info(" **** START Executing Validate Eicr Action **** ");
 		
 		if (obj instanceof LaunchDetails) {
 
-			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) obj;
 			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
@@ -51,19 +51,26 @@ public class ValidateEicrAction extends AbstractAction {
 			try {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
 			} catch (JsonMappingException e1) {
-				// TODO Auto-generated catch block
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				throw new RuntimeException(msg);
+				
 			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch block
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				throw new RuntimeException(msg);
 			}
 
-			logger.info(" Validate Eicr State : Launch Details State before execution :" + details.getStatus());
+			logger.info(" Executing Validate Eicr Action , Prior Execution State : = " + details.getStatus());
 			
 			
 			if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 				
-				logger.info(" Validation actions to be performed based on other related actions ");
+				logger.info(" Validation actions to be performed based on other related actions. ");
 
 				List<RelatedAction> racts = getRelatedActions();
 
@@ -99,8 +106,7 @@ public class ValidateEicrAction extends AbstractAction {
 				
 				Set<Integer> ids = state.getEicrsReadyForValidation();
 				
-				validateEicrs(details, state, ids);
-				
+				validateEicrs(details, state, ids);			
 				
 			}
 		}
@@ -119,24 +125,67 @@ public class ValidateEicrAction extends AbstractAction {
 			
 			  if (!aResSCH.isValidSchematron ()) {
 			    
-				  logger.info(" *** Cannot Validate since Schematron is not valid ** ");		    
+				  logger.info(" *** Cannot Validate since Schematron is not valid *** ");		    
 			  }
 			  else {
 				  
 				  SchematronOutputType output = null;
 				  try {
+					  logger.info(" Found Valid Schematron which can be applied EICR with Id = " + id);
 					  output = aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrToValidate.getData())));
 				  } catch (Exception e) {
-					// TODO Auto-generated catch block
-					  e.printStackTrace();
+					  	String msg = "Unable to read/write execution state";
+						logger.error(msg);
+						e.printStackTrace();
+						throw new RuntimeException(msg);
 				  }
 				  								  
-				  if(output != null && output.getNsPrefixInAttributeValuesCount() > 0) {
-					  logger.info(" Total # of Failed assertions " + output.getNsPrefixInAttributeValuesCount());
-					  validationResult = false;
+				  if(output != null) {
+					  
+					  
+					  //logger.info(" Total # of Failed assertions " + output.getNsPrefixInAttributeValuesCount());
+					  //validationResult = false;
+					  
+					  List<Object> objs = output.getActivePatternAndFiredRuleAndFailedAssert();
+					  Boolean foundFailures = false;
+					  
+					  logger.info(" Number of Failed Assertions " + objs.size());
+					  
+					  for(Object obj : objs) {
+						  
+						  if(obj instanceof FailedAssert) {
+							  
+							  FailedAssert fa = (FailedAssert)obj;
+							  
+							  //if(fa.getRole() != null && 
+								//	  (fa.getRole().contentEquals("fatal") || fa.getRole().contentEquals("error")) ) {
+							  
+							  if(fa.getFlag() != null && (fa.getFlag().contentEquals("error"))) {
+								  
+								  foundFailures = true;
+								  logger.info(" Failed Asertion : Id = " + fa.getId() + " , Location = " + fa.getLocation()
+								  	+ " , Text = " + fa.getText() + ", Flag = " + fa.getFlag());
+								  
+							  }
+							  else {
+								  
+								 //  logger.info("Failed Asertion : Id = " + fa.getId() + ", Flag = " + fa.getFlag());
+								 // It is a warning, so need to print to log for analysis
+							  }							  
+							  
+						  }
+						  
+					  }
+					  
+					  if(foundFailures)
+						  validationResult = false;
+					  else 
+						  validationResult = true;
 				  }					  
 				  else {
-					  validationResult = true;
+					  
+					  logger.info("Schematron Validation Ouput is null, so validation was not performed ");
+					  validationResult = false;
 				  }
 				  
 			  }

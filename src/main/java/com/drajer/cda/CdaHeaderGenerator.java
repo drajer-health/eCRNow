@@ -376,10 +376,12 @@ public class CdaHeaderGenerator {
 		
 		if(p.getDeceased() == null || 
 		   (p.getDeceased() != null && 
-		   p.getDeceased().isEmpty()) )
+		   p.getDeceased().isEmpty()) ) {
 			patientDetails.append(CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
-		else 
+		}
+		else {
 			patientDetails.append(CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+		}
 		
 		CodingDt race = CdaFhirUtilities.getCodingExtension(p.getUndeclaredExtensions(), 
 				CdaGeneratorConstants.FHIR_ARGO_RACE_EXT_URL, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);

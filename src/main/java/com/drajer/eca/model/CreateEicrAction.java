@@ -57,11 +57,12 @@ public class CreateEicrAction extends AbstractAction {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getCreateEicrStatus().setActionId(getActionId());
 			} catch (JsonMappingException e1) {
+				
 				String msg = "Unable to read/write execution state";
 				logger.error(msg);
 				e1.printStackTrace();
+				throw new RuntimeException(msg);
 				
-				throw new RuntimeException(msg); 
 			} catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
 				logger.error(msg);
@@ -114,7 +115,7 @@ public class CreateEicrAction extends AbstractAction {
 							}
 							else {
 								
-								logger.info(" Action has been completed " + actionId);
+								logger.info(" Related Action has been completed : " + actionId);
 								
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 

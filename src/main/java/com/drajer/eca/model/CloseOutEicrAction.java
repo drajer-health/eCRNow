@@ -62,7 +62,7 @@ public class CloseOutEicrAction extends AbstractAction {
 				throw new RuntimeException(msg);
 			}
 
-			logger.info(" Executing Create Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Close Out Eicr Action , Prior Execution State : = " + details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -104,7 +104,7 @@ public class CloseOutEicrAction extends AbstractAction {
 								relatedActsDone = false;
 							}
 							else {
-								logger.info(" Action has been completed " + actionId);
+								logger.info(" Related Action that has been completed : " + actionId);
 
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -183,7 +183,7 @@ public class CloseOutEicrAction extends AbstractAction {
 						
 						logger.info(" Job Not Scheduled since there is no timing data ");
 					}
-					else if (state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
+					else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
 						
 						logger.info(" Creating the Close Out EICR since the job has been scheduled ");
 
@@ -240,6 +240,9 @@ public class CloseOutEicrAction extends AbstractAction {
 							
 							throw new RuntimeException(msg);
 						}
+					}
+					else {
+						logger.info(" Close Out Eicr Action not creating Eicr because state = " + state.getCloseOutEicrStatus().getJobStatus());
 					}
 				}
 				else {
