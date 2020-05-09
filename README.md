@@ -65,29 +65,6 @@ The schematron file can be downloaded from https://gforge.hl7.org/gf/project/phe
 
 Change the logfile location to reflect where you want to log the data.
 
-**Frontend:** 
-
-File: eCRNow/frontend/public/config.js
-
-**CLIENT_ID:** This should be the value of **Client Id** received when you registered the app with the specific EHR sandbox.
-
-**SCOPES:** This is a comma seperated list of scopes that was selected as part of the app registration. 
-
-**Client_EndPoint:** Update this value when the application is being deployed to a test or production server with the right URL. To run and test in local machine, you can use the existing value.
-
-```
-var CLIENT_ID = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-var SCOPES = 'launch,online_access,offline_access,user/Patient.read,user/Condition.read';
-var Client_Endpoint = 'http://localhost:8081/';
-var OID = <Assigning Authority for the site>
-```
-
-File: eCRNow/frontend/.env
-
-**PUBLIC_URL:** Update this value when the application is being deployed to a test or production server with the right URL. To run and test in local machine, you can use the existing value.
-
-```PUBLIC_URL=http://localhost:8081```
-
 4. Build the App by running the following maven command.
 
 ```mvn clean install```
@@ -96,13 +73,21 @@ File: eCRNow/frontend/.env
 
 ```java -jar ./target/ecr-now.jar```
 
+6. **App configuration for EHR server:** 
+
+Once the App is up and running, you can access the App configuration screen by launching the URL:
+http://<localhost:8081>/clientDetails o
+Follow the App Configuration Guide present in documents folder to configure the app before using it for testing.
+Only after the app is configured, you will be able to use it for reporting.
+
 ## 3.3 Verification Steps: ##
 To check if you have downloaded the app properly and are being able to run it, follow the steps below.
 
-1. When the Spring Boot App starts up, it parses the eRSD File definition, and the hibernate process will create the following tables in the database.
-* launch_details
-* eicr
-* reportability_response
+1. When the Spring Boot App starts up, it parses the eRSD File definition, and the hibernate process will create the following tables in the database, verify that these tables are present in the database.
+* launch_details --- Maintains the context for each patient for reporting.
+* client_details --- Maintains configuration information for each EHR server.
+* eicr -- Contains each eICR created.
+* reportability_response -- Contains each Reportability Response received from PHA.
 
 This normally finishes in less than 10 seconds.
 
@@ -113,5 +98,5 @@ Once you launch the app with a Patient and Encounter context, the app will kick 
 
 You can verify that the eICR is produced by checking the eICR table in the database. 
 
-**Note:** For testing purposes, we are allowing the same patient and encounter to be used multiple times to help debug, similarly the timing schedules are shortened to less than 10 seconds, and the trigger code matching logic will allow the next step (Creating an eICR for testing purposes) to execute even if the test data does not match the value sets.
+**Note:** For testing purposes, we are allowing the same patient and encounter to be used multiple times to help debug, similarly the timing schedules are shortened to about 10 seconds, and the trigger code matching logic will allow the next step (Creating an eICR for testing purposes) to execute even if the test data does not match the value sets.
 
