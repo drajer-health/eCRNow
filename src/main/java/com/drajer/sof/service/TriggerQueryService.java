@@ -161,6 +161,7 @@ public class TriggerQueryService implements AbstractQueryService {
 				}	
 			}catch(Exception e) {
 				logger.error("Error in getting the MedicationAdministration Data");
+				e.printStackTrace();
 			}
 			
 			

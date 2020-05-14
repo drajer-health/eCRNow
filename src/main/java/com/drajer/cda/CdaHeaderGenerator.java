@@ -26,8 +26,13 @@ import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.model.dstu2.resource.Location;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
+import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
+import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
+import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ParticipantTypeEnum;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
+import ca.uhn.fhir.model.primitive.StringDt;
 
 public class CdaHeaderGenerator {
 	
@@ -103,7 +108,7 @@ public class CdaHeaderGenerator {
 				sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
 			}
 			else {
-				sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
+				sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
 			}
 				
 			sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress()));
@@ -122,7 +127,7 @@ public class CdaHeaderGenerator {
 		}
 		else {
 			
-			sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
+			sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
 			
 			List<AddressDt> addrs = null; 
 			sb.append(CdaFhirUtilities.getAddressXml(addrs));
@@ -181,13 +186,36 @@ public class CdaHeaderGenerator {
 		}
 		else {
 			
+						// ***************
+						// NOTE : THIS IS TEMPORARY --------
+						// For Connectathon testing add defaults, this needs to be removed after connectathon and replaced with the commented out code.
+						// ***************
 			sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
+			sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.CODE_EL_NAME, "OF", "2.16.840.1.113883.5.111", "HL7RoleCode", "Outpatient Facility"));
+			sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));			
+			
+			List<AddressDt> addrs = new ArrayList<AddressDt>();
+			AddressDt addr = new AddressDt();
+			List<StringDt> addrLine = new ArrayList<StringDt>();
+			addrLine.add(new StringDt("0987 Facility Drive"));
+			addr.setLine(addrLine);
+			addr.setCity("alt Lake City");
+			addr.setState("UT");
+			addr.setCountry("US");
+			addr.setPostalCode("84101");
+			addr.setUse(AddressUseEnum.WORK);
+			addrs.add(addr);
+			sb.append(CdaFhirUtilities.getAddressXml(addrs));
+			
+			sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+			
+		/*	sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
 			sb.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
 			
 			sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));				
 			List<AddressDt> addrs = null;
 			sb.append(CdaFhirUtilities.getAddressXml(addrs));		
-			sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+			sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME)); */
 			
 		}
 		
@@ -242,14 +270,42 @@ public class CdaHeaderGenerator {
 		}
 		else {
 			
-			sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
+			// ***************
+			// NOTE : THIS IS TEMPORARY --------
+			// For Connectathon testing add defaults, this needs to be removed after connectathon and replaced with the commented out code.
+			// ***************
+			sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), "UtahOutpatientClinic"));
+			sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, "Utah Outpatient Clinic"));
+			
+			List<ContactPointDt> cps = new ArrayList<ContactPointDt>();
+			ContactPointDt cp = new ContactPointDt();
+			cp.setSystem(ContactPointSystemEnum.PHONE);
+			cp.setUse(ContactPointUseEnum.HOME);
+			cp.setValue("5557770123");
+			cps.add(cp);
+			sb.append(CdaFhirUtilities.getTelecomXml(cps));
+			
+			List<AddressDt> addrs = new ArrayList<AddressDt>();
+			AddressDt addr = new AddressDt();
+			List<StringDt> addrLine = new ArrayList<StringDt>();
+			addrLine.add(new StringDt("0987 Facility Drive"));
+			addr.setLine(addrLine);
+			addr.setCity("alt Lake City");
+			addr.setState("UT");
+			addr.setCountry("US");
+			addr.setPostalCode("84101");
+			addr.setUse(AddressUseEnum.WORK);
+			addrs.add(addr);
+			sb.append(CdaFhirUtilities.getAddressXml(addrs));
+			
+			/* sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
 			sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 					
 			List<ContactPointDt> cps = null; 
 			sb.append(CdaFhirUtilities.getTelecomXml(cps));
 			
 			List<AddressDt> addrs = null; 
-			sb.append(CdaFhirUtilities.getAddressXml(addrs));
+			sb.append(CdaFhirUtilities.getAddressXml(addrs)); */
 			
 			
 		}
@@ -381,6 +437,14 @@ public class CdaHeaderGenerator {
 		}
 		else {
 			patientDetails.append(CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+			
+			if(p.getDeceased() instanceof DateTimeDt) {
+				DateTimeDt d = (DateTimeDt)p.getDeceased();
+				patientDetails.append(CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue().toString()));
+			}
+			else {
+				patientDetails.append(CdaGeneratorUtils.getXmlForNullEffectiveTime(CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
+			}
 		}
 		
 		CodingDt race = CdaFhirUtilities.getCodingExtension(p.getUndeclaredExtensions(), 

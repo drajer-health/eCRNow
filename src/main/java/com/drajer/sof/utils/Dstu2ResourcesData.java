@@ -47,17 +47,12 @@ public class Dstu2ResourcesData {
 		if (!condition.getCode().isEmpty() && condition.getCode() != null) {
 			conditionCodes.add(condition.getCode());
 		}
-		if (!condition.getSeverity().isEmpty() && condition.getSeverity() != null) {
-			conditionCodes.add(condition.getSeverity());
-		}
 		return conditionCodes;
 	}
 
 	private List<CodeableConceptDt> findLaboratoryCodes(Observation observation) {
 		List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
-		if (!observation.getCategory().isEmpty() && observation.getCategory() != null) {
-			observationCodes.add(observation.getCategory());
-		}
+		
 		if (!observation.getCode().isEmpty() && observation.getCode() != null) {
 			observationCodes.add(observation.getCode());
 		}
@@ -66,15 +61,16 @@ public class Dstu2ResourcesData {
 
 	private List<CodeableConceptDt> findMedicationCodes(MedicationAdministration medAdministration) {
 		List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
-		if (!medAdministration.getReasonGiven().isEmpty() && medAdministration.getReasonGiven() != null) {
-			medicationCodes.addAll(medAdministration.getReasonGiven());
-		}
-		if (!medAdministration.getReasonNotGiven().isEmpty() && medAdministration.getReasonNotGiven() != null) {
-			medicationCodes.addAll(medAdministration.getReasonNotGiven());
-		}
+		
 		if (!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
-			CodeableConceptDt medicationCode = (CodeableConceptDt) medAdministration.getMedication();
-			medicationCodes.add(medicationCode);
+			if(medAdministration.getMedication() instanceof CodeableConceptDt) {
+				// Handle Codeable Concept
+				CodeableConceptDt medicationCode = (CodeableConceptDt) medAdministration.getMedication();
+				medicationCodes.add(medicationCode);
+			}
+			else {
+				// Handle Reference data types
+			}
 		}
 		return medicationCodes;
 	}
@@ -89,9 +85,7 @@ public class Dstu2ResourcesData {
 	
 	private List<CodeableConceptDt> findDiagnosticReportCodes(DiagnosticReport diagnosticReport) {
 		List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
-		if (!diagnosticReport.getCategory().isEmpty() && diagnosticReport.getCategory() != null) {
-			diagnosticReportCodes.add(diagnosticReport.getCategory());
-		}
+		
 		if (!diagnosticReport.getCode().isEmpty() && diagnosticReport.getCode() != null) {
 			diagnosticReportCodes.add(diagnosticReport.getCode());
 		}
@@ -99,16 +93,12 @@ public class Dstu2ResourcesData {
 	}
 
 	private List<CodeableConceptDt> findImmunizationCodes(Immunization immunization) {
+		
 		List<CodeableConceptDt> immunizationCodes = new ArrayList<CodeableConceptDt>();
 		if (!immunization.getVaccineCode().isEmpty() && immunization.getVaccineCode() != null) {
 			immunizationCodes.add(immunization.getVaccineCode());
 		}
-		if (!immunization.getSite().isEmpty() && immunization.getSite() != null) {
-			immunizationCodes.add(immunization.getSite());
-		}
-		if (!immunization.getRoute().isEmpty() && immunization.getRoute() != null) {
-			immunizationCodes.add(immunization.getRoute());
-		}
+		
 		return immunizationCodes;
 	}
 
@@ -247,7 +237,7 @@ public class Dstu2ResourcesData {
 		List<MedicationAdministration> medAdministrations = new ArrayList<>();
 		List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
 		// Filter MedicationAdministrations based on Encounter Reference
-		if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+		if (bundle != null && !encounter.getId().getValue().isEmpty() && encounter != null) {
 			for (Entry entry : bundle.getEntry()) {
 				MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
 				if (!medAdministration.getEncounter().isEmpty()) {
@@ -260,7 +250,7 @@ public class Dstu2ResourcesData {
 			}
 			// If Encounter Id is not present using start and end dates to filter
 			// MedicationAdministrations
-		} else {
+		} else if(bundle != null){
 			for (Entry entry : bundle.getEntry()) {
 				MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
 				// Checking If Effective Date is present in MedicationAdministration resource

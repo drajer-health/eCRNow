@@ -1,5 +1,10 @@
 package com.drajer.ecrapp.util;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
@@ -11,12 +16,19 @@ import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.drajer.eca.model.ActionRepo;
+import com.drajer.eca.model.CreateEicrAction;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 
 public class ApplicationUtils {
 	
+	private final static Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
+
 	public static Boolean isCodePresent(Set<ValueSet> valuesets, String code) {
 		Boolean isCodePresent = false;
 		ValueSetExpansionComponent valueSetExpansionComponent;
@@ -129,6 +141,26 @@ public class ApplicationUtils {
 		
 		
 		return t; 
+	}
+	
+	public static void saveDataToFile(String data, String fileName) {
+		
+		FileOutputStream fos;
+		try {
+			
+			logger.error(" Writing eICR data to file: " + fileName);
+			fos = new FileOutputStream(fileName);
+			 DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
+			 outStream.writeUTF(data);
+			 outStream.close();
+		} catch (IOException e) {
+			
+			logger.error(" Unable to write EICR to file: " + fileName);
+			e.printStackTrace();
+			
+		}
+	   
+		
 	}
 
 }

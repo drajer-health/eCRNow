@@ -5,15 +5,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
@@ -99,6 +106,7 @@ public class CdaProblemGenerator {
                 sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
                 sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
+                Boolean triggerCodesAdded = false;
                 for (Condition pr : conds)
                 {
                     // Add the Entries.
@@ -187,6 +195,11 @@ public class CdaProblemGenerator {
                     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
                     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
+                    if(!triggerCodesAdded) {
+                    	sb.append(addTriggerCodes(data,details, pr, onset, abatement));
+                    	triggerCodesAdded = true;
+                    }
+                    
                     // End Tags for Entries
                     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
                     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -200,6 +213,105 @@ public class CdaProblemGenerator {
 		else {
 			
 			sb.append(generateEmptyProblemSection());
+		}
+		
+		return sb.toString();
+		
+	}
+	
+	public static String addTriggerCodes(Dstu2FhirData data, LaunchDetails details, Condition cond, Date onset, Date abatement) {
+		
+		StringBuilder sb = new StringBuilder();
+		
+		logger.info(" Adding Trigger Code Reason for Problem Observation ");
+		
+		ObjectMapper mapper = new ObjectMapper();
+		PatientExecutionState state = null;
+
+		try {
+			state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+		} catch (JsonMappingException e1) {
+			
+			String msg = "Unable to read/write execution state";
+			logger.error(msg);
+			e1.printStackTrace();
+			throw new RuntimeException(msg);
+			
+		} catch (JsonProcessingException e1) {
+			String msg = "Unable to read/write execution state";
+			logger.error(msg);
+			e1.printStackTrace();
+			
+			throw new RuntimeException(msg);
+		}
+		
+		List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+		
+		for(MatchedTriggerCodes mtc : mtcs) {
+			
+			// Add each code as an entry relationship observation
+			
+			if(mtc.hasMatchedTriggerCodes("Condition")) {
+			
+				// Add the Problem Observation
+				sb.append(CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_RSON_CODE));
+				sb.append(CdaGeneratorUtils.getXmlForActWithNegationInd(CdaGeneratorConstants.OBS_ACT_EL_NAME, 
+						CdaGeneratorConstants.OBS_CLASS_CODE, 
+						CdaGeneratorConstants.MOOD_CODE_DEF, "false", true));
+
+				sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID));
+				sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID, CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
+				sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID, CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
+
+
+				sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId().getIdPart()));
+
+
+				sb.append(CdaGeneratorUtils.getXmlForCDWithoutEndTag(CdaGeneratorConstants.CODE_EL_NAME,
+						CdaGeneratorConstants.DIAGNOSIS_SNOMED,
+						CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
+						CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
+						CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
+				sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.TRANSLATION_EL_NAME,
+						CdaGeneratorConstants.DIAGNOSIS_LOINC,
+						CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+						CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+						CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
+				sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
+
+				sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
+						CdaGeneratorConstants.COMPLETED_STATUS));
+
+				sb.append(CdaGeneratorUtils.getXmlForIVL_TS(CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+
+				Set<String> matchedCodes = mtc.getMatchedCodes();
+
+				for(String code : matchedCodes) {
+
+					// Split the system and code.
+					String[] parts = code.split("\\|");
+
+					Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+
+					// For Connectathon, until we get the right test data finish testing.
+					String vs = "2.16.840.1.114222.4.11.7508";
+					String vsVersion = "19/05/2016";
+					sb.append(CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+
+					// Adding one is sufficient, wait for feedback from connectathon.
+					break;
+
+				}
+
+				// End Tag for Entry Relationship
+				sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+				sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+			}
+			else {
+				
+				logger.info(" Not adding matched Trigger codes as they are not present ");
+			}
+				
 		}
 		
 		return sb.toString();

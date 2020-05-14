@@ -145,6 +145,8 @@ public class CdaGeneratorConstants {
     public static String PROB_CONCERN_TEMPLATE_ID_EXT = "2015-08-01";
     public static String PROB_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.4";
     public static String PROB_OBS_TEMPALTE_ID_EXT = "2015-08-01";
+    public static String TRIGGER_CODE_PROB_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.3";
+    public static String TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT = "2016-12-01";
     public static String PROB_CONC_ACT_CODE = "CONC";
     public static String PROB_CONC_ACT_NAME = "Concern";
     public static String PROB_OBS_CODE = "55607006";
@@ -338,6 +340,8 @@ public class CdaGeneratorConstants {
     public static String LAB_RESULTS_ORG_TEMPLATE_ID_EXT = "2015-08-01";
     public static String LAB_RESULTS_ENTRY_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.2";
     public static String LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT = "2015-08-01";
+    public static String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.2";
+    public static String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT = "2016-12-01";
     public static String QRDA_LAB_RESULTS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.40";
     public static String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.38";
     public static String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID_EXT = "2017-08-01";

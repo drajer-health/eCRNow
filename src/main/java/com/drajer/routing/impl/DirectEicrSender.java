@@ -45,7 +45,7 @@ public class DirectEicrSender extends EicrSender {
 	@Override
 	public void sendData(Object context, String data) {
 		
-		logger.info(" Getting ready to send Direct Eicr ");
+		logger.info(" **** START Executing Direct SEND **** ");
 			
 		if (context instanceof LaunchDetails) {
 
@@ -57,23 +57,35 @@ public class DirectEicrSender extends EicrSender {
 			try {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
 			} catch (JsonMappingException e1) {
-				// TODO Auto-generated catch block
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				throw new RuntimeException(msg);
+				
 			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch bloc
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
 				e1.printStackTrace();
+				throw new RuntimeException(msg);
 			}
 		
 			InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 			
 			try {
-				// sendMail(details.getDirectHost(), details.getDirectUser(), details.getDirectPwd(), details.getDirectRecipient(), is, DirectEicrSender.FILE_NAME);
 				
-				// For testing purposes..use site.
+				logger.info(" Sending Mail from " + details.getDirectUser() + " to : " + details.getDirectRecipient());
+				sendMail(details.getDirectHost(), details.getDirectUser(), details.getDirectPwd(), details.getDirectRecipient(), is, DirectEicrSender.FILE_NAME);
 				
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				
+				String msg = "Unable to send Direct Message";
+				logger.error(msg);
+				
 				e.printStackTrace();
+
+				throw new RuntimeException(msg);
 			}
 		}
 		
@@ -90,6 +102,8 @@ public class DirectEicrSender extends EicrSender {
 			props.setProperty("mail.smtp.ssl.trust", "*");
 
 			Session session = Session.getInstance(props, null);
+			
+			logger.info(" Retrieve Session instance for sending Direct mail ");
 
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(username));
@@ -109,44 +123,14 @@ public class DirectEicrSender extends EicrSender {
 			
 			// Send the complete message parts
 			message.setContent(multipart);
+			
+			logger.info(" Completed constructing the Message ");
 			Transport transport = session.getTransport("smtp");
 			transport.connect(host, 25, username, password);
 			transport.sendMessage(message, message.getAllRecipients());
 			transport.close();
+			
+			logger.info(" Finished sending Direct Message ");
 		}
 		
-		public void deleteMail(String host, String username, String password) throws Exception{
-			
-			Properties prop = new Properties();
-			String path = "./application.properties";
-			FileInputStream file = new FileInputStream(path);
-			prop.load(file);
-			file.close();
-			
-			Properties props = new Properties();
-			
-			Session session = Session.getInstance(props, null);
-
-			Store store = session.getStore("imap");
-			int port = Integer.parseInt(prop.getProperty("port"));
-			store.connect(prop.getProperty("host"),port,prop.getProperty("username"), prop.getProperty("password"));
-
-			Folder inbox = store.getFolder("Inbox");
-			inbox.open(Folder.READ_WRITE);
-
-
-			Flags seen = new Flags(Flags.Flag.SEEN);
-			
-			FlagTerm seenFlagTerm = new FlagTerm(seen,true);
-			Message messages[] = inbox.search(seenFlagTerm);
-
-			for (Message message : messages){
-
-				message.setFlag(Flags.Flag.DELETED, true);
-			}
-			
-			inbox.close(true);
-
-		}
-
 }

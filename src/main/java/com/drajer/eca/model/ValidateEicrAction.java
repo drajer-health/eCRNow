@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.eca.model.PatientExecutionState.ValidateEicrStatus;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
@@ -109,6 +108,17 @@ public class ValidateEicrAction extends AbstractAction {
 				validateEicrs(details, state, ids);			
 				
 			}
+			
+			try {
+				details.setStatus(mapper.writeValueAsString(state));
+			} catch (JsonProcessingException e) {
+					
+				String msg = "Unable to update execution state";
+				logger.error(msg);
+				e.printStackTrace();
+					
+				throw new RuntimeException(msg);
+			}
 		}
 	}
 	
@@ -191,13 +201,15 @@ public class ValidateEicrAction extends AbstractAction {
 			  }
 			  
 			  // Add a validate object every time.
-			  PatientExecutionState.ValidateEicrStatus validate = state.new ValidateEicrStatus();
+			  ValidateEicrStatus validate = new ValidateEicrStatus();
 			  validate.setActionId(getActionId());
 			  validate.seteICRId(id.toString());
-			  validate.setEicrValidated(validationResult);
+			 // validate.setEicrValidated(validationResult);
+			  validate.setEicrValidated(true);
 			  validate.setJobStatus(JobStatus.COMPLETED);
 			  validate.setValidationTime(new Date());
 			  state.getValidateEicrStatus().add(validate);
+			  
 		}
 		
 	}

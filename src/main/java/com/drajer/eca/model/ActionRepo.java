@@ -1,5 +1,6 @@
 package com.drajer.eca.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -50,6 +51,8 @@ public class ActionRepo {
 	
 	String 				schematronFileLocation;
 	
+	String 				logFileDirectory;
+	
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
 	public static ActionRepo getInstance() {
@@ -58,7 +61,21 @@ public class ActionRepo {
 		}
 		return instance;
 	}
-	
+		
+	public String getLogFileDirectory() {
+		return logFileDirectory;
+	}
+
+
+	public void setLogFileDirectory(String logFileLocation) {
+		
+		File f = new File(logFileLocation);
+		
+		if(f.getParentFile().isDirectory()) {
+			logFileDirectory = f.getParentFile().getAbsolutePath();
+		}
+	}
+
 	public DirectEicrSender getDirectTransport() {
 		return directTransport;
 	}

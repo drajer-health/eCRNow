@@ -72,6 +72,9 @@ public class WorkflowService {
 	@Value("${schematron.file.location}")
 	String schematronFileLocation;
 	
+	@Value("${logging.file.name}")
+	String logFileLocation;
+	
 	@PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
@@ -81,6 +84,7 @@ public class WorkflowService {
 		ActionRepo.getInstance().setEicrRRService(eicrRRService);
 		ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
 		ActionRepo.getInstance().setDirectTransport(directTansport);
+		ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
 		workflowInstance = this;
 	}
 

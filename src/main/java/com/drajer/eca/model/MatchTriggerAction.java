@@ -120,7 +120,13 @@ public class MatchTriggerAction extends AbstractAction {
 									
 									// For Testing purposes until we get test data assume the data has matched and continue processing.
 									state.getMatchTriggerStatus().setTriggerMatchStatus(true);
-									state.getMatchTriggerStatus().getMatchedCodes().addAll(intersection);
+									
+									// Hardcoded value set and value set version for CONNECTATHON
+									String valueSet = "2.16.840.1.113762.1.4.1146.1123";
+									String valuesetVersion = "1";
+									
+									state.getMatchTriggerStatus().addMatchedCodes(intersection, valueSet, ad.getPath(), valuesetVersion);
+									// state.getMatchTriggerStatus().getMatchedCodes().addAll(intersection);
 								}
 								else {
 									

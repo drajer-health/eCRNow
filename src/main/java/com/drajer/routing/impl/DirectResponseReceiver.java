@@ -1,7 +1,12 @@
 package com.drajer.routing.impl;
 
 import com.drajer.eca.model.CloseOutEicrAction;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.routing.RRReceiver;
+import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -43,46 +48,61 @@ public class DirectResponseReceiver extends RRReceiver {
 	private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class); 
 
 	@Override
-	public Object receiveRespone(Object obj) {
+	public Object receiveRespone(Object context) {
 		
-		// TODO Auto-generated method stub
+		logger.info(" **** START Executing Direct Receive **** ");
+		
+		if (context instanceof LaunchDetails) {
+
+			logger.info(" Obtained Launch Details ");
+			LaunchDetails details = (LaunchDetails) context;
+			ObjectMapper mapper = new ObjectMapper();
+			PatientExecutionState state = null;
+
+			try {
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
+			} catch (JsonMappingException e1) {
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
+				e1.printStackTrace();
+				throw new RuntimeException(msg);
+				
+			} catch (JsonProcessingException e1) {
+				
+				String msg = "Unable to read/write execution state";
+				logger.error(msg);
+				e1.printStackTrace();
+				throw new RuntimeException(msg);
+			}
+			
+			readMail(details, state);
+		}
 		
 		
 		return null;
-	}
+	}	
 	
-	
-
-	
-
-
-	/**
-	 * Reads every unread email and passes the attachment. The mail is marked as read at the end of the transaction.
-	 * 
-	 * @return
-	 */
-	public void readMail() {
+	public void readMail(LaunchDetails details, PatientExecutionState state) {
 
 			try {
 				
 				String mId = null;
 
-				//DirectEicrSender util = new DirectEicrSender();
-				//Reading properties file
-				Properties prop = new Properties();
+				/*Properties prop = new Properties();
 				String path = "./application.properties";
 				FileInputStream file = new FileInputStream(path);
 				prop.load(file);
-				file.close();
+				file.close();*/
 
 				//Properties for Javamail
 				Properties props = new Properties();
 				Session session = Session.getInstance(props, null);
 
 				Store store = session.getStore("imap");
-				int port = Integer.parseInt(prop.getProperty("port"));
+				int port = 143; // Integer.parseInt(prop.getProperty("port"));
 				logger.info("Connecting to IMAP Inbox");
-				store.connect(prop.getProperty("host"),port,prop.getProperty("username"), prop.getProperty("password"));
+				store.connect(details.getDirectHost(),port,details.getDirectUser(), details.getDirectPwd());
 
 				Folder inbox = store.getFolder("Inbox");
 				inbox.open(Folder.READ_WRITE);
@@ -96,6 +116,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
 					logger.info("Found unread emails");
 					Enumeration headers = message.getAllHeaders();
+					
 					while(headers.hasMoreElements()) {
 						Header h = (Header) headers.nextElement();
 						if(h.getName().contains("Message-ID")){
@@ -117,58 +138,52 @@ public class DirectResponseReceiver extends RRReceiver {
 							if (bodyPart.getFileName() != null) {
 								if ((bodyPart.getFileName().contains(".xml") || bodyPart.getFileName().contains(".XML"))){
 									String filename = bodyPart.getFileName();
-								//	String filename = fname.split(".")[0];
+									
 									logger.info("Found XML Attachment");
-									// Query Scorecard war endpoint
-									CloseableHttpClient client = HttpClients.createDefault();
+									
 									FileUtils.writeByteArrayToFile(new File(bodyPart.getFileName()), targetArray);
 									File file1 = new File(bodyPart.getFileName());
-									HttpPost post = new HttpPost(prop.getProperty("endpoint"));
 									FileBody fileBody = new FileBody(file1);
 
-									logger.info("Calling web service");
-									//POST Entity
-									MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-									builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-									builder.addPart("ccdaFile", fileBody);
-									HttpEntity entity = builder.build();
-									post.setEntity(entity);
-
-
-									HttpResponse response = client.execute(post);
-									// Convert response to String
-									InputStream iss = response.getEntity().getContent();
-
-									logger.info("Scoring C-CDA complete");
-									
-								//	InputStream iss = new ByteArrayInputStream(result.getBytes());
-								
-									
-									//Sending email with results
-								//	util.sendMail(prop.getProperty("host"),prop.getProperty("username"), prop.getProperty("password"),senderAddress,iss,filename);
-									logger.info("Email with results sent to "+senderAddress);
+									logger.info(" Need to determine what to do with the response received from :  " + senderAddress);
 								}
-							}
-							
+							}							
 					
 						}
-
 					}
-
-
 				}
 				
-				// util.deleteMail(prop.getProperty("host"),prop.getProperty("username"), prop.getProperty("password"));
-				
+				deleteMail(details.getDirectHost(),details.getDirectUser(), details.getDirectPwd());				
 
 			}  catch (Exception e) {
 
 				e.printStackTrace();
-			}
+			}	
 
-
-
+	}
+	
+	public void deleteMail(String host, String username, String password) throws Exception{
 		
+		Properties props = new Properties();		
+		Session session = Session.getInstance(props, null);
+
+		Store store = session.getStore("imap");
+		int port = 143; // Integer.parseInt(prop.getProperty("port"));
+		store.connect(host, username, password);
+
+		Folder inbox = store.getFolder("Inbox");
+		inbox.open(Folder.READ_WRITE);
+		Flags seen = new Flags(Flags.Flag.SEEN);
+		
+		FlagTerm seenFlagTerm = new FlagTerm(seen,true);
+		Message messages[] = inbox.search(seenFlagTerm);
+
+		for (Message message : messages){
+
+			message.setFlag(Flags.Flag.DELETED, true);
+		}
+		
+		inbox.close(true);
 
 	}
 

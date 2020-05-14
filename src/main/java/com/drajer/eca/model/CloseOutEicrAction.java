@@ -3,6 +3,7 @@ package com.drajer.eca.model;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -230,6 +232,9 @@ public class CloseOutEicrAction extends AbstractAction {
 
 							logger.info(eICR);
 
+							String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
+							                     + LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+							ApplicationUtils.saveDataToFile(eICR, fileName);
 
 							logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 						}

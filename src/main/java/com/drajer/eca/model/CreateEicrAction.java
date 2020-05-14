@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -244,6 +245,10 @@ public class CreateEicrAction extends AbstractAction {
 
 								logger.info(eICR);
 
+								String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CreateEicrAction" 
+					                     + LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+								ApplicationUtils.saveDataToFile(eICR, fileName);
+								
 								logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
 							}
 							else {

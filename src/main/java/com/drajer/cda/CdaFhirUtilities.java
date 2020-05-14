@@ -246,7 +246,7 @@ public class CdaFhirUtilities {
 			addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
 		}
 		
-		
+		logger.info(" Address String = " + addrString.toString());
 		return addrString.toString();
 	}
 	

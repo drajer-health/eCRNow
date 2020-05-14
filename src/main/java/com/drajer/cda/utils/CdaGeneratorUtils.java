@@ -347,8 +347,8 @@ public class CdaGeneratorUtils {
 		else {
 			
 			s += CdaGeneratorConstants.START_XMLTAG + telName + CdaGeneratorConstants.SPACE + "value="
-					+ CdaGeneratorConstants.DOUBLE_QUOTE + "tel:(" + telNo.substring(0, 3) + ")" + telNo.substring(3, 3) + "-"
-					+ telNo.substring(6, 4) + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+					+ CdaGeneratorConstants.DOUBLE_QUOTE + "tel:(" + telNo.substring(0, 3) + ")" + telNo.substring(3, 6) + "-"
+					+ telNo.substring(6, 10) + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
 		}
 
 		return s;
@@ -644,6 +644,60 @@ public class CdaGeneratorUtils {
 					CdaGeneratorConstants.SPACE + "sdtc:valueSet=" + CdaGeneratorConstants.DOUBLE_QUOTE + valueSet + CdaGeneratorConstants.DOUBLE_QUOTE +
 					CdaGeneratorConstants.END_XMLTAG_NEWLN;
 
+			return s;
+		}
+		else if(!StringUtils.isEmpty(displayName))
+		{
+			String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+					CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CD_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "code=" + CdaGeneratorConstants.DOUBLE_QUOTE + code + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "displayName=" + CdaGeneratorConstants.DOUBLE_QUOTE + displayName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+			return s;
+		}
+		else
+		{
+			String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+					CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CD_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "code=" + CdaGeneratorConstants.DOUBLE_QUOTE + code + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+			return s;
+		}
+	}
+	
+	public static String getXmlForValueCDWithValueSetAndVersion(String code, String codeSystem, String codeSystemName, String valueSet, String valuesetVersion, String displayName)
+	{
+		if (!StringUtils.isEmpty(displayName) && !StringUtils.isEmpty(valueSet) && (!StringUtils.isEmpty(valuesetVersion)))
+		{
+			String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+					CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CD_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "code=" + CdaGeneratorConstants.DOUBLE_QUOTE + code + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "displayName=" + CdaGeneratorConstants.DOUBLE_QUOTE + displayName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "sdtc:valueSet=" + CdaGeneratorConstants.DOUBLE_QUOTE + valueSet + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "sdtc:valueSetVersion=" + CdaGeneratorConstants.DOUBLE_QUOTE + valuesetVersion + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+			return s;
+		}
+		else if (!StringUtils.isEmpty(valueSet) && (!StringUtils.isEmpty(valuesetVersion))) {
+			
+			String s = CdaGeneratorConstants.START_XMLTAG + CdaGeneratorConstants.VAL_EL_NAME + CdaGeneratorConstants.SPACE +
+					CdaGeneratorConstants.XSI_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.CD_TYPE + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "code=" + CdaGeneratorConstants.DOUBLE_QUOTE + code + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystem=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystem + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "codeSystemName=" + CdaGeneratorConstants.DOUBLE_QUOTE + codeSystemName + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "sdtc:valueSet=" + CdaGeneratorConstants.DOUBLE_QUOTE + valueSet + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.SPACE + "sdtc:valueSetVersion=" + CdaGeneratorConstants.DOUBLE_QUOTE + valuesetVersion + CdaGeneratorConstants.DOUBLE_QUOTE +
+					CdaGeneratorConstants.END_XMLTAG_NEWLN;
+			
 			return s;
 		}
 		else if(!StringUtils.isEmpty(displayName))
