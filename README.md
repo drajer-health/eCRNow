@@ -95,7 +95,7 @@ This normally finishes in less than 10 seconds.
 
 2. Verification of a SMART App Launch
 
-Register for a client id in an EHR development sandbox and modify the config.js to reflect the client ids, the scopes and the app urls as described previously.
+Register for a client id in an EHR development sandbox and follow the eCR App Configuation step to reflect the client ids, the scopes and the app urls as described previously.
 Once you launch the app with a Patient and Encounter context, the app will kick off its proessing and go through various steps and produce an eICR. 
 
 You can verify that the eICR is produced by checking the eICR table in the database. 
