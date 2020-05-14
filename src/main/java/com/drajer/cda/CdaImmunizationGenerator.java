@@ -31,8 +31,7 @@ public class CdaImmunizationGenerator {
 			
 	        // Generate the component and section end tags
 			sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
-	        sb.append(CdaGeneratorUtils.getXmlForNFSection(CdaGeneratorConstants.SECTION_EL_NAME, 
-	            CdaGeneratorConstants.NF_NI));
+	        sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
 
 	        sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.IMMUNIZATION_SEC_TEMPLATE_ID));
 	        sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.IMMUNIZATION_SEC_TEMPLATE_ID, CdaGeneratorConstants.IMMUNIZATION_SEC_TEMPLATE_ID_EXT));

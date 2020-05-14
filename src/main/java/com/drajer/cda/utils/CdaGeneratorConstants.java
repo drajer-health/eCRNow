@@ -72,6 +72,7 @@ public class CdaGeneratorConstants {
     public static String FHIR_OBSERVATION_CATEGORY_URL = "http://hl7.org/fhir/observation-category";
     public static String FHIR_DIAG_REPORT_CATEGORY = "LAB";
     public static String FHIR_DIAG_REPORT_CATEGORY_URL = "http://hl7.org/fhir/ValueSet/diagnostic-service-sections";
+    public static String FHIR_CVX_URL = "http://hl7.org/fhir/sid/cvx";
        
     public static String FHIR_MR_IDTYPE_CODE = "MR";
     public static String CDA_MALE_CODE = "M";
@@ -771,6 +772,9 @@ public class CdaGeneratorConstants {
     	}
     	else if(url.contentEquals(CdaGeneratorConstants.FHIR_SERVICE_DELIVERY_TYPE_URL)) {
     		return new Pair<String,String>(CdaGeneratorConstants.SERVICE_DELIVERY_LOCATION_CODESYSTEM, CdaGeneratorConstants.SERVICE_DELIVERY_LOCATION_CODESYSTEM_NAME);
+    	}
+    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_CVX_URL)) {
+    		return new Pair<String,String>(CdaGeneratorConstants.CVX_CODESYSTEM_OID, CdaGeneratorConstants.CVX_CODESYSTEM_NAME);
     	}
     	else {
         	return new Pair<String, String>("", "");
