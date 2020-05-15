@@ -150,9 +150,9 @@ public class ApplicationUtils {
 			
 			logger.error(" Writing eICR data to file: " + fileName);
 			fos = new FileOutputStream(fileName);
-			 DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
-			 outStream.writeUTF(data);
-			 outStream.close();
+			DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
+			outStream.writeBytes(data);
+			outStream.close();
 		} catch (IOException e) {
 			
 			logger.error(" Unable to write EICR to file: " + fileName);
