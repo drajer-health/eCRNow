@@ -71,7 +71,7 @@ Change the logfile location to reflect where you want to log the data.
 
 5. Run the App using the following command from the eCRNow project root directory.
 
-```java -jar ./target/ecr-now.jar```
+```java -jar ./target/ecr-now.war```
 
 6. **App configuration for EHR server:** 
 
