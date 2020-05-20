@@ -1,5 +1,7 @@
 package com.drajer.ecrapp.config;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.hl7.fhir.r4.model.ValueSet;
@@ -12,8 +14,9 @@ public class ValueSetSingleton {
 	
 	private Set<ValueSet> covidValueSets;
 	private Set<String>   covidValueSetsAsString;
-	
 	private Set<ValueSet> valueSets;
+	
+	private Map<String, Set<ValueSet>> planDefinitionActions;
 
 	public Set<String> getCovidValueSetsAsString() {
 		return covidValueSetsAsString;
@@ -35,16 +38,21 @@ public class ValueSetSingleton {
 	}
 
 	public Set<ValueSet> getCovidValueSets() {
+		if(covidValueSets== null) {
+			covidValueSets = new HashSet<>();
+		}
 		return covidValueSets;
 	}
 
 	public void setCovidValueSets(Set<ValueSet> covidValueSets) {
 		this.covidValueSets = covidValueSets;
-		
 		this.covidValueSetsAsString = ApplicationUtils.convertValueSetsToString(covidValueSets);
 	}
 
 	public Set<ValueSet> getValueSets() {
+		if(valueSets== null) {
+			valueSets = new HashSet<>();
+		}
 		return valueSets;
 	}
 
@@ -52,6 +60,15 @@ public class ValueSetSingleton {
 		this.valueSets = valueSets;
 	}
 	
+
+	public Map<String, Set<ValueSet>> getPlanDefinitionActions() {
+		return planDefinitionActions;
+	}
+
+	public void setPlanDefinitionActions(Map<String, Set<ValueSet>> planDefinitionActions) {
+		this.planDefinitionActions = planDefinitionActions;
+	}
+
 	private ValueSetSingleton() {
 	}
 	

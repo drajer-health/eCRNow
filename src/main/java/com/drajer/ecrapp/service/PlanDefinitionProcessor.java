@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +27,10 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +52,6 @@ import com.drajer.eca.model.TimingSchedule;
 import com.drajer.eca.model.ValidateEicrAction;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ersd.service.ValueSetService;
-import com.drajer.sof.utils.RefreshTokenScheduler;
 
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -141,8 +138,20 @@ public class PlanDefinitionProcessor {
 								}
 						} else {
 							valueSetService.createValueSetGrouper(valueSet);
+							valuesets.add(valueSet);
 						}
-					} else if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
+					}
+				}
+			}
+			
+			ValueSetSingleton.getInstance().setCovidValueSets(covidValuesets);
+			ValueSetSingleton.getInstance().setValueSets(valuesets);
+			
+			for (BundleEntryComponent bundleEntry : bundleEntries) {
+				
+				if (Optional.ofNullable(bundleEntry).isPresent()) {
+					
+					if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
 						planDefinition = (PlanDefinition) bundleEntry.getResource();
 						actions = planDefinition.getAction();
 											
@@ -221,9 +230,6 @@ public class PlanDefinitionProcessor {
 					}
 				}
 			}
-			
-			ValueSetSingleton.getInstance().setCovidValueSets(covidValuesets);
-			ValueSetSingleton.getInstance().setValueSets(valuesets);
 			
 			if(acts != null) {
 				ActionRepo.getInstance().setActions(acts);

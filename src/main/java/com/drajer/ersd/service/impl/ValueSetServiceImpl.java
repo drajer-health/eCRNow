@@ -1,6 +1,9 @@
 package com.drajer.ersd.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -13,11 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.drajer.ecrapp.config.ValueSetSingleton;
+import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ersd.dao.ValueSetDao;
 import com.drajer.ersd.model.ValueSetGrouperModel;
 import com.drajer.ersd.model.ValueSetModel;
 import com.drajer.ersd.service.ValueSetService;
-import com.drajer.ersd.dao.ValueSetDao;
-import com.drajer.ersd.model.PlanDefinitionActionModel;
 
 import ca.uhn.fhir.parser.IParser;
 
@@ -60,7 +64,7 @@ public class ValueSetServiceImpl implements ValueSetService {
 	
 	}
 
-	@Override
+	/*@Override
 	public void createPlanDefinitionAction(TriggerDefinition triggerDefinition) {
 		PlanDefinitionActionModel model = new PlanDefinitionActionModel();
 		DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();
@@ -73,5 +77,18 @@ public class ValueSetServiceImpl implements ValueSetService {
 		model.setActionValueSetGrouper(codeFilter.getValueSet());
 
 		valueSetDao.createPlanDefinitionActions(model);
+	}*/
+	
+	@Override
+	public void createPlanDefinitionAction(TriggerDefinition triggerDefinition) {
+		DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();
+		DataRequirementCodeFilterComponent codeFilter = dataRequirement.getCodeFilterFirstRep();
+		Map<String, Set<ValueSet>> planDefinitionTriggerMap = new HashMap<String, Set<ValueSet>>();
+		
+		List<CanonicalType> valueSetIdList = ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
+		Set<ValueSet> valueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
+		planDefinitionTriggerMap.put(codeFilter.getPath(), valueSets);
+		
+		ValueSetSingleton.getInstance().setPlanDefinitionActions(planDefinitionTriggerMap);
 	}
 }
