@@ -117,7 +117,7 @@ public class ValidateEicrAction extends AbstractAction {
 			
 			logger.info(" Found eICR with Id " + id  +" to validate ");
 			
-			Boolean validationResult = CdaValidatorUtil.validateEicrToSchematron(ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData());
+			boolean validationResult = CdaValidatorUtil.validateEicrToSchematron(ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData());
 
 			// Add a validate object every time.
 			ValidateEicrStatus validate = new ValidateEicrStatus();
