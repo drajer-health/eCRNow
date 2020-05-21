@@ -76,9 +76,7 @@ class ClientDetails extends Component {
             encounterStartThreshold: this.state.startThreshold,
             encounterEndThreshold: this.state.endThreshold,
             isCovid: this.state.reportType === "covid19" ? true : false,
-            isFullEcr: this.state.reportType === "fullecr" ? true : false,
-            ersdFileLocation: this.state.ersdFileLocation,
-            schematronLocation: this.state.schematronLocation
+            isFullEcr: this.state.reportType === "fullecr" ? true : false
         };
         console.log(this.geturl());
         console.log(JSON.stringify(clientDetails));
@@ -402,24 +400,6 @@ class ClientDetails extends Component {
                                                             </Form.Check>
                                                         </Col>
                                                     </Row>
-                                                </Col>
-                                            </Form.Group>
-
-                                            <Form.Group as={Row} controlId="ersdFile">
-                                                <Form.Label column sm={2}>
-                                                    ERSD File Location:
-                                                </Form.Label>
-                                                <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="ERSD File Location" name="ersdFileLocation" onChange={e => this.handleChange(e)} value={this.state.ersdFileLocation} />
-                                                </Col>
-                                            </Form.Group>
-
-                                            <Form.Group as={Row} controlId="schematronLocation">
-                                                <Form.Label column sm={2}>
-                                                    Schematron Location:
-                                                </Form.Label>
-                                                <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="Schematron Location" name="schematronLocation" onChange={e => this.handleChange(e)} value={this.state.schematronLocation} />
                                                 </Col>
                                             </Form.Group>
                                         </Card.Body>
