@@ -27,20 +27,34 @@ import java.util.List;
 public class CdaValidatorUtil {
 
     public static final Logger logger = LoggerFactory.getLogger(CdaValidatorUtil.class);
+    private static final Schema schema = getSchema();
+
+    static private Schema getSchema(){
+        Schema schema ;
+        try {
+            logger.info("*** Inside getSchema Method ***");
+            schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(ActionRepo.getInstance().getXsdSchemasLocation()));
+        }catch (SAXException e){
+            schema = null;
+            logger.error(" **** Error loading XSD file from the location : "+ActionRepo.getInstance().getXsdSchemasLocation() +" Message: "+e.getMessage());
+        }
+        return schema;
+    }
 
     /**
      * Method validates XML data against xsdFile
      *
      * @param xmlData
-     * @param xsdFilePath
      * @return boolean value
      */
 
-    public static boolean validateEicrXMLData(String xmlData, String xsdFilePath){
+    public static boolean validateEicrXMLData(String xmlData){
         try {
             logger.info(" **** Starting XML validation from xsd **** ");
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new File(xsdFilePath));
+            if(schema == null){
+                logger.error("Message: Error validating XML Data " );
+                return false;
+            }
 
             Validator validator = schema.newValidator();
             // Add a custom ErrorHandler

@@ -225,13 +225,6 @@ public class CloseOutEicrAction extends AbstractAction {
 								}
 							}
 
-							//Validate incoming XML
-							if(StringUtils.isNotEmpty(eICR)) {
-								CdaValidatorUtil.validateEicrXMLData(eICR, ActionRepo.getInstance().getXsdSchemasLocation());
-							}else{
-								logger.info(" **** Skipping Eicr XML Validation **** ");
-							}
-
 							logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
 							logger.info(eICR);

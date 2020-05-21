@@ -234,13 +234,6 @@ public class CreateEicrAction extends AbstractAction {
 									throw new RuntimeException(msg);
 								}
 
-								//Validate incoming XML
-								if(StringUtils.isNotEmpty(eICR)) {
-									CdaValidatorUtil.validateEicrXMLData(eICR, ActionRepo.getInstance().getXsdSchemasLocation());
-								}else{
-									logger.info(" **** Skipping Eicr XML Validation **** ");
-								}
-
 								logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
 								logger.info(eICR);

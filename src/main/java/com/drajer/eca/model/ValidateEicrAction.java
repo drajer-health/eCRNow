@@ -6,6 +6,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,8 +117,15 @@ public class ValidateEicrAction extends AbstractAction {
 		for(Integer id : ids) {
 			
 			logger.info(" Found eICR with Id " + id  +" to validate ");
-			
-			boolean validationResult = CdaValidatorUtil.validateEicrToSchematron(ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData());
+			String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
+			boolean validationResult = CdaValidatorUtil.validateEicrToSchematron(eICR);
+
+			//Validate incoming XML
+			if(StringUtils.isNotEmpty(eICR)) {
+				CdaValidatorUtil.validateEicrXMLData(eICR);
+			}else{
+				logger.info(" **** Skipping Eicr XML Validation: eICR is null**** ");
+			}
 
 			// Add a validate object every time.
 			ValidateEicrStatus validate = new ValidateEicrStatus();
