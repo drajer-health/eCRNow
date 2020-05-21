@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.config;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +16,11 @@ public class ValueSetSingleton {
 	private Set<ValueSet> covidValueSets;
 	private Set<String>   covidValueSetsAsString;
 	private Set<ValueSet> valueSets;
+	private Set<ValueSet> grouperValueSets;
 	
-	private Map<String, Set<ValueSet>> planDefinitionActions;
+	private Map<String, Set<ValueSet>> triggerPathToValueSetsMap;
+	
+	private Map<String, ValueSet> triggerPathToGrouperMap;
 
 	public Set<String> getCovidValueSetsAsString() {
 		return covidValueSetsAsString;
@@ -61,17 +65,36 @@ public class ValueSetSingleton {
 	}
 	
 
-	public Map<String, Set<ValueSet>> getPlanDefinitionActions() {
-		return planDefinitionActions;
+	public Set<ValueSet> getGrouperValueSets() {
+		return grouperValueSets;
 	}
 
-	public void setPlanDefinitionActions(Map<String, Set<ValueSet>> planDefinitionActions) {
-		this.planDefinitionActions = planDefinitionActions;
+	public void setGrouperValueSets(Set<ValueSet> grouperValueSets) {
+		this.grouperValueSets = grouperValueSets;
+	}
+
+	public Map<String, Set<ValueSet>> getTriggerPathToValueSetsMap() {
+		if(triggerPathToValueSetsMap== null) {
+			triggerPathToValueSetsMap = new HashMap<>();
+		}
+		return triggerPathToValueSetsMap;
+	}
+
+	public void setTriggerPathToValueSetsMap(Map<String, Set<ValueSet>> triggerPathToValueSetsMap) {
+		this.triggerPathToValueSetsMap = triggerPathToValueSetsMap;
+	}
+
+	public Map<String, ValueSet> getTriggerPathToGrouperMap() {
+		if(triggerPathToGrouperMap== null) {
+			triggerPathToGrouperMap = new HashMap<>();
+		}
+		return triggerPathToGrouperMap;
+	}
+
+	public void setTriggerPathToGrouperMap(Map<String, ValueSet> triggerPathToGrouperMap) {
+		this.triggerPathToGrouperMap = triggerPathToGrouperMap;
 	}
 
 	private ValueSetSingleton() {
 	}
-	
-	
-
 }

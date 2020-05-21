@@ -49,7 +49,7 @@ public class ApplicationUtils {
 	
 	public static List<CanonicalType> getValueSetListFromGrouper(String grouperId){
 		List<CanonicalType> valueSetIdList = null;
-		for(ValueSet valueset : ValueSetSingleton.getInstance().getValueSets()) {
+		for(ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
 			if(valueset.getId().equals(grouperId)) {
 				if(valueset.getCompose()!=null && valueset.getCompose().getInclude()!=null) {
 					List<ConceptSetComponent> csc = valueset.getCompose().getInclude();
@@ -60,6 +60,16 @@ public class ApplicationUtils {
 			}
 		}
 		return valueSetIdList;
+	}
+	
+	public static ValueSet getValueSetGrouperFromId(String grouperId){
+		ValueSet valueSetGrouper= null;
+		for(ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
+			if(valueset.getId().equals(grouperId)) {
+				valueSetGrouper = valueset;
+			}
+		}
+		return valueSetGrouper;
 	}
 	
 	public static Set<ValueSet> getValueSetByIds(List<CanonicalType> valueSetIdList) {

@@ -103,6 +103,7 @@ public class PlanDefinitionProcessor {
 			List<TriggerDefinition> triggerDefinitionsList = null;
 			Set<ValueSet> covidValuesets = new HashSet<>();
 			Set<ValueSet> valuesets = new HashSet<>();
+			Set<ValueSet> grouperValueSets = new HashSet<>();
 			Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts = new HashMap<EventTypes.EcrActionTypes, Set<AbstractAction> >();
 
 			for (BundleEntryComponent bundleEntry : bundleEntries) {
@@ -138,7 +139,7 @@ public class PlanDefinitionProcessor {
 								}
 						} else {
 							valueSetService.createValueSetGrouper(valueSet);
-							valuesets.add(valueSet);
+							grouperValueSets.add(valueSet);
 						}
 					}
 				}
@@ -146,6 +147,7 @@ public class PlanDefinitionProcessor {
 			
 			ValueSetSingleton.getInstance().setCovidValueSets(covidValuesets);
 			ValueSetSingleton.getInstance().setValueSets(valuesets);
+			ValueSetSingleton.getInstance().setGrouperValueSets(grouperValueSets);
 			
 			for (BundleEntryComponent bundleEntry : bundleEntries) {
 				

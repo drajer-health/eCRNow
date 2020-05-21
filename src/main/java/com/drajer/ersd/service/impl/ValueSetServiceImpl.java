@@ -84,11 +84,16 @@ public class ValueSetServiceImpl implements ValueSetService {
 		DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();
 		DataRequirementCodeFilterComponent codeFilter = dataRequirement.getCodeFilterFirstRep();
 		Map<String, Set<ValueSet>> planDefinitionTriggerMap = new HashMap<String, Set<ValueSet>>();
+		Map<String, ValueSet> triggerPathToGrouperMap = new HashMap<>();
 		
 		List<CanonicalType> valueSetIdList = ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
 		Set<ValueSet> valueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
 		planDefinitionTriggerMap.put(codeFilter.getPath(), valueSets);
 		
-		ValueSetSingleton.getInstance().setPlanDefinitionActions(planDefinitionTriggerMap);
+		ValueSet valuSetGrouper = ApplicationUtils.getValueSetGrouperFromId(codeFilter.getValueSet());
+		triggerPathToGrouperMap.put(codeFilter.getPath(), valuSetGrouper);
+		
+		ValueSetSingleton.getInstance().setTriggerPathToValueSetsMap(planDefinitionTriggerMap);
+		ValueSetSingleton.getInstance().setTriggerPathToGrouperMap(triggerPathToGrouperMap);
 	}
 }
