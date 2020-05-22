@@ -75,12 +75,6 @@ public class ClientDetails {
 	@Column(name = "is_full_ecr", columnDefinition = "boolean default false", nullable = false)
 	private Boolean isFullEcr = false;
 
-	@Column(name = "ersd_file_location", nullable = true, columnDefinition = "TEXT") 
-	private String ersdFileLocation;
-
-	@Column(name = "schematron_location", nullable = true, columnDefinition = "TEXT") 
-	private String schematronLocation;
-
 	public Integer getId() {
 		return id;
 	}
@@ -239,21 +233,5 @@ public class ClientDetails {
 
 	public void setIsFullEcr(Boolean isFullEcr) {
 		this.isFullEcr = isFullEcr;
-	}
-
-	public String getErsdFileLocation() {
-		return ersdFileLocation;
-	}
-
-	public void setErsdFileLocation(String ersdFileLocation) {
-		this.ersdFileLocation = ersdFileLocation;
-	}
-
-	public String getSchematronLocation() {
-		return schematronLocation;
-	}
-
-	public void setSchematronLocation(String schematronLocation) {
-		this.schematronLocation = schematronLocation;
 	}
 }
