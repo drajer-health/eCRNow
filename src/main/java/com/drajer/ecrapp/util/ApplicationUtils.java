@@ -2,7 +2,6 @@ package com.drajer.ecrapp.util;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
@@ -10,17 +9,19 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.eca.model.ActionRepo;
-import com.drajer.eca.model.CreateEicrAction;
+import com.drajer.ecrapp.config.ValueSetSingleton;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
@@ -44,6 +45,50 @@ public class ApplicationUtils {
 			}
 		}
 		return isCodePresent;
+	}
+	
+	public static List<CanonicalType> getValueSetListFromGrouper(String grouperId){
+		List<CanonicalType> valueSetIdList = null;
+		for(ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
+			if(valueset.getId().equals(grouperId)) {
+				if(valueset.getCompose()!=null && valueset.getCompose().getInclude()!=null) {
+					List<ConceptSetComponent> csc = valueset.getCompose().getInclude();
+					for (ConceptSetComponent conceptSetComponent : csc) {
+						valueSetIdList = conceptSetComponent.getValueSet();
+					}
+				}
+			}
+		}
+		return valueSetIdList;
+	}
+	
+	public static ValueSet getValueSetGrouperFromId(String grouperId){
+		ValueSet valueSetGrouper= null;
+		for(ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
+			if(valueset.getId().equals(grouperId)) {
+				valueSetGrouper = valueset;
+			}
+		}
+		return valueSetGrouper;
+	}
+	
+	public static Set<ValueSet> getValueSetByIds(List<CanonicalType> valueSetIdList) {
+		Set<ValueSet> valueSets = new HashSet<>();
+		if (Optional.ofNullable(valueSetIdList).isPresent()) {
+			for(CanonicalType canonicalType : valueSetIdList) {
+				for(ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
+					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())){
+						valueSets.add(valueSet);
+					}
+				}
+				for(ValueSet valueSet : ValueSetSingleton.getInstance().getCovidValueSets()) {
+					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())){
+						valueSets.add(valueSet);
+					}
+				}
+			}
+		}
+		return valueSets;
 	}
 	
 	public static Set<String> convertValueSetsToString(Set<ValueSet> valuesets) { 
