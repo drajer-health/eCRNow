@@ -1,29 +1,19 @@
 package com.drajer.eca.model;
 
-import java.io.StringReader;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.transform.stream.StreamSource;
-
-import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.ecrapp.model.Eicr;
-import com.drajer.sof.model.Dstu2FhirData;
-import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.svrl.jaxb.FailedAssert;
-import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public class ValidateEicrAction extends AbstractAction {
 
@@ -90,7 +80,7 @@ public class ValidateEicrAction extends AbstractAction {
 							// Get the eICR for the Action Completed after which validation has to be run.
 							Set<Integer> ids = state.getEicrIdForCompletedActions(actionId);
 							
-							validateEicrs(details, state, ids);
+							validateEicrs(state, ids);
 							
 						}
 					}
@@ -105,7 +95,7 @@ public class ValidateEicrAction extends AbstractAction {
 				
 				Set<Integer> ids = state.getEicrsReadyForValidation();
 				
-				validateEicrs(details, state, ids);			
+				validateEicrs(state, ids);
 				
 			}
 			
@@ -122,93 +112,30 @@ public class ValidateEicrAction extends AbstractAction {
 		}
 	}
 	
-	public void validateEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+	public void validateEicrs(PatientExecutionState state, Set<Integer> ids) {
 	
 		for(Integer id : ids) {
 			
 			logger.info(" Found eICR with Id " + id  +" to validate ");
-			
-			Eicr ecrToValidate = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
-			
-			Boolean validationResult = false;
-			final ISchematronResource aResSCH = SchematronResourceSCH.fromFile(ActionRepo.getInstance().getSchematronFileLocation());
-			
-			  if (!aResSCH.isValidSchematron ()) {
-			    
-				  logger.info(" *** Cannot Validate since Schematron is not valid *** ");		    
-			  }
-			  else {
-				  
-				  SchematronOutputType output = null;
-				  try {
-					  logger.info(" Found Valid Schematron which can be applied EICR with Id = " + id);
-					  output = aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrToValidate.getData())));
-				  } catch (Exception e) {
-					  	String msg = "Unable to read/write execution state";
-						logger.error(msg);
-						e.printStackTrace();
-						throw new RuntimeException(msg);
-				  }
-				  								  
-				  if(output != null) {
-					  
-					  
-					  //logger.info(" Total # of Failed assertions " + output.getNsPrefixInAttributeValuesCount());
-					  //validationResult = false;
-					  
-					  List<Object> objs = output.getActivePatternAndFiredRuleAndFailedAssert();
-					  Boolean foundFailures = false;
-					  
-					  logger.info(" Number of Failed Assertions " + objs.size());
-					  
-					  for(Object obj : objs) {
-						  
-						  if(obj instanceof FailedAssert) {
-							  
-							  FailedAssert fa = (FailedAssert)obj;
-							  
-							  //if(fa.getRole() != null && 
-								//	  (fa.getRole().contentEquals("fatal") || fa.getRole().contentEquals("error")) ) {
-							  
-							  if(fa.getFlag() != null && (fa.getFlag().contentEquals("error"))) {
-								  
-								  foundFailures = true;
-								  logger.info(" Failed Asertion : Id = " + fa.getId() + " , Location = " + fa.getLocation()
-								  	+ " , Text = " + fa.getText() + ", Flag = " + fa.getFlag());
-								  
-							  }
-							  else {
-								  
-								 //  logger.info("Failed Asertion : Id = " + fa.getId() + ", Flag = " + fa.getFlag());
-								 // It is a warning, so need to print to log for analysis
-							  }							  
-							  
-						  }
-						  
-					  }
-					  
-					  if(foundFailures)
-						  validationResult = false;
-					  else 
-						  validationResult = true;
-				  }					  
-				  else {
-					  
-					  logger.info("Schematron Validation Ouput is null, so validation was not performed ");
-					  validationResult = false;
-				  }
-				  
-			  }
-			  
-			  // Add a validate object every time.
-			  ValidateEicrStatus validate = new ValidateEicrStatus();
-			  validate.setActionId(getActionId());
-			  validate.seteICRId(id.toString());
-			 // validate.setEicrValidated(validationResult);
-			  validate.setEicrValidated(true);
-			  validate.setJobStatus(JobStatus.COMPLETED);
-			  validate.setValidationTime(new Date());
-			  state.getValidateEicrStatus().add(validate);
+			String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
+			boolean validationResult = CdaValidatorUtil.validateEicrToSchematron(eICR);
+
+			//Validate incoming XML
+			if(StringUtils.isNotEmpty(eICR)) {
+				CdaValidatorUtil.validateEicrXMLData(eICR);
+			}else{
+				logger.info(" **** Skipping Eicr XML Validation: eICR is null**** ");
+			}
+
+			// Add a validate object every time.
+			ValidateEicrStatus validate = new ValidateEicrStatus();
+			validate.setActionId(getActionId());
+			validate.seteICRId(id.toString());
+			// validate.setEicrValidated(validationResult);
+			validate.setEicrValidated(true);
+			validate.setJobStatus(JobStatus.COMPLETED);
+			validate.setValidationTime(new Date());
+			state.getValidateEicrStatus().add(validate);
 			  
 		}
 		

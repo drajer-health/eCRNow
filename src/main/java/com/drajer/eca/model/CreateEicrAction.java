@@ -1,22 +1,7 @@
 package com.drajer.eca.model;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-
-import org.hl7.fhir.r4.model.Duration;
-import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-
 import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
@@ -25,10 +10,18 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.sof.service.LaunchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Service
 public class CreateEicrAction extends AbstractAction {
@@ -240,7 +233,7 @@ public class CreateEicrAction extends AbstractAction {
 									
 									throw new RuntimeException(msg);
 								}
-								
+
 								logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
 								logger.info(eICR);

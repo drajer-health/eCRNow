@@ -50,8 +50,10 @@ public class ActionRepo {
 	DirectEicrSender 	directTransport;
 	
 	String 				schematronFileLocation;
-	
-	String 				logFileDirectory;
+
+    String 				logFileDirectory;
+
+    String 				xsdSchemasLocation;
 	
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
@@ -92,7 +94,11 @@ public class ActionRepo {
 		this.schematronFileLocation = schematronFileLocation;
 	}
 
-	public EicrRRService getEicrRRService() {
+    public String getXsdSchemasLocation() { return xsdSchemasLocation; }
+
+    public void setXsdSchemasLocation(String xsdSchemasLocation) { this.xsdSchemasLocation = xsdSchemasLocation; }
+
+    public EicrRRService getEicrRRService() {
 		return eicrRRService;
 	}
 

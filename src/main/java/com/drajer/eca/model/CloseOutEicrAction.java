@@ -1,17 +1,7 @@
 package com.drajer.eca.model;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-
-import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
@@ -23,6 +13,13 @@ import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class CloseOutEicrAction extends AbstractAction {
 

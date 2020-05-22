@@ -74,8 +74,12 @@ public class WorkflowService {
 	
 	@Value("${logging.file.name}")
 	String logFileLocation;
-	
-	@PostConstruct
+
+    @Value("${xsd.schemas.location}")
+    String xsdSchemasLocation;
+
+
+    @PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
 		ActionRepo.getInstance().setTriggerQueryService(triggerQueryService);
@@ -85,7 +89,8 @@ public class WorkflowService {
 		ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
 		ActionRepo.getInstance().setDirectTransport(directTansport);
 		ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
-		workflowInstance = this;
+        ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
+        workflowInstance = this;
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
