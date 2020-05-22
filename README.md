@@ -56,12 +56,21 @@ File: src/main/resources/application.properties
 
 Change the database user name, password to reflect the database that was created in step 2 above. 
 
+*ERSD FILE LOCATION*
+
 Change the ERSD File location to reflect where to find the eRSD file that contains the trigger code definitions.
 The ERSD file can be downloaded by registering for an account at : http://ersd.aimsplatform.org 
 Currently this link only works state-side and if you are out of country, please contact us to figure out how we can get you a copy of it through the right means.
 
+*SCHEMATRON FILE LOCATION*
+
 Change the Schematron File location to reflect where to find the actual eICR Schematron.
 The schematron file can be downloaded from https://gforge.hl7.org/gf/project/pher/scmsvn/?action=browse&path=%2Ftrunk%2FPHCASERPT_eICR%2Fschematron%2F with the appropriate HL7 authorization. 
+
+*SCHEMA FILE LOCATION*
+
+Change the Schematron File location to reflect where to find the actual CDA Schema which has SDTC extensions. The schema has to be downloaded from HL7 as part of the CDA.
+The attribute ```xsd.schemas.location``` has to be set to the CDA XSD with SDTC extensions. 
 
 Change the logfile location to reflect where you want to log the data.
 
