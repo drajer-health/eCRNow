@@ -3,7 +3,7 @@ import {
     Alert,
     Row,
     Col,
-    Form, Card, Accordion
+    Form, Card, Accordion, Button
 } from 'react-bootstrap';
 import './ClientDetails.css';
 import { store } from 'react-notifications-component';
@@ -11,15 +11,62 @@ import { store } from 'react-notifications-component';
 class ClientDetails extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.launchType = 'providerLaunch';
-        this.state.directType = 'direct';
-        this.state.reportType = 'covid19';
+        this.state = {
+            validated: false
+        };
+        this.selectedClientDetails = this.props.selectedClientDetails;
+        this.addNew = this.props.addNew ? this.props.addNew.addNew : false;
+        if (!this.addNew && !this.isEmpty(this.selectedClientDetails)) {
+            if (this.selectedClientDetails.isProvider) {
+                this.state.launchType = 'providerLaunch';
+            }
+            if (this.selectedClientDetails.isSystem) {
+                this.state.launchType = 'systemLaunch';
+            }
+            this.state.clientId = this.selectedClientDetails.clientId;
+            this.state.clientSecret = this.selectedClientDetails.clientSecret;
+            this.state.fhirServerBaseURL = this.selectedClientDetails.fhirServerBaseURL;
+            this.state.tokenEndpoint = this.selectedClientDetails.tokenURL;
+            this.state.scopes = this.selectedClientDetails.scopes;
+            if (this.selectedClientDetails.isDirect) {
+                this.state.directType = 'direct';
+            }
+            if (this.selectedClientDetails.isXdr) {
+                this.state.directType = 'xdr';
+            }
+            this.state.directHost = this.selectedClientDetails.directHost;
+            this.state.directUserName = this.selectedClientDetails.directUser;
+            this.state.directPwd = this.selectedClientDetails.directPwd;
+            this.state.directRecipientAddress = this.selectedClientDetails.directRecipientAddress;
+            this.state.xdrRecipientAddress = this.selectedClientDetails.xdrRecipientAddress;
+            this.state.assigningAuthorityId = this.selectedClientDetails.assigningAuthorityId;
+            this.state.startThreshold = this.selectedClientDetails.encounterStartThreshold;
+            this.state.endThreshold = this.selectedClientDetails.encounterEndThreshold;
+            if (this.selectedClientDetails.isCovid) {
+                this.state.reportType = "covid19";
+            }
+            if (this.selectedClientDetails.isFullEcr) {
+                this.state.reportType = "fullecr";
+            }
+        } else {
+            this.state.launchType = 'providerLaunch';
+            this.state.directType = 'direct';
+            this.state.reportType = 'covid19';
+        }
         this.state.isSaved = false;
         this.saveClientDetails = this.saveClientDetails.bind(this);
         this.handleRadioChange = this.handleRadioChange.bind(this);
         this.handleDirectChange = this.handleDirectChange.bind(this);
         this.handleReportChange = this.handleReportChange.bind(this);
+        this.openClientDetailsList = this.openClientDetailsList.bind(this);
+    }
+
+    isEmpty(obj) {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
     }
 
     handleChange(e) {
@@ -45,6 +92,10 @@ class ClientDetails extends Component {
         });
     }
 
+    openClientDetailsList() {
+        this.props.history.push('clientDetailsList');
+    }
+
     geturl() {
         var protocol, context, host, strurl;
         protocol = window.location.protocol;
@@ -57,6 +108,7 @@ class ClientDetails extends Component {
 
     saveClientDetails() {
         console.log("clicked");
+        var requestMethod = '';
         var clientDetails = {
             isProvider: this.state.launchType === "providerLaunch" ? true : false,
             isSystem: this.state.launchType === 'systemLaunch' ? true : false,
@@ -78,11 +130,17 @@ class ClientDetails extends Component {
             isCovid: this.state.reportType === "covid19" ? true : false,
             isFullEcr: this.state.reportType === "fullecr" ? true : false
         };
+        if (!this.addNew && this.selectedClientDetails) {
+            clientDetails['id'] = this.selectedClientDetails.id;
+            requestMethod = 'PUT';
+        } else {
+            requestMethod = 'POST';
+        }
         console.log(this.geturl());
         console.log(JSON.stringify(clientDetails));
         var serviceURL = this.geturl();
         fetch(serviceURL + "/api/clientDetails", {
-            method: 'POST',
+            method: requestMethod,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -95,6 +153,8 @@ class ClientDetails extends Component {
                     });
                     return response.json();
                 } else {
+                    const errorMessage = response.json();
+                    console.log(errorMessage);
                     store.addNotification({
                         title: '' + response.status + '',
                         message: 'Error in Saving the Client Details',
@@ -149,6 +209,8 @@ class ClientDetails extends Component {
                             onScreen: true
                         }
                     });
+
+                    this.openClientDetailsList();
                 }
 
             });
@@ -156,20 +218,32 @@ class ClientDetails extends Component {
 
     render() {
         const setShow = () => this.setState({ isSaved: false });
+
+        const handleSubmit = (event) => {
+            const form = event.currentTarget;
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            if (form.checkValidity() === true) {
+                this.saveClientDetails();
+                this.setState({
+                    validated: true
+                });
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+        };
         return (
             <div className="clientDetails">
                 <br />
                 <Row>
-                    <Col>
+                    <Col md="6">
                         <h2>Client Details</h2>
                     </Col>
-                    <Col>
-                        <Row>
-                            <Col>
-                            </Col>
-                            <Col>
-                            </Col>
-                        </Row>
+                    <Col md="6" className="clientCol">
+                        <Button onClick={this.openClientDetailsList}>Client Details List</Button>
                     </Col>
                 </Row>
                 <hr />
@@ -183,7 +257,7 @@ class ClientDetails extends Component {
                         >
                             Client Details are saved successfully.
         </Alert>
-                        <Form ref={form => this.messageForm = form}>
+                        <Form noValidate validated={this.state.validated} onSubmit={handleSubmit} >
                             <Accordion defaultActiveKey="0">
                                 <Card className="accordionCards">
                                     <Accordion.Toggle as={Card.Header} eventKey="0">
@@ -217,7 +291,10 @@ class ClientDetails extends Component {
                                                     Client Id:
                                                 </Form.Label>
                                                 <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="ClientId" name="clientId" onChange={e => this.handleChange(e)} value={this.state.clientId} />
+                                                    <Form.Control type="text" placeholder="ClientId" name="clientId" required onChange={e => this.handleChange(e)} value={this.state.clientId} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide a Client Id.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
 
@@ -227,7 +304,10 @@ class ClientDetails extends Component {
                                                         Client Secret:
                                                     </Form.Label>
                                                     <Col sm={10}>
-                                                        <Form.Control type="text" placeholder="Client Secret" name="clientSecret" onChange={e => this.handleChange(e)} value={this.state.clientSecret} />
+                                                        <Form.Control type="text" placeholder="Client Secret" name="clientSecret" required={this.state.launchType === 'systemLaunch' ? true : false} onChange={e => this.handleChange(e)} value={this.state.clientSecret} />
+                                                        <Form.Control.Feedback type="invalid">
+                                                            Please provide a Client Secret.
+                                                        </Form.Control.Feedback>
                                                     </Col>
                                                 </Form.Group>
                                             ) : ''}
@@ -237,7 +317,10 @@ class ClientDetails extends Component {
                                                     Scopes:
                                                 </Form.Label>
                                                 <Col sm={10}>
-                                                    <Form.Control as="textarea" rows="3" name="scopes" onChange={e => this.handleChange(e)} value={this.state.scopes} />
+                                                    <Form.Control as="textarea" rows="3" name="scopes" onChange={e => this.handleChange(e)} required value={this.state.scopes} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide Scopes.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
 
@@ -246,7 +329,10 @@ class ClientDetails extends Component {
                                                     FHIR Server Base URL:
                                                 </Form.Label>
                                                 <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="FHIR Server Base URL" name="fhirServerBaseURL" onChange={e => this.handleChange(e)} value={this.state.fhirServerBaseURL} />
+                                                    <Form.Control type="text" placeholder="FHIR Server Base URL" name="fhirServerBaseURL" required onChange={e => this.handleChange(e)} value={this.state.fhirServerBaseURL} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide a FHIR Server Base URL.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
 
@@ -256,7 +342,11 @@ class ClientDetails extends Component {
                                                         Token Endpoint:
                                                     </Form.Label>
                                                     <Col sm={10}>
-                                                        <Form.Control type="text" placeholder="Token Endpoint" name="tokenEndpoint" onChange={e => this.handleChange(e)} value={this.state.tokenEndpoint} />
+                                                        <Form.Control type="text" placeholder="Token Endpoint" name="tokenEndpoint" required={this.state.launchType === 'systemLaunch' ? true : false} onChange={e => this.handleChange(e)} value={this.state.tokenEndpoint} />
+
+                                                        <Form.Control.Feedback type="invalid">
+                                                            Please provide a FHIR Server Token URL.
+                                                        </Form.Control.Feedback>
                                                     </Col>
                                                 </Form.Group>
                                             ) : ''}
@@ -298,7 +388,10 @@ class ClientDetails extends Component {
                                                             Direct Host:
                                                         </Form.Label>
                                                         <Col sm={10}>
-                                                            <Form.Control type="text" placeholder="Direct Host" name="directHost" onChange={e => this.handleChange(e)} value={this.state.directHost} />
+                                                            <Form.Control type="text" placeholder="Direct Host" name="directHost" required={this.state.directType === 'direct' ? true : false} onChange={e => this.handleChange(e)} value={this.state.directHost} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a Direct Host name.
+                                                            </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
 
@@ -308,7 +401,10 @@ class ClientDetails extends Component {
                                                             Direct Sender User Name:
                                                         </Form.Label>
                                                         <Col sm={10}>
-                                                            <Form.Control type="email" placeholder="Direct Sender User Name" name="directUserName" onChange={e => this.handleChange(e)} value={this.state.directUserName} />
+                                                            <Form.Control type="text" placeholder="Direct Sender User Name" required={this.state.directType === 'direct' ? true : false} name="directUserName" onChange={e => this.handleChange(e)} value={this.state.directUserName} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a Direct Sender User Name.
+                                                            </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
 
@@ -317,7 +413,10 @@ class ClientDetails extends Component {
                                                             Direct Sender Password:
                                                         </Form.Label>
                                                         <Col sm={10}>
-                                                            <Form.Control type="password" name="directPwd" placeholder="Direct Sender Password" onChange={e => this.handleChange(e)} value={this.state.directPwd} />
+                                                            <Form.Control type="password" name="directPwd" placeholder="Direct Sender Password" required={this.state.directType === 'direct' ? true : false} onChange={e => this.handleChange(e)} value={this.state.directPwd} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a Direct Password.
+                                                            </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
 
@@ -326,7 +425,10 @@ class ClientDetails extends Component {
                                                             Direct Recipient Address:
                                                         </Form.Label>
                                                         <Col sm={10}>
-                                                            <Form.Control type="email" name="directRecipientAddress" placeholder="Direct Receipient Address" onChange={e => this.handleChange(e)} value={this.state.directRecipientAddress} />
+                                                            <Form.Control type="text" name="directRecipientAddress" required={this.state.directType === 'direct' ? true : false} placeholder="Direct Receipient Address" onChange={e => this.handleChange(e)} value={this.state.directRecipientAddress} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a Direct Recipient Address.
+                                                            </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
                                                 </div>
@@ -339,7 +441,10 @@ class ClientDetails extends Component {
                                                             XDR Recipient Address:
                                                         </Form.Label>
                                                         <Col sm={10}>
-                                                            <Form.Control type="text" placeholder="XDR Recipient Address" name="xdrRecipientAddress" onChange={e => this.handleChange(e)} value={this.state.xdrRecipientAddress} />
+                                                            <Form.Control type="text" placeholder="XDR Recipient Address" required={this.state.directType === 'xdr' ? true : false} name="xdrRecipientAddress" onChange={e => this.handleChange(e)} value={this.state.xdrRecipientAddress} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a XDR Recipient Address.
+                                                            </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
                                                 </div>
@@ -359,7 +464,10 @@ class ClientDetails extends Component {
                                                     Assigning Authority Id:
                                                 </Form.Label>
                                                 <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="Assigning Authority Id" name="assigningAuthorityId" onChange={e => this.handleChange(e)} value={this.state.assigningAuthorityId} />
+                                                    <Form.Control type="text" placeholder="Assigning Authority Id" required name="assigningAuthorityId" onChange={e => this.handleChange(e)} value={this.state.assigningAuthorityId} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide a Assigning Authority Id.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
 
@@ -368,7 +476,10 @@ class ClientDetails extends Component {
                                                     Encounter Start Time Threshold:
                                                 </Form.Label>
                                                 <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="Encounter Start Time Threshold" name="startThreshold" onChange={e => this.handleChange(e)} value={this.state.startThreshold} />
+                                                    <Form.Control type="text" placeholder="Encounter Start Time Threshold" required name="startThreshold" onChange={e => this.handleChange(e)} value={this.state.startThreshold} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide a Encounter Start Time Threshold.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
 
@@ -377,7 +488,10 @@ class ClientDetails extends Component {
                                                     Encounter End Time Threshold:
                                                 </Form.Label>
                                                 <Col sm={10}>
-                                                    <Form.Control type="text" placeholder="Encounter End Time Threshold" name="endThreshold" onChange={e => this.handleChange(e)} value={this.state.endThreshold} />
+                                                    <Form.Control type="text" placeholder="Encounter End Time Threshold" required name="endThreshold" onChange={e => this.handleChange(e)} value={this.state.endThreshold} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide a Encounter End Time Threshold.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
 
@@ -406,8 +520,13 @@ class ClientDetails extends Component {
                                     </Accordion.Collapse>
                                 </Card>
                             </Accordion>
+                            <Row>
+                                <Col className="text-center">
+                                    <Button type="submit">Save</Button>
+                                </Col>
+                            </Row>
                         </Form>
-                        <Row>
+                        {/* <Row>
                             <Col className="text-center">
                                 <button
                                     className="btn btn-primary submitBtn"
@@ -417,7 +536,7 @@ class ClientDetails extends Component {
                                     Save
                                 </button>
                             </Col>
-                        </Row>
+                        </Row> */}
                     </Col>
                 </Row>
             </div>

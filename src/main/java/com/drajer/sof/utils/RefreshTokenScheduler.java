@@ -1,5 +1,6 @@
 package com.drajer.sof.utils;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
 import com.drajer.sof.service.LaunchService;
@@ -115,6 +117,33 @@ public class RefreshTokenScheduler {
 
 		// getResourcesData(existingAuthDetails);
 
+	}
+	
+	public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
+		JSONObject tokenResponse = null;
+		logger.info("Getting AccessToken for Client: " + clientDetails.getClientId());
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			headers.add("Accept",MediaType.APPLICATION_JSON_VALUE);
+			String authValues = clientDetails.getClientId()+":"+clientDetails.getClientSecret();
+			String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+			headers.add("Authorization", "Basic "+ base64EncodedString);
+			MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+			map.add("grant_type", "client_credentials");
+			map.add("scope", clientDetails.getScopes());
+			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+			ResponseEntity<?> response = restTemplate.exchange(clientDetails.getTokenURL(), HttpMethod.POST, entity,
+					Response.class);
+			tokenResponse = new JSONObject(response.getBody());
+			logger.info("Received AccessToken for Client: " + clientDetails.getClientId());
+			logger.info("Received AccessToken: " + tokenResponse);
+
+		} catch (Exception e) {
+			logger.error("Error in Getting the AccessToken for the client: " + clientDetails.getClientId());
+		}
+		return tokenResponse;
 	}
 
 	private void getResourcesData(LaunchDetails authDetails) {

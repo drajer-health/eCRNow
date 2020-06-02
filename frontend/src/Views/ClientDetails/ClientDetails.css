@@ -8,3 +8,7 @@
 .appConfiguration{
     border-bottom: 1px solid #dddddd;
 }
+
+.clientCol{
+    text-align: right;
+}

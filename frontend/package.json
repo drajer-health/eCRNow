@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.10.0",
     "bootstrap": "^4.4.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
+    "react-notifications-component": "latest",
     "react-router-dom": "latest",
-    "react-notifications-component": "latest"
+    "react-scripts": "3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

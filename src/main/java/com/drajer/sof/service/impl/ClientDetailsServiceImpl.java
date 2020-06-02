@@ -1,5 +1,7 @@
 package com.drajer.sof.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,11 @@ public class ClientDetailsServiceImpl implements ClientDetailsService{
 	public ClientDetails getClientDetailsByUrl(String url) {
 		ClientDetails clientDetails = clientDetailsDao.getClientDetailsByUrl(url);
 		return clientDetails;
+	}
+	
+	public List<ClientDetails> getAllClientDetails() {
+		List<ClientDetails> clientDetailsList = clientDetailsDao.getAllClientDetails();
+		return clientDetailsList;
 	}
 
 }

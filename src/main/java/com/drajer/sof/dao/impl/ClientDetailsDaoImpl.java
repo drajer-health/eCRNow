@@ -1,6 +1,9 @@
 package com.drajer.sof.dao.impl;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +16,7 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
 
 	public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
 		getSession().saveOrUpdate(clientDetails);
-		return null;
+		return clientDetails;
 	}
 
 	public ClientDetails getClientDetailsById(Integer id) {
@@ -26,6 +29,13 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
 		criteria.add(Restrictions.eq("fhirServerBaseURL", url));
 		ClientDetails clientDetails = (ClientDetails) criteria.uniqueResult();
 		return clientDetails;
+	}
+	
+	
+	public List<ClientDetails> getAllClientDetails() {
+		Criteria criteria = getSession().createCriteria(ClientDetails.class);
+		List<ClientDetails> clientDetailsList = criteria.addOrder(Order.desc("id")).list();
+		return clientDetailsList;
 	}
 
 }

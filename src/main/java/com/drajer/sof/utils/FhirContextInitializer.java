@@ -2,9 +2,16 @@ package com.drajer.sof.utils;
 
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import com.drajer.sof.model.LaunchDetails;
 
@@ -62,7 +69,7 @@ public class FhirContextInitializer {
 		logger.info("Initialized the Client");
 		return client;
 	}
-
+	
 	public IBaseResource getResouceById(LaunchDetails authDetails, IGenericClient genericClient, FhirContext context,
 			String resourceName, String resourceId) {
 		IBaseResource resource = null;
@@ -129,7 +136,5 @@ public class FhirContextInitializer {
 
 		return bundleResponse;
 	}
-
 	
-
 }
