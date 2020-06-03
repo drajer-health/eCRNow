@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Duration;
+import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
@@ -88,6 +89,46 @@ public class ApplicationUtils {
 				}
 			}
 		}
+		return valueSets;
+	}
+	
+	public static Set<ValueSet> getCovidValueSetByIds(List<CanonicalType> valueSetIdList) {
+		
+		Set<ValueSet> valueSets = new HashSet<>();
+		
+		if (Optional.ofNullable(valueSetIdList).isPresent()) {
+			for(CanonicalType canonicalType : valueSetIdList) {
+				
+				for(ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
+					
+					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())){
+						
+					
+					List<UsageContext> usageContextList = valueSet.getUseContext();
+					
+					if (!usageContextList.isEmpty()) {
+						
+							for (UsageContext usageContext : usageContextList) {
+								
+								if (Optional.ofNullable(usageContext).isPresent()) {
+									
+									if (usageContext.getValueCodeableConcept() != null && usageContext
+											.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
+										
+										logger.info("Found Grouper to COVID Value Set Mapping, ValueSet Id = : " 
+											        + valueSet.getId());
+										
+										valueSets.add(valueSet);
+									}
+					
+								}
+							}
+					}
+					}
+				}
+			}
+		}
+		
 		return valueSets;
 	}
 	

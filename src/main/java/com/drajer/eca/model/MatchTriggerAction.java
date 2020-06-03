@@ -96,7 +96,9 @@ public class MatchTriggerAction extends AbstractAction {
 						
 						List<ActionData> codePaths = getTriggerData();
 						
-						for(ActionData ad: codePaths) {
+						EcaUtils.matchTriggerCodesForDSTU2(codePaths, dstu2Data, state, details);
+						
+						/* for(ActionData ad: codePaths) {
 							
 							logger.info(" Need to match Trigger Codes for : " + ad.getPath());
 							
@@ -135,7 +137,7 @@ public class MatchTriggerAction extends AbstractAction {
 								}
 								
 							}
-						}
+						}*/
 						
 					}
 					else {

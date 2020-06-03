@@ -1,6 +1,7 @@
 package com.drajer.ersd.service.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,8 @@ import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetComposeComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ import ca.uhn.fhir.parser.IParser;
 
 @Service("valueSetServiceImpl")
 public class ValueSetServiceImpl implements ValueSetService {
+	
+	private final Logger logger = LoggerFactory.getLogger(ValueSetServiceImpl.class);
 	
 	@Autowired
 	@Qualifier("jsonParser")
@@ -81,19 +86,50 @@ public class ValueSetServiceImpl implements ValueSetService {
 	
 	@Override
 	public void createPlanDefinitionAction(TriggerDefinition triggerDefinition) {
+		
+		List<DataRequirement> datareqs = triggerDefinition.getData();
+		
+		Set<ValueSet> grouperToValueSets = new HashSet<ValueSet>();
+		Set<ValueSet> grouperToCovidValueSets = new HashSet<ValueSet>();
+		
+		for(DataRequirement d : datareqs) {
+			
+			DataRequirementCodeFilterComponent codeFilter = d.getCodeFilterFirstRep();
+			
+			logger.info(" Getting Value Set List for Grouper " + codeFilter.getValueSet());
+			
+			List<CanonicalType> valueSetIdList = ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
+			
+			grouperToValueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
+			
+			logger.info(" Size of Value Sets for Grouper : " + grouperToValueSets.size());
+			
+			grouperToCovidValueSets = ApplicationUtils.getCovidValueSetByIds(valueSetIdList);
+			
+			logger.info(" Size of Covid Value Sets for Grouper : " + grouperToCovidValueSets.size());
+			
+		}
+		
 		DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();
 		DataRequirementCodeFilterComponent codeFilter = dataRequirement.getCodeFilterFirstRep();
 		Map<String, Set<ValueSet>> planDefinitionTriggerMap = new HashMap<String, Set<ValueSet>>();
+		
 		Map<String, ValueSet> triggerPathToGrouperMap = new HashMap<>();
 		
 		List<CanonicalType> valueSetIdList = ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
 		Set<ValueSet> valueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
+	//	Set<ValueSet> covidValueSets = ApplicationUtils.getCovidValueSetByIds(valueSetIdList);
 		planDefinitionTriggerMap.put(codeFilter.getPath(), valueSets);
+	//	grouperToValueSets.put(codeFilter.getValueSet(), valueSets);
+	//	grouperToCovidValueSets.put(codeFilter.getValueSet(), valueSets);
+		
 		
 		ValueSet valuSetGrouper = ApplicationUtils.getValueSetGrouperFromId(codeFilter.getValueSet());
 		triggerPathToGrouperMap.put(codeFilter.getPath(), valuSetGrouper);
 		
 		ValueSetSingleton.getInstance().setTriggerPathToValueSetsMap(planDefinitionTriggerMap);
 		ValueSetSingleton.getInstance().setTriggerPathToGrouperMap(triggerPathToGrouperMap);
+		ValueSetSingleton.getInstance().addGrouperToValueSetMap(codeFilter.getValueSet(), grouperToValueSets);
+		ValueSetSingleton.getInstance().addGrouperToCovidValueSetMap(codeFilter.getValueSet(),grouperToCovidValueSets);
 	}
 }

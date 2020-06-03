@@ -118,7 +118,20 @@ public class PlanDefinitionProcessor {
 						if (!usageContextList.isEmpty()) {
 								for (UsageContext usageContext : usageContextList) {
 									if (Optional.ofNullable(usageContext).isPresent()) {
-										if(covid) {
+										
+										if (usageContext.getValueCodeableConcept() != null && usageContext
+												.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
+											System.out.println("Processing value set with id : " + valueSet.getId());
+											valueSetService.createValueSet(valueSet);
+											covidValuesets.add(valueSet);
+											valuesets.add(valueSet);
+										}
+										else {
+											valueSetService.createValueSet(valueSet);
+											valuesets.add(valueSet);
+										}
+										
+										/*if(covid) {
 											if (usageContext.getValueCodeableConcept() != null && usageContext
 													.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
 												System.out.println("Processing value set with id : " + valueSet.getId());
@@ -134,7 +147,7 @@ public class PlanDefinitionProcessor {
 												valuesets.add(valueSet);
 											}
 											
-										}
+										}*/
 									}
 								}
 						} else {
@@ -172,6 +185,8 @@ public class PlanDefinitionProcessor {
 									triggerDefinitionsList = action.getTrigger();
 									
 									if (triggerDefinitionsList != null && triggerDefinitionsList.size() > 0) {
+										
+										logger.info(" Number of Trigger Definitions " + triggerDefinitionsList.size());
 										
 										for (TriggerDefinition triggerDefinition : triggerDefinitionsList) {
 											
@@ -239,6 +254,8 @@ public class PlanDefinitionProcessor {
 				ActionRepo.getInstance().setupTriggerBasedActions();
 				
 				ActionRepo.getInstance().print();
+				
+				ValueSetSingleton.getInstance().print();
 				
 			}
 		}

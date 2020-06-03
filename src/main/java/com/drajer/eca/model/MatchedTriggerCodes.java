@@ -3,6 +3,8 @@ package com.drajer.eca.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections4.SetUtils;
+
 public class MatchedTriggerCodes {
 	
 	private Set<String>				matchedCodes;
@@ -47,6 +49,19 @@ public class MatchedTriggerCodes {
 		else
 			return false;
 		
+	}
+	
+	public void addCodes(Set<String> codes) {
+		
+		if(matchedCodes == null)
+			matchedCodes = new HashSet<String>();
+		
+		if(codes != null) {
+			Set<String> union = SetUtils.union(matchedCodes, codes);
+			
+			matchedCodes = union;
+		}
+			
 	}
 
 }

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 
@@ -77,11 +78,16 @@ public class CdaResultGenerator {
             	String obsDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
             	List<CodingDt> cds = null;
             	if(obs.getCode() != null && 
-                   obs.getCode().getCodingFirstRep() != null && 
-                   !StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getDisplay())) {
+                   obs.getCode().getCodingFirstRep() != null ) {
             		
             		cds = obs.getCode().getCoding();
-                 	obsDisplayName =  obs.getCode().getCodingFirstRep().getDisplay();                		
+            		
+            		if( !StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getDisplay())) {
+            			obsDisplayName =  obs.getCode().getCodingFirstRep().getDisplay();   
+            		}
+            		else if(!StringUtils.isEmpty(obs.getCode().getText())) {
+            			obsDisplayName =  obs.getCode().getText();
+            		}
                 } 
             	
             	Map<String, String> bodyvals = new HashMap<String, String>();
@@ -138,7 +144,7 @@ public class CdaResultGenerator {
                 lrEntry.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID));
                 lrEntry.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID, CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
             
-                lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId().getIdPart()));
+                lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
                 
                 lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
                 
@@ -147,7 +153,20 @@ public class CdaResultGenerator {
                 
                 lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
                 
-                lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(), CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
+                lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+                
+                // Add interpretation code.
+                if( (obs.getInterpretation() != null) && 
+                		(obs.getInterpretation().getCoding() != null) && 
+                		(obs.getInterpretation().getCoding().size() > 0 )) {
+                	
+                	logger.info(" Adding Interpretaion Code ");
+                	List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
+                    cdt.add(obs.getInterpretation());
+                    lrEntry.append(CdaFhirUtilities.getCodeableConceptXml(cdt, CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, false));
+                }
+                	
+               
                 
                 // End Tag for Entry Relationship
                 lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -244,7 +263,7 @@ public class CdaResultGenerator {
 
 				lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
-				lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(), CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
+			//	lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(), CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
 				
 				Set<String> matchedCodes = mtc.getMatchedCodes();
 
@@ -260,7 +279,7 @@ public class CdaResultGenerator {
 					String vsVersion = "19/05/2016";
 					lrEntry.append(CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
 
-					// Adding one is sufficient, wait for feedback from connectathon.
+					// Adding one is sufficient and only one is possible according to Schema.
 					break;
 
 				}

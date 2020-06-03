@@ -7,9 +7,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 public class ValidateErrorHandler implements ErrorHandler {
+	
     public static final Logger logger = LoggerFactory.getLogger(ValidateErrorHandler.class);
 
     public static boolean isException = false;
+    
     public void warning(SAXParseException exception) throws SAXException
     {
         logger.error("Message: Error validating XML Data at Line: "+ exception.getLineNumber()+" Column: "+exception.getColumnNumber() +"; Message: " +exception.getMessage());

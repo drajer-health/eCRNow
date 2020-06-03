@@ -246,7 +246,7 @@ public class CdaFhirUtilities {
 			addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
 		}
 		
-		logger.info(" Address String = " + addrString.toString());
+		// logger.info(" Address String = " + addrString.toString());
 		return addrString.toString();
 	}
 	
@@ -264,7 +264,7 @@ public class CdaFhirUtilities {
 					
 					logger.info(" Found Tel No " + tel.getValue());
 					telString.append(CdaGeneratorUtils.getXmlForTelecom(CdaGeneratorConstants.TEL_EL_NAME, 
-						tel.getValue(), tel.getUse()));
+						tel.getValue(), CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse())));
 					
 					
 					break;
@@ -708,6 +708,18 @@ public class CdaFhirUtilities {
 				else
 					val += getCodingXmlForValue(cds,elName);
 				
+			}
+			else if(dt instanceof CodeableConceptDt) {
+				
+				CodeableConceptDt cd = (CodeableConceptDt)dt;
+				
+				List<CodingDt> cds = cd.getCoding();
+				
+				if(!valFlag)
+					val += getCodingXml(cds,elName);
+				else
+					val += getCodingXmlForValue(cds,elName);
+ 				
 			}
 			else if(dt instanceof QuantityDt) {
 				

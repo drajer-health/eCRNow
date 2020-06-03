@@ -113,7 +113,7 @@ public class DirectEicrSender extends EicrSender {
 			message.setText("eICR Report");
 			BodyPart messageBodyPart = new MimeBodyPart();
 			Multipart multipart = new MimeMultipart();
-			DataSource source = new ByteArrayDataSource(is,"application/xml");
+			DataSource source = new ByteArrayDataSource(is,"application/xml; charset=UTF-8");
 			messageBodyPart.setDataHandler(new DataHandler(source));
 
 			messageBodyPart.setFileName(filename + "_eICRReport.xml");

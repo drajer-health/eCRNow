@@ -118,14 +118,22 @@ public class ValidateEicrAction extends AbstractAction {
 			
 			logger.info(" Found eICR with Id " + id  +" to validate ");
 			String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
-			boolean validationResult = CdaValidatorUtil.validateEicrToSchematron(eICR);
-
+			
 			//Validate incoming XML
 			if(StringUtils.isNotEmpty(eICR)) {
-				CdaValidatorUtil.validateEicrXMLData(eICR);
+				
+				boolean validationResultSchema = CdaValidatorUtil.validateEicrXMLData(eICR);
+				
+				logger.info(" Validation Result from Schema Validation = " + validationResultSchema);
+				
+				
 			}else{
 				logger.info(" **** Skipping Eicr XML Validation: eICR is null**** ");
 			}
+			
+			boolean validationResultSchematron = CdaValidatorUtil.validateEicrToSchematron(eICR);
+			
+			logger.info(" Validation Result from Schema Validation = " + validationResultSchematron);
 
 			// Add a validate object every time.
 			ValidateEicrStatus validate = new ValidateEicrStatus();

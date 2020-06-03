@@ -27,6 +27,7 @@ import java.util.List;
 public class CdaValidatorUtil {
 
     public static final Logger logger = LoggerFactory.getLogger(CdaValidatorUtil.class);
+    
     private static final Schema schema = getSchema();
 
     static private Schema getSchema(){
@@ -49,8 +50,10 @@ public class CdaValidatorUtil {
      */
 
     public static boolean validateEicrXMLData(String xmlData){
+    	
         try {
             logger.info(" **** Starting XML validation from xsd **** ");
+            
             if(schema == null){
                 logger.error("Message: Error validating XML Data " );
                 return false;
@@ -83,6 +86,7 @@ public class CdaValidatorUtil {
      */
 
     public static boolean validateEicrToSchematron(String ecrData) {
+    	
         boolean validationResult = false;
         final ISchematronResource aResSCH = SchematronResourceSCH.fromFile(ActionRepo.getInstance().getSchematronFileLocation());
 
@@ -112,7 +116,8 @@ public class CdaValidatorUtil {
                             logger.info(" Failed Asertion : Id = " + fa.getId() + " , Location = " + fa.getLocation()
                                     + " , Text = " + fa.getText() + ", Flag = " + fa.getFlag());
                         }else {
-                            // It is a warning, so need to print to log for analysis
+                           
+                        	// It is a warning, so need to print to log for analysis
                             //logger.info("Failed Asertion : Id = " + fa.getId() + ", Flag = " + fa.getFlag());
                         }
                     }

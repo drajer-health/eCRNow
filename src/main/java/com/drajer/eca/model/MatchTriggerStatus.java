@@ -41,14 +41,34 @@ public class MatchTriggerStatus extends EicrStatus {
 		this.matchedCodes = matchedCodes;
 	}
 	
+	public MatchedTriggerCodes getMatchedTriggerCodes(String path, String valueSet, String valuesetVersion) {
+		
+		for(MatchedTriggerCodes mtc : matchedCodes) {
+			
+			if(mtc.getMatchedPath().contains(path) &&  
+			   mtc.getValueSet().contains(valueSet) && 
+			   mtc.getValueSetVersion().contains(valuesetVersion) )
+				return mtc;
+		}
+		
+		return null;
+	}
+	
 	public void addMatchedCodes(Set<String> codes, String valueSet, String path, String valuesetVersion) {
 		
-		MatchedTriggerCodes mtc = new MatchedTriggerCodes();
-		mtc.setMatchedCodes(codes);
-		mtc.setValueSet(valueSet);
-		mtc.setValueSetVersion(valuesetVersion);
-		mtc.setMatchedPath(path);
-		matchedCodes.add(mtc);
+		MatchedTriggerCodes mtc = getMatchedTriggerCodes(path, valueSet, valuesetVersion);
+		
+		if(mtc == null) {
+			mtc = new MatchedTriggerCodes();
+			mtc.setMatchedCodes(codes);
+			mtc.setValueSet(valueSet);
+			mtc.setValueSetVersion(valuesetVersion);
+			mtc.setMatchedPath(path);
+			matchedCodes.add(mtc);
+		}
+		else {
+			mtc.addCodes(codes);			
+		}
 	}
 	
 	

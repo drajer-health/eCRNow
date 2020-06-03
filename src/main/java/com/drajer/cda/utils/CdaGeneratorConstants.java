@@ -601,6 +601,7 @@ public class CdaGeneratorConstants {
     public static String STATUS_CODE_EL_NAME = "statusCode";
     public static String VAL_EL_NAME = "value";
     public static String TRANSLATION_EL_NAME = "translation";
+    public static String INTERPRETATION_CODE_EL_NAME = "interpretationCode";
     public static String ORGANIZER_EL_NAME = "organizer";
     public static String CONSUMABLE_EL_NAME = "consumable";
     public static String MAN_PROD_EL_NAME = "manufacturedProduct";
@@ -724,12 +725,12 @@ public class CdaGeneratorConstants {
     public static String VS_TABLE_COL_3_BODY_CONTENT = "vitalSignDate";
     public static String DIAGNOSTICSTUDY_TABLE_COL_1_TITLE = "Diagnostic Study";
     public static String DIAGNOSTICSTUDY_COL_1_BODY_CONTENT = "diagnosticStudy";
-    public static String LABTEST_TABLE_COL_1_TITLE = "Lab Result";
-    public static String LABTEST_TABLE_COL_1_BODY_CONTENT = "labResult";
-    public static String LABTEST_TABLE_COL_2_TITLE = "Lab Result Value";
-    public static String LABTEST_TABLE_COL_2_BODY_CONTENT = "labResultValue";
-    public static String LABTEST_TABLE_COL_3_TITLE = "Lab Result Date";
-    public static String LABTEST_TABLE_COL_3_BODY_CONTENT = "labResultDate";
+    public static String LABTEST_TABLE_COL_1_TITLE = "Lab Test";
+    public static String LABTEST_TABLE_COL_1_BODY_CONTENT = "labTest";
+    public static String LABTEST_TABLE_COL_2_TITLE = "Lab Test Result Value";
+    public static String LABTEST_TABLE_COL_2_BODY_CONTENT = "labTestResultValue";
+    public static String LABTEST_TABLE_COL_3_TITLE = "Lab Test Result Date";
+    public static String LABTEST_TABLE_COL_3_BODY_CONTENT = "labTestResultDate";
     public static String MED_TABLE_COL_1_TITLE = "Medication Name";
     public static String MED_TABLE_COL_1_BODY_CONTENT = "medication";
     public static String MED_TABLE_COL_2_TITLE = "Medication Start Date";
@@ -780,6 +781,30 @@ public class CdaGeneratorConstants {
         	return new Pair<String, String>("", "");
     	}
     	  	
+    }
+    
+    public static String getCodeForTelecomUse(String val) {
+    	
+    	if(!StringUtils.isEmpty(val)) {
+    		
+    		if(val.contentEquals("home")) {
+        		return "H";
+        	}
+        	else if(val.contentEquals("work")) {
+        		return "WP";
+        	}
+        	else if(val.contentEquals("mobile")) {
+        		return "MC";
+        	}
+        	else {
+        		return "WP";
+        	}
+        	
+    	}
+    	else {
+    		return "WP";
+    	}
+    	
     }
 
 }

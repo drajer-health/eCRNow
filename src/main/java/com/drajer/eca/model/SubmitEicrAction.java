@@ -64,7 +64,7 @@ public class SubmitEicrAction extends AbstractAction {
 			
 			String data = "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
 			
-			ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+			//ActionRepo.getInstance().getDirectTransport().sendData(details, data);
 			
 			if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 				

@@ -962,5 +962,15 @@ public class CdaGeneratorUtils {
 		return s;
 	}
 	
-
+	public static String getRootOid(String systemValue, String aaId) {
+		
+		if(systemValue != null &&  systemValue.contains("urn:oid")) {
+		   String sys = systemValue.replace("urn:oid:", "");
+		   return sys;
+		}
+		else {
+			return aaId;
+		}
+	}
+	
 }
