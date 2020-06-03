@@ -103,6 +103,17 @@ public class LaunchDetails {
 	@Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
 	private String directRecipient;
 	
+	@Column(name = "is_covid19", columnDefinition = "boolean default true", nullable = false)
+	private Boolean isCovid = true;
+	
+	public Boolean getIsCovid() {
+		return isCovid;
+	}
+
+	public void setIsCovid(Boolean isCovid) {
+		this.isCovid = isCovid;
+	}
+
 	public String getDirectHost() {
 		return directHost;
 	}
