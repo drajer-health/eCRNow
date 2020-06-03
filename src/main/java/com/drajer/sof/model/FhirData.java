@@ -19,7 +19,7 @@ public abstract class FhirData {
 	List<CodeableConcept> r4ConditionCodes;
 	List<CodeableConcept> r4LabResultCodes;
 	List<CodeableConcept> r4MedicationCodes;
-	List<CodeableConcept> r4DiagnosticOrderCodes;
+	List<CodeableConcept> r4ServiceRequestCodes;
 	List<CodeableConcept> r4EncounterCodes;
 	List<CodeableConcept> r4ImmunizationCodes;
 	List<CodeableConcept> r4DiagnosticReportCodes;
@@ -127,12 +127,12 @@ public abstract class FhirData {
 		this.r4MedicationCodes = r4MedicationCodes;
 	}
 
-	public List<CodeableConcept> getR4DiagnosticOrderCodes() {
-		return r4DiagnosticOrderCodes;
+	public List<CodeableConcept> getR4ServiceRequestCodes() {
+		return r4ServiceRequestCodes;
 	}
 
-	public void setR4DiagnosticOrderCodes(List<CodeableConcept> r4DiagnosticOrderCodes) {
-		this.r4DiagnosticOrderCodes = r4DiagnosticOrderCodes;
+	public void setR4ServiceRequestCodes(List<CodeableConcept> r4ServiceRequestCodes) {
+		this.r4ServiceRequestCodes = r4ServiceRequestCodes;
 	}
 
 	public List<CodeableConcept> getR4EncounterCodes() {

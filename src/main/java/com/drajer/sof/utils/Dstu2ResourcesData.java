@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.service.TriggerQueryService;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
@@ -33,6 +36,8 @@ public class Dstu2ResourcesData {
 
 	@Autowired
 	FhirContextInitializer resourceData;
+	
+	private final Logger logger = LoggerFactory.getLogger(Dstu2ResourcesData.class);
 
 	private List<CodeableConceptDt> findEncounterCodes(Encounter encounter) {
 		List<CodeableConceptDt> encounterCodes = new ArrayList<CodeableConceptDt>();
@@ -384,11 +389,11 @@ public class Dstu2ResourcesData {
 				}
 			}
 			// If Encounter Id is not present using start and end dates to filter
-			// DiagnosticOrders
+			// DiagnosticReports
 		} else {
 			for (Entry entry : bundle.getEntry()) {
 				DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
-				// Checking If Issued Date is present in Observation resource
+				// Checking If Issued Date is present in DiagnosticReport resource
 				if (diagnosticReport.getIssued() != null) {
 					if (diagnosticReport.getIssued().after(start) && diagnosticReport.getIssued().before(end)) {
 						diagnosticReports.add(diagnosticReport);

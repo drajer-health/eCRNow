@@ -17,6 +17,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
+import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder;
 import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
@@ -182,17 +183,19 @@ public class LoadingQueryDstu2Bundle {
 		// Add to the bundle
 		// As you are adding to the bundle within Fhir Data, add the codeable concept
 		// also to the list of diagnosticOrderCodes.
-		/*
-		 * try { logger.info("Get DiagnosticOrder Data"); List<DiagnosticOrder>
-		 * diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context,
-		 * client, launchDetails, dstu2FhirData, encounter, start, end);
-		 * System.out.println("Filtered DiagnosticOrders----------->"
-		 * +diagnosticOrdersList.size()); for(DiagnosticOrder diagnosticOrder:
-		 * diagnosticOrdersList) { Entry diagnosticOrderEntry= new
-		 * Entry().setResource(diagnosticOrder); bundle.addEntry(diagnosticOrderEntry);
-		 * } }catch(Exception e) {
-		 * logger.error("Error in getting the DiagnosticOrder Data"); }
-		 */
+
+		try {
+			logger.info("Get DiagnosticOrder Data");
+			List<DiagnosticOrder> diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			System.out.println("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+			for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
+				Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
+				bundle.addEntry(diagnosticOrderEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting the DiagnosticOrder Data");
+		}
 
 		// Get Immunizations for Patients and laboratory category (Write a method).
 		// Filter the Immunizations based on encounter Reference if encounter is
@@ -238,12 +241,10 @@ public class LoadingQueryDstu2Bundle {
 		logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
 		logger.info("Immunization Codes Size=====>" + dstu2FhirData.getImmuniationCodes().size());
 		logger.info("DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-		// logger.info("DiagnosticOrders Codes
-		// Size=====>"+dstu2FhirData.getDiagnosticOrderCodes().size());
+		//logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
 
-		
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
-		
+
 		return bundle;
 	}
 

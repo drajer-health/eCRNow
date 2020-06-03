@@ -1,5 +1,7 @@
 package com.drajer.sof.dao.impl;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.drajer.ecrapp.dao.AbstractDao;
@@ -17,6 +19,15 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 	public LaunchDetails getAuthDetailsById(Integer id) {
 		LaunchDetails authDetails = (LaunchDetails) getSession().get(LaunchDetails.class, id);
 		return authDetails;
+	}
+
+	public LaunchDetails getLaunchDetailsByPatientAndEncounter(String patient, String encounter,String fhirServerUrl) {
+		Criteria criteria = getSession().createCriteria(LaunchDetails.class);
+		criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
+		criteria.add(Restrictions.eq("launchPatientId", patient));
+		criteria.add(Restrictions.eq("encounterId", encounter));
+		LaunchDetails launchDetails = (LaunchDetails) criteria.uniqueResult();
+		return launchDetails;
 	}
 
 }

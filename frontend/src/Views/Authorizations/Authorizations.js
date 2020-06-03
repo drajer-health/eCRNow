@@ -240,7 +240,8 @@ class Authorizations extends Component {
       startDate: Date.parse(this.state.encounterStartDate),
       endDate: Date.parse(this.state.encounterEndDate),
       directHost: this.clientDetails.directHost,
-      directRecipient: this.clientDetails.directRecipientAddress
+      directRecipient: this.clientDetails.directRecipientAddress,
+      isCovid: this.clientDetails.isCovid
     };
     console.log(clientInfo);
 

@@ -7,4 +7,6 @@ public interface LaunchService {
 	LaunchDetails saveOrUpdate(LaunchDetails authDetails);
 	
 	LaunchDetails getAuthDetailsById(Integer id);
+	
+	LaunchDetails getLaunchDetailsByPatientAndEncounter(String patient, String encounter,String fhirServerUrl);
 }

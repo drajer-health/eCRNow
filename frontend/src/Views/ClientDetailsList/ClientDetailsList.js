@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {
-    Alert,
     Row,
-    Col,
-    Form, Card, Accordion, Button, Table, OverlayTrigger, Tooltip
+    Col, Button, Table, OverlayTrigger, Tooltip
 } from 'react-bootstrap';
 import './ClientDetailsList.css';
 import { store } from 'react-notifications-component';
@@ -41,7 +39,7 @@ class ClientDetailsList extends Component {
             method: 'GET'
         }).then(response => {
             console.log(response);
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 store.addNotification({
                     title: '' + response.status + '',
                     message: 'Error in getting the Client Details',

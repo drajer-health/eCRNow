@@ -105,7 +105,6 @@ public class FhirContextInitializer {
 		} catch (Exception e) {
 			logger.info("Error in getting " + resourceName + " resource by Patient Id: "
 					+ authDetails.getLaunchPatientId());
-			e.printStackTrace();
 		}
 
 		return bundleResponse;

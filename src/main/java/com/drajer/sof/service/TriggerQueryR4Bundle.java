@@ -16,6 +16,7 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,25 +175,27 @@ public class TriggerQueryR4Bundle {
 			e.printStackTrace();
 		}
 
-		// Get DiagnosticOrders for Patients (Write a method).
-		// Filter the Diagnostic Orders based on encounter Reference if encounter is
+		// Get ServiceRequest for Patients (Write a method).
+		// Filter the ServiceReques based on encounter Reference if encounter is
 		// present.
 		// If encounter is not present, then filter based on times (Start and end, if
-		// diagnostic order time is between start and end times) -- Do this later.
+		// ServiceRequest time is between start and end times) -- Do this later.
 		// Add to the bundle
 		// As you are adding to the bundle within Fhir Data, add the codeable concept
-		// also to the list of diagnosticOrderCodes.
-		/*
-		 * try { logger.info("Get DiagnosticOrder Data"); List<DiagnosticOrder>
-		 * diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context,
-		 * client, launchDetails, dstu2FhirData, encounter, start, end);
-		 * logger.info("Filtered DiagnosticOrders----------->"
-		 * +diagnosticOrdersList.size()); for(DiagnosticOrder diagnosticOrder:
-		 * diagnosticOrdersList) { Entry diagnosticOrderEntry= new
-		 * Entry().setResource(diagnosticOrder); bundle.addEntry(diagnosticOrderEntry);
-		 * } }catch(Exception e) {
-		 * logger.error("Error in getting the DiagnosticOrder Data"); }
-		 */
+		// also to the list of ServiceRequestCodes.
+
+		try {
+			logger.info("Get ServiceRequest Data");
+			List<ServiceRequest> serviceRequestsList = r4ResourcesData.getServiceRequestData(context, client,
+					launchDetails, r4FhirData, encounter, start, end);
+			logger.info("Filtered ServiceRequests----------->" + serviceRequestsList.size());
+			for (ServiceRequest serviceRequest : serviceRequestsList) {
+				BundleEntryComponent serviceRequestEntry = new BundleEntryComponent().setResource(serviceRequest);
+				bundle.addEntry(serviceRequestEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting the ServiceRequest Data");
+		}
 
 		// Setting bundle to FHIR Data
 		logger.info("------------------------------CodeableConcept Codes------------------------------");
@@ -200,8 +203,7 @@ public class TriggerQueryR4Bundle {
 		logger.info("Conditions Codes Size=====>" + r4FhirData.getR4ConditionCodes().size());
 		logger.info("Observation Codes Size=====>" + r4FhirData.getR4LabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
-		// logger.info("DiagnosticOrders Codes
-		// Size=====>"+dstu2FhirData.getDiagnosticOrderCodes().size());
+		logger.info("ServiceRequests Codes Size=====>"+r4FhirData.getR4ServiceRequestCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 

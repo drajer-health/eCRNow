@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -361,6 +362,59 @@ public class R4ResourcesData {
 		}
 		r4FhirData.setR4ImmunizationCodes(immunizationCodes);
 		return immunizations;
+	}
+	
+	private List<CodeableConcept> findServiceRequestCodes(ServiceRequest serviceRequest) {
+		List<CodeableConcept> serviceRequestCodes = new ArrayList<CodeableConcept>();
+		if (!serviceRequest.getCode().isEmpty() && serviceRequest.getCode() != null) {
+			serviceRequestCodes.add(serviceRequest.getCode());
+		}
+		return serviceRequestCodes;
+	}
+
+	public List<ServiceRequest> getServiceRequestData(FhirContext context, IGenericClient client,
+			LaunchDetails launchDetails, R4FhirData r4FhirData, Encounter encounter, Date start, Date end) {
+		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
+		List<ServiceRequest> serviceRequests = new ArrayList<>();
+		List<CodeableConcept> serviceRequestCodes = new ArrayList<CodeableConcept>();
+		// Filter ServiceRequests based on Encounter Reference
+		if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+			for (BundleEntryComponent entry : bundle.getEntry()) {
+				ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
+				if (!serviceRequest.getEncounter().isEmpty()) {
+					if (serviceRequest.getEncounter().getReferenceElement().getIdPart()
+							.equals(encounter.getIdElement().getIdPart())) {
+						serviceRequests.add(serviceRequest);
+						serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+					}
+				}
+			}
+			// If Encounter Id is not present using start and end dates to filter
+			// ServiceRequests
+		} else {
+			for (BundleEntryComponent entry : bundle.getEntry()) {
+				ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
+				// Checking If Immunization DateTime is present in Immunization
+				// resource
+				if (serviceRequest.getOccurrenceDateTimeType() != null) {
+					if (serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
+							&& serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().before(end)) {
+						serviceRequests.add(serviceRequest);
+						serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+					}
+				}
+				// If ServiceRequest Date is not present looking for LastUpdatedDate
+				else {
+					Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
+					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+						serviceRequests.add(serviceRequest);
+						serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+					}
+				}
+			}
+		}
+		r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
+		return serviceRequests;
 	}
 
 }

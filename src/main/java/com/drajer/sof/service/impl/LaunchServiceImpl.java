@@ -24,4 +24,8 @@ public class LaunchServiceImpl implements LaunchService{
 		return authDetailsDao.getAuthDetailsById(id);
 	}
 
+	public LaunchDetails getLaunchDetailsByPatientAndEncounter(String patient, String encounter, String fhirServerUrl) {
+		return authDetailsDao.getLaunchDetailsByPatientAndEncounter(patient, encounter, fhirServerUrl);
+	}
+
 }
