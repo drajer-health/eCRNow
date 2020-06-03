@@ -240,10 +240,10 @@ class ClientDetails extends Component {
                 <br />
                 <Row>
                     <Col md="6">
-                        <h2>Client Details</h2>
+                        <h2>Client Details Configuration</h2>
                     </Col>
                     <Col md="6" className="clientCol">
-                        <Button onClick={this.openClientDetailsList}>Client Details List</Button>
+                        <Button onClick={this.openClientDetailsList}>Existing Client Details</Button>
                     </Col>
                 </Row>
                 <hr />
