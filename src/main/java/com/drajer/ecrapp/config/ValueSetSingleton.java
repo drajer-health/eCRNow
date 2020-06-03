@@ -216,7 +216,7 @@ public class ValueSetSingleton {
 				
 				logger.info(" Creating new entry and adding Covid value sets for Grouper  " + grouper + " Size = " + vs.size());
 				
-				grouperToValueSetMap.put(grouper, vs);
+				grouperToCovidValueSetMap.put(grouper, vs);
 				
 			}
 			
