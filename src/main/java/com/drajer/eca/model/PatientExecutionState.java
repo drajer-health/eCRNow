@@ -13,6 +13,7 @@ public class PatientExecutionState {
 	MatchTriggerStatus 				matchTriggerStatus;
 	CreateEicrStatus				createEicrStatus;
 	Set<PeriodicUpdateEicrStatus>   periodicUpdateStatus;
+	EventTypes.JobStatus    		periodicUpdateJobStatus;
 	CloseOutEicrStatus				closeOutEicrStatus;
 	Set<ValidateEicrStatus> 		validateEicrStatus;
 	Set<SubmitEicrStatus>			submitEicrStatus;
@@ -35,6 +36,8 @@ public class PatientExecutionState {
 		
 		submitEicrStatus = new HashSet<SubmitEicrStatus>();
 		
+		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
+		
 	}
 	
 	public PatientExecutionState() {
@@ -55,6 +58,16 @@ public class PatientExecutionState {
 		
 		submitEicrStatus = new HashSet<SubmitEicrStatus>();
 		
+		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
+		
+	}
+
+	public EventTypes.JobStatus getPeriodicUpdateJobStatus() {
+		return periodicUpdateJobStatus;
+	}
+
+	public void setPeriodicUpdateJobStatus(EventTypes.JobStatus periodicUpdateJobStatus) {
+		this.periodicUpdateJobStatus = periodicUpdateJobStatus;
 	}
 
 	public String getPatientId() {

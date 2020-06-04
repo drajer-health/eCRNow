@@ -174,10 +174,45 @@ public class WorkflowService {
 		
 		logger.info(" ***** START EXECUTING EICR WORKFLOW ***** ");
 		
-		ActionRepo repo = ActionRepo.getInstance();
-		executeActionsForType(details,EcrActionTypes.MATCH_TRIGGER);
-		executeActionsForType(details,EcrActionTypes.CREATE_EICR);			
-		executeActionsForType(details,EcrActionTypes.CLOSE_OUT_EICR);	
+		ObjectMapper mapper = new ObjectMapper();
+		PatientExecutionState state = null;
+		
+		try {
+			state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+		} catch (JsonMappingException e1) {
+
+			String msg = "Unable to read/write execution state";
+			logger.error(msg);
+			e1.printStackTrace();
+			
+			throw new RuntimeException(msg);
+			
+		} catch (JsonProcessingException e1) {
+			
+			String msg = "Unable to read/write execution state";
+			logger.error(msg);
+			e1.printStackTrace();
+			
+			throw new RuntimeException(msg);
+		}
+		
+		if(state.getMatchTriggerStatus().getJobStatus() != JobStatus.COMPLETED) {
+			executeActionsForType(details,EcrActionTypes.MATCH_TRIGGER);
+		}
+		
+		if(state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
+			executeActionsForType(details,EcrActionTypes.CREATE_EICR);	
+		}
+		
+		if(state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED &&
+		   state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED ) {
+			executeActionsForType(details,EcrActionTypes.PERIODIC_UPDATE_EICR);
+		}
+		
+		if(state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
+			executeActionsForType(details,EcrActionTypes.CLOSE_OUT_EICR);
+		}
+		
 		executeActionsForType(details,EcrActionTypes.VALIDATE_EICR);	
 		executeActionsForType(details,EcrActionTypes.SUBMIT_EICR);
 		
@@ -251,9 +286,9 @@ public class WorkflowService {
 
 	public static void scheduleJob(Integer launchDetailsId, TimingSchedule ts, EcrActionTypes actionType) {
 		
-		Instant t = new Date().toInstant().plusSeconds(10);
+		Instant t = ApplicationUtils.convertTimingScheduleToInstant(ts);
 		
-		ActionRepo.getInstance().getTaskScheduler().schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), new Date().toInstant().plusSeconds(10));
+		ActionRepo.getInstance().getTaskScheduler().schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 		
 		logger2.info("Job Scheduled for Action to executate for : " + actionType + " at time : " + t.toString());
 		
@@ -264,7 +299,6 @@ public class WorkflowService {
 		
 		Instant t = ApplicationUtils.convertDurationToInstant(d);
 		
-		final WorkflowService ws = new WorkflowService();
 		ActionRepo.getInstance().getTaskScheduler().schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 		
 		logger2.info("Job Scheduled for Action to executate for : " + actionType + " at time : " + t.toString());

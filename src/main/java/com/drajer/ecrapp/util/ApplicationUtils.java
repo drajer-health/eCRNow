@@ -22,6 +22,7 @@ import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
@@ -185,6 +186,39 @@ public class ApplicationUtils {
 		return retVal;
 	}
 	
+	public static Instant convertTimingScheduleToInstant(TimingSchedule ts) {
+		
+		Instant t = null;
+		
+		Duration d = new Duration();
+		
+		
+			if(ts.getDurationUnit() != null) {
+				
+				logger.info("Found Duration for Timing Schedule");
+				logger.info(" Duration = " + ts.getDuration());
+				logger.info(" Duration = " + ts.getDurationUnit());
+				d.setValue(ts.getDuration());
+				d.setUnit(ts.getDurationUnit().toString());
+			}
+			else if(ts.getFrequencyPeriodUnit() != null){
+				
+				logger.info("Found Frequency for Timing Schedule ");
+				d.setValue(ts.getFrequencyPeriod());
+				d.setUnit(ts.getFrequencyPeriodUnit().toString());
+			}
+			else {
+				
+				d.setValue(0);
+				d.setUnit("s");
+			}
+		
+			t = convertDurationToInstant(d);
+	
+		return t;
+	}
+		
+	
 	public static Instant convertDurationToInstant(Duration d) {
 		
 		Instant t = null;
@@ -220,7 +254,7 @@ public class ApplicationUtils {
 			}
 			else {
 				
-				t = new Date().toInstant();
+				t = new Date().toInstant().plusSeconds(d.getValue().longValue());;
 				
 			}
 		}

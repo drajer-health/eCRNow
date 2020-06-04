@@ -42,6 +42,7 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.CQLExpressionCondition;
 import com.drajer.eca.model.CloseOutEicrAction;
 import com.drajer.eca.model.CreateEicrAction;
+import com.drajer.eca.model.CreateEicrAfterReheckAction;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.MatchTriggerAction;
@@ -213,6 +214,15 @@ public class PlanDefinitionProcessor {
 									populateActionData(mta, acts, action, EcrActionTypes.PERIODIC_UPDATE_EICR);
 									
 								}
+								else if(action.getId().equals("create-eicr-after-recheck")) {
+									
+									logger.info(" Identified Create EICR After Recheck Action ");
+									
+									CreateEicrAfterReheckAction cra = new CreateEicrAfterReheckAction();
+									
+									populateActionData(cra, acts, action, EcrActionTypes.CREATE_EICR_AFTER_RECHECK);
+									
+								}
 								else if(action.getId().equals("close-out-eicr")) {
 									
 									logger.info(" Identified Close Out EICR Action ");
@@ -253,9 +263,9 @@ public class PlanDefinitionProcessor {
 				
 				ActionRepo.getInstance().setupTriggerBasedActions();
 				
-				ActionRepo.getInstance().print();
+				// ActionRepo.getInstance().print();
 				
-				ValueSetSingleton.getInstance().print();
+				// ValueSetSingleton.getInstance().print();
 				
 			}
 		}
@@ -298,9 +308,13 @@ public class PlanDefinitionProcessor {
 			processRelatedActions(action.getRelatedAction(), act, acts);
 		
 		if(action.hasTimingTiming()) {
+			
+			logger.info(" Found Timing Element for Action " + act.getActionId());
 			TimingSchedule ts = getTimingSchedule(action.getTimingTiming(), TriggerType.DATACHANGED);
-			if(ts != null)
+			if(ts != null) {
 				act.addTimingData(ts);
+				ts.print();
+			}
 		}
 		
 		if(acts.containsKey(type)) {
@@ -348,8 +362,10 @@ public class PlanDefinitionProcessor {
 							
 							DataRequirementCodeFilterComponent cf =  d.getCodeFilterFirstRep();
 							
-							if(cf.hasPath())
-								ad.setPath(cf.getPath());
+							if(cf.hasPath()) {
+								ad.setPath(d.getType() + "." + cf.getPath());
+								logger.info(" Evaluation Path = " + ad.getPath());
+							}
 							
 							if(cf.hasValueSet())
 								ad.setValueSet(cf.getValueSetElement());
@@ -400,6 +416,8 @@ public class PlanDefinitionProcessor {
 		
 		if(t != null && t.hasRepeat()) {
 			
+			logger.info(" Found Timing Element ");
+			
 			TimingRepeatComponent rc = t.getRepeat();
 			
 			// Create Timing Data 
@@ -411,8 +429,18 @@ public class PlanDefinitionProcessor {
 			ts.setMaxRepeat(rc.getCountMax());
 			ts.setFrequency(rc.getFrequency());
 			ts.setFrequencyMax(rc.getFrequencyMax());
+			
+			logger.info(" Period Freq = " + rc.getPeriod());
 			ts.setFrequencyPeriod(rc.getPeriod());
+			
+			logger.info(" Period Freq Unit = " + rc.getPeriodUnitElement().getValueAsString());
 			ts.setFrequencyPeriodUnit(rc.getPeriodUnitElement().getValue());
+			
+			logger.info(" Duration = " + rc.getDuration());
+			ts.setDuration(rc.getDuration());
+			
+			logger.info(" Duration Unit = " + rc.getDurationUnit());
+			ts.setDurationUnit(rc.getDurationUnit());
 			
 			return ts;
 			

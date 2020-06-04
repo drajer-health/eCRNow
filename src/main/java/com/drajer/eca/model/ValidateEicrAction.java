@@ -116,6 +116,7 @@ public class ValidateEicrAction extends AbstractAction {
 	
 		for(Integer id : ids) {
 			
+			if(id != 0) {
 			logger.info(" Found eICR with Id " + id  +" to validate ");
 			String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
 			
@@ -145,6 +146,8 @@ public class ValidateEicrAction extends AbstractAction {
 			validate.setValidationTime(new Date());
 			state.getValidateEicrStatus().add(validate);
 			  
+		}
+			
 		}
 		
 	}

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class CloseOutEicrAction extends AbstractAction {
 
@@ -114,7 +115,21 @@ public class CloseOutEicrAction extends AbstractAction {
 
 									try {
 
-										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CLOSE_OUT_EICR);
+										List<TimingSchedule> tsjobs = getTimingData();
+
+										if(tsjobs != null) {
+											for (TimingSchedule ts : tsjobs) {
+	
+												// TBD : Setup job using TS Timing after testing so that we can test faster.
+												// For now setup a default job with 10 seconds.
+													
+													WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR);
+											}
+										}
+										else {
+											WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CLOSE_OUT_EICR);
+										}
+										
 										state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 										details.setStatus(mapper.writeValueAsString(state));
 
@@ -185,62 +200,89 @@ public class CloseOutEicrAction extends AbstractAction {
 					else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
 						
 						logger.info(" Creating the Close Out EICR since the job has been scheduled ");
+						
+						// Check Trigger Codes again in case the data has changed.
+						PatientExecutionState newState = recheckTriggerCodes(details);
+						
+						if(newState.getMatchTriggerStatus().getTriggerMatchStatus() && 
+						   newState.getMatchTriggerStatus().getMatchedCodes() != null && 
+						   newState.getMatchTriggerStatus().getMatchedCodes().size() > 0) {
 
-						// Since the job has started, Execute the job.
-						// Call the Loading Queries and create eICR.
-						if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+							// Since the job has started, Execute the job.
+							// Call the Loading Queries and create eICR.
+							if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
-							logger.info(" Getting necessary data from Loading Queries ");
-							FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
+								logger.info(" Getting necessary data from Loading Queries ");
+								FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
 
-							String eICR = null;
+								String eICR = null;
 
-							if (data != null && data instanceof Dstu2FhirData) {
+								if (data != null && data instanceof Dstu2FhirData) {
 
-								Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
+									Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
 
-								// Need to increment version Number since it is for the same patient. 
-								// Add details.incrementVersion method.
+									// Need to increment version Number since it is for the same patient. 
+									// Add details.incrementVersion method.
 
-								eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+									eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
 
-								// Create the object for persistence.
-								Eicr ecr = new Eicr();
-								ecr.setData(eICR);
-								ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+									// Create the object for persistence.
+									Eicr ecr = new Eicr();
+									ecr.setData(eICR);
+									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
 
 
-								state.getCloseOutEicrStatus().setEicrClosed(true);
-								state.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
-								state.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+									newState.getCloseOutEicrStatus().setEicrClosed(true);
+									newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
+									newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-								try {
-									details.setStatus(mapper.writeValueAsString(state));
-								} catch (JsonProcessingException e) {
-									String msg = "Unable to update execution state";
-									logger.error(msg);
-									e.printStackTrace();
-									
-									throw new RuntimeException(msg);
+									try {
+										details.setStatus(mapper.writeValueAsString(newState));
+									} catch (JsonProcessingException e) {
+										String msg = "Unable to update execution state";
+										logger.error(msg);
+										e.printStackTrace();
+
+										throw new RuntimeException(msg);
+									}
 								}
+
+								logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+
+								logger.info(eICR);
+
+								String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
+										+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+								ApplicationUtils.saveDataToFile(eICR, fileName);
+
+								logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 							}
+							else {
 
-							logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+								String msg = "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
+								logger.error(msg);
 
-							logger.info(eICR);
-
-							String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
-							                     + LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-							ApplicationUtils.saveDataToFile(eICR, fileName);
-
-							logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
-						}
+								throw new RuntimeException(msg);
+							}
+						}// Check if Trigger Code Match found 
 						else {
 							
-							String msg = "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
-							logger.error(msg);
+							logger.info(" **** Trigger Code did not match, hence not creating EICR **** ");
 							
-							throw new RuntimeException(msg);
+							newState.getCloseOutEicrStatus().setEicrClosed(false);
+							newState.getCloseOutEicrStatus().seteICRId("0");
+							newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+
+							try {
+								details.setStatus(mapper.writeValueAsString(newState));
+							} catch (JsonProcessingException e) {
+
+								String msg = "Unable to update execution state";
+								logger.error(msg);
+								e.printStackTrace();
+
+								throw new RuntimeException(msg);
+							}
 						}
 					}
 					else {
@@ -264,6 +306,38 @@ public class CloseOutEicrAction extends AbstractAction {
 			
 			throw new RuntimeException(msg);		
 		}
+	}
+	
+	public PatientExecutionState recheckTriggerCodes(LaunchDetails details) {
+		
+		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
+		for(AbstractAction act : acts) {
+			act.execute(details);
+			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		PatientExecutionState newState = null;
+
+		try {
+			newState = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+			logger.info(" Successfully set the State value ");
+		} catch (JsonMappingException e1) {
+			
+			String msg = "Unable to read/write execution state";
+			logger.error(msg);
+			e1.printStackTrace();
+			throw new RuntimeException(msg);
+			
+		} catch (JsonProcessingException e1) {
+			String msg = "Unable to read/write execution state";
+			logger.error(msg);
+			e1.printStackTrace();
+			
+			throw new RuntimeException(msg);
+		}
+		
+		return newState;
 	}
 	
 }

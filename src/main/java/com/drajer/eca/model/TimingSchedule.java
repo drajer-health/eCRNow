@@ -33,8 +33,22 @@ public class TimingSchedule {
 	private int 		frequencyMax;	// Max No of times to repeat per period
 	private BigDecimal	frequencyPeriod;
 	private UnitsOfTime			frequencyPeriodUnit;
+	private BigDecimal  duration;
+	private UnitsOfTime durationUnit;
 	
 	
+	public BigDecimal getDuration() {
+		return duration;
+	}
+	public void setDuration(BigDecimal duration) {
+		this.duration = duration;
+	}
+	public UnitsOfTime getDurationUnit() {
+		return durationUnit;
+	}
+	public void setDurationUnit(UnitsOfTime durationUnit) {
+		this.durationUnit = durationUnit;
+	}
 	public int getNumOfRepeat() {
 		return numOfRepeat;
 	}
@@ -91,7 +105,9 @@ public class TimingSchedule {
 		logger.info(" Frequency = " + frequency);
 		logger.info(" Max Frequency = " + frequencyMax);
 		logger.info(" Frequency Period = " + frequencyPeriod);
-		logger.info(" Frequency Period Unit " + frequencyPeriodUnit.toString());
+		
+		if(frequencyPeriodUnit != null)
+			logger.info(" Frequency Period Unit " + frequencyPeriodUnit.toString());
 		
 		logger.info(" *** End Printing Timing Schedule *** ");
 				
