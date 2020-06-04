@@ -1,5 +1,10 @@
 # 1. eCR Now Background
 The purpose of the eCR Now FHIR App is to enable EHR companies that have not had electronic case reporting (eCR) capabilites to support  public health reporting for COVID-19. The App will be able to also support full eCR, but implementation will be dependent on public health agency readiness.
+For more information on electronic case reporting please refer to the following links.
+
+* [More information on electronic case reporting (eCR)](http://ecr.aimsplatform.org)
+
+* [More background information on ecrNow FHIR App](http:://ecr.aimsplatform.org/ecr-now-fhir-app)
 
 # 2. App Architecture # 
 The app is architected as a Java Spring Boot app using Java Spring framework for the application layer, Hibernate and PostgreSQL for the backend technologies and ReactJS for the front end. The app can be instantiated as a micro service and containerized using Docker or other technologies for deployments.
@@ -91,6 +96,13 @@ http://<localhost:8081>/clientDetails o
 Follow the App Configuration Guide present in documents folder to configure the app before using it for testing.
 Only after the app is configured, you will be able to use it for reporting.
 
+6.1 App Launch Mechanisms
+
+The app supports three different launch mechanisms.
+1. Regular SMART on FHIR ehr launch with a UI splash page that can be customized.
+2. Regular SMART on FHIR ehr launch with no UI (Headless launch) that can be configured with the backend launch and redirect URIs in the controllers.
+3. API based launch along with System Account access which can be used to integrate with systems which generate patient/encounter lists throughout the day and can report on these patients/encounters at the end of the day. Once such integration uses the ADT feeds. 
+
 ## 3.3 Verification Steps: ##
 To check if you have downloaded the app properly and are being able to run it, follow the steps below.
 
@@ -110,4 +122,10 @@ Once you launch the app with a Patient and Encounter context, the app will kick 
 You can verify that the eICR is produced by checking the eICR table in the database. 
 
 **Note:** For testing purposes, we are allowing the same patient and encounter to be used multiple times to help debug, similarly the timing schedules are shortened to about 10 seconds, and the trigger code matching logic will allow the next step (Creating an eICR for testing purposes) to execute even if the test data does not match the value sets.
+
+# 4. Production Deployment Considerations:
+Organizations implementing in production settings should consider the following:
+1. Properly securing the app user interface if it is used within the enterprise and protecting access.
+2. Implement organization policies around database settings (ports), schemas, encryption.
+3. Implement other security best practices.
 
