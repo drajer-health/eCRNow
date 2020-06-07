@@ -9,7 +9,6 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.eca.model.MatchTriggerAction;
 import com.drajer.ecrapp.util.ApplicationUtils;
 
 public class ValueSetSingleton {
@@ -230,6 +229,34 @@ public class ValueSetSingleton {
 			grouperToCovidValueSetMap.put(grouper, vs);
 			
 		}
+	}
+	
+	public Set<String> getValueSetsAsStringForGrouper(String path) {
+		String grouperId = null;
+		Set<String> retVal = new HashSet<String>();
+		ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
+		if (grouperValueSet != null) {
+			grouperId = grouperValueSet.getId();
+		}
+		if (grouperId != null && getGrouperToValueSetMap() != null) {
+			Set<ValueSet> valuesets = getGrouperToValueSetMap().get(grouperId);
+			retVal = ApplicationUtils.convertValueSetsToString(valuesets);
+		}
+		return retVal;
+	}
+	
+	public Set<String> getCovidValueSetsAsStringForGrouper(String path) {
+		String grouperId = null;
+		Set<String> retVal = new HashSet<String>();
+		ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
+		if (grouperValueSet != null) {
+			grouperId = grouperValueSet.getId();
+		}
+		if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
+			Set<ValueSet> valuesets = getGrouperToCovidValueSetMap().get(grouperId);
+			retVal = ApplicationUtils.convertValueSetsToString(valuesets);
+		}
+		return retVal;
 	}
 
 	private ValueSetSingleton() {

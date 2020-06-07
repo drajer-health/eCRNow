@@ -1,9 +1,7 @@
 package com.drajer.ersd.service.impl;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.hl7.fhir.r4.model.CanonicalType;
