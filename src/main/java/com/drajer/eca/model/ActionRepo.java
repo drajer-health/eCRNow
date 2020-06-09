@@ -54,6 +54,8 @@ public class ActionRepo {
     String 				logFileDirectory;
 
     String 				xsdSchemasLocation;
+
+    String 				oidUriMappingLocation;
 	
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
@@ -98,7 +100,15 @@ public class ActionRepo {
 
     public void setXsdSchemasLocation(String xsdSchemasLocation) { this.xsdSchemasLocation = xsdSchemasLocation; }
 
-    public EicrRRService getEicrRRService() {
+	public String getOidUriMappingLocation() {
+		return oidUriMappingLocation;
+	}
+
+	public void setOidUriMappingLocation(String oidUriMappingLocation) {
+		this.oidUriMappingLocation = oidUriMappingLocation;
+	}
+
+	public EicrRRService getEicrRRService() {
 		return eicrRRService;
 	}
 
