@@ -1,10 +1,17 @@
 package com.drajer.cda.utils;
 
+import com.drajer.eca.model.ActionRepo;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Properties;
+
 public class CdaGeneratorConstants {
-	
+
 	// XML Related
     public static String RIGHT_ANGLE_BRACKET = ">";
     public static String START_XMLTAG = "<";
@@ -750,7 +757,42 @@ public class CdaGeneratorConstants {
     public static String DEVICE_TABLE_COL_2_TITLE = "Device Date";
     public static String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
     public static String UNKNOWN_VALUE = "Unknown";
-    
+
+    //OID to URI Mapping
+    private static HashMap<String,String> oidMap = new HashMap<String,String>();
+    private static HashMap<String,String> uriMap = new HashMap<String,String>();
+    //Static block to load OID to URI mapping from property file
+    static
+    {
+        try (InputStream input = new FileInputStream(ActionRepo.getInstance().getOidUriMappingLocation())) {
+            Properties prop = new Properties();
+            prop.load(input);
+            prop.forEach((key, value) -> {
+                oidMap.put((String)key, (String)value);
+                uriMap.put((String)value,(String)key);
+            });
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * @param oid
+     * @return URI
+     */
+    public static String getURI(String oid){
+        return oidMap.get(oid);
+    }
+
+    /**
+     * @param uri
+     * @return OID
+     */
+    public static String getOID(String uri){
+        return uriMap.get(uri);
+    }
+
+
     public static Pair<String, String> getCodeSystemFromUrl(String url) {
     	
         if(StringUtils.isEmpty(url)) {
@@ -806,5 +848,6 @@ public class CdaGeneratorConstants {
     	}
     	
     }
+
 
 }
