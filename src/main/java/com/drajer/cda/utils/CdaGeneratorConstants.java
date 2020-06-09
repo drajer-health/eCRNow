@@ -764,7 +764,7 @@ public class CdaGeneratorConstants {
     //Static block to load OID to URI mapping from property file
     static
     {
-        try (InputStream input = new FileInputStream(ActionRepo.getInstance().getOidUriMappingLocation())) {
+        try (InputStream input = CdaGeneratorConstants.class.getClassLoader().getResourceAsStream("oid-uri-mapping-r4.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             prop.forEach((key, value) -> {

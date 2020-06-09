@@ -79,10 +79,6 @@ public class WorkflowService {
     @Value("${xsd.schemas.location}")
     String xsdSchemasLocation;
 
-	@Value("${oid.uri.mapping.location}")
-    String oidUriMappingLocation;
-
-
     @PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
@@ -94,8 +90,8 @@ public class WorkflowService {
 		ActionRepo.getInstance().setDirectTransport(directTansport);
 		ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
 		ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
-		ActionRepo.getInstance().setOidUriMappingLocation(oidUriMappingLocation);
-        workflowInstance = this;
+
+		workflowInstance = this;
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
