@@ -3,6 +3,7 @@ package com.drajer.sof.model;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.drajer.ecrapp.config.JSONObjectUserType;
+import com.drajer.ecrapp.encryptor.ColumnEncryptor;
 
 @Entity
 @Table(name = "launch_details")
@@ -98,6 +100,7 @@ public class LaunchDetails {
 	private String directUser;
 
 	@Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
+	@Convert(converter = ColumnEncryptor.class)
 	private String directPwd;
 	
 	@Column(name = "direct_recipient", nullable = true) // Status can be active or completed.

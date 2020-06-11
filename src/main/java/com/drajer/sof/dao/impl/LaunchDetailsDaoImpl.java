@@ -1,6 +1,9 @@
 package com.drajer.sof.dao.impl;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -28,6 +31,12 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 		criteria.add(Restrictions.eq("encounterId", encounter));
 		LaunchDetails launchDetails = (LaunchDetails) criteria.uniqueResult();
 		return launchDetails;
+	}
+
+	public List<LaunchDetails> getAllLaunchDetails() {
+		Criteria criteria = getSession().createCriteria(LaunchDetails.class);
+		List<LaunchDetails> launchDetailsList = criteria.addOrder(Order.desc("id")).list();
+		return launchDetailsList;	
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.drajer.sof.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.drajer.ecrapp.encryptor.ColumnEncryptor;
 
 @Entity
 @Table(name = "client_details")
@@ -52,6 +58,7 @@ public class ClientDetails {
 	private String directUser;
 
 	@Column(name = "direct_pwd", nullable = true)
+	@Convert(converter = ColumnEncryptor.class)
 	private String directPwd;
 	
 	@Column(name = "direct_recipient_address", nullable = true)
@@ -74,7 +81,7 @@ public class ClientDetails {
 	
 	@Column(name = "is_full_ecr", columnDefinition = "boolean default false", nullable = false)
 	private Boolean isFullEcr = false;
-
+	
 	public Integer getId() {
 		return id;
 	}

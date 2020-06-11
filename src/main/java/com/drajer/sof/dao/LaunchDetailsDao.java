@@ -1,5 +1,7 @@
 package com.drajer.sof.dao;
 
+import java.util.List;
+
 import com.drajer.sof.model.LaunchDetails;
 
 public interface LaunchDetailsDao {
@@ -10,4 +12,5 @@ public interface LaunchDetailsDao {
 	
 	LaunchDetails getLaunchDetailsByPatientAndEncounter(String patient, String encounter,String fhirServerUrl);
 
+	List<LaunchDetails> getAllLaunchDetails();
 }

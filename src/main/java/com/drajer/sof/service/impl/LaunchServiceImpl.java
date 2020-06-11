@@ -1,5 +1,7 @@
 package com.drajer.sof.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,11 @@ public class LaunchServiceImpl implements LaunchService{
 
 	public LaunchDetails getLaunchDetailsByPatientAndEncounter(String patient, String encounter, String fhirServerUrl) {
 		return authDetailsDao.getLaunchDetailsByPatientAndEncounter(patient, encounter, fhirServerUrl);
+	}
+
+	@Override
+	public List<LaunchDetails> getAllLaunchDetails() {
+		return authDetailsDao.getAllLaunchDetails();
 	}
 
 }
