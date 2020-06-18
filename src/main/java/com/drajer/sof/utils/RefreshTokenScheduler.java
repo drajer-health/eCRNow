@@ -48,6 +48,7 @@ public class RefreshTokenScheduler {
 
 	public void scheduleJob(LaunchDetails authDetails) {
 		logger.info("Scheduling Job to Get AccessToken");
+		logger.info("Accesstoken Expires in========>"+authDetails.getExpiry());
 		long minutes = TimeUnit.SECONDS.toMinutes(authDetails.getExpiry());
 		String cronExpression = "0 "+"0/"+minutes+" * * * ?";
 		// String cronExpression = "0/60 * * * * ?";

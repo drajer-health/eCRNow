@@ -1,5 +1,9 @@
 package com.drajer.sof.service;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -39,7 +44,7 @@ public class TriggerQueryR4Bundle {
 	@Autowired
 	R4ResourcesData r4ResourcesData;
 
-	private final Logger logger = LoggerFactory.getLogger(TriggerQueryR4Bundle.class);
+	private static final Logger logger = LoggerFactory.getLogger(TriggerQueryR4Bundle.class);
 
 	public Bundle createR4Bundle(LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {
 		Bundle bundle = new Bundle();
@@ -203,10 +208,13 @@ public class TriggerQueryR4Bundle {
 		logger.info("Conditions Codes Size=====>" + r4FhirData.getR4ConditionCodes().size());
 		logger.info("Observation Codes Size=====>" + r4FhirData.getR4LabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
-		logger.info("ServiceRequests Codes Size=====>"+r4FhirData.getR4ServiceRequestCodes().size());
+		logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
-
+		
+		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/TriggerQueryR4Bundle-"+launchDetails.getLaunchPatientId()+".json";
+		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 		return bundle;
 	}
+
 }

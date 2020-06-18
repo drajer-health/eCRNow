@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.Dstu2ResourcesData;
@@ -218,7 +219,8 @@ public class TriggerQueryDstu2Bundle {
 		// logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
-		
+		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/TriggerQueryDSTU2Bundle-"+launchDetails.getLaunchPatientId()+".json";
+		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 
 		return bundle;
 	}

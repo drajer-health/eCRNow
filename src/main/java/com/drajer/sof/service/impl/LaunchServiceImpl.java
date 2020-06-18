@@ -28,4 +28,8 @@ public class LaunchServiceImpl implements LaunchService{
 		return authDetailsDao.getLaunchDetailsByPatientAndEncounter(patient, encounter, fhirServerUrl);
 	}
 
+	public LaunchDetails getLaunchDetailsByState(int state) {
+		return authDetailsDao.getLaunchDetailsByState(state);
+	}
+
 }

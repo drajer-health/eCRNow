@@ -106,6 +106,18 @@ public class LaunchDetails {
 	@Column(name = "is_covid19", columnDefinition = "boolean default true", nullable = false)
 	private Boolean isCovid = true;
 	
+	@Column(name="launch_id",nullable = true)
+	private String launchId;
+	
+	@Column(name="launch_state",nullable = true)
+	private int launchState;
+	
+	@Column(name="redirect_uri",nullable = true)
+	private String redirectURI;
+	
+	@Column(name="auth_code",nullable = true)
+	private String authorizationCode;
+	
 	public Boolean getIsCovid() {
 		return isCovid;
 	}
@@ -304,6 +316,38 @@ public class LaunchDetails {
 
 	public void setDirectPwd(String directPwd) {
 		this.directPwd = directPwd;
+	}
+
+	public String getLaunchId() {
+		return launchId;
+	}
+
+	public void setLaunchId(String launchId) {
+		this.launchId = launchId;
+	}
+
+	public int getLaunchState() {
+		return launchState;
+	}
+
+	public void setLaunchState(int launchState) {
+		this.launchState = launchState;
+	}
+
+	public String getRedirectURI() {
+		return redirectURI;
+	}
+
+	public void setRedirectURI(String redirectURI) {
+		this.redirectURI = redirectURI;
+	}
+
+	public String getAuthorizationCode() {
+		return authorizationCode;
+	}
+
+	public void setAuthorizationCode(String authorizationCode) {
+		this.authorizationCode = authorizationCode;
 	}
 
 }

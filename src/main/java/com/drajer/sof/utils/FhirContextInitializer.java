@@ -1,5 +1,10 @@
 package com.drajer.sof.utils;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.json.JSONObject;
@@ -28,7 +33,7 @@ public class FhirContextInitializer {
 	private static final String DSTU3 = "DSTU3";
 	private static final String R4 = "R4";
 
-	private final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
+	private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
 
 	/**
 	 * Get FhirContext appropriate to fhirVersion
@@ -69,14 +74,15 @@ public class FhirContextInitializer {
 		logger.info("Initialized the Client");
 		return client;
 	}
-	
+
 	public IBaseResource getResouceById(LaunchDetails authDetails, IGenericClient genericClient, FhirContext context,
 			String resourceName, String resourceId) {
 		IBaseResource resource = null;
 		try {
 			logger.info("Getting " + resourceName + " data");
 			resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
-			// logger.info(resourceName + ":::::::::::::::::" + context.newJsonParser().encodeResourceToString(resource));
+			// logger.info(resourceName + ":::::::::::::::::" +
+			// context.newJsonParser().encodeResourceToString(resource));
 		} catch (Exception e) {
 			// e.printStackTrace();
 			logger.error("Error in getting " + resourceName + " resource by Id: " + resourceId);
@@ -109,12 +115,12 @@ public class FhirContextInitializer {
 
 		return bundleResponse;
 	}
-	
-	protected IBaseBundle getObservationByPatientId(LaunchDetails authDetails, IGenericClient genericClient, FhirContext context,
-			String resourceName, String category) {
+
+	protected IBaseBundle getObservationByPatientId(LaunchDetails authDetails, IGenericClient genericClient,
+			FhirContext context, String resourceName, String category) {
 		IBaseBundle bundleResponse = null;
-		String url = authDetails.getEhrServerURL() + "/" + resourceName + "?patient="
-				+ authDetails.getLaunchPatientId()+"&category="+category;
+		String url = authDetails.getEhrServerURL() + "/" + resourceName + "?patient=" + authDetails.getLaunchPatientId()
+				+ "&category=" + category;
 		logger.info("Invoking url:::::::::::::::" + url);
 		try {
 			logger.info("Getting " + resourceName + " data using Patient Id: " + authDetails.getLaunchPatientId());
@@ -135,5 +141,24 @@ public class FhirContextInitializer {
 
 		return bundleResponse;
 	}
-	
+
+	public static void saveBundleToFile(String data, String fileName) {
+
+		FileOutputStream fos;
+		try {
+
+			logger.error(" Writing Bundle data to file: " + fileName);
+			fos = new FileOutputStream(fileName);
+			DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
+			outStream.writeBytes(data);
+			outStream.close();
+		} catch (IOException e) {
+
+			logger.error(" Unable to write Bundle data to file: " + fileName);
+			e.printStackTrace();
+
+		}
+
+	}
+
 }
