@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
@@ -78,7 +79,6 @@ public class WorkflowService {
     @Value("${xsd.schemas.location}")
     String xsdSchemasLocation;
 
-
     @PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
@@ -89,8 +89,9 @@ public class WorkflowService {
 		ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
 		ActionRepo.getInstance().setDirectTransport(directTansport);
 		ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
-        ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
-        workflowInstance = this;
+		ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
+
+		workflowInstance = this;
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {

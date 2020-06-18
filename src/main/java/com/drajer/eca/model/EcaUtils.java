@@ -38,13 +38,15 @@ public class EcaUtils {
 				
 				if(details.getIsCovid()) {
 										
-					codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsString();
+					//codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsString();
+					codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
 					logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for COVID-19");
 					
 				}
 				else {
 					
 					// codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSets();
+					codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
 					logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for Full EICR ");
 				}
 								
