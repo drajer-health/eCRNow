@@ -11,7 +11,7 @@ import org.apache.commons.collections4.SetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.cda.CdaEicrGenerator;
+import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.util.ApplicationUtils;

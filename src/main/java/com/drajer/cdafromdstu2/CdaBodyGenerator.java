@@ -1,4 +1,4 @@
-package com.drajer.cda;
+package com.drajer.cdafromdstu2;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.drajer.eca.model;
 
-import com.drajer.cda.CdaEicrGenerator;
 import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;

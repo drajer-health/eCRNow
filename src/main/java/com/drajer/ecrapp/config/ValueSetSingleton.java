@@ -232,6 +232,7 @@ public class ValueSetSingleton {
 	}
 	
 	public Set<String> getValueSetsAsStringForGrouper(String path) {
+		
 		String grouperId = null;
 		Set<String> retVal = new HashSet<String>();
 		ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
@@ -246,16 +247,34 @@ public class ValueSetSingleton {
 	}
 	
 	public Set<String> getCovidValueSetsAsStringForGrouper(String path) {
+		
 		String grouperId = null;
 		Set<String> retVal = new HashSet<String>();
+		
 		ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
+		
 		if (grouperValueSet != null) {
+			
 			grouperId = grouperValueSet.getId();
+			logger.info(" Found the grouper value set for " + path + " : Grouper Id = " + grouperId);
 		}
+		else {
+			
+			logger.info(" Grouper not found for path " + path);
+		}
+		
 		if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
+			
+			logger.info("Found the value sets for the grouper ");
 			Set<ValueSet> valuesets = getGrouperToCovidValueSetMap().get(grouperId);
+			
+			logger.info(" Value Sets found = " + ((valuesets != null)?valuesets.size():"No value sets in the map"));
 			retVal = ApplicationUtils.convertValueSetsToString(valuesets);
 		}
+		else {
+			logger.info("Did not find the value sets for the grouper for path " + path);
+		}
+		
 		return retVal;
 	}
 

@@ -1,36 +1,35 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import java.util.List;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.ecrapp.service.WorkflowService;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.MedicationStatement;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
 
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
-import ca.uhn.fhir.model.dstu2.resource.Condition;
-import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder;
-import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
-import ca.uhn.fhir.model.dstu2.resource.Encounter;
-import ca.uhn.fhir.model.dstu2.resource.Immunization;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
-import ca.uhn.fhir.model.dstu2.resource.Location;
-import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
-import ca.uhn.fhir.model.dstu2.resource.Observation;
-import ca.uhn.fhir.model.dstu2.resource.Organization;
 
-public class CdaEicrGenerator {
+public class CdaEicrGeneratorFromR4 {
 	
-	private static final Logger logger = LoggerFactory.getLogger(CdaEicrGenerator.class);
+	private static final Logger logger = LoggerFactory.getLogger(CdaEicrGeneratorFromR4.class);
 
-	public static String convertDstu2FhirBundletoCdaEicr(Dstu2FhirData data, LaunchDetails details) {
-		
+	public static String convertR4FhirBundletoCdaEicr(R4FhirData data, LaunchDetails details) {
+
 		StringBuilder eICR = new StringBuilder();
 		
 		if(data != null) {
@@ -38,9 +37,9 @@ public class CdaEicrGenerator {
 			Bundle bundle = data.getData();
 			if(bundle != null) {
 				
-				List<Entry> entries = bundle.getEntry();
+				List<BundleEntryComponent> entries = bundle.getEntry();
 				
-				for(Entry ent : entries) {
+				for(BundleEntryComponent ent : entries) {
 					
 					// Populate data ..this can be moved to the APIs where the bundle is getting created. 
 					if(ent.getResource() instanceof Patient) {
@@ -70,7 +69,7 @@ public class CdaEicrGenerator {
 					else if(ent.getResource() instanceof Observation) {
 						
 						Observation obs = (Observation)ent.getResource();
-						if(obs.getCategory() != null &&
+					/*	if(obs.getCategory() != null &&
 						   obs.getCategory().getCodingFirstRep() != null &&
 						   obs.getCategory().getCodingFirstRep().getCode() != null && 
 						   obs.getCategory().getCodingFirstRep().getCode().contentEquals(CdaGeneratorConstants.FHIR_LAB_RESULT_CATEGORY)) {
@@ -83,7 +82,7 @@ public class CdaEicrGenerator {
 						   obs.getCategory().getCodingFirstRep().getCode() != null ) {
 							logger.info( "Code for Observation Category =  " + obs.getCategory().getCodingFirstRep().getCode());
 							
-						}
+						}*/
 						
 						// Compare Code for Travel Obs 
 						
@@ -94,10 +93,10 @@ public class CdaEicrGenerator {
 						logger.info(" Bundle contains Diagnostic Report ");
 						data.getDiagReports().add((DiagnosticReport)ent.getResource());
 					}
-					else if(ent.getResource() instanceof DiagnosticOrder) {
+				/*	else if(ent.getResource() instanceof DiagnosticOrder) {
 						logger.info(" Bundle contains Diagnostic Order ");
 						data.getDiagOrders().add((DiagnosticOrder)ent.getResource());
-					}
+					}*/
 					else if(ent.getResource() instanceof MedicationStatement) {
 						logger.info(" Bundle contains MedicationStatement ");
 						data.getMedications().add((MedicationStatement)ent.getResource());
@@ -116,8 +115,13 @@ public class CdaEicrGenerator {
 			}
 			
 		}
+		else {
+			
+			logger.error(" No Fhir Bundle Available to create CDA Documents ");
+		}
 			
 		return eICR.toString();
-		
+
 	}
+
 }

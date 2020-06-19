@@ -59,6 +59,7 @@ public class CdaGeneratorConstants {
     
     // FHIR Value Set URLS and values
     public static String FHIR_IDTYPE_SYSTEM = "http://hl7.org/fhir/v2/0203";
+    public static String FHIR_IDENTIFIER_TYPE_SYSTEM = "http://hl7.org/fhir/ValueSet/identifier-type";
     public static String FHIR_ARGO_RACE_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-race";
     public static String FHIR_ARGO_ETHNICITY_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity";
     public static String FHIR_ARGO_BIRTHSEX_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex";
@@ -761,6 +762,8 @@ public class CdaGeneratorConstants {
     //OID to URI Mapping
     private static HashMap<String,String> oidMap = new HashMap<String,String>();
     private static HashMap<String,String> uriMap = new HashMap<String,String>();
+    
+    
     //Static block to load OID to URI mapping from property file
     static
     {

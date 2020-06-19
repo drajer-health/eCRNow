@@ -121,8 +121,10 @@ public class ValueSetServiceImpl implements ValueSetService {
 		
 		ValueSet valuSetGrouper = ApplicationUtils.getValueSetGrouperFromId(codeFilter.getValueSet());
 		
-		ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(codeFilter.getPath(), valueSets);
-		ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(codeFilter.getPath(), valuSetGrouper);
+		String path = dataRequirement.getType() + "." + codeFilter.getPath();
+		
+		ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
+		ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, valuSetGrouper);
 		ValueSetSingleton.getInstance().addGrouperToValueSetMap(codeFilter.getValueSet(), grouperToValueSets);
 		ValueSetSingleton.getInstance().addGrouperToCovidValueSetMap(codeFilter.getValueSet(),grouperToCovidValueSets);
 	}

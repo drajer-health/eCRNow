@@ -1,4 +1,4 @@
-package com.drajer.cda;
+package com.drajer.cdafromdstu2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,15 +74,13 @@ public class CdaHeaderGenerator {
 					if(ent.getResource() instanceof Patient) {
 						
 						Patient p = (Patient)ent.getResource();
-						eICRHeader.append(getPatientDetailsDstu2(data, p, details));
+						eICRHeader.append(getPatientDetails(data, p, details));
 						
 						break;
 						
 					}
 				}
 					
-				// CdaFhirUtilities.populateEntriesForEncounter(bundle, details, en, pr, loc, org);
-		
 				eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter()));
 				
 				eICRHeader.append(getCustodianXml(data.getOrganization(), details));
@@ -385,7 +383,7 @@ public class CdaHeaderGenerator {
 	
 	
 	
-	public static String getPatientDetailsDstu2(Dstu2FhirData data, Patient p, LaunchDetails details) {
+	public static String getPatientDetails(Dstu2FhirData data, Patient p, LaunchDetails details) {
 
 		StringBuilder patientDetails = new StringBuilder();
 
