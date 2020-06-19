@@ -23,6 +23,7 @@ import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
+import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
@@ -145,12 +146,43 @@ public class LoadingQueryDstu2Bundle {
 			List<Observation> observationList = dstu2ResourcesData.getObservationData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				Entry observationsEntry = new Entry().setResource(observation);
 				bundle.addEntry(observationsEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting Observation Data");
+		}
+
+		// Get Pregnancy Observations
+		try {
+			logger.info("Get Pregnancy Observation Data");
+			List<Observation> observationList = dstu2ResourcesData.getPregnancyObservationData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setPregnancyObs(observationList);
+			for (Observation observation : observationList) {
+				Entry observationsEntry = new Entry().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Pregnancy Observation Data");
+		}
+
+		// Get Travel Observations
+		try {
+			logger.info("Get Travel Observation Data");
+			List<Observation> observationList = dstu2ResourcesData.getTravelObservationData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setTravelObs(observationList);
+			for (Observation observation : observationList) {
+				Entry observationsEntry = new Entry().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Travel Observation Data");
 		}
 
 		// Get MedicationAdministration for Patients and laboratory category (Write a
@@ -168,12 +200,27 @@ public class LoadingQueryDstu2Bundle {
 			List<MedicationAdministration> medAdministrationsList = dstu2ResourcesData.getMedicationAdministrationData(
 					context, client, launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
 				Entry medAdministrationEntry = new Entry().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting the MedicationAdministration Data");
+		}
+
+		try {
+			logger.info("Get MedicationStatement Data");
+			List<MedicationStatement> medStatementsList = dstu2ResourcesData.getMedicationStatementData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
+			for (MedicationStatement medStatement : medStatementsList) {
+				Entry medStatementEntry = new Entry().setResource(medStatement);
+				bundle.addEntry(medStatementEntry);
+			}
+			dstu2FhirData.setMedications(medStatementsList);
+		} catch (Exception e) {
+			logger.error("Error in getting the MedicationStatement Data");
 		}
 
 		// Get DiagnosticOrders for Patients (Write a method).
@@ -190,6 +237,7 @@ public class LoadingQueryDstu2Bundle {
 			List<DiagnosticOrder> diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			System.out.println("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+			dstu2FhirData.setDiagOrders(diagnosticOrdersList);
 			for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
 				Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
 				bundle.addEntry(diagnosticOrderEntry);
@@ -208,6 +256,7 @@ public class LoadingQueryDstu2Bundle {
 			List<Immunization> immunizationsList = dstu2ResourcesData.getImmunizationData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered Immunizations----------->" + immunizationsList.size());
+			dstu2FhirData.setImmunizations(immunizationsList);
 			for (Immunization immunization : immunizationsList) {
 				Entry immunizationEntry = new Entry().setResource(immunization);
 				bundle.addEntry(immunizationEntry);
@@ -226,6 +275,7 @@ public class LoadingQueryDstu2Bundle {
 			List<DiagnosticReport> diagnosticReportList = dstu2ResourcesData.getDiagnosticReportData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+			dstu2FhirData.setDiagReports(diagnosticReportList);
 			for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 				Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);
 				bundle.addEntry(diagnosticReportEntry);
@@ -242,11 +292,13 @@ public class LoadingQueryDstu2Bundle {
 		logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
 		logger.info("Immunization Codes Size=====>" + dstu2FhirData.getImmuniationCodes().size());
 		logger.info("DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-		//logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
+		// logger.info("DiagnosticOrders Codes Size=====>" +
+		// dstu2FhirData.getDiagnosticOrderCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 
-		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/LoadingQueryDSTU2Bundle-"+launchDetails.getLaunchPatientId()+".json";
+		String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/LoadingQueryDSTU2Bundle-"
+				+ launchDetails.getLaunchPatientId() + ".json";
 		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 		return bundle;
 	}

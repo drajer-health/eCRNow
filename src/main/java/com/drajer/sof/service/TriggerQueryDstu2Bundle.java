@@ -144,6 +144,7 @@ public class TriggerQueryDstu2Bundle {
 			List<Observation> observationList = dstu2ResourcesData.getObservationData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				Entry observationsEntry = new Entry().setResource(observation);
 				bundle.addEntry(observationsEntry);
@@ -167,6 +168,7 @@ public class TriggerQueryDstu2Bundle {
 			List<MedicationAdministration> medAdministrationsList = dstu2ResourcesData.getMedicationAdministrationData(
 					context, client, launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
 				Entry medAdministrationEntry = new Entry().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
@@ -189,6 +191,7 @@ public class TriggerQueryDstu2Bundle {
 			List<DiagnosticOrder> diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+			dstu2FhirData.setDiagOrders(diagnosticOrdersList);
 			for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
 				Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
 				bundle.addEntry(diagnosticOrderEntry);
@@ -201,6 +204,7 @@ public class TriggerQueryDstu2Bundle {
 			List<DiagnosticReport> diagnosticReportList = dstu2ResourcesData.getDiagnosticReportData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+			dstu2FhirData.setDiagReports(diagnosticReportList);
 			for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 				Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);
 				bundle.addEntry(diagnosticReportEntry);

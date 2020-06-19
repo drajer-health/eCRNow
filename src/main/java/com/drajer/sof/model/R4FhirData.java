@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
@@ -30,6 +31,7 @@ public class R4FhirData extends FhirData {
 	private List<Observation>      pregnancyObs;
 	private List<Immunization> 	   immunizations;
 	private List<MedicationStatement>  medications;
+	private List<MedicationAdministration> medicationAdministrations;
 	// private List<DiagnosticOrder>  diagOrders;
 
 	public Bundle getData() {
@@ -134,5 +136,13 @@ public class R4FhirData extends FhirData {
 
 	public void setMedications(List<MedicationStatement> medications) {
 		this.medications = medications;
+	}
+
+	public List<MedicationAdministration> getMedicationAdministrations() {
+		return medicationAdministrations;
+	}
+
+	public void setMedicationAdministrations(List<MedicationAdministration> medicationAdministrations) {
+		this.medicationAdministrations = medicationAdministrations;
 	}
 }

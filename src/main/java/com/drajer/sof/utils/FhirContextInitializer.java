@@ -142,6 +142,32 @@ public class FhirContextInitializer {
 		return bundleResponse;
 	}
 
+	protected IBaseBundle getObservationByPatientIdAndCode(LaunchDetails authDetails, IGenericClient genericClient,
+			FhirContext context, String resourceName, String code, String system) {
+		IBaseBundle bundleResponse = null;
+		String url = authDetails.getEhrServerURL() + "/" + resourceName + "?patient=" + authDetails.getLaunchPatientId()
+				+ "&code=" + system + "|" + code;
+		logger.info("Invoking url:::::::::::::::" + url);
+		try {
+			logger.info("Getting " + resourceName + " data using Patient Id: " + authDetails.getLaunchPatientId());
+			if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
+				bundleResponse = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
+				Bundle bundle = (Bundle) bundleResponse;
+				logger.info("Total No of " + resourceName + " received:::::::::::::::::" + bundle.getEntry().size());
+			} else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
+				bundleResponse = genericClient.search().byUrl(url).returnBundle(org.hl7.fhir.r4.model.Bundle.class)
+						.execute();
+				org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) bundleResponse;
+				logger.info("Total No of " + resourceName + " received:::::::::::::::::" + bundle.getEntry().size());
+			}
+		} catch (Exception e) {
+			logger.info("Error in getting " + resourceName + " resource by Patient Id: "
+					+ authDetails.getLaunchPatientId());
+		}
+
+		return bundleResponse;
+	}
+
 	public static void saveBundleToFile(String data, String fileName) {
 
 		FileOutputStream fos;

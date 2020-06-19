@@ -13,6 +13,7 @@ import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
@@ -146,12 +147,43 @@ public class LoadingQueryR4Bundle {
 			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
 				bundle.addEntry(observationsEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting Observation Data");
+		}
+		
+		//Get Pregnancy Observations
+		try {
+			logger.info("Get Preganancy Observation Data");
+			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
+					r4FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setPregnancyObs(observationList);
+			for (Observation observation : observationList) {
+				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Preganancy Observation Data");
+		}
+		
+		//Get Travel Observations
+		try {
+			logger.info("Get Travel Observation Data");
+			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
+					r4FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setTravelObs(observationList);
+			for (Observation observation : observationList) {
+				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Travel Observation Data");
 		}
 
 		// Get MedicationAdministration for Patients and laboratory category (Write a
@@ -169,6 +201,7 @@ public class LoadingQueryR4Bundle {
 			List<MedicationAdministration> medAdministrationsList = r4ResourcesData.getMedicationAdministrationData(
 					context, client, launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			r4FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
 				BundleEntryComponent medAdministrationEntry = new BundleEntryComponent().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
@@ -176,6 +209,21 @@ public class LoadingQueryR4Bundle {
 		} catch (Exception e) {
 			logger.error("Error in getting the MedicationAdministration Data");
 		}
+		
+		try {
+			logger.info("Get MedicationStatement Data");
+			List<MedicationStatement> medStatementsList = r4ResourcesData.getMedicationStatementData(
+					context, client, launchDetails, r4FhirData, encounter, start, end);
+			logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
+			r4FhirData.setMedications(medStatementsList);
+			for (MedicationStatement medStatement : medStatementsList) {
+				BundleEntryComponent medStatementEntry = new BundleEntryComponent().setResource(medStatement);
+				bundle.addEntry(medStatementEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting the MedicationStatement Data");
+		}
+		
 
 		// Get ServiceRequest for Patients (Write a method).
 		// Filter the ServiceRequest based on encounter Reference if encounter is

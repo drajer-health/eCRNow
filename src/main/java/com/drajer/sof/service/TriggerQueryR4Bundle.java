@@ -148,6 +148,7 @@ public class TriggerQueryR4Bundle {
 			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
 				bundle.addEntry(observationsEntry);
@@ -171,6 +172,7 @@ public class TriggerQueryR4Bundle {
 			List<MedicationAdministration> medAdministrationsList = r4ResourcesData
 					.getMedicationAdministrationData(context, client, launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			r4FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
 				BundleEntryComponent medAdministrationEntry = new BundleEntryComponent().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
