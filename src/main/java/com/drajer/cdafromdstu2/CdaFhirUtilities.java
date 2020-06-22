@@ -150,6 +150,33 @@ public class CdaFhirUtilities {
 		return null;
 	}
 	
+	public static CodeDt getCodeExtension(List<ExtensionDt> exts, String extUrl) {
+		
+		if(exts != null && exts.size() > 0) {
+			
+			for(ExtensionDt ext : exts) {
+
+				if (ext.getUrl() != null && 
+					ext.getUrl().contentEquals(extUrl)) {
+					
+					// if the top level extension has CodingDt then we will use it.
+					if(ext.getValue() != null &&
+					   (ext.getValue() instanceof CodeDt)) {
+						
+							logger.info(" Found Extension at top level ");
+							return (CodeDt)ext.getValue();
+							
+						
+					}
+				}
+			}
+			
+		}
+		
+		logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+		return null;
+	}
+	
 	public static CodingDt getLanguage(List<Communication> comms) {
 		
 		if(comms != null && comms.size() > 0) {

@@ -1,4 +1,4 @@
-package com.drajer.cdafromdstu2;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,28 +6,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.Observation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
-
-import ca.uhn.fhir.model.dstu2.resource.Observation;
-import ca.uhn.fhir.model.primitive.CodeDt;
+import com.drajer.sof.model.R4FhirData;
 
 public class CdaSocialHistoryGenerator {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CdaSocialHistoryGenerator.class);
 	
-	public static String generateSocialHistorySection(Dstu2FhirData data, LaunchDetails details) {
+	public static String generateSocialHistorySection(R4FhirData data, LaunchDetails details) {
 		
 		StringBuilder sb = new StringBuilder(2000);
 		
 		// Will have to wait to discuss with vendors on Travel History, Pregnancy, and Birth Sex Observations.
 		// Then we can generte the entries. Till then it will be empty section.
-		CodeDt birthSex = CdaFhirUtilities.getCodeExtension(data.getPatient().getUndeclaredExtensions(), CdaGeneratorConstants.FHIR_ARGO_BIRTHSEX_EXT_URL);
+		CodeType birthSex = CdaFhirUtilities.getCodeExtension(data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_ARGO_BIRTHSEX_EXT_URL);
 		List<Observation> pregObs = data.getPregnancyObs();
 		List<Observation> travelHistory = data.getTravelObs();
 		
@@ -58,7 +57,7 @@ public class CdaSocialHistoryGenerator {
 				
 				Map<String, String> bodyvals = new HashMap<String, String>();
                 bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT, CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
-                bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, CdaFhirUtilities.getStringForIDataType(birthSex));
+                bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, CdaFhirUtilities.getStringForType(birthSex));
                 
                 sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, 0));
 				
@@ -114,7 +113,7 @@ public class CdaSocialHistoryGenerator {
 		return sb.toString();
 	}
 	
-	public static String generateBirthSexEntry(Dstu2FhirData data, LaunchDetails details, CodeDt birthSex) {
+	public static String generateBirthSexEntry(R4FhirData data, LaunchDetails details, CodeType birthSex) {
 		
 		StringBuilder sb = new StringBuilder();
 
@@ -138,7 +137,7 @@ public class CdaSocialHistoryGenerator {
         sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
             CdaGeneratorConstants.COMPLETED_STATUS));
 
-        sb.append(CdaGeneratorUtils.getXmlForValueCD(CdaFhirUtilities.getStringForIDataType(birthSex), 
+        sb.append(CdaGeneratorUtils.getXmlForValueCD(CdaFhirUtilities.getStringForType(birthSex), 
         		CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_OID, CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_NAME, ""));
      
         // End Tag for Entry Relationship

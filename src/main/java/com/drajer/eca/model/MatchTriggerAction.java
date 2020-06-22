@@ -13,11 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +39,7 @@ public class MatchTriggerAction extends AbstractAction {
 	}
 	
 	@Override
-	public void execute(Object obj) {
+	public void execute(Object obj, WorkflowEvent launchType) {
 		
 		logger.info(" Executing Match Trigger Action ");
 		
@@ -98,46 +100,6 @@ public class MatchTriggerAction extends AbstractAction {
 						
 						EcaUtils.matchTriggerCodesForDSTU2(codePaths, dstu2Data, state, details);
 						
-						/* for(ActionData ad: codePaths) {
-							
-							logger.info(" Need to match Trigger Codes for : " + ad.getPath());
-							
-							List<CodeableConceptDt> ptCodes = dstu2Data.getCodesForExpression(ad.getPath());
-							
-							if(ptCodes != null && ptCodes.size() > 0) {
-								
-								logger.info(" Found a Total # of " + ptCodes.size() + " codes found for Patient." + ad.getPath());
-								
-								Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
-								
-								Set<String> codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsString();
-								
-								logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching");
-								
-								Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
-								
-								if(intersection != null && intersection.size() > 0) {
-									
-									logger.info(" Number of Matched Codes = " + intersection.size());
-									
-									// For Testing purposes until we get test data assume the data has matched and continue processing.
-									state.getMatchTriggerStatus().setTriggerMatchStatus(true);
-									
-									// Hardcoded value set and value set version for CONNECTATHON
-									String valueSet = "2.16.840.1.113762.1.4.1146.1123";
-									String valuesetVersion = "1";
-									
-									state.getMatchTriggerStatus().addMatchedCodes(intersection, valueSet, ad.getPath(), valuesetVersion);
-									// state.getMatchTriggerStatus().getMatchedCodes().addAll(intersection);
-								}
-								else {
-									
-									logger.info(" No Matched codes found for : " + ad.getPath());
-									state.getMatchTriggerStatus().setTriggerMatchStatus(false);
-								}
-								
-							}
-						}*/
 						
 					}
 					else {
@@ -163,6 +125,52 @@ public class MatchTriggerAction extends AbstractAction {
 						
 						throw new RuntimeException(msg);
 					}
+				}
+				else if(data != null && data instanceof R4FhirData) {
+					
+					R4FhirData r4Data = (R4FhirData)data;
+					
+					// For Match Trigger Action, we expect the following
+					// No preConditions;
+					// No relatedActions;
+					// No timingData
+					
+					// We only expect to match codes. So get the paths and match the codes.
+					if(getTriggerData() != null && getTriggerData().size() > 0) {
+						
+						// we have triggers to match against COVID Value Sets for now.
+						// In the future we will use the specific paths provided by the ersd spec to match.
+						
+						List<ActionData> codePaths = getTriggerData();
+						
+						EcaUtils.matchTriggerCodesForR4(codePaths, r4Data, state, details);
+						
+						
+					}
+					else {
+						
+						String msg = "No Trigger Data to match trigger Codes.";
+						logger.error(msg);
+						
+						throw new RuntimeException(msg);
+					}
+					
+					// Job is completed, even if it did not match.
+					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
+					// because data may be entered late even though the app was launched.
+					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+					
+					try {
+						details.setStatus(mapper.writeValueAsString(state));
+					} catch (JsonProcessingException e) {
+					
+						String msg = "Unable to update execution state";
+						logger.error(msg);
+						e.printStackTrace();
+						
+						throw new RuntimeException(msg);
+					}
+					
 				}
 				else {
 					

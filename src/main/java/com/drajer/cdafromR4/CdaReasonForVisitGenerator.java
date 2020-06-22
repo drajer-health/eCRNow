@@ -1,4 +1,4 @@
-package com.drajer.cdafromdstu2;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,22 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 
-import ca.uhn.fhir.model.dstu2.resource.Condition;
-import ca.uhn.fhir.model.dstu2.resource.Encounter;
 
 public class CdaReasonForVisitGenerator {
 	
-private static final Logger logger = LoggerFactory.getLogger(CdaReasonForVisitGenerator.class);
+	private static final Logger logger = LoggerFactory.getLogger(CdaReasonForVisitGenerator.class);
 	
-	public static String generateReasonForVisitSection(Dstu2FhirData data, LaunchDetails details) {
+	public static String generateReasonForVisitSection(R4FhirData data, LaunchDetails details) {
 		
 		StringBuilder sb = new StringBuilder(2000);
 		
@@ -66,16 +65,17 @@ private static final Logger logger = LoggerFactory.getLogger(CdaReasonForVisitGe
         int rowNum = 1;
         String text = CdaGeneratorConstants.UNKNOWN_REASON_FOR_VISIT;
         	
-        if(encounter != null && 
-        		encounter.getReasonFirstRep() != null && 
-        		encounter.getReasonFirstRep().getCodingFirstRep() != null && 
-        	    !StringUtils.isEmpty(encounter.getReasonFirstRep().getCodingFirstRep().getDisplay())) {
+        if(encounter != null &&
+        		encounter.getReasonCodeFirstRep() != null && 
+        		encounter.getReasonCodeFirstRep().getCodingFirstRep() != null && 
+        	    !StringUtils.isEmpty(encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
         	
-        	text = encounter.getReasonFirstRep().getCodingFirstRep().getDisplay();
+        	text = encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay();
         }
         
+        
         Map<String, String> bodyvals = new HashMap<String, String>();
-        bodyvals.put(CdaGeneratorConstants.REASON_FOR_VISIT_BODY_CONTENT, text);
+        bodyvals.put(CdaGeneratorConstants.TEXT_EL_NAME, text);
 
         sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
 
@@ -92,5 +92,6 @@ private static final Logger logger = LoggerFactory.getLogger(CdaReasonForVisitGe
 		
 		return sb.toString();
 	}
+
 
 }

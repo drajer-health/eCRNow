@@ -6,7 +6,9 @@ public final class EventTypes {
 		
 		// These are the two ways that the app can be initiated currently.
 		SOF_LAUNCH,
-		SUBSCRIPTION_NOTIFICATION
+		SUBSCRIPTION_NOTIFICATION,
+		SCHEDULED_JOB,
+		DEPENDENT_EVENT_COMPLETION
 	}
 	
 	public static enum JobStatus {
@@ -42,6 +44,7 @@ public final class EventTypes {
 		CLOSE_OUT_EICR,
 		VALIDATE_EICR,
 		SUBMIT_EICR,
+		RR_CHECK,
 		UNKNOWN
 	}
 	

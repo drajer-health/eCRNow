@@ -533,7 +533,7 @@ public class R4ResourcesData {
 	public List<ServiceRequest> getServiceRequestData(FhirContext context, IGenericClient client,
 			LaunchDetails launchDetails, R4FhirData r4FhirData, Encounter encounter, Date start, Date end) {
 		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
-		List<ServiceRequest> serviceRequests = new ArrayList<>();
+		List<ServiceRequest> serviceRequests = new ArrayList<ServiceRequest>();
 		List<CodeableConcept> serviceRequestCodes = new ArrayList<CodeableConcept>();
 		// Filter ServiceRequests based on Encounter Reference
 		if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {

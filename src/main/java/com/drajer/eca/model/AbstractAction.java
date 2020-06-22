@@ -6,9 +6,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
+
 public abstract class AbstractAction {
 	
-	public abstract void execute(Object obj);
+	public abstract void execute(Object obj, WorkflowEvent launchType);
 	
 	private String actionId;
 	

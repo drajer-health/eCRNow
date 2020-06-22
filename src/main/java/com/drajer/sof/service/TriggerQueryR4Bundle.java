@@ -236,7 +236,7 @@ public class TriggerQueryR4Bundle {
 		logger.info("Conditions Codes Size=====>" + r4FhirData.getR4ConditionCodes().size());
 		logger.info("Observation Codes Size=====>" + r4FhirData.getR4LabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
-		// logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
+		logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 		

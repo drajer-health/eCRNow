@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -8,34 +7,33 @@ import java.util.Set;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-@Service
-public class SubmitEicrAction extends AbstractAction {
-
-	private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
+public class ReportabilityResponseAction extends AbstractAction {
 	
+	private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseAction.class);
+
 	@Override
 	public void print() {
 		
 		logger.info(" **** Printing SubmitEicrAction **** ");
 		printBase();
 		logger.info(" **** End Printing SubmitEicrAction **** ");
+
 	}
-	
+
 	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
 		
-
-		logger.info(" **** START Executing Submit Eicr Action **** ");
+		logger.info(" **** START Executing RR Check Eicr Action **** ");
 		
 		if (obj instanceof LaunchDetails) {
 			  
@@ -43,7 +41,7 @@ public class SubmitEicrAction extends AbstractAction {
 			LaunchDetails details = (LaunchDetails) obj;
 			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
-
+	
 			try {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
 			} catch (JsonMappingException e1) {
@@ -60,8 +58,8 @@ public class SubmitEicrAction extends AbstractAction {
 				e1.printStackTrace();
 				throw new RuntimeException(msg);
 			}
-
-			logger.info(" Executing Submit Eicr Action , Prior Execution State : = " + details.getStatus());
+	
+			logger.info(" Executing RR Check Eicr Action , Prior Execution State : = " + details.getStatus());
 			
 			String data = "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
 			
@@ -70,27 +68,28 @@ public class SubmitEicrAction extends AbstractAction {
 			if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 				
 				logger.info(" Related Actions exist, so check dependencies ");
-
+	
 				List<RelatedAction> racts = getRelatedActions();
-
+	
 				for (RelatedAction ract : racts) {
-
+	
 					if (ract.getRelationship() == ActionRelationshipType.AFTER) {
-
+	
 						// check if the action is completed.
 						String actionId = ract.getRelatedAction().getActionId();
-
+	
 						if (!state.hasActionCompleted(actionId)) {
-
+	
 							logger.info(
 									" Action " + actionId + " is not completed , hence this action has to wait ");
 						}
 						else {
 							
-							// Get the eICR for the Action Completed after which validation has to be run.
-							Set<Integer> ids = state.getEicrsReadyForSubmission();
+							logger.info(" No related actions, so check all Eicrs that have been submitted ");
 							
-							submitEicrs(details, state, ids);
+							Set<Integer> ids = state.getEicrsForRRCheck();
+							
+							checkRRForEicrs(details, state, ids);	
 							
 						}
 					}
@@ -101,11 +100,11 @@ public class SubmitEicrAction extends AbstractAction {
 			}
 			else {
 				
-				logger.info(" No related actions, so submit all Eicrs that are ready for submission ");
+				logger.info(" No related actions, so check all Eicrs that have been submitted ");
 				
-				Set<Integer> ids = state.getEicrsReadyForSubmission();
+				Set<Integer> ids = state.getEicrsForRRCheck();
 				
-				submitEicrs(details, state, ids);			
+				checkRRForEicrs(details, state, ids);			
 				
 			}
 			
@@ -122,28 +121,25 @@ public class SubmitEicrAction extends AbstractAction {
 		}
 		
 	}
-	
-	public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+
+	public void checkRRForEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
 		
 		for(Integer id : ids) {
 			
-			logger.info(" Found eICR with Id " + id  +" to submit ");
+			logger.info(" Found eICR with Id " + id  +" to check for RR ");
 			
-			String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
-			
-			ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+			// String data = ActionRepo.getInstance().getEicrRRService().get(id).getData();
 							
 			// Add a submission object every time.
-			SubmitEicrStatus submitState = new SubmitEicrStatus();
+			RRStatus submitState = new RRStatus();
 			submitState.setActionId(getActionId());
 			submitState.seteICRId(id.toString());
-			submitState.setEicrSubmitted(true);
+			submitState.setRrObtained(true);
 			submitState.setJobStatus(JobStatus.COMPLETED);
-			submitState.setSubmittedTime(new Date());
-			state.getSubmitEicrStatus().add(submitState);
+			submitState.setRrTime(new Date());
+			state.getRrStatus().add(submitState);
 			  			  
 		}
 		
 	}
-
 }

@@ -63,6 +63,11 @@ public class CdaGeneratorConstants {
     public static String FHIR_ARGO_RACE_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-race";
     public static String FHIR_ARGO_ETHNICITY_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity";
     public static String FHIR_ARGO_BIRTHSEX_EXT_URL = "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex";
+   
+    public static String FHIR_USCORE_RACE_EXT_URL = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
+    public static String FHIR_USCORE_ETHNICITY_EXT_URL = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+    public static String FHIR_USCORE_BIRTHSEX_EXT_URL = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex";
+    
     public static String OMB_RACE_CATEGORY_URL = "ombCategory";
     public static String OMB_RACE_DETAILED_URL = "detailed";
     public static String FHIR_NPI_URL = "http://hl7.org/fhir/sid/us-npi";
@@ -426,6 +431,12 @@ public class CdaGeneratorConstants {
     public static String SOC_HISTORY_SEC_NAME = "Social History";
     public static String SOC_HISTORY_SEC_TITLE = "SOCIAL HISTORY";
     public static String SOC_HISTORY_SEC_TEMPLATE_ID_EXT = "2015-08-01";
+    public static String BIRTH_SEX_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.200";
+    public static String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
+    public static String BIRTH_SEX_CODE = "76689-9";
+    public static String BIRTH_SEX_DISPLAY = "Birth Sex";
+    public static String BIRTH_SEX_CODESYSTEM_OID = "2.16.840.1.113883.5.1";
+    public static String BIRTH_SEX_CODESYSTEM_NAME = "Administrative Gender";
 
     // Payer Related Information.
     public static String PAYERS_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.18";
@@ -603,6 +614,7 @@ public class CdaGeneratorConstants {
     public static String OBS_EL_NAME = "observation";
     public static String ENTRY_REL_EL_NAME = "entryRelationship";
     public static String TEXT_EL_NAME = "text";
+    public static String NARRATIVE_TEXT_EL_NAME = "Narrative Text";
     public static String ORIGINAL_TEXT_EL_NAME = "originalText";
     public static String TIME_LOW_EL_NAME = "low";
     public static String TIME_HIGH_EL_NAME = "high";
@@ -709,6 +721,8 @@ public class CdaGeneratorConstants {
     public static String PROB_TABLE_COL_1_BODY_CONTENT = "problem";
     public static String PROB_TABLE_COL_2_TITLE = "Problem Status";
     public static String PROB_TABLE_COL_2_BODY_CONTENT = "problemStatus";
+    public static String HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT = "historyOfPresentIllness";
+    public static String REASON_FOR_VISIT_BODY_CONTENT = "reasonForVisit";
     public static String ALLERGY_TABLE_COL_1_TITLE = "Allergy Substance";
     public static String ALLERGY_TABLE_COL_1_BODY_CONTENT = "allergySubstance";
     public static String ALLERGY_TABLE_COL_2_TITLE = "Allergy Status";
@@ -751,6 +765,10 @@ public class CdaGeneratorConstants {
     public static String FUNC_STATUS_TABLE_COL_1_BODY_CONTENT = "observation";
     public static String FUNC_STATUS_TABLE_COL_2_TITLE = "Observation Result";
     public static String FUNC_STATUS_TABLE_COL_2_BODY_CONTENT = "observationResult";
+    public static String SOC_HISTORY_TABLE_COL_1_TITLE = "Social History Observation";
+    public static String SOC_HISTORY_TABLE_COL_1_BODY_CONTENT = "socContent";
+    public static String SOC_HISTORY_TABLE_COL_2_TITLE = "Social History Observation Result";
+    public static String SOC_HISTORY_TABLE_COL_2_BODY_CONTENT = "socObservationResult";
     public static String PAYOR_TABLE_COL_1_TITLE = "Insurance Provider";
     public static String PAYOR_TABLE_COL_1_BODY_CONTENT = "payor";
     public static String DEVICE_TABLE_COL_1_TITLE = "Device Name";
@@ -758,6 +776,8 @@ public class CdaGeneratorConstants {
     public static String DEVICE_TABLE_COL_2_TITLE = "Device Date";
     public static String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
     public static String UNKNOWN_VALUE = "Unknown";
+    public static String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS = "Unknown History of Present Illness";
+    public static String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
 
     //OID to URI Mapping
     private static HashMap<String,String> oidMap = new HashMap<String,String>();

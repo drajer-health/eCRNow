@@ -456,7 +456,7 @@ public class CdaHeaderGenerator {
 		}
 		
 		Coding race = CdaFhirUtilities.getCodingExtension(p.getExtension(),
-				CdaGeneratorConstants.FHIR_ARGO_RACE_EXT_URL, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+				CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 		
 		if(race != null &&
 		   race.getCode() != null) {			
@@ -468,7 +468,7 @@ public class CdaHeaderGenerator {
 		}
 		
 		Coding ethnicity = CdaFhirUtilities.getCodingExtension(p.getExtension(), 
-				CdaGeneratorConstants.FHIR_ARGO_ETHNICITY_EXT_URL, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+				CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 		
 		if(ethnicity != null && 
 		   ethnicity.getCode() != null) {			
