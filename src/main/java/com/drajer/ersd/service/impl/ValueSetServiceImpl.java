@@ -1,9 +1,7 @@
 package com.drajer.ersd.service.impl;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -123,8 +121,10 @@ public class ValueSetServiceImpl implements ValueSetService {
 		
 		ValueSet valuSetGrouper = ApplicationUtils.getValueSetGrouperFromId(codeFilter.getValueSet());
 		
-		ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(codeFilter.getPath(), valueSets);
-		ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(codeFilter.getPath(), valuSetGrouper);
+		String path = dataRequirement.getType() + "." + codeFilter.getPath();
+		
+		ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
+		ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, valuSetGrouper);
 		ValueSetSingleton.getInstance().addGrouperToValueSetMap(codeFilter.getValueSet(), grouperToValueSets);
 		ValueSetSingleton.getInstance().addGrouperToCovidValueSetMap(codeFilter.getValueSet(),grouperToCovidValueSets);
 	}

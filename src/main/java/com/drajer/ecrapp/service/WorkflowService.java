@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
@@ -78,7 +79,6 @@ public class WorkflowService {
     @Value("${xsd.schemas.location}")
     String xsdSchemasLocation;
 
-
     @PostConstruct
 	public void initializeActionRepo() {
 		ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
@@ -89,8 +89,9 @@ public class WorkflowService {
 		ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
 		ActionRepo.getInstance().setDirectTransport(directTansport);
 		ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
-        ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
-        workflowInstance = this;
+		ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
+
+		workflowInstance = this;
 	}
 
 	public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -114,52 +115,7 @@ public class WorkflowService {
 			
 			
 			// Use Action Repo to get the events that we need to fire.			
-			executeEicrWorkflow(details);
-			
-		
-			// kickofff Data Changed triggers  -- This can be used in the future for developing a more subscription based launch.
-			/* 
-			 * We can use the logic below to make it a generic pipeline for event processing.
-			 * For now implement the above order of trigger matching, creation and close out.
-			 * 
-			 * if(repo.getActionsByTriggers() != null && 
-			   repo.getActionsByTriggers().containsKey(TriggerType.DATACHANGED) && 
-			   repo.getActionsByTriggers().get(TriggerType.DATACHANGED) != null) {
-				
-				Set<AbstractAction> acts = repo.getActionsByTriggers().get(TriggerType.DATACHANGED);
-				logger.info(" Found Actions for Data Changed " + acts.size());
-				
-				for(AbstractAction aa : acts) {
-					
-					// Execute the action
-					aa.execute(details);
-					launchService.saveOrUpdate(details);
-					
-				}
-			}
-					
-			// kickoff Data Added triggers
-			if(repo.getActionsByTriggers() != null && 
-					repo.getActionsByTriggers().containsKey(TriggerType.DATAADDED) && 
-					repo.getActionsByTriggers().get(TriggerType.DATAADDED) != null) {
-
-				Set<AbstractAction> acts = repo.getActionsByTriggers().get(TriggerType.DATAADDED);
-				logger.info(" Found Actions for Data Added " + acts.size());
-
-				for(AbstractAction aa : acts) {
-
-					// Execute the action
-					aa.execute(details);
-					launchService.saveOrUpdate(details);
-
-				}
-			} */
-			
-			
-			// Till the above is fixed..just invoke the act.
-			//act.execute(details);
-			
-			
+			executeEicrWorkflow(details, WorkflowEvent.SOF_LAUNCH );
 			
 		}
 		else if(type == WorkflowEvent.SUBSCRIPTION_NOTIFICATION) {
@@ -170,7 +126,7 @@ public class WorkflowService {
 		
 	}
 	
-	public void executeEicrWorkflow(LaunchDetails details) {
+	public void executeEicrWorkflow(LaunchDetails details, WorkflowEvent launchType) {
 		
 		logger.info(" ***** START EXECUTING EICR WORKFLOW ***** ");
 		
@@ -197,34 +153,35 @@ public class WorkflowService {
 		}
 		
 		if(state.getMatchTriggerStatus().getJobStatus() != JobStatus.COMPLETED) {
-			executeActionsForType(details,EcrActionTypes.MATCH_TRIGGER);
+			executeActionsForType(details,EcrActionTypes.MATCH_TRIGGER, launchType);
 		}
 		
 		if(state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
-			executeActionsForType(details,EcrActionTypes.CREATE_EICR);	
+			executeActionsForType(details,EcrActionTypes.CREATE_EICR, launchType);	
 		}
 		
 		if(state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED &&
 		   state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED ) {
-			executeActionsForType(details,EcrActionTypes.PERIODIC_UPDATE_EICR);
+			executeActionsForType(details,EcrActionTypes.PERIODIC_UPDATE_EICR, launchType);
 		}
 		
 		if(state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
-			executeActionsForType(details,EcrActionTypes.CLOSE_OUT_EICR);
+			executeActionsForType(details,EcrActionTypes.CLOSE_OUT_EICR, launchType);
 		}
 		
-		executeActionsForType(details,EcrActionTypes.VALIDATE_EICR);	
-		executeActionsForType(details,EcrActionTypes.SUBMIT_EICR);
+		executeActionsForType(details,EcrActionTypes.VALIDATE_EICR, launchType);	
+		executeActionsForType(details,EcrActionTypes.SUBMIT_EICR, launchType);
+		executeActionsForType(details,EcrActionTypes.RR_CHECK, launchType);
 		
 		logger.info(" ***** END EXECUTING EICR WORKFLOW ***** ");
 		
 	}
 	
-	public void executeActions(LaunchDetails details, Set<AbstractAction> actions) {
+	public void executeActions(LaunchDetails details, Set<AbstractAction> actions, WorkflowEvent launchType) {
 		
 		for(AbstractAction act : actions) {					
 			// Execute the event.
-			act.execute(details);
+			act.execute(details, launchType);
 		}
 		
 		// Update state for next action
@@ -232,7 +189,7 @@ public class WorkflowService {
 		
 	}
 	
-	public void executeActionsForType(LaunchDetails details, EcrActionTypes type) {
+	public void executeActionsForType(LaunchDetails details, EcrActionTypes type, WorkflowEvent launchType) {
 		
 		ActionRepo repo = ActionRepo.getInstance();
 		
@@ -240,21 +197,21 @@ public class WorkflowService {
 		if(repo.getActions() != null && 
 				repo.getActions().containsKey(type)) {
 			
-			executeActions(details, repo.getActions().get(type));
+			executeActions(details, repo.getActions().get(type), launchType);
 			
 		}
 	}
 	
-	public void executeScheduledAction(Integer launchDetailsId, EcrActionTypes actionType) {
+	public void executeScheduledAction(Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 		
 		logger.info("Get Launch Details from Database for Id  : " + launchDetailsId + " for Action Type " + actionType + " and start execution ");
 		
 		LaunchDetails launchDetails = ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
 		
-		executeActionsForType(launchDetails, actionType);
+		executeActionsForType(launchDetails, actionType, launchType);
 		
 		// Execute the Eicr Workflow since a job executtion can unlock other dependencies and execute other jobs.
-		executeEicrWorkflow(launchDetails);
+		executeEicrWorkflow(launchDetails, WorkflowEvent.DEPENDENT_EVENT_COMPLETION);
 		
 		
 	}
@@ -274,7 +231,7 @@ public class WorkflowService {
 		public void run() {
 			try {
 				
-				executeScheduledAction(launchDetailsId, actionType);			
+				executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);			
 				logger.info("Starting the Thread");
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {

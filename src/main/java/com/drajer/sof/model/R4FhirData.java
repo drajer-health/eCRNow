@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.Bundle;
@@ -8,11 +9,14 @@ import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Medication;
+import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.ServiceRequest;
 
 public class R4FhirData extends FhirData {
 
@@ -30,7 +34,23 @@ public class R4FhirData extends FhirData {
 	private List<Observation>      pregnancyObs;
 	private List<Immunization> 	   immunizations;
 	private List<MedicationStatement>  medications;
-	// private List<DiagnosticOrder>  diagOrders;
+	private List<MedicationAdministration> medicationAdministrations;
+	private List<Medication> medicationList;
+	private List<ServiceRequest> 	serviceRequests;
+
+	public R4FhirData() {
+
+		conditions = new ArrayList<Condition>();
+		diagReports = new ArrayList<DiagnosticReport>();
+		labResults = new ArrayList<Observation>();
+		travelObs = new ArrayList<Observation>();
+		pregnancyObs = new ArrayList<Observation>();
+		immunizations = new ArrayList<Immunization>();
+		medications = new ArrayList<MedicationStatement>();
+		medicationAdministrations = new ArrayList<MedicationAdministration>();
+		serviceRequests = new ArrayList<ServiceRequest>();
+		medicationList = new ArrayList<Medication>();
+	}
 
 	public Bundle getData() {
 		return data;
@@ -134,5 +154,29 @@ public class R4FhirData extends FhirData {
 
 	public void setMedications(List<MedicationStatement> medications) {
 		this.medications = medications;
+	}
+
+	public List<MedicationAdministration> getMedicationAdministrations() {
+		return medicationAdministrations;
+	}
+
+	public void setMedicationAdministrations(List<MedicationAdministration> medicationAdministrations) {
+		this.medicationAdministrations = medicationAdministrations;
+	}
+
+	public List<Medication> getMedicationList() {
+		return medicationList;
+	}
+
+	public void setMedicationList(List<Medication> medicationList) {
+		this.medicationList = medicationList;
+	}
+
+	public List<ServiceRequest> getServiceRequests() {
+		return serviceRequests;
+	}
+
+	public void setServiceRequests(List<ServiceRequest> serviceRequests) {
+		this.serviceRequests = serviceRequests;
 	}
 }

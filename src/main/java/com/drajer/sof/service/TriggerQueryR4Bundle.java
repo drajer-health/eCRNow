@@ -1,5 +1,10 @@
 package com.drajer.sof.service;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,18 +15,21 @@ import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -39,7 +47,7 @@ public class TriggerQueryR4Bundle {
 	@Autowired
 	R4ResourcesData r4ResourcesData;
 
-	private final Logger logger = LoggerFactory.getLogger(TriggerQueryR4Bundle.class);
+	private static final Logger logger = LoggerFactory.getLogger(TriggerQueryR4Bundle.class);
 
 	public Bundle createR4Bundle(LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {
 		Bundle bundle = new Bundle();
@@ -123,6 +131,7 @@ public class TriggerQueryR4Bundle {
 			List<Condition> conditionsList = r4ResourcesData.getConditionData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			r4FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
 				bundle.addEntry(conditionsEntry);
@@ -143,6 +152,7 @@ public class TriggerQueryR4Bundle {
 			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
 				bundle.addEntry(observationsEntry);
@@ -166,7 +176,31 @@ public class TriggerQueryR4Bundle {
 			List<MedicationAdministration> medAdministrationsList = r4ResourcesData
 					.getMedicationAdministrationData(context, client, launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			r4FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
+				if(!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
+					if(medAdministration.getMedication() instanceof Reference) {
+						Reference medRef = (Reference) medAdministration.getMedication();
+						String medReference = medRef.getReferenceElement().getValue();
+						if(medReference.startsWith("#")) {
+							List<Resource> medAdministrationContained = medAdministration.getContained();
+							// List<Medication> containedResources = medAdministrationContained;
+							if(medAdministrationContained.stream().anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+								logger.info("Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+							}
+						} else {
+							logger.info("Medication Reference Found=============>"+medReference);
+							Medication medication = r4ResourcesData.getMedicationData(context, client, launchDetails, r4FhirData, medReference);
+							BundleEntryComponent medicationEntry = new BundleEntryComponent().setResource(medication);
+							bundle.addEntry(medicationEntry);
+							if(medication != null) {
+								List<Medication> medicationList = new ArrayList<Medication>();
+								medicationList.add(medication);
+								r4FhirData.setMedicationList(medicationList);	
+							}
+						}
+					}
+				}
 				BundleEntryComponent medAdministrationEntry = new BundleEntryComponent().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}
@@ -189,6 +223,7 @@ public class TriggerQueryR4Bundle {
 			List<ServiceRequest> serviceRequestsList = r4ResourcesData.getServiceRequestData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered ServiceRequests----------->" + serviceRequestsList.size());
+			r4FhirData.setServiceRequests(serviceRequestsList);
 			for (ServiceRequest serviceRequest : serviceRequestsList) {
 				BundleEntryComponent serviceRequestEntry = new BundleEntryComponent().setResource(serviceRequest);
 				bundle.addEntry(serviceRequestEntry);
@@ -203,10 +238,13 @@ public class TriggerQueryR4Bundle {
 		logger.info("Conditions Codes Size=====>" + r4FhirData.getR4ConditionCodes().size());
 		logger.info("Observation Codes Size=====>" + r4FhirData.getR4LabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
-		logger.info("ServiceRequests Codes Size=====>"+r4FhirData.getR4ServiceRequestCodes().size());
+		logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
-
+		
+		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/TriggerQueryR4Bundle-"+launchDetails.getLaunchPatientId()+".json";
+		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 		return bundle;
 	}
+
 }

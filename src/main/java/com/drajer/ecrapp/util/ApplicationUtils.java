@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -172,6 +174,31 @@ public class ApplicationUtils {
 				List<CodingDt> cds = cd.getCoding();
 							
 				for(CodingDt code : cds) {
+					
+					if(code.getSystem() != null && 
+					   code.getCode() != null ) {
+						
+						retVal.add(code.getSystem() + "|" + code.getCode());
+					}
+				}
+				
+			}
+		}
+		
+		return retVal;
+	}
+	
+	public static Set<String> convertR4CodeableConceptsToString(List<CodeableConcept> codes) { 
+		
+		Set<String> retVal = new HashSet<String>();
+		
+		if(codes != null && codes.size() > 0) {
+			
+			for(CodeableConcept cd : codes) {
+				
+				List<Coding> cds = cd.getCoding();
+							
+				for(Coding code : cds) {
 					
 					if(code.getSystem() != null && 
 					   code.getCode() != null ) {

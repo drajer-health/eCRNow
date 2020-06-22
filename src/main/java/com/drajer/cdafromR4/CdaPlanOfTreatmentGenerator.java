@@ -1,18 +1,18 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 
 public class CdaPlanOfTreatmentGenerator {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CdaPlanOfTreatmentGenerator.class);
 	
-	public static String generatePlanOfTreatmentSection(Dstu2FhirData data, LaunchDetails details) {
+	public static String generatePlanOfTreatmentSection(R4FhirData data, LaunchDetails details) {
 		
 		StringBuilder sb = new StringBuilder(2000);
 		
@@ -59,4 +59,5 @@ public class CdaPlanOfTreatmentGenerator {
 
         return sb.toString();
 	}
+
 }

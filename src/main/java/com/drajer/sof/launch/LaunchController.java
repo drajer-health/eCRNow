@@ -74,8 +74,6 @@ public class LaunchController {
 	@Autowired
 	FhirContextInitializer fhirContextInitializer;
 
-	public static Map<Integer, JSONObject> authDetailsSet = new HashMap<Integer, JSONObject>();
-
 	@CrossOrigin
 	@RequestMapping("/api/launchDetails/{tokenId}")
 	public LaunchDetails getLaunchDetailsById(@PathVariable("tokenId") Integer tokenId) {
@@ -159,10 +157,11 @@ public class LaunchController {
 					+ request.getContextPath();
 			Random random = new Random();
 			Integer state = random.nextInt();
-			JSONObject authDetailsObject = new JSONObject();
-			authDetailsObject.put("redirectUrl", uri + "/api/redirect");
-			authDetailsObject.put("iss", iss);
-			authDetailsObject.put("launch", launch);
+			logger.info("Random State Value==========>"+state);
+			LaunchDetails launchDetails = new LaunchDetails();
+			launchDetails.setRedirectURI(uri + "/api/redirect");
+			launchDetails.setEhrServerURL(iss);
+			launchDetails.setLaunchId(launch);
 			try {
 				JSONObject object = authorization.getMetadata(iss + "/metadata");
 				if (object != null) {
@@ -172,32 +171,30 @@ public class LaunchController {
 					JSONObject extension = (JSONObject) sec.getJSONArray("extension").get(0);
 					JSONArray innerExtension = extension.getJSONArray("extension");
 					if (object.getString("fhirVersion").equals("1.0.2")) {
-						authDetailsObject.put("fhirVersion", FhirVersionEnum.DSTU2.toString());
+						launchDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
 					}
 					if (object.getString("fhirVersion").equals("4.0.0")) {
-						authDetailsObject.put("fhirVersion", FhirVersionEnum.R4.toString());
+						launchDetails.setFhirVersion(FhirVersionEnum.R4.toString());
 					}
 					for (int i = 0; i < innerExtension.length(); i++) {
 						JSONObject urlExtension = innerExtension.getJSONObject(i);
 						if (urlExtension.getString("url").equals("authorize")) {
 							logger.info("Authorize URL:::::" + urlExtension.getString("valueUri"));
-							authDetailsObject.put("authorizeUrl", urlExtension.getString("valueUri"));
+							launchDetails.setAuthUrl(urlExtension.getString("valueUri"));
 						}
 						if (urlExtension.getString("url").equals("token")) {
 							logger.info("Token URL:::::" + urlExtension.getString("valueUri"));
-							authDetailsObject.put("tokenUrl", urlExtension.getString("valueUri"));
+							launchDetails.setTokenUrl(urlExtension.getString("valueUri"));
 						}
 					}
 					ClientDetails clientDetails = clientDetailsService
-							.getClientDetailsByUrl(authDetailsObject.getString("iss"));
-					authDetailsObject.put("client_id", clientDetails.getClientId());
-					authDetailsObject.put("scope", clientDetails.getScopes());
-					String constructedAuthUrl = authorization.createAuthUrl(authDetailsObject, clientDetails, state);
+							.getClientDetailsByUrl(launchDetails.getEhrServerURL());
+					launchDetails.setClientId(clientDetails.getClientId());
+					launchDetails.setScope(clientDetails.getScopes());
+					launchDetails.setLaunchState(state);
+					String constructedAuthUrl = authorization.createAuthUrl(launchDetails, clientDetails, state);
 					logger.info("Constructed Authorization URL:::::" + constructedAuthUrl);
-					logger.info(
-							"Storing the oAuth Details to a HashMap using randomly generated state value as Key:::::"
-									+ authDetailsObject.toString());
-					authDetailsSet.put(state, authDetailsObject);
+					authDetailsService.saveOrUpdate(launchDetails);
 					// response.sendRedirect(constructedAuthUrl);
 					response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
 					response.setHeader("Location", constructedAuthUrl);
@@ -218,31 +215,31 @@ public class LaunchController {
 			logger.info("Received Code Parameter:::::" + code);
 			logger.info("Received State Parameter:::::" + state);
 			logger.info("Reading the oAuth Details stored in HashMap using state value");
-			JSONObject currentStateDetails = authDetailsSet.get(Integer.parseInt(state));
+			LaunchDetails currentLaunchDetails = authDetailsService.getLaunchDetailsByState(Integer.parseInt(state));
 			boolean isPatientLaunched = false;
-			if (currentStateDetails != null) {
-				currentStateDetails.put("code", code);
-				JSONObject accessTokenObject = authorization.getAccessToken(currentStateDetails);
+			if (currentLaunchDetails != null) {
+				currentLaunchDetails.setAuthorizationCode(code);
+				JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
 				if (accessTokenObject != null) {
-					logger.info("Received Access Token:::::" + accessTokenObject.toString());
+					logger.info("Received Access Token:::::" + accessTokenObject.getString("access_token"));
 					if (accessTokenObject.get("patient") != null && accessTokenObject.get("encounter") != null) {
 						isPatientLaunched = checkWithExistingPatientAndEncounter(accessTokenObject.getString("patient"),
-								accessTokenObject.getString("encounter"), currentStateDetails.getString("iss"));
+								accessTokenObject.getString("encounter"), currentLaunchDetails.getEhrServerURL());
 					}
 					if (!isPatientLaunched) {
 						ClientDetails clientDetails = clientDetailsService
-								.getClientDetailsByUrl(currentStateDetails.getString("iss"));
+								.getClientDetailsByUrl(currentLaunchDetails.getEhrServerURL());
 
-						LaunchDetails launchDetails = setLaunchDetails(currentStateDetails, accessTokenObject,
+						currentLaunchDetails = setLaunchDetails(currentLaunchDetails, accessTokenObject,
 								clientDetails);
 
-						saveLaunchDetails(launchDetails);
-						authDetailsSet.remove(Integer.parseInt(state));
+						saveLaunchDetails(currentLaunchDetails);
 					} else {
 						logger.error("Launch Context is already present for Patient:::::"
 								+ accessTokenObject.getString("patient"));
-						response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Launch Context is already present for Patient:::::"
-								+ accessTokenObject.getString("patient"));
+						response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+								"Launch Context is already present for Patient:::::"
+										+ accessTokenObject.getString("patient"));
 					}
 				} else {
 					throw new Exception("Error in getting AccessToken from Token Endpoint");
@@ -271,88 +268,81 @@ public class LaunchController {
 
 	}
 
-	public LaunchDetails setLaunchDetails(JSONObject currentStateDetails, JSONObject accessTokenObject,
+	public LaunchDetails setLaunchDetails(LaunchDetails currentStateDetails, JSONObject accessTokenObject,
 			ClientDetails clientDetails) {
 
-		LaunchDetails launchDetails = new LaunchDetails();
-		launchDetails.setClientId(currentStateDetails.getString("client_id"));
-		launchDetails.setEhrServerURL(currentStateDetails.getString("iss"));
-		launchDetails.setAuthUrl(currentStateDetails.getString("authorizeUrl"));
-		launchDetails.setTokenUrl(currentStateDetails.getString("tokenUrl"));
-		launchDetails.setAccessToken(accessTokenObject.getString("access_token"));
-		launchDetails.setRefreshToken(accessTokenObject.getString("refresh_token"));
-		launchDetails.setUserId(accessTokenObject.getString("user"));
-		launchDetails.setExpiry(accessTokenObject.getInt("expires_in"));
-		launchDetails.setScope(currentStateDetails.getString("scope"));
-		launchDetails.setLaunchPatientId(
+		currentStateDetails.setAccessToken(accessTokenObject.getString("access_token"));
+		currentStateDetails.setRefreshToken(accessTokenObject.getString("refresh_token"));
+		currentStateDetails.setUserId(accessTokenObject.getString("user"));
+		currentStateDetails.setExpiry(accessTokenObject.getInt("expires_in"));
+		currentStateDetails.setLaunchPatientId(
 				accessTokenObject.getString("patient") != null ? accessTokenObject.getString("patient") : null);
-		launchDetails.setFhirVersion(currentStateDetails.getString("fhirVersion"));
-		launchDetails.setEncounterId(
+		currentStateDetails.setEncounterId(
 				accessTokenObject.getString("encounter") != null ? accessTokenObject.getString("encounter") : null);
-		launchDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
-		launchDetails.setSetId(accessTokenObject.getString("patient") + "+" + accessTokenObject.getString("encounter"));
-		launchDetails.setVersionNumber("1");
-		launchDetails.setDirectUser(clientDetails.getDirectUser());
-		launchDetails.setDirectHost(clientDetails.getDirectHost());
-		launchDetails.setDirectPwd(clientDetails.getDirectPwd());
-		launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
-		launchDetails.setIsCovid(clientDetails.getIsCovid());
+		currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
+		currentStateDetails.setSetId(accessTokenObject.getString("patient") + "+" + accessTokenObject.getString("encounter"));
+		currentStateDetails.setVersionNumber("1");
+		currentStateDetails.setDirectUser(clientDetails.getDirectUser());
+		currentStateDetails.setDirectHost(clientDetails.getDirectHost());
+		currentStateDetails.setDirectPwd(clientDetails.getDirectPwd());
+		currentStateDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
+		currentStateDetails.setIsCovid(clientDetails.getIsCovid());
 
-		setStartAndEndDates(launchDetails, clientDetails, currentStateDetails);
+		setStartAndEndDates(clientDetails, currentStateDetails);
 
-		return launchDetails;
+		return currentStateDetails;
 	}
 
-	public void setStartAndEndDates(LaunchDetails launchDetails, ClientDetails clientDetails,
-			JSONObject currentStateDetails) {
-		FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
+	public void setStartAndEndDates(ClientDetails clientDetails,
+			LaunchDetails currentStateDetails) {
+		FhirContext context = fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion());
 
-		IGenericClient client = fhirContextInitializer.createClient(context, launchDetails.getEhrServerURL(),
-				launchDetails.getAccessToken());
+		IGenericClient client = fhirContextInitializer.createClient(context, currentStateDetails.getEhrServerURL(),
+				currentStateDetails.getAccessToken());
 
-		if (currentStateDetails.getString("fhirVersion").equals(FhirVersionEnum.DSTU2.toString())
-				&& launchDetails.getEncounterId() != null) {
-			Encounter encounter = (Encounter) fhirContextInitializer.getResouceById(launchDetails, client, context,
-					"Encounter", launchDetails.getEncounterId());
+		if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())
+				&& currentStateDetails.getEncounterId() != null) {
+			Encounter encounter = (Encounter) fhirContextInitializer.getResouceById(currentStateDetails, client, context,
+					"Encounter", currentStateDetails.getEncounterId());
 			if (encounter.getPeriod() != null) {
 				PeriodDt period = encounter.getPeriod();
 				if (period.getStart() != null) {
-					launchDetails.setStartDate(period.getStart());
+					currentStateDetails.setStartDate(period.getStart());
 				} else {
 					Date startDate = DateUtils.addHours(new Date(),
 							Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-					launchDetails.setStartDate(startDate);
+					currentStateDetails.setStartDate(startDate);
 				}
 				if (period.getEnd() != null) {
-					launchDetails.setEndDate(period.getEnd());
+					currentStateDetails.setEndDate(period.getEnd());
 				} else {
 					Date endDate = DateUtils.addHours(new Date(),
 							Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-					launchDetails.setEndDate(endDate);
+					currentStateDetails.setEndDate(endDate);
 				}
 			}
 		}
 
-		if (currentStateDetails.getString("fhirVersion").equals(FhirVersionEnum.R4.toString())
-				&& launchDetails.getEncounterId() != null) {
+		if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())
+				&& currentStateDetails.getEncounterId() != null) {
 			org.hl7.fhir.r4.model.Encounter r4Encounter = (org.hl7.fhir.r4.model.Encounter) fhirContextInitializer
-					.getResouceById(launchDetails, client, context, "Encounter", launchDetails.getEncounterId());
+					.getResouceById(currentStateDetails, client, context, "Encounter", currentStateDetails.getEncounterId());
 			if (r4Encounter != null) {
 				if (r4Encounter.getPeriod() != null) {
 					Period period = r4Encounter.getPeriod();
 					if (period.getStart() != null) {
-						launchDetails.setStartDate(period.getStart());
+						currentStateDetails.setStartDate(period.getStart());
 					} else {
 						Date startDate = DateUtils.addHours(new Date(),
 								Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-						launchDetails.setStartDate(startDate);
+						currentStateDetails.setStartDate(startDate);
 					}
 					if (period.getEnd() != null) {
-						launchDetails.setEndDate(period.getEnd());
+						currentStateDetails.setEndDate(period.getEnd());
 					} else {
 						Date endDate = DateUtils.addHours(new Date(),
 								Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-						launchDetails.setEndDate(endDate);
+						currentStateDetails.setEndDate(endDate);
 					}
 				}
 			}

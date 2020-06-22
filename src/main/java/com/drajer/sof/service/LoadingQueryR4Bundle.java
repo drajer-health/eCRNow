@@ -1,5 +1,6 @@
 package com.drajer.sof.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,18 +13,22 @@ import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -125,6 +130,7 @@ public class LoadingQueryR4Bundle {
 			List<Condition> conditionsList = r4ResourcesData.getConditionData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			r4FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
 				bundle.addEntry(conditionsEntry);
@@ -145,12 +151,43 @@ public class LoadingQueryR4Bundle {
 			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
 				bundle.addEntry(observationsEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting Observation Data");
+		}
+		
+		//Get Pregnancy Observations
+		try {
+			logger.info("Get Preganancy Observation Data");
+			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
+					r4FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setPregnancyObs(observationList);
+			for (Observation observation : observationList) {
+				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Preganancy Observation Data");
+		}
+		
+		//Get Travel Observations
+		try {
+			logger.info("Get Travel Observation Data");
+			List<Observation> observationList = r4ResourcesData.getObservationData(context, client, launchDetails,
+					r4FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			r4FhirData.setTravelObs(observationList);
+			for (Observation observation : observationList) {
+				BundleEntryComponent observationsEntry = new BundleEntryComponent().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Travel Observation Data");
 		}
 
 		// Get MedicationAdministration for Patients and laboratory category (Write a
@@ -168,13 +205,52 @@ public class LoadingQueryR4Bundle {
 			List<MedicationAdministration> medAdministrationsList = r4ResourcesData.getMedicationAdministrationData(
 					context, client, launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			r4FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
+				if(!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
+					if(medAdministration.getMedication() instanceof Reference) {
+						Reference medRef = (Reference) medAdministration.getMedication();
+						String medReference = medRef.getReferenceElement().getValue();
+						if(medReference.startsWith("#")) {
+							List<Resource> medAdministrationContained = medAdministration.getContained();
+							// List<Medication> containedResources = medAdministrationContained;
+							if(medAdministrationContained.stream().anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+								logger.info("Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+							}
+						} else {
+							logger.info("Medication Reference Found=============>"+medReference);
+							Medication medication = r4ResourcesData.getMedicationData(context, client, launchDetails, r4FhirData, medReference);
+							BundleEntryComponent medicationEntry = new BundleEntryComponent().setResource(medication);
+							bundle.addEntry(medicationEntry);
+							if(medication != null) {
+								List<Medication> medicationList = new ArrayList<Medication>();
+								medicationList.add(medication);
+								r4FhirData.setMedicationList(medicationList);	
+							}
+						}
+					}
+				}
 				BundleEntryComponent medAdministrationEntry = new BundleEntryComponent().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting the MedicationAdministration Data");
 		}
+		
+		try {
+			logger.info("Get MedicationStatement Data");
+			List<MedicationStatement> medStatementsList = r4ResourcesData.getMedicationStatementData(
+					context, client, launchDetails, r4FhirData, encounter, start, end);
+			logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
+			r4FhirData.setMedications(medStatementsList);
+			for (MedicationStatement medStatement : medStatementsList) {
+				BundleEntryComponent medStatementEntry = new BundleEntryComponent().setResource(medStatement);
+				bundle.addEntry(medStatementEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting the MedicationStatement Data");
+		}
+		
 
 		// Get ServiceRequest for Patients (Write a method).
 		// Filter the ServiceRequest based on encounter Reference if encounter is
@@ -190,6 +266,7 @@ public class LoadingQueryR4Bundle {
 			List<ServiceRequest> serviceRequestsList = r4ResourcesData.getServiceRequestData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered ServiceRequests----------->" + serviceRequestsList.size());
+			r4FhirData.setServiceRequests(serviceRequestsList);
 			for (ServiceRequest serviceRequest : serviceRequestsList) {
 				BundleEntryComponent serviceRequestEntry = new BundleEntryComponent().setResource(serviceRequest);
 				bundle.addEntry(serviceRequestEntry);
@@ -208,6 +285,7 @@ public class LoadingQueryR4Bundle {
 			List<Immunization> immunizationsList = r4ResourcesData.getImmunizationData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered Immunizations----------->" + immunizationsList.size());
+			r4FhirData.setImmunizations(immunizationsList);
 			for (Immunization immunization : immunizationsList) {
 				BundleEntryComponent immunizationEntry = new BundleEntryComponent().setResource(immunization);
 				bundle.addEntry(immunizationEntry);
@@ -226,6 +304,7 @@ public class LoadingQueryR4Bundle {
 			List<DiagnosticReport> diagnosticReportList = r4ResourcesData.getDiagnosticReportData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+			r4FhirData.setDiagReports(diagnosticReportList);
 			for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 				BundleEntryComponent diagnosticReportEntry = new BundleEntryComponent().setResource(diagnosticReport);
 				bundle.addEntry(diagnosticReportEntry);
@@ -247,7 +326,8 @@ public class LoadingQueryR4Bundle {
 
 		
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
-
+		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/LoadingQueryR4Bundle-"+launchDetails.getLaunchPatientId()+".json";
+		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 		return bundle;
 	}
 }

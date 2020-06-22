@@ -13,4 +13,6 @@ public interface LaunchService {
 	LaunchDetails getLaunchDetailsByPatientAndEncounter(String patient, String encounter,String fhirServerUrl);
 	
 	List<LaunchDetails> getAllLaunchDetails();
+
+	LaunchDetails getLaunchDetailsByState(int state);
 }

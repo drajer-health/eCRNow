@@ -54,7 +54,7 @@ public class ActionRepo {
     String 				logFileDirectory;
 
     String 				xsdSchemasLocation;
-	
+
 	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
 	public static ActionRepo getInstance() {

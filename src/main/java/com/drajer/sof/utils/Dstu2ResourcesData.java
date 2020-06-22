@@ -17,6 +17,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.TriggerQueryService;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.base.composite.BaseResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
@@ -26,7 +27,9 @@ import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder.Event;
 import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
+import ca.uhn.fhir.model.dstu2.resource.Medication;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
+import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -36,7 +39,7 @@ public class Dstu2ResourcesData {
 
 	@Autowired
 	FhirContextInitializer resourceData;
-	
+
 	private final Logger logger = LoggerFactory.getLogger(Dstu2ResourcesData.class);
 
 	private List<CodeableConceptDt> findEncounterCodes(Encounter encounter) {
@@ -57,7 +60,7 @@ public class Dstu2ResourcesData {
 
 	private List<CodeableConceptDt> findLaboratoryCodes(Observation observation) {
 		List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
-		
+
 		if (!observation.getCode().isEmpty() && observation.getCode() != null) {
 			observationCodes.add(observation.getCode());
 		}
@@ -66,14 +69,28 @@ public class Dstu2ResourcesData {
 
 	private List<CodeableConceptDt> findMedicationCodes(MedicationAdministration medAdministration) {
 		List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
-		
+
 		if (!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
-			if(medAdministration.getMedication() instanceof CodeableConceptDt) {
+			if (medAdministration.getMedication() instanceof CodeableConceptDt) {
 				// Handle Codeable Concept
 				CodeableConceptDt medicationCode = (CodeableConceptDt) medAdministration.getMedication();
 				medicationCodes.add(medicationCode);
+			} else {
+				// Handle Reference data types
 			}
-			else {
+		}
+		return medicationCodes;
+	}
+
+	private List<CodeableConceptDt> findMedicationStatementCodes(MedicationStatement medStatement) {
+		List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
+
+		if (!medStatement.getMedication().isEmpty() && medStatement.getMedication() != null) {
+			if (medStatement.getMedication() instanceof CodeableConceptDt) {
+				// Handle Codeable Concept
+				CodeableConceptDt medicationCode = (CodeableConceptDt) medStatement.getMedication();
+				medicationCodes.add(medicationCode);
+			} else {
 				// Handle Reference data types
 			}
 		}
@@ -87,10 +104,10 @@ public class Dstu2ResourcesData {
 		}
 		return diagnosticOrderCodes;
 	}
-	
+
 	private List<CodeableConceptDt> findDiagnosticReportCodes(DiagnosticReport diagnosticReport) {
 		List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
-		
+
 		if (!diagnosticReport.getCode().isEmpty() && diagnosticReport.getCode() != null) {
 			diagnosticReportCodes.add(diagnosticReport.getCode());
 		}
@@ -98,12 +115,12 @@ public class Dstu2ResourcesData {
 	}
 
 	private List<CodeableConceptDt> findImmunizationCodes(Immunization immunization) {
-		
+
 		List<CodeableConceptDt> immunizationCodes = new ArrayList<CodeableConceptDt>();
 		if (!immunization.getVaccineCode().isEmpty() && immunization.getVaccineCode() != null) {
 			immunizationCodes.add(immunization.getVaccineCode());
 		}
-		
+
 		return immunizationCodes;
 	}
 
@@ -143,7 +160,7 @@ public class Dstu2ResourcesData {
 		}
 		return encounter;
 	}
-	
+
 	public List<Condition> getConditionData(FhirContext context, IGenericClient client, LaunchDetails launchDetails,
 			Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
 		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Condition");
@@ -235,6 +252,102 @@ public class Dstu2ResourcesData {
 		return observations;
 	}
 
+	public List<Observation> getPregnancyObservationData(FhirContext context, IGenericClient client,
+			LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
+		Bundle bundle = (Bundle) resourceData.getObservationByPatientIdAndCode(launchDetails, client, context,
+				"Observation", QueryConstants.PREGNANCY_CODE, QueryConstants.LOINC_CODE_SYSTEM);
+		List<Observation> observations = new ArrayList<>();
+		List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
+		// Filter Observations based on Encounter Reference
+		if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+			for (Entry entry : bundle.getEntry()) {
+				Observation observation = (Observation) entry.getResource();
+				if (!observation.getEncounter().isEmpty()) {
+					if (observation.getEncounter().getReference().getIdPart()
+							.equals(encounter.getIdElement().getIdPart())) {
+						observations.add(observation);
+					}
+				}
+			}
+			// If Encounter Id is not present using start and end dates to filter
+			// Observations
+		} else {
+			for (Entry entry : bundle.getEntry()) {
+				Observation observation = (Observation) entry.getResource();
+				// Checking If Issued Date is present in Observation resource
+				if (observation.getIssued() != null) {
+					if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
+						observations.add(observation);
+					}
+					// If Issued date is not present, Checking for Effective Date
+				} else if (!observation.getEffective().isEmpty()) {
+					Date effectiveDate = (Date) observation.getEffective();
+					if (effectiveDate.after(start) && effectiveDate.before(end)) {
+						observations.add(observation);
+					}
+					// If Issued and Effective Date are not present looking for LastUpdatedDate
+				} else {
+					Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
+					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+						observations.add(observation);
+					}
+				}
+			}
+		}
+		return observations;
+	}
+
+	public List<Observation> getTravelObservationData(FhirContext context, IGenericClient client,
+			LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
+		Bundle bundle = (Bundle) resourceData.getObservationByPatientIdAndCode(launchDetails, client, context,
+				"Observation", QueryConstants.TRAVEL_CODE, QueryConstants.LOINC_CODE_SYSTEM);
+		List<Observation> observations = new ArrayList<>();
+		List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
+		// Filter Observations based on Encounter Reference
+		if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+			for (Entry entry : bundle.getEntry()) {
+				Observation observation = (Observation) entry.getResource();
+				if (!observation.getEncounter().isEmpty()) {
+					if (observation.getEncounter().getReference().getIdPart()
+							.equals(encounter.getIdElement().getIdPart())) {
+						observations.add(observation);
+					}
+				}
+			}
+			// If Encounter Id is not present using start and end dates to filter
+			// Observations
+		} else {
+			for (Entry entry : bundle.getEntry()) {
+				Observation observation = (Observation) entry.getResource();
+				// Checking If Issued Date is present in Observation resource
+				if (observation.getIssued() != null) {
+					if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
+						observations.add(observation);
+					}
+					// If Issued date is not present, Checking for Effective Date
+				} else if (!observation.getEffective().isEmpty()) {
+					Date effectiveDate = (Date) observation.getEffective();
+					if (effectiveDate.after(start) && effectiveDate.before(end)) {
+						observations.add(observation);
+					}
+					// If Issued and Effective Date are not present looking for LastUpdatedDate
+				} else {
+					Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
+					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+						observations.add(observation);
+					}
+				}
+			}
+		}
+		return observations;
+	}
+
+	public Medication getMedicationData(FhirContext context, IGenericClient client, LaunchDetails launchDetails,
+			Dstu2FhirData dstu2FhirData, String medicationId) {
+		Medication medication = (Medication) resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
+		return medication;
+	}
+
 	public List<MedicationAdministration> getMedicationAdministrationData(FhirContext context, IGenericClient client,
 			LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
 		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context,
@@ -255,7 +368,7 @@ public class Dstu2ResourcesData {
 			}
 			// If Encounter Id is not present using start and end dates to filter
 			// MedicationAdministrations
-		} else if(bundle != null){
+		} else if (bundle != null) {
 			for (Entry entry : bundle.getEntry()) {
 				MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
 				// Checking If Effective Date is present in MedicationAdministration resource
@@ -278,6 +391,37 @@ public class Dstu2ResourcesData {
 		}
 		dstu2FhirData.setMedicationCodes(medicationCodes);
 		return medAdministrations;
+	}
+
+	public List<MedicationStatement> getMedicationStatementData(FhirContext context, IGenericClient client,
+			LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
+		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context,
+				"MedicationStatement");
+		List<MedicationStatement> medStatements = new ArrayList<>();
+		List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
+		if (bundle != null) {
+			for (Entry entry : bundle.getEntry()) {
+				MedicationStatement medStatement = (MedicationStatement) entry.getResource();
+				// Checking If Effective Date is present in MedicationAdministration resource
+				if (medStatement.getEffective() != null) {
+					Date effectiveDateTime = (Date) medStatement.getEffective();
+					if (effectiveDateTime.after(start) && effectiveDateTime.before(end)) {
+						medStatements.add(medStatement);
+						medicationCodes.addAll(findMedicationStatementCodes(medStatement));
+					}
+				}
+				// If Effective Date is not present looking for LastUpdatedDate
+				else {
+					Date lastUpdatedDateTime = medStatement.getMeta().getLastUpdated();
+					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+						medStatements.add(medStatement);
+						medicationCodes.addAll(findMedicationStatementCodes(medStatement));
+					}
+				}
+			}
+		}
+		dstu2FhirData.setMedicationCodes(medicationCodes);
+		return medStatements;
 	}
 
 	public List<DiagnosticOrder> getDiagnosticOrderData(FhirContext context, IGenericClient client,
@@ -373,7 +517,8 @@ public class Dstu2ResourcesData {
 
 	public List<DiagnosticReport> getDiagnosticReportData(FhirContext context, IGenericClient client,
 			LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Encounter encounter, Date start, Date end) {
-		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "DiagnosticReport");
+		Bundle bundle = (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context,
+				"DiagnosticReport");
 		List<DiagnosticReport> diagnosticReports = new ArrayList<>();
 		List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
 		// Filter DiagnosticReports based on Encounter Reference

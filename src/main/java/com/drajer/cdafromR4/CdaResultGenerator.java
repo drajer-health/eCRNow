@@ -1,4 +1,4 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Observation;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +18,18 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.resource.Observation;
 
 
 public class CdaResultGenerator {
 
 	private static final Logger logger = LoggerFactory.getLogger(CdaResultGenerator.class);
 	
-	public static String generateResultsSection(Dstu2FhirData data, LaunchDetails details) {
+	public static String generateResultsSection(R4FhirData data, LaunchDetails details) {
 		
 		StringBuilder hsb = new StringBuilder(5000);
 		StringBuilder sb = new StringBuilder(2000);
@@ -76,7 +75,7 @@ public class CdaResultGenerator {
             for(Observation obs : results) {
             	
             	String obsDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
-            	List<CodingDt> cds = null;
+            	List<Coding> cds = null;
             	if(obs.getCode() != null && 
                    obs.getCode().getCodingFirstRep() != null ) {
             		
@@ -97,7 +96,7 @@ public class CdaResultGenerator {
                 String val = CdaGeneratorConstants.UNKNOWN_VALUE;
                 if(obs.getValue() != null) {
                 	
-                	val = CdaFhirUtilities.getStringForIDataType(obs.getValue());
+                	val = CdaFhirUtilities.getStringForType(obs.getValue());
                 }
                 
                 bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
@@ -105,7 +104,7 @@ public class CdaResultGenerator {
                 String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
                 if(obs.getEffective() != null) {
                 
-                	dt = CdaFhirUtilities.getStringForIDataType(obs.getEffective());
+                	dt = CdaFhirUtilities.getStringForType(obs.getEffective());
                 }
                 bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
                 
@@ -151,18 +150,15 @@ public class CdaResultGenerator {
                 lrEntry.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
                         CdaGeneratorConstants.COMPLETED_STATUS));
                 
-                lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+                lrEntry.append(CdaFhirUtilities.getXmlForType(obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
                 
-                lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+                lrEntry.append(CdaFhirUtilities.getXmlForType(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
                 
                 // Add interpretation code.
-                if( (obs.getInterpretation() != null) && 
-                		(obs.getInterpretation().getCoding() != null) && 
-                		(obs.getInterpretation().getCoding().size() > 0 )) {
+                if( obs.getInterpretation() != null) {
                 	
                 	logger.info(" Adding Interpretaion Code ");
-                	List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
-                    cdt.add(obs.getInterpretation());
+                	List<CodeableConcept> cdt = obs.getInterpretation();
                     lrEntry.append(CdaFhirUtilities.getCodeableConceptXml(cdt, CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, false));
                 }
                 	
@@ -210,7 +206,7 @@ public class CdaResultGenerator {
 		return hsb.toString();
 	}
 	
-	public static String addTriggerCodes(Dstu2FhirData data, LaunchDetails details, Observation obs, List<CodingDt> cds) {
+	public static String addTriggerCodes(R4FhirData data, LaunchDetails details, Observation obs, List<Coding> cds) {
 		
 		StringBuilder lrEntry = new StringBuilder();
 		
@@ -254,14 +250,14 @@ public class CdaResultGenerator {
 				lrEntry.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID, CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
 				lrEntry.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID, CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT));
 
-				lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId().getIdPart()));
+				lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId()));
 
 				lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
 
 				lrEntry.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
 						CdaGeneratorConstants.COMPLETED_STATUS));
 
-				lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+				lrEntry.append(CdaFhirUtilities.getXmlForType(obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
 			//	lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(), CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
 				

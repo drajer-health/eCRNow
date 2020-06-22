@@ -1,15 +1,18 @@
 package com.drajer.eca.model;
 
-import com.drajer.cda.CdaEicrGenerator;
 import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
+import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +41,7 @@ public class CreateEicrAction extends AbstractAction {
 	}
 
 	@Override
-	public void execute(Object obj) {
+	public void execute(Object obj, WorkflowEvent launchType) {
 
 		logger.info(" **** START Executing Create Eicr Action **** ");
 
@@ -195,13 +198,14 @@ public class CreateEicrAction extends AbstractAction {
 						
 						logger.info(" No job to schedule since there is no timing data ");
 					}
-					else if (state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
+					else if (state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED && 
+							 launchType == WorkflowEvent.SCHEDULED_JOB) {
 					
 						// Do this only if the job is scheduled.
 						logger.info(" Creating the EICR since the job has been scheduled ");
 						
 						// Check Trigger Codes again in case the data has changed.
-						PatientExecutionState newState = recheckTriggerCodes(details);
+						PatientExecutionState newState = recheckTriggerCodes(details, launchType);
 						
 						if(newState.getMatchTriggerStatus().getTriggerMatchStatus() && 
 						   newState.getMatchTriggerStatus().getMatchedCodes() != null && 
@@ -218,8 +222,46 @@ public class CreateEicrAction extends AbstractAction {
 
 								if (data != null && data instanceof Dstu2FhirData) {
 
+									logger.info("Creating eICR based on FHIR DSTU2 ");
 									Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
 									eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+									
+									// Create the object for persistence.
+									Eicr ecr = new Eicr();
+									ecr.setData(eICR);
+									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+
+
+									newState.getCreateEicrStatus().setEicrCreated(true);
+									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+
+									try {
+										details.setStatus(mapper.writeValueAsString(newState));
+									} catch (JsonProcessingException e) {
+
+										String msg = "Unable to update execution state";
+										logger.error(msg);
+										e.printStackTrace();
+
+										throw new RuntimeException(msg);
+									}
+
+									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
+
+									logger.info(eICR);
+
+									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CreateEicrAction" 
+											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+									ApplicationUtils.saveDataToFile(eICR, fileName);
+
+									logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+								}
+								else if(data != null && data instanceof R4FhirData) {
+									logger.info("Creating eICR based on FHIR R4 ");
+									R4FhirData r4Data = (R4FhirData) data;
+									eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details);
+									
 
 									// Create the object for persistence.
 									Eicr ecr = new Eicr();
@@ -317,11 +359,11 @@ public class CreateEicrAction extends AbstractAction {
 		logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
 	}
 	
-	public PatientExecutionState recheckTriggerCodes(LaunchDetails details) {
+	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
 		
 		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
 		for(AbstractAction act : acts) {
-			act.execute(details);
+			act.execute(details, launchType);
 			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
 		}
 		

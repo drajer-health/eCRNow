@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Enumerations.FHIRAllTypes;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -42,12 +43,13 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.CQLExpressionCondition;
 import com.drajer.eca.model.CloseOutEicrAction;
 import com.drajer.eca.model.CreateEicrAction;
-import com.drajer.eca.model.CreateEicrAfterReheckAction;
+import com.drajer.eca.model.CreateEicrAfterRecheckAction;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.MatchTriggerAction;
 import com.drajer.eca.model.PeriodicUpdateEicrAction;
 import com.drajer.eca.model.RelatedAction;
+import com.drajer.eca.model.ReportabilityResponseAction;
 import com.drajer.eca.model.SubmitEicrAction;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.eca.model.ValidateEicrAction;
@@ -131,24 +133,6 @@ public class PlanDefinitionProcessor {
 											valueSetService.createValueSet(valueSet);
 											valuesets.add(valueSet);
 										}
-										
-										/*if(covid) {
-											if (usageContext.getValueCodeableConcept() != null && usageContext
-													.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
-												System.out.println("Processing value set with id : " + valueSet.getId());
-												valueSetService.createValueSet(valueSet);
-												covidValuesets.add(valueSet);
-											}
-										}else {
-											valueSetService.createValueSet(valueSet);
-											if (usageContext.getValueCodeableConcept() != null && usageContext
-													.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
-												covidValuesets.add(valueSet);
-											}else {
-												valuesets.add(valueSet);
-											}
-											
-										}*/
 									}
 								}
 						} else {
@@ -218,7 +202,7 @@ public class PlanDefinitionProcessor {
 									
 									logger.info(" Identified Create EICR After Recheck Action ");
 									
-									CreateEicrAfterReheckAction cra = new CreateEicrAfterReheckAction();
+									CreateEicrAfterRecheckAction cra = new CreateEicrAfterRecheckAction();
 									
 									populateActionData(cra, acts, action, EcrActionTypes.CREATE_EICR_AFTER_RECHECK);
 									
@@ -251,6 +235,8 @@ public class PlanDefinitionProcessor {
 									
 									populateActionData(mta, acts, action, EcrActionTypes.SUBMIT_EICR);
 									
+									populateRRCheckAction(acts, mta);
+									
 								}
 							}
 						}
@@ -263,11 +249,39 @@ public class PlanDefinitionProcessor {
 				
 				ActionRepo.getInstance().setupTriggerBasedActions();
 				
-				// ActionRepo.getInstance().print();
-				
-				// ValueSetSingleton.getInstance().print();
-				
 			}
+		}
+	}
+	
+	private void populateRRCheckAction(Map<EcrActionTypes, Set<AbstractAction> > acts, AbstractAction relatedAction) {
+		
+		ReportabilityResponseAction act = new ReportabilityResponseAction();
+		
+		act.setActionId(java.util.UUID.randomUUID().toString());
+		
+		RelatedAction ra = new RelatedAction();
+		ra.setRelationship(PlanDefinition.ActionRelationshipType.AFTER);
+		ra.setRelatedAction(relatedAction);
+		
+		Duration d = new Duration();
+		d.setValue(300);
+		d.setUnit("s");
+		ra.setDuration(new Duration());
+		
+		act.addRelatedAction(ra);
+		
+		if(acts.containsKey(EcrActionTypes.RR_CHECK)) {
+			
+			acts.get(EcrActionTypes.RR_CHECK).add(act);
+			
+			logger.info(" Map contained  RR CHECK so added to map resulting in size " + acts.size());
+		}
+		else {
+			Set<AbstractAction> aa = new HashSet<AbstractAction>();
+			aa.add(act);
+			acts.put(EcrActionTypes.RR_CHECK, aa);
+			
+			logger.info(" Map did not contain RR CHECK so added to map resulting in size " + acts.size());
 		}
 	}
 

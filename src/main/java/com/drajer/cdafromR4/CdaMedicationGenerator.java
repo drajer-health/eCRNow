@@ -1,31 +1,27 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Dosage;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
-
-import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
-import ca.uhn.fhir.model.dstu2.resource.MedicationStatement.Dosage;
+import com.drajer.sof.model.R4FhirData;
 
 public class CdaMedicationGenerator {
 
 	private static final Logger logger = LoggerFactory.getLogger(CdaMedicationGenerator.class);
 	
-	public static String generateMedicationSection(Dstu2FhirData data, LaunchDetails details) {
-			
-		StringBuilder sb = new StringBuilder(2000);
+	public static String generateMedicationSection(R4FhirData data, LaunchDetails details) {
 		
+		StringBuilder sb = new StringBuilder(2000);
 		List<MedicationStatement> meds = data.getMedications();
 		
 		if(meds != null && meds.size() > 0) {		
@@ -70,12 +66,12 @@ public class CdaMedicationGenerator {
             	String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
             	
             	if(med.getMedication() != null ) {
-            		medDisplayName = CdaFhirUtilities.getStringForIDataType(med.getMedication());
+            		medDisplayName = CdaFhirUtilities.getStringForType(med.getMedication());
             	}
             	
             	String dt = null;
             	if(med.getEffective() != null) {
-            		dt = CdaFhirUtilities.getStringForIDataType(med.getEffective());
+            		dt = CdaFhirUtilities.getStringForType(med.getEffective());
             	}
 
                 Map<String, String> bodyvals = new HashMap<String, String>();
@@ -107,27 +103,29 @@ public class CdaMedicationGenerator {
                 sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.MED_ENTRY_TEMPLATE_ID));
                 sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.MED_ENTRY_TEMPLATE_ID, CdaGeneratorConstants.MED_ENTRY_TEMPLATE_ID_EXT));
                 
-                sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), med.getId().getIdPart()));
+                sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), med.getId()));
 
                 // set status code
                 sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
                     CdaGeneratorConstants.COMPLETED_STATUS));
 
                 // Set up Effective Time for start and End time.
-                sb.append(CdaFhirUtilities.getIDataTypeXml(med.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+                sb.append(CdaFhirUtilities.getXmlForType(med.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
                 //Set up Effective Time for Frequency.
                 String ds = "";
                 String freqInHours = CdaGeneratorConstants.UNKNOWN_VALUE;
                 if(med.getDosageFirstRep() != null) {
-                	Dosage dsg = med.getDosageFirstRep();              	
-                	ds = CdaFhirUtilities.getStringForIDataType(dsg.getQuantity());
+                	Dosage dsg = med.getDosageFirstRep();  
+                	
+                	if(dsg.getDoseAndRateFirstRep() != null && 
+                			dsg.getDoseAndRateFirstRep().getDose() != null) 
+                		ds = CdaFhirUtilities.getStringForType(dsg.getDoseAndRateFirstRep().getDose());
                 	
                 	if(dsg.getTiming() != null && 
-                	   dsg.getTiming().getRepeat() != null && 
-                	   dsg.getTiming().getRepeat().getFrequency() != null) {
+                	   dsg.getTiming().getRepeat() != null) {
                 		
-                		freqInHours = dsg.getTiming().getRepeat().getFrequency().toString();                		
+                		freqInHours = Integer.toString(dsg.getTiming().getRepeat().getFrequency());                		
                 	}
                 }
                 
@@ -149,7 +147,7 @@ public class CdaMedicationGenerator {
                 sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
                 sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
                 
-                sb.append(CdaFhirUtilities.getIDataTypeXml(med.getMedication(), CdaGeneratorConstants.CODE_EL_NAME, false));
+                sb.append(CdaFhirUtilities.getXmlForType(med.getMedication(), CdaGeneratorConstants.CODE_EL_NAME, false));
               
                 sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
                 sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));

@@ -1,12 +1,34 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.api.IBase;
-import org.hl7.fhir.instance.model.api.IBaseDatatype;
-import org.hl7.fhir.r4.model.Enumerations.FHIRAllTypes;
+import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Address.AddressUse;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
+import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
+import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,60 +38,33 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
-import ca.uhn.fhir.model.api.IDatatype;
-import ca.uhn.fhir.model.base.composite.BaseCodingDt;
-import ca.uhn.fhir.model.base.composite.BaseQuantityDt;
-import ca.uhn.fhir.model.dstu2.composite.AddressDt;
-import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
-import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
-import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
-import ca.uhn.fhir.model.dstu2.resource.Encounter;
-import ca.uhn.fhir.model.dstu2.resource.Location;
-import ca.uhn.fhir.model.dstu2.resource.Organization;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
-import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
-import ca.uhn.fhir.model.dstu2.resource.Patient.Communication;
-import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
-import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
-import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
-import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
-import ca.uhn.fhir.model.dstu2.valueset.ParticipantTypeEnum;
-import ca.uhn.fhir.model.primitive.BoundCodeDt;
 import ca.uhn.fhir.model.primitive.CodeDt;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
-import ca.uhn.fhir.model.primitive.StringDt;
 
 public class CdaFhirUtilities {
-	
+
 	public static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilities.class);
 
-	public static IdentifierDt getIdentifierForType(List<IdentifierDt> ids, IdentifierTypeCodesEnum type) {
+	public static Identifier getIdentifierForType(List<Identifier> ids, String type) {
 		
 		if(ids != null && ids.size() > 0) {
 			
-			for(IdentifierDt id : ids) {
+			for(Identifier id : ids) {
 
 				if (id.getType() != null) {
 					
-					 List<CodingDt> codings = id.getType().getCoding();
+					 List<Coding> codings = id.getType().getCoding();
 					 
 					 if(codings != null && codings.size() > 0) {
 									 
-						 for(CodingDt coding : codings) {
+						 for(Coding coding : codings) {
 							 
 							 if(coding.getSystem() != null &&
-								coding.getSystem().contentEquals(CdaGeneratorConstants.FHIR_IDTYPE_SYSTEM) && 
+								( coding.getSystem().contentEquals(CdaGeneratorConstants.FHIR_IDENTIFIER_TYPE_SYSTEM) || 
+										coding.getSystem().contentEquals(CdaGeneratorConstants.FHIR_IDTYPE_SYSTEM) )	&& 
 								coding.getCode() != null && 
-								coding.getCode().contentEquals(type.getCode()) ) {
+								coding.getCode().contentEquals(type) ) {
 								 
-								 logger.info(" Found the Identifier for Patient for type " + type.toString());
+								 logger.info(" Found the Identifier for Patient for type " + type);
 								 return id;
 							 }
 							 
@@ -82,15 +77,15 @@ public class CdaFhirUtilities {
 			
 		}
 		
-		logger.info(" Did not find the Identifier for the patient for type " + type.toString());
+		logger.info(" Did not find the Identifier for the patient for type " + type);
 		return null;
 	}
 	
-	public static IdentifierDt getIdentifierForSystem(List<IdentifierDt> ids, String system) {
+	public static Identifier getIdentifierForSystem(List<Identifier> ids, String system) {
 		
 		if(ids != null && ids.size() > 0) {
 
-			for(IdentifierDt id : ids) {
+			for(Identifier id : ids) {
 
 				if (id.getSystem() != null && 
 						id.getSystem().contentEquals(system)) {
@@ -107,36 +102,36 @@ public class CdaFhirUtilities {
 		return null;
 	}
 	
-	public static CodingDt getCodingExtension(List<ExtensionDt> exts, String extUrl, String subextUrl) {
+	public static Coding getCodingExtension(List<Extension> exts, String extUrl, String subextUrl) {
 		
 		if(exts != null && exts.size() > 0) {
 			
-			for(ExtensionDt ext : exts) {
+			for(Extension ext : exts) {
 
 				if (ext.getUrl() != null && 
 					ext.getUrl().contentEquals(extUrl)) {
 					
-					// if the top level extension has CodingDt then we will use it.
+					// if the top level extension has Coding then we will use it.
 					if(ext.getValue() != null &&
-					   (ext.getValue() instanceof CodingDt)) {
+					   (ext.getValue() instanceof Coding)) {
 						
 							logger.info(" Found Extension at top level ");
-							return (CodingDt)ext.getValue();
+							return (Coding)ext.getValue();
 							
 						
 					}
 					else if(ext.getValue() == null) {
 						
 						//get child extensions.
-						List<ExtensionDt> subExts = ext.getUndeclaredExtensionsByUrl(subextUrl);
+						List<Extension> subExts = ext.getExtensionsByUrl(subextUrl);
 						
-						for(ExtensionDt subext : subExts) {
+						for(Extension subext : subExts) {
 							
 							if(subext.getValue() != null &&
-							   (subext.getValue() instanceof CodingDt)) {
+							   (subext.getValue() instanceof Coding)) {
 								
 								logger.info(" Found Extension nested as children ");
-								return (CodingDt)subext.getValue();
+								return (Coding)subext.getValue();
 							}
 						}
 					}
@@ -150,11 +145,38 @@ public class CdaFhirUtilities {
 		return null;
 	}
 	
-	public static CodingDt getLanguage(List<Communication> comms) {
+	public static CodeType getCodeExtension(List<Extension> exts, String extUrl) {
+		
+		if(exts != null && exts.size() > 0) {
+			
+			for(Extension ext : exts) {
+
+				if (ext.getUrl() != null && 
+					ext.getUrl().contentEquals(extUrl)) {
+					
+					// if the top level extension has CodingDt then we will use it.
+					if(ext.getValue() != null &&
+					   (ext.getValue() instanceof CodeType)) {
+						
+							logger.info(" Found Extension at top level ");
+							return (CodeType)ext.getValue();
+							
+						
+					}
+				}
+			}
+			
+		}
+		
+		logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+		return null;
+	}
+	
+	public static Coding getLanguage(List<PatientCommunicationComponent> comms) {
 		
 		if(comms != null && comms.size() > 0) {
 			
-			for(Communication comm : comms) {
+			for(PatientCommunicationComponent comm : comms) {
 
 				if (comm.getLanguage() != null && 
 					comm.getLanguage().getCodingFirstRep() != null && 
@@ -170,24 +192,26 @@ public class CdaFhirUtilities {
 		return null;
 	}
 	
-	public static String getAddressXml(List<AddressDt> addrs) {
+	public static String getAddressXml(List<Address> addrs) {
 		
 		StringBuilder addrString = new StringBuilder(200);
 		
 		if(addrs != null && addrs.size() > 0) {
 					
-			for(AddressDt addr : addrs) {
+			for(Address addr : addrs) {
 
-				if(addr.getUseElement().getValueAsEnum() == AddressUseEnum.HOME || 
-				   addr.getUseElement().getValueAsEnum() == AddressUseEnum.WORK) {
+				if(addr.getUseElement().getValue() == AddressUse.HOME || 
+				   addr.getUseElement().getValue() == AddressUse.WORK) {
 					
 					logger.info(" Found Home or Work Address ");
 					
 					addrString.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
 					
 					// Address Line
-					if(!StringUtils.isEmpty(addr.getLineFirstRep().getValueAsString())) {
-						addrString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, addr.getLineFirstRep().getValue()));
+					List<StringType> lines = addr.getLine();
+					
+					if(lines != null && lines.size() > 0) {
+						addrString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, lines.get(0).getValue()));
 					}
 					else {
 						addrString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -250,21 +274,21 @@ public class CdaFhirUtilities {
 		return addrString.toString();
 	}
 	
-	public static String getTelecomXml(List<ContactPointDt> tels) {
+	public static String getTelecomXml(List<ContactPoint> tels) {
 		
 		StringBuilder telString = new StringBuilder(200);
 		
 		if(tels != null && tels.size() > 0) {
 					
-			for(ContactPointDt tel : tels) {
+			for(ContactPoint tel : tels) {
 
 				if(tel.getSystem() != null && 
-				   tel.getSystemElement().getValueAsEnum() == ContactPointSystemEnum.PHONE && 
+				   tel.getSystem() == ContactPoint.ContactPointSystem.PHONE && 
 				   !StringUtils.isEmpty(tel.getValue())) {
 					
 					logger.info(" Found Tel No " + tel.getValue());
 					telString.append(CdaGeneratorUtils.getXmlForTelecom(CdaGeneratorConstants.TEL_EL_NAME, 
-						tel.getValue(), CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse())));
+						tel.getValue(), CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode())));
 					
 					
 					break;
@@ -284,17 +308,17 @@ public class CdaFhirUtilities {
 	
 	public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
 		
-		List<Entry> entries = bundle.getEntry();
-		for(Entry ent : entries) {
+		List<BundleEntryComponent> entries = bundle.getEntry();
+		for(BundleEntryComponent ent : entries) {
 			
 			// Populate Patient 
 			if((ent.getResource() instanceof Encounter) && 
 			   (details.getEncounterId().contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) || 
-			    ent.getResource().getId().getIdPart().contentEquals(details.getEncounterId()))) {
+			    ent.getResource().getId().contentEquals(details.getEncounterId()))) {
 				
 				en = (Encounter)ent.getResource();
 				
-				logger.info(" Found Encounter for Id:  " + details.getEncounterId() + " Resource Id : "+ en.getId().getIdPart());
+				logger.info(" Found Encounter for Id:  " + details.getEncounterId() + " Resource Id : "+ en.getId());
 				
 				// For this encounter extract the other resources.
 				pr = getPractitioner(entries, en);
@@ -304,15 +328,15 @@ public class CdaFhirUtilities {
 		}		
 	}
 	
-	public static Organization getOrganization(List<Entry> entries, Encounter en) {
+	public static Organization getOrganization(List<BundleEntryComponent> entries, Encounter en) {
 				
-		if(!en.getServiceProvider().getReference().hasIdPart()) {
+		if(en.getServiceProvider().getReference() != null) {
 			
-			Entry ent = getResourceEntryForId(en.getServiceProvider().getReference().getIdPart(), "Organization", entries);
+			BundleEntryComponent ent = getResourceEntryForId(en.getServiceProvider().getReference(), "Organization", entries);
 			
 			if(ent != null) {
 				
-				logger.info(" Found organization for Id " +en.getServiceProvider().getReference().getIdPart());
+				logger.info(" Found organization for Id " +en.getServiceProvider().getReference());
 				return (Organization)ent.getResource();
 			}			
 		}
@@ -322,17 +346,18 @@ public class CdaFhirUtilities {
 				
 	}
 	
-	public static Location getLocation(List<Entry> entries, Encounter en) {
+	public static Location getLocation(List<BundleEntryComponent> entries, Encounter en) {
 		
-		Encounter.Location loc = en.getLocationFirstRep();
+		EncounterLocationComponent loc = en.getLocationFirstRep();
 		
-		if(loc.getLocation().getReference().hasIdPart()) {
+		if(loc != null && 
+				loc.getLocation() != null) {
 			
-			Entry ent = getResourceEntryForId(loc.getLocation().getReference().getIdPart(), "Location", entries);
+			BundleEntryComponent ent = getResourceEntryForId(loc.getLocation().getReference(), "Location", entries);
 			
 			if(ent != null) {
 				
-				logger.info(" Found Location for Id " + loc.getLocation().getReference().getIdPart());
+				logger.info(" Found Location for Id " + loc.getLocation().getReference());
 				return (Location)ent.getResource();
 			}
 				
@@ -344,41 +369,41 @@ public class CdaFhirUtilities {
 				
 	}
 	
-	public static Practitioner getPractitioner(List<Entry> entries, Encounter en) {
+	public static Practitioner getPractitioner(List<BundleEntryComponent> entries, Encounter en) {
 
 		
-		List<Participant> participants = en.getParticipant();
+		List<EncounterParticipantComponent> participants = en.getParticipant();
 		
 		if(participants != null && participants.size() > 0) {
 			
-			for(Participant part: participants) {
+			for(EncounterParticipantComponent part: participants) {
 				
-				if(part.getIndividual().getReference().hasIdPart()) {
+				if(part.getIndividual().getReference() != null) {
 					
 					logger.info(" Individual is present ");
 				
-					List<BoundCodeableConceptDt<ParticipantTypeEnum> > types = part.getType();
+					List<CodeableConcept> types = part.getType();
 					
-					for(BoundCodeableConceptDt<ParticipantTypeEnum> conc : types ) {
+					for(CodeableConcept conc : types ) {
 						
-						List<CodingDt> typeCodes = conc.getCoding();
+						List<Coding> typeCodes = conc.getCoding();
 						
-						for(CodingDt cd : typeCodes) {
+						for(Coding cd : typeCodes) {
 							
-							if(cd.getCode().contentEquals(ParticipantTypeEnum.PPRF.getCode())) {
+							if(cd.getCode().contentEquals(V3ParticipationType.PPRF.toString())) {
 								
 								// Found the participant.
 								// Look for the Practitioner.
 								
-								Entry ent = getResourceEntryForId(part.getIndividual().getReference().getIdPart(), "Practitioner", entries);
+								BundleEntryComponent ent = getResourceEntryForId(part.getIndividual().getReference(), "Practitioner", entries);
 								 
 								 if(ent != null) {
 									 
-									 logger.info(" Found Practitioner for Id " + part.getIndividual().getReference().getIdPart());
+									 logger.info(" Found Practitioner for Id " + part.getIndividual().getReference());
 									 return (Practitioner)ent.getResource();
 								 }
 								 else {
-									 logger.info(" Did not find the practitioner for : " + part.getIndividual().getReference().getIdPart());
+									 logger.info(" Did not find the practitioner for : " + part.getIndividual().getReference());
 								 }
 							}
 								
@@ -396,15 +421,15 @@ public class CdaFhirUtilities {
 				
 	}
 	
-	public static Entry getResourceEntryForId( String id, String type, List<Entry> entries) {
+	public static BundleEntryComponent getResourceEntryForId( String id, String type, List<BundleEntryComponent> entries) {
 		
-		for(Entry ent : entries) {
+		for(BundleEntryComponent ent : entries) {
 			
 			if(ent.getResource() != null &&
 			 //  ent.getResource() != null &&
 			//   ent.getResource().fhirType().contentEquals(type) && 
 			   ent.getResource().getId() != null &&
-			   ent.getResource().getId().getIdPart().contentEquals(id)) {
+			   ent.getResource().getId().contentEquals(id)) {
 				
 				logger.info(" Found entry for ID " + id + " Type : " + type);
 				return ent;
@@ -416,23 +441,23 @@ public class CdaFhirUtilities {
 		
 	}
 	
-	public static String getCodeableConceptXml(List<CodeableConceptDt> cds, String cdName, Boolean valueTrue) {
+	public static String getCodeableConceptXml(List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
 		
 		StringBuilder sb = new StringBuilder(500);
-		List<CodingDt> codes = new ArrayList<CodingDt>();
+		List<Coding> codes = new ArrayList<Coding>();
 		
 		if(cds != null && cds.size() > 0) {
 			
-			CodeableConceptDt cd = cds.get(0);
+			CodeableConcept cd = cds.get(0);
 			
-			List<CodingDt> codings = cd.getCoding();
+			List<Coding> codings = cd.getCoding();
 			
 			if(codings != null && codings.size() > 0) {
 
 				Boolean found = false;
 				Boolean first = true;
 				
-				for(CodingDt code : codings) {
+				for(Coding code : codings) {
 				
 					Pair<String,String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
 					
@@ -451,14 +476,14 @@ public class CdaFhirUtilities {
 		return sb.toString();
 	}
 	
-	public static String getCodingXml(List<CodingDt> codes, String cdName) {
+	public static String getCodingXml(List<Coding> codes, String cdName) {
 		
 		StringBuilder sb = new StringBuilder(200);
 		
 		if(codes != null && codes.size() > 0) {
 			
 			Boolean first = true;
-			for(CodingDt c : codes) {
+			for(Coding c : codes) {
 			
 				if(first) {
 					
@@ -484,14 +509,14 @@ public class CdaFhirUtilities {
 		
 	}
 	
-	public static String getCodingXmlForValue(List<CodingDt> codes, String cdName) {
+	public static String getCodingXmlForValue(List<Coding> codes, String cdName) {
 		
 		StringBuilder sb = new StringBuilder(200);
 		
 		if(codes.size() > 0) {
 			
 			Boolean first = true;
-			for(CodingDt c : codes) {
+			for(Coding c : codes) {
 			
 				if(first) {
 					
@@ -517,7 +542,7 @@ public class CdaFhirUtilities {
 		
 	}
 	
-	public static String getPeriodXml(PeriodDt period, String elName) {
+	public static String getPeriodXml(Period period, String elName) {
 		
 		StringBuilder sb = new StringBuilder(200);
 		
@@ -536,7 +561,7 @@ public class CdaFhirUtilities {
 		return sb.toString();
 	}
 	
-	public static String getQuantityXml(QuantityDt dt, String elName, Boolean valFlag) {
+	public static String getQuantityXml(Quantity dt, String elName, Boolean valFlag) {
 		
 		StringBuilder sb = new StringBuilder(200);
 		
@@ -552,18 +577,18 @@ public class CdaFhirUtilities {
 		return sb.toString();
 	}
 	
-	public static String getGenderXml(BoundCodeDt<AdministrativeGenderEnum> gender) {
+	public static String getGenderXml(AdministrativeGender gender) {
 		
 		String s = "";
 		
 		if(gender != null && 
-		   (gender.getValueAsEnum() == AdministrativeGenderEnum.MALE)) {
+		   (gender == AdministrativeGender.MALE)) {
 			
 			s += CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME, 
 					CdaGeneratorConstants.CDA_MALE_CODE, CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
 		}
 		else if (gender != null && 
-		   (gender.getValueAsEnum() == AdministrativeGenderEnum.FEMALE)) {
+		   (gender == AdministrativeGender.FEMALE)) {
 			
 			s += CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME, 
 					CdaGeneratorConstants.CDA_FEMALE_CODE, CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
@@ -583,21 +608,21 @@ public class CdaFhirUtilities {
 		return s;
 	}
 
-	public static String getNameXml(List<HumanNameDt> names) {
+	public static String getNameXml(List<HumanName> names) {
 		
 		StringBuilder nameString = new StringBuilder(200);
 		
 		if(names != null && names.size() > 0) {
 					
-			for(HumanNameDt name : names) {
+			for(HumanName name : names) {
 
-				List<StringDt> ns = name.getGiven();
+				List<StringType> ns = name.getGiven();
 				
-				for(StringDt n : ns) {
+				for(StringType n : ns) {
 
 					if(!StringUtils.isEmpty(n.getValue()))
 						nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, 
-							name.getGivenFirstRep().getValue()));
+							n.getValue()));
 				}	
 				
 				// If Empty create NF
@@ -605,9 +630,9 @@ public class CdaFhirUtilities {
 					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
 				}
 				
-				if(name.getFamilyFirstRep() != null &&
-				   !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
-					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamilyFirstRep().getValue()));
+				if(name.getFamily() != null &&
+				   !StringUtils.isEmpty(name.getFamily())) {
+					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
 				}
 				else {
 					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -628,13 +653,13 @@ public class CdaFhirUtilities {
 		return nameString.toString();
 	}
 	
-	public static String getStringForIDataType(IDatatype dt) {
+	public static String getStringForType(Type dt) {
 		
 		if(dt != null) {
 			
 			String val = "";
-			if(dt instanceof CodingDt) {
-				CodingDt cd = (CodingDt)dt;
+			if(dt instanceof Coding) {
+				Coding cd = (Coding)dt;
 				
 				if(cd.getCodeElement() != null &&
 				   cd.getSystemElement() != null) {
@@ -643,9 +668,9 @@ public class CdaFhirUtilities {
 				}
 				
 			}
-			else if(dt instanceof BaseQuantityDt) {
+			else if(dt instanceof Quantity) {
 				
-				QuantityDt qt = (QuantityDt)dt;
+				Quantity qt = (Quantity)dt;
 				
 				if(qt.getValueElement() != null && 
 				   qt.getSystemElement() != null && 
@@ -656,15 +681,15 @@ public class CdaFhirUtilities {
 				}
 				
 			}
-			else if(dt instanceof DateTimeDt) {
+			else if(dt instanceof DateTimeType) {
 				
-				DateTimeDt d = (DateTimeDt)dt;
+				DateTimeType d = (DateTimeType)dt;
 				
 				val += d.getValueAsString();
 				
 			}
-			else if(dt instanceof PeriodDt) {
-				PeriodDt pt = (PeriodDt)dt;
+			else if(dt instanceof Period) {
+				Period pt = (Period)dt;
 				
 				if(pt.getStart() != null && 
 						pt.getEnd() != null) {
@@ -674,9 +699,9 @@ public class CdaFhirUtilities {
 					val += pt.getStart().toString();
 				}		
 			}
-			else if(dt instanceof CodeDt) {
+			else if(dt instanceof CodeType) {
 				
-				CodeDt cd = (CodeDt)dt;
+				CodeType cd = (CodeType)dt;
 				
 				val += cd.getValue();
 			}
@@ -693,15 +718,15 @@ public class CdaFhirUtilities {
 	
 	
 	
-	public static String getIDataTypeXml(IDatatype dt, String elName, Boolean valFlag) {
+	public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
 		
 		if(dt != null) {
 			
 			String val = "";
-			if(dt instanceof CodingDt) {
-				CodingDt cd = (CodingDt)dt;
+			if(dt instanceof Coding) {
+				Coding cd = (Coding)dt;
 				
-				List<CodingDt> cds = new ArrayList<CodingDt>();
+				List<Coding> cds = new ArrayList<Coding>();
 				cds.add(cd);
 				if(!valFlag)
 					val += getCodingXml(cds,elName);
@@ -709,11 +734,11 @@ public class CdaFhirUtilities {
 					val += getCodingXmlForValue(cds,elName);
 				
 			}
-			else if(dt instanceof CodeableConceptDt) {
+			else if(dt instanceof CodeableConcept) {
 				
-				CodeableConceptDt cd = (CodeableConceptDt)dt;
+				CodeableConcept cd = (CodeableConcept)dt;
 				
-				List<CodingDt> cds = cd.getCoding();
+				List<Coding> cds = cd.getCoding();
 				
 				if(!valFlag)
 					val += getCodingXml(cds,elName);
@@ -721,28 +746,28 @@ public class CdaFhirUtilities {
 					val += getCodingXmlForValue(cds,elName);
  				
 			}
-			else if(dt instanceof QuantityDt) {
+			else if(dt instanceof Quantity) {
 				
-				QuantityDt qt = (QuantityDt)dt;
+				Quantity qt = (Quantity)dt;
 				
 				val += getQuantityXml(qt, elName, valFlag);
 				
 			}
-			else if(dt instanceof DateTimeDt) {
+			else if(dt instanceof DateTimeType) {
 				
-				DateTimeDt d = (DateTimeDt)dt;
+				DateTimeType d = (DateTimeType)dt;
 				
 				val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
 				
 			}
-			else if(dt instanceof PeriodDt) {
-				PeriodDt pt = (PeriodDt)dt;
+			else if(dt instanceof Period) {
+				Period pt = (Period)dt;
 				
 				val += getPeriodXml(pt, elName);
 			}
-			else if(dt instanceof CodeDt) {
+			else if(dt instanceof CodeType) {
 				
-				CodeDt cd = (CodeDt)dt;
+				CodeType cd = (CodeType)dt;
 				
 				if(!valFlag)
 					val += CdaGeneratorUtils.getNFXMLFoElement(elName, CdaGeneratorConstants.NF_NI);
@@ -759,5 +784,4 @@ public class CdaFhirUtilities {
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}
-
 }

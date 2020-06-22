@@ -1,4 +1,4 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,22 +20,18 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.resource.Condition;
-import ca.uhn.fhir.model.dstu2.valueset.ConditionClinicalStatusCodesEnum;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
 
 public class CdaProblemGenerator {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CdaProblemGenerator.class);
 	
-	public static String generateProblemSection(Dstu2FhirData data, LaunchDetails details) {
+	public static String generateProblemSection(R4FhirData data, LaunchDetails details) {
 		
 		StringBuilder sb = new StringBuilder(2000);
 		
@@ -88,8 +88,10 @@ public class CdaProblemGenerator {
                     bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
 
                     if(prob.getClinicalStatus() != null &&
-                       (prob.getClinicalStatus().contentEquals(ConditionClinicalStatusCodesEnum.ACTIVE.getCode()) || 
-                    		   prob.getClinicalStatus().contentEquals(ConditionClinicalStatusCodesEnum.RELAPSE.getCode()) ) ) {
+                       prob.getClinicalStatus().getCodingFirstRep() != null && 
+                       !StringUtils.isEmpty(prob.getClinicalStatus().getCodingFirstRep().getCode()) && 
+                       (prob.getClinicalStatus().getCodingFirstRep().getCode().contentEquals(ConditionClinical.ACTIVE.toCode()) || 
+                       prob.getClinicalStatus().getCodingFirstRep().getCode().contentEquals(ConditionClinical.RELAPSE.toCode()) ) ) {
                     	bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT, CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
                     }
                     else {
@@ -128,8 +130,10 @@ public class CdaProblemGenerator {
                         CdaGeneratorConstants.PROB_CONC_ACT_NAME));
 
                     if(pr.getClinicalStatus() != null &&
-                       (pr.getClinicalStatus().contentEquals(ConditionClinicalStatusCodesEnum.ACTIVE.getCode()) || 
-                         		   pr.getClinicalStatus().contentEquals(ConditionClinicalStatusCodesEnum.RELAPSE.getCode()) ) ) {
+                    		pr.getClinicalStatus().getCodingFirstRep() != null && 
+                            !StringUtils.isEmpty(pr.getClinicalStatus().getCodingFirstRep().getCode()) && 
+                            (pr.getClinicalStatus().getCodingFirstRep().getCode().contentEquals(ConditionClinical.ACTIVE.toCode()) || 
+                            pr.getClinicalStatus().getCodingFirstRep().getCode().contentEquals(ConditionClinical.RELAPSE.toCode()) ) ) {
                     	
                     	sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
                                 CdaGeneratorConstants.ACTIVE_STATUS));
@@ -142,16 +146,16 @@ public class CdaProblemGenerator {
                     Date onset = null;
                     Date abatement = null;
                     if(pr.getOnset() != null && 
-                       pr.getOnset() instanceof DateTimeDt ) {
+                       pr.getOnset() instanceof DateTimeType ) {
                     	
-                    	DateTimeDt dt = (DateTimeDt)pr.getOnset();
+                    	DateTimeType dt = (DateTimeType)pr.getOnset();
                     	onset = dt.getValue();
                     }
                     
                     if(pr.getAbatement() != null && 
-                       pr.getAbatement() instanceof DateTimeDt ) {
+                       pr.getAbatement() instanceof DateTimeType ) {
                     	
-                    	DateTimeDt dt = (DateTimeDt)pr.getAbatement();
+                    	DateTimeType dt = (DateTimeType)pr.getAbatement();
                     	abatement = dt.getValue();
                     }
                      
@@ -167,7 +171,7 @@ public class CdaProblemGenerator {
                     sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID, CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
                     
                     
-                    sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId().getValue()));
+                    sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId()));
 
 
                         sb.append(CdaGeneratorUtils.getXmlForCDWithoutEndTag(CdaGeneratorConstants.CODE_EL_NAME,
@@ -187,7 +191,7 @@ public class CdaProblemGenerator {
                     
                     sb.append(CdaGeneratorUtils.getXmlForIVL_TS(CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
-                    List<CodeableConceptDt> cds = new ArrayList<CodeableConceptDt>();
+                    List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
                     cds.add(pr.getCode());
                     sb.append(CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
                  
@@ -219,7 +223,7 @@ public class CdaProblemGenerator {
 		
 	}
 	
-	public static String addTriggerCodes(Dstu2FhirData data, LaunchDetails details, Condition cond, Date onset, Date abatement) {
+	public static String addTriggerCodes(R4FhirData data, LaunchDetails details, Condition cond, Date onset, Date abatement) {
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -264,7 +268,7 @@ public class CdaProblemGenerator {
 				sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID, CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
 
 
-				sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId().getIdPart()));
+				sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId()));
 
 
 				sb.append(CdaGeneratorUtils.getXmlForCDWithoutEndTag(CdaGeneratorConstants.CODE_EL_NAME,
@@ -351,5 +355,4 @@ public class CdaProblemGenerator {
 
         return sb.toString();
     }
-
 }

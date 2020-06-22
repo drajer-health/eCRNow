@@ -1,5 +1,6 @@
 package com.drajer.sof.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,12 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.Dstu2ResourcesData;
 import com.drajer.sof.utils.FhirContextInitializer;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.base.composite.BaseContainedDt;
+import ca.uhn.fhir.model.base.composite.BaseResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
@@ -21,7 +25,9 @@ import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder;
 import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
+import ca.uhn.fhir.model.dstu2.resource.Medication;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
+import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
@@ -124,6 +130,7 @@ public class LoadingQueryDstu2Bundle {
 			List<Condition> conditionsList = dstu2ResourcesData.getConditionData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			dstu2FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				Entry conditionsEntry = new Entry().setResource(condition);
 				bundle.addEntry(conditionsEntry);
@@ -144,12 +151,43 @@ public class LoadingQueryDstu2Bundle {
 			List<Observation> observationList = dstu2ResourcesData.getObservationData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				Entry observationsEntry = new Entry().setResource(observation);
 				bundle.addEntry(observationsEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting Observation Data");
+		}
+
+		// Get Pregnancy Observations
+		try {
+			logger.info("Get Pregnancy Observation Data");
+			List<Observation> observationList = dstu2ResourcesData.getPregnancyObservationData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setPregnancyObs(observationList);
+			for (Observation observation : observationList) {
+				Entry observationsEntry = new Entry().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Pregnancy Observation Data");
+		}
+
+		// Get Travel Observations
+		try {
+			logger.info("Get Travel Observation Data");
+			List<Observation> observationList = dstu2ResourcesData.getTravelObservationData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setTravelObs(observationList);
+			for (Observation observation : observationList) {
+				Entry observationsEntry = new Entry().setResource(observation);
+				bundle.addEntry(observationsEntry);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting Travel Observation Data");
 		}
 
 		// Get MedicationAdministration for Patients and laboratory category (Write a
@@ -167,12 +205,50 @@ public class LoadingQueryDstu2Bundle {
 			List<MedicationAdministration> medAdministrationsList = dstu2ResourcesData.getMedicationAdministrationData(
 					context, client, launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
+				if(!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
+					if(medAdministration.getMedication() instanceof ResourceReferenceDt) {
+						BaseResourceReferenceDt medRef = (BaseResourceReferenceDt) medAdministration.getMedication();
+						String medReference = medRef.getReference().getValue();
+						if(medReference.startsWith("#")) {
+							BaseContainedDt medAdministrationContained = medAdministration.getContained();
+							List<Medication> containedResources = (List<Medication>) medAdministrationContained.getContainedResources();
+							if(containedResources.stream().anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+								logger.info("Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+							}
+						} else {
+							logger.info("Medication Reference Found=============>"+medReference);
+							Medication medication = dstu2ResourcesData.getMedicationData(context, client, launchDetails, dstu2FhirData, medReference);
+							Entry medicationEntry = new Entry().setResource(medication);
+							bundle.addEntry(medicationEntry);
+							if(medication != null) {
+								List<Medication> medicationList = new ArrayList<Medication>();
+								medicationList.add(medication);
+								dstu2FhirData.setMedicationList(medicationList);	
+							}
+						}
+					}
+				}
 				Entry medAdministrationEntry = new Entry().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting the MedicationAdministration Data");
+		}
+
+		try {
+			logger.info("Get MedicationStatement Data");
+			List<MedicationStatement> medStatementsList = dstu2ResourcesData.getMedicationStatementData(context, client,
+					launchDetails, dstu2FhirData, encounter, start, end);
+			logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
+			for (MedicationStatement medStatement : medStatementsList) {
+				Entry medStatementEntry = new Entry().setResource(medStatement);
+				bundle.addEntry(medStatementEntry);
+			}
+			dstu2FhirData.setMedications(medStatementsList);
+		} catch (Exception e) {
+			logger.error("Error in getting the MedicationStatement Data");
 		}
 
 		// Get DiagnosticOrders for Patients (Write a method).
@@ -189,6 +265,7 @@ public class LoadingQueryDstu2Bundle {
 			List<DiagnosticOrder> diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			System.out.println("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+			dstu2FhirData.setDiagOrders(diagnosticOrdersList);
 			for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
 				Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
 				bundle.addEntry(diagnosticOrderEntry);
@@ -207,6 +284,7 @@ public class LoadingQueryDstu2Bundle {
 			List<Immunization> immunizationsList = dstu2ResourcesData.getImmunizationData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered Immunizations----------->" + immunizationsList.size());
+			dstu2FhirData.setImmunizations(immunizationsList);
 			for (Immunization immunization : immunizationsList) {
 				Entry immunizationEntry = new Entry().setResource(immunization);
 				bundle.addEntry(immunizationEntry);
@@ -225,6 +303,7 @@ public class LoadingQueryDstu2Bundle {
 			List<DiagnosticReport> diagnosticReportList = dstu2ResourcesData.getDiagnosticReportData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+			dstu2FhirData.setDiagReports(diagnosticReportList);
 			for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 				Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);
 				bundle.addEntry(diagnosticReportEntry);
@@ -241,10 +320,14 @@ public class LoadingQueryDstu2Bundle {
 		logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
 		logger.info("Immunization Codes Size=====>" + dstu2FhirData.getImmuniationCodes().size());
 		logger.info("DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-		//logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
+		// logger.info("DiagnosticOrders Codes Size=====>" +
+		// dstu2FhirData.getDiagnosticOrderCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 
+		String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/LoadingQueryDSTU2Bundle-"
+				+ launchDetails.getLaunchPatientId() + ".json";
+		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 		return bundle;
 	}
 

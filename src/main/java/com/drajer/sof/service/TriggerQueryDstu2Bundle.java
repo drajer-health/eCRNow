@@ -1,19 +1,24 @@
 package com.drajer.sof.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.Dstu2ResourcesData;
 import com.drajer.sof.utils.FhirContextInitializer;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.base.composite.BaseContainedDt;
+import ca.uhn.fhir.model.base.composite.BaseResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
@@ -28,6 +33,7 @@ import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Location;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
+import ca.uhn.fhir.model.dstu2.resource.Medication;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Component
@@ -123,6 +129,7 @@ public class TriggerQueryDstu2Bundle {
 			List<Condition> conditionsList = dstu2ResourcesData.getConditionData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			dstu2FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				Entry conditionsEntry = new Entry().setResource(condition);
 				bundle.addEntry(conditionsEntry);
@@ -143,6 +150,7 @@ public class TriggerQueryDstu2Bundle {
 			List<Observation> observationList = dstu2ResourcesData.getObservationData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered Observations---->" + observationList.size());
+			dstu2FhirData.setLabResults(observationList);
 			for (Observation observation : observationList) {
 				Entry observationsEntry = new Entry().setResource(observation);
 				bundle.addEntry(observationsEntry);
@@ -166,7 +174,31 @@ public class TriggerQueryDstu2Bundle {
 			List<MedicationAdministration> medAdministrationsList = dstu2ResourcesData.getMedicationAdministrationData(
 					context, client, launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+			dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
+				if(!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
+					if(medAdministration.getMedication() instanceof ResourceReferenceDt) {
+						BaseResourceReferenceDt medRef = (BaseResourceReferenceDt) medAdministration.getMedication();
+						String medReference = medRef.getReference().getValue();
+						if(medReference.startsWith("#")) {
+							BaseContainedDt medAdministrationContained = medAdministration.getContained();
+							List<Medication> containedResources = (List<Medication>) medAdministrationContained.getContainedResources();
+							if(containedResources.stream().anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+								logger.info("Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+							}
+						} else {
+							logger.info("Medication Reference Found=============>"+medReference);
+							Medication medication = dstu2ResourcesData.getMedicationData(context, client, launchDetails, dstu2FhirData, medReference);
+							Entry medicationEntry = new Entry().setResource(medication);
+							bundle.addEntry(medicationEntry);
+							if(medication != null) {
+								List<Medication> medicationList = new ArrayList<Medication>();
+								medicationList.add(medication);
+								dstu2FhirData.setMedicationList(medicationList);	
+							}
+						}
+					}
+				}
 				Entry medAdministrationEntry = new Entry().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}
@@ -188,6 +220,7 @@ public class TriggerQueryDstu2Bundle {
 			List<DiagnosticOrder> diagnosticOrdersList = dstu2ResourcesData.getDiagnosticOrderData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+			dstu2FhirData.setDiagOrders(diagnosticOrdersList);
 			for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
 				Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
 				bundle.addEntry(diagnosticOrderEntry);
@@ -200,6 +233,7 @@ public class TriggerQueryDstu2Bundle {
 			List<DiagnosticReport> diagnosticReportList = dstu2ResourcesData.getDiagnosticReportData(context, client,
 					launchDetails, dstu2FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+			dstu2FhirData.setDiagReports(diagnosticReportList);
 			for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 				Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);
 				bundle.addEntry(diagnosticReportEntry);
@@ -215,10 +249,11 @@ public class TriggerQueryDstu2Bundle {
 		logger.info("Observation Codes Size=====>" + dstu2FhirData.getLabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
 		logger.info("DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-		// logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
+		logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
-		
+		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/TriggerQueryDSTU2Bundle-"+launchDetails.getLaunchPatientId()+".json";
+		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 
 		return bundle;
 	}

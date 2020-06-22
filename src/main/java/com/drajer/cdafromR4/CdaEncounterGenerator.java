@@ -1,4 +1,4 @@
-package com.drajer.cda;
+package com.drajer.cdafromR4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,25 +6,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
-
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.resource.Encounter;
+import com.drajer.sof.model.R4FhirData;
 
 public class CdaEncounterGenerator {
 
-	private static final Logger logger = LoggerFactory.getLogger(CdaProblemGenerator.class);
+	private static final Logger logger = LoggerFactory.getLogger(CdaEncounterGenerator.class);
 	
-	public static String generateEncounterSection(Dstu2FhirData data, LaunchDetails details) {
+	public static String generateEncounterSection(R4FhirData data, LaunchDetails details) {
 		
 		StringBuilder sb = new StringBuilder(2000);
-		
 		Encounter encounter = data.getEncounter();
 		
 		if(encounter != null) {
@@ -100,9 +98,9 @@ public class CdaEncounterGenerator {
             sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID));
             sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID, CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID_EXT));
             
-            sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), encounter.getId().getIdPart()));
+            sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), encounter.getId()));
             
-            List<CodeableConceptDt> cds = encounter.getType();
+            List<CodeableConcept> cds = encounter.getType();
             sb.append(CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));
             
             sb.append(CdaFhirUtilities.getPeriodXml(encounter.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));

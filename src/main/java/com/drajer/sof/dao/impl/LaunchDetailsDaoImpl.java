@@ -37,6 +37,12 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 		Criteria criteria = getSession().createCriteria(LaunchDetails.class);
 		List<LaunchDetails> launchDetailsList = criteria.addOrder(Order.desc("id")).list();
 		return launchDetailsList;	
+	
+        public LaunchDetails getLaunchDetailsByState(int state) {
+		Criteria criteria = getSession().createCriteria(LaunchDetails.class);
+		criteria.add(Restrictions.eq("launchState", state));
+		LaunchDetails launchDetails = (LaunchDetails) criteria.uniqueResult();
+		return launchDetails;
 	}
 
 }
