@@ -1,8 +1,10 @@
 package com.drajer.sof.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import com.drajer.sof.utils.Dstu2ResourcesData;
 import com.drajer.sof.utils.FhirContextInitializer;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.base.composite.BaseContainedDt;
+import ca.uhn.fhir.model.base.composite.BaseResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
@@ -29,6 +33,7 @@ import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Location;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
+import ca.uhn.fhir.model.dstu2.resource.Medication;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Component
@@ -170,6 +175,29 @@ public class TriggerQueryDstu2Bundle {
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
 			dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
+				if(!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
+					if(medAdministration.getMedication() instanceof ResourceReferenceDt) {
+						BaseResourceReferenceDt medRef = (BaseResourceReferenceDt) medAdministration.getMedication();
+						String medReference = medRef.getReference().getValue();
+						if(medReference.startsWith("#")) {
+							BaseContainedDt medAdministrationContained = medAdministration.getContained();
+							List<Medication> containedResources = (List<Medication>) medAdministrationContained.getContainedResources();
+							if(containedResources.stream().anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+								logger.info("Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+							}
+						} else {
+							logger.info("Medication Reference Found=============>"+medReference);
+							Medication medication = dstu2ResourcesData.getMedicationData(context, client, launchDetails, dstu2FhirData, medReference);
+							Entry medicationEntry = new Entry().setResource(medication);
+							bundle.addEntry(medicationEntry);
+							if(medication != null) {
+								List<Medication> medicationList = new ArrayList<Medication>();
+								medicationList.add(medication);
+								dstu2FhirData.setMedicationList(medicationList);	
+							}
+						}
+					}
+				}
 				Entry medAdministrationEntry = new Entry().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}

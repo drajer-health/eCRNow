@@ -74,8 +74,6 @@ public class LaunchController {
 	@Autowired
 	FhirContextInitializer fhirContextInitializer;
 
-	public static Map<Integer, JSONObject> authDetailsSet = new HashMap<Integer, JSONObject>();
-
 	@CrossOrigin
 	@RequestMapping("/api/launchDetails/{tokenId}")
 	public LaunchDetails getLaunchDetailsById(@PathVariable("tokenId") Integer tokenId) {
@@ -223,7 +221,7 @@ public class LaunchController {
 				currentLaunchDetails.setAuthorizationCode(code);
 				JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
 				if (accessTokenObject != null) {
-					logger.info("Received Access Token:::::" + accessTokenObject.toString());
+					logger.info("Received Access Token:::::" + accessTokenObject.getString("access_token"));
 					if (accessTokenObject.get("patient") != null && accessTokenObject.get("encounter") != null) {
 						isPatientLaunched = checkWithExistingPatientAndEncounter(accessTokenObject.getString("patient"),
 								accessTokenObject.getString("encounter"), currentLaunchDetails.getEhrServerURL());
@@ -236,7 +234,6 @@ public class LaunchController {
 								clientDetails);
 
 						saveLaunchDetails(currentLaunchDetails);
-						authDetailsSet.remove(Integer.parseInt(state));
 					} else {
 						logger.error("Launch Context is already present for Patient:::::"
 								+ accessTokenObject.getString("patient"));

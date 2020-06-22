@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,12 +15,14 @@ import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,6 +177,29 @@ public class TriggerQueryR4Bundle {
 			logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
 			r4FhirData.setMedicationAdministrations(medAdministrationsList);
 			for (MedicationAdministration medAdministration : medAdministrationsList) {
+				if(!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
+					if(medAdministration.getMedication() instanceof Reference) {
+						Reference medRef = (Reference) medAdministration.getMedication();
+						String medReference = medRef.getReferenceElement().getValue();
+						if(medReference.startsWith("#")) {
+							List<Resource> medAdministrationContained = medAdministration.getContained();
+							// List<Medication> containedResources = medAdministrationContained;
+							if(medAdministrationContained.stream().anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+								logger.info("Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+							}
+						} else {
+							logger.info("Medication Reference Found=============>"+medReference);
+							Medication medication = r4ResourcesData.getMedicationData(context, client, launchDetails, r4FhirData, medReference);
+							BundleEntryComponent medicationEntry = new BundleEntryComponent().setResource(medication);
+							bundle.addEntry(medicationEntry);
+							if(medication != null) {
+								List<Medication> medicationList = new ArrayList<Medication>();
+								medicationList.add(medication);
+								r4FhirData.setMedicationList(medicationList);	
+							}
+						}
+					}
+				}
 				BundleEntryComponent medAdministrationEntry = new BundleEntryComponent().setResource(medAdministration);
 				bundle.addEntry(medAdministrationEntry);
 			}
@@ -210,7 +236,7 @@ public class TriggerQueryR4Bundle {
 		logger.info("Conditions Codes Size=====>" + r4FhirData.getR4ConditionCodes().size());
 		logger.info("Observation Codes Size=====>" + r4FhirData.getR4LabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
-		logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
+		// logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
 
 		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 		

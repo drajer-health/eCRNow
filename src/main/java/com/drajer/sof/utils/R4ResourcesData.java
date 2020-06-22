@@ -14,6 +14,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
@@ -292,6 +293,11 @@ public class R4ResourcesData {
 			}
 		}
 		return medicationCodes;
+	}
+	
+	public Medication getMedicationData(FhirContext context, IGenericClient client, LaunchDetails launchDetails, R4FhirData r4FhirData, String medicationId) {
+		Medication medication = (Medication) resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
+		return medication;
 	}
 
 	public List<MedicationAdministration> getMedicationAdministrationData(FhirContext context, IGenericClient client,

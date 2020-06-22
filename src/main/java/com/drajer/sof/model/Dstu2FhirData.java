@@ -10,6 +10,7 @@ import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
 import ca.uhn.fhir.model.dstu2.resource.Location;
+import ca.uhn.fhir.model.dstu2.resource.Medication;
 import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
 import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
@@ -35,6 +36,7 @@ public class Dstu2FhirData extends FhirData {
 	private List<Immunization> 	   immunizations;
 	private List<MedicationStatement>  medications;
 	private List<MedicationAdministration>  medicationAdministrations;
+	private List<Medication> medicationList;
 	
 	public Dstu2FhirData() {
 		
@@ -47,6 +49,7 @@ public class Dstu2FhirData extends FhirData {
 		immunizations = new ArrayList<Immunization>();
 		medications = new ArrayList<MedicationStatement>();
 		medicationAdministrations = new ArrayList<MedicationAdministration>();
+		medicationList = new ArrayList<Medication>();
 	}
 	
 	public List<Condition> getConditions() {
@@ -119,6 +122,14 @@ public class Dstu2FhirData extends FhirData {
 
 	public void setMedicationAdministrations(List<MedicationAdministration> medicationAdministrations) {
 		this.medicationAdministrations = medicationAdministrations;
+	}
+
+	public List<Medication> getMedicationList() {
+		return medicationList;
+	}
+
+	public void setMedicationList(List<Medication> medicationList) {
+		this.medicationList = medicationList;
 	}
 
 	public Patient getPatient() {
