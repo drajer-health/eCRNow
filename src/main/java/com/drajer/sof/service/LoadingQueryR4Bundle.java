@@ -130,6 +130,7 @@ public class LoadingQueryR4Bundle {
 			List<Condition> conditionsList = r4ResourcesData.getConditionData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			r4FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
 				bundle.addEntry(conditionsEntry);
@@ -265,6 +266,7 @@ public class LoadingQueryR4Bundle {
 			List<ServiceRequest> serviceRequestsList = r4ResourcesData.getServiceRequestData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered ServiceRequests----------->" + serviceRequestsList.size());
+			r4FhirData.setServiceRequests(serviceRequestsList);
 			for (ServiceRequest serviceRequest : serviceRequestsList) {
 				BundleEntryComponent serviceRequestEntry = new BundleEntryComponent().setResource(serviceRequest);
 				bundle.addEntry(serviceRequestEntry);
@@ -283,6 +285,7 @@ public class LoadingQueryR4Bundle {
 			List<Immunization> immunizationsList = r4ResourcesData.getImmunizationData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered Immunizations----------->" + immunizationsList.size());
+			r4FhirData.setImmunizations(immunizationsList);
 			for (Immunization immunization : immunizationsList) {
 				BundleEntryComponent immunizationEntry = new BundleEntryComponent().setResource(immunization);
 				bundle.addEntry(immunizationEntry);
@@ -301,6 +304,7 @@ public class LoadingQueryR4Bundle {
 			List<DiagnosticReport> diagnosticReportList = r4ResourcesData.getDiagnosticReportData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+			r4FhirData.setDiagReports(diagnosticReportList);
 			for (DiagnosticReport diagnosticReport : diagnosticReportList) {
 				BundleEntryComponent diagnosticReportEntry = new BundleEntryComponent().setResource(diagnosticReport);
 				bundle.addEntry(diagnosticReportEntry);

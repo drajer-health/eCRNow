@@ -130,6 +130,7 @@ public class LoadingQueryDstu2Bundle {
 			List<Condition> conditionsList = dstu2ResourcesData.getConditionData(context, client, launchDetails,
 					dstu2FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			dstu2FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				Entry conditionsEntry = new Entry().setResource(condition);
 				bundle.addEntry(conditionsEntry);

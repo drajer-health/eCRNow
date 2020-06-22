@@ -131,6 +131,7 @@ public class TriggerQueryR4Bundle {
 			List<Condition> conditionsList = r4ResourcesData.getConditionData(context, client, launchDetails,
 					r4FhirData, encounter, start, end);
 			logger.info("Filtered ConditionsList---->" + conditionsList.size());
+			r4FhirData.setConditions(conditionsList);
 			for (Condition condition : conditionsList) {
 				BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
 				bundle.addEntry(conditionsEntry);
@@ -222,6 +223,7 @@ public class TriggerQueryR4Bundle {
 			List<ServiceRequest> serviceRequestsList = r4ResourcesData.getServiceRequestData(context, client,
 					launchDetails, r4FhirData, encounter, start, end);
 			logger.info("Filtered ServiceRequests----------->" + serviceRequestsList.size());
+			r4FhirData.setServiceRequests(serviceRequestsList);
 			for (ServiceRequest serviceRequest : serviceRequestsList) {
 				BundleEntryComponent serviceRequestEntry = new BundleEntryComponent().setResource(serviceRequest);
 				bundle.addEntry(serviceRequestEntry);
