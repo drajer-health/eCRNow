@@ -27,6 +27,7 @@ import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ import org.slf4j.LoggerFactory;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
+
+import ca.uhn.fhir.model.api.ExtensionDt;
+import ca.uhn.fhir.model.primitive.CodeDt;
 
 public class CdaFhirUtilities {
 
@@ -132,6 +136,33 @@ public class CdaFhirUtilities {
 						}
 					}
 					
+				}
+			}
+			
+		}
+		
+		logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+		return null;
+	}
+	
+	public static CodeType getCodeExtension(List<Extension> exts, String extUrl) {
+		
+		if(exts != null && exts.size() > 0) {
+			
+			for(Extension ext : exts) {
+
+				if (ext.getUrl() != null && 
+					ext.getUrl().contentEquals(extUrl)) {
+					
+					// if the top level extension has CodingDt then we will use it.
+					if(ext.getValue() != null &&
+					   (ext.getValue() instanceof CodeType)) {
+						
+							logger.info(" Found Extension at top level ");
+							return (CodeType)ext.getValue();
+							
+						
+					}
 				}
 			}
 			
@@ -622,7 +653,7 @@ public class CdaFhirUtilities {
 		return nameString.toString();
 	}
 	
-	/*public static String getStringForIDataType(IDatatype dt) {
+	public static String getStringForType(Type dt) {
 		
 		if(dt != null) {
 			
@@ -683,11 +714,11 @@ public class CdaFhirUtilities {
 		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
- 	}*/
+ 	}
 	
 	
 	
-	/*public static String getIDataTypeXml(IDatatype dt, String elName, Boolean valFlag) {
+	public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
 		
 		if(dt != null) {
 			
@@ -752,5 +783,5 @@ public class CdaFhirUtilities {
 		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
- 	}*/
+ 	}
 }

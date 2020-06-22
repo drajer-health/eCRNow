@@ -220,9 +220,8 @@ public class TriggerQueryDstu2Bundle {
 		logger.info("Observation Codes Size=====>" + dstu2FhirData.getLabResultCodes().size());
 		logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
 		logger.info("DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-		// logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
+		logger.info("DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
 
-		// logger.info(context.newJsonParser().encodeResourceToString(bundle));
 		String fileName = ActionRepo.getInstance().getLogFileDirectory()+"/TriggerQueryDSTU2Bundle-"+launchDetails.getLaunchPatientId()+".json";
 		FhirContextInitializer.saveBundleToFile(context.newJsonParser().encodeResourceToString(bundle), fileName);
 

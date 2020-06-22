@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.Bundle;
@@ -14,6 +15,9 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.ServiceRequest;
+
+import ca.uhn.fhir.model.dstu2.resource.DiagnosticOrder;
 
 public class R4FhirData extends FhirData {
 
@@ -32,8 +36,21 @@ public class R4FhirData extends FhirData {
 	private List<Immunization> 	   immunizations;
 	private List<MedicationStatement>  medications;
 	private List<MedicationAdministration> medicationAdministrations;
-	// private List<DiagnosticOrder>  diagOrders;
+	private List<ServiceRequest> 	serviceRequests;
 
+	public R4FhirData() {
+		
+		conditions = new ArrayList<Condition>();
+		diagReports = new ArrayList<DiagnosticReport>();
+		labResults = new ArrayList<Observation>();
+		travelObs = new ArrayList<Observation>();
+		pregnancyObs = new ArrayList<Observation>();
+		immunizations = new ArrayList<Immunization>();
+		medications = new ArrayList<MedicationStatement>();
+		medicationAdministrations = new ArrayList<MedicationAdministration>();
+		serviceRequests = new ArrayList<ServiceRequest>();
+	}
+	
 	public Bundle getData() {
 		return data;
 	}
@@ -145,4 +162,14 @@ public class R4FhirData extends FhirData {
 	public void setMedicationAdministrations(List<MedicationAdministration> medicationAdministrations) {
 		this.medicationAdministrations = medicationAdministrations;
 	}
+
+	public List<ServiceRequest> getServiceRequests() {
+		return serviceRequests;
+	}
+
+	public void setServiceRequests(List<ServiceRequest> serviceRequests) {
+		this.serviceRequests = serviceRequests;
+	}
+	
+	
 }

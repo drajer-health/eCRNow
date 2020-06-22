@@ -3,9 +3,11 @@ package com.drajer.eca.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CreateEicrAfterReheckAction extends AbstractAction {
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
 
-	private final Logger logger = LoggerFactory.getLogger(CreateEicrAfterReheckAction.class);
+public class CreateEicrAfterRecheckAction extends AbstractAction {
+
+	private final Logger logger = LoggerFactory.getLogger(CreateEicrAfterRecheckAction.class);
 		
 	@Override
 	public void print() {
@@ -16,7 +18,7 @@ public class CreateEicrAfterReheckAction extends AbstractAction {
 	}
 	
 	@Override
-	public void execute(Object obj) {
+	public void execute(Object obj, WorkflowEvent launchType) {
 			// TODO Auto-generated method stub
 
 			logger.info(" Executing Periodic Update Action ");

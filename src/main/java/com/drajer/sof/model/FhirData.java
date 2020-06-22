@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -10,6 +11,7 @@ public abstract class FhirData {
 
 	List<CodeableConceptDt> conditionCodes;
 	List<CodeableConceptDt> labResultCodes;
+	List<CodeableConceptDt> labResultValues;
 	List<CodeableConceptDt> medicationCodes;
 	List<CodeableConceptDt> diagnosticOrderCodes;
 	List<CodeableConceptDt> encounterCodes;
@@ -18,11 +20,35 @@ public abstract class FhirData {
 	
 	List<CodeableConcept> r4ConditionCodes;
 	List<CodeableConcept> r4LabResultCodes;
+	List<CodeableConcept> r4LabResultValues;
 	List<CodeableConcept> r4MedicationCodes;
 	List<CodeableConcept> r4ServiceRequestCodes;
 	List<CodeableConcept> r4EncounterCodes;
 	List<CodeableConcept> r4ImmunizationCodes;
 	List<CodeableConcept> r4DiagnosticReportCodes;
+	
+	public FhirData() {
+		
+		conditionCodes = new ArrayList<CodeableConceptDt>();
+		labResultCodes = new ArrayList<CodeableConceptDt>();
+		labResultValues = new ArrayList<CodeableConceptDt>();
+		medicationCodes = new ArrayList<CodeableConceptDt>();
+		diagnosticOrderCodes = new ArrayList<CodeableConceptDt>();
+		encounterCodes = new ArrayList<CodeableConceptDt>();
+		immuniationCodes = new ArrayList<CodeableConceptDt>();
+		diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
+		
+		r4ConditionCodes = new ArrayList<CodeableConcept>();
+		r4LabResultCodes = new ArrayList<CodeableConcept>();
+		r4LabResultValues = new ArrayList<CodeableConcept>();
+		r4MedicationCodes = new ArrayList<CodeableConcept>();
+		r4ServiceRequestCodes = new ArrayList<CodeableConcept>();
+		r4EncounterCodes = new ArrayList<CodeableConcept>();
+		r4ImmunizationCodes = new ArrayList<CodeableConcept>();
+		r4DiagnosticReportCodes = new ArrayList<CodeableConcept>();
+		
+		
+	}
 	
 	public List<CodeableConceptDt> getConditionCodes() {
 		return conditionCodes;
@@ -82,20 +108,49 @@ public abstract class FhirData {
 
 	public List<CodeableConceptDt> getCodesForExpression(String expression) {
 		
-		if(expression.contains("Condition")) {
+		if(expression.contains("Condition.code")) {
 			return conditionCodes;
 		}
-		else if(expression.contains("Medication")) {
+		else if(expression.contains("MedicationAdministration.code")) {
 			return medicationCodes;
 		}
-		else if(expression.contains("Observation")) {
+		else if(expression.contains("Observation.code")) {
 			return labResultCodes;
 		}
-		else if(expression.contains("Immunization")) {
+		else if(expression.contains("Immunization.vaccineCode")) {
 			return immuniationCodes;
 		}
-		else if(expression.contains("ServiceRequest")) {
+		else if(expression.contains("ServiceRequest.code")) {
 			return diagnosticOrderCodes;
+		}
+		else if(expression.contains("Observation.value")) {
+			return labResultValues;
+		}
+		else {
+			return null;
+		}
+		
+	}
+	
+	public List<CodeableConcept> getR4CodesForExpression(String expression) {
+		
+		if(expression.contains("Condition.code")) {
+			return r4ConditionCodes;
+		}
+		else if(expression.contains("MedicationAdministration.code")) {
+			return r4MedicationCodes;
+		}
+		else if(expression.contains("Observation.code")) {
+			return r4LabResultCodes;
+		}
+		else if(expression.contains("Immunization.vaccineCode")) {
+			return r4ImmunizationCodes;
+		}
+		else if(expression.contains("ServiceRequest.code")) {
+			return r4ServiceRequestCodes;
+		}
+		else if(expression.contains("Observation.value")) {
+			return r4LabResultValues;
 		}
 		else {
 			return null;

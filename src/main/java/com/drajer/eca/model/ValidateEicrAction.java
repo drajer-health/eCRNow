@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -27,7 +28,7 @@ public class ValidateEicrAction extends AbstractAction {
 		logger.info(" **** End Printing ValidateEicrAction **** ");
 	}
 	@Override
-	public void execute(Object obj) {
+	public void execute(Object obj, WorkflowEvent launchType) {
 		
 		logger.info(" **** START Executing Validate Eicr Action **** ");
 		

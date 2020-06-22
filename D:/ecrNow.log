@@ -1,0 +1,23 @@
+2020-06-02 10:29:34.012  INFO 5851 --- [main] com.drajer.ecrapp.EcrApp                 : Starting EcrApp v0.0.1-SNAPSHOT on Nageshs-MacBook-Pro-2.local with PID 5851 (/Users/nbashyam/git/eCRNow/target/ecr-now.war started by nbashyam in /Users/nbashyam/git/eCRNow)
+2020-06-02 10:29:34.014  INFO 5851 --- [main] com.drajer.ecrapp.EcrApp                 : No active profile set, falling back to default profiles: default
+2020-06-02 10:29:34.704  INFO 5851 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2020-06-02 10:29:34.725  INFO 5851 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13ms. Found 0 repository interfaces.
+2020-06-02 10:29:34.903  INFO 5851 --- [main] ca.uhn.fhir.util.VersionUtil             : HAPI FHIR version 4.0.3 - Rev 343eaa8d68
+2020-06-02 10:29:34.906  INFO 5851 --- [main] ca.uhn.fhir.context.FhirContext          : Creating new FHIR context for FHIR version [R4]
+2020-06-02 10:29:35.154  INFO 5851 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2020-06-02 10:29:35.615  INFO 5851 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8081 (http)
+2020-06-02 10:29:35.628  INFO 5851 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2020-06-02 10:29:35.629  INFO 5851 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.27]
+2020-06-02 10:29:37.408  INFO 5851 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2020-06-02 10:29:37.408  INFO 5851 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 3347 ms
+2020-06-02 10:29:37.642  INFO 5851 --- [main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.4.8.Final}
+2020-06-02 10:29:37.836  INFO 5851 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2020-06-02 10:29:38.025  INFO 5851 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL95Dialect
+2020-06-02 10:29:38.783  INFO 5851 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2020-06-02 10:29:38.861  INFO 5851 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService
+2020-06-02 10:29:38.869  INFO 5851 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'threadPoolTaskScheduler'
+2020-06-02 10:29:39.109  INFO 5851 --- [main] ca.uhn.fhir.util.XmlUtil                 : FHIR XML procesing will use StAX implementation 'Java Runtime Environment' version '1.8.0_241'
+2020-06-02 10:29:40.031  INFO 5851 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [public/index.html]
+2020-06-02 10:29:40.389  INFO 5851 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path ''
+2020-06-02 10:29:40.393  INFO 5851 --- [main] com.drajer.ecrapp.EcrApp                 : Started EcrApp in 6.8 seconds (JVM running for 7.212)
+2020-06-02 11:59:24.835  INFO 5851 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'threadPoolTaskScheduler'

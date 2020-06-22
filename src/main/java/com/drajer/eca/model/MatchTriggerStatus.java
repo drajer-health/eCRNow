@@ -65,9 +65,11 @@ public class MatchTriggerStatus extends EicrStatus {
 			mtc.setValueSetVersion(valuesetVersion);
 			mtc.setMatchedPath(path);
 			matchedCodes.add(mtc);
+			triggerMatchStatus = true;
 		}
 		else {
-			mtc.addCodes(codes);			
+			mtc.addCodes(codes);	
+			triggerMatchStatus = true;
 		}
 	}
 	

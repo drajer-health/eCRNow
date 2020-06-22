@@ -1,15 +1,18 @@
 package com.drajer.eca.model;
 
 import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +38,7 @@ public class CloseOutEicrAction extends AbstractAction {
 	}
 	
 	@Override
-	public void execute(Object obj) {
+	public void execute(Object obj, WorkflowEvent launchType) {
 
 		logger.info(" **** START Executing Close Out Eicr Action **** ");
 				
@@ -197,12 +200,13 @@ public class CloseOutEicrAction extends AbstractAction {
 						
 						logger.info(" Job Not Scheduled since there is no timing data ");
 					}
-					else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.SCHEDULED) {
+					else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.SCHEDULED && 
+							 launchType == WorkflowEvent.SCHEDULED_JOB) {
 						
 						logger.info(" Creating the Close Out EICR since the job has been scheduled ");
 						
 						// Check Trigger Codes again in case the data has changed.
-						PatientExecutionState newState = recheckTriggerCodes(details);
+						PatientExecutionState newState = recheckTriggerCodes(details, launchType);
 						
 						if(newState.getMatchTriggerStatus().getTriggerMatchStatus() && 
 						   newState.getMatchTriggerStatus().getMatchedCodes() != null && 
@@ -245,17 +249,63 @@ public class CloseOutEicrAction extends AbstractAction {
 
 										throw new RuntimeException(msg);
 									}
+								
+
+									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+	
+									logger.info(eICR);
+	
+									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
+											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+									ApplicationUtils.saveDataToFile(eICR, fileName);
+	
+									logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+								
 								}
+								else if(data != null && data instanceof R4FhirData) {
+									
+									logger.info("Creating eICR based on FHIR R4 ");
+									R4FhirData r4Data = (R4FhirData) data;
+									eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details);
+									
+									// Create the object for persistence.
+									Eicr ecr = new Eicr();
+									ecr.setData(eICR);
+									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
 
-								logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
-								logger.info(eICR);
+									newState.getCloseOutEicrStatus().setEicrClosed(true);
+									newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
+									newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-								String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
-										+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-								ApplicationUtils.saveDataToFile(eICR, fileName);
+									try {
+										details.setStatus(mapper.writeValueAsString(newState));
+									} catch (JsonProcessingException e) {
+										String msg = "Unable to update execution state";
+										logger.error(msg);
+										e.printStackTrace();
 
-								logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+										throw new RuntimeException(msg);
+									}
+								
+
+									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+	
+									logger.info(eICR);
+	
+									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
+											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+									ApplicationUtils.saveDataToFile(eICR, fileName);
+	
+									logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+									
+								}
+								else {
+									String msg = "No Fhir Data retrieved to CLOSE OUT EICR.";
+									logger.error(msg);
+
+									throw new RuntimeException(msg);
+								}
 							}
 							else {
 
@@ -308,11 +358,11 @@ public class CloseOutEicrAction extends AbstractAction {
 		}
 	}
 	
-	public PatientExecutionState recheckTriggerCodes(LaunchDetails details) {
+	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
 		
 		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
 		for(AbstractAction act : acts) {
-			act.execute(details);
+			act.execute(details, launchType);
 			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
 		}
 		

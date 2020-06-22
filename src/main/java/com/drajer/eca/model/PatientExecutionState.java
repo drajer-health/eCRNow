@@ -17,6 +17,7 @@ public class PatientExecutionState {
 	CloseOutEicrStatus				closeOutEicrStatus;
 	Set<ValidateEicrStatus> 		validateEicrStatus;
 	Set<SubmitEicrStatus>			submitEicrStatus;
+	Set<RRStatus>				 	rrStatus;
 	
 	public PatientExecutionState(String patId, String enId) {
 		
@@ -35,6 +36,8 @@ public class PatientExecutionState {
 		validateEicrStatus = new HashSet<ValidateEicrStatus>();
 		
 		submitEicrStatus = new HashSet<SubmitEicrStatus>();
+		
+		rrStatus = new HashSet<RRStatus>();
 		
 		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
 		
@@ -59,6 +62,8 @@ public class PatientExecutionState {
 		submitEicrStatus = new HashSet<SubmitEicrStatus>();
 		
 		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
+		
+		rrStatus = new HashSet<RRStatus>();
 		
 	}
 
@@ -134,6 +139,16 @@ public class PatientExecutionState {
 		this.submitEicrStatus = submitEicrStatus;
 	}
 	
+	
+	
+	public Set<RRStatus> getRrStatus() {
+		return rrStatus;
+	}
+
+	public void setRrStatus(Set<RRStatus> rrStatus) {
+		this.rrStatus = rrStatus;
+	}
+
 	public Boolean hasActionCompleted(String actionId) {
 		
 		if(actionId.contentEquals(matchTriggerStatus.getActionId()) && 
@@ -261,4 +276,26 @@ public class PatientExecutionState {
 		return ids;
 	}
 	
+	public Set<Integer> getEicrsForRRCheck() {
+		
+		Set<Integer> ids = new HashSet<Integer>();
+		
+		// Get the EICRs already validated. 
+		Set<Integer> valIds = new HashSet<Integer>();
+		Set<RRStatus> vals = this.getRrStatus();
+		for(RRStatus val : vals) {			
+			// Collect the Ids.
+			valIds.add(Integer.valueOf(val.geteICRId()));
+		}
+		
+		for(SubmitEicrStatus pd : submitEicrStatus) {
+			
+			if(	pd.getJobStatus() == JobStatus.COMPLETED && 
+					   !valIds.contains(Integer.valueOf(pd.geteICRId()))) {
+				ids.add(Integer.valueOf(pd.geteICRId()));
+			}	
+		}
+		
+		return ids;
+	}
 }
