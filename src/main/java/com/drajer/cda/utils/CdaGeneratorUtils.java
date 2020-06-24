@@ -353,6 +353,25 @@ public class CdaGeneratorUtils {
 
 		return s;
 	}
+	
+	public static String getXmlForEmail(String telName, String telNo, String use)
+	{
+		String s = "";
+		
+		if(!StringUtils.isEmpty(use)) {
+			
+			s += CdaGeneratorConstants.START_XMLTAG + telName + CdaGeneratorConstants.SPACE + "value="
+					+ CdaGeneratorConstants.DOUBLE_QUOTE + "mailto:" +telNo + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.SPACE + "use=" +
+					CdaGeneratorConstants.DOUBLE_QUOTE + use + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		}
+		else {
+			
+			s += CdaGeneratorConstants.START_XMLTAG + telName + CdaGeneratorConstants.SPACE + "value="
+					+ CdaGeneratorConstants.DOUBLE_QUOTE + "mailto:" +telNo + CdaGeneratorConstants.DOUBLE_QUOTE + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+		}
+
+		return s;
+	}
 
 	public static String getCDADocHeaderTemplateXML()
 	{
