@@ -1,0 +1,17 @@
+FROM centos:latest
+MAINTAINER eCRNow DB
+
+ADD docker-scripts/run.sh /bin/run.sh
+RUN chmod +x /bin/run.sh
+
+RUN yum update -y
+
+RUN yum install postgresql-server -y
+
+ENV TZ=${TZ:-'America/New_York'}
+
+RUN echo "America/New_York" > /etc/timezone
+
+EXPOSE 5432
+
+CMD ["/bin/run.sh"]
