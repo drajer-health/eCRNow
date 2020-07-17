@@ -32,6 +32,9 @@ public class LaunchDetails {
 
 	@Column(name = "client_id", nullable = true)
 	private String clientId;
+	
+	@Column(name = "client_secret", nullable = true)
+	private String clientSecret;
 
 	@Column(name = "ehr_server_url", nullable = true, columnDefinition = "TEXT")
 	private String ehrServerURL;
@@ -118,6 +121,9 @@ public class LaunchDetails {
 	@Column(name="auth_code",nullable = true)
 	private String authorizationCode;
 	
+	@Column(name = "is_system_launch", columnDefinition = "boolean default false", nullable = false)
+	private Boolean isSystem = false;
+	
 	public Boolean getIsCovid() {
 		return isCovid;
 	}
@@ -180,6 +186,14 @@ public class LaunchDetails {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	public String getClientSecret() {
+		return clientSecret;
+	}
+
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
 	}
 
 	public String getEhrServerURL() {
@@ -348,6 +362,14 @@ public class LaunchDetails {
 
 	public void setAuthorizationCode(String authorizationCode) {
 		this.authorizationCode = authorizationCode;
+	}
+
+	public Boolean getIsSystem() {
+		return isSystem;
+	}
+
+	public void setIsSystem(Boolean isSystem) {
+		this.isSystem = isSystem;
 	}
 
 }

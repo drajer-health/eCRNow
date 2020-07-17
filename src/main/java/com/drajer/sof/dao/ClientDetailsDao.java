@@ -10,7 +10,7 @@ public interface ClientDetailsDao {
 	
 	ClientDetails getClientDetailsById(Integer id);
 	
-	ClientDetails getClientDetailsByUrl(String url);
+	ClientDetails getClientDetailsByUrl(String url,boolean isSystem);
 	
 	List<ClientDetails> getAllClientDetails();
 }

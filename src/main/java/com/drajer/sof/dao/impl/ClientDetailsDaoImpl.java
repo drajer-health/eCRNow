@@ -24,9 +24,10 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
 		return clientDetails;
 	}
 	
-	public ClientDetails getClientDetailsByUrl(String url) {
+	public ClientDetails getClientDetailsByUrl(String url,boolean isSystem) {
 		Criteria criteria = getSession().createCriteria(ClientDetails.class);
 		criteria.add(Restrictions.eq("fhirServerBaseURL", url));
+		criteria.add(Restrictions.eq("isSystem", isSystem));
 		ClientDetails clientDetails = (ClientDetails) criteria.uniqueResult();
 		return clientDetails;
 	}

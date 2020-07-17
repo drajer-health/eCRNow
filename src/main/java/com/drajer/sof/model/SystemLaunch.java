@@ -1,6 +1,6 @@
 package com.drajer.sof.model;
 
-public class SystemLuanch {
+public class SystemLaunch {
 
 	private String fhirServerURL;
 	private String patientId;

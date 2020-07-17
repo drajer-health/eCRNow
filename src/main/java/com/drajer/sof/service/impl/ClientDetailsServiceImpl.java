@@ -27,8 +27,8 @@ public class ClientDetailsServiceImpl implements ClientDetailsService{
 		return clientDetails;
 	}
 	
-	public ClientDetails getClientDetailsByUrl(String url) {
-		ClientDetails clientDetails = clientDetailsDao.getClientDetailsByUrl(url);
+	public ClientDetails getClientDetailsByUrl(String url,boolean isSystem) {
+		ClientDetails clientDetails = clientDetailsDao.getClientDetailsByUrl(url,isSystem);
 		return clientDetails;
 	}
 	

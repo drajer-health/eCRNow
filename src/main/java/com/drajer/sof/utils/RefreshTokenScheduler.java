@@ -83,14 +83,29 @@ public class RefreshTokenScheduler {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-			map.add("grant_type", "refresh_token");
-			map.add("refresh_token", authDetails.getRefreshToken());
-			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-			ResponseEntity<?> response = restTemplate.exchange(authDetails.getTokenUrl(), HttpMethod.POST, entity,
-					Response.class);
-			tokenResponse = new JSONObject(response.getBody());
+			if(!authDetails.getIsSystem()) {
+				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+				map.add("grant_type", "refresh_token");
+				map.add("refresh_token", authDetails.getRefreshToken());
+				HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+				ResponseEntity<?> response = restTemplate.exchange(authDetails.getTokenUrl(), HttpMethod.POST, entity,
+						Response.class);
+				tokenResponse = new JSONObject(response.getBody());
+			} else {
+				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				headers.add("Accept",MediaType.APPLICATION_JSON_VALUE);
+				String authValues = authDetails.getClientId()+":"+authDetails.getClientSecret();
+				String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+				headers.add("Authorization", "Basic "+ base64EncodedString);
+				MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+				map.add("grant_type", "client_credentials");
+				map.add("scope", authDetails.getScope());
+				HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+				ResponseEntity<?> response = restTemplate.exchange(authDetails.getTokenUrl(), HttpMethod.POST, entity,
+						Response.class);
+				tokenResponse = new JSONObject(response.getBody());
+			}
 			logger.info("Received AccessToken for Client: " + authDetails.getClientId());
 			logger.info("Received AccessToken: " + tokenResponse);
 			updateAccessToken(authDetails, tokenResponse);

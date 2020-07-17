@@ -30,7 +30,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.sof.model.SystemLuanch;
+import com.drajer.sof.model.SystemLaunch;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
@@ -132,10 +132,67 @@ public class LaunchController {
 
 	@CrossOrigin
 	@RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
-	public String invokeSystemLaunch(@RequestBody SystemLuanch systemLaunch) {
+	public String invokeSystemLaunch(@RequestBody SystemLaunch systemLaunch, HttpServletRequest request,
+			HttpServletResponse response) {
 		try {
-			ClientDetails clientDetails = clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
-			tokenScheduler.getSystemAccessToken(clientDetails);
+			boolean isPatientLaunched = false;
+			ClientDetails clientDetails = clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL(),true);
+			JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+			String fhirVersion ="";
+			JSONObject object = authorization.getMetadata(systemLaunch.getFhirServerURL() + "/metadata");
+			if (object != null) {
+				logger.info("Reading Metadata information");
+				if (object.getString("fhirVersion").equals("1.0.2")) {
+					fhirVersion = FhirVersionEnum.DSTU2.toString();
+				}
+				if (object.getString("fhirVersion").equals("4.0.0")) {
+					fhirVersion = FhirVersionEnum.R4.toString();
+				}
+			}
+			if (tokenResponse != null) {
+				if (systemLaunch.getPatientId() != null && systemLaunch.getEncounterId() != null) {
+					isPatientLaunched = checkWithExistingPatientAndEncounter(systemLaunch.getPatientId(),
+							systemLaunch.getEncounterId(), systemLaunch.getFhirServerURL());
+				} else {
+					logger.error("Please provide Patient Id and Encounter Id");
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+							"Please provide Patient Id and Encounter Id");
+				}
+				if (!isPatientLaunched) {
+					
+					LaunchDetails launchDetails = new LaunchDetails();
+					launchDetails.setAccessToken(tokenResponse.getString("access_token"));
+					launchDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
+					launchDetails.setClientId(clientDetails.getClientId());
+					launchDetails.setClientSecret(clientDetails.getClientSecret());
+					launchDetails.setScope(clientDetails.getScopes());
+					launchDetails.setDirectHost(clientDetails.getDirectHost());
+					launchDetails.setDirectPwd(clientDetails.getDirectPwd());
+					launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
+					launchDetails.setDirectUser(clientDetails.getDirectUser());
+					launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
+					launchDetails.setEncounterId(systemLaunch.getEncounterId());
+					launchDetails.setExpiry(tokenResponse.getInt("expires_in"));
+					launchDetails.setFhirVersion(fhirVersion);
+					launchDetails.setIsCovid(clientDetails.getIsCovid());
+					launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
+					launchDetails.setTokenUrl(clientDetails.getTokenURL());
+					launchDetails.setVersionNumber("1");
+					launchDetails.setIsSystem(clientDetails.getIsSystem());
+					
+					setStartAndEndDates(clientDetails, launchDetails);
+					
+					saveLaunchDetails(launchDetails);
+
+					
+				} else {
+					logger.error("Launch Context is already present for Patient:::::"
+							+ systemLaunch.getPatientId());
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+							"Launch Context is already present for Patient:::::"
+									+ systemLaunch.getPatientId());
+				}
+			}
 		} catch (Exception e) {
 			logger.info("Error in Invoking System Launch");
 		}
@@ -157,7 +214,7 @@ public class LaunchController {
 					+ request.getContextPath();
 			Random random = new Random();
 			Integer state = random.nextInt();
-			logger.info("Random State Value==========>"+state);
+			logger.info("Random State Value==========>" + state);
 			LaunchDetails launchDetails = new LaunchDetails();
 			launchDetails.setRedirectURI(uri + "/api/redirect");
 			launchDetails.setEhrServerURL(iss);
@@ -188,7 +245,7 @@ public class LaunchController {
 						}
 					}
 					ClientDetails clientDetails = clientDetailsService
-							.getClientDetailsByUrl(launchDetails.getEhrServerURL());
+							.getClientDetailsByUrl(launchDetails.getEhrServerURL(),false);
 					launchDetails.setClientId(clientDetails.getClientId());
 					launchDetails.setScope(clientDetails.getScopes());
 					launchDetails.setLaunchState(state);
@@ -228,10 +285,9 @@ public class LaunchController {
 					}
 					if (!isPatientLaunched) {
 						ClientDetails clientDetails = clientDetailsService
-								.getClientDetailsByUrl(currentLaunchDetails.getEhrServerURL());
+								.getClientDetailsByUrl(currentLaunchDetails.getEhrServerURL(),false);
 
-						currentLaunchDetails = setLaunchDetails(currentLaunchDetails, accessTokenObject,
-								clientDetails);
+						currentLaunchDetails = setLaunchDetails(currentLaunchDetails, accessTokenObject, clientDetails);
 
 						saveLaunchDetails(currentLaunchDetails);
 					} else {
@@ -280,7 +336,8 @@ public class LaunchController {
 		currentStateDetails.setEncounterId(
 				accessTokenObject.getString("encounter") != null ? accessTokenObject.getString("encounter") : null);
 		currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
-		currentStateDetails.setSetId(accessTokenObject.getString("patient") + "+" + accessTokenObject.getString("encounter"));
+		currentStateDetails
+				.setSetId(accessTokenObject.getString("patient") + "+" + accessTokenObject.getString("encounter"));
 		currentStateDetails.setVersionNumber("1");
 		currentStateDetails.setDirectUser(clientDetails.getDirectUser());
 		currentStateDetails.setDirectHost(clientDetails.getDirectHost());
@@ -293,8 +350,7 @@ public class LaunchController {
 		return currentStateDetails;
 	}
 
-	public void setStartAndEndDates(ClientDetails clientDetails,
-			LaunchDetails currentStateDetails) {
+	public void setStartAndEndDates(ClientDetails clientDetails, LaunchDetails currentStateDetails) {
 		FhirContext context = fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion());
 
 		IGenericClient client = fhirContextInitializer.createClient(context, currentStateDetails.getEhrServerURL(),
@@ -302,8 +358,8 @@ public class LaunchController {
 
 		if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())
 				&& currentStateDetails.getEncounterId() != null) {
-			Encounter encounter = (Encounter) fhirContextInitializer.getResouceById(currentStateDetails, client, context,
-					"Encounter", currentStateDetails.getEncounterId());
+			Encounter encounter = (Encounter) fhirContextInitializer.getResouceById(currentStateDetails, client,
+					context, "Encounter", currentStateDetails.getEncounterId());
 			if (encounter.getPeriod() != null) {
 				PeriodDt period = encounter.getPeriod();
 				if (period.getStart() != null) {
@@ -326,7 +382,8 @@ public class LaunchController {
 		if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())
 				&& currentStateDetails.getEncounterId() != null) {
 			org.hl7.fhir.r4.model.Encounter r4Encounter = (org.hl7.fhir.r4.model.Encounter) fhirContextInitializer
-					.getResouceById(currentStateDetails, client, context, "Encounter", currentStateDetails.getEncounterId());
+					.getResouceById(currentStateDetails, client, context, "Encounter",
+							currentStateDetails.getEncounterId());
 			if (r4Encounter != null) {
 				if (r4Encounter.getPeriod() != null) {
 					Period period = r4Encounter.getPeriod();

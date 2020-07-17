@@ -38,8 +38,12 @@ public class ClientDetailsController {
 	@CrossOrigin
 	@RequestMapping(value = "/api/clientDetails", method = RequestMethod.POST)
 	public ResponseEntity<?> createClientDetails(@RequestBody ClientDetails clientDetails) {
-		ClientDetails checkClientDetails = clientDetailsService
-				.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
+		ClientDetails checkClientDetails = null;
+		if (clientDetails.getIsSystem()) {
+			checkClientDetails = clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL(), clientDetails.getIsSystem());
+		} else {
+			checkClientDetails = clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL(), false);
+		}
 		if (checkClientDetails == null) {
 			clientDetailsService.saveOrUpdate(clientDetails);
 			return new ResponseEntity<>(clientDetails, HttpStatus.OK);
@@ -54,9 +58,14 @@ public class ClientDetailsController {
 	@CrossOrigin
 	@RequestMapping(value = "/api/clientDetails", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateClientDetails(@RequestBody ClientDetails clientDetails) {
-		ClientDetails checkClientDetails = clientDetailsService
-				.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
-		if (checkClientDetails == null || (checkClientDetails != null && checkClientDetails.getId().equals(clientDetails.getId()))) {
+		ClientDetails checkClientDetails = null;
+		if (clientDetails.getIsSystem()) {
+			checkClientDetails = clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL(), clientDetails.getIsSystem());
+		} else {
+			checkClientDetails = clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL(), false);
+		}
+		if (checkClientDetails == null
+				|| (checkClientDetails != null && checkClientDetails.getId().equals(clientDetails.getId()))) {
 			clientDetailsService.saveOrUpdate(clientDetails);
 			return new ResponseEntity<>(clientDetails, HttpStatus.OK);
 		} else {
@@ -67,11 +76,13 @@ public class ClientDetailsController {
 		}
 	}
 
-	@CrossOrigin
-	@RequestMapping("/api/clientDetails")
-	public ClientDetails getClientDetailsByUrl(@RequestParam(value = "url") String url) {
-		return clientDetailsService.getClientDetailsByUrl(url);
-	}
+	/*
+	 * @CrossOrigin
+	 * 
+	 * @RequestMapping("/api/clientDetails") public ClientDetails
+	 * getClientDetailsByUrl(@RequestParam(value = "url") String url) { return
+	 * clientDetailsService.getClientDetailsByUrl(url); }
+	 */
 
 	@CrossOrigin
 	@RequestMapping("/api/clientDetails/")
