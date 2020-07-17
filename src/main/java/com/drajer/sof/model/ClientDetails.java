@@ -30,7 +30,7 @@ public class ClientDetails {
 	@Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
 	private String clientSecret;
 	
-	@Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT")
+	@Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT", unique = true)
 	private String fhirServerBaseURL;
 	
 	@Column(name = "token_url", nullable = true, columnDefinition = "TEXT")

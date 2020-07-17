@@ -136,7 +136,7 @@ public class LaunchController {
 			HttpServletResponse response) {
 		try {
 			boolean isPatientLaunched = false;
-			ClientDetails clientDetails = clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL(),true);
+			ClientDetails clientDetails = clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
 			JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
 			String fhirVersion ="";
 			JSONObject object = authorization.getMetadata(systemLaunch.getFhirServerURL() + "/metadata");
@@ -245,7 +245,7 @@ public class LaunchController {
 						}
 					}
 					ClientDetails clientDetails = clientDetailsService
-							.getClientDetailsByUrl(launchDetails.getEhrServerURL(),false);
+							.getClientDetailsByUrl(launchDetails.getEhrServerURL());
 					launchDetails.setClientId(clientDetails.getClientId());
 					launchDetails.setScope(clientDetails.getScopes());
 					launchDetails.setLaunchState(state);
@@ -285,7 +285,7 @@ public class LaunchController {
 					}
 					if (!isPatientLaunched) {
 						ClientDetails clientDetails = clientDetailsService
-								.getClientDetailsByUrl(currentLaunchDetails.getEhrServerURL(),false);
+								.getClientDetailsByUrl(currentLaunchDetails.getEhrServerURL());
 
 						currentLaunchDetails = setLaunchDetails(currentLaunchDetails, accessTokenObject, clientDetails);
 
