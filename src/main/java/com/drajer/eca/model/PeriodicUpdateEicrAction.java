@@ -2,7 +2,6 @@ package com.drajer.eca.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PeriodicUpdateEicrAction extends AbstractAction {
@@ -48,43 +46,18 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 			PeriodicUpdateEicrStatus status = new PeriodicUpdateEicrStatus();
 
 			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-				
-			//	if(state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED)
-			//		state.setPeriodicUpdateJobStatus(JobStatus.IN_PROGRESS);
+				state = readObjectValue(mapper , details);
 				status.setActionId(getActionId());
-			} catch (JsonMappingException e1) {
-				
+			}  catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				
-				throw new RuntimeException(msg);
+				handleException(e1, logger, msg);
 			}
 
 			logger.info(" Executing Periodic Update Eicr Action , Prior Execution State : = " + details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
-			if (getPreConditions() != null && getPreConditions().size() > 0) {
-
-				logger.info(" Evaluating PreConditions ");
-				List<AbstractCondition> conds = getPreConditions();
-
-				for (AbstractCondition cond : conds) {
-
-					if (!cond.evaluate(details)) {
-						logger.info(" Condition Not met " + cond.getConditionType().toString());
-						conditionsMet = false;
-					}
-				}
-			}
+			handleConditions(details, conditionsMet);
 
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;
@@ -124,10 +97,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									try {
 										
 										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.PERIODIC_UPDATE_EICR);
-										state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 										
-										state.getPeriodicUpdateStatus().add(status);
-										details.setStatus(mapper.writeValueAsString(state));
+										getAndSetPeriodicUpdates(state,details,status,mapper);
 										
 										// No need to continue as the job will take over execution.
 										
@@ -135,10 +106,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 										return;
 									} catch (JsonProcessingException e) { 
 										String msg = "Unable to read/write execution state";
-										logger.error(msg);
-										e.printStackTrace();
-										
-										throw new RuntimeException(msg);
+										handleException(e, logger, msg);
 									}
 								}
 								else {
@@ -177,21 +145,16 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 								// For now setup a default job with 10 seconds.
 								try {
 									
-									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);									
-									state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
+									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);		
 									
-									state.getPeriodicUpdateStatus().add(status);
-									details.setStatus(mapper.writeValueAsString(state));
+									getAndSetPeriodicUpdates(state,details,status,mapper);
 									
 									// No need to continue as the job will take over execution.
 									logger.info(" **** End Executing Periodic Update Eicr Action **** ");
 									return;
 								} catch (JsonProcessingException e) { 
 									String msg = "Unable to read/write execution state";
-									logger.error(msg);
-									e.printStackTrace();
-									
-									throw new RuntimeException(msg);
+									handleException(e, logger, msg);
 								}
 
 								
@@ -242,16 +205,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
 									newState.getPeriodicUpdateStatus().add(status);
 
-									try {
-										details.setStatus(mapper.writeValueAsString(newState));
-									} catch (JsonProcessingException e) {
-
-										String msg = "Unable to update execution state";
-										logger.error(msg);
-										e.printStackTrace();
-
-										throw new RuntimeException(msg);
-									}
+									updateExecutionState(details,mapper,newState);
 
 									logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
@@ -279,24 +233,13 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
 									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-									try {
-										details.setStatus(mapper.writeValueAsString(newState));
-									} catch (JsonProcessingException e) {
-
-										String msg = "Unable to update execution state";
-										logger.error(msg);
-										e.printStackTrace();
-
-										throw new RuntimeException(msg);
-									}
+									updateExecutionState(details,mapper,newState);
 
 									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
 									logger.info(eICR);
-
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_PeriodicUpdateEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
+									
+									saveDataToTheFile("_PeriodicUpdateEicrAction",details,eICR);
 
 									logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
 								}
@@ -334,21 +277,16 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									// For now setup a default job with 10 seconds.
 									try {
 										
-										WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);									
-										state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
+										WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);		
 										
-										state.getPeriodicUpdateStatus().add(status);
-										details.setStatus(mapper.writeValueAsString(state));
+										getAndSetPeriodicUpdates(state,details,status,mapper);
 										
 										// No need to continue as the job will take over execution.
 										logger.info(" **** End Executing Periodic Update Eicr Action **** ");
 										return;
 									} catch (JsonProcessingException e) { 
 										String msg = "Unable to read/write execution state";
-										logger.error(msg);
-										e.printStackTrace();
-										
-										throw new RuntimeException(msg);
+										handleException(e, logger, msg);
 									}
 
 									
@@ -384,36 +322,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 		logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
 	}
 	
-	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
+	public void getAndSetPeriodicUpdates(PatientExecutionState state,LaunchDetails details,PeriodicUpdateEicrStatus status,ObjectMapper mapper) throws JsonProcessingException {
+		state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);	
+		state.getPeriodicUpdateStatus().add(status);
+		details.setStatus(mapper.writeValueAsString(state));
 		
-		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
-		for(AbstractAction act : acts) {
-			act.execute(details, launchType);
-			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
-		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		PatientExecutionState newState = null;
-
-		try {
-			newState = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-			logger.info(" Successfully set the State value ");
-		} catch (JsonMappingException e1) {
-			
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			e1.printStackTrace();
-			throw new RuntimeException(msg);
-			
-		} catch (JsonProcessingException e1) {
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			e1.printStackTrace();
-			
-			throw new RuntimeException(msg);
-		}
-		
-		return newState;
 	}
 
 }

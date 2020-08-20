@@ -198,7 +198,7 @@ public class ActionRepo {
 									
 								}
 								else {
-									Set<AbstractAction> la = new HashSet<AbstractAction>();
+									Set<AbstractAction> la = new HashSet<>();
 									la.add(a);
 									
 									actionsByTriggers.put(ad.getTriggerType(), la);
@@ -227,7 +227,7 @@ public class ActionRepo {
 									
 								}
 								else {
-									Set<AbstractAction> la = new HashSet<AbstractAction>();
+									Set<AbstractAction> la = new HashSet<>();
 									la.add(a);
 									
 									actionsByTriggers.put(tsd.getTriggerType(), la);

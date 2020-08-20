@@ -1,7 +1,6 @@
 package com.drajer.eca.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +11,6 @@ public class MatchTriggerStatus extends EicrStatus {
 	private String 					actionId;
 	private EventTypes.JobStatus    jobStatus;
 	private Boolean					triggerMatchStatus; // Did anything match or not
-	//private Set<String>				matchedCodes;
 	private List<MatchedTriggerCodes> matchedCodes;
 	
 	

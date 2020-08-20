@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
@@ -16,14 +15,12 @@ import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 public class CloseOutEicrAction extends AbstractAction {
 
@@ -49,39 +46,21 @@ public class CloseOutEicrAction extends AbstractAction {
 			PatientExecutionState state = null;
 
 			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+				state = readObjectValue(mapper , details);
 				state.getCloseOutEicrStatus().setActionId(getActionId());
 			} catch (JsonMappingException e1) {
 				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				
-				throw new RuntimeException(msg);
+				handleException(e1, logger, msg);
 			} catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				
-				throw new RuntimeException(msg);
+				handleException(e1, logger, msg);
 			}
 
 			logger.info(" Executing Close Out Eicr Action , Prior Execution State : = " + details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
-			if (getPreConditions() != null && getPreConditions().size() > 0) {
-
-				logger.info(" Evaluating PreConditions ");
-				List<AbstractCondition> conds = getPreConditions();
-
-				for (AbstractCondition cond : conds) {
-
-					if (!cond.evaluate(details)) {
-						logger.info(" Condition Not met " + cond.getConditionType().toString());
-						conditionsMet = false;
-					}
-				}
-			}
+			handleConditions(details, conditionsMet);
 
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;
@@ -142,10 +121,7 @@ public class CloseOutEicrAction extends AbstractAction {
 										return;
 									} catch (JsonProcessingException e) { 
 										String msg = "Unable to read/write execution state";
-										logger.error(msg);
-										e.printStackTrace();
-										
-										throw new RuntimeException(msg);
+										handleException(e, logger, msg);
 									}
 								}
 								else {
@@ -189,10 +165,7 @@ public class CloseOutEicrAction extends AbstractAction {
 									return;
 								} catch (JsonProcessingException e) { // TODO Auto-generated catch block
 									String msg = "Unable to read/write execution state";
-									logger.error(msg);
-									e.printStackTrace();
-									
-									throw new RuntimeException(msg);
+									handleException(e, logger, msg);
 								}	
 							}
 
@@ -240,24 +213,13 @@ public class CloseOutEicrAction extends AbstractAction {
 									newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
 									newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-									try {
-										details.setStatus(mapper.writeValueAsString(newState));
-									} catch (JsonProcessingException e) {
-										String msg = "Unable to update execution state";
-										logger.error(msg);
-										e.printStackTrace();
-
-										throw new RuntimeException(msg);
-									}
-								
+									updateExecutionState(details,mapper,newState);
 
 									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 	
 									logger.info(eICR);
-	
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
+									
+									saveDataToTheFile("_CloseOutEicrAction",details,eICR);
 	
 									logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 								
@@ -278,15 +240,7 @@ public class CloseOutEicrAction extends AbstractAction {
 									newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
 									newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-									try {
-										details.setStatus(mapper.writeValueAsString(newState));
-									} catch (JsonProcessingException e) {
-										String msg = "Unable to update execution state";
-										logger.error(msg);
-										e.printStackTrace();
-
-										throw new RuntimeException(msg);
-									}
+									updateExecutionState(details,mapper,newState);
 								
 
 									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
@@ -323,16 +277,7 @@ public class CloseOutEicrAction extends AbstractAction {
 							newState.getCloseOutEicrStatus().seteICRId("0");
 							newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-							try {
-								details.setStatus(mapper.writeValueAsString(newState));
-							} catch (JsonProcessingException e) {
-
-								String msg = "Unable to update execution state";
-								logger.error(msg);
-								e.printStackTrace();
-
-								throw new RuntimeException(msg);
-							}
+							updateExecutionState(details,mapper,newState);
 						}
 					}
 					else {
@@ -358,36 +303,6 @@ public class CloseOutEicrAction extends AbstractAction {
 		}
 	}
 	
-	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
-		
-		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
-		for(AbstractAction act : acts) {
-			act.execute(details, launchType);
-			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
-		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		PatientExecutionState newState = null;
-
-		try {
-			newState = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-			logger.info(" Successfully set the State value ");
-		} catch (JsonMappingException e1) {
-			
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			e1.printStackTrace();
-			throw new RuntimeException(msg);
-			
-		} catch (JsonProcessingException e1) {
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			e1.printStackTrace();
-			
-			throw new RuntimeException(msg);
-		}
-		
-		return newState;
-	}
+	
 	
 }

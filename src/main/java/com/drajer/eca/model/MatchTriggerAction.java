@@ -1,30 +1,19 @@
 package com.drajer.eca.model;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.collections4.SetUtils;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.ecrapp.config.ValueSetSingleton;
-import com.drajer.ecrapp.util.ApplicationUtils;
+
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 
 public class MatchTriggerAction extends AbstractAction {
 
@@ -51,23 +40,12 @@ public class MatchTriggerAction extends AbstractAction {
 			PatientExecutionState state = null;
 			
 			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+				state = readObjectValue(mapper , details);
 				state.getMatchTriggerStatus().setActionId(getActionId());
-			} catch (JsonMappingException e1) {
-
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
+			}  catch (JsonProcessingException e1) {
 				
 				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				
-				throw new RuntimeException(msg);
+				handleException(e1, logger, msg);
 			}
 			
 			// Execute the Match Trigger Action, even if it completed, because it could be invoked multiple times from 
@@ -113,18 +91,8 @@ public class MatchTriggerAction extends AbstractAction {
 					// Job is completed, even if it did not match.
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
-					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+					matchStatus(state,details,mapper);
 					
-					try {
-						details.setStatus(mapper.writeValueAsString(state));
-					} catch (JsonProcessingException e) {
-					
-						String msg = "Unable to update execution state";
-						logger.error(msg);
-						e.printStackTrace();
-						
-						throw new RuntimeException(msg);
-					}
 				}
 				else if(data != null && data instanceof R4FhirData) {
 					
@@ -158,18 +126,7 @@ public class MatchTriggerAction extends AbstractAction {
 					// Job is completed, even if it did not match.
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
-					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
-					
-					try {
-						details.setStatus(mapper.writeValueAsString(state));
-					} catch (JsonProcessingException e) {
-					
-						String msg = "Unable to update execution state";
-						logger.error(msg);
-						e.printStackTrace();
-						
-						throw new RuntimeException(msg);
-					}
+					matchStatus(state,details,mapper);
 					
 				}
 				else {
@@ -196,6 +153,18 @@ public class MatchTriggerAction extends AbstractAction {
 			
 			throw new RuntimeException(msg);
 			
+		}
+	}
+	
+	public void matchStatus(PatientExecutionState state,LaunchDetails details,ObjectMapper mapper) {
+		state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+		
+		try {
+			details.setStatus(mapper.writeValueAsString(state));
+		} catch (JsonProcessingException e) {
+		
+			String msg = "Unable to update execution state";
+			handleException(e, logger, msg);
 		}
 	}
 }

@@ -45,20 +45,11 @@ public class SubmitEicrAction extends AbstractAction {
 			PatientExecutionState state = null;
 
 			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
-			} catch (JsonMappingException e1) {
+				state = readObjectValue(mapper, details);
+			}  catch (JsonProcessingException e1) {
 				
 				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
+				handleException(e1, logger, msg);
 			}
 
 			logger.info(" Executing Submit Eicr Action , Prior Execution State : = " + details.getStatus());
@@ -109,16 +100,7 @@ public class SubmitEicrAction extends AbstractAction {
 				
 			}
 			
-			try {
-				details.setStatus(mapper.writeValueAsString(state));
-			} catch (JsonProcessingException e) {
-					
-				String msg = "Unable to update execution state";
-				logger.error(msg);
-				e.printStackTrace();
-					
-				throw new RuntimeException(msg);
-			}
+			updateExecutionState( details, mapper, state);
 		}
 		
 	}

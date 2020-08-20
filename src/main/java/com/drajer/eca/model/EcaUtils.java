@@ -37,47 +37,7 @@ public class EcaUtils {
 				logger.info(" Found a Total # of " + ptCodes.size() + " codes found for Patient." + ad.getPath());
 				
 				Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
-				Set<String> codesToMatchAgainst = null;
-				
-				if(details.getIsCovid()) {
-										
-					//codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsString();
-					codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
-					logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for COVID-19");
-					
-				}
-				else {
-					
-					// codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSets();
-					codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
-					logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for Full EICR ");
-				}
-								
-				Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
-				
-				if(intersection != null && intersection.size() > 0) {
-					
-					logger.info(" Number of Matched Codes = " + intersection.size());
-					
-					state.getMatchTriggerStatus().setTriggerMatchStatus(true);
-					matchfound = true;
-					
-					// Hardcoded value set and value set version for CONNECTATHON
-					String valueSet = "2.16.840.1.113762.1.4.1146.1123";
-					String valuesetVersion = "1";
-					
-					state.getMatchTriggerStatus().addMatchedCodes(intersection, valueSet, ad.getPath(), valuesetVersion);
-					
-				}
-				else {
-					
-					logger.info(" No Matched codes found for : " + ad.getPath());
-				}
-				
-			}
-			else {
-				
-				logger.info(" No Codes Found for Path " + ad.getPath());
+				matchTriggerCodes(details,ad,codesToMatch,state,matchfound);
 			}
 		}
 	
@@ -102,52 +62,49 @@ public class EcaUtils {
 				logger.info(" Found a Total # of " + ptCodes.size() + " codes found for Patient." + ad.getPath());
 				
 				Set<String> codesToMatch = ApplicationUtils.convertR4CodeableConceptsToString(ptCodes);
-				Set<String> codesToMatchAgainst = null;
-				
-				if(details.getIsCovid()) {
-										
-					//codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsString();
-					codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
-					logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for COVID-19");
-					
-				}
-				else {
-					
-					// codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSets();
-					codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
-					logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for Full EICR ");
-				}
-								
-				Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
-				
-				if(intersection != null && intersection.size() > 0) {
-					
-					logger.info(" Number of Matched Codes = " + intersection.size());
-					
-					state.getMatchTriggerStatus().setTriggerMatchStatus(true);
-					matchfound = true;
-					
-					// Hardcoded value set and value set version for CONNECTATHON
-					String valueSet = "2.16.840.1.113762.1.4.1146.1123";
-					String valuesetVersion = "1";
-					
-					state.getMatchTriggerStatus().addMatchedCodes(intersection, valueSet, ad.getPath(), valuesetVersion);
-					
-				}
-				else {
-					
-					logger.info(" No Matched codes found for : " + ad.getPath());
-				}
-				
-			}
-			else {
-				
-				logger.info(" No Codes Found for Path " + ad.getPath());
+				matchTriggerCodes(details,ad,codesToMatch,state,matchfound);
 			}
 		}
 	
 		logger.info(" End Matching Trigger Codes ");
 		return matchfound;
+	}
+	
+	public static void matchTriggerCodes(LaunchDetails details,ActionData ad,Set<String> codesToMatch,PatientExecutionState state,boolean matchfound) {
+		Set<String> codesToMatchAgainst = null;
+		
+		if(details.getIsCovid()) {
+								
+			codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
+			logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for COVID-19");
+			
+		}
+		else {
+			
+			codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
+			logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for Full EICR ");
+		}
+						
+		Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
+		
+		if(intersection != null && intersection.size() > 0) {
+			
+			logger.info(" Number of Matched Codes = " + intersection.size());
+			
+			state.getMatchTriggerStatus().setTriggerMatchStatus(true);
+			matchfound = true;
+			
+			// Hardcoded value set and value set version for CONNECTATHON
+			String valueSet = "2.16.840.1.113762.1.4.1146.1123";
+			String valuesetVersion = "1";
+			
+			state.getMatchTriggerStatus().addMatchedCodes(intersection, valueSet, ad.getPath(), valuesetVersion);
+			
+		}
+		else {
+			
+			logger.info(" No Matched codes found for : " + ad.getPath());
+		}
 	}
 	
 }

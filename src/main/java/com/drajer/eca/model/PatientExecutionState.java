@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,15 +28,15 @@ public class PatientExecutionState {
 		createEicrStatus = new CreateEicrStatus();
 		
 		// Ignore Periodic Updates for now.
-		periodicUpdateStatus = new HashSet<PeriodicUpdateEicrStatus>();
+		periodicUpdateStatus = new HashSet<>();
 		
 		closeOutEicrStatus = new CloseOutEicrStatus();
 		
-		validateEicrStatus = new HashSet<ValidateEicrStatus>();
+		validateEicrStatus = new HashSet<>();
 		
-		submitEicrStatus = new HashSet<SubmitEicrStatus>();
+		submitEicrStatus = new HashSet<>();
 		
-		rrStatus = new HashSet<RRStatus>();
+		rrStatus = new HashSet<>();
 		
 		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
 		
@@ -53,17 +52,17 @@ public class PatientExecutionState {
 		createEicrStatus = new CreateEicrStatus();
 		
 		// Ignore Periodic Updates for now.
-		periodicUpdateStatus = new HashSet<PeriodicUpdateEicrStatus>();
+		periodicUpdateStatus = new HashSet<>();
 		
 		closeOutEicrStatus = new CloseOutEicrStatus();
 		
-		validateEicrStatus = new HashSet<ValidateEicrStatus>();
+		validateEicrStatus = new HashSet<>();
 		
-		submitEicrStatus = new HashSet<SubmitEicrStatus>();
+		submitEicrStatus = new HashSet<>();
 		
 		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
 		
-		rrStatus = new HashSet<RRStatus>();
+		rrStatus = new HashSet<>();
 		
 	}
 
