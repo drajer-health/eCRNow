@@ -1,4 +1,4 @@
-# 1. eCR Now Background - test commit
+# 1. eCR Now Background
 The purpose of the eCR Now FHIR App is to enable EHR companies that have not had electronic case reporting (eCR) capabilites to support  public health reporting for COVID-19. The App will be able to also support full eCR, but implementation will be dependent on public health agency readiness.
 For more information on electronic case reporting please refer to the following links.
 
