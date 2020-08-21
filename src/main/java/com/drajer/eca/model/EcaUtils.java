@@ -28,13 +28,13 @@ public class EcaUtils {
 		
 		for(ActionData ad: codePaths) {
 			
-			logger.info(" Need to match Trigger Codes for : " + ad.getPath());
+			logger.info(" Need to match Trigger Codes for : {}" , ad.getPath());
 			
 			List<CodeableConceptDt> ptCodes = data.getCodesForExpression(ad.getPath());
 			
 			if(ptCodes != null && ptCodes.size() > 0) {
 				
-				logger.info(" Found a Total # of " + ptCodes.size() + " codes found for Patient." + ad.getPath());
+				logger.info(" Found a Total # of {} codes found for Patient {}", ptCodes.size(), ad.getPath());
 				
 				Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
 				matchTriggerCodes(details,ad,codesToMatch,state,matchfound);
@@ -53,13 +53,13 @@ public class EcaUtils {
 		
 		for(ActionData ad: codePaths) {
 			
-			logger.info(" Need to match Trigger Codes for : " + ad.getPath());
+			logger.info(" Need to match Trigger Codes for :{} " , ad.getPath());
 			
 			List<CodeableConcept> ptCodes = data.getR4CodesForExpression(ad.getPath());
 			
 			if(ptCodes != null && ptCodes.size() > 0) {
 				
-				logger.info(" Found a Total # of " + ptCodes.size() + " codes found for Patient." + ad.getPath());
+				logger.info(" Found a Total # of {} codes found for Patient." , ad.getPath());
 				
 				Set<String> codesToMatch = ApplicationUtils.convertR4CodeableConceptsToString(ptCodes);
 				matchTriggerCodes(details,ad,codesToMatch,state,matchfound);
@@ -76,20 +76,20 @@ public class EcaUtils {
 		if(details.getIsCovid()) {
 								
 			codesToMatchAgainst = ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
-			logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for COVID-19");
+			logger.info(" Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",codesToMatchAgainst.size());
 			
 		}
 		else {
 			
 			codesToMatchAgainst = ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
-			logger.info(" Total # of "+ codesToMatchAgainst.size() + " Codes in Trigger Code Value Set for matching for Full EICR ");
+			logger.info(" Total # of {} Codes in Trigger Code Value Set for matching for Full EICR ",codesToMatchAgainst.size());
 		}
 						
 		Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
 		
 		if(intersection != null && intersection.size() > 0) {
 			
-			logger.info(" Number of Matched Codes = " + intersection.size());
+			logger.info(" Number of Matched Codes = {}" , intersection.size());
 			
 			state.getMatchTriggerStatus().setTriggerMatchStatus(true);
 			matchfound = true;
@@ -103,7 +103,7 @@ public class EcaUtils {
 		}
 		else {
 			
-			logger.info(" No Matched codes found for : " + ad.getPath());
+			logger.info(" No Matched codes found for : {}" , ad.getPath());
 		}
 	}
 	

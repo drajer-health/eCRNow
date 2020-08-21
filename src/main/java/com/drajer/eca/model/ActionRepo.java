@@ -262,7 +262,7 @@ public class ActionRepo {
 			for(Map.Entry<EcrActionTypes, Set<AbstractAction> > ent : actions.entrySet()) {
 				
 				
-				logger.info(" Printing Eicr Action Type : " + ent.getKey().toString());
+				logger.info(" Printing Eicr Action Type : {}" , ent.getKey().toString());
 				
 				Set<AbstractAction> aa = ent.getValue();
 				
@@ -270,7 +270,7 @@ public class ActionRepo {
 					
 					for(AbstractAction a : aa) {
 						
-						logger.info(" Action that will be executed " + a.toString());
+						logger.info(" Action that will be executed {}" , a.toString());
 						
 						// a.print();
 					}
@@ -286,7 +286,7 @@ public class ActionRepo {
 			
 			for(Map.Entry<TriggerType, Set<AbstractAction> > ent : actionsByTriggers.entrySet()) {
 				
-				logger.info(" Printing Trigger for Action " + ent.getKey().toString());
+				logger.info(" Printing Trigger for Action {}" , ent.getKey().toString());
 				
 				
 				Set<AbstractAction> aa = ent.getValue();
@@ -295,7 +295,7 @@ public class ActionRepo {
 					
 					for(AbstractAction a : aa) {
 						
-						logger.info(" Action that will be executed " + a.toString());
+						logger.info(" Action that will be executed {}" , a.toString());
 						
 						// a.print();
 					}

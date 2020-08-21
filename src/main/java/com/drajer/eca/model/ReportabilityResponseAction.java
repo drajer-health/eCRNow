@@ -50,7 +50,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 				handleException(e1, logger, msg);
 			}
 	
-			logger.info(" Executing RR Check Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing RR Check Eicr Action , Prior Execution State : = {}" , details.getStatus());
 			
 			String data = "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
 			
@@ -72,7 +72,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 						if (!state.hasActionCompleted(actionId)) {
 	
 							logger.info(
-									" Action " + actionId + " is not completed , hence this action has to wait ");
+									" Action {} is not completed , hence this action has to wait ",actionId);
 						}
 						else {
 							
@@ -85,7 +85,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 						}
 					}
 					else {
-						logger.info(" This action is not dependent on the action relationship : " + ract.getRelationship() + ", Action Id = " + ract.getRelatedAction().getActionId());
+						logger.info(" This action is not dependent on the action relationship : {}, Action Id = {}" ,ract.getRelationship(),ract.getRelatedAction().getActionId());
 					}
 				}
 			}
@@ -108,7 +108,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 		
 		for(Integer id : ids) {
 			
-			logger.info(" Found eICR with Id " + id  +" to check for RR ");
+			logger.info(" Found eICR with Id {} to check for RR ",id);
 			
 			// String data = ActionRepo.getInstance().getEicrRRService().get(id).getData();
 							

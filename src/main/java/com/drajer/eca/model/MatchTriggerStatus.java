@@ -74,7 +74,7 @@ public class MatchTriggerStatus extends EicrStatus {
 	
 	public MatchTriggerStatus() {
 		actionId = "";
-		matchedCodes = new ArrayList<MatchedTriggerCodes>();
+		matchedCodes = new ArrayList<>();
 		triggerMatchStatus = false;
 		jobStatus = JobStatus.NOT_STARTED;
 	}

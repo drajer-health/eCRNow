@@ -59,7 +59,7 @@ public class CreateEicrAction extends AbstractAction {
 				handleException(e1, logger, msg);
 			}
 
-			logger.info(" Executing Create Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Create Eicr Action , Prior Execution State : = {}" , details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -86,12 +86,12 @@ public class CreateEicrAction extends AbstractAction {
 							if (!state.hasActionCompleted(actionId)) {
 
 								logger.info(
-										" Action " + actionId + " is not completed , hence this action has to wait ");
+										" Action {} is not completed , hence this action has to wait ",actionId);
 								relatedActsDone = false;
 							}
 							else {
 								
-								logger.info(" Related Action has been completed : " + actionId);
+								logger.info(" Related Action has been completed : {}" , actionId);
 								
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -122,7 +122,7 @@ public class CreateEicrAction extends AbstractAction {
 							}
 						}
 						else {
-							logger.info(" Action " + ract.getRelatedAction().getActionId() + " is related via " + ract.getRelationship());
+							logger.info(" Action {} is related via {}" ,ract.getRelatedAction().getActionId(),ract.getRelationship());
 							
 						}
 					}
@@ -276,7 +276,7 @@ public class CreateEicrAction extends AbstractAction {
 						}
 					}
 					else {
-						logger.info(" EICR job is in a state of " + state.getCreateEicrStatus().getJobStatus() + " , due to which EICR will not be created. ");
+						logger.info(" EICR job is in a state of {} , due to which EICR will not be created. ",state.getCreateEicrStatus().getJobStatus());
 					}
 
 				}

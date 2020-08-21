@@ -53,7 +53,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 				handleException(e1, logger, msg);
 			}
 
-			logger.info(" Executing Periodic Update Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Periodic Update Eicr Action , Prior Execution State : = {}" , details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -80,12 +80,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 							if (!state.hasActionCompleted(actionId)) {
 
 								logger.info(
-										" Action " + actionId + " is not completed , hence this action has to wait ");
+										" Action {} is not completed , hence this action has to wait ",actionId);
 								relatedActsDone = false;
 							}
 							else {
 								
-								logger.info(" Related Action has been completed : " + actionId);
+								logger.info(" Related Action has been completed : {}" , actionId);
 								
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -116,7 +116,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 							}
 						}
 						else {
-							logger.info(" Action " + ract.getRelatedAction().getActionId() + " is related via " + ract.getRelationship());
+							logger.info(" Action {} is related via {}",ract.getRelatedAction().getActionId(),ract.getRelationship());
 							
 						}
 					}

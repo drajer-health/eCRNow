@@ -112,7 +112,7 @@ public abstract class AbstractAction {
 
 	public void printBase() {
 
-		logger.info(" Action Id = " + actionId);
+		logger.info(" Action Id = {}" , actionId);
 
 		if (preConditions != null) {
 
@@ -145,10 +145,8 @@ public abstract class AbstractAction {
 	}
 
 	public void handleException(Exception e1, Logger logger, String msg) {
-		logger.error(msg);
-		e1.printStackTrace();
-
-		throw new RuntimeException(msg);
+		logger.error(e1.getMessage(),msg);
+		throw new RuntimeException(msg,e1);
 	}
 
 	public PatientExecutionState readObjectValue(ObjectMapper mapper, LaunchDetails details)
@@ -165,7 +163,7 @@ public abstract class AbstractAction {
 			for (AbstractCondition cond : conds) {
 
 				if (!cond.evaluate(details)) {
-					logger.info(" Condition Not met " + cond.getConditionType().toString());
+					logger.info(" Condition Not met {}" , cond.getConditionType().toString());
 					conditionsMet = false;
 				}
 			}

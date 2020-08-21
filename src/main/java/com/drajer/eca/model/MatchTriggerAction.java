@@ -50,7 +50,7 @@ public class MatchTriggerAction extends AbstractAction {
 			
 			// Execute the Match Trigger Action, even if it completed, because it could be invoked multiple times from 
 			// other EICR Actions.
-			logger.info(" Executing Match Trigger Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Match Trigger Action , Prior Execution State : = {}" , details.getStatus());
 			
 			// Call the Trigger Queries.
 			if(ActionRepo.getInstance().getTriggerQueryService() != null ) { 

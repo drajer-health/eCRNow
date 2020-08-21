@@ -48,15 +48,12 @@ public class CloseOutEicrAction extends AbstractAction {
 			try {
 				state = readObjectValue(mapper , details);
 				state.getCloseOutEicrStatus().setActionId(getActionId());
-			} catch (JsonMappingException e1) {
-				String msg = "Unable to read/write execution state";
-				handleException(e1, logger, msg);
-			} catch (JsonProcessingException e1) {
+			}  catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
 				handleException(e1, logger, msg);
 			}
 
-			logger.info(" Executing Close Out Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Close Out Eicr Action , Prior Execution State : = {}" , details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
@@ -82,11 +79,11 @@ public class CloseOutEicrAction extends AbstractAction {
 							if (!state.hasActionCompleted(actionId)) {
 
 								logger.info(
-										" Action " + actionId + " is not completed , hence this action has to wait ");
+										" Action {} is not completed , hence this action has to wait ",actionId);
 								relatedActsDone = false;
 							}
 							else {
-								logger.info(" Related Action that has been completed : " + actionId);
+								logger.info(" Related Action that has been completed : {}" , actionId);
 
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -131,7 +128,7 @@ public class CloseOutEicrAction extends AbstractAction {
 							}
 						}
 						else {
-							logger.info(" Action " + ract.getRelatedAction().getActionId() + " is related via " + ract.getRelationship());							
+							logger.info(" Action {} is related via {}" ,ract.getRelatedAction().getActionId(),ract.getRelationship());							
 						}
 					}
 				}
@@ -281,7 +278,7 @@ public class CloseOutEicrAction extends AbstractAction {
 						}
 					}
 					else {
-						logger.info(" Close Out Eicr Action not creating Eicr because state = " + state.getCloseOutEicrStatus().getJobStatus());
+						logger.info(" Close Out Eicr Action not creating Eicr because state = {}" , state.getCloseOutEicrStatus().getJobStatus());
 					}
 				}
 				else {
