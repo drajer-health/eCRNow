@@ -67,7 +67,7 @@ public class TestPeriodicUpdateEicrAction {
 	 * In case invalid Object passed to Execute method,
 	 */
 	@Test(expected = RuntimeException.class)
-	public void whenUnableToReadExecutionStateThrowJsonProcessingException() throws Exception {
+	public void whenInvalidObjectPassedThrowRuntimeException() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
 		
