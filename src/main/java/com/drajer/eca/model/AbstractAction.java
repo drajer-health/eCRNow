@@ -145,7 +145,7 @@ public abstract class AbstractAction {
 	}
 
 	public void handleException(Exception e1, Logger logger, String msg) {
-		logger.error(e1.getMessage(),msg);
+		logger.error(msg,e1);
 		throw new RuntimeException(msg,e1);
 	}
 
