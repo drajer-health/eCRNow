@@ -193,19 +193,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
 
 									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCreateEicrStatus().setEicrCreated(true);
-									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-									
-									newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
-									newState.getPeriodicUpdateStatus().add(status);
-
-									updateExecutionState(details,mapper,newState);
+									createPersistenceObjectToCreateEicrAction(eICR, newState, details, mapper);
 
 									logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
@@ -214,6 +202,9 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									saveDataToTheFile("_PeriodicUpdateEicrAction", details, eICR);
 
 									logger.info(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
+
+									
+									
 								}
 								else if(data != null && data instanceof R4FhirData) {
 									logger.info("Creating eICR based on FHIR R4 ");
@@ -222,16 +213,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									
 
 									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCreateEicrStatus().setEicrCreated(true);
-									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									updateExecutionState(details,mapper,newState);
+									createPersistenceObjectToCreateEicrAction(eICR, newState, details, mapper);
 
 									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 

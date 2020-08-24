@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
+import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -206,6 +207,53 @@ public abstract class AbstractAction {
 		}
 
 		return newState;
+	}
+	
+	public void createPersistenceObjectForCloseOutEicrAction(String eICR,PatientExecutionState newState,LaunchDetails details, ObjectMapper mapper) {
+		Eicr ecr = new Eicr();
+		ecr.setData(eICR);
+		ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+
+
+		newState.getCloseOutEicrStatus().setEicrClosed(true);
+		newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
+		newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+
+		updateExecutionState(details,mapper,newState);
+		
+		
+
+	/*	logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+
+		logger.info(eICR);
+		
+		saveDataToTheFile("_CloseOutEicrAction",details,eICR);
+
+		logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+		*/
+	}
+	
+	public void createPersistenceObjectToCreateEicrAction(String eICR,PatientExecutionState newState,LaunchDetails details, ObjectMapper mapper) {
+		Eicr ecr = new Eicr();
+		ecr.setData(eICR);
+		ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+
+
+		newState.getCreateEicrStatus().setEicrCreated(true);
+		newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+		newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+
+		updateExecutionState(details , mapper, newState);
+		
+
+	/*	logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
+
+		logger.info(eICR);
+		
+		saveDataToTheFile("_CreateEicrAction", details,  eICR);
+
+		logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");   */
+		
 	}
 
 }

@@ -200,24 +200,14 @@ public class CloseOutEicrAction extends AbstractAction {
 
 									eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
 
-									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCloseOutEicrStatus().setEicrClosed(true);
-									newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									updateExecutionState(details,mapper,newState);
-
+									// Create the object for persistence.	
+									createPersistenceObjectForCloseOutEicrAction(eICR, newState, details, mapper);
 									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
-	
+
 									logger.info(eICR);
 									
 									saveDataToTheFile("_CloseOutEicrAction",details,eICR);
-	
+
 									logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 								
 								}
@@ -228,25 +218,13 @@ public class CloseOutEicrAction extends AbstractAction {
 									eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details);
 									
 									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCloseOutEicrStatus().setEicrClosed(true);
-									newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									updateExecutionState(details,mapper,newState);
-								
-
+									createPersistenceObjectForCloseOutEicrAction(eICR, newState, details, mapper);
 									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
-	
+
 									logger.info(eICR);
 									
 									saveDataToTheFile("_CloseOutEicrAction",details,eICR);
-	
-	
+
 									logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 									
 								}

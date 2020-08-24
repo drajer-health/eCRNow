@@ -92,6 +92,7 @@ public class MatchTriggerAction extends AbstractAction {
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
 					matchStatus(state,details,mapper);
+					//1
 					
 				}
 				else if(data != null && data instanceof R4FhirData) {
@@ -127,6 +128,7 @@ public class MatchTriggerAction extends AbstractAction {
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
 					matchStatus(state,details,mapper);
+					//2
 					
 				}
 				else {

@@ -199,24 +199,12 @@ public class CreateEicrAction extends AbstractAction {
 									eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
 									
 									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCreateEicrStatus().setEicrCreated(true);
-									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									updateExecutionState(details , mapper, newState);
-
+									createPersistenceObjectToCreateEicrAction(eICR, newState, details, mapper);
 									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
 									logger.info(eICR);
-
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CreateEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
+									
+									saveDataToTheFile("_CreateEicrAction", details,  eICR);
 
 									logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
 								}
@@ -227,22 +215,12 @@ public class CreateEicrAction extends AbstractAction {
 									
 
 									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCreateEicrStatus().setEicrCreated(true);
-									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									updateExecutionState(details,mapper,newState);
-
+									createPersistenceObjectToCreateEicrAction(eICR, newState, details, mapper);
 									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
 									logger.info(eICR);
 									
-									saveDataToTheFile("_CreateEicrAction",details,eICR);
+									saveDataToTheFile("_CreateEicrAction", details,  eICR);
 
 									logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
 								}
