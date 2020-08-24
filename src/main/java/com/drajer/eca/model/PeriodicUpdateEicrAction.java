@@ -211,9 +211,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
 									logger.info(eICR);
 
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_PeriodicUpdateEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
+									saveDataToTheFile("_PeriodicUpdateEicrAction", details, eICR);
 
 									logger.info(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
 								}

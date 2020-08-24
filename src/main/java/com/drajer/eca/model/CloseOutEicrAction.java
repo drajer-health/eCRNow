@@ -243,10 +243,9 @@ public class CloseOutEicrAction extends AbstractAction {
 									logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 	
 									logger.info(eICR);
+									
+									saveDataToTheFile("_CloseOutEicrAction",details,eICR);
 	
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CloseOutEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
 	
 									logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 									
