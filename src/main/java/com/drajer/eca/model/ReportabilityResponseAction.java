@@ -8,13 +8,10 @@ import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ReportabilityResponseAction extends AbstractAction {

@@ -8,15 +8,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

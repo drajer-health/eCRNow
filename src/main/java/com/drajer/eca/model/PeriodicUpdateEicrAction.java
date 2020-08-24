@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -12,9 +11,7 @@ import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
-import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
