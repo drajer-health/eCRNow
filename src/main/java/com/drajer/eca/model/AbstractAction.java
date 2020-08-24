@@ -220,17 +220,7 @@ public abstract class AbstractAction {
 		newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
 		updateExecutionState(details,mapper,newState);
-		
-		
-
-	/*	logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
-
-		logger.info(eICR);
-		
-		saveDataToTheFile("_CloseOutEicrAction",details,eICR);
-
-		logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
-		*/
+	
 	}
 	
 	public void createPersistenceObjectToCreateEicrAction(String eICR,PatientExecutionState newState,LaunchDetails details, ObjectMapper mapper) {
@@ -244,16 +234,7 @@ public abstract class AbstractAction {
 		newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
 		updateExecutionState(details , mapper, newState);
-		
-
-	/*	logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
-
-		logger.info(eICR);
-		
-		saveDataToTheFile("_CreateEicrAction", details,  eICR);
-
-		logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");   */
-		
+	
 	}
 
 }
