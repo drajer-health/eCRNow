@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "client_details")
@@ -18,10 +19,12 @@ public class ClientDetails {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	
-	@Column(name = "is_provider_launch", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_provider_launch", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isProvider = false;
 	
-	@Column(name = "is_system_launch", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_system_launch", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isSystem = false;
 	
 	@Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
@@ -30,7 +33,7 @@ public class ClientDetails {
 	@Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
 	private String clientSecret;
 	
-	@Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT", unique = true)
+	@Column(name = "fhir_server_base_url", nullable = false, unique = true)
 	private String fhirServerBaseURL;
 	
 	@Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
@@ -39,10 +42,12 @@ public class ClientDetails {
 	@Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
 	private String scopes;
 
-	@Column(name = "is_direct", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_direct", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isDirect = false;
 	
-	@Column(name = "is_xdr", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_xdr", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isXdr = false;
 	
 	@Column(name = "direct_host", nullable = true, columnDefinition = "TEXT") 
@@ -69,10 +74,12 @@ public class ClientDetails {
 	@Column(name = "encounter_end_time", nullable = true) 
 	private String encounterEndThreshold;
 	
-	@Column(name = "is_covid19", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_covid19", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isCovid = false;
 	
-	@Column(name = "is_full_ecr", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_full_ecr", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isFullEcr = false;
 
 	public Integer getId() {
