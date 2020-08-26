@@ -91,7 +91,13 @@ public class ValidateEicrAction extends AbstractAction {
 				
 			}
 			
-			updateExecutionState(details,  mapper, state);
+			try {
+				details.setStatus(mapper.writeValueAsString(state));
+			} catch (JsonProcessingException e) {
+					
+				String msg = "Unable to update execution state";
+				handleException(e, logger, msg);
+			}
 		}
 	}
 	

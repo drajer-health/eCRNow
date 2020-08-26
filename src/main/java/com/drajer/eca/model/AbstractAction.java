@@ -163,22 +163,7 @@ public abstract class AbstractAction {
 		}
 		return conditionsMet;
 	}
-
-	public void updateExecutionState(LaunchDetails details, ObjectMapper mapper, PatientExecutionState newState) {
-		try {
-			details.setStatus(mapper.writeValueAsString(newState));
-		} catch (JsonProcessingException e) {
-			String msg = "Unable to update execution state";
-			handleException(e, logger, msg);
-		}
-	}
-
-	public void saveDataToTheFile(String EicrAction, LaunchDetails details, String eICR) {
-		String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId()
-				+ EicrAction + LocalDateTime.now().getHour() + LocalDateTime.now().getMinute()
-				+ LocalDateTime.now().getSecond() + ".xml";
-		ApplicationUtils.saveDataToFile(eICR, fileName);
-	}
+	
 
 	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
 
@@ -202,32 +187,5 @@ public abstract class AbstractAction {
 		return newState;
 	}
 	
-	public void createPersistenceObjectForCloseOutEicrAction(String eICR,PatientExecutionState newState,LaunchDetails details, ObjectMapper mapper) {
-		Eicr ecr = new Eicr();
-		ecr.setData(eICR);
-		ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-		newState.getCloseOutEicrStatus().setEicrClosed(true);
-		newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
-		newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-		updateExecutionState(details,mapper,newState);
-	
-	}
-	
-	public void createPersistenceObjectToCreateEicrAction(String eICR,PatientExecutionState newState,LaunchDetails details, ObjectMapper mapper) {
-		Eicr ecr = new Eicr();
-		ecr.setData(eICR);
-		ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-		newState.getCreateEicrStatus().setEicrCreated(true);
-		newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-		newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-		updateExecutionState(details , mapper, newState);
-	
-	}
 
 }
