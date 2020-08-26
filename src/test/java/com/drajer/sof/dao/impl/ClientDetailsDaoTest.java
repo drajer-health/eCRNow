@@ -2,7 +2,6 @@ package com.drajer.sof.dao.impl;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -38,8 +37,7 @@ public class ClientDetailsDaoTest {
 	@Test
 	public void saveClientDetails() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("clientDetails.json").getFile());
-		ClientDetails clientDetails = mapper.readValue(jsonFile, ClientDetails.class);
+		ClientDetails clientDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"), ClientDetails.class);
 		
 		ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(clientDetails);
 		
@@ -53,8 +51,7 @@ public class ClientDetailsDaoTest {
 	@Test
 	public void getClientDetailsById() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("clientDetails.json").getFile());
-		ClientDetails clientDetails = mapper.readValue(jsonFile, ClientDetails.class);
+		ClientDetails clientDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"), ClientDetails.class);
 		
 		ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(clientDetails);
 		
@@ -67,8 +64,7 @@ public class ClientDetailsDaoTest {
 	@Test
 	public void getClientDetailsByUrl() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("clientDetails.json").getFile());
-		ClientDetails clientDetails = mapper.readValue(jsonFile, ClientDetails.class);
+		ClientDetails clientDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"), ClientDetails.class);
 		
 		String fhirServerBaseURL = clientDetails.getFhirServerBaseURL();
 		
@@ -82,12 +78,9 @@ public class ClientDetailsDaoTest {
 	
 	@Test
 	public void getAllClientDetails() throws JsonParseException, JsonMappingException, IOException
-	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("clientDetails.json").getFile());
-		File jsonFile2 = new File(getClass().getClassLoader().getResource("clientDetails2.json").getFile());
-		
-		ClientDetails clientDetails = mapper.readValue(jsonFile, ClientDetails.class);
-		ClientDetails clientDetails2 = mapper.readValue(jsonFile2, ClientDetails.class);
+	{		
+		ClientDetails clientDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"), ClientDetails.class);
+		ClientDetails clientDetails2 = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("clientDetails2.json"), ClientDetails.class);
 		
 		clientDetailsDao.saveOrUpdate(clientDetails);
 		clientDetailsDao.saveOrUpdate(clientDetails2);

@@ -3,7 +3,6 @@ package com.drajer.ecrapp.dao.impl;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -38,9 +37,8 @@ public class EicrDaoTest {
 	
 	@Test
 	public void saveOrUpdateEicr() throws JsonParseException, JsonMappingException, IOException
-	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("eicr.json").getFile());
-		Eicr eicr = mapper.readValue(jsonFile, Eicr.class);
+	{		
+		Eicr eicr = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("eicr.json"), Eicr.class);
 		
 		Eicr savedEicr = eicrDaoImpl.saveOrUpdate(eicr);
 		
@@ -50,8 +48,7 @@ public class EicrDaoTest {
 	@Test
 	public void getEicrById() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("eicr.json").getFile());
-		Eicr eicr = mapper.readValue(jsonFile, Eicr.class);
+		Eicr eicr = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("eicr.json"), Eicr.class);
 		
 		Eicr savedEicr = eicrDaoImpl.saveOrUpdate(eicr);
 		Eicr retrievedEicr = eicrDaoImpl.getEicrById(savedEicr.getId());
@@ -62,9 +59,8 @@ public class EicrDaoTest {
 	@Test
 	public void saveOrUpdateReportabilityResponse() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("reportabilityResponse.json").getFile());
-		ReportabilityResponse rr = mapper.readValue(jsonFile, ReportabilityResponse.class);
-		
+		ReportabilityResponse rr = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("reportabilityResponse.json"), ReportabilityResponse.class);
+				
 		ReportabilityResponse savedRR = eicrDaoImpl.saveOrUpdate(rr);
 		
 		assertEquals(rr.getData(), savedRR.getData());
@@ -73,8 +69,7 @@ public class EicrDaoTest {
 	@Test
 	public void getReportabilityResponseById() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("reportabilityResponse.json").getFile());
-		ReportabilityResponse rr = mapper.readValue(jsonFile, ReportabilityResponse.class);
+		ReportabilityResponse rr = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("reportabilityResponse.json"), ReportabilityResponse.class);
 		
 		ReportabilityResponse savedRR = eicrDaoImpl.saveOrUpdate(rr);
 		ReportabilityResponse retrievedRR = eicrDaoImpl.getRRById(savedRR.getId());

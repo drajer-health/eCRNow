@@ -3,7 +3,6 @@ package com.drajer.sof.dao.impl;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -38,8 +37,7 @@ public class LaunchDetailsDaoTest {
 	@Test
 	public void saveLaunchDetails() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("launchDetails.json").getFile());
-		LaunchDetails launchDetails = mapper.readValue(jsonFile, LaunchDetails.class);
+		LaunchDetails launchDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"), LaunchDetails.class);
 		
 		LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 		
@@ -52,8 +50,7 @@ public class LaunchDetailsDaoTest {
 	@Test
 	public void getAuthDetailsById() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("launchDetails.json").getFile());
-		LaunchDetails launchDetails = mapper.readValue(jsonFile, LaunchDetails.class);
+		LaunchDetails launchDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"), LaunchDetails.class);
 		
 		LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 		LaunchDetails retrievedLaunchDetails = launchDetailsDaoImpl.getAuthDetailsById(savedLaunchDetails.getId());
@@ -64,8 +61,7 @@ public class LaunchDetailsDaoTest {
 	@Test
 	public void getLaunchDetailsByPatientAndEncounter() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("launchDetails.json").getFile());
-		LaunchDetails launchDetails = mapper.readValue(jsonFile, LaunchDetails.class);
+		LaunchDetails launchDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"), LaunchDetails.class);
 		
 		LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 		String patientID = savedLaunchDetails.getLaunchPatientId();
@@ -79,8 +75,7 @@ public class LaunchDetailsDaoTest {
 	@Test
 	public void getLaunchDetailsByState() throws JsonParseException, JsonMappingException, IOException
 	{
-		File jsonFile = new File(getClass().getClassLoader().getResource("launchDetails.json").getFile());
-		LaunchDetails launchDetails = mapper.readValue(jsonFile, LaunchDetails.class);
+		LaunchDetails launchDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"), LaunchDetails.class);
 		
 		LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 		
