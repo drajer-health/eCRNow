@@ -134,7 +134,9 @@ public class WorkflowService {
 		PatientExecutionState state = null;
 		
 		try {
+			logger.info(" Reading object State ");
 			state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+			logger.info(" Finished Reading object State ");
 		} catch (JsonMappingException e1) {
 
 			String msg = "Unable to read/write execution state";
@@ -153,24 +155,31 @@ public class WorkflowService {
 		}
 		
 		if(state.getMatchTriggerStatus().getJobStatus() != JobStatus.COMPLETED) {
+			logger.info(" Execute Match Trigger Action ");
 			executeActionsForType(details,EcrActionTypes.MATCH_TRIGGER, launchType);
 		}
 		
 		if(state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
+			logger.info(" Execute Create Eicr Action ");
 			executeActionsForType(details,EcrActionTypes.CREATE_EICR, launchType);	
 		}
 		
 		if(state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED &&
 		   state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED ) {
+			logger.info(" Execute Periodic Update Action ");
 			executeActionsForType(details,EcrActionTypes.PERIODIC_UPDATE_EICR, launchType);
 		}
 		
 		if(state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
+			logger.info(" Execute Close Out Action ");
 			executeActionsForType(details,EcrActionTypes.CLOSE_OUT_EICR, launchType);
 		}
 		
+		logger.info(" Execute Validate Eicr Action ");
 		executeActionsForType(details,EcrActionTypes.VALIDATE_EICR, launchType);	
+		logger.info(" Execute Submit Eicr Action ");
 		executeActionsForType(details,EcrActionTypes.SUBMIT_EICR, launchType);
+		logger.info(" Execute RR Check Action ");
 		executeActionsForType(details,EcrActionTypes.RR_CHECK, launchType);
 		
 		logger.info(" ***** END EXECUTING EICR WORKFLOW ***** ");

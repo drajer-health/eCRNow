@@ -16,6 +16,7 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Duration;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
+import com.drajer.ecrapp.service.PlanDefinitionProcessor;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
@@ -52,24 +54,52 @@ public class ApplicationUtils {
 	}
 	
 	public static List<CanonicalType> getValueSetListFromGrouper(String grouperId){
+		
 		List<CanonicalType> valueSetIdList = null;
+		
 		for(ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
-			if(valueset.getId().equals(grouperId)) {
+			
+			logger.info(" Looking for grouper value set for " + grouperId);
+			
+			if(valueset.getId().equals(grouperId) || 
+			   grouperId.contains(valueset.getId())) {
+				
+				logger.info(" Found Grouper Value Set for " + grouperId);
+				
 				if(valueset.getCompose()!=null && valueset.getCompose().getInclude()!=null) {
+					
+					logger.info(" Value Set is composed of other value sets ");
 					List<ConceptSetComponent> csc = valueset.getCompose().getInclude();
+					
 					for (ConceptSetComponent conceptSetComponent : csc) {
+						
+						logger.info(" Adding Value Set Ids to the list ");
+						
 						valueSetIdList = conceptSetComponent.getValueSet();
 					}
+					
+					logger.info(" Value Set Id List Size = " +((valueSetIdList==null)?"Null":valueSetIdList.size()));
 				}
+				break;
+			}
+			else {
+				
+				logger.info(" Value Set Id = " + valueset.getId() + " does not macth grouper Id ");
 			}
 		}
 		return valueSetIdList;
 	}
 	
 	public static ValueSet getValueSetGrouperFromId(String grouperId){
+		
 		ValueSet valueSetGrouper= null;
+		
 		for(ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
-			if(valueset.getId().equals(grouperId)) {
+			
+			if(valueset.getId().equals(grouperId) ||
+					   grouperId.contains(valueset.getId()) ) {
+				
+				logger.info(" Grouper Id " + grouperId);
 				valueSetGrouper = valueset;
 			}
 		}
@@ -77,17 +107,47 @@ public class ApplicationUtils {
 	}
 	
 	public static Set<ValueSet> getValueSetByIds(List<CanonicalType> valueSetIdList) {
+		
 		Set<ValueSet> valueSets = new HashSet<>();
+		
 		if (Optional.ofNullable(valueSetIdList).isPresent()) {
+			
+			logger.info(" Value Set id List is not null ");
+			
 			for(CanonicalType canonicalType : valueSetIdList) {
+				
 				for(ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
+					
+					//logger.info(" Iterating over value sets to setup grouper ");
+					
 					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())){
+						
+						// logger.info(" Ids matched ");
 						valueSets.add(valueSet);
+						break;
+					}
+					else if( (valueSet.getUrl() != null) && 
+							 (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString())) ) {
+						
+						// logger.info("Urls Matched ");
+						valueSets.add(valueSet);
+						break;
 					}
 				}
+				
 				for(ValueSet valueSet : ValueSetSingleton.getInstance().getCovidValueSets()) {
+					
 					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())){
+						
+						// logger.info(" Ids matched ");
 						valueSets.add(valueSet);
+						break;
+					}
+					else if( (valueSet.getUrl() != null) && 
+							 (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString())) ) {
+						// logger.info("Urls Matched ");
+						valueSets.add(valueSet);
+						break;
 					}
 				}
 			}
@@ -100,33 +160,44 @@ public class ApplicationUtils {
 		Set<ValueSet> valueSets = new HashSet<>();
 		
 		if (Optional.ofNullable(valueSetIdList).isPresent()) {
+			
 			for(CanonicalType canonicalType : valueSetIdList) {
+				
+				logger.info(" Checking Value set " + canonicalType.getValueAsString());
 				
 				for(ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
 					
-					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())){
-						
-					
-					List<UsageContext> usageContextList = valueSet.getUseContext();
-					
-					if (!usageContextList.isEmpty()) {
-						
-							for (UsageContext usageContext : usageContextList) {
-								
-								if (Optional.ofNullable(usageContext).isPresent()) {
-									
-									if (usageContext.getValueCodeableConcept() != null && usageContext
-											.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
-										
-										logger.info("Found Grouper to COVID Value Set Mapping, ValueSet Id = : " 
-											        + valueSet.getId());
-										
-										valueSets.add(valueSet);
-									}
-					
-								}
-							}
+					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString()) && 
+							isACovidValueSet(valueSet)	) { 
+						logger.info(" Found a Covid Value Set for Grouper using Id " + valueSet.getId());
+						valueSets.add(valueSet);
+						break;
 					}
+					else if( (valueSet.getUrl() != null) && 
+							 (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString())) &&
+							 isACovidValueSet(valueSet)) {
+						
+						logger.info("Urls Matched for a Covid Value Set" + valueSet.getId());
+						valueSets.add(valueSet);
+						break;
+					}
+				}
+				
+				for(ValueSet valueSet : ValueSetSingleton.getInstance().getCovidValueSets()) {
+					
+					if(valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString()) && 
+							isACovidValueSet(valueSet)){
+						
+						logger.info(" Found a Covid Value Set for Grouper using Id " + valueSet.getId());
+						valueSets.add(valueSet);
+						break;
+					}
+					else if( (valueSet.getUrl() != null) && 
+							 (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString())) && 
+								isACovidValueSet(valueSet) ) {
+						logger.info("Urls Matched for a Covid Value Set" + valueSet.getId());
+						valueSets.add(valueSet);
+						break;
 					}
 				}
 			}
@@ -307,6 +378,79 @@ public class ApplicationUtils {
 			
 		}
 	   
+		
+	}
+	
+	public static boolean isACovidValueSet(ValueSet v) {
+		
+		boolean retVal = false;
+		
+		if(v != null) {
+			
+			logger.info(" Checking Value Set Id " + v.getId());
+			
+			if(v.getUseContextFirstRep() != null) {
+				
+				UsageContext uc = v.getUseContextFirstRep();
+				
+				if(uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
+					
+					CodeableConcept cc = (CodeableConcept)uc.getValue();
+					
+					if(cc.getCodingFirstRep() != null && 
+							( cc.getCodingFirstRep().getCode() != null && 
+							  cc.getCodingFirstRep().getCode().contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE) ) ) { //&&
+						//	( cc.getCodingFirstRep().getSystem() != null && 
+						//	  cc.getCodingFirstRep().getSystem().contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_SYSTEM) )) {
+						
+						logger.info(" Found COVID VALUE SET = " + v.getId());
+						retVal = true;
+					}
+				}
+				
+			}
+			
+		}
+		
+		
+		return retVal;
+		
+	}
+	
+	public static boolean isAGrouperValueSet(ValueSet v) {
+		
+		boolean retVal = false;
+		
+		if(v != null) {
+			
+			if(v.getUseContextFirstRep() != null) {
+				
+				logger.info(" Found Use Context ");
+				
+				UsageContext uc = v.getUseContextFirstRep();
+				
+				if(uc.getValue() != null && (uc.getValue() instanceof Reference)) {
+					
+					logger.info(" Found Use Context Reference ");
+					
+					Reference rr = (Reference)uc.getValue();
+					
+					if(rr != null && 
+						rr.getReference() != null &&
+						( rr.getReference().contains(PlanDefinitionProcessor.GROUPER_VALUE_SET_REFERENCE_1) || 
+								rr.getReference().contains(PlanDefinitionProcessor.GROUPER_VALUE_SET_REFERENCE_2) ) ) {
+						
+						logger.info(" Found Grouper VALUE SET = " + v.getId());
+						retVal = true;
+					}
+				}
+				
+			}
+			
+		}
+		
+		
+		return retVal;
 		
 	}
 

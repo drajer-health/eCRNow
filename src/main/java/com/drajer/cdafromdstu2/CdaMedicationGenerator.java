@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,8 @@ public class CdaMedicationGenerator {
 		
 		//List<MedicationStatement> meds = data.getMedications();
 		List<MedicationAdministration> meds = data.getMedicationAdministrations();
+		// List<MedicationStatement> medications = data.getMedications();
+		
 		
 		if(meds != null && meds.size() > 0) {		
 			

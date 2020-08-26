@@ -150,6 +150,9 @@ public class RefreshTokenScheduler {
 			map.add("grant_type", "client_credentials");
 			map.add("scope", clientDetails.getScopes());
 			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+			
+			// clientDetails.print();
+			
 			ResponseEntity<?> response = restTemplate.exchange(clientDetails.getTokenURL(), HttpMethod.POST, entity,
 					Response.class);
 			tokenResponse = new JSONObject(response.getBody());

@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Duration;
@@ -23,6 +24,7 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
@@ -30,6 +32,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4.model.codesystems.BundleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +57,7 @@ import com.drajer.eca.model.SubmitEicrAction;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.eca.model.ValidateEicrAction;
 import com.drajer.ecrapp.config.ValueSetSingleton;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.ersd.service.ValueSetService;
 
 import ca.uhn.fhir.parser.IParser;
@@ -61,7 +65,16 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Service
 public class PlanDefinitionProcessor {
-
+	
+	public static String COVID_SNOMED_USE_CONTEXT_CODE = "840539006";
+	
+	public static String COVID_SNOMED_USE_CONTEXT_SYSTEM = "http://snomed.info/sct";
+	
+	public static String GROUPER_VALUE_SET_REFERENCE_1 = "plandefinition-ersd-instance";
+	public static String GROUPER_VALUE_SET_REFERENCE_2 = "plandefinition-ersd-skeleton";
+	
+	public static String ERSD_BUNDLE_ID_STRING = "rctc";
+	
 	@Autowired
 	@Qualifier("esrdGenericClient")
 	private IGenericClient esrdClient;
@@ -93,11 +106,57 @@ public class PlanDefinitionProcessor {
 		// Bundle esrdBundle =
 		// esrdClient.read().resource(Bundle.class).withId("506").execute();
 
-		Bundle esrdBundle = readErsdBundleFromFile();
+		logger.info(" Reading ERSD Bundle File ");
+		Bundle ersdBundle = readErsdBundleFromFile();
+		Bundle actualErsdBundle = null;
 
-		if (esrdBundle != null) {
+		if (ersdBundle != null) {
 			
-			List<BundleEntryComponent> bundleEntries = esrdBundle.getEntry();
+			logger.info(" Bundle has been created with Entries : " + ((ersdBundle.getEntry() != null )?ersdBundle.getEntry().size():" zero "));
+			
+			// Check to see if this is a searchset bundle.
+			if(ersdBundle.getType() == Bundle.BundleType.SEARCHSET) {
+				
+				// Check if there is a bundle of type collection and use it. 
+				// Typically it will be the first one.
+				
+				logger.info("Found a Bundle from a search result, containing the actual ERSD Bundle");
+				
+				List<BundleEntryComponent> innerBundle = ersdBundle.getEntry();
+				
+				for (BundleEntryComponent bundleEntry : innerBundle) {
+					
+					if (Optional.ofNullable(bundleEntry).isPresent() && 
+							bundleEntry.getResource().getResourceType().equals(ResourceType.Bundle) ) {
+						
+						logger.info(" Found a bundle within a bundle ");
+						
+						Bundle ib = (Bundle)(bundleEntry.getResource());
+						
+						if (ib.getType() == Bundle.BundleType.COLLECTION && 
+							ib.getId().contains(ERSD_BUNDLE_ID_STRING) ) {
+							
+							logger.info(" Found the bundle which is the actual ERSD Bundle file ");
+							actualErsdBundle = ib;
+							break;
+						}
+					}
+					
+				}
+				
+			}
+			
+			
+			List<BundleEntryComponent> bundleEntries = null;
+			
+			if(actualErsdBundle != null ) {
+				logger.info(" Innder ERSD Bundle Found from where we need to extract the plan definition");
+				bundleEntries = actualErsdBundle.getEntry();
+			}
+			else {
+				logger.info(" Bundle read from configuration is a valid bundle to extarct the plan definition");
+				bundleEntries = ersdBundle.getEntry();
+			}
 			
 			ValueSet valueSet = null;
 			List<UsageContext> usageContextList;
@@ -108,37 +167,81 @@ public class PlanDefinitionProcessor {
 			Set<ValueSet> valuesets = new HashSet<>();
 			Set<ValueSet> grouperValueSets = new HashSet<>();
 			Map<EventTypes.EcrActionTypes, Set<AbstractAction> > acts = new HashMap<EventTypes.EcrActionTypes, Set<AbstractAction> >();
+			
+			
 
 			for (BundleEntryComponent bundleEntry : bundleEntries) {
 				
+				logger.info(" Processing Bundle Entries ");
+				
 				if (Optional.ofNullable(bundleEntry).isPresent()) {
+					
+					logger.info(" Bundle Entries present and is of type " + bundleEntry.getResource().getResourceType());
 					
 					if (bundleEntry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
 						
+						logger.info(" Found Value set");
+						
 						valueSet = (ValueSet) bundleEntry.getResource();
+						
+						if(ApplicationUtils.isACovidValueSet(valueSet)) {
+						
+							logger.info(" Found a COVID Value Set " + valueSet.getId());
+							
+							valueSetService.createValueSet(valueSet);
+							covidValuesets.add(valueSet);
+							valuesets.add(valueSet);
+						}
+						else if (ApplicationUtils.isAGrouperValueSet(valueSet)){
+							
+							logger.info(" Found a Grouper Value Set " + valueSet.getId());
+							valueSetService.createValueSetGrouper(valueSet);
+							grouperValueSets.add(valueSet);
+							
+						}
+						else {
+							logger.info(" Found a Regular Value Set " + valueSet.getId());
+							valueSetService.createValueSet(valueSet);
+							valuesets.add(valueSet);
+						}
+						
+						
+						/*
 						usageContextList = valueSet.getUseContext();
 						
 						if (!usageContextList.isEmpty()) {
+							
+							logger.info(" Value Set Usage Context Not empty ");
+							
 								for (UsageContext usageContext : usageContextList) {
 									if (Optional.ofNullable(usageContext).isPresent()) {
 										
+										if(usageContext.getValue() != null )
+										
 										if (usageContext.getValueCodeableConcept() != null && usageContext
 												.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
-											System.out.println("Processing value set with id : " + valueSet.getId());
+											
+											logger.info("Processing value set with id : " + valueSet.getId());
+											
 											valueSetService.createValueSet(valueSet);
 											covidValuesets.add(valueSet);
 											valuesets.add(valueSet);
 										}
 										else {
+											
+											logger.info(" Creating Value Set");
 											valueSetService.createValueSet(valueSet);
 											valuesets.add(valueSet);
 										}
 									}
 								}
 						} else {
+							
+							logger.info(" Creating Value Set Grouper ");
 							valueSetService.createValueSetGrouper(valueSet);
 							grouperValueSets.add(valueSet);
 						}
+						*/
 					}
 				}
 			}
@@ -149,12 +252,15 @@ public class PlanDefinitionProcessor {
 			
 			for (BundleEntryComponent bundleEntry : bundleEntries) {
 				
+				// logger.info(" Process Bundle Entries for Creating Actions if found  ");
+				
 				if (Optional.ofNullable(bundleEntry).isPresent()) {
 					
 					if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
 						planDefinition = (PlanDefinition) bundleEntry.getResource();
 						actions = planDefinition.getAction();
 											
+						logger.info(" Found Plan Definition ");
 						if (actions != null && actions.size() > 0) {
 							
 							for (PlanDefinitionActionComponent action : actions) {
@@ -287,14 +393,18 @@ public class PlanDefinitionProcessor {
 
 	private Bundle readErsdBundleFromFile() {
 		
+		logger.info("About to read ERSD File " + ersdFileLocation);
 		InputStream in = null;
 		Bundle bundle = null;
 		try {
+			logger.info("Reading ERSD File ");
 			in = new FileInputStream(new File(ersdFileLocation));
 			if (in != null) {
 				bundle = jsonParser.parseResource(Bundle.class, in);
 			}
+			logger.info("Completed Reading ERSD File ");
 		} catch (Exception e) {
+			logger.info("Exception Reading ERSD File ");
 			e.printStackTrace();
 		} finally {
 			if (in != null) {

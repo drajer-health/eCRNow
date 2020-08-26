@@ -786,5 +786,7 @@ public class CdaFhirUtilities {
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}
+	
+	//public CodeableConcept getMedication(MedicationAdmininstration med, )
 
 }
