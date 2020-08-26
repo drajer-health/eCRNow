@@ -230,10 +230,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									} catch (JsonProcessingException e) {
 
 										String msg = "Unable to update execution state";
-										logger.error(msg);
-										e.printStackTrace();
-
-										throw new RuntimeException(msg);
+										handleException(e, logger, msg);
 									}
 
 									logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
