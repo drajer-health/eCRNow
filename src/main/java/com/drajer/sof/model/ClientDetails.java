@@ -6,15 +6,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
+
 import org.hibernate.annotations.Type;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jline.internal.Log;
+
 
 @Entity
 @Table(name = "client_details")
 @DynamicUpdate
 public class ClientDetails {
 
+	@Transient
+	private final Logger logger = LoggerFactory.getLogger(ClientDetails.class);
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
@@ -240,5 +251,32 @@ public class ClientDetails {
 
 	public void setIsFullEcr(Boolean isFullEcr) {
 		this.isFullEcr = isFullEcr;
+	}
+	
+	public void print() {
+
+		logger.info(" **** Printing Client Details **** ");
+		
+		Log.info(" Id = " + id );
+		Log.info(" Provider Launch = " + isProvider );
+		Log.info(" System Launch = " + isSystem );
+		Log.info(" Client Id = " + clientId );
+		Log.info(" Client Secret = " + clientSecret );
+		Log.info(" FHIR Server URL = " + fhirServerBaseURL );
+		Log.info(" Token URL = " + tokenURL );
+		Log.info(" Scopes = " + scopes );
+		Log.info(" Is Direct ? = " + isDirect );
+		Log.info(" Is XDR = " + isXdr );
+		Log.info(" Direct Host = " + directHost );
+		Log.info(" Direct pwd = " + directPwd );
+		Log.info(" Direct Recipient Address = " + directRecipientAddress );
+		Log.info(" XDR Recipient Address = " + xdrRecipientAddress );
+		Log.info(" Assigning Authority Id = " + assigningAuthorityId);
+		Log.info(" Encounter Start Threshold = " + encounterStartThreshold);
+		Log.info(" Encounter End Threshold = " + encounterEndThreshold);
+		Log.info(" Is Covid = " + isCovid);
+		Log.info(" Is Full ECR = " + isFullEcr);
+		
+		logger.info(" **** End Printing Client Details **** ");
 	}
 }

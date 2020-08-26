@@ -98,6 +98,8 @@ public class ValueSetServiceImpl implements ValueSetService {
 			
 			List<CanonicalType> valueSetIdList = ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
 			
+			logger.info(" Size of valueSetIdList = " + ((valueSetIdList==null)?"Null":valueSetIdList.size()));
+			
 			grouperToValueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
 			
 			logger.info(" Size of Value Sets for Grouper : " + grouperToValueSets.size());
@@ -122,10 +124,17 @@ public class ValueSetServiceImpl implements ValueSetService {
 		ValueSet valuSetGrouper = ApplicationUtils.getValueSetGrouperFromId(codeFilter.getValueSet());
 		
 		String path = dataRequirement.getType() + "." + codeFilter.getPath();
+		logger.info(" Trigger Path to Grouper Map " + path + ", Grouper " + ((valuSetGrouper==null)?"NULL":valuSetGrouper.getId()));
 		
 		ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
 		ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, valuSetGrouper);
-		ValueSetSingleton.getInstance().addGrouperToValueSetMap(codeFilter.getValueSet(), grouperToValueSets);
-		ValueSetSingleton.getInstance().addGrouperToCovidValueSetMap(codeFilter.getValueSet(),grouperToCovidValueSets);
+				
+		if(valuSetGrouper != null) {
+			
+			logger.info(" Adding Grouper Id: " + codeFilter.getValueSet() + " to map ");
+			ValueSetSingleton.getInstance().addGrouperToValueSetMap(valuSetGrouper.getId(), grouperToValueSets);
+			ValueSetSingleton.getInstance().addGrouperToCovidValueSetMap(valuSetGrouper.getId(),grouperToCovidValueSets);
+		}
+		
 	}
 }

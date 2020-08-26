@@ -91,7 +91,7 @@ Change the logfile location to reflect where you want to log the data.
 
 Once the App is up and running, you can access the App configuration screen by launching the URL:
 
-http://<localhost:8081>/clientDetails o
+http://<localhost:8081>/clientDetails
 
 Follow the App Configuration Guide present in documents folder to configure the app before using it for testing.
 Only after the app is configured, you will be able to use it for reporting.
