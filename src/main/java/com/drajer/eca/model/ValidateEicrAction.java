@@ -39,7 +39,7 @@ public class ValidateEicrAction extends AbstractAction {
 			PatientExecutionState state = null;
 
 			try {
-				state = readObjectValue(mapper , details);		
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);		
 			} catch (JsonProcessingException e1) {
 				
 				String msg = "Unable to read/write execution state";

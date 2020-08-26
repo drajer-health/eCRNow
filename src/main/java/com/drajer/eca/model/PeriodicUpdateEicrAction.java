@@ -43,7 +43,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 			PeriodicUpdateEicrStatus status = new PeriodicUpdateEicrStatus();
 
 			try {
-				state = readObjectValue(mapper , details);
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				status.setActionId(getActionId());
 			}  catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";

@@ -147,11 +147,6 @@ public abstract class AbstractAction {
 		throw new RuntimeException(msg,e1);
 	}
 
-	public PatientExecutionState readObjectValue(ObjectMapper mapper, LaunchDetails details)
-			throws JsonProcessingException {
-		return mapper.readValue(details.getStatus(), PatientExecutionState.class);
-	}
-
 	public boolean handleConditions(LaunchDetails details, Boolean conditionsMet) {
 		if (getPreConditions() != null && getPreConditions().size() > 0) {
 

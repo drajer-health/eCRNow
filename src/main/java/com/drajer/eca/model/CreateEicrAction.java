@@ -47,7 +47,7 @@ public class CreateEicrAction extends AbstractAction {
 			PatientExecutionState state = null;
 
 			try {
-				state = readObjectValue(mapper , details);
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getCreateEicrStatus().setActionId(getActionId());
 			}  catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";

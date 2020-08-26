@@ -40,7 +40,7 @@ public class MatchTriggerAction extends AbstractAction {
 			PatientExecutionState state = null;
 			
 			try {
-				state = readObjectValue(mapper , details);
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getMatchTriggerStatus().setActionId(getActionId());
 			}  catch (JsonProcessingException e1) {
 				

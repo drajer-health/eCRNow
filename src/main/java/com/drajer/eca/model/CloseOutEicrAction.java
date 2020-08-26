@@ -42,7 +42,7 @@ public class CloseOutEicrAction extends AbstractAction {
 			PatientExecutionState state = null;
 
 			try {
-				state = readObjectValue(mapper , details);
+				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getCloseOutEicrStatus().setActionId(getActionId());
 			}  catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
