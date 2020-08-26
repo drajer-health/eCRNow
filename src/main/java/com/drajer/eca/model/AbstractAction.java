@@ -152,7 +152,7 @@ public abstract class AbstractAction {
 		return mapper.readValue(details.getStatus(), PatientExecutionState.class);
 	}
 
-	public void handleConditions(LaunchDetails details, Boolean conditionsMet) {
+	public boolean handleConditions(LaunchDetails details, Boolean conditionsMet) {
 		if (getPreConditions() != null && getPreConditions().size() > 0) {
 
 			logger.info(" Evaluating PreConditions ");
@@ -166,6 +166,7 @@ public abstract class AbstractAction {
 				}
 			}
 		}
+		return conditionsMet;
 	}
 
 	public void updateExecutionState(LaunchDetails details, ObjectMapper mapper, PatientExecutionState newState) {

@@ -54,7 +54,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
-			handleConditions(details, conditionsMet);
+			conditionsMet = handleConditions(details, conditionsMet);
 
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;
