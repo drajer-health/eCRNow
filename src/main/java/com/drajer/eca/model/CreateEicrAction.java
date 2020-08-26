@@ -54,38 +54,16 @@ public class CreateEicrAction extends AbstractAction {
 			try {
 				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 				state.getCreateEicrStatus().setActionId(getActionId());
-			} catch (JsonMappingException e1) {
-				
+			}  catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				
-				throw new RuntimeException(msg);
+				handleException(e1, logger, msg);
 			}
 
-			logger.info(" Executing Create Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Create Eicr Action , Prior Execution State : = {}" , details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
-			if (getPreConditions() != null && getPreConditions().size() > 0) {
-
-				logger.info(" Evaluating PreConditions ");
-				List<AbstractCondition> conds = getPreConditions();
-
-				for (AbstractCondition cond : conds) {
-
-					if (!cond.evaluate(details)) {
-						logger.info(" Condition Not met " + cond.getConditionType().toString());
-						conditionsMet = false;
-					}
-				}
-			}
+			conditionsMet = handleConditions(details, conditionsMet);
 
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;
@@ -108,12 +86,12 @@ public class CreateEicrAction extends AbstractAction {
 							if (!state.hasActionCompleted(actionId)) {
 
 								logger.info(
-										" Action " + actionId + " is not completed , hence this action has to wait ");
+										" Action {} is not completed , hence this action has to wait ",actionId);
 								relatedActsDone = false;
 							}
 							else {
 								
-								logger.info(" Related Action has been completed : " + actionId);
+								logger.info(" Related Action has been completed : {}" , actionId);
 								
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -134,10 +112,7 @@ public class CreateEicrAction extends AbstractAction {
 										return;
 									} catch (JsonProcessingException e) { 
 										String msg = "Unable to read/write execution state";
-										logger.error(msg);
-										e.printStackTrace();
-										
-										throw new RuntimeException(msg);
+										handleException(e, logger, msg);
 									}
 								}
 								else {
@@ -147,7 +122,7 @@ public class CreateEicrAction extends AbstractAction {
 							}
 						}
 						else {
-							logger.info(" Action " + ract.getRelatedAction().getActionId() + " is related via " + ract.getRelationship());
+							logger.info(" Action {} is related via {}" ,ract.getRelatedAction().getActionId(),ract.getRelationship());
 							
 						}
 					}
@@ -185,10 +160,7 @@ public class CreateEicrAction extends AbstractAction {
 									return;
 								} catch (JsonProcessingException e) { 
 									String msg = "Unable to read/write execution state";
-									logger.error(msg);
-									e.printStackTrace();
-									
-									throw new RuntimeException(msg);
+									handleException(e, logger, msg);
 								}
 
 								
@@ -259,10 +231,7 @@ public class CreateEicrAction extends AbstractAction {
 									} catch (JsonProcessingException e) {
 
 										String msg = "Unable to update execution state";
-										logger.error(msg);
-										e.printStackTrace();
-
-										throw new RuntimeException(msg);
+										handleException(e, logger, msg);
 									}
 
 									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
@@ -299,15 +268,12 @@ public class CreateEicrAction extends AbstractAction {
 							} catch (JsonProcessingException e) {
 
 								String msg = "Unable to update execution state";
-								logger.error(msg);
-								e.printStackTrace();
-
-								throw new RuntimeException(msg);
+								handleException(e, logger, msg);
 							}
 						}
 					}
 					else {
-						logger.info(" EICR job is in a state of " + state.getCreateEicrStatus().getJobStatus() + " , due to which EICR will not be created. ");
+						logger.info(" EICR job is in a state of {} , due to which EICR will not be created. ",state.getCreateEicrStatus().getJobStatus());
 					}
 
 				}
