@@ -1,11 +1,8 @@
 package com.drajer.sof.launch;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +70,8 @@ public class LaunchController {
 
 	@Autowired
 	FhirContextInitializer fhirContextInitializer;
+	
+	private Random random = new Random();
 
 	@CrossOrigin
 	@RequestMapping("/api/launchDetails/{tokenId}")
@@ -212,7 +211,6 @@ public class LaunchController {
 							|| "https".equals(request.getScheme()) && request.getServerPort() == 443 ? ""
 									: ":" + request.getServerPort())
 					+ request.getContextPath();
-			Random random = new Random();
 			Integer state = random.nextInt();
 			logger.info("Random State Value==========>" + state);
 			LaunchDetails launchDetails = new LaunchDetails();

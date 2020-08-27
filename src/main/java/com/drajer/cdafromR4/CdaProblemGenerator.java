@@ -290,10 +290,10 @@ public class CdaProblemGenerator {
 
 				Set<String> matchedCodes = mtc.getMatchedCodes();
 
-				for(String code : matchedCodes) {
+				if(matchedCodes!=null && matchedCodes.size() > 0) {
 
 					// Split the system and code.
-					String[] parts = code.split("\\|");
+					String[] parts = matchedCodes.stream().findFirst().get().split("\\|");
 
 					Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
@@ -303,7 +303,6 @@ public class CdaProblemGenerator {
 					sb.append(CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
 
 					// Adding one is sufficient, wait for feedback from connectathon.
-					break;
 
 				}
 
