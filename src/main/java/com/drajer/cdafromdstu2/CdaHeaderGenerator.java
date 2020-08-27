@@ -481,25 +481,6 @@ public class CdaHeaderGenerator {
 		}		
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
 		
-				
-	    //Adding Guardian details for patient
-		if(p.getContact()!=null && p.getContact().size()>0) {
-			Contact guardianContact = CdaFhirUtilities.getGuardianContact(p.getContact());
-			patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
-			patientDetails
-					.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
-			patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-			patientDetails.append(CdaFhirUtilities.getNameXml(guardianContact.getName()));
-			patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-			patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
-
-			patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));
-
-			patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
-
-			patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
-		}
-		
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));

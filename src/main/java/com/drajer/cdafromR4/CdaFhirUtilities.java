@@ -309,50 +309,6 @@ public class CdaFhirUtilities {
 		return telString.toString();
 	}
 	
-	public static String getEmailXml(List<ContactPoint> tels) {
-		
-StringBuilder telString = new StringBuilder(200);
-		
-		if(tels != null && tels.size() > 0) {
-					
-			for(ContactPoint tel : tels) {
-
-				if(tel.getSystem() != null && 
-						tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL && 
-				   !StringUtils.isEmpty(tel.getValue())) {
-					
-					logger.info(" Found Email  " + tel.getValue());
-					telString.append(CdaGeneratorUtils.getXmlForEmail(CdaGeneratorConstants.TEL_EL_NAME, 
-						tel.getValue(), CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode())));
-					
-					
-					break;
-					
-				}
-			}
-		}
-		else {
-			
-			logger.info(" Did not find the Email ");
-			telString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.TEL_EL_NAME, CdaGeneratorConstants.NF_NI));
-		}
-		return telString.toString();
-	}
-	
-	public static ContactComponent getGuardianContact(List<ContactComponent> contactList) {
-		if(contactList!=null && contactList.size() > 0) {
-			for(ContactComponent contact : contactList) {
-				if(contact.getRelationship()!= null && contact.getRelationship().size()>0) {
-					for (CodeableConcept code : contact.getRelationship()) {
-						if(code.getText().equalsIgnoreCase("guardian")) {
-							return contact;
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
 	
 	/*public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
 		
@@ -698,42 +654,6 @@ StringBuilder telString = new StringBuilder(200);
 		return nameString.toString();
 	}
 	
-	public static String getNameXml(HumanName name) {
-		
-		StringBuilder nameString = new StringBuilder(200);
-		if(name!=null) {
-
-			List<StringType> ns = name.getGiven();
-			
-			for(StringType n : ns) {
-
-				if(!StringUtils.isEmpty(n.getValue()))
-					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, 
-						n.getValue()));
-			}	
-			
-			// If Empty create NF
-			if(StringUtils.isEmpty(nameString)) {
-				nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			}
-			
-			if(name.getFamily() != null &&
-			   !StringUtils.isEmpty(name.getFamily())) {
-				nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
-			}
-			else {
-				nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			}
-		}else {
-			
-			logger.info(" Did not find the Name for the patient guardian ");
-			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			
-		}
-				
-		return nameString.toString();
-	}
 	
 	public static String getStringForType(Type dt) {
 		
