@@ -4,9 +4,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -147,9 +147,8 @@ public class ITLaunchController extends BaseIntegrationTest {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document actualDoc = builder.parse(new InputSource(new StringReader(last.getData())));
-
 		BufferedReader br1 = new BufferedReader(
-				new FileReader(new File(classLoader.getResource("EICR_Expected").getFile())));
+				new InputStreamReader(classLoader.getResourceAsStream("EICR_Expected"), StandardCharsets.UTF_8));
 		BufferedReader br2 = new BufferedReader(new StringReader(last.getData()));
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -167,14 +166,13 @@ public class ITLaunchController extends BaseIntegrationTest {
 	}
 
 	private void getSystemLaunchInputData() throws IOException {
-		File systemLaunchInputDataFile = new File(classLoader.getResource("systemLaunchRequest.json").getFile());
-		systemLaunchInputData = FileUtils.readFileToString(systemLaunchInputDataFile, StandardCharsets.UTF_8);
+		systemLaunchInputData = getFileContentAsString("systemLaunchRequest.json");
 
 	}
 
 	private void createTestLaunchDetailsInDB() throws IOException {
-		File dataEntryFile = new File(classLoader.getResource("saveLaunchDataEntry.json").getFile());
-		launchDetailString = FileUtils.readFileToString(dataEntryFile, StandardCharsets.UTF_8);
+		launchDetailString = getFileContentAsString("saveLaunchDataEntry.json");
+
 		testLaunchDetailsId = (int) session.save(mapper.readValue(launchDetailString, LaunchDetails.class));
 
 		LaunchDetails launchDetailsToBeDeleted = (LaunchDetails) session.get(LaunchDetails.class, testLaunchDetailsId);
@@ -184,8 +182,8 @@ public class ITLaunchController extends BaseIntegrationTest {
 
 	private void createTestClientDetailsInDB() throws IOException {
 
-		File dataEntryFile = new File(classLoader.getResource("saveClientDataEntry1.json").getFile());
-		clientDetailString = FileUtils.readFileToString(dataEntryFile, StandardCharsets.UTF_8);
+		clientDetailString = getFileContentAsString("saveClientDataEntry1.json");
+
 		testClientDetailsId = (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
 
 		ClientDetails clientDetailsToBeDeleted = (ClientDetails) session.get(ClientDetails.class, testClientDetailsId);
@@ -209,7 +207,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 	private Document getExpectedXml() throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document document = builder.parse(new File(classLoader.getResource("EICR_Expected").getFile()));
+		Document document = builder.parse(classLoader.getResourceAsStream("EICR_Expected"));
 		return document;
 
 	}

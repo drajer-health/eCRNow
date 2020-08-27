@@ -1,8 +1,12 @@
 package com.cerner.test.it.common;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -51,6 +55,8 @@ public abstract class BaseIntegrationTest {
 	
 	protected static final String URL = "http://localhost:";
 	
+	ClassLoader classLoader =this.getClass().getClassLoader();
+	
 	@Before
 	public void setUp() throws IOException {
 		
@@ -61,6 +67,20 @@ public abstract class BaseIntegrationTest {
 	public void tearDown() {
 		session.close();
 	}
+	
+	protected String getFileContentAsString(String fileName) throws IOException {
+		String fileContent = "";
+		InputStream stream = classLoader.getResourceAsStream(fileName);
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
+		fileContent = writer.toString();
+		stream.close();
+		writer.close();
+		return fileContent;
+
+	}
+	
+
 	
 
 	protected Object invokePrivateMethod(String className, String methodName,

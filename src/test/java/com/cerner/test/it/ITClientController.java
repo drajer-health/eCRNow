@@ -2,13 +2,14 @@ package com.cerner.test.it;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +24,6 @@ import com.cerner.test.util.TestUtils;
 import com.drajer.sof.model.ClientDetails;
 
 public class ITClientController extends BaseIntegrationTest {
-
-	ClassLoader classLoader = getClass().getClassLoader();
 
 	static int savedId;
 	static String clientDetailString;
@@ -196,15 +195,15 @@ public class ITClientController extends BaseIntegrationTest {
 	}
 
 	private void createSaveClientInputData() throws IOException {
-		File saveClientInputDataFile = new File(classLoader.getResource("createClientDetails.json").getFile());
-		testSaveClientData = FileUtils.readFileToString(saveClientInputDataFile, StandardCharsets.UTF_8);
+
+		testSaveClientData = getFileContentAsString("createClientDetails.json");
 
 	}
 
 	private void createTestClientDetailsInDB() throws IOException {
 
-		File dataEntryFile = new File(classLoader.getResource("saveClientDataEntry.json").getFile());
-		clientDetailString = FileUtils.readFileToString(dataEntryFile, StandardCharsets.UTF_8);
+		clientDetailString = getFileContentAsString("saveClientDataEntry.json");
+
 		testClientDetailsId = (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
 
 		ClientDetails clientDetailsToBeDeleted = (ClientDetails) session.get(ClientDetails.class, testClientDetailsId);
