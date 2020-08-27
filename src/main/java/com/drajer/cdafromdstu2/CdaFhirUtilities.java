@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.LaunchDetails;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.api.IDatatype;
@@ -24,14 +23,12 @@ import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.model.dstu2.resource.Location;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient.Communication;
-import ca.uhn.fhir.model.dstu2.resource.Patient.Contact;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
@@ -609,45 +606,45 @@ public class CdaFhirUtilities {
 	}
 
 	public static String getNameXml(List<HumanNameDt> names) {
-		
+
 		StringBuilder nameString = new StringBuilder(200);
-		
-		if(names != null && names.size() > 0) {
-					
-			for(HumanNameDt name : names) {
 
-				List<StringDt> ns = name.getGiven();
-				
-				for(StringDt n : ns) {
+		if (names != null && names.size() > 0) {
 
-					if(!StringUtils.isEmpty(n.getValue()))
-						nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, 
+			HumanNameDt name = names.stream().findFirst().get();
+
+			List<StringDt> ns = name.getGiven();
+
+			for (StringDt n : ns) {
+
+				if (!StringUtils.isEmpty(n.getValue()))
+					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.FIRST_NAME_EL_NAME,
 							name.getGivenFirstRep().getValue()));
-				}	
-				
-				// If Empty create NF
-				if(StringUtils.isEmpty(nameString)) {
-					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-				}
-				
-				if(name.getFamilyFirstRep() != null &&
-				   !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
-					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamilyFirstRep().getValue()));
-				}
-				else {
-					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-				}
-				
 			}
-		}
-		else {
-			
+
+			// If Empty create NF
+			if (StringUtils.isEmpty(nameString)) {
+				nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+						CdaGeneratorConstants.NF_NI));
+			}
+
+			if (name.getFamilyFirstRep() != null && !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
+				nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME,
+						name.getFamilyFirstRep().getValue()));
+			} else {
+				nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME,
+						CdaGeneratorConstants.NF_NI));
+			}
+		} else {
+
 			logger.info(" Did not find the Name for the patient ");
-			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			
+			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+					CdaGeneratorConstants.NF_NI));
+			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME,
+					CdaGeneratorConstants.NF_NI));
+
 		}
-			
+
 		return nameString.toString();
 	}
 	
