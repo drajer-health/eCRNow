@@ -6,6 +6,10 @@ import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -25,6 +29,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,7 +86,13 @@ public abstract class BaseIntegrationTest {
 
 	}
 	
+	protected Document getExpectedXml(String expectedXml) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document document = builder.parse(classLoader.getResourceAsStream(expectedXml));
+		return document;
 
+	}
 	
 
 	protected Object invokePrivateMethod(String className, String methodName,

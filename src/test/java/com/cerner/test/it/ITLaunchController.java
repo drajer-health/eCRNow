@@ -36,6 +36,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.cerner.test.it.common.BaseIntegrationTest;
+import com.cerner.test.util.TestUtils;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
@@ -143,7 +144,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 		query.setMaxResults(1);
 		Eicr last = (Eicr) query.uniqueResult();
 
-		Document expectedDoc = getExpectedXml();
+		Document expectedDoc = getExpectedXml("EICR_Expected");
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document actualDoc = builder.parse(new InputSource(new StringReader(last.getData())));
@@ -157,7 +158,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 		assertEquals(expectedDoc.getDocumentElement().getTextContent(),
 				actualDoc.getDocumentElement().getTextContent());
 
-		assertTrue(compareStringBuffer(br1, br2));
+		assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
 
 	}
 
@@ -204,44 +205,6 @@ public class ITLaunchController extends BaseIntegrationTest {
 		deleteClientList.clear();
 	}
 
-	private Document getExpectedXml() throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document document = builder.parse(classLoader.getResourceAsStream("EICR_Expected"));
-		return document;
-
-	}
-
-	private boolean compareStringBuffer(BufferedReader br1, BufferedReader br2) throws IOException {
-		boolean isSame = false;
-		String sCurrentLine;
-		List<String> list1 = new ArrayList<String>();
-		List<String> list2 = new ArrayList<String>();
-
-		int count = 0;
-
-		while ((sCurrentLine = br1.readLine()) != null) {
-			list1.add(sCurrentLine);
-		}
-		while ((sCurrentLine = br2.readLine()) != null) {
-			list2.add(sCurrentLine);
-		}
-
-		if (list1.size() != list2.size())
-			return false;
-
-		for (int i = 0; i < list1.size(); i++) {
-			if (!transactionalEntrySet.contains(i))
-				if (list1.get(i).equals(list2.get(i))) {
-					// System.out.println(list1.get(i));
-				} else {
-					count++;
-				}
-
-		}
-		if (count == 0)
-			isSame = true;
-		return isSame;
-	}
+	
 
 }
