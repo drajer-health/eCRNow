@@ -462,8 +462,8 @@ public class CdaHeaderGenerator {
 		
 		if(ethnicity != null && 
 		   ethnicity.getCode() != null) {			
-			patientDetails.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, race.getCode(), 
-					CdaGeneratorConstants.RACE_CODE_SYSTEM, CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME, race.getDisplay()));
+			patientDetails.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, ethnicity.getCode(), 
+					CdaGeneratorConstants.RACE_CODE_SYSTEM, CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME, ethnicity.getDisplay()));
 		}
 		else {
 			patientDetails.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));

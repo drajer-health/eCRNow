@@ -170,19 +170,26 @@ public class FhirContextInitializer {
 
 	public static void saveBundleToFile(String data, String fileName) {
 
-		FileOutputStream fos;
+		DataOutputStream outStream = null;
 		try {
 
 			logger.error(" Writing Bundle data to file: " + fileName);
-			fos = new FileOutputStream(fileName);
-			DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
+			outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
 			outStream.writeBytes(data);
-			outStream.close();
 		} catch (IOException e) {
 
 			logger.error(" Unable to write Bundle data to file: " + fileName);
 			e.printStackTrace();
 
+		}finally {
+			if(outStream!=null) {
+				try {
+					outStream.close();
+				} catch (IOException e) {
+					logger.error(" Unable to close Data output stream");
+					e.printStackTrace();
+				}
+			}
 		}
 
 	}

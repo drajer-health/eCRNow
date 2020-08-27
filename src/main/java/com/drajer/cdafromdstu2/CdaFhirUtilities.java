@@ -354,7 +354,7 @@ public class CdaFhirUtilities {
 	}
 	
 	
-	public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
+	/*public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
 		
 		List<Entry> entries = bundle.getEntry();
 		for(Entry ent : entries) {
@@ -374,7 +374,7 @@ public class CdaFhirUtilities {
 				org = getOrganization(entries, en);				
 			}
 		}		
-	}
+	}*/
 	
 	public static Organization getOrganization(List<Entry> entries, Encounter en) {
 				
@@ -685,8 +685,6 @@ public class CdaFhirUtilities {
 					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
 				}
 				
-				// Enough names for now.
-				break;
 			}
 		}
 		else {
