@@ -12,7 +12,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestReportabilityResponseAction {
+public class ReportabilityResponseActionTest {
 	
 	@InjectMocks
 	private ReportabilityResponseAction reportabilityResponseAction;

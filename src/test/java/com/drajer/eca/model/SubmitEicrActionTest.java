@@ -12,20 +12,19 @@ import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestValidateEicrAction {
+public class SubmitEicrActionTest {
 	
 	@InjectMocks
-	private ValidateEicrAction validateEicrAction;
+	private SubmitEicrAction submitEicrAction;
 	
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@Test
-	public void testValidateEicrAction() throws Exception {
+	public void testSubmitEicrAction() throws Exception {
 		LaunchDetails launchDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"), LaunchDetails.class);
 		
 		WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
-		
-		validateEicrAction.execute(launchDetails, launchType);
+		submitEicrAction.execute(launchDetails, launchType);
 	}
 
 }

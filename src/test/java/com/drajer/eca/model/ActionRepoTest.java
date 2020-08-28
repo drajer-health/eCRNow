@@ -7,7 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestActionRepo {
+public class ActionRepoTest {
 
 	@InjectMocks
 	private ActionRepo actionRepo;
