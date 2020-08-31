@@ -4,9 +4,6 @@ import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
@@ -21,13 +18,6 @@ public class ValidateEicrAction extends AbstractAction {
 	private final Logger logger = LoggerFactory.getLogger(ValidateEicrAction.class);
 	
 	@Override
-	public void print() {
-		
-		logger.info(" **** Printing ValidateEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing ValidateEicrAction **** ");
-	}
-	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
 		
 		logger.info(" **** START Executing Validate Eicr Action **** ");
@@ -35,16 +25,9 @@ public class ValidateEicrAction extends AbstractAction {
 		if (obj instanceof LaunchDetails) {
 
 			LaunchDetails details = (LaunchDetails) obj;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);		
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				handleException(e1, logger, msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
 
 			logger.info(" Executing Validate Eicr Action , Prior Execution State : = {}" , details.getStatus());
 			
@@ -91,14 +74,16 @@ public class ValidateEicrAction extends AbstractAction {
 				
 			}
 			
-			try {
-				details.setStatus(mapper.writeValueAsString(state));
-			} catch (JsonProcessingException e) {
-					
-				String msg = "Unable to update execution state";
-				handleException(e, logger, msg);
-			}
+			EcaUtils.updateDetailStatus(details, state);
 		}
+	}
+	
+	@Override
+	public void print() {
+		
+		logger.info(" **** Printing ValidateEicrAction **** ");
+		printBase();
+		logger.info(" **** End Printing ValidateEicrAction **** ");
 	}
 	
 	public void validateEicrs(PatientExecutionState state, Set<Integer> ids) {

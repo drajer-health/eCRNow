@@ -13,23 +13,13 @@ import org.springframework.stereotype.Service;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 
 @Service
 public class SubmitEicrAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
-	
-	@Override
-	public void print() {
-		
-		logger.info(" **** Printing SubmitEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing SubmitEicrAction **** ");
-	}
 	
 	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
@@ -41,16 +31,9 @@ public class SubmitEicrAction extends AbstractAction {
 			  
 			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) obj;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-			}  catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				handleException(e1, logger, msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
 
 			logger.info(" Executing Submit Eicr Action , Prior Execution State : = {}" , details.getStatus());
 			
@@ -100,15 +83,17 @@ public class SubmitEicrAction extends AbstractAction {
 				
 			}
 			
-			try {
-				details.setStatus(mapper.writeValueAsString(state));
-			} catch (JsonProcessingException e) {
-					
-				String msg = "Unable to update execution state";
-				handleException(e, logger, msg);
-			}
+			EcaUtils.updateDetailStatus(details, state);
 		}
 		
+	}
+	
+	@Override
+	public void print() {
+		
+		logger.info(" **** Printing SubmitEicrAction **** ");
+		printBase();
+		logger.info(" **** End Printing SubmitEicrAction **** ");
 	}
 	
 	public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {

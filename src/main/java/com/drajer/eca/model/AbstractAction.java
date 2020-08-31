@@ -141,12 +141,7 @@ public abstract class AbstractAction {
 		}
 
 	}
-
-	public void handleException(Exception e1, Logger logger, String msg) {
-		logger.error(msg,e1);
-		throw new RuntimeException(msg,e1);
-	}
-
+	
 	public boolean matchCondition(LaunchDetails details, Boolean conditionsMet) {
 		if (getPreConditions() != null && getPreConditions().size() > 0) {
 
@@ -173,16 +168,9 @@ public abstract class AbstractAction {
 			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
 		PatientExecutionState newState = null;
 
-		try {
-			newState = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-			logger.info(" Successfully set the State value ");
-		}  catch (JsonProcessingException e1) {
-			String msg = "Unable to read/write execution state";
-			handleException(e1, logger, msg);
-		}
+		newState = EcaUtils.getDetailStatus(details);
 
 		return newState;
 	}

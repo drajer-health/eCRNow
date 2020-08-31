@@ -11,21 +11,11 @@ import org.slf4j.LoggerFactory;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public class ReportabilityResponseAction extends AbstractAction {
 	
 	private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseAction.class);
-
-	@Override
-	public void print() {
-		
-		logger.info(" **** Printing SubmitEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing SubmitEicrAction **** ");
-
-	}
 
 	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
@@ -36,16 +26,9 @@ public class ReportabilityResponseAction extends AbstractAction {
 			  
 			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) obj;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 	
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);		
-			}  catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				handleException(e1, logger, msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
 	
 			logger.info(" Executing RR Check Eicr Action , Prior Execution State : = {}" , details.getStatus());
 			
@@ -96,17 +79,20 @@ public class ReportabilityResponseAction extends AbstractAction {
 				
 			}
 			
-			try {
-				details.setStatus(mapper.writeValueAsString(state));
-			} catch (JsonProcessingException e) {
-					
-				String msg = "Unable to update execution state";
-				handleException(e, logger, msg);
-			}
+			EcaUtils.updateDetailStatus(details, state);
 		}
 		
 	}
 
+	@Override
+	public void print() {
+		
+		logger.info(" **** Printing SubmitEicrAction **** ");
+		printBase();
+		logger.info(" **** End Printing SubmitEicrAction **** ");
+
+	}
+	
 	public void checkRRForEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
 		
 		for(Integer id : ids) {

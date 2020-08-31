@@ -12,20 +12,11 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public class MatchTriggerAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(MatchTriggerAction.class);
-	
-	@Override
-	public void print() {
-		
-		logger.info(" **** Printing MatchTriggerAction **** ");
-		printBase();
-		logger.info(" **** End Printing MatchTriggerAction **** ");
-	}
 	
 	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
@@ -36,17 +27,10 @@ public class MatchTriggerAction extends AbstractAction {
 			
 			LaunchDetails details = (LaunchDetails)obj;
 			
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 			
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-				state.getMatchTriggerStatus().setActionId(getActionId());
-			}  catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				handleException(e1, logger, msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
+			state.getMatchTriggerStatus().setActionId(getActionId());
 			
 			// Execute the Match Trigger Action, even if it completed, because it could be invoked multiple times from 
 			// other EICR Actions.
@@ -91,7 +75,8 @@ public class MatchTriggerAction extends AbstractAction {
 					// Job is completed, even if it did not match.
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
-					updateTriggerStatus(state,details,mapper);
+					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+					EcaUtils.updateDetailStatus(details, state);
 					
 				}
 				else if(data != null && data instanceof R4FhirData) {
@@ -113,7 +98,6 @@ public class MatchTriggerAction extends AbstractAction {
 						
 						EcaUtils.matchTriggerCodesForR4(codePaths, r4Data, state, details);
 						
-						
 					}
 					else {
 						
@@ -126,7 +110,8 @@ public class MatchTriggerAction extends AbstractAction {
 					// Job is completed, even if it did not match.
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
-					updateTriggerStatus(state,details,mapper);
+					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+					EcaUtils.updateDetailStatus(details, state);
 					
 				}
 				else {
@@ -155,16 +140,13 @@ public class MatchTriggerAction extends AbstractAction {
 			
 		}
 	}
-	
-	public void updateTriggerStatus(PatientExecutionState state,LaunchDetails details,ObjectMapper mapper) {
-		state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+
+	@Override
+	public void print() {
 		
-		try {
-			details.setStatus(mapper.writeValueAsString(state));
-		} catch (JsonProcessingException e) {
-		
-			String msg = "Unable to update execution state";
-			handleException(e, logger, msg);
-		}
-	}
+		logger.info(" **** Printing MatchTriggerAction **** ");
+		printBase();
+		logger.info(" **** End Printing MatchTriggerAction **** ");
+	}	
+
 }
