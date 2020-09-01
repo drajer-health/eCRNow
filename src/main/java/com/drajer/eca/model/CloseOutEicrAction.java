@@ -47,7 +47,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
-			conditionsMet = matchCondition(details, conditionsMet);
+			conditionsMet = matchCondition(details);
 
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;

@@ -142,7 +142,8 @@ public abstract class AbstractAction {
 
 	}
 	
-	public boolean matchCondition(LaunchDetails details, Boolean conditionsMet) {
+	public boolean matchCondition(LaunchDetails details) {
+		boolean conditionsMet = true;
 		if (getPreConditions() != null && getPreConditions().size() > 0) {
 
 			logger.info(" Evaluating PreConditions ");
