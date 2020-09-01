@@ -365,16 +365,12 @@ public class LaunchController {
 				if (period.getStart() != null) {
 					currentStateDetails.setStartDate(period.getStart());
 				} else {
-					Date startDate = DateUtils.addHours(new Date(),
-							Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-					currentStateDetails.setStartDate(startDate);
+					setStartDate(clientDetails, currentStateDetails);
 				}
 				if (period.getEnd() != null) {
 					currentStateDetails.setEndDate(period.getEnd());
 				} else {
-					Date endDate = DateUtils.addHours(new Date(),
-							Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-					currentStateDetails.setEndDate(endDate);
+					setEndDate(clientDetails, currentStateDetails);
 				}
 			}
 		}
@@ -390,19 +386,29 @@ public class LaunchController {
 					if (period.getStart() != null) {
 						currentStateDetails.setStartDate(period.getStart());
 					} else {
-						Date startDate = DateUtils.addHours(new Date(),
-								Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-						currentStateDetails.setStartDate(startDate);
+						setStartDate(clientDetails, currentStateDetails);
 					}
 					if (period.getEnd() != null) {
 						currentStateDetails.setEndDate(period.getEnd());
 					} else {
-						Date endDate = DateUtils.addHours(new Date(),
-								Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-						currentStateDetails.setEndDate(endDate);
+						setEndDate(clientDetails, currentStateDetails);
 					}
 				}
 			}
 		}
+	}
+	
+	public void setStartDate(ClientDetails clientDetails, LaunchDetails currentStateDetails)
+	{
+		Date startDate = DateUtils.addHours(new Date(),
+				Integer.parseInt(clientDetails.getEncounterStartThreshold()));
+		currentStateDetails.setStartDate(startDate);
+	}
+	
+	public void setEndDate(ClientDetails clientDetails, LaunchDetails currentStateDetails)
+	{
+		Date endDate = DateUtils.addHours(new Date(),
+				Integer.parseInt(clientDetails.getEncounterEndThreshold()));
+		currentStateDetails.setEndDate(endDate);
 	}
 }
