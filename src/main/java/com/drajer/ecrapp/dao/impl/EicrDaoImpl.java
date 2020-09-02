@@ -1,6 +1,7 @@
 package com.drajer.ecrapp.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.EicrDao;
@@ -8,6 +9,7 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 
 @Repository
+@Transactional
 public class EicrDaoImpl extends AbstractDao implements EicrDao{
 	
 	public Eicr saveOrUpdate(Eicr eicr) {

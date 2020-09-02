@@ -206,14 +206,14 @@ public class ValueSetSingleton {
 			
 			if(grouperToCovidValueSetMap.containsKey(grouper)) {
 			
-				logger.info(" Adding Covid Value sets for Grouper  " + grouper + " Size = " + vs.size());
+				logger.info(" Adding Covid Value sets for Grouper that exists " + grouper + " Size = " + vs.size());
 				
 				grouperToCovidValueSetMap.get(grouper).addAll(vs);
 				
 			}
 			else {
 				
-				logger.info(" Creating new entry and adding Covid value sets for Grouper  " + grouper + " Size = " + vs.size());
+				logger.info(" Creating new entry and adding Covid value sets for Grouper that does not exist " + grouper + " Size = " + vs.size());
 				
 				grouperToCovidValueSetMap.put(grouper, vs);
 				
