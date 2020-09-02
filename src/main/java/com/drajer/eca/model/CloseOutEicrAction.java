@@ -73,7 +73,7 @@ public class CloseOutEicrAction extends AbstractAction {
 								relatedActsDone = false;
 							}
 							else {
-								logger.info(" Related Action that has been completed : " + actionId);
+								logger.info(" Related Action that has been completed : {}" , actionId);
 
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
