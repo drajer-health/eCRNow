@@ -179,10 +179,8 @@ public class EcaUtils {
 		} catch (JsonProcessingException e) {
 
 			String msg = "Unable to update execution state";
-			logger.error(msg);
-			e.printStackTrace();
-
-			throw new RuntimeException(msg);
+			logger.error(msg,e);
+			throw new RuntimeException(msg,e);
 		}
 	}
 
@@ -195,19 +193,10 @@ public class EcaUtils {
 			
 			state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 		
-		} catch (JsonMappingException e1) {
-			
+		}  catch (JsonProcessingException e1) {
 			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			e1.printStackTrace();
-			throw new RuntimeException(msg);
-			
-		} catch (JsonProcessingException e1) {
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			e1.printStackTrace();
-			
-			throw new RuntimeException(msg);
+			logger.error(msg,e1);
+			throw new RuntimeException(msg,e1);
 		}
 		
 		return state;
