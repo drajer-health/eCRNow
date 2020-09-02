@@ -44,7 +44,7 @@ public class EcaUtils {
 				logger.info(" Found a Total # of {} codes found for Patient {}", ptCodes.size(), ad.getPath());
 				
 				Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
-				matchTriggerCodes(details,ad,codesToMatch,state,matchfound);
+				matchfound = matchTriggerCodes(details,ad,codesToMatch,state);
 			}
 		}
 	
@@ -69,7 +69,7 @@ public class EcaUtils {
 				logger.info(" Found a Total # of {} codes found for Patient." , ad.getPath());
 				
 				Set<String> codesToMatch = ApplicationUtils.convertR4CodeableConceptsToString(ptCodes);
-				matchTriggerCodes(details,ad,codesToMatch,state,matchfound);
+				matchfound = matchTriggerCodes(details,ad,codesToMatch,state);
 			}
 		}
 	
@@ -77,7 +77,8 @@ public class EcaUtils {
 		return matchfound;
 	}
 	
-	public static void matchTriggerCodes(LaunchDetails details,ActionData ad,Set<String> codesToMatch,PatientExecutionState state,boolean matchfound) {
+	public static boolean matchTriggerCodes(LaunchDetails details,ActionData ad,Set<String> codesToMatch,PatientExecutionState state) {
+		boolean matchfound = false;
 		Set<String> codesToMatchAgainst = null;
 		
 		if(details.getIsCovid()) {
@@ -112,6 +113,7 @@ public class EcaUtils {
 			
 			logger.info(" No Matched codes found for : {}" , ad.getPath());
 		}
+		return matchfound;
 	}
 
 	public static Eicr createEicr(LaunchDetails details){
