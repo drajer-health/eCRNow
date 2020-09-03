@@ -16,14 +16,13 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import com.drajer.ecrapp.config.JSONObjectUserType;
 
 @Entity
 @Table(name = "launch_details")
 @DynamicUpdate
-@TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
+//@TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
 public class LaunchDetails {
 
 	@Id
@@ -36,7 +35,7 @@ public class LaunchDetails {
 	@Column(name = "client_secret", nullable = true)
 	private String clientSecret;
 
-	@Column(name = "ehr_server_url", nullable = true, columnDefinition = "TEXT")
+	@Column(name = "ehr_server_url", nullable = true)
 	private String ehrServerURL;
 
 	@Column(name = "auth_url", nullable = true, columnDefinition = "TEXT")
@@ -81,8 +80,7 @@ public class LaunchDetails {
 	@Column(name = "encounter_id", nullable = true)
 	private String encounterId;
 
-	@Column(name = "status", nullable = true) // Status can be active or completed.
-	@Type(type = "StringJsonObject")
+	@Column(name = "status", nullable = true, columnDefinition = "TEXT") // Status can be active or completed.
 	private String status;
 
 	@Column(name = "aa_id", nullable = true) // Status can be active or completed.
@@ -106,7 +104,8 @@ public class LaunchDetails {
 	@Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
 	private String directRecipient;
 	
-	@Column(name = "is_covid19", columnDefinition = "boolean default true", nullable = false)
+	@Column(name = "is_covid19", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isCovid = true;
 	
 	@Column(name="launch_id",nullable = true)
@@ -121,7 +120,8 @@ public class LaunchDetails {
 	@Column(name="auth_code",nullable = true)
 	private String authorizationCode;
 	
-	@Column(name = "is_system_launch", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_system_launch", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isSystem = false;
 	
 	public Boolean getIsCovid() {

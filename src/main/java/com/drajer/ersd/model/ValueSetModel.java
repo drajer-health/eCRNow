@@ -9,7 +9,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,8 +25,7 @@ public class ValueSetModel {
 	@Column(name = "id")
 	private String valueSetId;
 
-	@Column(name = "data")
-	@Type(type = "StringJsonObject")
+	@Column(name = "data", columnDefinition = "TEXT")
 	private String data;
 
 	@Column(name = "last_updated_ts")
