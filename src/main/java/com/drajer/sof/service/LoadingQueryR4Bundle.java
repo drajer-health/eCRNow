@@ -46,7 +46,7 @@ public class LoadingQueryR4Bundle {
 	@Autowired
 	R4ResourcesData r4ResourcesData;
 
-	private final Logger logger = LoggerFactory.getLogger(LoadingQueryDstu2Bundle.class);
+	private final Logger logger = LoggerFactory.getLogger(LoadingQueryR4Bundle.class);
 
 	public Bundle createR4Bundle(LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {
 		Bundle bundle = new Bundle();
