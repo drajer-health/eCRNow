@@ -13,24 +13,21 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 
 import ca.uhn.fhir.model.dstu2.composite.AddressDt;
-import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
 import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
-import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.model.dstu2.resource.Location;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
-import ca.uhn.fhir.model.dstu2.valueset.ParticipantTypeEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 
@@ -464,8 +461,8 @@ public class CdaHeaderGenerator {
 		
 		if(ethnicity != null && 
 		   ethnicity.getCode() != null) {			
-			patientDetails.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, race.getCode(), 
-					CdaGeneratorConstants.RACE_CODE_SYSTEM, CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME, race.getDisplay()));
+			patientDetails.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, ethnicity.getCode(), 
+					CdaGeneratorConstants.RACE_CODE_SYSTEM, CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME, ethnicity.getDisplay()));
 		}
 		else {
 			patientDetails.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -482,8 +479,8 @@ public class CdaHeaderGenerator {
 			patientDetails.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
 		}		
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
-				
-		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_EL_NAME));		
+		
+		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
 		patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
 		

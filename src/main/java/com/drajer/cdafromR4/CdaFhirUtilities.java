@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -35,10 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.LaunchDetails;
 
-import ca.uhn.fhir.model.api.ExtensionDt;
-import ca.uhn.fhir.model.primitive.CodeDt;
+
 
 public class CdaFhirUtilities {
 
@@ -306,7 +303,8 @@ public class CdaFhirUtilities {
 		return telString.toString();
 	}
 	
-	public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
+	
+	/*public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
 		
 		List<BundleEntryComponent> entries = bundle.getEntry();
 		for(BundleEntryComponent ent : entries) {
@@ -326,7 +324,7 @@ public class CdaFhirUtilities {
 				org = getOrganization(entries, en);				
 			}
 		}		
-	}
+	}*/
 	
 	public static Organization getOrganization(List<BundleEntryComponent> entries, Encounter en) {
 				
@@ -613,9 +611,8 @@ public class CdaFhirUtilities {
 		StringBuilder nameString = new StringBuilder(200);
 		
 		if(names != null && names.size() > 0) {
-					
-			for(HumanName name : names) {
-
+			
+			    HumanName name = names.stream().findFirst().get();
 				List<StringType> ns = name.getGiven();
 				
 				for(StringType n : ns) {
@@ -639,8 +636,6 @@ public class CdaFhirUtilities {
 				}
 				
 				// Enough names for now.
-				break;
-			}
 		}
 		else {
 			
@@ -652,6 +647,7 @@ public class CdaFhirUtilities {
 			
 		return nameString.toString();
 	}
+	
 	
 	public static String getStringForType(Type dt) {
 		
@@ -706,14 +702,10 @@ public class CdaFhirUtilities {
 				val += cd.getValue();
 			}
 			
+			logger.info(" Printing the class name " + dt.getClass());
 			return val;
-			
 		}
-		
-			
-		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
-	
  	}
 	
 	
@@ -775,12 +767,13 @@ public class CdaFhirUtilities {
 					val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
 			}
 			
+			logger.info(" Printing the class name " + dt.getClass());
 			return val;
 			
 		}
 		
 			
-		logger.info(" Printing the class name " + dt.getClass());
+		
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}
