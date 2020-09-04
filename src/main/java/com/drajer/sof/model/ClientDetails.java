@@ -9,10 +9,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
+
+import org.hibernate.annotations.Type;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jline.internal.Log;
+
 
 @Entity
 @Table(name = "client_details")
@@ -38,7 +42,7 @@ public class ClientDetails {
 	@Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
 	private String clientSecret;
 	
-	@Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT", unique = true)
+	@Column(name = "fhir_server_base_url", nullable = false, unique = true)
 	private String fhirServerBaseURL;
 	
 	@Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
@@ -50,7 +54,7 @@ public class ClientDetails {
 	@Column(name = "is_direct", columnDefinition = "boolean default false", nullable = false)
 	private Boolean isDirect = false;
 	
-	@Column(name = "is_xdr", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_xdr",columnDefinition = "boolean default false", nullable = false)
 	private Boolean isXdr = false;
 	
 	@Column(name = "direct_host", nullable = true, columnDefinition = "TEXT") 
@@ -80,7 +84,7 @@ public class ClientDetails {
 	@Column(name = "is_covid19", columnDefinition = "boolean default false", nullable = false)
 	private Boolean isCovid = false;
 	
-	@Column(name = "is_full_ecr", columnDefinition = "boolean default false", nullable = false)
+	@Column(name = "is_full_ecr",columnDefinition = "boolean default false", nullable = false)
 	private Boolean isFullEcr = false;
 
 	public Integer getId() {

@@ -3,12 +3,14 @@ package com.drajer.sof.dao.impl;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
 
 @Repository
+@Transactional
 public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDao{
 
 	public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
