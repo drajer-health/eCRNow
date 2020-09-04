@@ -2,6 +2,8 @@ package com.drajer.cda.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 public class CdaGeneratorConstants {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CdaGeneratorConstants.class);
 
 	// XML Related
     public static String RIGHT_ANGLE_BRACKET = ">";
@@ -792,7 +796,7 @@ public class CdaGeneratorConstants {
                 uriMap.put((String)value,new Pair<>((String)key, name));
             });
         } catch (IOException ex) {
-            ex.printStackTrace();
+        	logger.error("Error while loading OID to URI from properties files", ex);
         }
     }
 

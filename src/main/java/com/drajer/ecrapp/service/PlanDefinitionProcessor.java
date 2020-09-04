@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Duration;
@@ -24,7 +23,6 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
-import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
@@ -32,7 +30,6 @@ import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.hl7.fhir.r4.model.codesystems.BundleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -402,16 +399,15 @@ public class PlanDefinitionProcessor {
 			if (in != null) {
 				bundle = jsonParser.parseResource(Bundle.class, in);
 			}
-			logger.info("Completed Reading ERSD File ");
+			logger.info("Completed Reading ERSD File");
 		} catch (Exception e) {
-			logger.info("Exception Reading ERSD File ");
-			e.printStackTrace();
+			logger.error("Exception Reading ERSD File", e);
 		} finally {
 			if (in != null) {
 				try {
 					in.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("Exception while closing input stream");
 				}
 			}
 		}

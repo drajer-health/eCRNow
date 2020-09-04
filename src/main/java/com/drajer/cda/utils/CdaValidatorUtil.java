@@ -74,7 +74,6 @@ public class CdaValidatorUtil {
 
         } catch (SAXException | IOException e) {
             logger.error("Message: Error validating XML Data " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
         return true;
@@ -103,7 +102,6 @@ public class CdaValidatorUtil {
                 output = aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrData)));
             } catch (Exception e) {
                 logger.error("Unable to read/write execution state: "+e.getMessage() );
-                e.printStackTrace();
             }
 
             if(output != null) {
