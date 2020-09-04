@@ -164,7 +164,7 @@ public class CloseOutEicrAction extends AbstractAction {
 						logger.info(" Creating the Close Out EICR since the job has been scheduled ");
 						
 						// Check Trigger Codes again in case the data has changed.
-						PatientExecutionState newState = recheckTriggerCodes(details, launchType);
+						PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 						
 						if(newState.getMatchTriggerStatus().getTriggerMatchStatus() && 
 						   newState.getMatchTriggerStatus().getMatchedCodes() != null && 

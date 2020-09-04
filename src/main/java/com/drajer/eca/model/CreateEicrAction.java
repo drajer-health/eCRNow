@@ -141,7 +141,7 @@ public class CreateEicrAction extends AbstractAction {
 						logger.info(" Creating the EICR since the job has been scheduled ");
 						
 						// Check Trigger Codes again in case the data has changed.
-						PatientExecutionState newState = recheckTriggerCodes(details, launchType);
+						PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 						
 						if(newState.getMatchTriggerStatus().getTriggerMatchStatus() && 
 						   newState.getMatchTriggerStatus().getMatchedCodes() != null && 

@@ -161,20 +161,6 @@ public abstract class AbstractAction {
 	}
 	
 
-	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
-
-		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
-		for (AbstractAction act : acts) {
-			act.execute(details, launchType);
-			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
-		}
-
-		PatientExecutionState newState = null;
-
-		newState = EcaUtils.getDetailStatus(details);
-
-		return newState;
-	}
 	
 
 }

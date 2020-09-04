@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.CdaEicrGenerator;
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -202,4 +204,20 @@ public class EcaUtils {
 		return state;
 	
 	}
+	
+	public static PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
+
+		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
+		for (AbstractAction act : acts) {
+			act.execute(details, launchType);
+			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
+		}
+
+		PatientExecutionState newState = null;
+
+		newState = EcaUtils.getDetailStatus(details);
+
+		return newState;
+	}
+	
 }
