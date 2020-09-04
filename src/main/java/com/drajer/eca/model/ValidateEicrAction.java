@@ -44,14 +44,12 @@ public class ValidateEicrAction extends AbstractAction {
 				
 				String msg = "Unable to read/write execution state";
 				logger.error(msg);
-				e1.printStackTrace();
 				throw new RuntimeException(msg);
 				
 			} catch (JsonProcessingException e1) {
 				
 				String msg = "Unable to read/write execution state";
 				logger.error(msg);
-				e1.printStackTrace();
 				throw new RuntimeException(msg);
 			}
 
@@ -106,7 +104,6 @@ public class ValidateEicrAction extends AbstractAction {
 					
 				String msg = "Unable to update execution state";
 				logger.error(msg);
-				e.printStackTrace();
 					
 				throw new RuntimeException(msg);
 			}
