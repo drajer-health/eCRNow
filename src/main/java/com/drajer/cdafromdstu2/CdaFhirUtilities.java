@@ -652,6 +652,8 @@ public class CdaFhirUtilities {
 		
 		if(dt != null) {
 			
+			logger.info(" Printing the class name " + dt.getClass());
+			
 			String val = "";
 			if(dt instanceof CodingDt) {
 				CodingDt cd = (CodingDt)dt;
@@ -704,9 +706,6 @@ public class CdaFhirUtilities {
 			return val;
 			
 		}
-		
-			
-		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}
@@ -716,6 +715,8 @@ public class CdaFhirUtilities {
 	public static String getIDataTypeXml(IDatatype dt, String elName, Boolean valFlag) {
 		
 		if(dt != null) {
+			
+			logger.info(" Printing the class name " + dt.getClass());
 			
 			String val = "";
 			if(dt instanceof CodingDt) {
@@ -773,9 +774,6 @@ public class CdaFhirUtilities {
 			return val;
 			
 		}
-		
-			
-		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}

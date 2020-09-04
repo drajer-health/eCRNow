@@ -84,7 +84,6 @@ public class FhirContextInitializer {
 			// logger.info(resourceName + ":::::::::::::::::" +
 			// context.newJsonParser().encodeResourceToString(resource));
 		} catch (Exception e) {
-			// e.printStackTrace();
 			logger.error("Error in getting " + resourceName + " resource by Id: " + resourceId);
 		}
 		return resource;
@@ -177,17 +176,13 @@ public class FhirContextInitializer {
 			outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
 			outStream.writeBytes(data);
 		} catch (IOException e) {
-
-			logger.error(" Unable to write Bundle data to file: " + fileName);
-			e.printStackTrace();
-
+			logger.error(" Unable to write Bundle data to file: " + fileName, e);
 		}finally {
 			if(outStream!=null) {
 				try {
 					outStream.close();
 				} catch (IOException e) {
 					logger.error(" Unable to close Data output stream");
-					e.printStackTrace();
 				}
 			}
 		}
