@@ -584,6 +584,8 @@ public class CdaGeneratorConstants {
     public static String CONFIDENTIALITY_EL_NAME = "confidentialityCode";
     public static String LANGUAGE_CODE_EL_NAME = "languageCode";
     public static String RECORD_TARGET_EL_NAME = "recordTarget";
+    public static String GUARDIAN_EL_NAME = "guardian";
+    public static String GUARDIAN_PERSON_EL_NAME = "guardianPerson";
     public static String PATIENT_ROLE_EL_NAME = "patientRole";
     public static String ADDR_EL_NAME = "addr";
     public static String ST_ADDR_LINE_EL_NAME = "streetAddressLine";
