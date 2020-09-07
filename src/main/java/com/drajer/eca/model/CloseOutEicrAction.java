@@ -54,14 +54,10 @@ public class CloseOutEicrAction extends AbstractAction {
 			} catch (JsonMappingException e1) {
 				String msg = "Unable to read/write execution state";
 				logger.error(msg);
-				e1.printStackTrace();
-				
 				throw new RuntimeException(msg);
 			} catch (JsonProcessingException e1) {
 				String msg = "Unable to read/write execution state";
 				logger.error(msg);
-				e1.printStackTrace();
-				
 				throw new RuntimeException(msg);
 			}
 
@@ -143,8 +139,6 @@ public class CloseOutEicrAction extends AbstractAction {
 									} catch (JsonProcessingException e) { 
 										String msg = "Unable to read/write execution state";
 										logger.error(msg);
-										e.printStackTrace();
-										
 										throw new RuntimeException(msg);
 									}
 								}
@@ -190,8 +184,6 @@ public class CloseOutEicrAction extends AbstractAction {
 								} catch (JsonProcessingException e) { // TODO Auto-generated catch block
 									String msg = "Unable to read/write execution state";
 									logger.error(msg);
-									e.printStackTrace();
-									
 									throw new RuntimeException(msg);
 								}	
 							}
@@ -245,8 +237,6 @@ public class CloseOutEicrAction extends AbstractAction {
 									} catch (JsonProcessingException e) {
 										String msg = "Unable to update execution state";
 										logger.error(msg);
-										e.printStackTrace();
-
 										throw new RuntimeException(msg);
 									}
 								
@@ -283,8 +273,6 @@ public class CloseOutEicrAction extends AbstractAction {
 									} catch (JsonProcessingException e) {
 										String msg = "Unable to update execution state";
 										logger.error(msg);
-										e.printStackTrace();
-
 										throw new RuntimeException(msg);
 									}
 								
@@ -329,8 +317,6 @@ public class CloseOutEicrAction extends AbstractAction {
 
 								String msg = "Unable to update execution state";
 								logger.error(msg);
-								e.printStackTrace();
-
 								throw new RuntimeException(msg);
 							}
 						}
@@ -376,13 +362,11 @@ public class CloseOutEicrAction extends AbstractAction {
 			
 			String msg = "Unable to read/write execution state";
 			logger.error(msg);
-			e1.printStackTrace();
 			throw new RuntimeException(msg);
 			
 		} catch (JsonProcessingException e1) {
 			String msg = "Unable to read/write execution state";
 			logger.error(msg);
-			e1.printStackTrace();
 			
 			throw new RuntimeException(msg);
 		}

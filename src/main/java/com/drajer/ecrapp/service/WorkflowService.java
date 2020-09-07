@@ -107,8 +107,7 @@ public class WorkflowService {
 			try {
 				details.setStatus(mapper.writeValueAsString(oldstate));
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error while handling SOF Launch workflow", e);
 			}
 			
 			logger.info("State = " + details.getStatus());
@@ -141,16 +140,12 @@ public class WorkflowService {
 
 			String msg = "Unable to read/write execution state";
 			logger.error(msg);
-			e1.printStackTrace();
-			
 			throw new RuntimeException(msg);
 			
 		} catch (JsonProcessingException e1) {
 			
 			String msg = "Unable to read/write execution state";
 			logger.error(msg);
-			e1.printStackTrace();
-			
 			throw new RuntimeException(msg);
 		}
 		
@@ -245,7 +240,6 @@ public class WorkflowService {
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				logger.info("Error in Getting Data=====>" + e.getMessage());
-				e.printStackTrace();
 			}
 		}
 	}
