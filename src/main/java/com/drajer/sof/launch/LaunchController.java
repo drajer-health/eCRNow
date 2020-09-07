@@ -1,12 +1,9 @@
 package com.drajer.sof.launch;
 
-import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,6 +70,8 @@ public class LaunchController {
 
 	@Autowired
 	FhirContextInitializer fhirContextInitializer;
+	
+	private SecureRandom random = new SecureRandom();
 
 	@CrossOrigin
 	@RequestMapping("/api/launchDetails/{tokenId}")
@@ -107,8 +106,7 @@ public class LaunchController {
 			Date start = ft.parse("2012-02-19");
 			triggerQueryService.getData(launchDetails, start, new Date());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error while triggering data from EHR", e);
 		}
 
 		return "Success";
@@ -123,8 +121,7 @@ public class LaunchController {
 			Date start = ft.parse("2012-02-19");
 			loadingQueryService.getData(launchDetails, start, new Date());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error while loading data from EHR", e);
 		}
 
 		return "Success";
@@ -212,7 +209,6 @@ public class LaunchController {
 							|| "https".equals(request.getScheme()) && request.getServerPort() == 443 ? ""
 									: ":" + request.getServerPort())
 					+ request.getContextPath();
-			Random random = new Random();
 			Integer state = random.nextInt();
 			logger.info("Random State Value==========>" + state);
 			LaunchDetails launchDetails = new LaunchDetails();

@@ -127,7 +127,6 @@ public class RefreshTokenScheduler {
 			authDetailsService.saveOrUpdate(existingAuthDetails);
 			logger.info("Successfully updated AccessToken value in database");
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error in Updating the AccessToken value into database: " + e.getMessage());
 		}
 
