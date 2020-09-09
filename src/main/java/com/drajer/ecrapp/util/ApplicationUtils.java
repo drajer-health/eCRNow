@@ -363,19 +363,22 @@ public class ApplicationUtils {
 	
 	public static void saveDataToFile(String data, String fileName) {
 		
-		FileOutputStream fos;
+		DataOutputStream outStream = null;
 		try {
 			
-			logger.error(" Writing eICR data to file: " + fileName);
-			fos = new FileOutputStream(fileName);
-			DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
+			logger.info(" Writing eICR data to file: " + fileName);
+			outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
 			outStream.writeBytes(data);
-			outStream.close();
 		} catch (IOException e) {
-			
-			logger.error(" Unable to write EICR to file: " + fileName);
-			e.printStackTrace();
-			
+			logger.error(" Unable to write EICR to file: " + fileName, e);
+		}finally {
+			if(outStream!=null) {
+				try {
+					outStream.close();
+				} catch (IOException e) {
+					logger.error(" Unable to close Data output stream");
+				}
+			}
 		}
 	   
 		

@@ -34,7 +34,10 @@ public class CdaValidatorUtil {
         Schema schema ;
         try {
             logger.info("*** Inside getSchema Method ***");
-            schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(ActionRepo.getInstance().getXsdSchemasLocation()));
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            schema = schemaFactory.newSchema(new File(ActionRepo.getInstance().getXsdSchemasLocation()));
         }catch (SAXException e){
             schema = null;
             logger.error(" **** Error loading XSD file from the location : "+ActionRepo.getInstance().getXsdSchemasLocation() +" Message: "+e.getMessage());
@@ -71,7 +74,6 @@ public class CdaValidatorUtil {
 
         } catch (SAXException | IOException e) {
             logger.error("Message: Error validating XML Data " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
         return true;
@@ -100,7 +102,6 @@ public class CdaValidatorUtil {
                 output = aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrData)));
             } catch (Exception e) {
                 logger.error("Unable to read/write execution state: "+e.getMessage() );
-                e.printStackTrace();
             }
 
             if(output != null) {

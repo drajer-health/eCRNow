@@ -1,9 +1,5 @@
 package com.drajer.sof.service;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -205,8 +201,7 @@ public class TriggerQueryR4Bundle {
 				bundle.addEntry(medAdministrationEntry);
 			}
 		} catch (Exception e) {
-			logger.error("Error in getting the MedicationAdministration Data");
-			e.printStackTrace();
+			logger.error("Error in getting the MedicationAdministration Data", e);
 		}
 
 		// Get ServiceRequest for Patients (Write a method).

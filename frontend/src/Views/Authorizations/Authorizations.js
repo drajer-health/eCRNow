@@ -76,7 +76,9 @@ class Authorizations extends Component {
     }
   }
   authorizeWithServer() {
-    var state = Math.round(Math.random() * 100000000).toString();
+    // var state = Math.round(Math.random() * 100000000).toString();
+    var array = new Uint32Array(1);
+    var state = window.crypto.getRandomValues(array)[0].toString();
     const clientid = this.clientDetails.clientId;
     const redirecturi = window.location.href.split('?')[0];
     const scopes = this.clientDetails.scopes;
@@ -413,7 +415,7 @@ class Authorizations extends Component {
         <Alert
           variant="success"
           show={this.state.isAuthorized}
-          onClose={() => setShow(false)}
+          onClose={() => setShow()}
           dismissible
         >
           Application has been authorized with EHR successfully.

@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.api.IBase;
-import org.hl7.fhir.instance.model.api.IBaseDatatype;
-import org.hl7.fhir.r4.model.Enumerations.FHIRAllTypes;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.LaunchDetails;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.api.IDatatype;
-import ca.uhn.fhir.model.base.composite.BaseCodingDt;
 import ca.uhn.fhir.model.base.composite.BaseQuantityDt;
 import ca.uhn.fhir.model.dstu2.composite.AddressDt;
 import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;
@@ -28,14 +23,13 @@ import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
+import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.model.dstu2.resource.Location;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
-import ca.uhn.fhir.model.dstu2.resource.Encounter.Participant;
 import ca.uhn.fhir.model.dstu2.resource.Patient.Communication;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
@@ -309,7 +303,8 @@ public class CdaFhirUtilities {
 		return telString.toString();
 	}
 	
-	public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
+	
+	/*public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
 		
 		List<Entry> entries = bundle.getEntry();
 		for(Entry ent : entries) {
@@ -329,7 +324,7 @@ public class CdaFhirUtilities {
 				org = getOrganization(entries, en);				
 			}
 		}		
-	}
+	}*/
 	
 	public static Organization getOrganization(List<Entry> entries, Encounter en) {
 				
@@ -611,53 +606,53 @@ public class CdaFhirUtilities {
 	}
 
 	public static String getNameXml(List<HumanNameDt> names) {
-		
+
 		StringBuilder nameString = new StringBuilder(200);
-		
-		if(names != null && names.size() > 0) {
-					
-			for(HumanNameDt name : names) {
 
-				List<StringDt> ns = name.getGiven();
-				
-				for(StringDt n : ns) {
+		if (names != null && names.size() > 0) {
 
-					if(!StringUtils.isEmpty(n.getValue()))
-						nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, 
+			HumanNameDt name = names.stream().findFirst().get();
+
+			List<StringDt> ns = name.getGiven();
+
+			for (StringDt n : ns) {
+
+				if (!StringUtils.isEmpty(n.getValue()))
+					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.FIRST_NAME_EL_NAME,
 							name.getGivenFirstRep().getValue()));
-				}	
-				
-				// If Empty create NF
-				if(StringUtils.isEmpty(nameString)) {
-					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-				}
-				
-				if(name.getFamilyFirstRep() != null &&
-				   !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
-					nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamilyFirstRep().getValue()));
-				}
-				else {
-					nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-				}
-				
-				// Enough names for now.
-				break;
 			}
-		}
-		else {
-			
+
+			// If Empty create NF
+			if (StringUtils.isEmpty(nameString)) {
+				nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+						CdaGeneratorConstants.NF_NI));
+			}
+
+			if (name.getFamilyFirstRep() != null && !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
+				nameString.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME,
+						name.getFamilyFirstRep().getValue()));
+			} else {
+				nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME,
+						CdaGeneratorConstants.NF_NI));
+			}
+		} else {
+
 			logger.info(" Did not find the Name for the patient ");
-			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-			
+			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+					CdaGeneratorConstants.NF_NI));
+			nameString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.LAST_NAME_EL_NAME,
+					CdaGeneratorConstants.NF_NI));
+
 		}
-			
+
 		return nameString.toString();
 	}
 	
 	public static String getStringForIDataType(IDatatype dt) {
 		
 		if(dt != null) {
+			
+			logger.info(" Printing the class name " + dt.getClass());
 			
 			String val = "";
 			if(dt instanceof CodingDt) {
@@ -711,9 +706,6 @@ public class CdaFhirUtilities {
 			return val;
 			
 		}
-		
-			
-		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}
@@ -723,6 +715,8 @@ public class CdaFhirUtilities {
 	public static String getIDataTypeXml(IDatatype dt, String elName, Boolean valFlag) {
 		
 		if(dt != null) {
+			
+			logger.info(" Printing the class name " + dt.getClass());
 			
 			String val = "";
 			if(dt instanceof CodingDt) {
@@ -780,9 +774,6 @@ public class CdaFhirUtilities {
 			return val;
 			
 		}
-		
-			
-		logger.info(" Printing the class name " + dt.getClass());
 		return CdaGeneratorConstants.UNKNOWN_VALUE;
 	
  	}
