@@ -22,7 +22,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -45,77 +44,94 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
+@PrepareForTest({ EcaUtils.class, ApplicationUtils.class, WorkflowService.class })
 public class ReportabilityResponseActionTest {
-	
+
 	private LaunchDetails mockDetails;
 	private PatientExecutionState mockState;
 	private RelatedAction mockRelActn;
-	private MatchTriggerStatus mockTriggerStatus;
-	private Eicr mockEicr;
-	
+
 	private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
-	
+
+	@InjectMocks
+	ReportabilityResponseAction reportabilityResponseAction;
+
 	@Before
 	public void setUp() {
-		ObjectMapper mapper = new ObjectMapper();
-		
+
 		mockDetails = PowerMockito.mock(LaunchDetails.class);
 		mockState = PowerMockito.mock(PatientExecutionState.class);
 		mockRelActn = PowerMockito.mock(RelatedAction.class);
-		mockTriggerStatus = PowerMockito.mock(MatchTriggerStatus.class);
-		mockEicr = PowerMockito.mock(Eicr.class);
-			
+
 		PowerMockito.mockStatic(EcaUtils.class);
 		PowerMockito.mockStatic(ApplicationUtils.class);
 		PowerMockito.mockStatic(WorkflowService.class);
-		
+
 	}
-	
+
 	@Test
 	public void testExecute_RelatedActionNotCompleted() throws Exception {
-		ReportabilityResponseAction reportabilityResponseAction = new ReportabilityResponseAction();
+
 		reportabilityResponseAction.addRelatedAction(mockRelActn);
 		reportabilityResponseAction.setActionId("123");
-		
+
 		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
 		when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
 		when(mockState.hasActionCompleted(any())).thenReturn(false);
-		
+
 		reportabilityResponseAction.execute(mockDetails, launchType);
-		
-		//Validate
-		verify(mockState,times(1)).hasActionCompleted("123");
+
+		// Validate
+		verify(mockState, times(1)).hasActionCompleted("123");
 		verify(mockRelActn, times(0)).getDuration();
-		
+
 	}
-	
+
 	@Test
 	public void testExecute_AllSubmittedEics() throws Exception {
-		ReportabilityResponseAction reportabilityResponseAction = new ReportabilityResponseAction();
+		// ReportabilityResponseAction reportabilityResponseAction = new
+		// ReportabilityResponseAction();
+
 		reportabilityResponseAction.addRelatedAction(mockRelActn);
 		reportabilityResponseAction.setActionId("123");
-		
+
 		Set<Integer> id = new HashSet<Integer>();
 		id.add(1);
-		
+
 		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
 		when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
 		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 		when(mockState.getEicrsForRRCheck()).thenReturn(id);
 		when(mockState.hasActionCompleted(any())).thenReturn(true);
-		
+
 		reportabilityResponseAction.execute(mockDetails, launchType);
-		
-		//Validate
-		verify(mockState,times(1)).hasActionCompleted("123");
+
+		// Validate
+		verify(mockState, times(1)).hasActionCompleted("123");
 		verify(mockRelActn, times(0)).getDuration();
-		
+
 		assertNotNull(mockState.getEicrsForRRCheck());
-		
-		
+
 	}
-	
+
+	@Test
+	public void testExecute_whenRelatedActionIsNotPresent() {
+
+		reportabilityResponseAction.setActionId("123");
+
+		Set<Integer> ids = new HashSet<Integer>();
+		ids.add(1);
+
+		when(mockRelActn.getRelatedAction()).thenReturn(null);
+		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+		when(mockState.getEicrsForRRCheck()).thenReturn(ids);
+
+		reportabilityResponseAction.execute(mockDetails, launchType);
+
+		verify(mockRelActn, times(0)).getDuration();
+
+		assertNotNull(mockState.getEicrsForRRCheck());
+	}
 
 }
