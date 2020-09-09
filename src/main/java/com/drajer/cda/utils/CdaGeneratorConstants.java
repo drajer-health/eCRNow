@@ -828,6 +828,9 @@ public class CdaGeneratorConstants {
 
 
     public static Pair<String, String> getCodeSystemFromUrl(String url) {
+    	
+    	logger.info(" Url passed = " + url);
+    	
         if(StringUtils.isEmpty(url)) {
         	return new Pair<String, String>("", "");
         }else if(uriMap.containsKey(url)){

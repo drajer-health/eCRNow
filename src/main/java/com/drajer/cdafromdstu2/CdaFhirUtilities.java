@@ -343,7 +343,9 @@ public class CdaFhirUtilities {
 			for(Contact contact : contactList) {
 				if(contact.getRelationship()!= null && contact.getRelationship().size()>0) {
 					for (CodeableConceptDt code : contact.getRelationship()) {
-						if(code.getText().equalsIgnoreCase("guardian")) {
+						if(code.getText() != null && 
+								(code.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME) || 
+										code.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)) ) {
 							return contact;
 						}
 					}

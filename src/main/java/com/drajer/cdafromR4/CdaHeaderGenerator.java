@@ -13,6 +13,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
@@ -477,6 +478,32 @@ public class CdaHeaderGenerator {
 		}
 		else {
 			patientDetails.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+		}
+		
+		//Adding Guardian 
+		if(p.getContact() != null && p.getContact().size()>0) {
+			
+			ContactComponent guardianContact = CdaFhirUtilities.getGuardianContact(p.getContact());
+			
+			patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+			
+			// Add Telecom
+			patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));
+			patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
+			
+			patientDetails
+			.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+			patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+			
+			List<HumanName> names = new ArrayList<HumanName>();
+			names.add(guardianContact.getName());
+			patientDetails.append(CdaFhirUtilities.getNameXml(names));
+			
+			patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+			patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+
+			patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));		
+			
 		}
 		
 		patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));		
