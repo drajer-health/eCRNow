@@ -66,11 +66,15 @@ public class CdaReasonForVisitGenerator {
         String text = CdaGeneratorConstants.UNKNOWN_REASON_FOR_VISIT;
         	
         if(encounter != null &&
-        		encounter.getReasonCodeFirstRep() != null && 
-        		encounter.getReasonCodeFirstRep().getCodingFirstRep() != null && 
-        	    !StringUtils.isEmpty(encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
+        	encounter.getReasonCodeFirstRep() != null ) {  
         	
-        	text = encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay();
+        	if(!StringUtils.isEmpty(encounter.getReasonCodeFirstRep().getText())) {
+        		text = encounter.getReasonCodeFirstRep().getText();
+        	}
+        	else if (encounter.getReasonCodeFirstRep().getCodingFirstRep() != null &&
+        			!StringUtils.isEmpty(encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
+        		text = encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay();
+        	}
         }
         
         

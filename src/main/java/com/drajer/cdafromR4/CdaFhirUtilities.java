@@ -555,7 +555,7 @@ public class CdaFhirUtilities {
 			}
 			
 			// At least one code is there so...close the tag
-			sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
+			sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 		}
 		else {
 			sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));

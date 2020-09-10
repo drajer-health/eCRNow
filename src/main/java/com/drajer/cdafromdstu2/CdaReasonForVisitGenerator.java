@@ -67,11 +67,15 @@ private static final Logger logger = LoggerFactory.getLogger(CdaReasonForVisitGe
         String text = CdaGeneratorConstants.UNKNOWN_REASON_FOR_VISIT;
         	
         if(encounter != null && 
-        		encounter.getReasonFirstRep() != null && 
-        		encounter.getReasonFirstRep().getCodingFirstRep() != null && 
-        	    !StringUtils.isEmpty(encounter.getReasonFirstRep().getCodingFirstRep().getDisplay())) {
+        	encounter.getReasonFirstRep() != null ) { 
         	
-        	text = encounter.getReasonFirstRep().getCodingFirstRep().getDisplay();
+        	if(!StringUtils.isEmpty(encounter.getReasonFirstRep().getText())) {
+        		text = encounter.getReasonFirstRep().getText();
+        	}
+        	else if(encounter.getReasonFirstRep().getCodingFirstRep() != null &&
+        			!StringUtils.isEmpty(encounter.getReasonFirstRep().getCodingFirstRep().getDisplay())) {
+        		text = encounter.getReasonFirstRep().getCodingFirstRep().getDisplay();
+        	}      	
         }
         
         Map<String, String> bodyvals = new HashMap<String, String>();

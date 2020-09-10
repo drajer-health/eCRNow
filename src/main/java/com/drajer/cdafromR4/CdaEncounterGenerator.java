@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +100,19 @@ public class CdaEncounterGenerator {
             sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID, CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID_EXT));
             
             sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), encounter.getId()));
+            
+            //Add Identifiers
+			List<Identifier> ids = encounter.getIdentifier();
+			if(ids != null) {
+				
+				for(Identifier id : ids) {
+					
+					if(id.getSystem() != null && id.getValue() != null) {
+						
+						sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getRootOid(id.getSystem(),  details.getAssigningAuthorityId()), id.getValue()));
+					}
+				}
+			}
             
             List<CodeableConcept> cds = encounter.getType();
             sb.append(CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));

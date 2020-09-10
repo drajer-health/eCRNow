@@ -336,6 +336,20 @@ public class CdaHeaderGenerator {
 		
 		if(en != null) {
 			sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId().getIdPart()));
+			
+			// Add all the encounter identifiers to the Ids
+			List<IdentifierDt> ids = en.getIdentifier();
+			if(ids != null) {
+				
+				for(IdentifierDt id : ids) {
+					
+					if (id.getSystem() != null && id.getValue() != null) {
+
+						sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()), id.getValue()));
+					}					
+				}				
+			}
+			
 			sb.append(CdaFhirUtilities.getCodeableConceptXml(en.getType(), CdaGeneratorConstants.CODE_EL_NAME, false));			
 			sb.append(CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
 		}

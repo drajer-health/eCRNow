@@ -347,6 +347,20 @@ public class CdaHeaderGenerator {
 		
 		if(en != null) {
 			sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId()));
+			
+			//Add Identifiers
+			List<Identifier> ids = en.getIdentifier();
+			if(ids != null) {
+				
+				for(Identifier id : ids) {
+					
+					if(id.getSystem() != null && id.getValue() != null) {
+						
+						sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getRootOid(id.getSystem(),  details.getAssigningAuthorityId()), id.getValue()));
+					}
+				}
+			}
+			
 			sb.append(CdaFhirUtilities.getCodeableConceptXml(en.getType(), CdaGeneratorConstants.CODE_EL_NAME, false));			
 			sb.append(CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
 		}
