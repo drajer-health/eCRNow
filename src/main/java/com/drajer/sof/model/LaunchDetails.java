@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -20,7 +21,8 @@ import org.hibernate.annotations.TypeDefs;
 import com.drajer.ecrapp.config.JSONObjectUserType;
 
 @Entity
-@Table(name = "launch_details")
+@Table(name = "launch_details",
+		uniqueConstraints=@UniqueConstraint(columnNames={"ehr_server_url", "launch_patient_id", "encounter_id" }))
 @DynamicUpdate
 //@TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
 public class LaunchDetails {
@@ -31,7 +33,7 @@ public class LaunchDetails {
 
 	@Column(name = "client_id", nullable = true)
 	private String clientId;
-	
+
 	@Column(name = "client_secret", nullable = true)
 	private String clientSecret;
 
@@ -59,11 +61,11 @@ public class LaunchDetails {
 	@Column(name = "last_updated_ts", nullable = false)
 	@CreationTimestamp
 	private Date lastUpdated;
-	
+
 	@Column(name = "start_date", nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
-	
+
 	@Column(name = "end_date", nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
@@ -91,7 +93,7 @@ public class LaunchDetails {
 
 	@Column(name = "ver_number", nullable = true) // Status can be active or completed.
 	private String versionNumber;
-	
+
 	@Column(name = "direct_host", nullable = true) // Status can be active or completed.
 	private String directHost;
 
@@ -100,30 +102,30 @@ public class LaunchDetails {
 
 	@Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
 	private String directPwd;
-	
+
 	@Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
 	private String directRecipient;
-	
+
 	@Column(name = "is_covid19", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isCovid = true;
-	
-	@Column(name="launch_id",nullable = true)
+
+	@Column(name = "launch_id", nullable = true)
 	private String launchId;
-	
-	@Column(name="launch_state",nullable = true)
+
+	@Column(name = "launch_state", nullable = true)
 	private int launchState;
-	
-	@Column(name="redirect_uri",nullable = true)
+
+	@Column(name = "redirect_uri", nullable = true)
 	private String redirectURI;
-	
-	@Column(name="auth_code",nullable = true)
+
+	@Column(name = "auth_code", nullable = true)
 	private String authorizationCode;
-	
+
 	@Column(name = "is_system_launch", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isSystem = false;
-	
+
 	public Boolean getIsCovid() {
 		return isCovid;
 	}
