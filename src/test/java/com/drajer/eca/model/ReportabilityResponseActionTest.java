@@ -73,6 +73,7 @@ public class ReportabilityResponseActionTest {
 	public void testExecute_RelatedActionNotCompleted() throws Exception {
 
 		reportabilityResponseAction.addRelatedAction(mockRelActn);
+		
 		reportabilityResponseAction.setActionId("123");
 
 		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
@@ -90,8 +91,6 @@ public class ReportabilityResponseActionTest {
 
 	@Test
 	public void testExecute_AllSubmittedEics() throws Exception {
-		// ReportabilityResponseAction reportabilityResponseAction = new
-		// ReportabilityResponseAction();
 
 		reportabilityResponseAction.addRelatedAction(mockRelActn);
 		reportabilityResponseAction.setActionId("123");

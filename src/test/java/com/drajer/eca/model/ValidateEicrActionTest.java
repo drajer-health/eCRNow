@@ -50,20 +50,18 @@ public class ValidateEicrActionTest {
 	private LaunchDetails mockDetails;
 	private PatientExecutionState mockState;
 	private RelatedAction mockRelActn;
-	private MatchTriggerStatus mockTriggerStatus;
-	private Eicr mockEicr;
 
 	private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
 
+	@InjectMocks
+	ValidateEicrAction validateEicrAction;
+
 	@Before
 	public void setUp() {
-		ObjectMapper mapper = new ObjectMapper();
 
 		mockDetails = PowerMockito.mock(LaunchDetails.class);
 		mockState = PowerMockito.mock(PatientExecutionState.class);
 		mockRelActn = PowerMockito.mock(RelatedAction.class);
-		mockTriggerStatus = PowerMockito.mock(MatchTriggerStatus.class);
-		mockEicr = PowerMockito.mock(Eicr.class);
 
 		PowerMockito.mockStatic(EcaUtils.class);
 		PowerMockito.mockStatic(ApplicationUtils.class);
@@ -74,13 +72,9 @@ public class ValidateEicrActionTest {
 	@Test
 	public void testExecute_RelatedActionNotCompleted() throws Exception {
 
-		ValidateEicrAction validateEicrAction = new ValidateEicrAction();
 		validateEicrAction.addRelatedAction(mockRelActn);
-		validateEicrAction.setActionId("123");
+		setUpMockData();
 
-		Set<ValidateEicrStatus> validateEicrStatus = new HashSet<ValidateEicrStatus>();
-		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
-		when(mockState.getValidateEicrStatus()).thenReturn(validateEicrStatus);
 		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
 		when(mockRelActn.getRelatedAction()).thenReturn(validateEicrAction);
 		when(mockState.hasActionCompleted(any())).thenReturn(false);
@@ -97,14 +91,9 @@ public class ValidateEicrActionTest {
 	@Test
 	public void testExecute_RelatedActionCompleted() {
 
-		ValidateEicrAction validateEicrAction = new ValidateEicrAction();
 		validateEicrAction.addRelatedAction(mockRelActn);
-		validateEicrAction.setActionId("123");
+		setUpMockData();
 
-		Set<ValidateEicrStatus> validateEicrStatus = new HashSet<ValidateEicrStatus>();
-
-		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
-		when(mockState.getValidateEicrStatus()).thenReturn(validateEicrStatus);
 		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
 		when(mockRelActn.getRelatedAction()).thenReturn(validateEicrAction);
 		when(mockState.hasActionCompleted(any())).thenReturn(true);
@@ -118,4 +107,26 @@ public class ValidateEicrActionTest {
 
 	}
 
+	@Test
+	public void testExecute_RelatedActionNotPresent() {
+
+		setUpMockData();
+		when(mockRelActn.getRelatedAction()).thenReturn(null);
+
+		// Test
+		validateEicrAction.execute(mockDetails, launchType);
+
+		// validate
+		assertNotNull(mockState.getEicrIdForCompletedActions("123"));
+		assertNotNull(mockState.getEicrsReadyForValidation());
+	}
+
+	public void setUpMockData() {
+
+		validateEicrAction.setActionId("123");
+		Set<ValidateEicrStatus> validateEicrStatus = new HashSet<ValidateEicrStatus>();
+		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+		when(mockState.getValidateEicrStatus()).thenReturn(validateEicrStatus);
+
+	}
 }

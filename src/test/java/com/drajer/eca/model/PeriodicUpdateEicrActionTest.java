@@ -131,6 +131,8 @@ public class PeriodicUpdateEicrActionTest {
 
 	@Test
 	public void testExecute_NoDurationJobNotStarted() throws Exception {
+		
+		try {
 		EventTypes.JobStatus periodicUpdateJobStatus = JobStatus.NOT_STARTED;
 		when(mockState.getPeriodicUpdateJobStatus()).thenReturn(periodicUpdateJobStatus);
 		when(mockState.hasActionCompleted(any())).thenReturn(true);
@@ -149,6 +151,12 @@ public class PeriodicUpdateEicrActionTest {
 		WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR));
 
 		verify(mockState, times(1)).hasActionCompleted("123");
+		
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			fail("This exception is not expected, fix the test method");
+		}
 
 	}
 
