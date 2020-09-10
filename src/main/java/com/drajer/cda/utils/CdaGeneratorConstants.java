@@ -2,6 +2,8 @@ package com.drajer.cda.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 public class CdaGeneratorConstants {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CdaGeneratorConstants.class);
 
 	// XML Related
     public static String RIGHT_ANGLE_BRACKET = ">";
@@ -778,10 +782,8 @@ public class CdaGeneratorConstants {
     public static String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
 
     //OID to URI Mapping
-    private static HashMap<String,String> oidMap = new HashMap<String,String>();
-    private static HashMap<String,String> uriMap = new HashMap<String,String>();
-    
-    
+    private static HashMap<String,Pair<String,String>> oidMap = new HashMap<>();
+    private static HashMap<String,Pair<String,String>> uriMap = new HashMap<>();
     //Static block to load OID to URI mapping from property file
     static
     {
@@ -789,61 +791,48 @@ public class CdaGeneratorConstants {
             Properties prop = new Properties();
             prop.load(input);
             prop.forEach((key, value) -> {
-                oidMap.put((String)key, (String)value);
-                uriMap.put((String)value,(String)key);
+                String name = StringUtils.substringAfterLast((String)value, "/");
+                oidMap.put((String)key, new Pair<>((String)value, name));
+                uriMap.put((String)value,new Pair<>((String)key, name));
             });
         } catch (IOException ex) {
-            ex.printStackTrace();
+        	logger.error("Error while loading OID to URI from properties files", ex);
         }
     }
 
     /**
      * @param oid
-     * @return URI
+     * @return URI|Name
      */
-    public static String getURI(String oid){
-        return oidMap.get(oid);
+    public static Pair getURI(String oid){
+        if(oidMap.containsKey(oid)){
+            return oidMap.get(oid);
+        }else {
+            return new Pair<String, String>("", "");
+        }
     }
 
     /**
      * @param uri
-     * @return OID
+     * @return OID|Name
      */
-    public static String getOID(String uri){
-        return uriMap.get(uri);
+    public static Pair<String,String> getOID(String uri){
+        if(uriMap.containsKey(uri)){
+            return uriMap.get(uri);
+        }else {
+            return new Pair<String, String>("", "");
+        }
     }
 
 
     public static Pair<String, String> getCodeSystemFromUrl(String url) {
-    	
         if(StringUtils.isEmpty(url)) {
         	return new Pair<String, String>("", "");
+        }else if(uriMap.containsKey(url)){
+            return uriMap.get(url);
+        }else {
+            return new Pair<String, String>("", "");
         }
-        else if(url.contentEquals(CdaGeneratorConstants.FHIR_SNOMED_URL)) {   		
-    		return new Pair<String,String>(CdaGeneratorConstants.SNOMED_CODESYSTEM_OID, CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME);  		
-    	}
-    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_CPT_URL)) {
-    		return new Pair<String,String>(CdaGeneratorConstants.CPT_CODESYSTEM_OID, CdaGeneratorConstants.CPT_CODESYSTEM_NAME);  
-    	}
-    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_ICD10_CM_URL)) {
-    		return new Pair<String,String>(CdaGeneratorConstants.ICD10_CM_CODESYSTEM_OID, CdaGeneratorConstants.ICD10_CM_CODESYSTEM_NAME);  
-    	}
-    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_ICD9_CM_URL)) {
-    		return new Pair<String,String>(CdaGeneratorConstants.ICD9_CM_CODESYSTEM_OID, CdaGeneratorConstants.ICD9_CM_CODESYSTEM_NAME);  
-    	}
-    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_LOINC_URL)) {
-    		return new Pair<String,String>(CdaGeneratorConstants.LOINC_CODESYSTEM_OID, CdaGeneratorConstants.LOINC_CODESYSTEM_NAME);  
-    	}
-    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_SERVICE_DELIVERY_TYPE_URL)) {
-    		return new Pair<String,String>(CdaGeneratorConstants.SERVICE_DELIVERY_LOCATION_CODESYSTEM, CdaGeneratorConstants.SERVICE_DELIVERY_LOCATION_CODESYSTEM_NAME);
-    	}
-    	else if(url.contentEquals(CdaGeneratorConstants.FHIR_CVX_URL)) {
-    		return new Pair<String,String>(CdaGeneratorConstants.CVX_CODESYSTEM_OID, CdaGeneratorConstants.CVX_CODESYSTEM_NAME);
-    	}
-    	else {
-        	return new Pair<String, String>("", "");
-    	}
-    	  	
     }
     
     public static String getCodeForTelecomUse(String val) {

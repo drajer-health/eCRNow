@@ -1,13 +1,22 @@
 package com.drajer.eca.model;
 
-
+import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
+import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.sof.model.Dstu2FhirData;
+import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 
 @Service

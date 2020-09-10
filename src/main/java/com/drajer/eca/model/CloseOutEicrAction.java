@@ -73,7 +73,7 @@ public class CloseOutEicrAction extends AbstractAction {
 								relatedActsDone = false;
 							}
 							else {
-								logger.info(" Related Action that has been completed : {}" , actionId);
+								logger.info(" Related Action that has been completed : " + actionId);
 
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -108,8 +108,10 @@ public class CloseOutEicrAction extends AbstractAction {
 										return;
 									} catch (JsonProcessingException e) { 
 										String msg = "Unable to read/write execution state";
-										logger.error(msg,e);	
-										throw new RuntimeException(msg,e);
+										logger.error(msg);
+										e.printStackTrace();
+										
+										throw new RuntimeException(msg);
 									}
 								}
 								else {
@@ -149,7 +151,6 @@ public class CloseOutEicrAction extends AbstractAction {
 								EcaUtils.updateDetailStatus(details, state);
 								
 								logger.info(" **** END Executing Close Out Eicr Action **** ");
-								
 								return;
 									
 							}

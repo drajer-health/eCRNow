@@ -9,12 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uhn.fhir.model.dstu2.composite.AddressDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
-import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
-
 public class CdaGeneratorUtils {
 	
 	public static final Logger logger = LoggerFactory.getLogger(CdaGeneratorUtils.class);
@@ -353,6 +347,7 @@ public class CdaGeneratorUtils {
 
 		return s;
 	}
+	
 
 	public static String getCDADocHeaderTemplateXML()
 	{

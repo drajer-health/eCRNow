@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -221,13 +222,11 @@ public class CdaResultGenerator {
 			
 			String msg = "Unable to read/write execution state";
 			logger.error(msg);
-			e1.printStackTrace();
 			throw new RuntimeException(msg);
 			
 		} catch (JsonProcessingException e1) {
 			String msg = "Unable to read/write execution state";
 			logger.error(msg);
-			e1.printStackTrace();
 			
 			throw new RuntimeException(msg);
 		}
@@ -263,20 +262,22 @@ public class CdaResultGenerator {
 				
 				Set<String> matchedCodes = mtc.getMatchedCodes();
 
-				for(String code : matchedCodes) {
+				if(matchedCodes!=null && matchedCodes.size()>0) {
 
 					// Split the system and code.
-					String[] parts = code.split("\\|");
+					matchedCodes.stream().filter( Objects::nonNull ).findFirst().ifPresent(matchCode -> {
+						
+						String[] parts = matchCode.split("\\|");
 
-					Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+						Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
-					// For Connectathon, until we get the right test data finish testing.
-					String vs = "2.16.840.1.114222.4.11.7508";
-					String vsVersion = "19/05/2016";
-					lrEntry.append(CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+						// For Connectathon, until we get the right test data finish testing.
+						String vs = "2.16.840.1.114222.4.11.7508";
+						String vsVersion = "19/05/2016";
+						lrEntry.append(CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
 
-					// Adding one is sufficient and only one is possible according to Schema.
-					break;
+						// Adding one is sufficient and only one is possible according to Schema.
+					});
 
 				}
 

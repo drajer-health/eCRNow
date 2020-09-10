@@ -42,9 +42,11 @@ public class ClientDetailsController {
 				.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
 		;
 		if (checkClientDetails == null) {
+			logger.info("Saving the Client Details");
 			clientDetailsService.saveOrUpdate(clientDetails);
 			return new ResponseEntity<>(clientDetails, HttpStatus.OK);
 		} else {
+			logger.error("FHIR Server URL is already registered");
 			JSONObject responseObject = new JSONObject();
 			responseObject.put("status", "error");
 			responseObject.put("message", "URL is already registered");
@@ -59,9 +61,11 @@ public class ClientDetailsController {
 				.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
 		if (checkClientDetails == null
 				|| (checkClientDetails != null && checkClientDetails.getId().equals(clientDetails.getId()))) {
+			logger.info("Saving the Client Details");
 			clientDetailsService.saveOrUpdate(clientDetails);
 			return new ResponseEntity<>(clientDetails, HttpStatus.OK);
 		} else {
+			logger.error("FHIR Server URL is already registered");
 			JSONObject responseObject = new JSONObject();
 			responseObject.put("status", "error");
 			responseObject.put("message", "URL is already registered");
