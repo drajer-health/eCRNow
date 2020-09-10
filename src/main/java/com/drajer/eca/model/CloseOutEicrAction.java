@@ -122,11 +122,11 @@ public class CloseOutEicrAction extends AbstractAction {
 												// TBD : Setup job using TS Timing after testing so that we can test faster.
 												// For now setup a default job with 10 seconds.
 													
-													WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR);
+													WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
 											}
 										}
 										else {
-											WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CLOSE_OUT_EICR);
+											WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
 										}
 										
 										state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
@@ -175,7 +175,7 @@ public class CloseOutEicrAction extends AbstractAction {
 								// For now setup a default job with 10 seconds.
 								try {
 									
-									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR);
+									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
 									state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 									details.setStatus(mapper.writeValueAsString(state));
 									

@@ -121,7 +121,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 								
 									try {
 										
-										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.PERIODIC_UPDATE_EICR);
+										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());
 										state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 										
 										state.getPeriodicUpdateStatus().add(status);
@@ -174,7 +174,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 								// For now setup a default job with 10 seconds.
 								try {
 									
-									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);									
+									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());									
 									state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 									
 									state.getPeriodicUpdateStatus().add(status);
@@ -328,7 +328,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									// For now setup a default job with 10 seconds.
 									try {
 										
-										WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);									
+										WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());									
 										state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 										
 										state.getPeriodicUpdateStatus().add(status);

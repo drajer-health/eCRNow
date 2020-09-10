@@ -244,9 +244,9 @@ public class WorkflowService {
 		}
 	}
 
-	public static void scheduleJob(Integer launchDetailsId, TimingSchedule ts, EcrActionTypes actionType) {
+	public static void scheduleJob(Integer launchDetailsId, TimingSchedule ts, EcrActionTypes actionType, Date timeRef) {
 		
-		Instant t = ApplicationUtils.convertTimingScheduleToInstant(ts);
+		Instant t = ApplicationUtils.convertTimingScheduleToInstant(ts, timeRef);
 		
 		ActionRepo.getInstance().getTaskScheduler().schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 		
@@ -254,10 +254,10 @@ public class WorkflowService {
 		
 	}
 	
-	public static void scheduleJob(Integer launchDetailsId, Duration d, EcrActionTypes actionType) {
+	public static void scheduleJob(Integer launchDetailsId, Duration d, EcrActionTypes actionType, Date timeRef) {
 		
 		
-		Instant t = ApplicationUtils.convertDurationToInstant(d);
+		Instant t = ApplicationUtils.convertDurationToInstant(d, timeRef);
 		
 		ActionRepo.getInstance().getTaskScheduler().schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 		

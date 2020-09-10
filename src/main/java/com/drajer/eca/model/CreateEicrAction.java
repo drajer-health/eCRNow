@@ -121,7 +121,7 @@ public class CreateEicrAction extends AbstractAction {
 								
 									try {
 										
-										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR);
+										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR, details.getStartDate());
 										state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 										details.setStatus(mapper.writeValueAsString(state));
 										
@@ -171,7 +171,7 @@ public class CreateEicrAction extends AbstractAction {
 								// For now setup a default job with 10 seconds.
 								try {
 									
-									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR);
+									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate());
 									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 									details.setStatus(mapper.writeValueAsString(state));
 									
