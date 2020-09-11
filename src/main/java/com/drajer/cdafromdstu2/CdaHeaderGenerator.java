@@ -23,6 +23,7 @@ import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.model.dstu2.resource.Location;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Patient.Contact;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
@@ -335,6 +336,20 @@ public class CdaHeaderGenerator {
 		
 		if(en != null) {
 			sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId().getIdPart()));
+			
+			// Add all the encounter identifiers to the Ids
+			List<IdentifierDt> ids = en.getIdentifier();
+			if(ids != null) {
+				
+				for(IdentifierDt id : ids) {
+					
+					if (id.getSystem() != null && id.getValue() != null) {
+
+						sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()), id.getValue()));
+					}					
+				}				
+			}
+			
 			sb.append(CdaFhirUtilities.getCodeableConceptXml(en.getType(), CdaGeneratorConstants.CODE_EL_NAME, false));			
 			sb.append(CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
 		}
@@ -467,7 +482,36 @@ public class CdaHeaderGenerator {
 		else {
 			patientDetails.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
 		}
+				
+	    //Adding Guardian details for patient
+		if(p.getContact()!=null && p.getContact().size()>0) {
+			
+			// Add Guardian element
+			Contact guardianContact = CdaFhirUtilities.getGuardianContact(p.getContact());
+			
+			if(guardianContact != null ) {
+							
+				patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+				
+				//Add Telecom
+				patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));
+	
+				patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
+				
+				// Add Name
+				patientDetails
+						.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+				patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+				patientDetails.append(CdaFhirUtilities.getNameXml(guardianContact.getName()));
+				patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+				patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+	
+				patientDetails.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+			
+			}
+		}
 		
+		// Add language communication
 		patientDetails.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));		
 		CodingDt language = CdaFhirUtilities.getLanguage(p.getCommunication());
 		

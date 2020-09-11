@@ -289,12 +289,14 @@ public class CdaProblemGenerator {
 
 					// Split the system and code.
 					matchedCodes.stream().filter( Objects::nonNull ).findFirst().ifPresent(matchCode -> {
+						
+						logger.info(" Starting to add trigger code that was matched " + matchCode);
 					
 						String[] parts = matchCode.split("\\|");
 
 						Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
-						// For Connectathon, until we get the right test data finish testing.
+						// Add the right value set and version number.
 						String vs = "2.16.840.1.114222.4.11.7508";
 						String vsVersion = "19/05/2016";
 						sb.append(CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));

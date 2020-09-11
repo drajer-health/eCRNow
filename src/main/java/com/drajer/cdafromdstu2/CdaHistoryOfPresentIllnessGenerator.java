@@ -74,8 +74,12 @@ public class CdaHistoryOfPresentIllnessGenerator {
 	        	String probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
             	
             	if(prob.getCode() != null && 
-            	   prob.getCode().getCodingFirstRep() != null && 
-            	   !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
+            		!StringUtils.isEmpty(prob.getCode().getText())) { 
+            		
+            		probDisplayName = prob.getCode().getText();
+            	}
+            	else if( prob.getCode().getCodingFirstRep() != null && 
+            			 !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
             		
             		probDisplayName =  prob.getCode().getCodingFirstRep().getDisplay();
             		

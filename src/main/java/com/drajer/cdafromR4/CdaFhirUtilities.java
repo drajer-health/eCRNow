@@ -21,6 +21,8 @@ import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -75,6 +77,30 @@ public class CdaFhirUtilities {
 		}
 		
 		logger.info(" Did not find the Identifier for the patient for type " + type);
+		return null;
+	}
+	
+	public static Patient.ContactComponent getGuardianContact(List<ContactComponent> ccs) {
+		
+		if(ccs != null && ccs.size() > 0) {
+			
+			for(ContactComponent cc: ccs) {
+				
+				if(cc.getRelationship() != null && cc.getRelationship().size() > 0) {
+					
+					for(CodeableConcept cd : cc.getRelationship()) {
+						
+						if(cd.getText() != null && 
+								(cd.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME) || 
+								 cd.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)) ) {
+							
+							return cc;
+						}
+					}
+				}
+			}
+		}
+		
 		return null;
 	}
 	
@@ -304,6 +330,38 @@ public class CdaFhirUtilities {
 	}
 	
 	
+	public static String getEmailXml(List<ContactPoint> tels) {
+		
+		StringBuilder telString = new StringBuilder(200);
+		
+		if(tels != null && tels.size() > 0) {
+					
+			for(ContactPoint tel : tels) {
+
+				if(tel.getSystem() != null && 
+				   tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL && 
+				   !StringUtils.isEmpty(tel.getValue())) {
+					
+					logger.info(" Found Email " + tel.getValue());
+					telString.append(CdaGeneratorUtils.getXmlForTelecom(CdaGeneratorConstants.TEL_EL_NAME, 
+						tel.getValue(), CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode())));
+					
+					
+					break;
+					
+				}
+			}
+		}
+		else {
+			
+			logger.info(" Did not find the Email ");
+			telString.append(CdaGeneratorUtils.getXmlForNFText(CdaGeneratorConstants.TEL_EL_NAME, CdaGeneratorConstants.NF_NI));
+		}
+		
+		
+		return telString.toString();
+	}
+	
 	/*public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
 		
 		List<BundleEntryComponent> entries = bundle.getEntry();
@@ -497,7 +555,7 @@ public class CdaFhirUtilities {
 			}
 			
 			// At least one code is there so...close the tag
-			sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
+			sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 		}
 		else {
 			sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));

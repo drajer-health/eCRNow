@@ -130,8 +130,7 @@ public class CdaResultGenerator {
                 lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
                 
                 // Fix the Code to be the same as the result code..
-                lrEntry.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.CODE_EL_NAME, 
-                        CdaGeneratorConstants.NF_UNK));
+                lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
                 
                 lrEntry.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, 
                         CdaGeneratorConstants.COMPLETED_STATUS));

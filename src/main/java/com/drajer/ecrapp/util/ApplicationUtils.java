@@ -284,7 +284,7 @@ public class ApplicationUtils {
 		return retVal;
 	}
 	
-	public static Instant convertTimingScheduleToInstant(TimingSchedule ts) {
+	public static Instant convertTimingScheduleToInstant(TimingSchedule ts, Date timeRef) {
 		
 		Instant t = null;
 		
@@ -311,13 +311,13 @@ public class ApplicationUtils {
 				d.setUnit("s");
 			}
 		
-			t = convertDurationToInstant(d);
+			t = convertDurationToInstant(d, timeRef);
 	
 		return t;
 	}
 		
 	
-	public static Instant convertDurationToInstant(Duration d) {
+	public static Instant convertDurationToInstant(Duration d, Date timeRef) {
 		
 		Instant t = null;
 		

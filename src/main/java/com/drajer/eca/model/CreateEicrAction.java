@@ -86,15 +86,13 @@ public class CreateEicrAction extends AbstractAction {
 									// Duration is not null, meaning that the create action has to be delayed by the duration.
 									logger.info(" Schedule the job for Create EICR based on the duration.");
 								
-									WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR);
-									
+									WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR, details.getStartDate());
 									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 									EcaUtils.updateDetailStatus(details, state);
 									
 									// No need to continue as the job will take over execution.									
 									logger.info(" **** END Executing Create Eicr Action **** ");
 									return;
-									
 								}
 								else {
 									
@@ -130,16 +128,13 @@ public class CreateEicrAction extends AbstractAction {
 
 								// TBD : Setup job using TS Timing after testing so that we can test faster.
 								// For now setup a default job with 10 seconds.
-								WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR);
-								
+								WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate());
 								state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
 								EcaUtils.updateDetailStatus(details, state);
 								// No need to continue as the job will take over execution.
 								logger.info(" **** End Executing Create Eicr Action **** ");
 								return;
-																
 							}
-
 						}
 						
 						logger.info(" No job to schedule since there is no timing data ");

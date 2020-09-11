@@ -75,9 +75,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									
 									// Duration is not null, meaning that the create action has to be delayed by the duration.
 									logger.info(" Schedule the job for Priodic Update EICR based on the duration.");
-								
-									WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.PERIODIC_UPDATE_EICR);
-									
+
+									WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());
 									state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);	
 									state.getPeriodicUpdateStatus().add(status);
 									
@@ -85,7 +84,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 									// No need to continue as the job will take over execution.
 									logger.info(" **** End Executing Periodic Update Eicr Action **** ");
 									return;
-									
 								}
 								else {
 									
@@ -115,7 +113,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 						if (getTimingData() != null && getTimingData().size() > 0) {
 							
 							logger.info(" Timing Data is present , so create a job based on timing data.");
-							
 							scheduleJob(details, state, status);
 							return;
 						}
@@ -171,7 +168,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 							if (getTimingData() != null && getTimingData().size() > 0) {
 								
 								logger.info(" Timing Data is present , so create a job based on timing data.");
-								
 								scheduleJob(details, state, status);
 								return;
 							}
@@ -212,7 +208,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
 			// TBD : Setup job using TS Timing after testing so that we can test faster.
 			// For now setup a default job with 10 seconds.
-			WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR);
+			WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());
 
 			state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);	
 			state.getPeriodicUpdateStatus().add(status);

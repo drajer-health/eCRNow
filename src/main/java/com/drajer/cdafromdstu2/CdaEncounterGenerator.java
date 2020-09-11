@@ -15,6 +15,7 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 
 public class CdaEncounterGenerator {
@@ -101,6 +102,19 @@ public class CdaEncounterGenerator {
             sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID, CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID_EXT));
             
             sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), encounter.getId().getIdPart()));
+            
+            // Add all the encounter identifiers to the Ids
+            List<IdentifierDt> ids = encounter.getIdentifier();
+            if(ids != null) {
+
+            	for(IdentifierDt id : ids) {
+
+            		if (id.getSystem() != null && id.getValue() != null) {
+
+            			sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()), id.getValue()));
+            		}					
+            	}				
+            }
             
             List<CodeableConceptDt> cds = encounter.getType();
             sb.append(CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));
