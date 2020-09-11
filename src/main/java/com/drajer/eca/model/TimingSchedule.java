@@ -1,7 +1,6 @@
 package com.drajer.eca.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.hl7.fhir.r4.model.Timing.UnitsOfTime;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
@@ -98,16 +97,16 @@ public class TimingSchedule {
 		logger.info(" *** Printing Timing Schedule *** ");
 		
 		if(triggerType != null)
-			logger.info("Trigger Type = " + triggerType);
+			logger.info("Trigger Type = {}" , triggerType);
 		
-		logger.info(" Num of repeats = " + numOfRepeat );
-		logger.info(" Max repeats = " + maxRepeat);
-		logger.info(" Frequency = " + frequency);
-		logger.info(" Max Frequency = " + frequencyMax);
-		logger.info(" Frequency Period = " + frequencyPeriod);
+		logger.info(" Num of repeats = {}" , numOfRepeat );
+		logger.info(" Max repeats = {}" , maxRepeat);
+		logger.info(" Frequency = {}" , frequency);
+		logger.info(" Max Frequency = {}" , frequencyMax);
+		logger.info(" Frequency Period = {}" , frequencyPeriod);
 		
 		if(frequencyPeriodUnit != null)
-			logger.info(" Frequency Period Unit " + frequencyPeriodUnit.toString());
+			logger.info(" Frequency Period Unit {}" , frequencyPeriodUnit.toString());
 		
 		logger.info(" *** End Printing Timing Schedule *** ");
 				

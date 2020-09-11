@@ -1,42 +1,22 @@
 package com.drajer.eca.model;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.collections4.SetUtils;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.drajer.cdafromdstu2.CdaEicrGenerator;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.ecrapp.config.ValueSetSingleton;
-import com.drajer.ecrapp.util.ApplicationUtils;
+
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 
 public class MatchTriggerAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(MatchTriggerAction.class);
-	
-	@Override
-	public void print() {
-		
-		logger.info(" **** Printing MatchTriggerAction **** ");
-		printBase();
-		logger.info(" **** End Printing MatchTriggerAction **** ");
-	}
 	
 	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
@@ -47,28 +27,14 @@ public class MatchTriggerAction extends AbstractAction {
 			
 			LaunchDetails details = (LaunchDetails)obj;
 			
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 			
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-				state.getMatchTriggerStatus().setActionId(getActionId());
-			} catch (JsonMappingException e1) {
-
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
+			state.getMatchTriggerStatus().setActionId(getActionId());
 			
 			// Execute the Match Trigger Action, even if it completed, because it could be invoked multiple times from 
 			// other EICR Actions.
-			logger.info(" Executing Match Trigger Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Match Trigger Action , Prior Execution State : = {}" , details.getStatus());
 			
 			// Call the Trigger Queries.
 			if(ActionRepo.getInstance().getTriggerQueryService() != null ) { 
@@ -110,15 +76,8 @@ public class MatchTriggerAction extends AbstractAction {
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
 					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+					EcaUtils.updateDetailStatus(details, state);
 					
-					try {
-						details.setStatus(mapper.writeValueAsString(state));
-					} catch (JsonProcessingException e) {
-					
-						String msg = "Unable to update execution state";
-						logger.error(msg);
-						throw new RuntimeException(msg);
-					}
 				}
 				else if(data != null && data instanceof R4FhirData) {
 					
@@ -139,7 +98,6 @@ public class MatchTriggerAction extends AbstractAction {
 						
 						EcaUtils.matchTriggerCodesForR4(codePaths, r4Data, state, details);
 						
-						
 					}
 					else {
 						
@@ -153,15 +111,7 @@ public class MatchTriggerAction extends AbstractAction {
 					// The next job has to check the Match Status to see if something needs to be reported, it may elect to run the matching again 
 					// because data may be entered late even though the app was launched.
 					state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
-					
-					try {
-						details.setStatus(mapper.writeValueAsString(state));
-					} catch (JsonProcessingException e) {
-					
-						String msg = "Unable to update execution state";
-						logger.error(msg);
-						throw new RuntimeException(msg);
-					}
+					EcaUtils.updateDetailStatus(details, state);
 					
 				}
 				else {
@@ -190,4 +140,13 @@ public class MatchTriggerAction extends AbstractAction {
 			
 		}
 	}
+
+	@Override
+	public void print() {
+		
+		logger.info(" **** Printing MatchTriggerAction **** ");
+		printBase();
+		logger.info(" **** End Printing MatchTriggerAction **** ");
+	}	
+
 }

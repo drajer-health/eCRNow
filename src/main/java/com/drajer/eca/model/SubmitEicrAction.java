@@ -13,23 +13,13 @@ import org.springframework.stereotype.Service;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 
 @Service
 public class SubmitEicrAction extends AbstractAction {
 
 	private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
-	
-	@Override
-	public void print() {
-		
-		logger.info(" **** Printing SubmitEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing SubmitEicrAction **** ");
-	}
 	
 	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
@@ -41,25 +31,11 @@ public class SubmitEicrAction extends AbstractAction {
 			  
 			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) obj;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
-			} catch (JsonMappingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
 
-			logger.info(" Executing Submit Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Submit Eicr Action , Prior Execution State : = {}" , details.getStatus());
 			
 			String data = "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
 			
@@ -81,7 +57,7 @@ public class SubmitEicrAction extends AbstractAction {
 						if (!state.hasActionCompleted(actionId)) {
 
 							logger.info(
-									" Action " + actionId + " is not completed , hence this action has to wait ");
+									" Action {} is not completed , hence this action has to wait ",actionId);
 						}
 						else {
 							
@@ -93,7 +69,7 @@ public class SubmitEicrAction extends AbstractAction {
 						}
 					}
 					else {
-						logger.info(" This action is not dependent on the action relationship : " + ract.getRelationship() + ", Action Id = " + ract.getRelatedAction().getActionId());
+						logger.info(" This action is not dependent on the action relationship : {}, Action Id = {}" ,ract.getRelationship(),ract.getRelatedAction().getActionId());
 					}
 				}
 			}
@@ -107,24 +83,24 @@ public class SubmitEicrAction extends AbstractAction {
 				
 			}
 			
-			try {
-				details.setStatus(mapper.writeValueAsString(state));
-			} catch (JsonProcessingException e) {
-					
-				String msg = "Unable to update execution state";
-				logger.error(msg);
-					
-				throw new RuntimeException(msg);
-			}
+			EcaUtils.updateDetailStatus(details, state);
 		}
 		
+	}
+	
+	@Override
+	public void print() {
+		
+		logger.info(" **** Printing SubmitEicrAction **** ");
+		printBase();
+		logger.info(" **** End Printing SubmitEicrAction **** ");
 	}
 	
 	public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
 		
 		for(Integer id : ids) {
 			
-			logger.info(" Found eICR with Id " + id  +" to submit ");
+			logger.info(" Found eICR with Id {} to submit ",id);
 			
 			String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
 			
