@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DirectEicrSender extends EicrSender {
 	
-	private final Logger logger = LoggerFactory.getLogger(DirectEicrSender.class);
+	private static final Logger logger = LoggerFactory.getLogger(DirectEicrSender.class);
 	
 	private static final String FILE_NAME = "eICR Report";
 
@@ -51,25 +51,9 @@ public class DirectEicrSender extends EicrSender {
 
 			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) context;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
-
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
-			} catch (JsonMappingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-			}
+			
+			state = getDetailStatus(details, state);
 		
 			InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 			
@@ -132,5 +116,29 @@ public class DirectEicrSender extends EicrSender {
 			
 			logger.info(" Finished sending Direct Message ");
 		}
+	
+	public static PatientExecutionState getDetailStatus(LaunchDetails details, PatientExecutionState state) {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
+		} catch (JsonMappingException e1) {
+			
+			String msg = "Unable to read/write execution state";
+			logger.error(msg, e1);
+			e1.printStackTrace();
+			throw new RuntimeException(msg);
+			
+		} catch (JsonProcessingException e1) {
+			
+			String msg = "Unable to read/write execution state";
+			logger.error(msg, e1);
+			e1.printStackTrace();
+			throw new RuntimeException(msg);
+		}
+		return state;
+		
+	}
 		
 }

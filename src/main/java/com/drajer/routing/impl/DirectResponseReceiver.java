@@ -56,29 +56,12 @@ public class DirectResponseReceiver extends RRReceiver {
 
 			logger.info(" Obtained Launch Details ");
 			LaunchDetails details = (LaunchDetails) context;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
-
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
-			} catch (JsonMappingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				e1.printStackTrace();
-				throw new RuntimeException(msg);
-			}
+			
+			state = DirectEicrSender.getDetailStatus(details, state);
 			
 			readMail(details, state);
-		}
-		
+		}		
 		
 		return null;
 	}	
