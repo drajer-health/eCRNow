@@ -104,8 +104,7 @@ public class DataRoutingTest {
 			
 			//Validate
 			
-			//Assert
-			
+			Mockito.verify(directResponseReceiverSpy, times(1)).readMail(any(), any());			
 		
 	}
 	
