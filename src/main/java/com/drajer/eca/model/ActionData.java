@@ -69,20 +69,20 @@ public class ActionData {
 		logger.info(" *** Printing Action Data *** ");
 		
 		if(fhirDataType != null)
-			logger.info(" Fhir Data Type = " + fhirDataType.toString());
+			logger.info(" Fhir Data Type = {}" , fhirDataType.toString());
 		
 		if(triggerType != null)
-			logger.info(" Trigger Type = " + triggerType.toString());
+			logger.info(" Trigger Type = {}" , triggerType.toString());
 		
-		logger.info(" Path  = " + path);
+		logger.info(" Path  = {}" , path);
 		
 		if(valueSet != null)
-			logger.info(" ValueSet Canonical URL = " + valueSet.getValue());
+			logger.info(" ValueSet Canonical URL = {}" , valueSet.getValue());
 		
 		if(profiles != null) {
 			
 			for( CanonicalType ct : profiles ) {
-				logger.info(" Profile Name = " + ct.getValue());
+				logger.info(" Profile Name = {}" , ct.getValue());
 			}
 		}
 		

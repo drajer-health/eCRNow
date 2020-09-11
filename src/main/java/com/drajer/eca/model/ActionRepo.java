@@ -1,8 +1,6 @@
 package com.drajer.eca.model;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +10,6 @@ import java.util.Set;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -198,7 +195,7 @@ public class ActionRepo {
 									
 								}
 								else {
-									Set<AbstractAction> la = new HashSet<AbstractAction>();
+									Set<AbstractAction> la = new HashSet<>();
 									la.add(a);
 									
 									actionsByTriggers.put(ad.getTriggerType(), la);
@@ -227,7 +224,7 @@ public class ActionRepo {
 									
 								}
 								else {
-									Set<AbstractAction> la = new HashSet<AbstractAction>();
+									Set<AbstractAction> la = new HashSet<>();
 									la.add(a);
 									
 									actionsByTriggers.put(tsd.getTriggerType(), la);
@@ -262,7 +259,7 @@ public class ActionRepo {
 			for(Map.Entry<EcrActionTypes, Set<AbstractAction> > ent : actions.entrySet()) {
 				
 				
-				logger.info(" Printing Eicr Action Type : " + ent.getKey().toString());
+				logger.info(" Printing Eicr Action Type : {}" , ent.getKey().toString());
 				
 				Set<AbstractAction> aa = ent.getValue();
 				
@@ -270,7 +267,7 @@ public class ActionRepo {
 					
 					for(AbstractAction a : aa) {
 						
-						logger.info(" Action that will be executed " + a.toString());
+						logger.info(" Action that will be executed {}" , a.toString());
 						
 						// a.print();
 					}
@@ -286,7 +283,7 @@ public class ActionRepo {
 			
 			for(Map.Entry<TriggerType, Set<AbstractAction> > ent : actionsByTriggers.entrySet()) {
 				
-				logger.info(" Printing Trigger for Action " + ent.getKey().toString());
+				logger.info(" Printing Trigger for Action {}" , ent.getKey().toString());
 				
 				
 				Set<AbstractAction> aa = ent.getValue();
@@ -295,7 +292,7 @@ public class ActionRepo {
 					
 					for(AbstractAction a : aa) {
 						
-						logger.info(" Action that will be executed " + a.toString());
+						logger.info(" Action that will be executed {}" , a.toString());
 						
 						// a.print();
 					}

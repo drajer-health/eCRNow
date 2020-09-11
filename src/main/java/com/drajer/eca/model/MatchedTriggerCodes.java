@@ -13,7 +13,7 @@ public class MatchedTriggerCodes {
 	private String 					matchedPath;
 	
 	public MatchedTriggerCodes() {
-		matchedCodes = new HashSet<String>();
+		matchedCodes = new HashSet<>();
 	}
 	
 	public Set<String> getMatchedCodes() {
@@ -54,7 +54,7 @@ public class MatchedTriggerCodes {
 	public void addCodes(Set<String> codes) {
 		
 		if(matchedCodes == null)
-			matchedCodes = new HashSet<String>();
+			matchedCodes = new HashSet<>();
 		
 		if(codes != null) {
 			Set<String> union = SetUtils.union(matchedCodes, codes);

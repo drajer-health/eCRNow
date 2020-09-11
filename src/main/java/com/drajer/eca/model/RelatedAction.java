@@ -6,13 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RelatedAction {
-	
-	private ActionRelationshipType 	relationship;
-	
-	private AbstractAction  		relatedAction;
-	
-	private Duration				duration;
-	
+
+	private ActionRelationshipType relationship;
+
+	private AbstractAction relatedAction;
+
+	private Duration duration;
+
 	private final Logger logger = LoggerFactory.getLogger(RelatedAction.class);
 
 	public ActionRelationshipType getRelationship() {
@@ -38,23 +38,23 @@ public class RelatedAction {
 	public void setDuration(Duration duration) {
 		this.duration = duration;
 	}
-	
+
 	public void print() {
-		
+
 		logger.info(" *** Printing Related Actions *** ");
-		
-		if(relationship != null)
-			logger.info(" Relationship = " + relationship.toString());
-		
-		if(relatedAction != null)
+
+		if (relationship != null)
+			logger.info(" Relationship = {}", relationship.toString());
+
+		if (relatedAction != null)
 			relatedAction.print();
-		
-		if(duration != null) {
-			
-			logger.info(" Duration period = " + duration.getValue());
-			logger.info(" Duration unit = " + duration.getUnit());
+
+		if (duration != null) {
+
+			logger.info(" Duration period = {}", duration.getValue());
+			logger.info(" Duration unit = {}", duration.getUnit());
 		}
-		
+
 		logger.info("*** End Printing Related Actions *** ");
 	}
 
