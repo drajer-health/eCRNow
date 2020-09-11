@@ -195,43 +195,8 @@ public class R4ResourcesData {
 		Bundle bundle = (Bundle) resourceData.getObservationByPatientIdAndCode(launchDetails, client, context, "Observation",
 				QueryConstants.PREGNANCY_CODE, QueryConstants.LOINC_CODE_SYSTEM);
 		List<Observation> observations = new ArrayList<>();
-		// Filter Observations based on Encounter Reference
-		if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
-			for (BundleEntryComponent entry : bundle.getEntry()) {
-				Observation observation = (Observation) entry.getResource();
-				if (!observation.getEncounter().isEmpty()) {
-					if (observation.getEncounter().getReferenceElement().getIdPart()
-							.equals(encounter.getIdElement().getIdPart())) {
-						observations.add(observation);
-					}
-				}
-			}
-			// If Encounter Id is not present using start and end dates to filter
-			// Observations
-		} else {
-			for (BundleEntryComponent entry : bundle.getEntry()) {
-				Observation observation = (Observation) entry.getResource();
-				// Checking If Issued Date is present in Observation resource
-				if (observation.getIssued() != null) {
-					if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
-						observations.add(observation);
-					}
-					// If Issued date is not present, Checking for Effective Date
-				} else if (!observation.getEffective().isEmpty()) {
-					Type effectiveDate = (Type) observation.getEffectiveDateTimeType();
-					Date effDate = effectiveDate.dateTimeValue().getValue();
-					if (effDate.after(start) && effDate.before(end)) {
-						observations.add(observation);
-					}
-					// If Issued and Effective Date are not present looking for LastUpdatedDate
-				} else {
-					Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
-					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-						observations.add(observation);
-					}
-				}
-			}
-		}
+		observations = getObservations(observations, bundle, encounter, start, end);
+
 		return observations;
 	}
 	
@@ -240,43 +205,8 @@ public class R4ResourcesData {
 		Bundle bundle = (Bundle) resourceData.getObservationByPatientIdAndCode(launchDetails, client, context, "Observation",
 				QueryConstants.TRAVEL_CODE, QueryConstants.LOINC_CODE_SYSTEM);
 		List<Observation> observations = new ArrayList<>();
-		// Filter Observations based on Encounter Reference
-		if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
-			for (BundleEntryComponent entry : bundle.getEntry()) {
-				Observation observation = (Observation) entry.getResource();
-				if (!observation.getEncounter().isEmpty()) {
-					if (observation.getEncounter().getReferenceElement().getIdPart()
-							.equals(encounter.getIdElement().getIdPart())) {
-						observations.add(observation);
-					}
-				}
-			}
-			// If Encounter Id is not present using start and end dates to filter
-			// Observations
-		} else {
-			for (BundleEntryComponent entry : bundle.getEntry()) {
-				Observation observation = (Observation) entry.getResource();
-				// Checking If Issued Date is present in Observation resource
-				if (observation.getIssued() != null) {
-					if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
-						observations.add(observation);
-					}
-					// If Issued date is not present, Checking for Effective Date
-				} else if (!observation.getEffective().isEmpty()) {
-					Type effectiveDate = (Type) observation.getEffectiveDateTimeType();
-					Date effDate = effectiveDate.dateTimeValue().getValue();
-					if (effDate.after(start) && effDate.before(end)) {
-						observations.add(observation);
-					}
-					// If Issued and Effective Date are not present looking for LastUpdatedDate
-				} else {
-					Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
-					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-						observations.add(observation);
-					}
-				}
-			}
-		}
+		observations = getObservations(observations, bundle, encounter, start, end);
+		
 		return observations;
 	}
 
@@ -573,6 +503,49 @@ public class R4ResourcesData {
 		}
 		r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
 		return serviceRequests;
+	}
+	
+	public static List<Observation> getObservations(List<Observation> observations, Bundle bundle, Encounter encounter, Date start, Date end)
+	{
+		// Filter Observations based on Encounter Reference
+		if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+			for (BundleEntryComponent entry : bundle.getEntry()) {
+				Observation observation = (Observation) entry.getResource();
+				if (!observation.getEncounter().isEmpty()) {
+					if (observation.getEncounter().getReferenceElement().getIdPart()
+							.equals(encounter.getIdElement().getIdPart())) {
+						observations.add(observation);
+					}
+				}
+			}
+			// If Encounter Id is not present using start and end dates to filter
+			// Observations
+		} else {
+			for (BundleEntryComponent entry : bundle.getEntry()) {
+				Observation observation = (Observation) entry.getResource();
+				// Checking If Issued Date is present in Observation resource
+				if (observation.getIssued() != null) {
+					if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
+						observations.add(observation);
+					}
+					// If Issued date is not present, Checking for Effective Date
+				} else if (!observation.getEffective().isEmpty()) {
+					Type effectiveDate = (Type) observation.getEffectiveDateTimeType();
+					Date effDate = effectiveDate.dateTimeValue().getValue();
+					if (effDate.after(start) && effDate.before(end)) {
+						observations.add(observation);
+					}
+					// If Issued and Effective Date are not present looking for LastUpdatedDate
+				} else {
+					Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
+					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+						observations.add(observation);
+					}
+				}
+			}
+		}
+		return observations;
+		
 	}
 
 }
