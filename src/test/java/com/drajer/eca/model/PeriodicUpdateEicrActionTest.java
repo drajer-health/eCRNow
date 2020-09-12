@@ -119,7 +119,7 @@ public class PeriodicUpdateEicrActionTest {
 			verify(mockState, times(1)).hasActionCompleted("123");
 			verify(mockRelActn, times(2)).getDuration();
 			PowerMockito.verifyStatic(WorkflowService.class, times(1));
-			WorkflowService.scheduleJob(eq(1), any(Duration.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR));
+			WorkflowService.scheduleJob(eq(1), any(Duration.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR), any(Date.class));
 
 		} catch (Exception e) {
 
@@ -148,7 +148,7 @@ public class PeriodicUpdateEicrActionTest {
 		verify(mockState, times(1)).hasActionCompleted("123");
 		verify(mockRelActn, times(1)).getDuration();
 		PowerMockito.verifyStatic(WorkflowService.class, times(1));
-		WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR));
+		WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR), any(Date.class));
 
 		verify(mockState, times(1)).hasActionCompleted("123");
 		
@@ -256,7 +256,7 @@ public class PeriodicUpdateEicrActionTest {
 
 			// Validate
 			PowerMockito.verifyStatic(WorkflowService.class, times(1));
-			WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR));
+			WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR), any(Date.class));
 
 			verify(mockState, times(1)).hasActionCompleted("123");
 
@@ -286,6 +286,7 @@ public class PeriodicUpdateEicrActionTest {
 		when(mockDetails.getId()).thenReturn(1);
 		when(mockDetails.getStatus()).thenReturn("MockStatus");
 		when(mockDetails.getLaunchPatientId()).thenReturn("100");
+		when(mockDetails.getStartDate()).thenReturn(new Date());
 
 		// Mock EcaUtils
 		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);

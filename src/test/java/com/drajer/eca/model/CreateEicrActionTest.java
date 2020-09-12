@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.Duration;
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
@@ -107,7 +109,7 @@ public class CreateEicrActionTest {
 			verify(mockState, times(1)).hasActionCompleted("123");
 			verify(mockRelActn, times(2)).getDuration();
 			PowerMockito.verifyStatic(WorkflowService.class, times(1));
-			WorkflowService.scheduleJob(eq(1), any(Duration.class), eq(EcrActionTypes.CREATE_EICR));
+			WorkflowService.scheduleJob(eq(1), any(Duration.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
 
 			assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
 
@@ -141,7 +143,7 @@ public class CreateEicrActionTest {
 			verify(mockState, times(1)).hasActionCompleted("123");
 			verify(mockRelActn, times(1)).getDuration();
 			PowerMockito.verifyStatic(WorkflowService.class, times(1));
-			WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CREATE_EICR));
+			WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
 
 			assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
 
@@ -248,6 +250,7 @@ public class CreateEicrActionTest {
 		when(mockDetails.getId()).thenReturn(1);
 		when(mockDetails.getStatus()).thenReturn("MockStatus");
 		when(mockDetails.getLaunchPatientId()).thenReturn("100");
+		when(mockDetails.getStartDate()).thenReturn(new Date());
 
 		// Mock EcaUtils
 		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
