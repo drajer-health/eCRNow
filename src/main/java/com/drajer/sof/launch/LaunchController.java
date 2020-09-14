@@ -1,14 +1,24 @@
 package com.drajer.sof.launch;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Period;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.routing.FhirEicrSender;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.SystemLaunch;
@@ -70,6 +82,9 @@ public class LaunchController {
 
 	@Autowired
 	FhirContextInitializer fhirContextInitializer;
+	
+//	@Autowired
+//	FhirEicrSender fhirEicrBundle;
 	
 	private SecureRandom random = new SecureRandom();
 
@@ -126,6 +141,32 @@ public class LaunchController {
 
 		return "Success";
 	}
+	
+	/** This Method is created to test Submit Bundle to FHIR endpoint **/
+	/*@CrossOrigin
+	@RequestMapping(value = "/api/submitBundle")
+	public JSONObject submitBundle() throws IOException {
+		
+		StringBuilder contentBuilder = new StringBuilder();
+		 
+        try (Stream<String> stream = Files.lines( Paths.get("D:\\SampleBundle.json"), StandardCharsets.UTF_8)) 
+        {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+
+		String content = contentBuilder.toString();
+		logger.info(content);
+		
+		
+		JSONObject response= fhirEicrBundle.submitBundle(content);
+		
+
+		return response;
+	}*/
 
 	@CrossOrigin
 	@RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)

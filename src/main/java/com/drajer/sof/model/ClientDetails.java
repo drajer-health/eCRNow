@@ -32,11 +32,11 @@ public class ClientDetails {
 	
 	@Column(name = "is_provider_launch", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private Boolean isProvider = false;
+	private Boolean isProvider;
 	
 	@Column(name = "is_system_launch", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private Boolean isSystem = false;
+	private Boolean isSystem;
 	
 	@Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
 	private String clientId;
@@ -55,11 +55,11 @@ public class ClientDetails {
 
 	@Column(name = "is_direct", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private Boolean isDirect = false;
+	private Boolean isDirect;
 	
 	@Column(name = "is_xdr", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private Boolean isXdr = false;
+	private Boolean isXdr;
 	
 	@Column(name = "direct_host", nullable = true, columnDefinition = "TEXT") 
 	private String directHost;
@@ -73,7 +73,7 @@ public class ClientDetails {
 	@Column(name = "direct_recipient_address", nullable = true)
 	private String directRecipientAddress;
 	
-	@Column(name = "xdr_recipient_address", nullable = true, columnDefinition = "TEXT")
+	@Column(name = "xdr_recipient_address", nullable = true)
 	private String xdrRecipientAddress;
 	
 	@Column(name = "aa_id", nullable = true) 
@@ -87,11 +87,11 @@ public class ClientDetails {
 	
 	@Column(name = "is_covid19", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private Boolean isCovid = false;
+	private Boolean isCovid;
 	
 	@Column(name = "is_full_ecr", nullable = false)
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private Boolean isFullEcr = false;
+	private Boolean isFullEcr;
 
 	public Integer getId() {
 		return id;
