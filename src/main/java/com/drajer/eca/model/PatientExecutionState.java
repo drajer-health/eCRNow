@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,15 +28,15 @@ public class PatientExecutionState {
 		createEicrStatus = new CreateEicrStatus();
 		
 		// Ignore Periodic Updates for now.
-		periodicUpdateStatus = new HashSet<PeriodicUpdateEicrStatus>();
+		periodicUpdateStatus = new HashSet<>();
 		
 		closeOutEicrStatus = new CloseOutEicrStatus();
 		
-		validateEicrStatus = new HashSet<ValidateEicrStatus>();
+		validateEicrStatus = new HashSet<>();
 		
-		submitEicrStatus = new HashSet<SubmitEicrStatus>();
+		submitEicrStatus = new HashSet<>();
 		
-		rrStatus = new HashSet<RRStatus>();
+		rrStatus = new HashSet<>();
 		
 		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
 		
@@ -53,17 +52,17 @@ public class PatientExecutionState {
 		createEicrStatus = new CreateEicrStatus();
 		
 		// Ignore Periodic Updates for now.
-		periodicUpdateStatus = new HashSet<PeriodicUpdateEicrStatus>();
+		periodicUpdateStatus = new HashSet<>();
 		
 		closeOutEicrStatus = new CloseOutEicrStatus();
 		
-		validateEicrStatus = new HashSet<ValidateEicrStatus>();
+		validateEicrStatus = new HashSet<>();
 		
-		submitEicrStatus = new HashSet<SubmitEicrStatus>();
+		submitEicrStatus = new HashSet<>();
 		
 		periodicUpdateJobStatus = JobStatus.NOT_STARTED;
 		
-		rrStatus = new HashSet<RRStatus>();
+		rrStatus = new HashSet<>();
 		
 	}
 
@@ -195,7 +194,7 @@ public class PatientExecutionState {
 	
 	public Set<Integer> getEicrIdForCompletedActions(String actionId) {
 		
-		Set<Integer> ids = new HashSet<Integer>();
+		Set<Integer> ids = new HashSet<>();
 		
 		if(actionId.contentEquals(createEicrStatus.getActionId()) && 
 				   createEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
@@ -221,10 +220,10 @@ public class PatientExecutionState {
 	
 	public Set<Integer> getEicrsReadyForValidation() {
 		
-		Set<Integer> ids = new HashSet<Integer>();
+		Set<Integer> ids = new HashSet<>();
 		
 		// Get the EICRs already validated. 
-		Set<Integer> valIds = new HashSet<Integer>();
+		Set<Integer> valIds = new HashSet<>();
 		Set<ValidateEicrStatus> vals = this.getValidateEicrStatus();
 		for(ValidateEicrStatus val : vals) {
 			
@@ -255,10 +254,10 @@ public class PatientExecutionState {
 	
 	public Set<Integer> getEicrsReadyForSubmission() {
 		
-		Set<Integer> ids = new HashSet<Integer>();
+		Set<Integer> ids = new HashSet<>();
 		
 		// Get the EICRs already validated. 
-		Set<Integer> valIds = new HashSet<Integer>();
+		Set<Integer> valIds = new HashSet<>();
 		Set<SubmitEicrStatus> vals = this.getSubmitEicrStatus();
 		for(SubmitEicrStatus val : vals) {			
 			// Collect the Ids.
@@ -278,10 +277,10 @@ public class PatientExecutionState {
 	
 	public Set<Integer> getEicrsForRRCheck() {
 		
-		Set<Integer> ids = new HashSet<Integer>();
+		Set<Integer> ids = new HashSet<>();
 		
 		// Get the EICRs already validated. 
-		Set<Integer> valIds = new HashSet<Integer>();
+		Set<Integer> valIds = new HashSet<>();
 		Set<RRStatus> vals = this.getRrStatus();
 		for(RRStatus val : vals) {			
 			// Collect the Ids.

@@ -33,14 +33,6 @@ public class CreateEicrAction extends AbstractAction {
 	private final Logger logger = LoggerFactory.getLogger(CreateEicrAction.class);
 
 	@Override
-	public void print() {
-
-		logger.info(" **** Printing CreateEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing CreateEicrAction **** ");
-	}
-
-	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
 
 		logger.info(" **** START Executing Create Eicr Action **** ");
@@ -48,41 +40,16 @@ public class CreateEicrAction extends AbstractAction {
 		if (obj instanceof LaunchDetails) {
 
 			LaunchDetails details = (LaunchDetails) obj;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-				state.getCreateEicrStatus().setActionId(getActionId());
-			} catch (JsonMappingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-			}
-
-			logger.info(" Executing Create Eicr Action , Prior Execution State : = " + details.getStatus());
+			state = EcaUtils.getDetailStatus(details);
+			state.getCreateEicrStatus().setActionId(getActionId());
+			
+			logger.info(" Executing Create Eicr Action , Prior Execution State : = {}" , details.getStatus());
 
 			// Handle Conditions
 			Boolean conditionsMet = true;
-			if (getPreConditions() != null && getPreConditions().size() > 0) {
-
-				logger.info(" Evaluating PreConditions ");
-				List<AbstractCondition> conds = getPreConditions();
-
-				for (AbstractCondition cond : conds) {
-
-					if (!cond.evaluate(details)) {
-						logger.info(" Condition Not met " + cond.getConditionType().toString());
-						conditionsMet = false;
-					}
-				}
-			}
+			conditionsMet = matchCondition(details);
 
 			// PreConditions Met, then process related actions.
 			Boolean relatedActsDone = true;
@@ -105,12 +72,12 @@ public class CreateEicrAction extends AbstractAction {
 							if (!state.hasActionCompleted(actionId)) {
 
 								logger.info(
-										" Action " + actionId + " is not completed , hence this action has to wait ");
+										" Action {} is not completed , hence this action has to wait ",actionId);
 								relatedActsDone = false;
 							}
 							else {
 								
-								logger.info(" Related Action has been completed : " + actionId);
+								logger.info(" Related Action has been completed : {}" , actionId);
 								
 								// Check if there is any timing constraint that needs to be handled.
 								if(ract.getDuration() != null && 
@@ -119,21 +86,13 @@ public class CreateEicrAction extends AbstractAction {
 									// Duration is not null, meaning that the create action has to be delayed by the duration.
 									logger.info(" Schedule the job for Create EICR based on the duration.");
 								
-									try {
-										
-										WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR, details.getStartDate());
-										state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-										details.setStatus(mapper.writeValueAsString(state));
-										
-										// No need to continue as the job will take over execution.
-										
-										logger.info(" **** END Executing Create Eicr Action **** ");
-										return;
-									} catch (JsonProcessingException e) { 
-										String msg = "Unable to read/write execution state";
-										logger.error(msg);
-										throw new RuntimeException(msg);
-									}
+									WorkflowService.scheduleJob(details.getId(), ract.getDuration(), EcrActionTypes.CREATE_EICR, details.getStartDate());
+									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+									EcaUtils.updateDetailStatus(details, state);
+									
+									// No need to continue as the job will take over execution.									
+									logger.info(" **** END Executing Create Eicr Action **** ");
+									return;
 								}
 								else {
 									
@@ -142,7 +101,7 @@ public class CreateEicrAction extends AbstractAction {
 							}
 						}
 						else {
-							logger.info(" Action " + ract.getRelatedAction().getActionId() + " is related via " + ract.getRelationship());
+							logger.info(" Action {} is related via {}" ,ract.getRelatedAction().getActionId(),ract.getRelationship());
 							
 						}
 					}
@@ -169,24 +128,13 @@ public class CreateEicrAction extends AbstractAction {
 
 								// TBD : Setup job using TS Timing after testing so that we can test faster.
 								// For now setup a default job with 10 seconds.
-								try {
-									
-									WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate());
-									state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-									details.setStatus(mapper.writeValueAsString(state));
-									
-									// No need to continue as the job will take over execution.
-									logger.info(" **** End Executing Create Eicr Action **** ");
-									return;
-								} catch (JsonProcessingException e) { 
-									String msg = "Unable to read/write execution state";
-									logger.error(msg);
-									throw new RuntimeException(msg);
-								}
-
-								
+								WorkflowService.scheduleJob(details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate());
+								state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+								EcaUtils.updateDetailStatus(details, state);
+								// No need to continue as the job will take over execution.
+								logger.info(" **** End Executing Create Eicr Action **** ");
+								return;
 							}
-
 						}
 						
 						logger.info(" No job to schedule since there is no timing data ");
@@ -198,7 +146,7 @@ public class CreateEicrAction extends AbstractAction {
 						logger.info(" Creating the EICR since the job has been scheduled ");
 						
 						// Check Trigger Codes again in case the data has changed.
-						PatientExecutionState newState = recheckTriggerCodes(details, launchType);
+						PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 						
 						if(newState.getMatchTriggerStatus().getTriggerMatchStatus() && 
 						   newState.getMatchTriggerStatus().getMatchedCodes() != null && 
@@ -206,100 +154,27 @@ public class CreateEicrAction extends AbstractAction {
 
 							// Since the job has started, Execute the job.
 							// Call the Loading Queries and create eICR.
-							if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+							Eicr ecr = EcaUtils.createEicr(details);
+								
+							if(ecr != null) {
 
-								logger.info(" Getting necessary data from Loading Queries ");
-								FhirData data = ActionRepo.getInstance().getLoadingQueryService().getData(details, details.getStartDate(), details.getEndDate());
+								newState.getCreateEicrStatus().setEicrCreated(true);
+								newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+								newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-								String eICR = null;
+								EcaUtils.updateDetailStatus(details, newState);
 
-								if (data != null && data instanceof Dstu2FhirData) {
+								logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
-									logger.info("Creating eICR based on FHIR DSTU2 ");
-									Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-									eICR = CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
-									
-									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+								logger.info(ecr.getData());
 
+								String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CreateEicrAction" 
+										+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
+								ApplicationUtils.saveDataToFile(ecr.getData(), fileName);
 
-									newState.getCreateEicrStatus().setEicrCreated(true);
-									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									try {
-										details.setStatus(mapper.writeValueAsString(newState));
-									} catch (JsonProcessingException e) {
-
-										String msg = "Unable to update execution state";
-										logger.error(msg);
-										throw new RuntimeException(msg);
-									}
-
-									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
-
-									logger.info(eICR);
-
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CreateEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
-
-									logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
-								}
-								else if(data != null && data instanceof R4FhirData) {
-									logger.info("Creating eICR based on FHIR R4 ");
-									R4FhirData r4Data = (R4FhirData) data;
-									eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details);
-									
-
-									// Create the object for persistence.
-									Eicr ecr = new Eicr();
-									ecr.setData(eICR);
-									ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-
-
-									newState.getCreateEicrStatus().setEicrCreated(true);
-									newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-									newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-
-									try {
-										details.setStatus(mapper.writeValueAsString(newState));
-									} catch (JsonProcessingException e) {
-
-										String msg = "Unable to update execution state";
-										logger.error(msg);
-										throw new RuntimeException(msg);
-									}
-
-									logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
-
-									logger.info(eICR);
-
-									String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/" + details.getLaunchPatientId() + "_CreateEicrAction" 
-											+ LocalDateTime.now().getHour()+LocalDateTime.now().getMinute()+LocalDateTime.now().getSecond()+ ".xml";
-									ApplicationUtils.saveDataToFile(eICR, fileName);
-
-									logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
-								}
-								else {
-
-									String msg = "No Fhir Data retrieved to CREATE EICR.";
-									logger.error(msg);
-
-									throw new RuntimeException(msg);
-								}
-
-
+								logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
 							}
-							else {
 
-								String msg = "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
-								logger.error(msg);
-
-								throw new RuntimeException(msg);
-							}
 						}// Check if Trigger Code Match found 
 						else {
 							
@@ -309,18 +184,11 @@ public class CreateEicrAction extends AbstractAction {
 							newState.getCreateEicrStatus().seteICRId("0");
 							newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-							try {
-								details.setStatus(mapper.writeValueAsString(newState));
-							} catch (JsonProcessingException e) {
-
-								String msg = "Unable to update execution state";
-								logger.error(msg);
-								throw new RuntimeException(msg);
-							}
+							EcaUtils.updateDetailStatus(details, newState);
 						}
 					}
 					else {
-						logger.info(" EICR job is in a state of " + state.getCreateEicrStatus().getJobStatus() + " , due to which EICR will not be created. ");
+						logger.info(" EICR job is in a state of {} , due to which EICR will not be created. ",state.getCreateEicrStatus().getJobStatus());
 					}
 
 				}
@@ -346,33 +214,11 @@ public class CreateEicrAction extends AbstractAction {
 		logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
 	}
 	
-	public PatientExecutionState recheckTriggerCodes(LaunchDetails details, WorkflowEvent launchType) {
-		
-		Set<AbstractAction> acts = ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
-		for(AbstractAction act : acts) {
-			act.execute(details, launchType);
-			ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
-		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		PatientExecutionState newState = null;
+	@Override
+	public void print() {
 
-		try {
-			newState = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-			logger.info(" Successfully set the State value ");
-		} catch (JsonMappingException e1) {
-			
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			throw new RuntimeException(msg);
-			
-		} catch (JsonProcessingException e1) {
-			String msg = "Unable to read/write execution state";
-			logger.error(msg);
-			
-			throw new RuntimeException(msg);
-		}
-		
-		return newState;
+		logger.info(" **** Printing CreateEicrAction **** ");
+		printBase();
+		logger.info(" **** End Printing CreateEicrAction **** ");
 	}
 }

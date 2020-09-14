@@ -4,9 +4,6 @@ import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
@@ -21,13 +18,6 @@ public class ValidateEicrAction extends AbstractAction {
 	private final Logger logger = LoggerFactory.getLogger(ValidateEicrAction.class);
 	
 	@Override
-	public void print() {
-		
-		logger.info(" **** Printing ValidateEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing ValidateEicrAction **** ");
-	}
-	@Override
 	public void execute(Object obj, WorkflowEvent launchType) {
 		
 		logger.info(" **** START Executing Validate Eicr Action **** ");
@@ -35,25 +25,11 @@ public class ValidateEicrAction extends AbstractAction {
 		if (obj instanceof LaunchDetails) {
 
 			LaunchDetails details = (LaunchDetails) obj;
-			ObjectMapper mapper = new ObjectMapper();
 			PatientExecutionState state = null;
 
-			try {
-				state = mapper.readValue(details.getStatus(), PatientExecutionState.class);			
-			} catch (JsonMappingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-				
-			} catch (JsonProcessingException e1) {
-				
-				String msg = "Unable to read/write execution state";
-				logger.error(msg);
-				throw new RuntimeException(msg);
-			}
+			state = EcaUtils.getDetailStatus(details);
 
-			logger.info(" Executing Validate Eicr Action , Prior Execution State : = " + details.getStatus());
+			logger.info(" Executing Validate Eicr Action , Prior Execution State : = {}" , details.getStatus());
 			
 			
 			if (getRelatedActions() != null && getRelatedActions().size() > 0) {
@@ -72,7 +48,7 @@ public class ValidateEicrAction extends AbstractAction {
 						if (!state.hasActionCompleted(actionId)) {
 
 							logger.info(
-									" Action " + actionId + " is not completed , hence this action has to wait ");
+									" Action {} is not completed , hence this action has to wait ",actionId);
 						}
 						else {
 							
@@ -84,7 +60,7 @@ public class ValidateEicrAction extends AbstractAction {
 						}
 					}
 					else {
-						logger.info(" This action is not dependent on the action relationship : " + ract.getRelationship() + ", Action Id = " + ract.getRelatedAction().getActionId());
+						logger.info(" This action is not dependent on the action relationship : {}, Action Id = {}" ,ract.getRelationship(),ract.getRelatedAction().getActionId());
 					}
 				}
 			}
@@ -98,16 +74,16 @@ public class ValidateEicrAction extends AbstractAction {
 				
 			}
 			
-			try {
-				details.setStatus(mapper.writeValueAsString(state));
-			} catch (JsonProcessingException e) {
-					
-				String msg = "Unable to update execution state";
-				logger.error(msg);
-					
-				throw new RuntimeException(msg);
-			}
+			EcaUtils.updateDetailStatus(details, state);
 		}
+	}
+	
+	@Override
+	public void print() {
+		
+		logger.info(" **** Printing ValidateEicrAction **** ");
+		printBase();
+		logger.info(" **** End Printing ValidateEicrAction **** ");
 	}
 	
 	public void validateEicrs(PatientExecutionState state, Set<Integer> ids) {
@@ -115,7 +91,7 @@ public class ValidateEicrAction extends AbstractAction {
 		for(Integer id : ids) {
 			
 			if(id != 0) {
-			logger.info(" Found eICR with Id " + id  +" to validate ");
+			logger.info(" Found eICR with Id {} to validate ",id);
 			String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
 			
 			//Validate incoming XML
@@ -123,7 +99,7 @@ public class ValidateEicrAction extends AbstractAction {
 				
 				boolean validationResultSchema = CdaValidatorUtil.validateEicrXMLData(eICR);
 				
-				logger.info(" Validation Result from Schema Validation = " + validationResultSchema);
+				logger.info(" Validation Result from Schema Validation = {}" , validationResultSchema);
 				
 				
 			}else{
@@ -132,7 +108,7 @@ public class ValidateEicrAction extends AbstractAction {
 			
 			boolean validationResultSchematron = CdaValidatorUtil.validateEicrToSchematron(eICR);
 			
-			logger.info(" Validation Result from Schema Validation = " + validationResultSchematron);
+			logger.info(" Validation Result from Schema Validation = {}" , validationResultSchematron);
 
 			// Add a validate object every time.
 			ValidateEicrStatus validate = new ValidateEicrStatus();
