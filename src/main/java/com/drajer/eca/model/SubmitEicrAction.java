@@ -1,122 +1,111 @@
 package com.drajer.eca.model;
 
-
+import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.sof.model.LaunchDetails;
-
-
-
 @Service
 public class SubmitEicrAction extends AbstractAction {
 
-	private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
-	
-	@Override
-	public void execute(Object obj, WorkflowEvent launchType) {
-		
+  private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
 
-		logger.info(" **** START Executing Submit Eicr Action **** ");
-		
-		if (obj instanceof LaunchDetails) {
-			  
-			logger.info(" Obtained Launch Details ");
-			LaunchDetails details = (LaunchDetails) obj;
-			PatientExecutionState state = null;
+  @Override
+  public void execute(Object obj, WorkflowEvent launchType) {
 
-			state = EcaUtils.getDetailStatus(details);
+    logger.info(" **** START Executing Submit Eicr Action **** ");
 
-			logger.info(" Executing Submit Eicr Action , Prior Execution State : = {}" , details.getStatus());
-			
-			String data = "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
-			
-			//ActionRepo.getInstance().getDirectTransport().sendData(details, data);
-			
-			if (getRelatedActions() != null && getRelatedActions().size() > 0) {
-				
-				logger.info(" Related Actions exist, so check dependencies ");
+    if (obj instanceof LaunchDetails) {
 
-				List<RelatedAction> racts = getRelatedActions();
+      logger.info(" Obtained Launch Details ");
+      LaunchDetails details = (LaunchDetails) obj;
+      PatientExecutionState state = null;
 
-				for (RelatedAction ract : racts) {
+      state = EcaUtils.getDetailStatus(details);
 
-					if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+      logger.info(
+          " Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());
 
-						// check if the action is completed.
-						String actionId = ract.getRelatedAction().getActionId();
+      String data =
+          "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
 
-						if (!state.hasActionCompleted(actionId)) {
+      // ActionRepo.getInstance().getDirectTransport().sendData(details, data);
 
-							logger.info(
-									" Action {} is not completed , hence this action has to wait ",actionId);
-						}
-						else {
-							
-							// Get the eICR for the Action Completed after which validation has to be run.
-							Set<Integer> ids = state.getEicrsReadyForSubmission();
-							
-							submitEicrs(details, state, ids);
-							
-						}
-					}
-					else {
-						logger.info(" This action is not dependent on the action relationship : {}, Action Id = {}" ,ract.getRelationship(),ract.getRelatedAction().getActionId());
-					}
-				}
-			}
-			else {
-				
-				logger.info(" No related actions, so submit all Eicrs that are ready for submission ");
-				
-				Set<Integer> ids = state.getEicrsReadyForSubmission();
-				
-				submitEicrs(details, state, ids);			
-				
-			}
-			
-			EcaUtils.updateDetailStatus(details, state);
-		}
-		
-	}
-	
-	@Override
-	public void print() {
-		
-		logger.info(" **** Printing SubmitEicrAction **** ");
-		printBase();
-		logger.info(" **** End Printing SubmitEicrAction **** ");
-	}
-	
-	public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
-		
-		for(Integer id : ids) {
-			
-			logger.info(" Found eICR with Id {} to submit ",id);
-			
-			String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
-			
-			ActionRepo.getInstance().getDirectTransport().sendData(details, data);
-							
-			// Add a submission object every time.
-			SubmitEicrStatus submitState = new SubmitEicrStatus();
-			submitState.setActionId(getActionId());
-			submitState.seteICRId(id.toString());
-			submitState.setEicrSubmitted(true);
-			submitState.setJobStatus(JobStatus.COMPLETED);
-			submitState.setSubmittedTime(new Date());
-			state.getSubmitEicrStatus().add(submitState);
-			  			  
-		}
-		
-	}
+      if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 
+        logger.info(" Related Actions exist, so check dependencies ");
+
+        List<RelatedAction> racts = getRelatedActions();
+
+        for (RelatedAction ract : racts) {
+
+          if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+
+            // check if the action is completed.
+            String actionId = ract.getRelatedAction().getActionId();
+
+            if (!state.hasActionCompleted(actionId)) {
+
+              logger.info(" Action {} is not completed , hence this action has to wait ", actionId);
+            } else {
+
+              // Get the eICR for the Action Completed after which validation has to be run.
+              Set<Integer> ids = state.getEicrsReadyForSubmission();
+
+              submitEicrs(details, state, ids);
+            }
+          } else {
+            logger.info(
+                " This action is not dependent on the action relationship : {}, Action Id = {}",
+                ract.getRelationship(),
+                ract.getRelatedAction().getActionId());
+          }
+        }
+      } else {
+
+        logger.info(" No related actions, so submit all Eicrs that are ready for submission ");
+
+        Set<Integer> ids = state.getEicrsReadyForSubmission();
+
+        submitEicrs(details, state, ids);
+      }
+
+      EcaUtils.updateDetailStatus(details, state);
+    }
+  }
+
+  @Override
+  public void print() {
+
+    logger.info(" **** Printing SubmitEicrAction **** ");
+    printBase();
+    logger.info(" **** End Printing SubmitEicrAction **** ");
+  }
+
+  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+
+    for (Integer id : ids) {
+
+      logger.info(" Found eICR with Id {} to submit ", id);
+
+      String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
+
+      ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+
+      // Add a submission object every time.
+      SubmitEicrStatus submitState = new SubmitEicrStatus();
+      submitState.setActionId(getActionId());
+      submitState.seteICRId(id.toString());
+      submitState.setEicrSubmitted(true);
+      submitState.setJobStatus(JobStatus.COMPLETED);
+      submitState.setSubmittedTime(new Date());
+      state.getSubmitEicrStatus().add(submitState);
+    }
+  }
 }

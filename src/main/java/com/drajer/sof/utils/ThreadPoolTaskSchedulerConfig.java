@@ -9,23 +9,24 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 @Configuration
-@ComponentScan(basePackages = { "com.drajer.ecr" }, basePackageClasses = { RefreshTokenScheduler.class })
+@ComponentScan(
+    basePackages = {"com.drajer.ecr"},
+    basePackageClasses = {RefreshTokenScheduler.class})
 @EnableScheduling
 @EnableAsync
 public class ThreadPoolTaskSchedulerConfig {
 
-	@Bean
-	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-		threadPoolTaskScheduler.setPoolSize(5);
-		threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
-		threadPoolTaskScheduler.initialize();
-		return threadPoolTaskScheduler;
-	}
+  @Bean
+  public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+    ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+    threadPoolTaskScheduler.setPoolSize(5);
+    threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+    threadPoolTaskScheduler.initialize();
+    return threadPoolTaskScheduler;
+  }
 
-	@Bean
-	public CronTrigger cronTrigger() {
-		return new CronTrigger("10 * * * * ?");
-	}
-
+  @Bean
+  public CronTrigger cronTrigger() {
+    return new CronTrigger("10 * * * * ?");
+  }
 }

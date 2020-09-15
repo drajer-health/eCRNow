@@ -2,7 +2,6 @@ package com.drajer.sof.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -20,163 +19,164 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 
 public class R4FhirData extends FhirData {
 
-	private Bundle data;
-	
-	private Patient patient;
-	private Practitioner practitioner;
-	private Encounter encounter;
-	private Location  location;
-	private Organization organization;
-	private List<Condition> conditions;
-	private List<DiagnosticReport> diagReports;
-	private List<Observation> 	   labResults;
-	private List<Observation> 	   travelObs;
-	private List<Observation>      pregnancyObs;
-	private List<Immunization> 	   immunizations;
-	private List<MedicationStatement>  medications;
-	private List<MedicationAdministration> medicationAdministrations;
-	private List<Medication> medicationList;
-	private List<ServiceRequest> 	serviceRequests;
+  private Bundle data;
 
-	public R4FhirData() {
+  private Patient patient;
+  private Practitioner practitioner;
+  private Encounter encounter;
+  private Location location;
+  private Organization organization;
+  private List<Condition> conditions;
+  private List<DiagnosticReport> diagReports;
+  private List<Observation> labResults;
+  private List<Observation> travelObs;
+  private List<Observation> pregnancyObs;
+  private List<Immunization> immunizations;
+  private List<MedicationStatement> medications;
+  private List<MedicationAdministration> medicationAdministrations;
+  private List<Medication> medicationList;
+  private List<ServiceRequest> serviceRequests;
 
-		conditions = new ArrayList<Condition>();
-		diagReports = new ArrayList<DiagnosticReport>();
-		labResults = new ArrayList<Observation>();
-		travelObs = new ArrayList<Observation>();
-		pregnancyObs = new ArrayList<Observation>();
-		immunizations = new ArrayList<Immunization>();
-		medications = new ArrayList<MedicationStatement>();
-		medicationAdministrations = new ArrayList<MedicationAdministration>();
-		serviceRequests = new ArrayList<ServiceRequest>();
-		medicationList = new ArrayList<Medication>();
-	}
+  public R4FhirData() {
 
-	public Bundle getData() {
-		return data;
-	}
+    conditions = new ArrayList<Condition>();
+    diagReports = new ArrayList<DiagnosticReport>();
+    labResults = new ArrayList<Observation>();
+    travelObs = new ArrayList<Observation>();
+    pregnancyObs = new ArrayList<Observation>();
+    immunizations = new ArrayList<Immunization>();
+    medications = new ArrayList<MedicationStatement>();
+    medicationAdministrations = new ArrayList<MedicationAdministration>();
+    serviceRequests = new ArrayList<ServiceRequest>();
+    medicationList = new ArrayList<Medication>();
+  }
 
-	public void setData(Bundle data) {
-		this.data = data;
-	}
+  public Bundle getData() {
+    return data;
+  }
 
-	public Patient getPatient() {
-		return patient;
-	}
+  public void setData(Bundle data) {
+    this.data = data;
+  }
 
-	public void setPatient(Patient patient) {
-		this.patient = patient;
-	}
+  public Patient getPatient() {
+    return patient;
+  }
 
-	public Practitioner getPractitioner() {
-		return practitioner;
-	}
+  public void setPatient(Patient patient) {
+    this.patient = patient;
+  }
 
-	public void setPractitioner(Practitioner practitioner) {
-		this.practitioner = practitioner;
-	}
+  public Practitioner getPractitioner() {
+    return practitioner;
+  }
 
-	public Encounter getEncounter() {
-		return encounter;
-	}
+  public void setPractitioner(Practitioner practitioner) {
+    this.practitioner = practitioner;
+  }
 
-	public void setEncounter(Encounter encounter) {
-		this.encounter = encounter;
-	}
+  public Encounter getEncounter() {
+    return encounter;
+  }
 
-	public Location getLocation() {
-		return location;
-	}
+  public void setEncounter(Encounter encounter) {
+    this.encounter = encounter;
+  }
 
-	public void setLocation(Location location) {
-		this.location = location;
-	}
+  public Location getLocation() {
+    return location;
+  }
 
-	public Organization getOrganization() {
-		return organization;
-	}
+  public void setLocation(Location location) {
+    this.location = location;
+  }
 
-	public void setOrganization(Organization organization) {
-		this.organization = organization;
-	}
+  public Organization getOrganization() {
+    return organization;
+  }
 
-	public List<Condition> getConditions() {
-		return conditions;
-	}
+  public void setOrganization(Organization organization) {
+    this.organization = organization;
+  }
 
-	public void setConditions(List<Condition> conditions) {
-		this.conditions = conditions;
-	}
+  public List<Condition> getConditions() {
+    return conditions;
+  }
 
-	public List<DiagnosticReport> getDiagReports() {
-		return diagReports;
-	}
+  public void setConditions(List<Condition> conditions) {
+    this.conditions = conditions;
+  }
 
-	public void setDiagReports(List<DiagnosticReport> diagReports) {
-		this.diagReports = diagReports;
-	}
+  public List<DiagnosticReport> getDiagReports() {
+    return diagReports;
+  }
 
-	public List<Observation> getLabResults() {
-		return labResults;
-	}
+  public void setDiagReports(List<DiagnosticReport> diagReports) {
+    this.diagReports = diagReports;
+  }
 
-	public void setLabResults(List<Observation> labResults) {
-		this.labResults = labResults;
-	}
+  public List<Observation> getLabResults() {
+    return labResults;
+  }
 
-	public List<Observation> getTravelObs() {
-		return travelObs;
-	}
+  public void setLabResults(List<Observation> labResults) {
+    this.labResults = labResults;
+  }
 
-	public void setTravelObs(List<Observation> travelObs) {
-		this.travelObs = travelObs;
-	}
+  public List<Observation> getTravelObs() {
+    return travelObs;
+  }
 
-	public List<Observation> getPregnancyObs() {
-		return pregnancyObs;
-	}
+  public void setTravelObs(List<Observation> travelObs) {
+    this.travelObs = travelObs;
+  }
 
-	public void setPregnancyObs(List<Observation> pregnancyObs) {
-		this.pregnancyObs = pregnancyObs;
-	}
+  public List<Observation> getPregnancyObs() {
+    return pregnancyObs;
+  }
 
-	public List<Immunization> getImmunizations() {
-		return immunizations;
-	}
+  public void setPregnancyObs(List<Observation> pregnancyObs) {
+    this.pregnancyObs = pregnancyObs;
+  }
 
-	public void setImmunizations(List<Immunization> immunizations) {
-		this.immunizations = immunizations;
-	}
+  public List<Immunization> getImmunizations() {
+    return immunizations;
+  }
 
-	public List<MedicationStatement> getMedications() {
-		return medications;
-	}
+  public void setImmunizations(List<Immunization> immunizations) {
+    this.immunizations = immunizations;
+  }
 
-	public void setMedications(List<MedicationStatement> medications) {
-		this.medications = medications;
-	}
+  public List<MedicationStatement> getMedications() {
+    return medications;
+  }
 
-	public List<MedicationAdministration> getMedicationAdministrations() {
-		return medicationAdministrations;
-	}
+  public void setMedications(List<MedicationStatement> medications) {
+    this.medications = medications;
+  }
 
-	public void setMedicationAdministrations(List<MedicationAdministration> medicationAdministrations) {
-		this.medicationAdministrations = medicationAdministrations;
-	}
+  public List<MedicationAdministration> getMedicationAdministrations() {
+    return medicationAdministrations;
+  }
 
-	public List<Medication> getMedicationList() {
-		return medicationList;
-	}
+  public void setMedicationAdministrations(
+      List<MedicationAdministration> medicationAdministrations) {
+    this.medicationAdministrations = medicationAdministrations;
+  }
 
-	public void setMedicationList(List<Medication> medicationList) {
-		this.medicationList = medicationList;
-	}
+  public List<Medication> getMedicationList() {
+    return medicationList;
+  }
 
-	public List<ServiceRequest> getServiceRequests() {
-		return serviceRequests;
-	}
+  public void setMedicationList(List<Medication> medicationList) {
+    this.medicationList = medicationList;
+  }
 
-	public void setServiceRequests(List<ServiceRequest> serviceRequests) {
-		this.serviceRequests = serviceRequests;
-	}
+  public List<ServiceRequest> getServiceRequests() {
+    return serviceRequests;
+  }
+
+  public void setServiceRequests(List<ServiceRequest> serviceRequests) {
+    this.serviceRequests = serviceRequests;
+  }
 }

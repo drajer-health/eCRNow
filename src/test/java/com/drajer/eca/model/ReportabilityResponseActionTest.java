@@ -1,136 +1,110 @@
 package com.drajer.eca.model;
 
-import java.util.ArrayList;
-import java.util.Date;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.sof.model.LaunchDetails;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.annotation.meta.When;
-
-import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-
-import com.drajer.eca.model.EventTypes.EcrActionTypes;
-import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.ecrapp.model.Eicr;
-import com.drajer.ecrapp.service.WorkflowService;
-import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.mockito.Mockito.when;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ EcaUtils.class, ApplicationUtils.class, WorkflowService.class })
+@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class ReportabilityResponseActionTest {
 
-	private LaunchDetails mockDetails;
-	private PatientExecutionState mockState;
-	private RelatedAction mockRelActn;
+  private LaunchDetails mockDetails;
+  private PatientExecutionState mockState;
+  private RelatedAction mockRelActn;
 
-	private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
+  private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
 
-	@InjectMocks
-	ReportabilityResponseAction reportabilityResponseAction;
+  @InjectMocks ReportabilityResponseAction reportabilityResponseAction;
 
-	@Before
-	public void setUp() {
+  @Before
+  public void setUp() {
 
-		mockDetails = PowerMockito.mock(LaunchDetails.class);
-		mockState = PowerMockito.mock(PatientExecutionState.class);
-		mockRelActn = PowerMockito.mock(RelatedAction.class);
+    mockDetails = PowerMockito.mock(LaunchDetails.class);
+    mockState = PowerMockito.mock(PatientExecutionState.class);
+    mockRelActn = PowerMockito.mock(RelatedAction.class);
 
-		PowerMockito.mockStatic(EcaUtils.class);
-		PowerMockito.mockStatic(ApplicationUtils.class);
-		PowerMockito.mockStatic(WorkflowService.class);
+    PowerMockito.mockStatic(EcaUtils.class);
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    PowerMockito.mockStatic(WorkflowService.class);
+  }
 
-	}
+  @Test
+  public void testExecute_RelatedActionNotCompleted() throws Exception {
 
-	@Test
-	public void testExecute_RelatedActionNotCompleted() throws Exception {
+    reportabilityResponseAction.addRelatedAction(mockRelActn);
 
-		reportabilityResponseAction.addRelatedAction(mockRelActn);
-		
-		reportabilityResponseAction.setActionId("123");
+    reportabilityResponseAction.setActionId("123");
 
-		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
-		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
-		when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
-		when(mockState.hasActionCompleted(any())).thenReturn(false);
+    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
+    when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
+    when(mockState.hasActionCompleted(any())).thenReturn(false);
 
-		reportabilityResponseAction.execute(mockDetails, launchType);
+    reportabilityResponseAction.execute(mockDetails, launchType);
 
-		// Validate
-		verify(mockState, times(1)).hasActionCompleted("123");
-		verify(mockRelActn, times(0)).getDuration();
+    // Validate
+    verify(mockState, times(1)).hasActionCompleted("123");
+    verify(mockRelActn, times(0)).getDuration();
+  }
 
-	}
+  @Test
+  public void testExecute_AllSubmittedEics() throws Exception {
 
-	@Test
-	public void testExecute_AllSubmittedEics() throws Exception {
+    reportabilityResponseAction.addRelatedAction(mockRelActn);
+    reportabilityResponseAction.setActionId("123");
 
-		reportabilityResponseAction.addRelatedAction(mockRelActn);
-		reportabilityResponseAction.setActionId("123");
+    Set<Integer> id = new HashSet<Integer>();
+    id.add(1);
 
-		Set<Integer> id = new HashSet<Integer>();
-		id.add(1);
+    when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
+    when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
+    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(mockState.getEicrsForRRCheck()).thenReturn(id);
+    when(mockState.hasActionCompleted(any())).thenReturn(true);
 
-		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
-		when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
-		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
-		when(mockState.getEicrsForRRCheck()).thenReturn(id);
-		when(mockState.hasActionCompleted(any())).thenReturn(true);
+    reportabilityResponseAction.execute(mockDetails, launchType);
 
-		reportabilityResponseAction.execute(mockDetails, launchType);
+    // Validate
+    verify(mockState, times(1)).hasActionCompleted("123");
+    verify(mockRelActn, times(0)).getDuration();
 
-		// Validate
-		verify(mockState, times(1)).hasActionCompleted("123");
-		verify(mockRelActn, times(0)).getDuration();
+    assertNotNull(mockState.getEicrsForRRCheck());
+  }
 
-		assertNotNull(mockState.getEicrsForRRCheck());
+  @Test
+  public void testExecute_whenRelatedActionIsNotPresent() {
 
-	}
+    reportabilityResponseAction.setActionId("123");
 
-	@Test
-	public void testExecute_whenRelatedActionIsNotPresent() {
+    Set<Integer> ids = new HashSet<Integer>();
+    ids.add(1);
 
-		reportabilityResponseAction.setActionId("123");
+    when(mockRelActn.getRelatedAction()).thenReturn(null);
+    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(mockState.getEicrsForRRCheck()).thenReturn(ids);
 
-		Set<Integer> ids = new HashSet<Integer>();
-		ids.add(1);
+    reportabilityResponseAction.execute(mockDetails, launchType);
 
-		when(mockRelActn.getRelatedAction()).thenReturn(null);
-		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
-		when(mockState.getEicrsForRRCheck()).thenReturn(ids);
+    verify(mockRelActn, times(0)).getDuration();
 
-		reportabilityResponseAction.execute(mockDetails, launchType);
-
-		verify(mockRelActn, times(0)).getDuration();
-
-		assertNotNull(mockState.getEicrsForRRCheck());
-	}
-
+    assertNotNull(mockState.getEicrsForRRCheck());
+  }
 }

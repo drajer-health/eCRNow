@@ -1,5 +1,3 @@
 package com.drajer.eca.model;
 
-public abstract class EicrStatus {
-
-}
+public abstract class EicrStatus {}
