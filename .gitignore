@@ -30,3 +30,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Others ###
+.DS_Store
+D:/
