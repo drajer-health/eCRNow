@@ -42,15 +42,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 public class RefreshTokenSchedulerTest {
 	
-	
-	
 	@ClassRule
 	public static WireMockClassRule wireMockRule = new WireMockClassRule(options().port(8089));
 
 	@Rule
 	public WireMockClassRule mockServer = wireMockRule;
 	
-	//private WireMockServer  wireMockServer;
 	private ClientDetails clientDetails;
 	private RefreshTokenScheduler token = new RefreshTokenScheduler();
 	ObjectMapper mapper = new ObjectMapper();
@@ -62,6 +59,9 @@ public class RefreshTokenSchedulerTest {
 		try {
 			clientDetails = mapper.readValue(this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
 					ClientDetails.class);
+			clientDetails.setFhirServerBaseURL("http://localhost:8089/FHIR");
+			clientDetails.setTokenURL("http://localhost:8089/authorization");
+			
 		} catch (IOException e) {
 						
 			e.printStackTrace();
@@ -77,7 +77,7 @@ public class RefreshTokenSchedulerTest {
 			
 			String accesstoken = "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
 			
-			MappingBuilder mappingBuilder = post(urlEqualTo("/tenants/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca/protocols/oauth2/profiles/smart-v1/token"));
+			MappingBuilder mappingBuilder = post(urlEqualTo("/authorization"));
 			ResponseDefinitionBuilder  response = aResponse()
 													.withStatus(HttpStatus.OK_200)
 													.withBody(accesstoken)
@@ -88,7 +88,7 @@ public class RefreshTokenSchedulerTest {
 			//Test
 			JSONObject authresponse = token.getSystemAccessToken(clientDetails);
 			
-			verify(postRequestedFor(urlEqualTo("/tenants/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca/protocols/oauth2/profiles/smart-v1/token")));
+			verify(postRequestedFor(urlEqualTo("/authorization")));
 			assertEquals(authresponse.getString("access_token"), "eyJraWQiOiIy");
 			assertEquals(authresponse.getInt("expires_in"), 570);
 			
@@ -104,7 +104,7 @@ public class RefreshTokenSchedulerTest {
 		
 		try {
 			
-			MappingBuilder mappingBuilder = post(urlEqualTo("/tenants/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca/protocols/oauth2/profiles/smart-v1/token"));
+			MappingBuilder mappingBuilder = post(urlEqualTo("/authorization"));
 			ResponseDefinitionBuilder  response = aResponse()
 													.withStatus(HttpStatus.UNAUTHORIZED_401);
 			stubFor(mappingBuilder.willReturn(response));
@@ -112,7 +112,7 @@ public class RefreshTokenSchedulerTest {
 			//Test
 			JSONObject authresponse = token.getSystemAccessToken(clientDetails);
 			
-			verify(postRequestedFor(urlEqualTo("/tenants/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca/protocols/oauth2/profiles/smart-v1/token")));
+			verify(postRequestedFor(urlEqualTo("/authorization")));
 			assertNull(authresponse);
 			
 			
