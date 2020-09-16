@@ -6,27 +6,24 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCondition {
 
-	private final Logger logger = LoggerFactory.getLogger(AbstractCondition.class);
-	
-	public abstract Boolean evaluate(Object obj);
-	
-	private ActionConditionKind		conditionType;
+  private final Logger logger = LoggerFactory.getLogger(AbstractCondition.class);
 
-	public ActionConditionKind getConditionType() {
-		return conditionType;
-	}
+  public abstract Boolean evaluate(Object obj);
 
-	public void setConditionType(ActionConditionKind conditionType) {
-		this.conditionType = conditionType;
-	}
-	
-	public abstract void print();
-	
-	public void printBase() {
-		
-		if(conditionType != null)
-			logger.info(" Condition Type = {}" , conditionType.toString());
-		
-	}
-	
+  private ActionConditionKind conditionType;
+
+  public ActionConditionKind getConditionType() {
+    return conditionType;
+  }
+
+  public void setConditionType(ActionConditionKind conditionType) {
+    this.conditionType = conditionType;
+  }
+
+  public abstract void print();
+
+  public void printBase() {
+
+    if (conditionType != null) logger.info(" Condition Type = {}", conditionType.toString());
+  }
 }

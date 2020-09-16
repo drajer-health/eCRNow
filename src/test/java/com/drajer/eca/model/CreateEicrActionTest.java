@@ -1,25 +1,14 @@
 package com.drajer.eca.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hl7.fhir.r4.model.Duration;
-import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
@@ -28,238 +17,245 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.hl7.fhir.r4.model.Duration;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ EcaUtils.class, ApplicationUtils.class, WorkflowService.class })
+@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class CreateEicrActionTest {
 
-	private LaunchDetails mockDetails;
-	private PatientExecutionState mockState;
-	private RelatedAction mockRelActn;
-	private MatchTriggerStatus mockTriggerStatus;
-	private Eicr mockEicr;
+  private LaunchDetails mockDetails;
+  private PatientExecutionState mockState;
+  private RelatedAction mockRelActn;
+  private MatchTriggerStatus mockTriggerStatus;
+  private Eicr mockEicr;
 
-	private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
+  private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
 
-	@InjectMocks
-	CreateEicrAction createtEicrAction;
+  @InjectMocks CreateEicrAction createtEicrAction;
 
-	@Before
-	public void setUp() {
-		mockDetails = PowerMockito.mock(LaunchDetails.class);
-		mockState = PowerMockito.mock(PatientExecutionState.class);
-		mockRelActn = PowerMockito.mock(RelatedAction.class);
-		mockTriggerStatus = PowerMockito.mock(MatchTriggerStatus.class);
-		mockEicr = PowerMockito.mock(Eicr.class);
+  @Before
+  public void setUp() {
+    mockDetails = PowerMockito.mock(LaunchDetails.class);
+    mockState = PowerMockito.mock(PatientExecutionState.class);
+    mockRelActn = PowerMockito.mock(RelatedAction.class);
+    mockTriggerStatus = PowerMockito.mock(MatchTriggerStatus.class);
+    mockEicr = PowerMockito.mock(Eicr.class);
 
-		PowerMockito.mockStatic(EcaUtils.class);
-		PowerMockito.mockStatic(ApplicationUtils.class);
-		PowerMockito.mockStatic(WorkflowService.class);
+    PowerMockito.mockStatic(EcaUtils.class);
+    PowerMockito.mockStatic(ApplicationUtils.class);
+    PowerMockito.mockStatic(WorkflowService.class);
+  }
 
-	}
+  @Test
+  public void testExecute_RelatedActionNotCompleted() throws Exception {
 
-	@Test
-	public void testExecute_RelatedActionNotCompleted() throws Exception {
+    try {
 
-		try {
+      // Setup
+      CreateEicrStatus createEicrStatus = new CreateEicrStatus();
+      when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
+      when(mockState.hasActionCompleted(any())).thenReturn(false);
+      setupMockData();
 
-			// Setup
-			CreateEicrStatus createEicrStatus = new CreateEicrStatus();
-			when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
-			when(mockState.hasActionCompleted(any())).thenReturn(false);
-			setupMockData();
+      // Test
+      createtEicrAction.execute(mockDetails, launchType);
 
-			// Test
-			createtEicrAction.execute(mockDetails, launchType);
+      // Validate
+      verify(mockState, times(1)).hasActionCompleted("123");
+      verify(mockRelActn, times(0)).getDuration();
 
-			// Validate
-			verify(mockState, times(1)).hasActionCompleted("123");
-			verify(mockRelActn, times(0)).getDuration();
+    } catch (Exception e) {
 
-		} catch (Exception e) {
+      e.printStackTrace();
+      fail("This exception is not expected, fix the test method");
+    }
+  }
 
-			e.printStackTrace();
-			fail("This exception is not expected, fix the test method");
-		}
-	}
+  @Test
+  public void testExecute_RelatedActionWithDuration() throws Exception {
 
-	@Test
-	public void testExecute_RelatedActionWithDuration() throws Exception {
+    try {
 
-		try {
+      // Setup
+      CreateEicrStatus createEicrStatus = new CreateEicrStatus();
+      createEicrStatus.setJobStatus(JobStatus.NOT_STARTED);
+      when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
+      when(mockState.hasActionCompleted(any())).thenReturn(true);
 
-			// Setup
-			CreateEicrStatus createEicrStatus = new CreateEicrStatus();
-			createEicrStatus.setJobStatus(JobStatus.NOT_STARTED);
-			when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
-			when(mockState.hasActionCompleted(any())).thenReturn(true);
+      setupMockData();
 
-			setupMockData();
+      Duration duration = new Duration();
+      when(mockRelActn.getDuration()).thenReturn(duration);
 
-			Duration duration = new Duration();
-			when(mockRelActn.getDuration()).thenReturn(duration);
+      // Test
+      createtEicrAction.execute(mockDetails, launchType);
 
-			// Test
-			createtEicrAction.execute(mockDetails, launchType);
+      // Validate
+      verify(mockState, times(1)).hasActionCompleted("123");
+      verify(mockRelActn, times(2)).getDuration();
+      PowerMockito.verifyStatic(WorkflowService.class, times(1));
+      WorkflowService.scheduleJob(
+          eq(1), any(Duration.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
 
-			// Validate
-			verify(mockState, times(1)).hasActionCompleted("123");
-			verify(mockRelActn, times(2)).getDuration();
-			PowerMockito.verifyStatic(WorkflowService.class, times(1));
-			WorkflowService.scheduleJob(eq(1), any(Duration.class), eq(EcrActionTypes.CREATE_EICR));
+      assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
 
-			assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
+    } catch (Exception e) {
 
-		} catch (Exception e) {
+      e.printStackTrace();
+      fail("This exception is not expected, fix the test method");
+    }
+  }
 
-			e.printStackTrace();
-			fail("This exception is not expected, fix the test method");
-		}
-	}
+  @Test
+  public void testExecute_NoDurationJobNotStarted() throws Exception {
 
-	@Test
-	public void testExecute_NoDurationJobNotStarted() throws Exception {
+    try {
 
-		try {
-			
-			// Setup
-			CreateEicrStatus createEicrStatus = new CreateEicrStatus();
-			createEicrStatus.setJobStatus(JobStatus.NOT_STARTED);
-			when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
-			when(mockState.hasActionCompleted(any())).thenReturn(true);
+      // Setup
+      CreateEicrStatus createEicrStatus = new CreateEicrStatus();
+      createEicrStatus.setJobStatus(JobStatus.NOT_STARTED);
+      when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
+      when(mockState.hasActionCompleted(any())).thenReturn(true);
 
-			TimingSchedule timeSchld = new TimingSchedule();
-			createtEicrAction.addTimingData(timeSchld);
+      TimingSchedule timeSchld = new TimingSchedule();
+      createtEicrAction.addTimingData(timeSchld);
 
-			setupMockData();
+      setupMockData();
 
-			// Test
-			createtEicrAction.execute(mockDetails, launchType);
+      // Test
+      createtEicrAction.execute(mockDetails, launchType);
 
-			// Validate
-			verify(mockState, times(1)).hasActionCompleted("123");
-			verify(mockRelActn, times(1)).getDuration();
-			PowerMockito.verifyStatic(WorkflowService.class, times(1));
-			WorkflowService.scheduleJob(eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CREATE_EICR));
+      // Validate
+      verify(mockState, times(1)).hasActionCompleted("123");
+      verify(mockRelActn, times(1)).getDuration();
+      PowerMockito.verifyStatic(WorkflowService.class, times(1));
+      WorkflowService.scheduleJob(
+          eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
 
-			assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
+      assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
 
-		} catch (Exception e) {
+    } catch (Exception e) {
 
-			e.printStackTrace();
-			fail("This exception is not expected, fix the test method");
-		}
+      e.printStackTrace();
+      fail("This exception is not expected, fix the test method");
+    }
+  }
 
-	}
+  @Test
+  public void testExecute_NoDurationJobScheduledTriggerMatch() throws Exception {
 
-	@Test
-	public void testExecute_NoDurationJobScheduledTriggerMatch() throws Exception {
+    try {
 
-		try {
+      // Setup
+      CreateEicrStatus createEicrStatus = new CreateEicrStatus();
+      createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
+      when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
+      when(mockState.hasActionCompleted(any())).thenReturn(true);
+      when(mockState.getMatchTriggerStatus()).thenReturn(mockTriggerStatus);
 
-			// Setup
-			CreateEicrStatus createEicrStatus = new CreateEicrStatus();
-			createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
-			when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
-			when(mockState.hasActionCompleted(any())).thenReturn(true);
-			when(mockState.getMatchTriggerStatus()).thenReturn(mockTriggerStatus);
+      TimingSchedule timeSchld = new TimingSchedule();
+      createtEicrAction.addTimingData(timeSchld);
+      List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
+      matchedCodes.add(new MatchedTriggerCodes());
 
-			TimingSchedule timeSchld = new TimingSchedule();
-			createtEicrAction.addTimingData(timeSchld);
-			List<MatchedTriggerCodes> matchedCodes = new ArrayList<>();
-			matchedCodes.add(new MatchedTriggerCodes());
+      setupMockData();
 
-			setupMockData();
+      when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
+      when(EcaUtils.createEicr(mockDetails)).thenReturn(mockEicr);
 
-			when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
-			when(EcaUtils.createEicr(mockDetails)).thenReturn(mockEicr);
+      when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
+      when(mockTriggerStatus.getMatchedCodes()).thenReturn(matchedCodes);
 
-			when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
-			when(mockTriggerStatus.getMatchedCodes()).thenReturn(matchedCodes);
+      when(mockEicr.getId()).thenReturn(10);
+      when(mockEicr.getData()).thenReturn("This is Eicr Document");
 
-			when(mockEicr.getId()).thenReturn(10);
-			when(mockEicr.getData()).thenReturn("This is Eicr Document");
+      // Test
+      createtEicrAction.execute(mockDetails, launchType);
 
-			// Test
-			createtEicrAction.execute(mockDetails, launchType);
+      // Validate
+      PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
+      ApplicationUtils.saveDataToFile(eq("This is Eicr Document"), anyString());
 
-			// Validate
-			PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
-			ApplicationUtils.saveDataToFile(eq("This is Eicr Document"), anyString());
+      assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
 
-			assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
+    } catch (Exception e) {
 
-		} catch (Exception e) {
+      e.printStackTrace();
+      fail("This exception is not expected, fix the test method");
+    }
+  }
 
-			e.printStackTrace();
-			fail("This exception is not expected, fix the test method");
-		}
+  @Test
+  public void testExecute_NoDurationJobScheduledTriggerNoMatch() throws Exception {
 
-	}
+    try {
 
-	@Test
-	public void testExecute_NoDurationJobScheduledTriggerNoMatch() throws Exception {
+      // Setup
+      CreateEicrStatus createEicrStatus = new CreateEicrStatus();
+      createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
+      when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
+      when(mockState.hasActionCompleted(any())).thenReturn(true);
+      when(mockState.getMatchTriggerStatus()).thenReturn(mockTriggerStatus);
 
-		try {
+      TimingSchedule timeSchld = new TimingSchedule();
+      createtEicrAction.addTimingData(timeSchld);
 
-			// Setup
-			CreateEicrStatus createEicrStatus = new CreateEicrStatus();
-			createEicrStatus.setJobStatus(JobStatus.SCHEDULED);
-			when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
-			when(mockState.hasActionCompleted(any())).thenReturn(true);
-			when(mockState.getMatchTriggerStatus()).thenReturn(mockTriggerStatus);
+      setupMockData();
 
-			TimingSchedule timeSchld = new TimingSchedule();
-			createtEicrAction.addTimingData(timeSchld);
+      when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
+      when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
 
-			setupMockData();
+      // Test
+      createtEicrAction.execute(mockDetails, launchType);
 
-			when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
-			when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
+      // Validate
+      PowerMockito.verifyStatic(EcaUtils.class, times(0));
+      EcaUtils.createEicr(mockDetails);
 
-			// Test
-			createtEicrAction.execute(mockDetails, launchType);
+      assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
 
-			// Validate
-			PowerMockito.verifyStatic(EcaUtils.class, times(0));
-			EcaUtils.createEicr(mockDetails);
+    } catch (Exception e) {
 
-			assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
+      e.printStackTrace();
+      fail("This exception is not expected, fix the test method");
+    }
+  }
 
-		} catch (Exception e) {
+  @Test(expected = RuntimeException.class)
+  public void testExecute_DetailObjIsInvalid() throws Exception {
 
-			e.printStackTrace();
-			fail("This exception is not expected, fix the test method");
-		}
+    // Test
+    createtEicrAction.execute(null, launchType);
+  }
 
-	}
+  private void setupMockData() {
 
-	@Test(expected = RuntimeException.class)
-	public void testExecute_DetailObjIsInvalid() throws Exception {
+    // Mock LaunchDetails
+    when(mockDetails.getId()).thenReturn(1);
+    when(mockDetails.getStatus()).thenReturn("MockStatus");
+    when(mockDetails.getLaunchPatientId()).thenReturn("100");
+    when(mockDetails.getStartDate()).thenReturn(new Date());
 
-		// Test
-		createtEicrAction.execute(null, launchType);
-	}
+    // Mock EcaUtils
+    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
-	private void setupMockData() {
+    // Mock RelatedActions
+    when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
+    when(mockRelActn.getRelatedAction()).thenReturn(createtEicrAction);
 
-		// Mock LaunchDetails
-		when(mockDetails.getId()).thenReturn(1);
-		when(mockDetails.getStatus()).thenReturn("MockStatus");
-		when(mockDetails.getLaunchPatientId()).thenReturn("100");
-
-		// Mock EcaUtils
-		when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
-
-		// Mock RelatedActions
-		when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
-		when(mockRelActn.getRelatedAction()).thenReturn(createtEicrAction);
-
-		// SetUp CreateEicrAction
-		createtEicrAction.addRelatedAction(mockRelActn);
-		createtEicrAction.setActionId("123");
-
-	}
-
+    // SetUp CreateEicrAction
+    createtEicrAction.addRelatedAction(mockRelActn);
+    createtEicrAction.setActionId("123");
+  }
 }

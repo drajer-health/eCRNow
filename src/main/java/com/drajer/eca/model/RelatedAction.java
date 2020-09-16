@@ -7,55 +7,52 @@ import org.slf4j.LoggerFactory;
 
 public class RelatedAction {
 
-	private ActionRelationshipType relationship;
+  private ActionRelationshipType relationship;
 
-	private AbstractAction relatedAction;
+  private AbstractAction relatedAction;
 
-	private Duration duration;
+  private Duration duration;
 
-	private final Logger logger = LoggerFactory.getLogger(RelatedAction.class);
+  private final Logger logger = LoggerFactory.getLogger(RelatedAction.class);
 
-	public ActionRelationshipType getRelationship() {
-		return relationship;
-	}
+  public ActionRelationshipType getRelationship() {
+    return relationship;
+  }
 
-	public void setRelationship(ActionRelationshipType relationship) {
-		this.relationship = relationship;
-	}
+  public void setRelationship(ActionRelationshipType relationship) {
+    this.relationship = relationship;
+  }
 
-	public AbstractAction getRelatedAction() {
-		return relatedAction;
-	}
+  public AbstractAction getRelatedAction() {
+    return relatedAction;
+  }
 
-	public void setRelatedAction(AbstractAction relatedAction) {
-		this.relatedAction = relatedAction;
-	}
+  public void setRelatedAction(AbstractAction relatedAction) {
+    this.relatedAction = relatedAction;
+  }
 
-	public Duration getDuration() {
-		return duration;
-	}
+  public Duration getDuration() {
+    return duration;
+  }
 
-	public void setDuration(Duration duration) {
-		this.duration = duration;
-	}
+  public void setDuration(Duration duration) {
+    this.duration = duration;
+  }
 
-	public void print() {
+  public void print() {
 
-		logger.info(" *** Printing Related Actions *** ");
+    logger.info(" *** Printing Related Actions *** ");
 
-		if (relationship != null)
-			logger.info(" Relationship = {}", relationship.toString());
+    if (relationship != null) logger.info(" Relationship = {}", relationship.toString());
 
-		if (relatedAction != null)
-			relatedAction.print();
+    if (relatedAction != null) relatedAction.print();
 
-		if (duration != null) {
+    if (duration != null) {
 
-			logger.info(" Duration period = {}", duration.getValue());
-			logger.info(" Duration unit = {}", duration.getUnit());
-		}
+      logger.info(" Duration period = {}", duration.getValue());
+      logger.info(" Duration unit = {}", duration.getUnit());
+    }
 
-		logger.info("*** End Printing Related Actions *** ");
-	}
-
+    logger.info("*** End Printing Related Actions *** ");
+  }
 }

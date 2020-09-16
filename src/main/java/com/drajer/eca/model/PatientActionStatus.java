@@ -4,24 +4,23 @@ import java.util.List;
 
 public class PatientActionStatus {
 
-	private String patiendId;
+  private String patiendId;
 
-	List<ActionStatus> actionStatus;
+  List<ActionStatus> actionStatus;
 
-	public String getPatiendId() {
-		return patiendId;
-	}
+  public String getPatiendId() {
+    return patiendId;
+  }
 
-	public void setPatiendId(String patiendId) {
-		this.patiendId = patiendId;
-	}
+  public void setPatiendId(String patiendId) {
+    this.patiendId = patiendId;
+  }
 
-	public List<ActionStatus> getActionStatus() {
-		return actionStatus;
-	}
+  public List<ActionStatus> getActionStatus() {
+    return actionStatus;
+  }
 
-	public void setActionStatus(List<ActionStatus> actionStatus) {
-		this.actionStatus = actionStatus;
-	}
-
+  public void setActionStatus(List<ActionStatus> actionStatus) {
+    this.actionStatus = actionStatus;
+  }
 }
