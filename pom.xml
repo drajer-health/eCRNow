@@ -185,6 +185,22 @@
 			<version>1.9</version>
 		</dependency>
 		
+		<dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito2</artifactId>
+                <version>2.0.7</version>
+                <scope>test</scope>
+        </dependency>
+ 
+        <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>2.0.7</version>
+                <scope>test</scope>
+        </dependency>
+        
+        
+		
 		<!-- Spring Boot Test -->
 
 		<dependency>
@@ -301,22 +317,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.21.0</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.21.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/java</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+        			<forkCount>0</forkCount>
+      			</configuration>
 			</plugin>			
 			
 			<!-- <plugin>
@@ -360,6 +363,22 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+                <groupId>com.coveo</groupId>
+                <artifactId>fmt-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <id>fmt-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+			</plugin>
+			
 		</plugins>
 	</build>
 	

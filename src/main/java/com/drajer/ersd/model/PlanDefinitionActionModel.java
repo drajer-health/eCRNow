@@ -4,78 +4,77 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "plandefinitionactions")
 @DynamicUpdate
 public class PlanDefinitionActionModel {
-	
-	@Id
-	@Column(name = "id")
-	private String id;
-	
-	@Column(name = "actionid")
-	private String actionId;
-	
-	@Column(name = "actiontriggertype")
-	private String actionTriggerType;
-	
-	@Column(name = "actionelementtype")
-	private String actionElementType;
-	
-	@Column(name = "actionpath")
-	private String actionPath;
-	
-	@Column(name = "actionvaluesetgrouper")
-	private String actionValueSetGrouper;
 
-	public String getId() {
-		return id;
-	}
+  @Id
+  @Column(name = "id")
+  private String id;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  @Column(name = "actionid")
+  private String actionId;
 
-	public String getActionId() {
-		return actionId;
-	}
+  @Column(name = "actiontriggertype")
+  private String actionTriggerType;
 
-	public void setActionId(String actionId) {
-		this.actionId = actionId;
-	}
+  @Column(name = "actionelementtype")
+  private String actionElementType;
 
-	public String getActionTriggerType() {
-		return actionTriggerType;
-	}
+  @Column(name = "actionpath")
+  private String actionPath;
 
-	public void setActionTriggerType(String actionTriggerType) {
-		this.actionTriggerType = actionTriggerType;
-	}
+  @Column(name = "actionvaluesetgrouper")
+  private String actionValueSetGrouper;
 
-	public String getActionElementType() {
-		return actionElementType;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setActionElementType(String actionElementType) {
-		this.actionElementType = actionElementType;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public String getActionPath() {
-		return actionPath;
-	}
+  public String getActionId() {
+    return actionId;
+  }
 
-	public void setActionPath(String actionPath) {
-		this.actionPath = actionPath;
-	}
+  public void setActionId(String actionId) {
+    this.actionId = actionId;
+  }
 
-	public String getActionValueSetGrouper() {
-		return actionValueSetGrouper;
-	}
+  public String getActionTriggerType() {
+    return actionTriggerType;
+  }
 
-	public void setActionValueSetGrouper(String actionValueSetGrouper) {
-		this.actionValueSetGrouper = actionValueSetGrouper;
-	}
+  public void setActionTriggerType(String actionTriggerType) {
+    this.actionTriggerType = actionTriggerType;
+  }
+
+  public String getActionElementType() {
+    return actionElementType;
+  }
+
+  public void setActionElementType(String actionElementType) {
+    this.actionElementType = actionElementType;
+  }
+
+  public String getActionPath() {
+    return actionPath;
+  }
+
+  public void setActionPath(String actionPath) {
+    this.actionPath = actionPath;
+  }
+
+  public String getActionValueSetGrouper() {
+    return actionValueSetGrouper;
+  }
+
+  public void setActionValueSetGrouper(String actionValueSetGrouper) {
+    this.actionValueSetGrouper = actionValueSetGrouper;
+  }
 }

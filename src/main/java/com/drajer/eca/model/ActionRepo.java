@@ -1,311 +1,279 @@
 package com.drajer.eca.model;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ActionRepo {
-	
-	private static ActionRepo instance;
-	
-	private Map<EcrActionTypes, Set<AbstractAction> > actions;
-	
-	private Map<TriggerType, Set<AbstractAction> >	   actionsByTriggers;
-	
-	// These are other services that the action classes use and we are storing it once for all of them instead
-	// of using it class variables which can be injected.
-	// We could do injection if we do not use NEW operator , but the ERSD processor will use new to create intead of
-	// Spring context, hence Autowired variables cannot be injected into this class or the action classes.
-	
-	TriggerQueryService triggerQueryService;
-	
-	LoadingQueryService loadingQueryService;
-	
-	LaunchService		launchService;
-	
-	ThreadPoolTaskScheduler taskScheduler;
-	
-	EicrRRService		eicrRRService;
-	
-	DirectEicrSender 	directTransport;
-	
-	String 				schematronFileLocation;
 
-    String 				logFileDirectory;
+  private static ActionRepo instance;
 
-    String 				xsdSchemasLocation;
+  private Map<EcrActionTypes, Set<AbstractAction>> actions;
 
-	private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
+  private Map<TriggerType, Set<AbstractAction>> actionsByTriggers;
 
-	public static ActionRepo getInstance() {
-		if (instance == null) {
-			instance = new ActionRepo();
-		}
-		return instance;
-	}
-		
-	public String getLogFileDirectory() {
-		return logFileDirectory;
-	}
+  // These are other services that the action classes use and we are storing it once for all of them
+  // instead
+  // of using it class variables which can be injected.
+  // We could do injection if we do not use NEW operator , but the ERSD processor will use new to
+  // create intead of
+  // Spring context, hence Autowired variables cannot be injected into this class or the action
+  // classes.
 
+  TriggerQueryService triggerQueryService;
 
-	public void setLogFileDirectory(String logFileLocation) {
-		
-		File f = new File(logFileLocation);
-		
-		if(f.getParentFile().isDirectory()) {
-			logFileDirectory = f.getParentFile().getAbsolutePath();
-		}
-	}
+  LoadingQueryService loadingQueryService;
 
-	public DirectEicrSender getDirectTransport() {
-		return directTransport;
-	}
+  LaunchService launchService;
 
-	public void setDirectTransport(DirectEicrSender directTransport) {
-		this.directTransport = directTransport;
-	}
+  ThreadPoolTaskScheduler taskScheduler;
 
-	public String getSchematronFileLocation() {
-		return schematronFileLocation;
-	}
+  EicrRRService eicrRRService;
 
-	public void setSchematronFileLocation(String schematronFileLocation) {
-		this.schematronFileLocation = schematronFileLocation;
-	}
+  DirectEicrSender directTransport;
 
-    public String getXsdSchemasLocation() { return xsdSchemasLocation; }
+  String schematronFileLocation;
 
-    public void setXsdSchemasLocation(String xsdSchemasLocation) { this.xsdSchemasLocation = xsdSchemasLocation; }
+  String logFileDirectory;
 
-    public EicrRRService getEicrRRService() {
-		return eicrRRService;
-	}
+  String xsdSchemasLocation;
 
-	public void setEicrRRService(EicrRRService eicrRRService) {
-		this.eicrRRService = eicrRRService;
-	}
+  private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
-	public ThreadPoolTaskScheduler getTaskScheduler() {
-		return taskScheduler;
-	}
+  public static ActionRepo getInstance() {
+    if (instance == null) {
+      instance = new ActionRepo();
+    }
+    return instance;
+  }
 
-	public void setTaskScheduler(ThreadPoolTaskScheduler taskScheduler) {
-		this.taskScheduler = taskScheduler;
-	}
+  public String getLogFileDirectory() {
+    return logFileDirectory;
+  }
 
+  public void setLogFileDirectory(String logFileLocation) {
 
+    File f = new File(logFileLocation);
 
+    if (f.getParentFile().isDirectory()) {
+      logFileDirectory = f.getParentFile().getAbsolutePath();
+    }
+  }
 
-	public LaunchService getLaunchService() {
-		return launchService;
-	}
+  public DirectEicrSender getDirectTransport() {
+    return directTransport;
+  }
 
-	public void setLaunchService(LaunchService launchService) {
-		this.launchService = launchService;
-	}
+  public void setDirectTransport(DirectEicrSender directTransport) {
+    this.directTransport = directTransport;
+  }
 
-	public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
-		return actionsByTriggers;
-	}
+  public String getSchematronFileLocation() {
+    return schematronFileLocation;
+  }
 
-	public void setActionsByTriggers(Map<TriggerType, Set<AbstractAction>> actionsByTriggers) {
-		this.actionsByTriggers = actionsByTriggers;
-	}
+  public void setSchematronFileLocation(String schematronFileLocation) {
+    this.schematronFileLocation = schematronFileLocation;
+  }
 
+  public String getXsdSchemasLocation() {
+    return xsdSchemasLocation;
+  }
 
+  public void setXsdSchemasLocation(String xsdSchemasLocation) {
+    this.xsdSchemasLocation = xsdSchemasLocation;
+  }
 
-	public TriggerQueryService getTriggerQueryService() {
-		return triggerQueryService;
-	}
+  public EicrRRService getEicrRRService() {
+    return eicrRRService;
+  }
 
+  public void setEicrRRService(EicrRRService eicrRRService) {
+    this.eicrRRService = eicrRRService;
+  }
 
+  public ThreadPoolTaskScheduler getTaskScheduler() {
+    return taskScheduler;
+  }
 
-	public void setTriggerQueryService(TriggerQueryService triggerQueryService) {
-		this.triggerQueryService = triggerQueryService;
-	}
+  public void setTaskScheduler(ThreadPoolTaskScheduler taskScheduler) {
+    this.taskScheduler = taskScheduler;
+  }
 
+  public LaunchService getLaunchService() {
+    return launchService;
+  }
 
+  public void setLaunchService(LaunchService launchService) {
+    this.launchService = launchService;
+  }
 
-	public LoadingQueryService getLoadingQueryService() {
-		return loadingQueryService;
-	}
+  public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
+    return actionsByTriggers;
+  }
 
+  public void setActionsByTriggers(Map<TriggerType, Set<AbstractAction>> actionsByTriggers) {
+    this.actionsByTriggers = actionsByTriggers;
+  }
 
+  public TriggerQueryService getTriggerQueryService() {
+    return triggerQueryService;
+  }
 
-	public void setLoadingQueryService(LoadingQueryService loadingQueryService) {
-		this.loadingQueryService = loadingQueryService;
-	}
+  public void setTriggerQueryService(TriggerQueryService triggerQueryService) {
+    this.triggerQueryService = triggerQueryService;
+  }
 
+  public LoadingQueryService getLoadingQueryService() {
+    return loadingQueryService;
+  }
 
+  public void setLoadingQueryService(LoadingQueryService loadingQueryService) {
+    this.loadingQueryService = loadingQueryService;
+  }
 
-	public Map<EcrActionTypes, Set<AbstractAction>> getActions() {
-		return actions;
-	}
+  public Map<EcrActionTypes, Set<AbstractAction>> getActions() {
+    return actions;
+  }
 
+  public void setActions(Map<EcrActionTypes, Set<AbstractAction>> actions) {
+    this.actions = actions;
+  }
 
+  public void setupTriggerBasedActions() {
 
-	public void setActions(Map<EcrActionTypes, Set<AbstractAction>> actions) {
-		this.actions = actions;
-		
-	}
-	
-	public void setupTriggerBasedActions() {
-		
-		if(actions != null) {
-			
-			for(Map.Entry<EcrActionTypes, Set<AbstractAction> > ent : actions.entrySet()) {
-				
-				Set<AbstractAction> aa = ent.getValue();
-				
-				if(aa != null) {
-					
-					for(AbstractAction a : aa) {
-						
-						// if Trigger is populated then we can add it.
-						List<ActionData> td = a.getTriggerData();
-						
-						if(td != null && td.size() > 0) {
-							
-							if(actionsByTriggers == null)
-								actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction> >();
-								
-							for(ActionData ad : td) {
-								
-								if(actionsByTriggers.containsKey(ad.getTriggerType())) {
-									
-									actionsByTriggers.get(ad.getTriggerType()).add(a);
-									
-								}
-								else {
-									Set<AbstractAction> la = new HashSet<AbstractAction>();
-									la.add(a);
-									
-									actionsByTriggers.put(ad.getTriggerType(), la);
-																		
-								}
-								
-								
-							}
-							
-						}			
-						
-						// Add for Timing data
-						// if Trigger is populated then we can add it.
-						List<TimingSchedule> ts = a.getTimingData();
-						
-						if(ts != null && ts.size() > 0) {
-							
-							if(actionsByTriggers == null)
-								actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction> >();
-								
-							for(TimingSchedule tsd : ts) {
-								
-								if(actionsByTriggers.containsKey(tsd.getTriggerType())) {
-									
-									actionsByTriggers.get(tsd.getTriggerType()).add(a);
-									
-								}
-								else {
-									Set<AbstractAction> la = new HashSet<AbstractAction>();
-									la.add(a);
-									
-									actionsByTriggers.put(tsd.getTriggerType(), la);
-																		
-								}
-								
-								
-							}
-							
-						}	
-					}
-				}				
-			}
-			
-		}
-	}
-	
+    if (actions != null) {
 
+      for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
 
+        Set<AbstractAction> aa = ent.getValue();
 
-	private ActionRepo() {
-	}
-	
-	public void print() {
-		
-		logger.info(" ***** Printing ACTION Repository ***** " + "\n" );
-		
-		logger.info(" *************** Printing EicrTypes Repository **************** " + "\n" );
-		
-		if(actions != null) {
-			
-			for(Map.Entry<EcrActionTypes, Set<AbstractAction> > ent : actions.entrySet()) {
-				
-				
-				logger.info(" Printing Eicr Action Type : " + ent.getKey().toString());
-				
-				Set<AbstractAction> aa = ent.getValue();
-				
-				if(aa != null) {
-					
-					for(AbstractAction a : aa) {
-						
-						logger.info(" Action that will be executed " + a.toString());
-						
-						// a.print();
-					}
-				}	
-			}
-		}
-		
-		logger.info(" *************** End Printing EicrTypes Repository **************** " + "\n" );
-		
-		logger.info(" *************** Start Printing Trigger Types Repository **************** " + "\n" );
-		
-		if(actionsByTriggers != null) {
-			
-			for(Map.Entry<TriggerType, Set<AbstractAction> > ent : actionsByTriggers.entrySet()) {
-				
-				logger.info(" Printing Trigger for Action " + ent.getKey().toString());
-				
-				
-				Set<AbstractAction> aa = ent.getValue();
-				
-				if(aa != null) {
-					
-					for(AbstractAction a : aa) {
-						
-						logger.info(" Action that will be executed " + a.toString());
-						
-						// a.print();
-					}
-				}
-			}
-		}
-		
-		logger.info(" *************** End Printing Trigger Types Repository **************** " + "\n" );
-		
-		logger.info(" ***** End Printing ACTION Repository ***** " + "\n" );
-		
-	}
+        if (aa != null) {
+
+          for (AbstractAction a : aa) {
+
+            // if Trigger is populated then we can add it.
+            List<ActionData> td = a.getTriggerData();
+
+            if (td != null && td.size() > 0) {
+
+              if (actionsByTriggers == null)
+                actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction>>();
+
+              for (ActionData ad : td) {
+
+                if (actionsByTriggers.containsKey(ad.getTriggerType())) {
+
+                  actionsByTriggers.get(ad.getTriggerType()).add(a);
+
+                } else {
+                  Set<AbstractAction> la = new HashSet<>();
+                  la.add(a);
+
+                  actionsByTriggers.put(ad.getTriggerType(), la);
+                }
+              }
+            }
+
+            // Add for Timing data
+            // if Trigger is populated then we can add it.
+            List<TimingSchedule> ts = a.getTimingData();
+
+            if (ts != null && ts.size() > 0) {
+
+              if (actionsByTriggers == null)
+                actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction>>();
+
+              for (TimingSchedule tsd : ts) {
+
+                if (actionsByTriggers.containsKey(tsd.getTriggerType())) {
+
+                  actionsByTriggers.get(tsd.getTriggerType()).add(a);
+
+                } else {
+                  Set<AbstractAction> la = new HashSet<>();
+                  la.add(a);
+
+                  actionsByTriggers.put(tsd.getTriggerType(), la);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private ActionRepo() {}
+
+  public void print() {
+
+    logger.info(" ***** Printing ACTION Repository ***** " + "\n");
+
+    logger.info(" *************** Printing EicrTypes Repository **************** " + "\n");
+
+    if (actions != null) {
+
+      for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
+
+        logger.info(" Printing Eicr Action Type : {}", ent.getKey().toString());
+
+        Set<AbstractAction> aa = ent.getValue();
+
+        if (aa != null) {
+
+          for (AbstractAction a : aa) {
+
+            logger.info(" Action that will be executed {}", a.toString());
+
+            // a.print();
+          }
+        }
+      }
+    }
+
+    logger.info(" *************** End Printing EicrTypes Repository **************** " + "\n");
+
+    logger.info(
+        " *************** Start Printing Trigger Types Repository **************** " + "\n");
+
+    if (actionsByTriggers != null) {
+
+      for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
+
+        logger.info(" Printing Trigger for Action {}", ent.getKey().toString());
+
+        Set<AbstractAction> aa = ent.getValue();
+
+        if (aa != null) {
+
+          for (AbstractAction a : aa) {
+
+            logger.info(" Action that will be executed {}", a.toString());
+
+            // a.print();
+          }
+        }
+      }
+    }
+
+    logger.info(" *************** End Printing Trigger Types Repository **************** " + "\n");
+
+    logger.info(" ***** End Printing ACTION Repository ***** " + "\n");
+  }
 }
