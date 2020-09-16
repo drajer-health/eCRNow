@@ -252,7 +252,7 @@ class ClientDetails extends Component {
                         <Alert
                             variant="success"
                             show={this.state.isSaved}
-                            onClose={() => setShow(false)}
+                            onClose={() => setShow()}
                             dismissible
                         >
                             Client Details are saved successfully.

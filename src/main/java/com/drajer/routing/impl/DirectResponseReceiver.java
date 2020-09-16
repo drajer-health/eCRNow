@@ -1,21 +1,13 @@
 package com.drajer.routing.impl;
 
-import com.drajer.eca.model.CloseOutEicrAction;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.routing.RRReceiver;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Properties;
-
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
@@ -27,147 +19,136 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class DirectResponseReceiver extends RRReceiver {
-	
-	private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class); 
 
-	@Override
-	public Object receiveRespone(Object context) {
-		
-		logger.info(" **** START Executing Direct Receive **** ");
-		
-		if (context instanceof LaunchDetails) {
+  private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class);
 
-			logger.info(" Obtained Launch Details ");
-			LaunchDetails details = (LaunchDetails) context;
-			PatientExecutionState state = null;
-			
-			state = DirectEicrSender.getDetailStatus(details, state);
-			
-			readMail(details, state);
-		}		
-		
-		return null;
-	}	
-	
-	public void readMail(LaunchDetails details, PatientExecutionState state) {
+  @Override
+  public Object receiveRespone(Object context) {
 
-			try {
-				
-				String mId = null;
+    logger.info(" **** START Executing Direct Receive **** ");
 
-				/*Properties prop = new Properties();
-				String path = "./application.properties";
-				FileInputStream file = new FileInputStream(path);
-				prop.load(file);
-				file.close();*/
+    if (context instanceof LaunchDetails) {
 
-				//Properties for Javamail
-				Properties props = new Properties();
-				Session session = Session.getInstance(props, null);
+      logger.info(" Obtained Launch Details ");
+      LaunchDetails details = (LaunchDetails) context;
+      ObjectMapper mapper = new ObjectMapper();
+      PatientExecutionState state = null;
 
-				Store store = session.getStore("imap");
-				int port = 143; // Integer.parseInt(prop.getProperty("port"));
-				logger.info("Connecting to IMAP Inbox");
-				store.connect(details.getDirectHost(),port,details.getDirectUser(), details.getDirectPwd());
+      state = DirectEicrSender.getDetailStatus(details, state);
 
-				Folder inbox = store.getFolder("Inbox");
-				inbox.open(Folder.READ_WRITE);
+      readMail(details, state);
+    }
 
+    return null;
+  }
 
-				Flags seen = new Flags(Flags.Flag.SEEN);
-				FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-				Message messages[] = inbox.search(unseenFlagTerm);
+  public void readMail(LaunchDetails details, PatientExecutionState state) {
 
-				for (Message message : messages) {
+    try {
 
-					logger.info("Found unread emails");
-					Enumeration headers = message.getAllHeaders();
-					
-					while(headers.hasMoreElements()) {
-						Header h = (Header) headers.nextElement();
-						if(h.getName().contains("Message-ID")){
-							mId = h.getValue();
-						}
-					}
-					
-					Address[] froms = message.getFrom();
-					String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
-					
-					if(message.getContent() instanceof Multipart){
-						Multipart multipart = (Multipart) message.getContent();
-						for (int i = 0; i < multipart.getCount(); i++) {
-							BodyPart bodyPart = multipart.getBodyPart(i);
-							InputStream stream = bodyPart.getInputStream();
+      String mId = null;
 
-							byte[] targetArray = IOUtils.toByteArray(stream);
+      /*Properties prop = new Properties();
+      String path = "./application.properties";
+      FileInputStream file = new FileInputStream(path);
+      prop.load(file);
+      file.close();*/
 
-							if (bodyPart.getFileName() != null) {
-								if ((bodyPart.getFileName().contains(".xml") || bodyPart.getFileName().contains(".XML"))){
-									String filename = bodyPart.getFileName();
-									
-									logger.info("Found XML Attachment");
-									
-									FileUtils.writeByteArrayToFile(new File(bodyPart.getFileName()), targetArray);
-									File file1 = new File(bodyPart.getFileName());
-									FileBody fileBody = new FileBody(file1);
+      // Properties for Javamail
+      Properties props = new Properties();
+      Session session = Session.getInstance(props, null);
 
-									logger.info(" Need to determine what to do with the response received from :  " + senderAddress);
-								}
-							}							
-					
-						}
-					}
-				}
-				
-				deleteMail(details.getDirectHost(),details.getDirectUser(), details.getDirectPwd());				
+      Store store = session.getStore("imap");
+      int port = 143; // Integer.parseInt(prop.getProperty("port"));
+      logger.info("Connecting to IMAP Inbox");
+      store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
 
-			}  catch (Exception e) {
+      Folder inbox = store.getFolder("Inbox");
+      inbox.open(Folder.READ_WRITE);
 
-				e.printStackTrace();
-			}	
+      Flags seen = new Flags(Flags.Flag.SEEN);
+      FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
+      Message messages[] = inbox.search(unseenFlagTerm);
 
-	}
-	
-	public void deleteMail(String host, String username, String password) throws Exception{
-		
-		Properties props = new Properties();		
-		Session session = Session.getInstance(props, null);
+      for (Message message : messages) {
 
-		Store store = session.getStore("imap");
-		int port = 143; // Integer.parseInt(prop.getProperty("port"));
-		store.connect(host, username, password);
+        logger.info("Found unread emails");
+        Enumeration headers = message.getAllHeaders();
 
-		Folder inbox = store.getFolder("Inbox");
-		inbox.open(Folder.READ_WRITE);
-		Flags seen = new Flags(Flags.Flag.SEEN);
-		
-		FlagTerm seenFlagTerm = new FlagTerm(seen,true);
-		Message messages[] = inbox.search(seenFlagTerm);
+        while (headers.hasMoreElements()) {
+          Header h = (Header) headers.nextElement();
+          if (h.getName().contains("Message-ID")) {
+            mId = h.getValue();
+          }
+        }
 
-		for (Message message : messages){
+        Address[] froms = message.getFrom();
+        String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
 
-			message.setFlag(Flags.Flag.DELETED, true);
-		}
-		
-		inbox.close(true);
+        if (message.getContent() instanceof Multipart) {
+          Multipart multipart = (Multipart) message.getContent();
+          for (int i = 0; i < multipart.getCount(); i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            InputStream stream = bodyPart.getInputStream();
 
-	}
+            byte[] targetArray = IOUtils.toByteArray(stream);
 
+            if (bodyPart.getFileName() != null) {
+              if ((bodyPart.getFileName().contains(".xml")
+                  || bodyPart.getFileName().contains(".XML"))) {
+                String filename = bodyPart.getFileName();
+
+                logger.info("Found XML Attachment");
+
+                FileUtils.writeByteArrayToFile(new File(bodyPart.getFileName()), targetArray);
+                File file1 = new File(bodyPart.getFileName());
+                FileBody fileBody = new FileBody(file1);
+
+                logger.info(
+                    " Need to determine what to do with the response received from :  "
+                        + senderAddress);
+              }
+            }
+          }
+        }
+      }
+
+      deleteMail(details.getDirectHost(), details.getDirectUser(), details.getDirectPwd());
+
+    } catch (Exception e) {
+
+      logger.error("Error while reading mail", e);
+    }
+  }
+
+  public void deleteMail(String host, String username, String password) throws Exception {
+
+    Properties props = new Properties();
+    Session session = Session.getInstance(props, null);
+
+    Store store = session.getStore("imap");
+    int port = 143; // Integer.parseInt(prop.getProperty("port"));
+    store.connect(host, username, password);
+
+    Folder inbox = store.getFolder("Inbox");
+    inbox.open(Folder.READ_WRITE);
+    Flags seen = new Flags(Flags.Flag.SEEN);
+
+    FlagTerm seenFlagTerm = new FlagTerm(seen, true);
+    Message messages[] = inbox.search(seenFlagTerm);
+
+    for (Message message : messages) {
+
+      message.setFlag(Flags.Flag.DELETED, true);
+    }
+
+    inbox.close(true);
+  }
 }

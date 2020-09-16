@@ -13,19 +13,18 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
 @EnableTransactionManagement
 @ServletComponentScan
-public class EcrApp extends SpringBootServletInitializer{
+public class EcrApp extends SpringBootServletInitializer {
 
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(EcrApp.class);
-	}
-	
-	public static void main(String[] args) {
-		SpringApplication.run(EcrApp.class, args);
-	}
-	
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+  protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    return application.sources(EcrApp.class);
+  }
 
+  public static void main(String[] args) {
+    SpringApplication.run(EcrApp.class, args);
+  }
+
+  @Bean
+  public RestTemplate restTemplate() {
+    return new RestTemplate();
+  }
 }

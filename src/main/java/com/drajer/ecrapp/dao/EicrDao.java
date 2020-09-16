@@ -5,11 +5,11 @@ import com.drajer.ecrapp.model.ReportabilityResponse;
 
 public interface EicrDao {
 
-	Eicr saveOrUpdate(Eicr eicr);
-	
-	Eicr getEicrById(Integer id);
-	
-	ReportabilityResponse saveOrUpdate(ReportabilityResponse rr);
-	
-	ReportabilityResponse getRRById(Integer id);
+  Eicr saveOrUpdate(Eicr eicr);
+
+  Eicr getEicrById(Integer id);
+
+  ReportabilityResponse saveOrUpdate(ReportabilityResponse rr);
+
+  ReportabilityResponse getRRById(Integer id);
 }

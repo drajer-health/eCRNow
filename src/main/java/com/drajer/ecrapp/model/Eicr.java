@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -14,26 +13,26 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 public class Eicr {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer id;
 
-	@Column(name = "data", nullable = true, columnDefinition = "TEXT")
-	private String data;
+  @Column(name = "data", nullable = true, columnDefinition = "TEXT")
+  private String data;
 
-	public Integer getId() {
-		return id;
-	}
+  public Integer getId() {
+    return id;
+  }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-	public String getData() {
-		return data;
-	}
+  public String getData() {
+    return data;
+  }
 
-	public void setData(String data) {
-		this.data = data;
-	}
+  public void setData(String data) {
+    this.data = data;
+  }
 }

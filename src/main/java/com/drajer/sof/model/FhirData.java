@@ -1,216 +1,198 @@
 package com.drajer.sof.model;
 
+import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.hl7.fhir.r4.model.CodeableConcept;
-
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 
 public abstract class FhirData {
 
-	List<CodeableConceptDt> conditionCodes;
-	List<CodeableConceptDt> labResultCodes;
-	List<CodeableConceptDt> labResultValues;
-	List<CodeableConceptDt> medicationCodes;
-	List<CodeableConceptDt> diagnosticOrderCodes;
-	List<CodeableConceptDt> encounterCodes;
-	List<CodeableConceptDt> immuniationCodes;
-	List<CodeableConceptDt> diagnosticReportCodes;
-	
-	List<CodeableConcept> r4ConditionCodes;
-	List<CodeableConcept> r4LabResultCodes;
-	List<CodeableConcept> r4LabResultValues;
-	List<CodeableConcept> r4MedicationCodes;
-	List<CodeableConcept> r4ServiceRequestCodes;
-	List<CodeableConcept> r4EncounterCodes;
-	List<CodeableConcept> r4ImmunizationCodes;
-	List<CodeableConcept> r4DiagnosticReportCodes;
-	
-	public FhirData() {
-		
-		conditionCodes = new ArrayList<CodeableConceptDt>();
-		labResultCodes = new ArrayList<CodeableConceptDt>();
-		labResultValues = new ArrayList<CodeableConceptDt>();
-		medicationCodes = new ArrayList<CodeableConceptDt>();
-		diagnosticOrderCodes = new ArrayList<CodeableConceptDt>();
-		encounterCodes = new ArrayList<CodeableConceptDt>();
-		immuniationCodes = new ArrayList<CodeableConceptDt>();
-		diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
-		
-		r4ConditionCodes = new ArrayList<CodeableConcept>();
-		r4LabResultCodes = new ArrayList<CodeableConcept>();
-		r4LabResultValues = new ArrayList<CodeableConcept>();
-		r4MedicationCodes = new ArrayList<CodeableConcept>();
-		r4ServiceRequestCodes = new ArrayList<CodeableConcept>();
-		r4EncounterCodes = new ArrayList<CodeableConcept>();
-		r4ImmunizationCodes = new ArrayList<CodeableConcept>();
-		r4DiagnosticReportCodes = new ArrayList<CodeableConcept>();
-		
-		
-	}
-	
-	public List<CodeableConceptDt> getConditionCodes() {
-		return conditionCodes;
-	}
+  List<CodeableConceptDt> conditionCodes;
+  List<CodeableConceptDt> labResultCodes;
+  List<CodeableConceptDt> labResultValues;
+  List<CodeableConceptDt> medicationCodes;
+  List<CodeableConceptDt> diagnosticOrderCodes;
+  List<CodeableConceptDt> encounterCodes;
+  List<CodeableConceptDt> immuniationCodes;
+  List<CodeableConceptDt> diagnosticReportCodes;
 
-	public void setConditionCodes(List<CodeableConceptDt> conditionCodes) {
-		this.conditionCodes = conditionCodes;
-	}
+  List<CodeableConcept> r4ConditionCodes;
+  List<CodeableConcept> r4LabResultCodes;
+  List<CodeableConcept> r4LabResultValues;
+  List<CodeableConcept> r4MedicationCodes;
+  List<CodeableConcept> r4ServiceRequestCodes;
+  List<CodeableConcept> r4EncounterCodes;
+  List<CodeableConcept> r4ImmunizationCodes;
+  List<CodeableConcept> r4DiagnosticReportCodes;
 
-	public List<CodeableConceptDt> getLabResultCodes() {
-		return labResultCodes;
-	}
+  public FhirData() {
 
-	public void setLabResultCodes(List<CodeableConceptDt> labResultCodes) {
-		this.labResultCodes = labResultCodes;
-	}
+    conditionCodes = new ArrayList<CodeableConceptDt>();
+    labResultCodes = new ArrayList<CodeableConceptDt>();
+    labResultValues = new ArrayList<CodeableConceptDt>();
+    medicationCodes = new ArrayList<CodeableConceptDt>();
+    diagnosticOrderCodes = new ArrayList<CodeableConceptDt>();
+    encounterCodes = new ArrayList<CodeableConceptDt>();
+    immuniationCodes = new ArrayList<CodeableConceptDt>();
+    diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
 
-	public List<CodeableConceptDt> getMedicationCodes() {
-		return medicationCodes;
-	}
+    r4ConditionCodes = new ArrayList<CodeableConcept>();
+    r4LabResultCodes = new ArrayList<CodeableConcept>();
+    r4LabResultValues = new ArrayList<CodeableConcept>();
+    r4MedicationCodes = new ArrayList<CodeableConcept>();
+    r4ServiceRequestCodes = new ArrayList<CodeableConcept>();
+    r4EncounterCodes = new ArrayList<CodeableConcept>();
+    r4ImmunizationCodes = new ArrayList<CodeableConcept>();
+    r4DiagnosticReportCodes = new ArrayList<CodeableConcept>();
+  }
 
-	public void setMedicationCodes(List<CodeableConceptDt> medicationCodes) {
-		this.medicationCodes = medicationCodes;
-	}
+  public List<CodeableConceptDt> getConditionCodes() {
+    return conditionCodes;
+  }
 
-	public List<CodeableConceptDt> getDiagnosticOrderCodes() {
-		return diagnosticOrderCodes;
-	}
+  public void setConditionCodes(List<CodeableConceptDt> conditionCodes) {
+    this.conditionCodes = conditionCodes;
+  }
 
-	public void setDiagnosticOrderCodes(List<CodeableConceptDt> diagnosticOrderCodes) {
-		this.diagnosticOrderCodes = diagnosticOrderCodes;
-	}
+  public List<CodeableConceptDt> getLabResultCodes() {
+    return labResultCodes;
+  }
 
-	public List<CodeableConceptDt> getEncounterCodes() {
-		return encounterCodes;
-	}
+  public void setLabResultCodes(List<CodeableConceptDt> labResultCodes) {
+    this.labResultCodes = labResultCodes;
+  }
 
-	public void setEncounterCodes(List<CodeableConceptDt> encounterCodes) {
-		this.encounterCodes = encounterCodes;
-	}
+  public List<CodeableConceptDt> getMedicationCodes() {
+    return medicationCodes;
+  }
 
-	public List<CodeableConceptDt> getImmuniationCodes() {
-		return immuniationCodes;
-	}
+  public void setMedicationCodes(List<CodeableConceptDt> medicationCodes) {
+    this.medicationCodes = medicationCodes;
+  }
 
-	public void setImmuniationCodes(List<CodeableConceptDt> immuniationCodes) {
-		this.immuniationCodes = immuniationCodes;
-	}
+  public List<CodeableConceptDt> getDiagnosticOrderCodes() {
+    return diagnosticOrderCodes;
+  }
 
-	public List<CodeableConceptDt> getDiagnosticReportCodes() {
-		return diagnosticReportCodes;
-	}
+  public void setDiagnosticOrderCodes(List<CodeableConceptDt> diagnosticOrderCodes) {
+    this.diagnosticOrderCodes = diagnosticOrderCodes;
+  }
 
-	public void setDiagnosticReportCodes(List<CodeableConceptDt> diagnosticReportCodes) {
-		this.diagnosticReportCodes = diagnosticReportCodes;
-	}
+  public List<CodeableConceptDt> getEncounterCodes() {
+    return encounterCodes;
+  }
 
-	public List<CodeableConceptDt> getCodesForExpression(String expression) {
-		
-		if(expression.contains("Condition.code")) {
-			return conditionCodes;
-		}
-		else if(expression.contains("MedicationAdministration.code")) {
-			return medicationCodes;
-		}
-		else if(expression.contains("Observation.code")) {
-			return labResultCodes;
-		}
-		else if(expression.contains("Immunization.vaccineCode")) {
-			return immuniationCodes;
-		}
-		else if(expression.contains("ServiceRequest.code")) {
-			return diagnosticOrderCodes;
-		}
-		else if(expression.contains("Observation.value")) {
-			return labResultValues;
-		}
-		else {
-			return null;
-		}
-		
-	}
-	
-	public List<CodeableConcept> getR4CodesForExpression(String expression) {
-		
-		if(expression.contains("Condition.code")) {
-			return r4ConditionCodes;
-		}
-		else if(expression.contains("MedicationAdministration.code")) {
-			return r4MedicationCodes;
-		}
-		else if(expression.contains("Observation.code")) {
-			return r4LabResultCodes;
-		}
-		else if(expression.contains("Immunization.vaccineCode")) {
-			return r4ImmunizationCodes;
-		}
-		else if(expression.contains("ServiceRequest.code")) {
-			return r4ServiceRequestCodes;
-		}
-		else if(expression.contains("Observation.value")) {
-			return r4LabResultValues;
-		}
-		else {
-			return null;
-		}
-		
-	}
+  public void setEncounterCodes(List<CodeableConceptDt> encounterCodes) {
+    this.encounterCodes = encounterCodes;
+  }
 
-	public List<CodeableConcept> getR4ConditionCodes() {
-		return r4ConditionCodes;
-	}
+  public List<CodeableConceptDt> getImmuniationCodes() {
+    return immuniationCodes;
+  }
 
-	public void setR4ConditionCodes(List<CodeableConcept> r4ConditionCodes) {
-		this.r4ConditionCodes = r4ConditionCodes;
-	}
+  public void setImmuniationCodes(List<CodeableConceptDt> immuniationCodes) {
+    this.immuniationCodes = immuniationCodes;
+  }
 
-	public List<CodeableConcept> getR4LabResultCodes() {
-		return r4LabResultCodes;
-	}
+  public List<CodeableConceptDt> getDiagnosticReportCodes() {
+    return diagnosticReportCodes;
+  }
 
-	public void setR4LabResultCodes(List<CodeableConcept> r4LabResultCodes) {
-		this.r4LabResultCodes = r4LabResultCodes;
-	}
+  public void setDiagnosticReportCodes(List<CodeableConceptDt> diagnosticReportCodes) {
+    this.diagnosticReportCodes = diagnosticReportCodes;
+  }
 
-	public List<CodeableConcept> getR4MedicationCodes() {
-		return r4MedicationCodes;
-	}
+  public List<CodeableConceptDt> getCodesForExpression(String expression) {
 
-	public void setR4MedicationCodes(List<CodeableConcept> r4MedicationCodes) {
-		this.r4MedicationCodes = r4MedicationCodes;
-	}
+    if (expression.contains("Condition.code")) {
+      return conditionCodes;
+    } else if (expression.contains("MedicationAdministration.code")) {
+      return medicationCodes;
+    } else if (expression.contains("Observation.code")) {
+      return labResultCodes;
+    } else if (expression.contains("Immunization.vaccineCode")) {
+      return immuniationCodes;
+    } else if (expression.contains("ServiceRequest.code")) {
+      return diagnosticOrderCodes;
+    } else if (expression.contains("Observation.value")) {
+      return labResultValues;
+    } else {
+      return null;
+    }
+  }
 
-	public List<CodeableConcept> getR4ServiceRequestCodes() {
-		return r4ServiceRequestCodes;
-	}
+  public List<CodeableConcept> getR4CodesForExpression(String expression) {
 
-	public void setR4ServiceRequestCodes(List<CodeableConcept> r4ServiceRequestCodes) {
-		this.r4ServiceRequestCodes = r4ServiceRequestCodes;
-	}
+    if (expression.contains("Condition.code")) {
+      return r4ConditionCodes;
+    } else if (expression.contains("MedicationAdministration.code")) {
+      return r4MedicationCodes;
+    } else if (expression.contains("Observation.code")) {
+      return r4LabResultCodes;
+    } else if (expression.contains("Immunization.vaccineCode")) {
+      return r4ImmunizationCodes;
+    } else if (expression.contains("ServiceRequest.code")) {
+      return r4ServiceRequestCodes;
+    } else if (expression.contains("Observation.value")) {
+      return r4LabResultValues;
+    } else {
+      return null;
+    }
+  }
 
-	public List<CodeableConcept> getR4EncounterCodes() {
-		return r4EncounterCodes;
-	}
+  public List<CodeableConcept> getR4ConditionCodes() {
+    return r4ConditionCodes;
+  }
 
-	public void setR4EncounterCodes(List<CodeableConcept> r4EncounterCodes) {
-		this.r4EncounterCodes = r4EncounterCodes;
-	}
+  public void setR4ConditionCodes(List<CodeableConcept> r4ConditionCodes) {
+    this.r4ConditionCodes = r4ConditionCodes;
+  }
 
-	public List<CodeableConcept> getR4ImmunizationCodes() {
-		return r4ImmunizationCodes;
-	}
+  public List<CodeableConcept> getR4LabResultCodes() {
+    return r4LabResultCodes;
+  }
 
-	public void setR4ImmunizationCodes(List<CodeableConcept> r4ImmunizationCodes) {
-		this.r4ImmunizationCodes = r4ImmunizationCodes;
-	}
+  public void setR4LabResultCodes(List<CodeableConcept> r4LabResultCodes) {
+    this.r4LabResultCodes = r4LabResultCodes;
+  }
 
-	public List<CodeableConcept> getR4DiagnosticReportCodes() {
-		return r4DiagnosticReportCodes;
-	}
+  public List<CodeableConcept> getR4MedicationCodes() {
+    return r4MedicationCodes;
+  }
 
-	public void setR4DiagnosticReportCodes(List<CodeableConcept> r4DiagnosticReportCodes) {
-		this.r4DiagnosticReportCodes = r4DiagnosticReportCodes;
-	}
+  public void setR4MedicationCodes(List<CodeableConcept> r4MedicationCodes) {
+    this.r4MedicationCodes = r4MedicationCodes;
+  }
+
+  public List<CodeableConcept> getR4ServiceRequestCodes() {
+    return r4ServiceRequestCodes;
+  }
+
+  public void setR4ServiceRequestCodes(List<CodeableConcept> r4ServiceRequestCodes) {
+    this.r4ServiceRequestCodes = r4ServiceRequestCodes;
+  }
+
+  public List<CodeableConcept> getR4EncounterCodes() {
+    return r4EncounterCodes;
+  }
+
+  public void setR4EncounterCodes(List<CodeableConcept> r4EncounterCodes) {
+    this.r4EncounterCodes = r4EncounterCodes;
+  }
+
+  public List<CodeableConcept> getR4ImmunizationCodes() {
+    return r4ImmunizationCodes;
+  }
+
+  public void setR4ImmunizationCodes(List<CodeableConcept> r4ImmunizationCodes) {
+    this.r4ImmunizationCodes = r4ImmunizationCodes;
+  }
+
+  public List<CodeableConcept> getR4DiagnosticReportCodes() {
+    return r4DiagnosticReportCodes;
+  }
+
+  public void setR4DiagnosticReportCodes(List<CodeableConcept> r4DiagnosticReportCodes) {
+    this.r4DiagnosticReportCodes = r4DiagnosticReportCodes;
+  }
 }
