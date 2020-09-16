@@ -93,7 +93,8 @@ public class FhirContextInitializer {
             + resourceName
             + "?patient="
             + authDetails.getLaunchPatientId();
-    bundleResponse = bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
+    bundleResponse =
+        bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
     return bundleResponse;
   }
 
@@ -112,7 +113,8 @@ public class FhirContextInitializer {
             + authDetails.getLaunchPatientId()
             + "&category="
             + category;
-    bundleResponse = bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
+    bundleResponse =
+        bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
     return bundleResponse;
   }
 
@@ -134,7 +136,8 @@ public class FhirContextInitializer {
             + system
             + "|"
             + code;
-    bundleResponse = bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
+    bundleResponse =
+        bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
     return bundleResponse;
   }
 
@@ -158,28 +161,51 @@ public class FhirContextInitializer {
       }
     }
   }
-  
-  public static IBaseBundle bundlePopulator(LaunchDetails authDetails, IGenericClient genericClient,
-			FhirContext context, String resourceName, String url, IBaseBundle bundleResponse)
-	{
-		logger.info("Invoking url:::::::::::::::" + url);
-		try {
-			logger.info("Getting " + resourceName + " data using Patient Id: " + authDetails.getLaunchPatientId());
-			if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
-				bundleResponse = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
-				Bundle bundle = (Bundle) bundleResponse;
-				logger.info("Total No of " + resourceName + " received:::::::::::::::::" + bundle.getEntry().size());
-			} else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
-				bundleResponse = genericClient.search().byUrl(url).returnBundle(org.hl7.fhir.r4.model.Bundle.class)
-						.execute();
-				org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) bundleResponse;
-				logger.info("Total No of " + resourceName + " received:::::::::::::::::" + bundle.getEntry().size());
-			}
-		} catch (Exception e) {
-			logger.info("Error in getting " + resourceName + " resource by Patient Id: "
-					+ authDetails.getLaunchPatientId());
-		}
 
-		return bundleResponse;
-	}
+  public static IBaseBundle bundlePopulator(
+      LaunchDetails authDetails,
+      IGenericClient genericClient,
+      FhirContext context,
+      String resourceName,
+      String url,
+      IBaseBundle bundleResponse) {
+    logger.info("Invoking url:::::::::::::::" + url);
+    try {
+      logger.info(
+          "Getting "
+              + resourceName
+              + " data using Patient Id: "
+              + authDetails.getLaunchPatientId());
+      if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
+        bundleResponse = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
+        Bundle bundle = (Bundle) bundleResponse;
+        logger.info(
+            "Total No of "
+                + resourceName
+                + " received:::::::::::::::::"
+                + bundle.getEntry().size());
+      } else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
+        bundleResponse =
+            genericClient
+                .search()
+                .byUrl(url)
+                .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
+                .execute();
+        org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) bundleResponse;
+        logger.info(
+            "Total No of "
+                + resourceName
+                + " received:::::::::::::::::"
+                + bundle.getEntry().size());
+      }
+    } catch (Exception e) {
+      logger.info(
+          "Error in getting "
+              + resourceName
+              + " resource by Patient Id: "
+              + authDetails.getLaunchPatientId());
+    }
+
+    return bundleResponse;
+  }
 }

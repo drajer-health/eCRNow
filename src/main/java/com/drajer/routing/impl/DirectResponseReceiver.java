@@ -3,8 +3,6 @@ package com.drajer.routing.impl;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.routing.RRReceiver;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.InputStream;
@@ -42,7 +40,7 @@ public class DirectResponseReceiver extends RRReceiver {
       LaunchDetails details = (LaunchDetails) context;
       ObjectMapper mapper = new ObjectMapper();
       PatientExecutionState state = null;
-      
+
       state = DirectEicrSender.getDetailStatus(details, state);
 
       readMail(details, state);

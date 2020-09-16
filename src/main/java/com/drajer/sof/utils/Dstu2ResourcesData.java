@@ -294,7 +294,7 @@ public class Dstu2ResourcesData {
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
     observations = getObservations(observations, bundle, encounter, start, end);
-    
+
     return observations;
   }
 
@@ -317,7 +317,7 @@ public class Dstu2ResourcesData {
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
     observations = getObservations(observations, bundle, encounter, start, end);
-    
+
     return observations;
   }
 
@@ -601,47 +601,50 @@ public class Dstu2ResourcesData {
     dstu2FhirData.setDiagnosticReportCodes(diagnosticReportCodes);
     return diagnosticReports;
   }
-  
-  public static List<Observation> getObservations(List<Observation> observations, Bundle bundle, Encounter encounter, Date start, Date end) {
-		
-		List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
-		// Filter Observations based on Encounter Reference
-		if (!encounter.getId().getValue().isEmpty() && encounter != null) {
-			for (Entry entry : bundle.getEntry()) {
-				Observation observation = (Observation) entry.getResource();
-				if (!observation.getEncounter().isEmpty()) {
-					if (observation.getEncounter().getReference().getIdPart()
-							.equals(encounter.getIdElement().getIdPart())) {
-						observations.add(observation);
-					}
-				}
-			}
-			// If Encounter Id is not present using start and end dates to filter
-			// Observations
-		} else {
-			for (Entry entry : bundle.getEntry()) {
-				Observation observation = (Observation) entry.getResource();
-				// Checking If Issued Date is present in Observation resource
-				if (observation.getIssued() != null) {
-					if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
-						observations.add(observation);
-					}
-					// If Issued date is not present, Checking for Effective Date
-				} else if (!observation.getEffective().isEmpty()) {
-					Date effectiveDate = (Date) observation.getEffective();
-					if (effectiveDate.after(start) && effectiveDate.before(end)) {
-						observations.add(observation);
-					}
-					// If Issued and Effective Date are not present looking for LastUpdatedDate
-				} else {
-					Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
-					if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-						observations.add(observation);
-					}
-				}
-			}
-		}
-		return observations;		
-		
-	}
+
+  public static List<Observation> getObservations(
+      List<Observation> observations, Bundle bundle, Encounter encounter, Date start, Date end) {
+
+    List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
+    // Filter Observations based on Encounter Reference
+    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+      for (Entry entry : bundle.getEntry()) {
+        Observation observation = (Observation) entry.getResource();
+        if (!observation.getEncounter().isEmpty()) {
+          if (observation
+              .getEncounter()
+              .getReference()
+              .getIdPart()
+              .equals(encounter.getIdElement().getIdPart())) {
+            observations.add(observation);
+          }
+        }
+      }
+      // If Encounter Id is not present using start and end dates to filter
+      // Observations
+    } else {
+      for (Entry entry : bundle.getEntry()) {
+        Observation observation = (Observation) entry.getResource();
+        // Checking If Issued Date is present in Observation resource
+        if (observation.getIssued() != null) {
+          if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
+            observations.add(observation);
+          }
+          // If Issued date is not present, Checking for Effective Date
+        } else if (!observation.getEffective().isEmpty()) {
+          Date effectiveDate = (Date) observation.getEffective();
+          if (effectiveDate.after(start) && effectiveDate.before(end)) {
+            observations.add(observation);
+          }
+          // If Issued and Effective Date are not present looking for LastUpdatedDate
+        } else {
+          Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
+          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+            observations.add(observation);
+          }
+        }
+      }
+    }
+    return observations;
+  }
 }
