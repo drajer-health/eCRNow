@@ -2,12 +2,17 @@ package com.drajer.test.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+
+import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +26,7 @@ public class TestUtils {
         
         return mapper.writeValueAsString(object);
     }
+	
 	
 	//This method compared two buffered readers line by line except for lines that are expected to change in each test
 		public static boolean compareStringBuffer(BufferedReader br1, BufferedReader br2, Set<Integer> exceptionSet) throws IOException {
