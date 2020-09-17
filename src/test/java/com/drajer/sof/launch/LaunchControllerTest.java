@@ -23,9 +23,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-public class StartEndDateTest {
+public class LaunchControllerTest {
 
   ObjectMapper mapper = new ObjectMapper();
+  private LaunchDetails currentStateDetails;
+  private ClientDetails clientDetails;
 
   @InjectMocks LaunchController launchController;
 
@@ -34,19 +36,25 @@ public class StartEndDateTest {
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
+
+    try {
+      currentStateDetails =
+          mapper.readValue(
+              this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
+              LaunchDetails.class);
+
+      clientDetails =
+          mapper.readValue(
+              this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
+              ClientDetails.class);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @Test
   public void testStartEndDateDSTU2() throws JsonParseException, JsonMappingException, IOException {
-
-    LaunchDetails currentStateDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
-    ClientDetails clientDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("saveClientDataEntry1.json"),
-            ClientDetails.class);
 
     Date startDate = currentStateDetails.getStartDate();
     Date endDate = currentStateDetails.getEndDate();
@@ -82,14 +90,6 @@ public class StartEndDateTest {
   @Test
   public void testStartEndDateR4() throws JsonParseException, JsonMappingException, IOException {
 
-    LaunchDetails currentStateDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
-    ClientDetails clientDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("saveClientDataEntry1.json"),
-            ClientDetails.class);
     currentStateDetails.setFhirVersion("R4");
 
     Date startDate = currentStateDetails.getStartDate();

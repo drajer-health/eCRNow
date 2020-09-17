@@ -14,8 +14,8 @@
   "directRecipientAddress": "connectathon@aimsplatform.sandbox.dmhisp.com",
   "xdrRecipientAddress": null,
   "assigningAuthorityId": "2.16.840.1.113883.1.1.1.1",
-  "encounterStartThreshold": "2019-10-31T14:00:00.000+0000",
-  "encounterEndThreshold": "2020-08-15T05:34:07.000+0000",
+  "encounterStartThreshold": "3",
+  "encounterEndThreshold": "30",
   "isCovid": true,
   "isFullEcr": false 
 }

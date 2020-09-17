@@ -42,7 +42,6 @@ public class DirectEicrSender extends EicrSender {
 
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
-      ObjectMapper mapper = new ObjectMapper();
       PatientExecutionState state = null;
 
       state = getDetailStatus(details, state);
@@ -123,9 +122,10 @@ public class DirectEicrSender extends EicrSender {
       LaunchDetails details, PatientExecutionState state) {
 
     ObjectMapper mapper = new ObjectMapper();
+    PatientExecutionState stateResponse = null;
 
     try {
-      state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+      stateResponse = mapper.readValue(details.getStatus(), PatientExecutionState.class);
     } catch (JsonMappingException e1) {
 
       String msg = "Unable to read/write execution state";
@@ -140,6 +140,6 @@ public class DirectEicrSender extends EicrSender {
       e1.printStackTrace();
       throw new RuntimeException(msg);
     }
-    return state;
+    return stateResponse;
   }
 }

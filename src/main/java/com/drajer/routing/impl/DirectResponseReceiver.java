@@ -3,7 +3,6 @@ package com.drajer.routing.impl;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.routing.RRReceiver;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -38,7 +37,6 @@ public class DirectResponseReceiver extends RRReceiver {
 
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
-      ObjectMapper mapper = new ObjectMapper();
       PatientExecutionState state = null;
 
       state = DirectEicrSender.getDetailStatus(details, state);
