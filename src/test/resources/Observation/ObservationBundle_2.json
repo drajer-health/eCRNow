@@ -1,0 +1,11 @@
+{
+  "resourceType": "Bundle",
+  "id": "58d30185-775a-4145-80fd-734e4f5acd38",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742571&code=http%3A%2F%2Floinc.org%7C90767-5"
+    }
+  ]
+}

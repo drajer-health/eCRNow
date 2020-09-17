@@ -1,0 +1,21 @@
+{
+"isProvider": false,
+"isSystem": true,
+"clientId": "5943d69c-660a-4ef3-8938-11802fa4d230",
+"clientSecret": "YuRW4sX6uTtreKTl1n82DRhhxPlAYTnI",
+"fhirServerBaseURL": "https://fhir-ehr-code.cerner.com/dstu2/ec2458f2-1e24-41c8-b71b-0e701af7583d",
+"tokenURL": "https://authorization.cerner.com/tenants/ec2458f2-1e24-41c8-b71b-0e701af7583d/protocols/oauth2/profiles/smart-v1/token",
+"scopes": "system/CarePlan.read,system/Condition.read,system/DiagnosticReport.read,system/Encounter.read,system/Immunization.read,system/MedicationAdministration.read,system/MedicationOrder.read,system/MedicationStatement.read,system/Observation.read,system/Patient.read,system/Practitioner.read,system/Procedure.read,system/ProcedureRequest.read",
+"isDirect": true,
+"isXdr": false,
+"directHost": "ett.healthit.gov",
+"directUser": "test@ett.healthit.gov",
+"directPwd": "12345",
+"directRecipientAddress": "connectathon@aimsplatform.sandbox.dmhisp.com",
+"xdrRecipientAddress": null,
+"assigningAuthorityId": "2.16.840.1.113883.1.1.1.1",
+"encounterStartThreshold": "3",
+"encounterEndThreshold": "30",
+"isCovid": true,
+"isFullEcr": false
+}
