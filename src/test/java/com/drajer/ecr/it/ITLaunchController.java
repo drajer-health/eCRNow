@@ -85,13 +85,6 @@ public class ITLaunchController extends BaseIntegrationTest {
 		stubResource("Observation", isQueryParam, "patient=12742571&code=http://loinc.org|929762-2", isR4,
 				"Observation/ObservationBundle_3.json");
 
-		// ValueMatchingStrategy queryParamMatchingStrategy=new ValueMatchingStrategy();
-		// queryParamMatchingStrategy.setMatches(matches);
-		// ValueMatchingStrategy queryParamMatchingStrategy2=new
-		// ValueMatchingStrategy();
-		// queryParamMatchingStrategy2.setEqualTo("http://loinc.org|929762-2");
-		// .withQueryParam("code", queryParamMatchingStrategy2))
-
 	}
 
 	@After
@@ -112,7 +105,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 
 		HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
 		logger.info("Invoking systemLaunch...");
-		logger.info("Payload::::: "+systemLaunchInputData);
+		logger.info("Payload: \n"+systemLaunchInputData);
 		ResponseEntity<String> response = restTemplate.exchange(createURLWithPort(systemLaunchURI), HttpMethod.POST,
 				entity, String.class);
 		logger.info("Received Response. Waiting for EICR generation.....");
