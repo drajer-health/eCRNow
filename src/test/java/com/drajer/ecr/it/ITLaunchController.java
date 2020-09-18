@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -107,6 +108,23 @@ public class ITLaunchController extends BaseIntegrationTest {
     dataCleanup();
 
     tx.commit();
+  }
+
+  @Test
+  public void testGetLaunchDetailsById() throws Exception {
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            createURLWithPort("/api/launchDetails/" + testLaunchDetailsId),
+            HttpMethod.GET,
+            null,
+            String.class);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    LaunchDetails launchDetails = mapper.readValue(response.getBody(), LaunchDetails.class);
+
+    assertEquals(
+        mapper.readValue(launchDetailString, LaunchDetails.class).getClientId(),
+        launchDetails.getClientId());
   }
 
   @Test
