@@ -1,0 +1,6 @@
+{
+    "access_token": "eyJraWQiOiIy",
+    "scope": "system/CarePlan.read system/Condition.read system/Encounter.read system/Observation.read system/Patient.read system/Practitioner.read system/Procedure.read",
+    "token_type": "Bearer",
+    "expires_in": 570
+}
