@@ -27,15 +27,15 @@ import org.springframework.http.MediaType;
 public class RefreshTokenSchedulerTest {
 
   @ClassRule
-  public static WireMockClassRule wireMockRule = new WireMockClassRule(wireMockConfig().withRootDirectory("src/test/resources").dynamicPort());
+  public static WireMockClassRule wireMockRule =
+      new WireMockClassRule(wireMockConfig().dynamicPort());
 
-  @Rule 
-  public WireMockClassRule mockServer = wireMockRule;
+  @Rule public WireMockClassRule mockServer = wireMockRule;
 
   private ClientDetails clientDetails;
   private RefreshTokenScheduler token = new RefreshTokenScheduler();
   ObjectMapper mapper = new ObjectMapper();
-  
+
   private int wireMockPort = wireMockRule.port();
 
   @Before
@@ -61,14 +61,13 @@ public class RefreshTokenSchedulerTest {
     try {
 
       String accesstoken =
-         "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
+          "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
 
       MappingBuilder mappingBuilder = post(urlEqualTo("/authorization"));
       ResponseDefinitionBuilder response =
           aResponse()
               .withStatus(HttpStatus.OK_200)
               .withBody(accesstoken)
-              .withBodyFile("/Authresponse.json")
               .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
       stubFor(mappingBuilder.willReturn(response));
