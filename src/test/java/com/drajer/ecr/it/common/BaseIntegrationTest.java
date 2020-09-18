@@ -71,7 +71,7 @@ public abstract class BaseIntegrationTest {
   protected static ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
-  protected String tenantId = "ec2458f2-1e24-41c8-b71b-0e701af7583d";
+  protected String baseUrl = "/FHIR";
 
   protected int wireMockHttpPort;
   protected int wireMockHttpsPort;
@@ -104,6 +104,7 @@ public abstract class BaseIntegrationTest {
 
     setUpWireMockServer();
     stubAuthAndMetadata();
+    stubDefaultResponse();
   }
 
   @After
@@ -119,37 +120,18 @@ public abstract class BaseIntegrationTest {
    * responseFilePath-filepath+filename
    */
   protected void stubResource(
-      String resourceName,
-      boolean isQueryParam,
-      String params,
-      boolean isR4,
-      String responseFilePath)
+      String resourceName, boolean isQueryParam, String params, String responseFilePath)
       throws IOException {
     String url = "";
-    String version = "";
     String param = "";
-    if (isR4) version = "r4";
-    else version = "dstu2";
 
     if (isQueryParam) param = "?" + params;
     else param = "/" + params;
 
-    url = "/" + version + "/" + tenantId + "/" + resourceName + param;
+    url = baseUrl + "/" + resourceName + param;
     // url=URLEncoder.encode( url, "UTF-8" );
 
     String responseStr = getFileContentAsString(responseFilePath);
-
-    // DefaultMapping
-    UrlMatchingStrategy urlMatchingStrategy = new UrlMatchingStrategy();
-    urlMatchingStrategy.setUrlPattern(".*");
-    stubFor(
-        any(urlMatchingStrategy)
-            .atPriority(10)
-            .willReturn(
-                aResponse()
-                    .withStatus(404)
-                    .withBody(getFileContentAsString("DefaultResponse/NoDataFound_Default.json"))
-                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
 
     // Mapping for our resources
     logger.info("Creating wiremock stub for uri: " + url);
@@ -160,6 +142,21 @@ public abstract class BaseIntegrationTest {
                 aResponse()
                     .withBody(responseStr)
                     .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+  }
+
+  private void stubDefaultResponse() {
+    // DefaultMapping
+    UrlMatchingStrategy urlMatchingStrategy = new UrlMatchingStrategy();
+    urlMatchingStrategy.setUrlPattern(baseUrl + "/.*");
+    stubFor(
+        any(urlMatchingStrategy)
+            .atPriority(10)
+            .willReturn(
+                aResponse()
+                    .withStatus(404)
+                    .withBody(getFileContentAsString("R4/DefaultResponse/NoDataFound_Default.json"))
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+    logger.info("Stub Created for default: " + "/FHIR/.*");
   }
 
   // the file should be in test/resources folder, or the folderpath with filename
@@ -256,18 +253,21 @@ public abstract class BaseIntegrationTest {
 
   private void stubAuthAndMetadata() throws IOException {
     stubFor(
-        get(urlEqualTo("/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/metadata"))
+        get(urlEqualTo(baseUrl + "/metadata"))
+            .atPriority(1)
             .willReturn(
                 aResponse()
-                    .withBody(getFileContentAsString("Misc/MetaData.json"))
+                    .withBody(getFileContentAsString("R4/Misc/MetaData_r4.json"))
                     .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+    logger.info("Stub Created for Metadata uri: " + baseUrl + "/metadata");
 
     stubFor(
-        post(urlEqualTo(
-                "/tenants/ec2458f2-1e24-41c8-b71b-0e701af7583d/protocols/oauth2/profiles/smart-v1/token"))
+        post(urlEqualTo(baseUrl + "/token"))
+            .atPriority(1)
             .willReturn(
                 aResponse()
-                    .withBody(getFileContentAsString("Misc/AccessToken.json"))
+                    .withBody(getFileContentAsString("R4/Misc/AccessToken.json"))
                     .withHeader("Content-Type", "application/json")));
+    logger.info("Stub Created for AsscessToken uri: " + baseUrl + "/token");
   }
 }

@@ -76,8 +76,8 @@ public class ITClientController {
 
   protected static final String URL = "http://localhost:";
 
-  String clientDetailsFile2 = "Misc/ClientDetails/ClientDataEntry2.json";
-  String clientDetailsFile1 = "Misc/ClientDetails/ClientDetails1.json";
+  String clientDetailsFile2 = "R4/Misc/ClientDetails/ClientDataEntry2.json";
+  String clientDetailsFile1 = "R4/Misc/ClientDetails/ClientDetails1.json";
 
   @Before
   public void clientTestSetUp() throws IOException {

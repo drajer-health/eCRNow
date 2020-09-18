@@ -39,10 +39,10 @@ public class ITLaunchController extends BaseIntegrationTest {
   private final String systemLaunchURI = "/api/systemLaunch";
 
   // For WireMock
-  private String clientDetailsFile = "Misc/ClientDetails/ClientDataEntry1.json";
-  private String launchDetailsFile = "Misc/LaunchDetails/LaunchDataEntry1.json";
-  private String systemLaunchFile = "Misc/SystemLaunchPayload/systemLaunchRequest.json";
-  private String expectedEICRFile = "Misc/ExpectedEICR/EICR_Expected.xml";
+  private String clientDetailsFile = "R4/Misc/ClientDetails/ClientDataEntry1.json";
+  private String launchDetailsFile = "R4/Misc/LaunchDetails/LaunchDataEntry1.json";
+  private String systemLaunchFile = "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json";
+  private String expectedEICRFile = "R4/Misc/ExpectedEICR/EICR_Expected.xml";
 
   // TestDataGenerator testDataGenerator = new
   // TestDataGenerator("LaunchTestData.yaml");
@@ -59,53 +59,46 @@ public class ITLaunchController extends BaseIntegrationTest {
     session.flush();
     tx.commit();
 
-    boolean isR4 = true;
-    boolean isdstu2 = false;
     boolean isQueryParam = true;
     boolean isPathParam = false;
     // stub all r4 URIs
     logger.info("Creating wiremockstubs..");
-    stubResource("Patient", isPathParam, "12742571", isR4, "Patient/Patient_12742571.json");
-    stubResource("Encounter", isPathParam, "97953900", isR4, "Encounter/Encounter_97953900.json");
+    stubResource("Patient", isPathParam, "12742571", "R4/Patient/Patient_12742571.json");
+    stubResource("Encounter", isPathParam, "97953900", "R4/Encounter/Encounter_97953900.json");
     stubResource(
         "Encounter",
         isQueryParam,
         "patient=12742571",
-        isR4,
-        "Encounter/EncounterBundle_97953900.json");
+        "R4/Encounter/EncounterBundle_97953900.json");
 
     stubResource(
-        "Practitioner", isPathParam, "11817978", isR4, "Practitioner/Practitioner_11817978.json");
+        "Practitioner", isPathParam, "11817978", "R4/Practitioner/Practitioner_11817978.json");
     stubResource(
-        "Practitioner", isPathParam, "4122622", isR4, "Practitioner/Practitioner_4122622.json");
+        "Practitioner", isPathParam, "4122622", "R4/Practitioner/Practitioner_4122622.json");
     stubResource(
-        "Practitioner", isPathParam, "11938004", isR4, "Practitioner/Practitioner_11938004.json");
+        "Practitioner", isPathParam, "11938004", "R4/Practitioner/Practitioner_11938004.json");
 
     stubResource(
         "Condition",
         isQueryParam,
         "patient=12742571",
-        isR4,
-        "Condition/ConditionBundle_d2572364249.json");
+        "R4/Condition/ConditionBundle_d2572364249.json");
 
     stubResource(
         "Observation",
         isQueryParam,
         "patient=12742571&category=laboratory",
-        isR4,
-        "Observation/ObservationBundle_1.json");
+        "R4/Observation/ObservationBundle_1.json");
     stubResource(
         "Observation",
         isQueryParam,
         "patient=12742571&code=http://loinc.org|90767-5",
-        isR4,
-        "Observation/ObservationBundle_2.json");
+        "R4/Observation/ObservationBundle_2.json");
     stubResource(
         "Observation",
         isQueryParam,
         "patient=12742571&code=http://loinc.org|929762-2",
-        isR4,
-        "Observation/ObservationBundle_3.json");
+        "R4/Observation/ObservationBundle_3.json");
   }
 
   @After
