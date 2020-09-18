@@ -7,12 +7,8 @@ import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -261,12 +257,12 @@ public class ITClientController {
 
   private void createSaveClientInputData() throws IOException {
 
-    testSaveClientData = getFileContentAsString(clientDetailsFile1);
+    testSaveClientData = TestUtils.getFileContentAsString(clientDetailsFile1);
   }
 
   private void createTestClientDetailsInDB() throws IOException {
 
-    clientDetailString = getFileContentAsString(clientDetailsFile2);
+    clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile2);
 
     testClientDetailsId =
         (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
@@ -282,21 +278,5 @@ public class ITClientController {
       session.delete(clientDetails);
     }
     deleteClientList.clear();
-  }
-
-  private String getFileContentAsString(String fileName) {
-    String fileContent = "";
-    InputStream stream = classLoader.getResourceAsStream(fileName);
-    StringWriter writer = new StringWriter();
-    try {
-      IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
-      fileContent = writer.toString();
-      stream.close();
-      writer.close();
-    } catch (Exception e) {
-      logger.error("File not found::" + fileName);
-    }
-
-    return fileContent;
   }
 }

@@ -11,19 +11,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -131,7 +128,7 @@ public abstract class BaseIntegrationTest {
     url = baseUrl + "/" + resourceName + param;
     // url=URLEncoder.encode( url, "UTF-8" );
 
-    String responseStr = getFileContentAsString(responseFilePath);
+    String responseStr = TestUtils.getFileContentAsString(responseFilePath);
 
     // Mapping for our resources
     logger.info("Creating wiremock stub for uri: " + url);
@@ -155,26 +152,11 @@ public abstract class BaseIntegrationTest {
             .willReturn(
                 aResponse()
                     .withStatus(404)
-                    .withBody(getFileContentAsString("R4/DefaultResponse/NoDataFound_Default.json"))
+                    .withBody(
+                        TestUtils.getFileContentAsString(
+                            "R4/DefaultResponse/NoDataFound_Default.json"))
                     .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
     logger.info("Stub Created for default: " + "/FHIR/.*");
-  }
-
-  // the file should be in test/resources folder, or the folderpath with filename
-  protected String getFileContentAsString(String fileName) {
-    String fileContent = "";
-    InputStream stream = classLoader.getResourceAsStream(fileName);
-    StringWriter writer = new StringWriter();
-    try {
-      IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
-      fileContent = writer.toString();
-      stream.close();
-      writer.close();
-    } catch (Exception e) {
-      logger.error("File not found::" + fileName);
-    }
-
-    return fileContent;
   }
 
   protected Document getExpectedXml(String expectedXml)
@@ -199,12 +181,12 @@ public abstract class BaseIntegrationTest {
   }
 
   protected void getSystemLaunchInputData(String systemLaunchFile) throws IOException {
-    systemLaunchInputData = getFileContentAsString(systemLaunchFile);
+    systemLaunchInputData = TestUtils.getFileContentAsString(systemLaunchFile);
     systemLaunchInputData = systemLaunchInputData.replace("port", "" + wireMockHttpPort);
   }
 
   protected void createTestLaunchDetailsInDB(String launchDetailsFile) throws IOException {
-    launchDetailString = getFileContentAsString(launchDetailsFile);
+    launchDetailString = TestUtils.getFileContentAsString(launchDetailsFile);
 
     testLaunchDetailsId =
         (int) session.save(mapper.readValue(launchDetailString, LaunchDetails.class));
@@ -217,7 +199,7 @@ public abstract class BaseIntegrationTest {
   protected void createTestClientDetailsInDB(String clientDetailsFile) throws IOException {
 
     // clientDetailString = testDataGenerator.getTestDataAsString(0);
-    clientDetailString = getFileContentAsString(clientDetailsFile);
+    clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
     ClientDetails clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
 
     String fhirServerBaseURL =
@@ -257,7 +239,7 @@ public abstract class BaseIntegrationTest {
             .atPriority(1)
             .willReturn(
                 aResponse()
-                    .withBody(getFileContentAsString("R4/Misc/MetaData_r4.json"))
+                    .withBody(TestUtils.getFileContentAsString("R4/Misc/MetaData_r4.json"))
                     .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
     logger.info("Stub Created for Metadata uri: " + baseUrl + "/metadata");
 
@@ -266,7 +248,7 @@ public abstract class BaseIntegrationTest {
             .atPriority(1)
             .willReturn(
                 aResponse()
-                    .withBody(getFileContentAsString("R4/Misc/AccessToken.json"))
+                    .withBody(TestUtils.getFileContentAsString("R4/Misc/AccessToken.json"))
                     .withHeader("Content-Type", "application/json")));
     logger.info("Stub Created for AsscessToken uri: " + baseUrl + "/token");
   }

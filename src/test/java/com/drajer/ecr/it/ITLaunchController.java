@@ -146,7 +146,6 @@ public class ITLaunchController extends BaseIntegrationTest {
     Query query = session.createQuery("from Eicr order by id DESC");
     query.setMaxResults(1);
     Eicr last = (Eicr) query.uniqueResult();
-    System.out.println(last.getData());
     Document expectedDoc = getExpectedXml(expectedEICRFile);
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
