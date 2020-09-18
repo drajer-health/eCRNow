@@ -140,6 +140,7 @@ public abstract class BaseIntegrationTest {
             .atPriority(1)
             .willReturn(
                 aResponse()
+                    .withStatus(200)
                     .withBody(responseStr)
                     .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
   }
@@ -186,9 +187,8 @@ public abstract class BaseIntegrationTest {
 
   protected void setUpWireMockServer() {
     wireMockHttpPort = port + 1;
-    wireMockHttpsPort = port + 2;
     try {
-      wireMockServer = new WireMockServer(wireMockHttpPort, wireMockHttpsPort);
+      wireMockServer = new WireMockServer(wireMockHttpPort);
 
       wireMockServer.start();
       configureFor("localhost", wireMockHttpPort);
