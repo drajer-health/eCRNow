@@ -8,17 +8,21 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
+import com.drajer.ecrapp.config.SpringConfiguration;
+import com.drajer.sof.model.ClientDetails;
+import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -43,13 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.drajer.ecrapp.config.SpringConfiguration;
-import com.drajer.sof.model.ClientDetails;
-import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = SpringConfiguration.class)
@@ -58,213 +55,219 @@ import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(BaseIntegrationTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(BaseIntegrationTest.class);
 
-	@LocalServerPort
-	protected int port;
+  @LocalServerPort protected int port;
 
-	@Autowired
-	protected MockMvc mockMvc;
+  @Autowired protected MockMvc mockMvc;
 
-	@Autowired
-	protected SessionFactory sessionFactory;
-	protected Session session = null;
-	protected Transaction tx = null;
+  @Autowired protected SessionFactory sessionFactory;
+  protected Session session = null;
+  protected Transaction tx = null;
 
-	protected TestRestTemplate restTemplate = new TestRestTemplate();
-	protected HttpHeaders headers = new HttpHeaders();
+  protected TestRestTemplate restTemplate = new TestRestTemplate();
+  protected HttpHeaders headers = new HttpHeaders();
 
-	protected static ObjectMapper mapper = new ObjectMapper();
+  protected static ObjectMapper mapper = new ObjectMapper();
 
-	protected static final String URL = "http://localhost:";
-	protected String tenantId = "ec2458f2-1e24-41c8-b71b-0e701af7583d";
+  protected static final String URL = "http://localhost:";
+  protected String tenantId = "ec2458f2-1e24-41c8-b71b-0e701af7583d";
 
-	protected int wireMockHttpPort;
-	protected int wireMockHttpsPort;
-	
-	
-	protected static String testSaveLaunchData;
-	protected static String launchDetailString;
-	protected static int savedLaunchId;
-	protected static int testLaunchDetailsId;
+  protected int wireMockHttpPort;
+  protected int wireMockHttpsPort;
 
-	protected static int savedClientId;
-	protected static String clientDetailString;
-	protected static String testSaveClientData;
+  protected static String testSaveLaunchData;
+  protected static String launchDetailString;
+  protected static int savedLaunchId;
+  protected static int testLaunchDetailsId;
 
-	protected static String systemLaunchInputData;
+  protected static int savedClientId;
+  protected static String clientDetailString;
+  protected static String testSaveClientData;
 
-	protected static int testClientDetailsId;
+  protected static String systemLaunchInputData;
 
-	protected static List<ClientDetails> deleteClientList = new ArrayList<>();
+  protected static int testClientDetailsId;
 
-	protected static List<LaunchDetails> deleteLaunchList = new ArrayList<>();
+  protected static List<ClientDetails> deleteClientList = new ArrayList<>();
 
-	protected ClassLoader classLoader = this.getClass().getClassLoader();
+  protected static List<LaunchDetails> deleteLaunchList = new ArrayList<>();
 
-	WireMockServer wireMockServer;
+  protected ClassLoader classLoader = this.getClass().getClassLoader();
 
-	@Before
-	public void setUp() throws IOException {
+  WireMockServer wireMockServer;
 
-		session = sessionFactory.openSession();
+  @Before
+  public void setUp() throws IOException {
 
-		setUpWireMockServer();
-		stubAuthAndMetadata();
+    session = sessionFactory.openSession();
 
-	}
+    setUpWireMockServer();
+    stubAuthAndMetadata();
+  }
 
-	@After
-	public void tearDown() {
+  @After
+  public void tearDown() {
 
-		session.close();
-		wireMockServer.stop();
-	}
+    session.close();
+    wireMockServer.stop();
+  }
 
-	/*
-	 * Usage: ResourceName eg Patient, Encounter isQueryParam true for queryparam
-	 * params key value pairs isR4 true for r4, false for dstu2
-	 * responseFilePath-filepath+filename
-	 */
-	protected void stubResource(String resourceName, boolean isQueryParam, String params, boolean isR4,
-			String responseFilePath) throws IOException {
-		String url = "";
-		String version = "";
-		String param = "";
-		if (isR4)
-			version = "r4";
-		else
-			version = "dstu2";
+  /*
+   * Usage: ResourceName eg Patient, Encounter isQueryParam true for queryparam
+   * params key value pairs isR4 true for r4, false for dstu2
+   * responseFilePath-filepath+filename
+   */
+  protected void stubResource(
+      String resourceName,
+      boolean isQueryParam,
+      String params,
+      boolean isR4,
+      String responseFilePath)
+      throws IOException {
+    String url = "";
+    String version = "";
+    String param = "";
+    if (isR4) version = "r4";
+    else version = "dstu2";
 
-		if (isQueryParam)
-			param = "?" + params;
+    if (isQueryParam) param = "?" + params;
+    else param = "/" + params;
 
-		else
-			param = "/" + params;
+    url = "/" + version + "/" + tenantId + "/" + resourceName + param;
+    // url=URLEncoder.encode( url, "UTF-8" );
 
-		url = "/" + version + "/" + tenantId + "/" + resourceName + param;
-		// url=URLEncoder.encode( url, "UTF-8" );
+    String responseStr = getFileContentAsString(responseFilePath);
 
-		String responseStr = getFileContentAsString(responseFilePath);
+    // DefaultMapping
+    UrlMatchingStrategy urlMatchingStrategy = new UrlMatchingStrategy();
+    urlMatchingStrategy.setUrlPattern(".*");
+    stubFor(
+        any(urlMatchingStrategy)
+            .atPriority(10)
+            .willReturn(
+                aResponse()
+                    .withStatus(404)
+                    .withBody(getFileContentAsString("DefaultResponse/NoDataFound_Default.json"))
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
 
-		// DefaultMapping
-		UrlMatchingStrategy urlMatchingStrategy = new UrlMatchingStrategy();
-		urlMatchingStrategy.setUrlPattern(".*");
-		stubFor(any(urlMatchingStrategy).atPriority(10)
-				.willReturn(aResponse().withStatus(404)
-						.withBody(getFileContentAsString("DefaultResponse/NoDataFound_Default.json"))
-						.withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+    // Mapping for our resources
+    logger.info("Creating wiremock stub for uri: " + url);
+    stubFor(
+        get(urlEqualTo(url))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withBody(responseStr)
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+  }
 
-		// Mapping for our resources
-		logger.info("Creating wiremock stub for uri: "+url);
-		stubFor(get(urlEqualTo(url)).atPriority(1).willReturn(
-				aResponse().withBody(responseStr).withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+  // the file should be in test/resources folder, or the folderpath with filename
+  protected String getFileContentAsString(String fileName) {
+    String fileContent = "";
+    InputStream stream = classLoader.getResourceAsStream(fileName);
+    StringWriter writer = new StringWriter();
+    try {
+      IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
+      fileContent = writer.toString();
+      stream.close();
+      writer.close();
+    } catch (Exception e) {
+      logger.error("File not found::" + fileName);
+    }
 
-	}
+    return fileContent;
+  }
 
-	// the file should be in test/resources folder, or the folderpath with filename
-	protected String getFileContentAsString(String fileName) {
-		String fileContent = "";
-		InputStream stream = classLoader.getResourceAsStream(fileName);
-		StringWriter writer = new StringWriter();
-		try {
-			IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
-			fileContent = writer.toString();
-			stream.close();
-			writer.close();
-		} catch (Exception e) {
-			logger.error("File not found::" + fileName);
-		}
+  protected Document getExpectedXml(String expectedXml)
+      throws ParserConfigurationException, SAXException, IOException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document document = builder.parse(classLoader.getResourceAsStream(expectedXml));
+    return document;
+  }
 
-		return fileContent;
+  protected void setUpWireMockServer() {
+    wireMockHttpPort = port + 1;
+    wireMockHttpsPort = port + 2;
+    try {
+      wireMockServer = new WireMockServer(wireMockHttpPort, wireMockHttpsPort);
 
-	}
+      wireMockServer.start();
+      configureFor("localhost", wireMockHttpPort);
+      logger.info("Initialized wiremock on http server: " + wireMockHttpPort);
+    } catch (Exception e) {
+      logger.error("Error in initializing wiremock" + e);
+    }
+  }
 
-	protected Document getExpectedXml(String expectedXml)
-			throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document document = builder.parse(classLoader.getResourceAsStream(expectedXml));
-		return document;
+  protected void getSystemLaunchInputData(String systemLaunchFile) throws IOException {
+    systemLaunchInputData = getFileContentAsString(systemLaunchFile);
+    systemLaunchInputData = systemLaunchInputData.replace("port", "" + wireMockHttpPort);
+  }
 
-	}
+  protected void createTestLaunchDetailsInDB(String launchDetailsFile) throws IOException {
+    launchDetailString = getFileContentAsString(launchDetailsFile);
 
-	protected void setUpWireMockServer() {
-		wireMockHttpPort = port + 1;
-		wireMockHttpsPort = port + 2;
-		try {
-			wireMockServer = new WireMockServer(wireMockHttpPort, wireMockHttpsPort);
+    testLaunchDetailsId =
+        (int) session.save(mapper.readValue(launchDetailString, LaunchDetails.class));
 
-			wireMockServer.start();
-			configureFor("localhost", wireMockHttpPort);
-			logger.info("Initialized wiremock on http server: "+wireMockHttpPort);
-		} catch (Exception e) {
-			logger.error("Error in initializing wiremock" + e);
-		}
+    LaunchDetails launchDetailsToBeDeleted =
+        (LaunchDetails) session.get(LaunchDetails.class, testLaunchDetailsId);
+    deleteLaunchList.add(launchDetailsToBeDeleted);
+  }
 
-	}
-	protected void getSystemLaunchInputData(String systemLaunchFile) throws IOException {
-		systemLaunchInputData = getFileContentAsString(systemLaunchFile);
-		systemLaunchInputData = systemLaunchInputData.replace("port", "" + wireMockHttpPort);
+  protected void createTestClientDetailsInDB(String clientDetailsFile) throws IOException {
 
-	}
+    // clientDetailString = testDataGenerator.getTestDataAsString(0);
+    clientDetailString = getFileContentAsString(clientDetailsFile);
+    ClientDetails clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
 
-	protected void createTestLaunchDetailsInDB(String launchDetailsFile) throws IOException {
-		launchDetailString = getFileContentAsString(launchDetailsFile);
+    String fhirServerBaseURL =
+        clientDetails.getFhirServerBaseURL().replace("port", "" + wireMockHttpPort);
+    clientDetails.setFhirServerBaseURL(fhirServerBaseURL);
+    String tokenURL = clientDetails.getTokenURL().replace("port", "" + wireMockHttpPort);
+    clientDetails.setTokenURL(tokenURL);
 
-		testLaunchDetailsId = (int) session.save(mapper.readValue(launchDetailString, LaunchDetails.class));
+    testClientDetailsId = (int) session.save(clientDetails);
 
-		LaunchDetails launchDetailsToBeDeleted = (LaunchDetails) session.get(LaunchDetails.class, testLaunchDetailsId);
-		deleteLaunchList.add(launchDetailsToBeDeleted);
+    ClientDetails clientDetailsToBeDeleted =
+        (ClientDetails) session.get(ClientDetails.class, testClientDetailsId);
+    deleteClientList.add(clientDetailsToBeDeleted);
+  }
 
-	}
+  protected void dataCleanup() {
+    for (LaunchDetails launchDetails : deleteLaunchList) {
+      session.load(LaunchDetails.class, launchDetails.getId());
+      session.delete(launchDetails);
+    }
+    deleteLaunchList.clear();
 
-	protected void createTestClientDetailsInDB(String clientDetailsFile) throws IOException {
+    for (ClientDetails clientDetails : deleteClientList) {
+      session.load(ClientDetails.class, clientDetails.getId());
+      session.delete(clientDetails);
+    }
+    deleteClientList.clear();
+  }
 
-		// clientDetailString = testDataGenerator.getTestDataAsString(0);
-		clientDetailString = getFileContentAsString(clientDetailsFile);
-		ClientDetails clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
+  protected String createURLWithPort(String uri) {
+    return URL + port + uri;
+  }
 
-		String fhirServerBaseURL = clientDetails.getFhirServerBaseURL().replace("port", "" + wireMockHttpPort);
-		clientDetails.setFhirServerBaseURL(fhirServerBaseURL);
-		String tokenURL = clientDetails.getTokenURL().replace("port", "" + wireMockHttpPort);
-		clientDetails.setTokenURL(tokenURL);
+  private void stubAuthAndMetadata() throws IOException {
+    stubFor(
+        get(urlEqualTo("/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/metadata"))
+            .willReturn(
+                aResponse()
+                    .withBody(getFileContentAsString("Misc/MetaData.json"))
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
 
-		testClientDetailsId = (int) session.save(clientDetails);
-
-		ClientDetails clientDetailsToBeDeleted = (ClientDetails) session.get(ClientDetails.class, testClientDetailsId);
-		deleteClientList.add(clientDetailsToBeDeleted);
-	}
-
-	protected void dataCleanup() {
-		for (LaunchDetails launchDetails : deleteLaunchList) {
-			session.load(LaunchDetails.class, launchDetails.getId());
-			session.delete(launchDetails);
-		}
-		deleteLaunchList.clear();
-
-		for (ClientDetails clientDetails : deleteClientList) {
-			session.load(ClientDetails.class, clientDetails.getId());
-			session.delete(clientDetails);
-		}
-		deleteClientList.clear();
-	}
-
-	protected String createURLWithPort(String uri) {
-		return URL + port + uri;
-	}
-	
-
-	private void stubAuthAndMetadata() throws IOException {
-		stubFor(get(urlEqualTo("/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/metadata"))
-				.willReturn(aResponse().withBody(getFileContentAsString("Misc/MetaData.json"))
-						.withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
-
-		stubFor(post(
-				urlEqualTo("/tenants/ec2458f2-1e24-41c8-b71b-0e701af7583d/protocols/oauth2/profiles/smart-v1/token"))
-						.willReturn(aResponse().withBody(getFileContentAsString("Misc/AccessToken.json"))
-								.withHeader("Content-Type", "application/json")));
-
-	}
-
+    stubFor(
+        post(urlEqualTo(
+                "/tenants/ec2458f2-1e24-41c8-b71b-0e701af7583d/protocols/oauth2/profiles/smart-v1/token"))
+            .willReturn(
+                aResponse()
+                    .withBody(getFileContentAsString("Misc/AccessToken.json"))
+                    .withHeader("Content-Type", "application/json")));
+  }
 }
