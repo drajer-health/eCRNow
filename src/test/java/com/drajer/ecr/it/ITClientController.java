@@ -2,61 +2,25 @@ package com.drajer.ecr.it;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.drajer.ecrapp.config.SpringConfiguration;
+import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.junit.runners.Parameterized.Parameters;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = SpringConfiguration.class)
-@AutoConfigureMockMvc
-@Transactional
-@ActiveProfiles("test")
-public class ITClientController {
-
-  private static final Logger logger = LoggerFactory.getLogger(ITClientController.class);
-
-  ClassLoader classLoader = this.getClass().getClassLoader();
-
-  @LocalServerPort protected int port;
-
-  @Autowired protected MockMvc mockMvc;
-
-  @Autowired protected SessionFactory sessionFactory;
-  protected Session session = null;
-  protected Transaction tx = null;
-
-  protected TestRestTemplate restTemplate = new TestRestTemplate();
+public class ITClientController extends BaseIntegrationTest {
 
   static int savedId;
   static String clientDetailString;
@@ -66,14 +30,13 @@ public class ITClientController {
 
   static List<ClientDetails> deleteClientList = new ArrayList<>();
 
-  protected HttpHeaders headers = new HttpHeaders();
+  String clientDetailsFile2;
+  String clientDetailsFile1;
 
-  protected static ObjectMapper mapper = new ObjectMapper();
-
-  protected static final String URL = "http://localhost:";
-
-  String clientDetailsFile2 = "R4/Misc/ClientDetails/ClientDataEntry2.json";
-  String clientDetailsFile1 = "R4/Misc/ClientDetails/ClientDetails1.json";
+  public ITClientController(String clientDetailsFile2, String clientDetailsFile1) {
+    this.clientDetailsFile2 = clientDetailsFile2;
+    this.clientDetailsFile1 = clientDetailsFile1;
+  }
 
   @Before
   public void clientTestSetUp() throws IOException {
@@ -88,9 +51,20 @@ public class ITClientController {
   @After
   public void cleanUp() {
     tx = session.beginTransaction();
-    dataCleanup();
+    cleanup();
 
     tx.commit();
+  }
+
+  @Parameters(name = "{index}: Running Test with file1= {0}, file2={1}")
+  public static Collection<Object[]> data() {
+
+    Object[][] data = new Object[1][2];
+
+    data[0][0] = "R4/Misc/ClientDetails/ClientDataEntry2.json";
+    data[0][1] = "R4/Misc/ClientDetails/ClientDetails1.json";
+
+    return Arrays.asList(data);
   }
 
   @Test
@@ -251,10 +225,6 @@ public class ITClientController {
     assertEquals(1, clientList.size());
   }
 
-  private String createURLWithPort(String uri) {
-    return URL + port + uri;
-  }
-
   private void createSaveClientInputData() throws IOException {
 
     testSaveClientData = TestUtils.getFileContentAsString(clientDetailsFile1);
@@ -272,7 +242,7 @@ public class ITClientController {
     deleteClientList.add(clientDetailsToBeDeleted);
   }
 
-  private void dataCleanup() {
+  private void cleanup() {
     for (ClientDetails clientDetails : deleteClientList) {
       session.load(ClientDetails.class, clientDetails.getId());
       session.delete(clientDetails);

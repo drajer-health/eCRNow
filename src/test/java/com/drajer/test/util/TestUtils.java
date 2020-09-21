@@ -12,9 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class TestUtils {
 
@@ -76,5 +81,13 @@ public class TestUtils {
     }
 
     return fileContent;
+  }
+
+  public static Document getXmlDocument(String expectedXml)
+      throws ParserConfigurationException, SAXException, IOException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document document = builder.parse(TestUtils.class.getResourceAsStream("/" + expectedXml));
+    return document;
   }
 }
