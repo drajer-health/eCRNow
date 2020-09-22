@@ -71,6 +71,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 
   @Before
   public void launchTestSetUp() throws IOException {
+    logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");

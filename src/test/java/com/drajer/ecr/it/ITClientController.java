@@ -4,16 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,12 @@ import org.springframework.http.ResponseEntity;
 
 public class ITClientController extends BaseIntegrationTest {
 
+  private String testCaseId;
+
+  public ITClientController(String testCaseId) {
+    this.testCaseId = testCaseId;
+  }
+
   static int savedId;
   static String clientDetailString;
   static String testSaveClientData;
@@ -29,17 +39,19 @@ public class ITClientController extends BaseIntegrationTest {
   static int testClientDetailsId;
 
   static List<ClientDetails> deleteClientList = new ArrayList<>();
+  static TestDataGenerator testDataGenerator;
 
   String clientDetailsFile2;
   String clientDetailsFile1;
 
-  public ITClientController(String clientDetailsFile2, String clientDetailsFile1) {
-    this.clientDetailsFile2 = clientDetailsFile2;
-    this.clientDetailsFile1 = clientDetailsFile1;
-  }
+  private static final Logger logger = LoggerFactory.getLogger(ITClientController.class);
 
   @Before
   public void clientTestSetUp() throws IOException {
+    logger.info("Executing Tests with TestCase: " + testCaseId);
+    clientDetailsFile2 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
+    clientDetailsFile1 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved2");
+
     session = sessionFactory.openSession();
     tx = session.beginTransaction();
     createTestClientDetailsInDB();
@@ -56,13 +68,16 @@ public class ITClientController extends BaseIntegrationTest {
     tx.commit();
   }
 
-  @Parameters(name = "{index}: Running Test with file1= {0}, file2={1}")
+  @Parameters(name = "{index}: Execute Test with TestCase= {0}")
   public static Collection<Object[]> data() {
-
-    Object[][] data = new Object[1][2];
-
-    data[0][0] = "R4/Misc/ClientDetails/ClientDataEntry2.json";
-    data[0][1] = "R4/Misc/ClientDetails/ClientDetails1.json";
+    testDataGenerator = new TestDataGenerator("TestClientController.yaml");
+    Set<String> testCaseSet = testDataGenerator.getAllTestCases();
+    Object[][] data = new Object[testCaseSet.size()][1];
+    int count = 0;
+    for (String testCase : testCaseSet) {
+      data[count][0] = testCase;
+      count++;
+    }
 
     return Arrays.asList(data);
   }
