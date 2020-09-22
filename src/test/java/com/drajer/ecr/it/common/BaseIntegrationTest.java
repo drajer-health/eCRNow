@@ -29,7 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(Parameterized.class)
@@ -49,8 +48,6 @@ public abstract class BaseIntegrationTest {
 
   @LocalServerPort protected int port;
 
-  @Autowired protected MockMvc mockMvc;
-
   @Autowired protected SessionFactory sessionFactory;
   protected Session session = null;
   protected Transaction tx = null;
@@ -62,14 +59,6 @@ public abstract class BaseIntegrationTest {
 
   protected static final String URL = "http://localhost:";
   protected String baseUrl = "/FHIR";
-
-  protected static int savedClientId;
-  protected static String clientDetailString;
-  protected static String testSaveClientData;
-
-  protected static String systemLaunchInputData;
-
-  protected static int testClientDetailsId;
 
   protected ClassLoader classLoader = this.getClass().getClassLoader();
 
@@ -87,14 +76,15 @@ public abstract class BaseIntegrationTest {
     session.close();
   }
 
-  protected void getSystemLaunchInputData(String systemLaunchFile) throws IOException {
-    systemLaunchInputData = TestUtils.getFileContentAsString(systemLaunchFile);
+  protected String getSystemLaunchInputData(String systemLaunchFile) throws IOException {
+    String systemLaunchInputData = TestUtils.getFileContentAsString(systemLaunchFile);
     systemLaunchInputData = systemLaunchInputData.replace("port", "" + wireMockHttpPort);
+    return systemLaunchInputData;
   }
 
   protected void createTestClientDetailsInDB(String clientDetailsFile) throws IOException {
 
-    clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
+    String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
     ClientDetails clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
 
     String fhirServerBaseURL =
@@ -102,8 +92,7 @@ public abstract class BaseIntegrationTest {
     clientDetails.setFhirServerBaseURL(fhirServerBaseURL);
     String tokenURL = clientDetails.getTokenURL().replace("port", "" + wireMockHttpPort);
     clientDetails.setTokenURL(tokenURL);
-
-    testClientDetailsId = (int) session.save(clientDetails);
+    session.save(clientDetails);
   }
 
   protected String createURLWithPort(String uri) {

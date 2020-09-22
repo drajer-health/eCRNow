@@ -2,10 +2,13 @@ package com.drajer.ecr.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import java.io.BufferedReader;
@@ -19,7 +22,10 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,10 +54,18 @@ public class ITLaunchController extends BaseIntegrationTest {
 
   private final String systemLaunchURI = "/api/systemLaunch";
 
+  private static String systemLaunchInputData;
+  private String patientId;
+  private String encounterID;
+  private String fhirServerUrl;
+
   static TestDataGenerator testDataGenerator;
   String clientDetailsFile;
   String systemLaunchFile;
   String expectedEICRFile;
+
+  private LaunchDetails launchDetails;
+  private PatientExecutionState state;
 
   WireMockHelper stubHelper;
 
@@ -64,7 +78,11 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     // Data Setup
     createTestClientDetailsInDB(clientDetailsFile);
-    getSystemLaunchInputData(systemLaunchFile);
+    systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
+    JSONObject jsonObject = new JSONObject(systemLaunchInputData);
+    patientId = (String) jsonObject.get("patientId");
+    encounterID = (String) jsonObject.get("encounterId");
+    fhirServerUrl = (String) jsonObject.get("fhirServerURL");
 
     session.flush();
     tx.commit();
@@ -131,5 +149,40 @@ public class ITLaunchController extends BaseIntegrationTest {
         actualDoc.getDocumentElement().getTextContent());
 
     assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
+  }
+
+  private void pupulateLaunchDetailAndStatus() {
+
+    try {
+      Criteria criteria = session.createCriteria(LaunchDetails.class);
+      criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
+      criteria.add(Restrictions.eq("launchPatientId", patientId));
+      criteria.add(Restrictions.eq("encounterId", encounterID));
+      launchDetails = (LaunchDetails) criteria.uniqueResult();
+
+      state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
+
+    } catch (Exception e) {
+
+      fail(e.getMessage() + "Exception occured retreving launchdetail and status");
+    }
+  }
+
+  private Document getEicrDocument() {
+    Document eicrDoc = null;
+    try {
+
+      if (state.getCreateEicrStatus().getEicrCreated()) {
+        Eicr createEicr =
+            session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId()));
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        InputSource doc = new InputSource(createEicr.getData());
+        eicrDoc = dBuilder.parse(doc);
+      }
+    } catch (Exception e) {
+      fail(e.getMessage() + "Error while retrieving EICR document");
+    }
+    return eicrDoc;
   }
 }
