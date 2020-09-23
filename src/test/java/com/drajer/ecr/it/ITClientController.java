@@ -7,7 +7,6 @@ import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +37,6 @@ public class ITClientController extends BaseIntegrationTest {
 
   static int testClientDetailsId;
 
-  static List<ClientDetails> deleteClientList = new ArrayList<>();
   static TestDataGenerator testDataGenerator;
 
   String clientDetailsFile2;
@@ -62,10 +60,7 @@ public class ITClientController extends BaseIntegrationTest {
 
   @After
   public void cleanUp() {
-    tx = session.beginTransaction();
-    cleanup();
-
-    tx.commit();
+    session.close();
   }
 
   @Parameters(name = "{index}: Execute Test with TestCase= {0}")
@@ -97,9 +92,6 @@ public class ITClientController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     assertEquals(TestUtils.toJson(expectedDetails), response.getBody());
-
-    // add for cleanup later
-    deleteClientList.add(expectedDetails);
   }
 
   @Test
@@ -117,13 +109,6 @@ public class ITClientController extends BaseIntegrationTest {
         restTemplate.exchange(
             createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, dupResponse.getStatusCode());
-
-    // add for cleanup later
-    savedId = mapper.readValue(response.getBody(), ClientDetails.class).getId();
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, savedId);
-
-    deleteClientList.add(clientDetailsToBeDeleted);
   }
 
   @Test
@@ -149,13 +134,6 @@ public class ITClientController extends BaseIntegrationTest {
     assertEquals(
         "updated-test@ett.healthit.gov",
         mapper.readValue(updateResponse.getBody(), ClientDetails.class).getDirectUser());
-
-    savedId = mapper.readValue(updateResponse.getBody(), ClientDetails.class).getId();
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, savedId);
-
-    // add for cleanup later
-    deleteClientList.add(clientDetailsToBeDeleted);
   }
 
   @Test
@@ -180,13 +158,6 @@ public class ITClientController extends BaseIntegrationTest {
         restTemplate.exchange(
             createURLWithPort("/api/clientDetails"), HttpMethod.PUT, updatedEntity, String.class);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateResponse.getStatusCode());
-
-    savedId = mapper.readValue(response.getBody(), ClientDetails.class).getId();
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, savedId);
-
-    // add for cleanup later
-    deleteClientList.add(clientDetailsToBeDeleted);
   }
 
   @Test
@@ -251,17 +222,5 @@ public class ITClientController extends BaseIntegrationTest {
 
     testClientDetailsId =
         (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
-
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, testClientDetailsId);
-    deleteClientList.add(clientDetailsToBeDeleted);
-  }
-
-  private void cleanup() {
-    for (ClientDetails clientDetails : deleteClientList) {
-      session.load(ClientDetails.class, clientDetails.getId());
-      session.delete(clientDetails);
-    }
-    deleteClientList.clear();
   }
 }
