@@ -157,8 +157,7 @@ public class LaunchController {
     if (clientDetails != null) {
       JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
       String fhirVersion = "";
-      JSONObject object =
-          authorization.getMetadata(systemLaunch.getFhirServerURL() + "/metadata");
+      JSONObject object = authorization.getMetadata(systemLaunch.getFhirServerURL() + "/metadata");
       if (object != null) {
         logger.info("Reading Metadata information");
         if (object.getString("fhirVersion").equals("1.0.2")) {
@@ -171,9 +170,9 @@ public class LaunchController {
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null && systemLaunch.getEncounterId() != null) {
           if (!checkWithExistingPatientAndEncounter(
-                  systemLaunch.getPatientId(),
-                  systemLaunch.getEncounterId(),
-                  systemLaunch.getFhirServerURL())) {
+              systemLaunch.getPatientId(),
+              systemLaunch.getEncounterId(),
+              systemLaunch.getFhirServerURL())) {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString("access_token"));
@@ -202,8 +201,8 @@ public class LaunchController {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
           } else {
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Launch Context is already present for Patient:::::" + systemLaunch.getPatientId());
+                HttpStatus.CONFLICT,
+                "Launch Context is already present for Patient:::::" + systemLaunch.getPatientId());
           }
         } else {
           logger.error("Please provide Patient Id and Encounter Id");
