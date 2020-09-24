@@ -164,6 +164,7 @@ public class ITLaunchController extends BaseIntegrationTest {
       launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
+      session.refresh(launchDetails);
 
     } catch (Exception e) {
 

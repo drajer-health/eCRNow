@@ -38,6 +38,7 @@ public class ITClientController extends BaseIntegrationTest {
   static int testClientDetailsId;
 
   static TestDataGenerator testDataGenerator;
+  String clientURI = "/api/clientDetails";
 
   String clientDetailsFile2;
   String clientDetailsFile1;
@@ -49,13 +50,6 @@ public class ITClientController extends BaseIntegrationTest {
     logger.info("Executing Tests with TestCase: " + testCaseId);
     clientDetailsFile2 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     clientDetailsFile1 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved2");
-
-    session = sessionFactory.openSession();
-    tx = session.beginTransaction();
-    createTestClientDetailsInDB();
-    createSaveClientInputData();
-    session.flush();
-    tx.commit();
   }
 
   @After
@@ -79,13 +73,13 @@ public class ITClientController extends BaseIntegrationTest {
 
   @Test
   public void testSaveClient() throws IOException {
+    createSaveClientInputData();
 
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<String> entity = new HttpEntity<String>(testSaveClientData, headers);
     ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
+        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
     savedId = mapper.readValue(response.getBody(), ClientDetails.class).getId();
     ClientDetails expectedDetails = (ClientDetails) session.get(ClientDetails.class, savedId);
 
@@ -96,23 +90,23 @@ public class ITClientController extends BaseIntegrationTest {
 
   @Test
   public void testSaveClient_dup() throws IOException {
+    createSaveClientInputData();
 
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<String> entity = new HttpEntity<String>(testSaveClientData, headers);
     ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
+        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     // resend the same client details
     ResponseEntity<String> dupResponse =
-        restTemplate.exchange(
-            createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
+        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, dupResponse.getStatusCode());
   }
 
   @Test
   public void testUpdateClient_new() throws IOException {
+    createSaveClientInputData();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     StringBuilder str = new StringBuilder(testSaveClientData);
@@ -129,7 +123,7 @@ public class ITClientController extends BaseIntegrationTest {
     HttpEntity<String> updatedEntity = new HttpEntity<String>(str.toString(), headers);
     ResponseEntity<String> updateResponse =
         restTemplate.exchange(
-            createURLWithPort("/api/clientDetails"), HttpMethod.PUT, updatedEntity, String.class);
+            createURLWithPort(clientURI), HttpMethod.PUT, updatedEntity, String.class);
     assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
     assertEquals(
         "updated-test@ett.healthit.gov",
@@ -138,12 +132,12 @@ public class ITClientController extends BaseIntegrationTest {
 
   @Test
   public void testUpdateClient_existing() throws IOException {
+    createSaveClientInputData();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<String> entity = new HttpEntity<String>(testSaveClientData, headers);
     ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
+        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     StringBuilder str = new StringBuilder(testSaveClientData);
@@ -156,16 +150,16 @@ public class ITClientController extends BaseIntegrationTest {
     HttpEntity<String> updatedEntity = new HttpEntity<String>(str.toString(), headers);
     ResponseEntity<String> updateResponse =
         restTemplate.exchange(
-            createURLWithPort("/api/clientDetails"), HttpMethod.PUT, updatedEntity, String.class);
+            createURLWithPort(clientURI), HttpMethod.PUT, updatedEntity, String.class);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateResponse.getStatusCode());
   }
 
   @Test
   public void testGetClientDetailsById() throws IOException {
-
+    createTestClientDetailsInDB();
     ResponseEntity<String> response =
         restTemplate.exchange(
-            createURLWithPort("/api/clientDetails/" + testClientDetailsId),
+            createURLWithPort(clientURI + "/" + testClientDetailsId),
             HttpMethod.GET,
             null,
             String.class);
@@ -180,11 +174,12 @@ public class ITClientController extends BaseIntegrationTest {
 
   @Test
   public void testGetClientDetailsByURL() throws IOException {
-
+    createTestClientDetailsInDB();
     ResponseEntity<String> response =
         restTemplate.exchange(
             createURLWithPort(
-                "/api/clientDetails?url=https://fhirsave-ehr.sandboxcerner.com/dstu2/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca"),
+                clientURI
+                    + "?url=https://fhirsave-ehr.sandboxcerner.com/dstu2/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca"),
             HttpMethod.GET,
             null,
             String.class);
@@ -199,10 +194,10 @@ public class ITClientController extends BaseIntegrationTest {
 
   @Test
   public void testGetAllClientDetails() throws IOException {
-
+    createTestClientDetailsInDB();
     ResponseEntity<String> response =
         restTemplate.exchange(
-            createURLWithPort("/api/clientDetails/"), HttpMethod.GET, null, String.class);
+            createURLWithPort(clientURI + "/"), HttpMethod.GET, null, String.class);
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     List<ClientDetails> clientList =
@@ -217,10 +212,13 @@ public class ITClientController extends BaseIntegrationTest {
   }
 
   private void createTestClientDetailsInDB() throws IOException {
-
+    session = sessionFactory.openSession();
+    tx = session.beginTransaction();
     clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile2);
 
     testClientDetailsId =
         (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
+    session.flush();
+    tx.commit();
   }
 }
