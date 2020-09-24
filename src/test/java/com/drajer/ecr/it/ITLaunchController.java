@@ -149,9 +149,9 @@ public class ITLaunchController extends BaseIntegrationTest {
         expectedDoc.getDocumentElement().getTextContent(),
         actualDoc.getDocumentElement().getTextContent());
 
-    if(( (String)testDataGenerator.getOtherMappings(testCaseId).get("metadata")).contains("r4")){
-  	  assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
-  }
+    if (((String) testDataGenerator.getOtherMappings(testCaseId).get("metadata")).contains("r4")) {
+      assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
+    }
   }
 
   private void getLaunchDetailAndStatus() {
