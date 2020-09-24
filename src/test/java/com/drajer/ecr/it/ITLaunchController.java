@@ -2,10 +2,14 @@ package com.drajer.ecr.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecr.it.common.BaseIntegrationTest;
+import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,14 +17,19 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -33,98 +42,75 @@ import org.xml.sax.InputSource;
 
 public class ITLaunchController extends BaseIntegrationTest {
 
+  private String testCaseId;
+
+  public ITLaunchController(String testCaseId) {
+    this.testCaseId = testCaseId;
+  }
+
   private static final Logger logger = LoggerFactory.getLogger(ITLaunchController.class);
 
   static final Set<Integer> transactionalEntrySet = new HashSet<>(Arrays.asList(10, 13, 202, 244));
 
   private final String systemLaunchURI = "/api/systemLaunch";
 
-  // For WireMock
-  private String clientDetailsFile = "R4/Misc/ClientDetails/ClientDataEntry1.json";
-  private String launchDetailsFile = "R4/Misc/LaunchDetails/LaunchDataEntry1.json";
-  private String systemLaunchFile = "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json";
-  private String expectedEICRFile = "R4/Misc/ExpectedEICR/EICR_Expected.xml";
+  private static String systemLaunchInputData;
+  private String patientId;
+  private String encounterID;
+  private String fhirServerUrl;
 
-  // TestDataGenerator testDataGenerator = new
-  // TestDataGenerator("LaunchTestData.yaml");
+  static TestDataGenerator testDataGenerator;
+  String clientDetailsFile;
+  String systemLaunchFile;
+  String expectedEICRFile;
+
+  private LaunchDetails launchDetails;
+  private PatientExecutionState state;
+
+  WireMockHelper stubHelper;
 
   @Before
   public void launchTestSetUp() throws IOException {
+    logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
+    clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
+    systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
+    expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
 
     // Data Setup
     createTestClientDetailsInDB(clientDetailsFile);
-    getSystemLaunchInputData(systemLaunchFile);
-    createTestLaunchDetailsInDB(launchDetailsFile);
+    systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
+    JSONObject jsonObject = new JSONObject(systemLaunchInputData);
+    patientId = (String) jsonObject.get("patientId");
+    encounterID = (String) jsonObject.get("encounterId");
+    fhirServerUrl = (String) jsonObject.get("fhirServerURL");
 
     session.flush();
     tx.commit();
 
-    boolean isQueryParam = true;
-    boolean isPathParam = false;
-    // stub all r4 URIs
+    stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
     logger.info("Creating wiremockstubs..");
-    stubResource("Patient", isPathParam, "12742571", "R4/Patient/Patient_12742571.json");
-    stubResource("Encounter", isPathParam, "97953900", "R4/Encounter/Encounter_97953900.json");
-    stubResource(
-        "Encounter",
-        isQueryParam,
-        "patient=12742571",
-        "R4/Encounter/EncounterBundle_97953900.json");
-
-    stubResource(
-        "Practitioner", isPathParam, "11817978", "R4/Practitioner/Practitioner_11817978.json");
-    stubResource(
-        "Practitioner", isPathParam, "4122622", "R4/Practitioner/Practitioner_4122622.json");
-    stubResource(
-        "Practitioner", isPathParam, "11938004", "R4/Practitioner/Practitioner_11938004.json");
-
-    stubResource(
-        "Condition",
-        isQueryParam,
-        "patient=12742571",
-        "R4/Condition/ConditionBundle_d2572364249.json");
-
-    stubResource(
-        "Observation",
-        isQueryParam,
-        "patient=12742571&category=laboratory",
-        "R4/Observation/ObservationBundle_1.json");
-    stubResource(
-        "Observation",
-        isQueryParam,
-        "patient=12742571&code=http://loinc.org|90767-5",
-        "R4/Observation/ObservationBundle_2.json");
-    stubResource(
-        "Observation",
-        isQueryParam,
-        "patient=12742571&code=http://loinc.org|929762-2",
-        "R4/Observation/ObservationBundle_3.json");
+    stubHelper.stubResources(testDataGenerator.getResourceMappings(testCaseId));
+    stubHelper.stubAuthAndMetadata(testDataGenerator.getOtherMappings(testCaseId));
   }
 
   @After
   public void cleanUp() {
-    tx = session.beginTransaction();
-    dataCleanup();
-
-    tx.commit();
+    stubHelper.stopMockServer();
   }
 
-  @Test
-  public void testGetLaunchDetailsById() throws Exception {
-    ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort("/api/launchDetails/" + testLaunchDetailsId),
-            HttpMethod.GET,
-            null,
-            String.class);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+  @Parameters(name = "{index}: Execute TestSystemLaunch with Test Case = {0}")
+  public static Collection<Object[]> data() {
+    testDataGenerator = new TestDataGenerator("TestSystemLaunch.yaml");
+    Set<String> testCaseSet = testDataGenerator.getAllTestCases();
+    Object[][] data = new Object[testCaseSet.size()][1];
+    int count = 0;
+    for (String testCase : testCaseSet) {
+      data[count][0] = testCase;
+      count++;
+    }
 
-    LaunchDetails launchDetails = mapper.readValue(response.getBody(), LaunchDetails.class);
-
-    assertEquals(
-        mapper.readValue(launchDetailString, LaunchDetails.class).getClientId(),
-        launchDetails.getClientId());
+    return Arrays.asList(data);
   }
 
   @Test
@@ -141,13 +127,12 @@ public class ITLaunchController extends BaseIntegrationTest {
         restTemplate.exchange(
             createURLWithPort(systemLaunchURI), HttpMethod.POST, entity, String.class);
     logger.info("Received Response. Waiting for EICR generation.....");
-    Thread.sleep(140000);
+    Thread.sleep(100000);
 
     Query query = session.createQuery("from Eicr order by id DESC");
     query.setMaxResults(1);
     Eicr last = (Eicr) query.uniqueResult();
-    System.out.println(last.getData());
-    Document expectedDoc = getExpectedXml(expectedEICRFile);
+    Document expectedDoc = TestUtils.getXmlDocument(expectedEICRFile);
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document actualDoc = builder.parse(new InputSource(new StringReader(last.getData())));
@@ -165,5 +150,40 @@ public class ITLaunchController extends BaseIntegrationTest {
         actualDoc.getDocumentElement().getTextContent());
 
     assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
+  }
+
+  private void pupulateLaunchDetailAndStatus() {
+
+    try {
+      Criteria criteria = session.createCriteria(LaunchDetails.class);
+      criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
+      criteria.add(Restrictions.eq("launchPatientId", patientId));
+      criteria.add(Restrictions.eq("encounterId", encounterID));
+      launchDetails = (LaunchDetails) criteria.uniqueResult();
+
+      state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
+
+    } catch (Exception e) {
+
+      fail(e.getMessage() + "Exception occured retreving launchdetail and status");
+    }
+  }
+
+  private Document getEicrDocument() {
+    Document eicrDoc = null;
+    try {
+
+      if (state.getCreateEicrStatus().getEicrCreated()) {
+        Eicr createEicr =
+            session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId()));
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        InputSource doc = new InputSource(createEicr.getData());
+        eicrDoc = dBuilder.parse(doc);
+      }
+    } catch (Exception e) {
+      fail(e.getMessage() + "Error while retrieving EICR document");
+    }
+    return eicrDoc;
   }
 }

@@ -2,65 +2,34 @@ package com.drajer.ecr.it;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.drajer.ecrapp.config.SpringConfiguration;
+import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = SpringConfiguration.class)
-@AutoConfigureMockMvc
-@Transactional
-@ActiveProfiles("test")
-public class ITClientController {
+public class ITClientController extends BaseIntegrationTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(ITClientController.class);
+  private String testCaseId;
 
-  ClassLoader classLoader = this.getClass().getClassLoader();
-
-  @LocalServerPort protected int port;
-
-  @Autowired protected MockMvc mockMvc;
-
-  @Autowired protected SessionFactory sessionFactory;
-  protected Session session = null;
-  protected Transaction tx = null;
-
-  protected TestRestTemplate restTemplate = new TestRestTemplate();
+  public ITClientController(String testCaseId) {
+    this.testCaseId = testCaseId;
+  }
 
   static int savedId;
   static String clientDetailString;
@@ -68,19 +37,19 @@ public class ITClientController {
 
   static int testClientDetailsId;
 
-  static List<ClientDetails> deleteClientList = new ArrayList<>();
+  static TestDataGenerator testDataGenerator;
 
-  protected HttpHeaders headers = new HttpHeaders();
+  String clientDetailsFile2;
+  String clientDetailsFile1;
 
-  protected static ObjectMapper mapper = new ObjectMapper();
-
-  protected static final String URL = "http://localhost:";
-
-  String clientDetailsFile2 = "R4/Misc/ClientDetails/ClientDataEntry2.json";
-  String clientDetailsFile1 = "R4/Misc/ClientDetails/ClientDetails1.json";
+  private static final Logger logger = LoggerFactory.getLogger(ITClientController.class);
 
   @Before
   public void clientTestSetUp() throws IOException {
+    logger.info("Executing Tests with TestCase: " + testCaseId);
+    clientDetailsFile2 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
+    clientDetailsFile1 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved2");
+
     session = sessionFactory.openSession();
     tx = session.beginTransaction();
     createTestClientDetailsInDB();
@@ -91,10 +60,21 @@ public class ITClientController {
 
   @After
   public void cleanUp() {
-    tx = session.beginTransaction();
-    dataCleanup();
+    session.close();
+  }
 
-    tx.commit();
+  @Parameters(name = "{index}: Execute Test with TestCase= {0}")
+  public static Collection<Object[]> data() {
+    testDataGenerator = new TestDataGenerator("TestClientController.yaml");
+    Set<String> testCaseSet = testDataGenerator.getAllTestCases();
+    Object[][] data = new Object[testCaseSet.size()][1];
+    int count = 0;
+    for (String testCase : testCaseSet) {
+      data[count][0] = testCase;
+      count++;
+    }
+
+    return Arrays.asList(data);
   }
 
   @Test
@@ -112,9 +92,6 @@ public class ITClientController {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     assertEquals(TestUtils.toJson(expectedDetails), response.getBody());
-
-    // add for cleanup later
-    deleteClientList.add(expectedDetails);
   }
 
   @Test
@@ -132,13 +109,6 @@ public class ITClientController {
         restTemplate.exchange(
             createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, dupResponse.getStatusCode());
-
-    // add for cleanup later
-    savedId = mapper.readValue(response.getBody(), ClientDetails.class).getId();
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, savedId);
-
-    deleteClientList.add(clientDetailsToBeDeleted);
   }
 
   @Test
@@ -164,13 +134,6 @@ public class ITClientController {
     assertEquals(
         "updated-test@ett.healthit.gov",
         mapper.readValue(updateResponse.getBody(), ClientDetails.class).getDirectUser());
-
-    savedId = mapper.readValue(updateResponse.getBody(), ClientDetails.class).getId();
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, savedId);
-
-    // add for cleanup later
-    deleteClientList.add(clientDetailsToBeDeleted);
   }
 
   @Test
@@ -195,13 +158,6 @@ public class ITClientController {
         restTemplate.exchange(
             createURLWithPort("/api/clientDetails"), HttpMethod.PUT, updatedEntity, String.class);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateResponse.getStatusCode());
-
-    savedId = mapper.readValue(response.getBody(), ClientDetails.class).getId();
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, savedId);
-
-    // add for cleanup later
-    deleteClientList.add(clientDetailsToBeDeleted);
   }
 
   @Test
@@ -255,48 +211,16 @@ public class ITClientController {
     assertEquals(1, clientList.size());
   }
 
-  private String createURLWithPort(String uri) {
-    return URL + port + uri;
-  }
-
   private void createSaveClientInputData() throws IOException {
 
-    testSaveClientData = getFileContentAsString(clientDetailsFile1);
+    testSaveClientData = TestUtils.getFileContentAsString(clientDetailsFile1);
   }
 
   private void createTestClientDetailsInDB() throws IOException {
 
-    clientDetailString = getFileContentAsString(clientDetailsFile2);
+    clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile2);
 
     testClientDetailsId =
         (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
-
-    ClientDetails clientDetailsToBeDeleted =
-        (ClientDetails) session.get(ClientDetails.class, testClientDetailsId);
-    deleteClientList.add(clientDetailsToBeDeleted);
-  }
-
-  private void dataCleanup() {
-    for (ClientDetails clientDetails : deleteClientList) {
-      session.load(ClientDetails.class, clientDetails.getId());
-      session.delete(clientDetails);
-    }
-    deleteClientList.clear();
-  }
-
-  private String getFileContentAsString(String fileName) {
-    String fileContent = "";
-    InputStream stream = classLoader.getResourceAsStream(fileName);
-    StringWriter writer = new StringWriter();
-    try {
-      IOUtils.copy(stream, writer, StandardCharsets.UTF_8);
-      fileContent = writer.toString();
-      stream.close();
-      writer.close();
-    } catch (Exception e) {
-      logger.error("File not found::" + fileName);
-    }
-
-    return fileContent;
   }
 }

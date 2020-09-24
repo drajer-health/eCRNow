@@ -4,8 +4,18 @@ import java.util.Map;
 
 public class TestDataVO {
   private String testName;
-  private String testId;
-  private Map<String, ?> dataMap;
+
+  private Map<String, TestCase> testCase;
+
+  public TestDataVO() {
+    super();
+  }
+
+  public TestDataVO(String testName, Map<String, TestCase> testCase) {
+    super();
+    this.testName = testName;
+    this.testCase = testCase;
+  }
 
   public String getTestName() {
     return testName;
@@ -15,19 +25,11 @@ public class TestDataVO {
     this.testName = testName;
   }
 
-  public String getTestId() {
-    return testId;
+  public Map<String, TestCase> getTestCase() {
+    return testCase;
   }
 
-  public void setTestId(String testId) {
-    this.testId = testId;
-  }
-
-  public Map<String, ?> getDataMap() {
-    return dataMap;
-  }
-
-  public void setDataMap(Map<String, ?> dataMap) {
-    this.dataMap = dataMap;
+  public void setTestCase(Map<String, TestCase> testCase) {
+    this.testCase = testCase;
   }
 }
