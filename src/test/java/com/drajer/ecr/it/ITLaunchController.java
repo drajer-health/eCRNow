@@ -142,7 +142,7 @@ public class ITLaunchController extends BaseIntegrationTest {
                 classLoader.getResourceAsStream(expectedEICRFile), StandardCharsets.UTF_8));
     BufferedReader br2 = new BufferedReader(new StringReader(last.getData()));
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     assertEquals(
