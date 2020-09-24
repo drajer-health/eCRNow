@@ -149,10 +149,12 @@ public class ITLaunchController extends BaseIntegrationTest {
         expectedDoc.getDocumentElement().getTextContent(),
         actualDoc.getDocumentElement().getTextContent());
 
-    assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
+    if(( (String)testDataGenerator.getOtherMappings(testCaseId).get("metadata")).contains("r4")){
+  	  assertTrue(TestUtils.compareStringBuffer(br1, br2, transactionalEntrySet));
+  }
   }
 
-  private void pupulateLaunchDetailAndStatus() {
+  private void getLaunchDetailAndStatus() {
 
     try {
       Criteria criteria = session.createCriteria(LaunchDetails.class);
@@ -169,7 +171,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     }
   }
 
-  private Document getEicrDocument() {
+  private Document getCreateEicrDocument() {
     Document eicrDoc = null;
     try {
 
