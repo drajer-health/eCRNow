@@ -111,9 +111,6 @@ public class TriggerQueryServiceTest extends BaseIntegrationTest {
     String expectedBundle =
         TestUtils.getFileContentAsString("TriggerQueryR4Bundle-12742571_expected.json");
 
-    System.out.println(generatedBundle);
-    System.out.println(expectedBundle);
-
     assertEquals(generatedBundle, expectedBundle);
   }
 

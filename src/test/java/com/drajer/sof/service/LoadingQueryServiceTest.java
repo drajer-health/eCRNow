@@ -1,4 +1,4 @@
-/*package com.drajer.sof.service;
+package com.drajer.sof.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +44,7 @@ public class LoadingQueryServiceTest extends BaseIntegrationTest {
 
   WireMockHelper stubHelper;
 
-  private static final Logger logger = LoggerFactory.getLogger(TriggerQueryServiceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(LoadingQueryServiceTest.class);
 
   @Before
   public void launchTestSetUp() throws IOException {
@@ -109,7 +109,7 @@ public class LoadingQueryServiceTest extends BaseIntegrationTest {
 
     String generatedBundle = getGeneratedBundle();
     String expectedBundle =
-        TestUtils.getFileContentAsString("TriggerQueryR4Bundle-12742571_expected.json");
+        TestUtils.getFileContentAsString("LoadingQueryR4Bundle-12742571_expected.json");
 
     assertEquals(generatedBundle, expectedBundle);
   }
@@ -126,4 +126,4 @@ public class LoadingQueryServiceTest extends BaseIntegrationTest {
     reader.close();
     return currentLine;
   }
-}*/
+}
