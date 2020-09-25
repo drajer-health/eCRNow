@@ -1,0 +1,91 @@
+---
+testName: "TestSystemLaunch"
+testCase:
+  TestCase001:
+    fileData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+      Practitioner:
+      - params: "11817978"
+        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      - params: "4122622"
+        responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
+      - params: "11938004"
+        responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+      Observation:
+      - params:
+          patient: "12742571"
+          category: "laboratory"
+        responseFilePath: "R4/Observation/ObservationBundle_1.json"
+      - params:
+          patient: "12742571"
+          code: "http://loinc.org|90767-5"
+        responseFilePath: "R4/Observation/ObservationBundle_2.json"
+      - params:
+          patient: "12742571"
+          code: "http://loinc.org|929762-2"
+        responseFilePath: "R4/Observation/ObservationBundle_3.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+  TestCase002:
+    fileData:
+      ClientDataToBeSaved: "DSTU2/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "DSTU2/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      LaunchDataToBeSaved: "DSTU2/Misc/LaunchDetails/LaunchDataEntry1.json"
+      ExpectedEICRFile: "DSTU2/Misc/ExpectedEICR/EICR_Expected.xml"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "DSTU2/Patient/Patient_12742571.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "DSTU2/Encounter/Encounter_97953900.json"
+      - params:
+          patient: "12742571"
+        responseFilePath: "DSTU2/Encounter/EncounterBundle_97953900.json"
+      Practitioner:
+      - params: "11817978"
+        responseFilePath: "DSTU2/Practitioner/Practitioner_11817978.json"
+      - params: "4122622"
+        responseFilePath: "DSTU2/Practitioner/Practitioner_4122622.json"
+      - params: "11938004"
+        responseFilePath: "DSTU2/Practitioner/Practitioner_11938004.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "DSTU2/Condition/ConditionBundle_d2572364249.json"
+      Observation:
+      - params:
+          patient: "12742571"
+          category: "laboratory"
+        responseFilePath: "DSTU2/Observation/ObservationBundle_1.json"
+      - params:
+          patient: "12742571"
+          code: "http://loinc.org|90767-5"
+        responseFilePath: "DSTU2/Observation/ObservationBundle_2.json"
+      - params:
+          patient: "12742571"
+          code: "http://loinc.org|929762-2"
+        responseFilePath: "DSTU2/Observation/ObservationBundle_3.json"
+    otherMappingData:
+      metadata: "DSTU2/Misc/MetaData_dstu2.json"
+      token: "DSTU2/Misc/AccessToken.json"
+      default: "DSTU2/Misc/NoDataFound_Default.json"
+

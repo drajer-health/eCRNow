@@ -1,0 +1,283 @@
+{
+  "resourceType": "Patient",
+  "id": "12742571",
+  "meta": {
+    "versionId": "5",
+    "lastUpdated": "2020-05-13T13:40:21.000Z"
+  },
+  "text": {
+    "status": "extensions",
+    "div": "<div><p><b>Patient</b></p><p><b>Name</b>: FHIRTest, COVIDONE</p><p><b>DOB</b>: Jan  2, 1970</p><p><b>Birth Sex</b>: Male</p><p><b>Administrative Gender</b>: Male</p><p><b>Marital Status</b>: Single</p><p><b>Status</b>: Active</p></div>"
+  },
+  "extension": [
+    {
+      "url": "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex",
+      "valueCode": "M"
+    },
+    {
+      "url": "http://fhir.org/guides/argonaut/StructureDefinition/argo-race",
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/v3/Race",
+            "code": "2054-5",
+            "display": "Black or African American",
+            "userSelected": false
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Black or African American"
+        }
+      ]
+    },
+    {
+      "url": "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity",
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/v3/Ethnicity",
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino",
+            "userSelected": false
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Not Hispanic, Latino, or Spanish Origin"
+        }
+      ]
+    }
+  ],
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/v2/0203",
+            "code": "MR",
+            "display": "Medical record number",
+            "userSelected": false
+          }
+        ],
+        "text": "MRN"
+      },
+      "system": "urn:oid:2.16.840.1.113883.6.1000",
+      "value": "490056856",
+      "_value": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
+            "valueString": "00490056856"
+          }
+        ]
+      },
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "text": "FHIRTest, COVIDONE",
+      "family": [
+        "FHIRTest"
+      ],
+      "given": [
+        "COVIDONE"
+      ],
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    },
+    {
+      "use": "usual",
+      "text": "HARRIS, JEFF",
+      "family": [
+        "FHIRTest"
+      ],
+      "given": [
+        "JEFF"
+      ],
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "2125555554",
+      "use": "mobile",
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1970-01-02",
+  "address": [
+    {
+      "use": "home",
+      "text": "2801 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+      "line": [
+        "2801 ROCK CREEK PKWY"
+      ],
+      "city": "KANSAS CITY",
+      "state": "MO",
+      "postalCode": "64117",
+      "country": "US",
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    }
+  ],
+  "maritalStatus": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/marital-status",
+        "code": "U",
+        "display": "Unmarried",
+        "userSelected": false
+      }
+    ],
+    "text": "Single"
+  },
+  "contact": [
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/patient-contact-relationship",
+              "code": "emergency",
+              "display": "Emergency",
+              "userSelected": false
+            }
+          ],
+          "text": "Emergency Contact"
+        }
+      ],
+      "name": {
+        "use": "official",
+        "text": "HARRIS, DANA",
+        "family": [
+          "HARRIS"
+        ],
+        "given": [
+          "DANA"
+        ]
+      },
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "2125555553",
+          "use": "home",
+          "period": {
+            "start": "2020-04-27T16:36:47.000Z"
+          }
+        },
+        {
+          "system": "email",
+          "value": "dharris@gmail.com",
+          "use": "home",
+          "period": {
+            "start": "2020-07-28T14:53:41.000Z"
+          }
+        }
+      ],
+      "address": {
+        "use": "home",
+        "text": "\nUS",
+        "country": "US",
+        "period": {
+          "start": "2020-09-09T22:24:03.000Z"
+        }
+      },
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    },
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/patient-contact-relationship",
+              "code": "guardian",
+              "display": "Guardian",
+              "userSelected": false
+            }
+          ],
+          "text": "Guardian"
+        }
+      ],
+      "name": {
+        "use": "official",
+        "text": "HARRIS, DANA",
+        "family": [
+          "HARRIS"
+        ],
+        "given": [
+          "DANA"
+        ]
+      },
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "2125555553",
+          "use": "home",
+          "period": {
+            "start": "2020-04-27T16:36:47.000Z"
+          }
+        },
+        {
+          "system": "email",
+          "value": "dharris@gmail.com",
+          "use": "home",
+          "period": {
+            "start": "2020-07-28T14:53:41.000Z"
+          }
+        }
+      ],
+      "address": {
+        "use": "home",
+        "text": "\nUS",
+        "country": "US",
+        "period": {
+          "start": "2020-09-09T22:24:03.000Z"
+        }
+      },
+      "period": {
+        "start": "2020-05-12T13:40:56.000Z"
+      }
+    }
+  ],
+  "communication": [
+    {
+      "language": {
+        "coding": [
+          {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English",
+            "userSelected": false
+          }
+        ],
+        "text": "English"
+      },
+      "preferred": true
+    }
+  ],
+  "careProvider": [
+    {
+      "reference": "Practitioner/11938004",
+      "display": "Bradford, MD, Michael Cerner"
+    }
+  ]
+}

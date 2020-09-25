@@ -1,0 +1,5 @@
+{
+ "fhirServerURL":"http://localhost:port/FHIR",
+ "patientId":"12742571",
+ "encounterId":"97953900"
+}
