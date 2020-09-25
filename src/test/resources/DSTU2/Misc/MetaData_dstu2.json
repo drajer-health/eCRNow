@@ -1,0 +1,950 @@
+{
+    "resourceType": "Conformance",
+    "text": {
+        "status": "generated",
+        "div": "<div>Generated Conformance Statement</div>"
+    },
+    "url": "https://fhir-ehr-code.cerner.com/dstu2/ec2458f2-1e24-41c8-b71b-0e701af7583d/metadata",
+    "name": "Cerner Conformance Statement",
+    "status": "draft",
+    "publisher": "Cerner",
+    "date": "2018-07-18",
+    "description": "Describes capabilities of this server",
+    "kind": "instance",
+    "fhirVersion": "1.0.2",
+    "acceptUnknown": "no",
+    "format": [
+        "json"
+    ],
+    "rest": [
+        {
+            "mode": "server",
+            "documentation": "All the functionality defined in FHIR",
+            "security": {
+                "extension": [
+                    {
+                        "url": "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris",
+                        "extension": [
+                            {
+                                "url": "token",
+                                "valueUri": "https://authorization.cerner.com/tenants/ec2458f2-1e24-41c8-b71b-0e701af7583d/protocols/oauth2/profiles/smart-v1/token"
+                            },
+                            {
+                                "url": "authorize",
+                                "valueUri": "https://authorization.cerner.com/tenants/ec2458f2-1e24-41c8-b71b-0e701af7583d/protocols/oauth2/profiles/smart-v1/personas/provider/authorize"
+                            },
+                            {
+                                "url": "introspect",
+                                "valueUri": "https://authorization.cerner.com"
+                            }
+                        ]
+                    }
+                ],
+                "cors": true,
+                "service": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/restful-security-service",
+                                "code": "SMART-on-FHIR"
+                            }
+                        ],
+                        "text": "OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org/)."
+                    }
+                ],
+                "description": "OAuth2 plus SMART extensions"
+            },
+            "resource": [
+                {
+                    "type": "Conformance",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        }
+                    ]
+                },
+                {
+                    "type": "AllergyIntolerance",
+                    "interaction": [
+                        {
+                            "code": "create"
+                        },
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "update"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "updateCreate": false,
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of AllergyIntolerance ids. It is a required field if the patient field is not given"
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "Who the sensitivity is for. It is a required field if the _id field is not given"
+                        },
+                        {
+                            "name": "status",
+                            "type": "token",
+                            "documentation": "Certainty of the allergy or intolerance"
+                        }
+                    ]
+                },
+                {
+                    "type": "Appointment",
+                    "interaction": [
+                        {
+                            "code": "create"
+                        },
+                        {
+                            "code": "update"
+                        },
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "updateCreate": false,
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Appointment ids. Either the '_id' parameter or one of the 'patient', 'practitioner' or 'location' parameters must be set."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of items to include in a page."
+                        },
+                        {
+                            "name": "date",
+                            "type": "date",
+                            "documentation": "A date or date range from which to find appointments. The 'date' parameter may be provided once without a prefix or time component to imply a date range or once without a prefix and with a time component to search for appointments at a specific time. Alternately it may be provided twice with 'le', 'lt', 'ge', or 'gt' prefixes to search for appointments within a specific range. The date and prefix pairs must create a closed range."
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "A single or comma separated list of Patient references. Either the '_id' parameter or one of the 'patient', 'practitioner' or 'location' parameters must be set."
+                        },
+                        {
+                            "name": "practitioner",
+                            "type": "reference",
+                            "documentation": "A single or comma separated list of Practitioner references. Either the '_id' parameter or one of the 'patient', 'practitioner' or 'location' parameters must be set."
+                        },
+                        {
+                            "name": "location",
+                            "type": "reference",
+                            "documentation": "A single or comma separated list of Location references. Either the '_id' parameter or one of the 'patient', 'practitioner' or 'location' parameters must be set."
+                        },
+                        {
+                            "name": "status",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of appointment statuses."
+                        }
+                    ]
+                },
+                {
+                    "type": "Binary",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        }
+                    ]
+                },
+                {
+                    "type": "CarePlan",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "Who care plan or care team is for. Either the '_id' parameter or one of the 'patient' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "Who care plan or care team is for. Must be a patient. Either the '_id' parameter or one of the 'patient' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of CarePlan ids. Either the '_id' parameter or one of the 'patient' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "date",
+                            "type": "date",
+                            "documentation": "Time period plan covers. The prefixes 'ge' and 'le' are supported for this parameter. Date may be provided once to imply a date range or twice to specify a range. When two dates are provided they must create a closed range."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to return in a page."
+                        },
+                        {
+                            "name": "category",
+                            "type": "token",
+                            "documentation": "Determines if searching for care plan or care team, and if a care team then which type. Must be set if 'patient' or 'subject' is present"
+                        },
+                        {
+                            "name": "context",
+                            "type": "reference",
+                            "documentation": "The encounter for which this care team was responsible. Cannot be set unless 'category' is set to 'encounter'"
+                        }
+                    ]
+                },
+                {
+                    "type": "Condition",
+                    "interaction": [
+                        {
+                            "code": "create"
+                        },
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        },
+                        {
+                            "code": "update"
+                        }
+                    ],
+                    "updateCreate": false,
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Condition ids. It is a required field if the patient field is not given"
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient who has the condition. It is a required field if the _id field is not given"
+                        },
+                        {
+                            "name": "clinicalstatus",
+                            "type": "token",
+                            "documentation": "A list of desired clinical statuses of the condition"
+                        },
+                        {
+                            "name": "category",
+                            "type": "token",
+                            "documentation": "The category of the condition"
+                        }
+                    ]
+                },
+                {
+                    "type": "Contract",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchInclude": [
+                        "Contract:actor",
+                        "Contract:patient"
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Contract ids. Either the '_id' parameter or one of the 'actor', 'actor.identifier', 'patient.identifier' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "actor",
+                            "type": "reference",
+                            "documentation": "The single actor of the Contract. Must be a RelatedPerson. Either the '_id' parameter or one of the 'actor', 'actor.identifier', 'patient.identifier' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "actor.identifier",
+                            "type": "token",
+                            "documentation": "The single identifier of the actor of the Contract. Either the '_id' parameter or one of the 'actor', 'actor.identifier', 'patient.identifier' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "patient.identifier",
+                            "type": "token",
+                            "documentation": "The single identifier of the patient subject of the Contract. Either the '_id' parameter or one of the 'actor', 'actor.identifier', 'patient.identifier' or 'subject' parameters must be set."
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The single subject of the Contract. Must be a Patient. Either the '_id' parameter or one of the 'actor', 'actor.identifier', 'patient.identifier' or 'subject' parameters must be set."
+                        }
+                    ]
+                },
+                {
+                    "type": "Device",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient who has the device affixed. It is a required field if the _id field is not given"
+                        },
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Device ids. It is a required field if the patient field is not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "DiagnosticReport",
+                    "interaction": [
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The subject of the report if a patient. It is a required field if the subject field is not given"
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The subject of the report. It is a required field if the patient field is not given"
+                        },
+                        {
+                            "name": "date",
+                            "type": "date",
+                            "documentation": "The start date after which or date range in which the report occurs. If only start date is provided, it must be prefixed by 'ge'. If range is provided, this parameter value should be present twice, prefixed once by 'ge' representing the earliest date and once by 'lt' representing the latest date"
+                        }
+                    ]
+                },
+                {
+                    "type": "DocumentReference",
+                    "interaction": [
+                        {
+                            "code": "create"
+                        },
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of DocumentReference ids. It is a required field if the patient or subject fields are not given"
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient the document is about. It is a required field if the _id or subject fields are not given"
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The subject the document is about. Must be a Patient. It is a required field if the _id or patient fields are not given"
+                        },
+                        {
+                            "name": "encounter",
+                            "type": "reference",
+                            "documentation": "The Encounter in which the document was created"
+                        },
+                        {
+                            "name": "created",
+                            "type": "date",
+                            "documentation": "A date range with which to find Documents. If used, the 'created' parameter must be provided twice. Once with a 'ge' prefix representing the earliest date, and once with a 'le' prefix representing the latest date. The date prefix pair must create a closed range and cannot be equal to each other."
+                        }
+                    ]
+                },
+                {
+                    "type": "Encounter",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient present at the encounter. It is a required field if the _id field is not given"
+                        },
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Encounter ids. It is a required field if the patient field is not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "Goal",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The identity of a patient to list goals for. It is a required field if the _id or subject fields are not given"
+                        },
+                        {
+                            "name": "targetdate",
+                            "type": "date",
+                            "documentation": "A date or date range from which to find Goals. The 'targetDate' parameter may be provided once with a prefix to imply a date range or without a prefix to search for goals at a specific date. Alternately it may be provided twice with 'le, 'lt', 'ge', or 'gt' prefixes to search for goals within specific range. The date and prefix pairs must create a closed range."
+                        },
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Goal ids. It is a required field if the patient or subject fields are not given"
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The subject for whom the goal is established. Must be a Patient. It is a required field if the patient or _id fields are not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "Immunization",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient for the vaccination record. It is a required field if the _id field is not given"
+                        },
+                        {
+                            "name": "date",
+                            "type": "date",
+                            "documentation": "The date range into which the immunization falls. It is an optional field. This parameter value should be prefixed once by 'ge' representing the earliest date, and once by 'le' representing the latest date"
+                        },
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Immunization ids. It is a required field if the patient field is not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "MedicationAdministration",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of MedicationAdministration ids. It is a required field if the patient field is not given"
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The identity of a patient to list administrations for. It is a required field if the _id field is not given"
+                        },
+                        {
+                            "name": "effectivetime",
+                            "type": "date",
+                            "documentation": "Date administration happened (or did not happen). The prefixes 'le' and 'ge' are permitted. When searching by effectivetime both a start and end must be provided."
+                        },
+                        {
+                            "name": "notgiven",
+                            "type": "token",
+                            "documentation": "Administrations that were not made. A value of 'true' will search for these, and a value of 'false' will exclude them."
+                        },
+                        {
+                            "name": "practitioner",
+                            "type": "reference",
+                            "documentation": "A single or comma separated list of practitioners who administered the substance."
+                        },
+                        {
+                            "name": "status",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of medication administration statuses."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to include in a page."
+                        }
+                    ]
+                },
+                {
+                    "type": "MedicationOrder",
+                    "interaction": [
+                        {
+                            "code": "search-type"
+                        },
+                        {
+                            "code": "read"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "The unique identifier representing the medication order. If provided, no other search parameters may be provided."
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The identity of a patient to list medication orders for. It is a required field"
+                        },
+                        {
+                            "name": "status",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of medication order statuses."
+                        },
+                        {
+                            "name": "-timing-boundsPeriod",
+                            "type": "date",
+                            "documentation": "The date-time which should fall within the period the medication should be given to the patient. Must be prefixed by 'ge'."
+                        },
+                        {
+                            "name": "_lastUpdated",
+                            "type": "date",
+                            "documentation": "The date range within which the most recent clinically relevant update was made to the medication order. This parameter value should be prefixed by 'ge' when specifying the earliest date time, or by 'le' when specifying the latest date time. It may be provided up to 2 times, must include a time component, and must define a closed range."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to include in a page."
+                        }
+                    ]
+                },
+                {
+                    "type": "MedicationStatement",
+                    "interaction": [
+                        {
+                            "code": "create"
+                        },
+                        {
+                            "code": "update"
+                        },
+                        {
+                            "code": "search-type"
+                        },
+                        {
+                            "code": "read"
+                        }
+                    ],
+                    "updateCreate": false,
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The identity of a patient to list statements for. It is a required field."
+                        },
+                        {
+                            "name": "status",
+                            "type": "token",
+                            "documentation": "One or more medication statement status values separated by commas."
+                        },
+                        {
+                            "name": "effectivedate",
+                            "type": "date",
+                            "documentation": "The date-time which should fall within the period the patient was taking (or not taking) the medication. Must be prefixed by 'ge'."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to include in a page."
+                        },
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Medication Statement ids. It is a required field if the patient field is not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "Observation",
+                    "interaction": [
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The subject that the observation is about (if patient). It is a required field if the subject field is not given"
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The subject that the observation is about. It is a required field if the patient field is not given"
+                        },
+                        {
+                            "name": "category",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of classifications of the type of observation."
+                        },
+                        {
+                            "name": "code",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of observation types."
+                        },
+                        {
+                            "name": "date",
+                            "type": "date",
+                            "documentation": "A date or date range from which to find observations. The 'date' parameter may be provided once without a prefix or time component to imply a date range or once without a prefix and with a time component to search for observations at a specific time. Alternately it may be provided twice with 'le', 'lt', 'ge', or 'gt' prefixes to search for observations within a specific range. The date and prefix pairs must create a closed range."
+                        },
+                        {
+                            "name": "_lastUpdated",
+                            "type": "date",
+                            "documentation": "A date or date range used to search for observations which were last updated in that period. The '_lastUpdated' parameter may be provided once without a prefix or time component to imply a date range or once without a prefix and with a time component to search for observations at a specific time. Alternately it may be provided twice with 'le', 'lt', 'ge', or 'gt' prefixes to search for observations within a specific range. The date and prefix pairs must create a closed range."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to return in a page."
+                        }
+                    ]
+                },
+                {
+                    "type": "OperationDefinition",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        }
+                    ]
+                },
+                {
+                    "type": "Patient",
+                    "interaction": [
+                        {
+                            "code": "create"
+                        },
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Patient ids. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "identifier",
+                            "type": "token",
+                            "documentation": "A patient identifier. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "documentation": "The beginning of any name of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "given",
+                            "type": "string",
+                            "documentation": "The beginning of the given name of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "family",
+                            "type": "string",
+                            "documentation": "The beginning of the family name of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "address-postalcode",
+                            "type": "string",
+                            "documentation": "The postal code of the address of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "birthdate",
+                            "type": "date",
+                            "documentation": "The date of birth of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "phone",
+                            "type": "token",
+                            "documentation": "The value of the phone number of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "email",
+                            "type": "token",
+                            "documentation": "The value of the email address of the patient. Either the '_id' parameter, or a combination of 'identifier', 'birthdate', 'name', 'given', 'family', 'address-postalcode', 'phone', or 'email' parameters must be provided."
+                        },
+                        {
+                            "name": "gender",
+                            "type": "token",
+                            "documentation": "The administrative gender of the patient. Gender may only be provided if another parameter other than '_id' is provided"
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to return. Not honoured when '_id' or 'identifier' are set."
+                        }
+                    ]
+                },
+                {
+                    "type": "Person",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Person ids. It is a required field if the identifier field is not given"
+                        },
+                        {
+                            "name": "identifier",
+                            "type": "token",
+                            "documentation": "A person identifier. It is a required field if the _id field is not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "Practitioner",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Practitioner ids. This is a required field."
+                        }
+                    ]
+                },
+                {
+                    "type": "Procedure",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Procedure ids. It is a required field if the patient or subject fields are not given"
+                        },
+                        {
+                            "name": "date",
+                            "type": "date",
+                            "documentation": "The date range into which the procedure falls. It is an optional field. This parameter value should be prefixed by 'ge' representing the earliest date, or by 'le' representing the latest date. It may be provided up to 2 times and must define a closed range."
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient whose procedures are to be returned. It is a required field if the _id or subject fields are not given"
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The patient subject whose procedures are to be returned. It is a required field if the _id or patient fields are not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "ProcedureRequest",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of ProcedureRequest ids. It is a required field if the patient or subject fields are not given."
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient whose procedure requests are to be returned. It is a required field if the _id or subject fields are not given."
+                        },
+                        {
+                            "name": "subject",
+                            "type": "reference",
+                            "documentation": "The patient subject whose procedure requests are to be returned. It is a required field if the _id or patient fields are not given."
+                        },
+                        {
+                            "name": "_lastUpdated",
+                            "type": "date",
+                            "documentation": "The date range within which the most recent clinically relevant update was made to the procedure request. This parameter value should be prefixed by 'ge' when specifying the earliest datetime, or by 'le' when specifying the latest datetime. It may be provided up to 2 times, must include a time, and must define a closed range. It is an optional field."
+                        },
+                        {
+                            "name": "_count",
+                            "type": "number",
+                            "documentation": "The maximum number of results to return. Not honoured when '_id' is set."
+                        }
+                    ]
+                },
+                {
+                    "type": "RelatedPerson",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of logical resource ids associated with the RelatedPerson. It is a required field if the patient or identifier fields are not given"
+                        },
+                        {
+                            "name": "patient",
+                            "type": "reference",
+                            "documentation": "The patient the related persons are related to. It is a required field if the _id or identifier fields are not given"
+                        },
+                        {
+                            "name": "identifier",
+                            "type": "token",
+                            "documentation": "An identifier of the person. It is a required field if the _id or patient fields are not given"
+                        }
+                    ]
+                },
+                {
+                    "type": "Schedule",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Schedule ids. It is a required field."
+                        }
+                    ]
+                },
+                {
+                    "type": "Slot",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        },
+                        {
+                            "code": "search-type"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "_id",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of Slot ids. Either the '_id' parameter or 'slot-type' must be set."
+                        },
+                        {
+                            "name": "start",
+                            "type": "date",
+                            "documentation": "A date or date range from which the slots are to be retrieved. The 'start' parameter may be provided once with no prefix or an 'eq' prefix and no time component to imply a date range. Alternately it may be provided twice with 'lt' and 'ge' prefixes to search for appointments within a specific range. Time component if provided, it should be provided for both the instances. The date and prefix pairs must create a closed range."
+                        },
+                        {
+                            "name": "slot-type",
+                            "type": "token",
+                            "documentation": "A single or comma separated list of appointment types. Either the '_id' parameter or 'slot-type' must be set."
+                        },
+                        {
+                            "name": "schedule.actor",
+                            "type": "reference",
+                            "documentation": "A single or comma separated list of schedule actors. Must be Practitioner actors. Either the '_id' parameter or 'slot-type' must be set."
+                        },
+                        {
+                            "name": "-location",
+                            "type": "reference",
+                            "documentation": "A single or comma separated list of Location references. Either the '_id' parameter or 'slot-type' must be set."
+                        }
+                    ]
+                },
+                {
+                    "type": "StructureDefinition",
+                    "interaction": [
+                        {
+                            "code": "read"
+                        }
+                    ]
+                }
+            ],
+            "operation": [
+                {
+                    "name": "autogen-ccd-if",
+                    "definition": {
+                        "reference": "https://fhir-ehr.cerner.com/dstu2/OperationDefinition/binary-autogen-ccd-if",
+                        "display": "Generate Continuity of Care Document (CCD)"
+                    }
+                },
+                {
+                    "name": "docref",
+                    "definition": {
+                        "reference": "http://fhir.org/guides/argonaut/OperationDefinition/docref",
+                        "display": "Argonaut Get DocumentReferences"
+                    }
+                }
+            ]
+        }
+    ]
+}

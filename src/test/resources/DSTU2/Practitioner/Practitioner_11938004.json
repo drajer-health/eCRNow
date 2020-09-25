@@ -1,0 +1,59 @@
+{
+    "resourceType": "Practitioner",
+    "id": "11938004",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2017-01-24T15:34:13.000Z"
+    },
+    "text": {
+        "status": "generated",
+        "div": "<div><p><b>Practitioner</b></p><p><b>Name</b>: Bradford, MD, Michael Cerner</p><p><b>Identifiers</b>: MESSAGING: 11938004, EXTERNALID: DEMOPATH6</p><p><b>Status</b>: Active</p></div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v2/0203",
+                        "code": "U",
+                        "display": "Unspecified identifier"
+                    }
+                ],
+                "text": "Messaging"
+            },
+            "value": "11938004",
+            "period": {
+                "start": "2015-12-15T06:00:00.000Z"
+            }
+        },
+        {
+            "use": "usual",
+            "type": {
+                "text": "External Identifier"
+            },
+            "value": "DEMOPATH6",
+            "period": {
+                "start": "2015-12-14T21:33:11.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": {
+        "use": "usual",
+        "text": "Bradford, MD, Michael Cerner",
+        "family": [
+            "Bradford"
+        ],
+        "given": [
+            "Michael",
+            "Cerner"
+        ],
+        "prefix": [
+            "MD"
+        ],
+        "period": {
+            "start": "2017-01-24T15:34:13.000Z"
+        }
+    }
+}
