@@ -29,7 +29,7 @@ public class CreateEicrAction extends AbstractAction {
       LaunchDetails details = (LaunchDetails) obj;
       PatientExecutionState state = null;
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
       state.getCreateEicrStatus().setActionId(getActionId());
 
       logger.info(

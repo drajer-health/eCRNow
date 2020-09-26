@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public class SubmitEicrAction extends AbstractAction {
       LaunchDetails details = (LaunchDetails) obj;
       PatientExecutionState state = null;
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
 
       logger.info(
           " Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());

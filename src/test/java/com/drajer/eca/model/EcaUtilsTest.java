@@ -1,8 +1,6 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
@@ -19,9 +17,6 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.service.LoadingQueryService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -203,26 +198,6 @@ public class EcaUtilsTest {
 
     // Validate
     assertEquals(eicr.getData(), "This is R4 EICR data");
-  }
-
-  @Test
-  public void testSetDetailStatus() throws JsonMappingException, JsonProcessingException {
-
-    ObjectMapper mapper = new ObjectMapper();
-
-    try {
-      mockDetails =
-          mapper.readValue(
-              this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-              LaunchDetails.class);
-    } catch (Exception e) {
-
-      e.printStackTrace();
-      fail("This is not expected, Fix this exception");
-    }
-    mockState = EcaUtils.getDetailStatus(mockDetails);
-
-    assertNotNull(mockState);
   }
 
   public void setupMockForMatchTrigger() {

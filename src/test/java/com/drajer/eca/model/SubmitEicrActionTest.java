@@ -112,7 +112,7 @@ public class SubmitEicrActionTest {
   public void setUpMockData() {
     submitEicrAction.setActionId("123");
     mockSubmitEicrStatus = new HashSet<>();
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     when(mockState.getSubmitEicrStatus()).thenReturn(mockSubmitEicrStatus);
   }
 }

@@ -197,24 +197,6 @@ public class EcaUtils {
     }
   }
 
-  public static PatientExecutionState getDetailStatus(LaunchDetails details) {
-
-    ObjectMapper mapper = new ObjectMapper();
-    PatientExecutionState state = null;
-
-    try {
-
-      state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-
-    } catch (JsonProcessingException e1) {
-      String msg = "Unable to read/write execution state";
-      logger.error(msg, e1);
-      throw new RuntimeException(msg, e1);
-    }
-
-    return state;
-  }
-
   public static PatientExecutionState recheckTriggerCodes(
       LaunchDetails details, WorkflowEvent launchType) {
 
@@ -227,7 +209,7 @@ public class EcaUtils {
 
     PatientExecutionState newState = null;
 
-    newState = EcaUtils.getDetailStatus(details);
+    newState = ApplicationUtils.getDetailStatus(details);
 
     return newState;
   }

@@ -100,7 +100,7 @@ public class ValidateEicrActionTest {
 
     validateEicrAction.setActionId("123");
     Set<ValidateEicrStatus> validateEicrStatus = new HashSet<ValidateEicrStatus>();
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     when(mockState.getValidateEicrStatus()).thenReturn(validateEicrStatus);
   }
 }

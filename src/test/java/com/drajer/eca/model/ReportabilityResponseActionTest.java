@@ -53,7 +53,7 @@ public class ReportabilityResponseActionTest {
 
     reportabilityResponseAction.setActionId("123");
 
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
     when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
     when(mockState.hasActionCompleted(any())).thenReturn(false);
@@ -76,7 +76,7 @@ public class ReportabilityResponseActionTest {
 
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
     when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     when(mockState.getEicrsForRRCheck()).thenReturn(id);
     when(mockState.hasActionCompleted(any())).thenReturn(true);
 
@@ -98,7 +98,7 @@ public class ReportabilityResponseActionTest {
     ids.add(1);
 
     when(mockRelActn.getRelatedAction()).thenReturn(null);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     when(mockState.getEicrsForRRCheck()).thenReturn(ids);
 
     reportabilityResponseAction.execute(mockDetails, launchType);

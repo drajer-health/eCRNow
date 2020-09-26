@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -25,7 +26,7 @@ public class MatchTriggerAction extends AbstractAction {
 
       PatientExecutionState state = null;
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
       state.getMatchTriggerStatus().setActionId(getActionId());
 
       // Execute the Match Trigger Action, even if it completed, because it could be invoked

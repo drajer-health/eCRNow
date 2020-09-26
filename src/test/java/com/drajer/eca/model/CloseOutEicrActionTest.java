@@ -65,7 +65,7 @@ public class CloseOutEicrActionTest {
     try {
 
       CloseOutEicrStatus closeOutEicrStatus = new CloseOutEicrStatus();
-      when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+      when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
       when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutEicrStatus);
       when(mockState.hasActionCompleted(any())).thenReturn(false);
 
@@ -211,7 +211,7 @@ public class CloseOutEicrActionTest {
     when(mockDetails.getStartDate()).thenReturn(new Date());
 
     // Mock EcaUtils
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
     // Mock RelatedActions
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
