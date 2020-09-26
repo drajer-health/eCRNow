@@ -3,6 +3,7 @@ package com.drajer.sof.service;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -28,8 +29,6 @@ public class LoadingQueryR4Bundle {
 
   @Autowired R4ResourcesData r4ResourcesData;
 
-  @Autowired TriggerQueryR4Bundle triggerQueryR4Bundle;
-
   private final Logger logger = LoggerFactory.getLogger(LoadingQueryR4Bundle.class);
 
   public Bundle createR4Bundle(
@@ -43,7 +42,7 @@ public class LoadingQueryR4Bundle {
             context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
 
     // GET Patient Details and Add to Bundle
-    bundle = triggerQueryR4Bundle.getPatientData(launchDetails, client, context, bundle);
+    bundle = r4ResourcesData.getPatientData(launchDetails, client, context, bundle);
 
     // Step 1: Get Encounters for Patient based on encId. (Create a method to get
     // encounters)
@@ -58,13 +57,37 @@ public class LoadingQueryR4Bundle {
       encounter =
           r4ResourcesData.getEncounterData(context, client, launchDetails, r4FhirData, start, end);
       bundle =
-          triggerQueryR4Bundle.getEncounterData(encounter, launchDetails, client, context, bundle);
+          r4ResourcesData.getPractitionerEntry(encounter, launchDetails, client, context, bundle);
+      bundle =
+          r4ResourcesData.getOrganizationEntry(encounter, launchDetails, client, context, bundle);
+      bundle = r4ResourcesData.getLocationEntry(encounter, launchDetails, client, context, bundle);
+      BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
+      bundle.addEntry(encounterEntry);
     } catch (Exception e) {
       logger.error("Error in getting Encounter Data");
     }
 
+    // Step 2: Get Conditions for Patient (Write a method)
+    // Filter the conditions based on encounter Reference if Encounter Reference is
+    // present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // Condition time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of ConditionCodes.
     bundle =
-        triggerQueryR4Bundle.getConditionObservationData(
+        r4ResourcesData.getConditionData(
+            encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
+
+    // Get Observations for Patients and laboratory category (Write a method).
+    // Filter the observations based on encounter Reference if encounter is present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // observation time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of labResultCodes.
+    bundle =
+        r4ResourcesData.getObservationData(
             encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
 
     // Get Pregnancy Observations
@@ -112,7 +135,7 @@ public class LoadingQueryR4Bundle {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of medicationCodes.
     bundle =
-        triggerQueryR4Bundle.getMedicationAdministrationData(
+        r4ResourcesData.getMedicationAdministrationData(
             encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
 
     try {
@@ -140,7 +163,7 @@ public class LoadingQueryR4Bundle {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of ServiceRequestCodes.
     bundle =
-        triggerQueryR4Bundle.getServiceRequestData(
+        r4ResourcesData.getServiceRequestData(
             encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
 
     // Get Immunizations for Patients and laboratory category (Write a method).
@@ -204,7 +227,7 @@ public class LoadingQueryR4Bundle {
             + "/LoadingQueryR4Bundle-"
             + launchDetails.getLaunchPatientId()
             + ".json";
-    FhirContextInitializer.saveBundleToFile(
+    ApplicationUtils.saveDataToFile(
         context.newJsonParser().encodeResourceToString(bundle), fileName);
     return bundle;
   }

@@ -5,10 +5,6 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import com.drajer.sof.model.LaunchDetails;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -139,27 +135,6 @@ public class FhirContextInitializer {
     bundleResponse =
         bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
     return bundleResponse;
-  }
-
-  public static void saveBundleToFile(String data, String fileName) {
-
-    DataOutputStream outStream = null;
-    try {
-
-      logger.error(" Writing Bundle data to file: " + fileName);
-      outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-      outStream.writeBytes(data);
-    } catch (IOException e) {
-      logger.error(" Unable to write Bundle data to file: " + fileName, e);
-    } finally {
-      if (outStream != null) {
-        try {
-          outStream.close();
-        } catch (IOException e) {
-          logger.error(" Unable to close Data output stream");
-        }
-      }
-    }
   }
 
   public static IBaseBundle bundlePopulator(

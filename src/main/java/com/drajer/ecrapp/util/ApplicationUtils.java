@@ -2,9 +2,14 @@ package com.drajer.ecrapp.util;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.service.PlanDefinitionProcessor;
+import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -341,11 +346,11 @@ public class ApplicationUtils {
     DataOutputStream outStream = null;
     try {
 
-      logger.info(" Writing eICR data to file: " + fileName);
+      logger.info(" Writing data to file: " + fileName);
       outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.error(" Unable to write EICR to file: " + fileName, e);
+      logger.error(" Unable to write data to file: " + fileName, e);
     } finally {
       if (outStream != null) {
         try {
@@ -425,5 +430,30 @@ public class ApplicationUtils {
     }
 
     return retVal;
+  }
+
+  public static PatientExecutionState getDetailStatus(
+      LaunchDetails details, PatientExecutionState state) {
+
+    ObjectMapper mapper = new ObjectMapper();
+    PatientExecutionState stateResponse = null;
+
+    try {
+      stateResponse = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+    } catch (JsonMappingException e1) {
+
+      String msg = "Unable to read/write execution state";
+      logger.error(msg, e1);
+      e1.printStackTrace();
+      throw new RuntimeException(msg);
+
+    } catch (JsonProcessingException e1) {
+
+      String msg = "Unable to read/write execution state";
+      logger.error(msg, e1);
+      e1.printStackTrace();
+      throw new RuntimeException(msg);
+    }
+    return stateResponse;
   }
 }

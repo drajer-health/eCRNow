@@ -1,11 +1,9 @@
 package com.drajer.routing.impl;
 
 import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.EicrSender;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -44,7 +42,7 @@ public class DirectEicrSender extends EicrSender {
       LaunchDetails details = (LaunchDetails) context;
       PatientExecutionState state = null;
 
-      state = getDetailStatus(details, state);
+      state = ApplicationUtils.getDetailStatus(details, state);
 
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 
@@ -116,30 +114,5 @@ public class DirectEicrSender extends EicrSender {
     transport.close();
 
     logger.info(" Finished sending Direct Message ");
-  }
-
-  public static PatientExecutionState getDetailStatus(
-      LaunchDetails details, PatientExecutionState state) {
-
-    ObjectMapper mapper = new ObjectMapper();
-    PatientExecutionState stateResponse = null;
-
-    try {
-      stateResponse = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-    } catch (JsonMappingException e1) {
-
-      String msg = "Unable to read/write execution state";
-      logger.error(msg, e1);
-      e1.printStackTrace();
-      throw new RuntimeException(msg);
-
-    } catch (JsonProcessingException e1) {
-
-      String msg = "Unable to read/write execution state";
-      logger.error(msg, e1);
-      e1.printStackTrace();
-      throw new RuntimeException(msg);
-    }
-    return stateResponse;
   }
 }

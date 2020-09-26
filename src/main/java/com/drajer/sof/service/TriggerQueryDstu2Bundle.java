@@ -20,6 +20,7 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.Dstu2ResourcesData;
@@ -53,8 +54,18 @@ public class TriggerQueryDstu2Bundle {
             context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
 
     // GET Patient Details and Add to Bundle
-    bundle = getPatientData(launchDetails, client, context, bundle);
-
+    try {
+      logger.info("Get Patient Data");
+      Patient patient =
+          (Patient)
+              fhirContextInitializer.getResouceById(
+                  launchDetails, client, context, "Patient", launchDetails.getLaunchPatientId());
+      Entry patientEntry = new Entry();
+      patientEntry.setResource(patient);
+      bundle.addEntry(patientEntry);
+    } catch (Exception e) {
+      logger.error("Error in getting Patient Data");
+    }
     // Step 1: Get Encounters for Patient based on encId. (Create a method to get
     // encounters)
     // If encId is null, find encounters for patient within the start and end time
@@ -68,150 +79,61 @@ public class TriggerQueryDstu2Bundle {
       encounter =
           dstu2ResourcesData.getEncounterData(
               context, client, launchDetails, dstu2FhirData, start, end);
-      bundle = getEncounterData(encounter, launchDetails, client, context, bundle);
+      if (encounter.getParticipant() != null) {
+        List<Participant> participants = encounter.getParticipant();
+        for (Participant participant : participants) {
+          if (participant.getIndividual() != null) {
+            ResourceReferenceDt practitionerReference = participant.getIndividual();
+            Practitioner practitioner =
+                (Practitioner)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Practitioner",
+                        practitionerReference.getReference().getIdPart());
+            Entry practitionerEntry = new Entry().setResource(practitioner);
+            bundle.addEntry(practitionerEntry);
+          }
+        }
+      }
+      if (encounter.getServiceProvider() != null) {
+        ResourceReferenceDt organizationReference = encounter.getServiceProvider();
+        Organization organization =
+            (Organization)
+                fhirContextInitializer.getResouceById(
+                    launchDetails,
+                    client,
+                    context,
+                    "Organization",
+                    organizationReference.getReference().getIdPart());
+        Entry organizationEntry = new Entry().setResource(organization);
+        bundle.addEntry(organizationEntry);
+      }
+      if (encounter.getLocation() != null) {
+        List<Location> enocunterLocations = encounter.getLocation();
+        for (Location location : enocunterLocations) {
+          if (location.getLocation() != null) {
+            ResourceReferenceDt locationReference = location.getLocation();
+            ca.uhn.fhir.model.dstu2.resource.Location locationResource =
+                (ca.uhn.fhir.model.dstu2.resource.Location)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Location",
+                        locationReference.getReference().getIdPart());
+            Entry locationEntry = new Entry().setResource(locationResource);
+            bundle.addEntry(locationEntry);
+          }
+        }
+      }
+      Entry encounterEntry = new Entry().setResource(encounter);
+      bundle.addEntry(encounterEntry);
     } catch (Exception e) {
       logger.error("Error in getting Encounter Data");
     }
 
-    bundle =
-        getConditionObservationData(
-            encounter, dstu2FhirData, start, end, launchDetails, client, context, bundle);
-
-    // Get MedicationAdministration for Patients and laboratory category (Write a
-    // method).
-    // Filter the MedicationAdministrations based on encounter Reference if
-    // encounter is present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // medicationadministration time is between start and end times) -- Do this
-    // later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of medicationCodes.
-    bundle =
-        getMedicationAdministrationData(
-            encounter, dstu2FhirData, start, end, launchDetails, client, context, bundle);
-
-    // Get DiagnosticOrders for Patients (Write a method).
-    // Filter the Diagnostic Orders based on encounter Reference if encounter is
-    // present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // diagnostic order time is between start and end times) -- Do this later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of diagnosticOrderCodes.
-    bundle =
-        getDiagnosticOrderData(
-            encounter, dstu2FhirData, start, end, launchDetails, client, context, bundle);
-
-    // Setting bundle to FHIR Data
-    logger.info(
-        "------------------------------CodeableConcept Codes------------------------------");
-    logger.info("Encounter Codes Size=====>" + dstu2FhirData.getEncounterCodes().size());
-    logger.info("Conditions Codes Size=====>" + dstu2FhirData.getConditionCodes().size());
-    logger.info("Observation Codes Size=====>" + dstu2FhirData.getLabResultCodes().size());
-    logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
-    logger.info(
-        "DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-    logger.info(
-        "DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
-
-    // logger.info(context.newJsonParser().encodeResourceToString(bundle));
-    String fileName =
-        ActionRepo.getInstance().getLogFileDirectory()
-            + "/TriggerQueryDSTU2Bundle-"
-            + launchDetails.getLaunchPatientId()
-            + ".json";
-    FhirContextInitializer.saveBundleToFile(
-        context.newJsonParser().encodeResourceToString(bundle), fileName);
-
-    return bundle;
-  }
-
-  public Bundle getPatientData(
-      LaunchDetails launchDetails, IGenericClient client, FhirContext context, Bundle bundle) {
-    try {
-      logger.info("Get Patient Data");
-      Patient patient =
-          (Patient)
-              fhirContextInitializer.getResouceById(
-                  launchDetails, client, context, "Patient", launchDetails.getLaunchPatientId());
-      Entry patientEntry = new Entry();
-      patientEntry.setResource(patient);
-      bundle.addEntry(patientEntry);
-    } catch (Exception e) {
-      logger.error("Error in getting Patient Data");
-    }
-    return bundle;
-  }
-
-  public Bundle getEncounterData(
-      Encounter encounter,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
-    if (encounter.getParticipant() != null) {
-      List<Participant> participants = encounter.getParticipant();
-      for (Participant participant : participants) {
-        if (participant.getIndividual() != null) {
-          ResourceReferenceDt practitionerReference = participant.getIndividual();
-          Practitioner practitioner =
-              (Practitioner)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Practitioner",
-                      practitionerReference.getReference().getIdPart());
-          Entry practitionerEntry = new Entry().setResource(practitioner);
-          bundle.addEntry(practitionerEntry);
-        }
-      }
-    }
-    if (encounter.getServiceProvider() != null) {
-      ResourceReferenceDt organizationReference = encounter.getServiceProvider();
-      Organization organization =
-          (Organization)
-              fhirContextInitializer.getResouceById(
-                  launchDetails,
-                  client,
-                  context,
-                  "Organization",
-                  organizationReference.getReference().getIdPart());
-      Entry organizationEntry = new Entry().setResource(organization);
-      bundle.addEntry(organizationEntry);
-    }
-    if (encounter.getLocation() != null) {
-      List<Location> enocunterLocations = encounter.getLocation();
-      for (Location location : enocunterLocations) {
-        if (location.getLocation() != null) {
-          ResourceReferenceDt locationReference = location.getLocation();
-          ca.uhn.fhir.model.dstu2.resource.Location locationResource =
-              (ca.uhn.fhir.model.dstu2.resource.Location)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Location",
-                      locationReference.getReference().getIdPart());
-          Entry locationEntry = new Entry().setResource(locationResource);
-          bundle.addEntry(locationEntry);
-        }
-      }
-    }
-    Entry encounterEntry = new Entry().setResource(encounter);
-    return bundle.addEntry(encounterEntry);
-  }
-
-  public Bundle getConditionObservationData(
-      Encounter encounter,
-      Dstu2FhirData dstu2FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
     // Step 2: Get Conditions for Patient (Write a method)
     // Filter the conditions based on encounter Reference if Encounter Reference is
     // present.
@@ -256,18 +178,17 @@ public class TriggerQueryDstu2Bundle {
     } catch (Exception e) {
       logger.error("Error in getting Observation Data");
     }
-    return bundle;
-  }
 
-  public Bundle getMedicationAdministrationData(
-      Encounter encounter,
-      Dstu2FhirData dstu2FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
+    // Get MedicationAdministration for Patients and laboratory category (Write a
+    // method).
+    // Filter the MedicationAdministrations based on encounter Reference if
+    // encounter is present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // medicationadministration time is between start and end times) -- Do this
+    // later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of medicationCodes.
     try {
       logger.info("Get MedicationAdministration Data");
       List<MedicationAdministration> medAdministrationsList =
@@ -313,18 +234,16 @@ public class TriggerQueryDstu2Bundle {
     } catch (Exception e) {
       logger.error("Error in getting the MedicationAdministration Data");
     }
-    return bundle;
-  }
 
-  public Bundle getDiagnosticOrderData(
-      Encounter encounter,
-      Dstu2FhirData dstu2FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
+    // Get DiagnosticOrders for Patients (Write a method).
+    // Filter the Diagnostic Orders based on encounter Reference if encounter is
+    // present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // diagnostic order time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of diagnosticOrderCodes.
+
     try {
       logger.info("Get DiagnosticOrder Data");
       List<DiagnosticOrder> diagnosticOrdersList =
@@ -353,6 +272,28 @@ public class TriggerQueryDstu2Bundle {
     } catch (Exception e) {
       logger.error("Error in getting the DiagnosticReport Data");
     }
+
+    // Setting bundle to FHIR Data
+    logger.info(
+        "------------------------------CodeableConcept Codes------------------------------");
+    logger.info("Encounter Codes Size=====>" + dstu2FhirData.getEncounterCodes().size());
+    logger.info("Conditions Codes Size=====>" + dstu2FhirData.getConditionCodes().size());
+    logger.info("Observation Codes Size=====>" + dstu2FhirData.getLabResultCodes().size());
+    logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
+    logger.info(
+        "DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
+    logger.info(
+        "DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
+
+    // logger.info(context.newJsonParser().encodeResourceToString(bundle));
+    String fileName =
+        ActionRepo.getInstance().getLogFileDirectory()
+            + "/TriggerQueryDSTU2Bundle-"
+            + launchDetails.getLaunchPatientId()
+            + ".json";
+    ApplicationUtils.saveDataToFile(
+        context.newJsonParser().encodeResourceToString(bundle), fileName);
+
     return bundle;
   }
 }
