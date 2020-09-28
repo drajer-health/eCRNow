@@ -4,11 +4,9 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -233,23 +231,9 @@ public class CdaResultGenerator {
 
     logger.info(" Adding Trigger Code Reason for Result Observation ");
 
-    ObjectMapper mapper = new ObjectMapper();
     PatientExecutionState state = null;
 
-    try {
-      state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-    } catch (JsonMappingException e1) {
-
-      String msg = "Unable to read/write execution state";
-      logger.error(msg);
-      throw new RuntimeException(msg);
-
-    } catch (JsonProcessingException e1) {
-      String msg = "Unable to read/write execution state";
-      logger.error(msg);
-
-      throw new RuntimeException(msg);
-    }
+    state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
 

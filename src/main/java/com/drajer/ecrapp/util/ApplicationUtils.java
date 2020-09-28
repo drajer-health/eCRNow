@@ -2,9 +2,13 @@ package com.drajer.ecrapp.util;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.service.PlanDefinitionProcessor;
+import com.drajer.sof.model.LaunchDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -425,5 +429,23 @@ public class ApplicationUtils {
     }
 
     return retVal;
+  }
+
+  public static PatientExecutionState getDetailStatus(LaunchDetails details) {
+
+    ObjectMapper mapper = new ObjectMapper();
+    PatientExecutionState state = null;
+
+    try {
+
+      state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
+
+    } catch (JsonProcessingException e1) {
+      String msg = "Unable to read/write execution state";
+      logger.error(msg, e1);
+      throw new RuntimeException(msg, e1);
+    }
+
+    return state;
   }
 }

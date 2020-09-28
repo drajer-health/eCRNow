@@ -231,17 +231,7 @@ public class CdaHeaderGenerator {
               "Outpatient Facility"));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      List<Address> addrs = new ArrayList<Address>();
-      Address addr = new Address();
-      List<StringType> addrLine = new ArrayList<StringType>();
-      addrLine.add(new StringType("0987 Facility Drive"));
-      addr.setLine(addrLine);
-      addr.setCity("alt Lake City");
-      addr.setState("UT");
-      addr.setCountry("US");
-      addr.setPostalCode("84101");
-      addr.setUse(AddressUse.WORK);
-      addrs.add(addr);
+      List<Address> addrs = getAddressDetails();
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
@@ -324,19 +314,8 @@ public class CdaHeaderGenerator {
       cps.add(cp);
       sb.append(CdaFhirUtilities.getTelecomXml(cps));
 
-      List<Address> addrs = new ArrayList<Address>();
-      Address addr = new Address();
-      List<StringType> addrLine = new ArrayList<StringType>();
-      addrLine.add(new StringType("0987 Facility Drive"));
-      addr.setLine(addrLine);
-      addr.setCity("alt Lake City");
-      addr.setState("UT");
-      addr.setCountry("US");
-      addr.setPostalCode("84101");
-      addr.setUse(AddressUse.WORK);
-      addrs.add(addr);
+      List<Address> addrs = getAddressDetails();
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
-
       // Code that will replace the code above after testing.
       /* sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
@@ -627,5 +606,21 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
 
     return patientDetails.toString();
+  }
+
+  public static List<Address> getAddressDetails() {
+    List<Address> addrs = new ArrayList<Address>();
+    Address addr = new Address();
+    List<StringType> addrLine = new ArrayList<StringType>();
+    addrLine.add(new StringType("0987 Facility Drive"));
+    addr.setLine(addrLine);
+    addr.setCity("alt Lake City");
+    addr.setState("UT");
+    addr.setCountry("US");
+    addr.setPostalCode("84101");
+    addr.setUse(AddressUse.WORK);
+    addrs.add(addr);
+
+    return addrs;
   }
 }

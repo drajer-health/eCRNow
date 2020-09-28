@@ -74,7 +74,7 @@ public class MatchTriggerActionTest {
 
     MatchTriggerStatus matchTriggerStatus = new MatchTriggerStatus();
     matchTriggerStatus.setJobStatus(JobStatus.SCHEDULED);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     matchTriggerStatus = new MatchTriggerStatus();
     when(mockState.getMatchTriggerStatus()).thenReturn(matchTriggerStatus);
     when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
@@ -89,7 +89,7 @@ public class MatchTriggerActionTest {
 
     when(EcaUtils.matchTriggerCodesForDSTU2(codePaths, mockDstu2Data, mockState, mockDetails))
         .thenReturn(true);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
     matchTriggerAction.execute(mockDetails, launchType);
 
@@ -101,7 +101,7 @@ public class MatchTriggerActionTest {
   public void test_Execute_GettingDataForTriggerQueryR4FhirData() throws Exception {
     MatchTriggerStatus matchTriggerStatus = new MatchTriggerStatus();
     matchTriggerStatus.setJobStatus(JobStatus.SCHEDULED);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     matchTriggerStatus = new MatchTriggerStatus();
     when(mockState.getMatchTriggerStatus()).thenReturn(matchTriggerStatus);
     when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
@@ -115,7 +115,7 @@ public class MatchTriggerActionTest {
 
     when(EcaUtils.matchTriggerCodesForR4(codePaths, mockR4Data, mockState, mockDetails))
         .thenReturn(true);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
     matchTriggerAction.execute(mockDetails, launchType);
 
@@ -127,7 +127,7 @@ public class MatchTriggerActionTest {
   public void test_Execute_WhenNoFhirData() {
     MatchTriggerStatus matchTriggerStatus = new MatchTriggerStatus();
     matchTriggerStatus.setJobStatus(JobStatus.SCHEDULED);
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     matchTriggerStatus = new MatchTriggerStatus();
     when(mockState.getMatchTriggerStatus()).thenReturn(matchTriggerStatus);
     when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
