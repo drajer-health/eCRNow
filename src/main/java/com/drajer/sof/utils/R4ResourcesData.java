@@ -249,7 +249,7 @@ public class R4ResourcesData {
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = getObservationFilter(bundle, encounter, start, end);
+    observations = filterObservation(bundle, encounter, start, end);
 
     return observations;
   }
@@ -272,7 +272,7 @@ public class R4ResourcesData {
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = getObservationFilter(bundle, encounter, start, end);
+    observations = filterObservation(bundle, encounter, start, end);
 
     return observations;
   }
@@ -638,7 +638,7 @@ public class R4ResourcesData {
     return serviceRequests;
   }
 
-  public static List<Observation> getObservationFilter(
+  public static List<Observation> filterObservation(
       Bundle bundle, Encounter encounter, Date start, Date end) {
 
     List<Observation> observations = new ArrayList<>();
