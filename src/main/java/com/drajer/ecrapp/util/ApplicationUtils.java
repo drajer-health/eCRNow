@@ -350,13 +350,13 @@ public class ApplicationUtils {
       outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.error(" Unable to write data to file: " + fileName, e);
+      logger.debug(" Unable to write data to file: " + fileName, e);
     } finally {
       if (outStream != null) {
         try {
           outStream.close();
         } catch (IOException e) {
-          logger.error(" Unable to close Data output stream");
+          logger.debug(" Unable to close Data output stream");
         }
       }
     }
