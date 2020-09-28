@@ -620,7 +620,7 @@ public class CdaHeaderGenerator {
     addr.setPostalCode("84101");
     addr.setUse(AddressUse.WORK);
     addrs.add(addr);
-    
+
     return addrs;
   }
 }
