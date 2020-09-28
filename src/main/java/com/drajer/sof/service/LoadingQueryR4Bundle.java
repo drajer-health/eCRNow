@@ -13,7 +13,6 @@ import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
@@ -33,7 +32,6 @@ public class LoadingQueryR4Bundle {
 
   public Bundle createR4Bundle(
       LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {
-    Bundle bundle = new Bundle();
     logger.info("Initializing FHIR Context for Version::::" + launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
@@ -41,61 +39,15 @@ public class LoadingQueryR4Bundle {
         fhirContextInitializer.createClient(
             context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
 
-    // GET Patient Details and Add to Bundle
-    bundle = r4ResourcesData.getPatientData(launchDetails, client, context, bundle);
-
-    // Step 1: Get Encounters for Patient based on encId. (Create a method to get
-    // encounters)
-    // If encId is null, find encounters for patient within the start and end time
-    // provided.
-    // Add to the bundle.
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of encounterCodes.
-    Encounter encounter = null;
-    try {
-      logger.info("Get Encounter Data");
-      encounter =
-          r4ResourcesData.getEncounterData(context, client, launchDetails, r4FhirData, start, end);
-      bundle =
-          r4ResourcesData.getPractitionerEntry(encounter, launchDetails, client, context, bundle);
-      bundle =
-          r4ResourcesData.getOrganizationEntry(encounter, launchDetails, client, context, bundle);
-      bundle = r4ResourcesData.getLocationEntry(encounter, launchDetails, client, context, bundle);
-      BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
-      bundle.addEntry(encounterEntry);
-    } catch (Exception e) {
-      logger.error("Error in getting Encounter Data");
-    }
-
-    // Step 2: Get Conditions for Patient (Write a method)
-    // Filter the conditions based on encounter Reference if Encounter Reference is
-    // present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // Condition time is between start and end times) -- Do this later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of ConditionCodes.
-    bundle =
-        r4ResourcesData.getConditionData(
-            encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
-
-    // Get Observations for Patients and laboratory category (Write a method).
-    // Filter the observations based on encounter Reference if encounter is present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // observation time is between start and end times) -- Do this later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of labResultCodes.
-    bundle =
-        r4ResourcesData.getObservationData(
-            encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
+    Bundle bundle =
+        r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);
 
     // Get Pregnancy Observations
     try {
       logger.info("Get Preganancy Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getObservationData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
       logger.info("Filtered Observations---->" + observationList.size());
       r4FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
@@ -112,7 +64,7 @@ public class LoadingQueryR4Bundle {
       logger.info("Get Travel Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getObservationData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
       logger.info("Filtered Observations---->" + observationList.size());
       r4FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
@@ -124,25 +76,11 @@ public class LoadingQueryR4Bundle {
       logger.error("Error in getting Travel Observation Data");
     }
 
-    // Get MedicationAdministration for Patients and laboratory category (Write a
-    // method).
-    // Filter the MedicationAdministrations based on encounter Reference if
-    // encounter is present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // medicationadministration time is between start and end times) -- Do this
-    // later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of medicationCodes.
-    bundle =
-        r4ResourcesData.getMedicationAdministrationData(
-            encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
-
     try {
       logger.info("Get MedicationStatement Data");
       List<MedicationStatement> medStatementsList =
           r4ResourcesData.getMedicationStatementData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
       logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
       r4FhirData.setMedications(medStatementsList);
       for (MedicationStatement medStatement : medStatementsList) {
@@ -154,18 +92,6 @@ public class LoadingQueryR4Bundle {
       logger.error("Error in getting the MedicationStatement Data");
     }
 
-    // Get ServiceRequest for Patients (Write a method).
-    // Filter the ServiceRequest based on encounter Reference if encounter is
-    // present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // ServiceRequest time is between start and end times) -- Do this later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of ServiceRequestCodes.
-    bundle =
-        r4ResourcesData.getServiceRequestData(
-            encounter, r4FhirData, start, end, launchDetails, client, context, bundle);
-
     // Get Immunizations for Patients and laboratory category (Write a method).
     // Filter the Immunizations based on encounter Reference if encounter is
     // present.
@@ -175,7 +101,7 @@ public class LoadingQueryR4Bundle {
     try {
       List<Immunization> immunizationsList =
           r4ResourcesData.getImmunizationData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
       logger.info("Filtered Immunizations----------->" + immunizationsList.size());
       r4FhirData.setImmunizations(immunizationsList);
       for (Immunization immunization : immunizationsList) {
@@ -196,7 +122,7 @@ public class LoadingQueryR4Bundle {
     try {
       List<DiagnosticReport> diagnosticReportList =
           r4ResourcesData.getDiagnosticReportData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
       logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
       r4FhirData.setDiagReports(diagnosticReportList);
       for (DiagnosticReport diagnosticReport : diagnosticReportList) {

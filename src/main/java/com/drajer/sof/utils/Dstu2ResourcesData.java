@@ -293,7 +293,7 @@ public class Dstu2ResourcesData {
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = getObservations(observations, bundle, encounter, start, end);
+    observations = getObservationFilter(bundle, encounter, start, end);
 
     return observations;
   }
@@ -316,7 +316,7 @@ public class Dstu2ResourcesData {
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = getObservations(observations, bundle, encounter, start, end);
+    observations = getObservationFilter(bundle, encounter, start, end);
 
     return observations;
   }
@@ -602,10 +602,11 @@ public class Dstu2ResourcesData {
     return diagnosticReports;
   }
 
-  public static List<Observation> getObservations(
-      List<Observation> observations, Bundle bundle, Encounter encounter, Date start, Date end) {
+  public static List<Observation> getObservationFilter(
+      Bundle bundle, Encounter encounter, Date start, Date end) {
 
     List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
+    List<Observation> observations = new ArrayList<>();
     // Filter Observations based on Encounter Reference
     if (!encounter.getId().getValue().isEmpty() && encounter != null) {
       for (Entry entry : bundle.getEntry()) {

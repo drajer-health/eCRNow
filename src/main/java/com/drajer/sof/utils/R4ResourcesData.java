@@ -46,6 +46,8 @@ public class R4ResourcesData {
 
   private final Logger logger = LoggerFactory.getLogger(R4ResourcesData.class);
 
+  public Encounter encounter;
+
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<CodeableConcept>();
     if (encounter.getType() != null) {
@@ -247,7 +249,7 @@ public class R4ResourcesData {
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = getObservations(observations, bundle, encounter, start, end);
+    observations = getObservationFilter(bundle, encounter, start, end);
 
     return observations;
   }
@@ -270,7 +272,7 @@ public class R4ResourcesData {
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = getObservations(observations, bundle, encounter, start, end);
+    observations = getObservationFilter(bundle, encounter, start, end);
 
     return observations;
   }
@@ -636,8 +638,10 @@ public class R4ResourcesData {
     return serviceRequests;
   }
 
-  public static List<Observation> getObservations(
-      List<Observation> observations, Bundle bundle, Encounter encounter, Date start, Date end) {
+  public static List<Observation> getObservationFilter(
+      Bundle bundle, Encounter encounter, Date start, Date end) {
+
+    List<Observation> observations = new ArrayList<>();
     // Filter Observations based on Encounter Reference
     if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
@@ -681,8 +685,16 @@ public class R4ResourcesData {
     return observations;
   }
 
-  public Bundle getPatientData(
-      LaunchDetails launchDetails, IGenericClient client, FhirContext context, Bundle bundle) {
+  public Bundle getCommonResources(
+      R4FhirData r4FhirData,
+      Date start,
+      Date end,
+      LaunchDetails launchDetails,
+      IGenericClient client,
+      FhirContext context) {
+
+    Bundle bundle = new Bundle();
+    // GET Patient Details and Add to Bundle
     try {
       logger.info("Get Patient Data");
       Patient patient =
@@ -695,96 +707,83 @@ public class R4ResourcesData {
     } catch (Exception e) {
       logger.error("Error in getting Patient Data");
     }
-    return bundle;
-  }
-
-  public Bundle getPractitionerEntry(
-      Encounter encounter,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
-    if (encounter.getParticipant() != null) {
-      List<EncounterParticipantComponent> participants = encounter.getParticipant();
-      for (EncounterParticipantComponent participant : participants) {
-        if (participant.getIndividual() != null) {
-          Reference practitionerReference = participant.getIndividual();
-          Practitioner practitioner =
-              (Practitioner)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Practitioner",
-                      practitionerReference.getReferenceElement().getIdPart());
-          BundleEntryComponent practitionerEntry =
-              new BundleEntryComponent().setResource(practitioner);
-          bundle.addEntry(practitionerEntry);
+    // Step 1: Get Encounters for Patient based on encId. (Create a method to get
+    // encounters)
+    // If encId is null, find encounters for patient within the start and end time
+    // provided.
+    // Add to the bundle.
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of encounterCodes.
+    // Encounter encounter = null;
+    try {
+      logger.info("Get Encounter Data");
+      encounter = getEncounterData(context, client, launchDetails, r4FhirData, start, end);
+      if (encounter.getParticipant() != null) {
+        List<EncounterParticipantComponent> participants = encounter.getParticipant();
+        for (EncounterParticipantComponent participant : participants) {
+          if (participant.getIndividual() != null) {
+            Reference practitionerReference = participant.getIndividual();
+            Practitioner practitioner =
+                (Practitioner)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Practitioner",
+                        practitionerReference.getReferenceElement().getIdPart());
+            BundleEntryComponent practitionerEntry =
+                new BundleEntryComponent().setResource(practitioner);
+            bundle.addEntry(practitionerEntry);
+          }
         }
       }
-    }
-    return bundle;
-  }
-
-  public Bundle getOrganizationEntry(
-      Encounter encounter,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
-    if (encounter.getServiceProvider() != null) {
-      Reference organizationReference = encounter.getServiceProvider();
-      Organization organization =
-          (Organization)
-              fhirContextInitializer.getResouceById(
-                  launchDetails,
-                  client,
-                  context,
-                  "Organization",
-                  organizationReference.getReferenceElement().getIdPart());
-      BundleEntryComponent organizationEntry = new BundleEntryComponent().setResource(organization);
-      bundle.addEntry(organizationEntry);
-    }
-    return bundle;
-  }
-
-  public Bundle getLocationEntry(
-      Encounter encounter,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
-    if (encounter.getLocation() != null) {
-      List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
-      for (EncounterLocationComponent location : enocunterLocations) {
-        if (location.getLocation() != null) {
-          Reference locationReference = location.getLocation();
-          Location locationResource =
-              (Location)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Location",
-                      locationReference.getReferenceElement().getIdPart());
-          BundleEntryComponent locationEntry =
-              new BundleEntryComponent().setResource(locationResource);
-          bundle.addEntry(locationEntry);
+      if (encounter.getServiceProvider() != null) {
+        Reference organizationReference = encounter.getServiceProvider();
+        Organization organization =
+            (Organization)
+                fhirContextInitializer.getResouceById(
+                    launchDetails,
+                    client,
+                    context,
+                    "Organization",
+                    organizationReference.getReferenceElement().getIdPart());
+        BundleEntryComponent organizationEntry =
+            new BundleEntryComponent().setResource(organization);
+        bundle.addEntry(organizationEntry);
+      }
+      if (encounter.getLocation() != null) {
+        List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
+        for (EncounterLocationComponent location : enocunterLocations) {
+          if (location.getLocation() != null) {
+            Reference locationReference = location.getLocation();
+            Location locationResource =
+                (Location)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Location",
+                        locationReference.getReferenceElement().getIdPart());
+            BundleEntryComponent locationEntry =
+                new BundleEntryComponent().setResource(locationResource);
+            bundle.addEntry(locationEntry);
+          }
         }
       }
+      BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
+      bundle.addEntry(encounterEntry);
+    } catch (Exception e) {
+      logger.error("Error in getting Encounter Data");
     }
-    return bundle;
-  }
 
-  public Bundle getConditionData(
-      Encounter encounter,
-      R4FhirData r4FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
+    // Step 2: Get Conditions for Patient (Write a method)
+    // Filter the conditions based on encounter Reference if Encounter Reference is
+    // present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // Condition time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of ConditionCodes.
     try {
       logger.info("Get Condition Data");
       List<Condition> conditionsList =
@@ -798,18 +797,14 @@ public class R4ResourcesData {
     } catch (Exception e) {
       logger.error("Error in getting Condition Data");
     }
-    return bundle;
-  }
 
-  public Bundle getObservationData(
-      Encounter encounter,
-      R4FhirData r4FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
+    // Get Observations for Patients and laboratory category (Write a method).
+    // Filter the observations based on encounter Reference if encounter is present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // observation time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of labResultCodes.
     try {
       logger.info("Get Observation Data");
       List<Observation> observationList =
@@ -824,18 +819,17 @@ public class R4ResourcesData {
     } catch (Exception e) {
       logger.error("Error in getting Observation Data");
     }
-    return bundle;
-  }
 
-  public Bundle getMedicationAdministrationData(
-      Encounter encounter,
-      R4FhirData r4FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
+    // Get MedicationAdministration for Patients and laboratory category (Write a
+    // method).
+    // Filter the MedicationAdministrations based on encounter Reference if
+    // encounter is present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // medicationadministration time is between start and end times) -- Do this
+    // later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of medicationCodes.
     try {
       logger.info("Get MedicationAdministration Data");
       List<MedicationAdministration> medAdministrationsList =
@@ -880,18 +874,16 @@ public class R4ResourcesData {
     } catch (Exception e) {
       logger.error("Error in getting the MedicationAdministration Data", e);
     }
-    return bundle;
-  }
 
-  public Bundle getServiceRequestData(
-      Encounter encounter,
-      R4FhirData r4FhirData,
-      Date start,
-      Date end,
-      LaunchDetails launchDetails,
-      IGenericClient client,
-      FhirContext context,
-      Bundle bundle) {
+    // Get ServiceRequest for Patients (Write a method).
+    // Filter the ServiceRequest based on encounter Reference if encounter is
+    // present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // ServiceRequest time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of ServiceRequestCodes.
+
     try {
       logger.info("Get ServiceRequest Data");
       List<ServiceRequest> serviceRequestsList =

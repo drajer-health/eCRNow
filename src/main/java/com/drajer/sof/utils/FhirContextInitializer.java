@@ -89,8 +89,7 @@ public class FhirContextInitializer {
             + resourceName
             + "?patient="
             + authDetails.getLaunchPatientId();
-    bundleResponse =
-        bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
+    bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
 
@@ -109,8 +108,7 @@ public class FhirContextInitializer {
             + authDetails.getLaunchPatientId()
             + "&category="
             + category;
-    bundleResponse =
-        bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
+    bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
 
@@ -132,19 +130,18 @@ public class FhirContextInitializer {
             + system
             + "|"
             + code;
-    bundleResponse =
-        bundlePopulator(authDetails, genericClient, context, resourceName, url, bundleResponse);
+    bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
 
-  public static IBaseBundle bundlePopulator(
+  public static IBaseBundle getResourceBundleByUrl(
       LaunchDetails authDetails,
       IGenericClient genericClient,
       FhirContext context,
       String resourceName,
-      String url,
-      IBaseBundle bundleResponse) {
+      String url) {
     logger.info("Invoking url:::::::::::::::" + url);
+    IBaseBundle bundleResponse = null;
     try {
       logger.info(
           "Getting "
