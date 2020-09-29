@@ -420,18 +420,12 @@ public class LaunchController {
         if (period.getStart() != null) {
           currentStateDetails.setStartDate(period.getStart());
         } else {
-          Date startDate =
-              DateUtils.addHours(
-                  new Date(), Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-          currentStateDetails.setStartDate(startDate);
+          currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
         }
         if (period.getEnd() != null) {
           currentStateDetails.setEndDate(period.getEnd());
         } else {
-          Date endDate =
-              DateUtils.addHours(
-                  new Date(), Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-          currentStateDetails.setEndDate(endDate);
+          currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
         }
       }
     }
@@ -452,21 +446,20 @@ public class LaunchController {
           if (period.getStart() != null) {
             currentStateDetails.setStartDate(period.getStart());
           } else {
-            Date startDate =
-                DateUtils.addHours(
-                    new Date(), Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-            currentStateDetails.setStartDate(startDate);
+            currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
           }
           if (period.getEnd() != null) {
             currentStateDetails.setEndDate(period.getEnd());
           } else {
-            Date endDate =
-                DateUtils.addHours(
-                    new Date(), Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-            currentStateDetails.setEndDate(endDate);
+            currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
           }
         }
       }
     }
+  }
+
+  private static Date getDate(String thresholdValue) {
+    Date date = DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
+    return date;
   }
 }

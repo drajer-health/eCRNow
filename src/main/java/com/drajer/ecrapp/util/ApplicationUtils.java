@@ -345,17 +345,17 @@ public class ApplicationUtils {
     DataOutputStream outStream = null;
     try {
 
-      logger.info(" Writing eICR data to file: " + fileName);
+      logger.info(" Writing data to file: " + fileName);
       outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.error(" Unable to write EICR to file: " + fileName, e);
+      logger.debug(" Unable to write data to file: " + fileName, e);
     } finally {
       if (outStream != null) {
         try {
           outStream.close();
         } catch (IOException e) {
-          logger.error(" Unable to close Data output stream");
+          logger.debug(" Unable to close Data output stream");
         }
       }
     }

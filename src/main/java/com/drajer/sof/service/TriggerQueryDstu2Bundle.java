@@ -20,6 +20,7 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.Dstu2ResourcesData;
@@ -290,7 +291,7 @@ public class TriggerQueryDstu2Bundle {
             + "/TriggerQueryDSTU2Bundle-"
             + launchDetails.getLaunchPatientId()
             + ".json";
-    FhirContextInitializer.saveBundleToFile(
+    ApplicationUtils.saveDataToFile(
         context.newJsonParser().encodeResourceToString(bundle), fileName);
 
     return bundle;

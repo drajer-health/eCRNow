@@ -1,5 +1,7 @@
 package com.drajer.test.util;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +18,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -89,5 +94,27 @@ public class TestUtils {
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document document = builder.parse(TestUtils.class.getResourceAsStream("/" + expectedXml));
     return document;
+  }
+
+  public static Bundle getExpectedBundle(FhirContext context, String expectedBundle)
+      throws IOException {
+    final IParser jsonParser = context.newJsonParser();
+
+    return jsonParser.parseResource(Bundle.class, expectedBundle);
+  }
+
+  public static Resource getResourceFromBundle(Bundle bundle, Class<?> resource) {
+    try {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        if (entry.getResource() != null) {
+          if (entry.getResource().getClass() == resource) {
+            return entry.getResource();
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting the Resource from Bundle");
+    }
+    return null;
   }
 }

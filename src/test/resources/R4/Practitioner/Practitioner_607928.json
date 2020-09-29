@@ -1,0 +1,47 @@
+{
+    "resourceType": "Practitioner",
+    "id": "607928",
+    "meta": {
+        "versionId": "18",
+        "lastUpdated": "2016-04-28T15:02:06.000Z"
+    },
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Practitioner</b></p><p><b>Name</b>: Cerner Test, Nurse Cerner</p><p><b>Identifiers</b>: EXTERNALID: CERNERNURSERN</p><p><b>Status</b>: Active</p></div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "text": "External Identifier"
+            },
+            "_system": {
+                "extension": [
+                    {
+                        "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                        "valueCode": "unknown"
+                    }
+                ]
+            },
+            "value": "CERNERNURSERN",
+            "period": {
+                "start": "2016-04-28T15:02:06.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "usual",
+            "text": "Cerner Test, Nurse Cerner",
+            "family": "Cerner Test",
+            "given": [
+                "Nurse",
+                "Cerner"
+            ],
+            "period": {
+                "start": "2016-04-28T15:02:06.000Z"
+            }
+        }
+    ]
+}
