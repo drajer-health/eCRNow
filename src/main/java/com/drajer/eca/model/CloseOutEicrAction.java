@@ -30,7 +30,7 @@ public class CloseOutEicrAction extends AbstractAction {
       ObjectMapper mapper = new ObjectMapper();
       PatientExecutionState state = null;
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
       state.getCloseOutEicrStatus().setActionId(getActionId());
 
       logger.info(

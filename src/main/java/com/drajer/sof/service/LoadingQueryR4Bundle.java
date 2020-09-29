@@ -13,6 +13,7 @@ import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
@@ -42,12 +43,15 @@ public class LoadingQueryR4Bundle {
     Bundle bundle =
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);
 
+    Encounter encounter =
+        (Encounter) r4ResourcesData.getResourceFromBundle(bundle, Encounter.class);
+
     // Get Pregnancy Observations
     try {
       logger.info("Get Preganancy Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getObservationData(
-              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       logger.info("Filtered Observations---->" + observationList.size());
       r4FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
@@ -64,7 +68,7 @@ public class LoadingQueryR4Bundle {
       logger.info("Get Travel Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getObservationData(
-              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       logger.info("Filtered Observations---->" + observationList.size());
       r4FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
@@ -80,7 +84,7 @@ public class LoadingQueryR4Bundle {
       logger.info("Get MedicationStatement Data");
       List<MedicationStatement> medStatementsList =
           r4ResourcesData.getMedicationStatementData(
-              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
       r4FhirData.setMedications(medStatementsList);
       for (MedicationStatement medStatement : medStatementsList) {
@@ -101,7 +105,7 @@ public class LoadingQueryR4Bundle {
     try {
       List<Immunization> immunizationsList =
           r4ResourcesData.getImmunizationData(
-              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       logger.info("Filtered Immunizations----------->" + immunizationsList.size());
       r4FhirData.setImmunizations(immunizationsList);
       for (Immunization immunization : immunizationsList) {
@@ -122,7 +126,7 @@ public class LoadingQueryR4Bundle {
     try {
       List<DiagnosticReport> diagnosticReportList =
           r4ResourcesData.getDiagnosticReportData(
-              context, client, launchDetails, r4FhirData, r4ResourcesData.encounter, start, end);
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
       r4FhirData.setDiagReports(diagnosticReportList);
       for (DiagnosticReport diagnosticReport : diagnosticReportList) {

@@ -3,15 +3,13 @@ package com.drajer.sof.service;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.drajer.eca.model.ActionRepo;
+import ca.uhn.fhir.context.FhirContext;
 import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +17,7 @@ import java.util.Date;
 import java.util.Set;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Condition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +67,6 @@ public class TriggerQueryServiceTest extends BaseIntegrationTest {
         launchDetails.getAccessToken().replace("port", "" + wireMockHttpPort));
 
     startDate = DateUtils.addHours(new Date(), 3);
-
     endDate = DateUtils.addHours(new Date(), 30);
 
     session.flush();
@@ -103,27 +101,19 @@ public class TriggerQueryServiceTest extends BaseIntegrationTest {
   public void getDataTest() throws IOException {
     R4FhirData r4FhirData =
         (R4FhirData) triggerQueryService.getData(launchDetails, startDate, endDate);
-    Bundle bundle = r4FhirData.getData();
+    Bundle generatedBundle = r4FhirData.getData();
 
-    assertNotNull(bundle);
+    assertNotNull(generatedBundle);
 
-    String generatedBundle = getGeneratedBundle();
-    String expectedBundle =
-        TestUtils.getFileContentAsString("TriggerQueryR4Bundle-12742571_expected.json");
+    Condition generatedCondition =
+        (Condition) TestUtils.getResourceFromBundle(generatedBundle, Condition.class);
 
-    assertEquals(generatedBundle, expectedBundle);
-  }
+    String expectedBundleAsString =
+        TestUtils.getFileContentAsString("R4/Condition/ConditionBundle_d2572364249.json");
+    FhirContext context = FhirContext.forR4();
+    Bundle expectedBundle = TestUtils.getExpectedBundle(context, expectedBundleAsString);
+    Condition expectedCondition = (Condition) expectedBundle.getEntry().get(0).getResource();
 
-  public String getGeneratedBundle() throws IOException {
-    String file =
-        ActionRepo.getInstance().getLogFileDirectory()
-            + "/TriggerQueryR4Bundle-"
-            + launchDetails.getLaunchPatientId()
-            + ".json";
-
-    BufferedReader reader = new BufferedReader(new FileReader(file));
-    String currentLine = reader.readLine();
-    reader.close();
-    return currentLine;
+    assertEquals(generatedCondition.getCode().getText(), expectedCondition.getCode().getText());
   }
 }

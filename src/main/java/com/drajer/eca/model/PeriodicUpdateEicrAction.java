@@ -28,7 +28,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       PatientExecutionState state = null;
       PeriodicUpdateEicrStatus status = new PeriodicUpdateEicrStatus();
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
       status.setActionId(getActionId());
 
       logger.info(

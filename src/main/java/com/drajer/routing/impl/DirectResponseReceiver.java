@@ -40,7 +40,7 @@ public class DirectResponseReceiver extends RRReceiver {
       LaunchDetails details = (LaunchDetails) context;
       PatientExecutionState state = null;
 
-      state = ApplicationUtils.getDetailStatus(details, state);
+      state = ApplicationUtils.getDetailStatus(details);
 
       readMail(details, state);
     }

@@ -8,7 +8,6 @@ import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.service.PlanDefinitionProcessor;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -432,28 +431,21 @@ public class ApplicationUtils {
     return retVal;
   }
 
-  public static PatientExecutionState getDetailStatus(
-      LaunchDetails details, PatientExecutionState state) {
+  public static PatientExecutionState getDetailStatus(LaunchDetails details) {
 
     ObjectMapper mapper = new ObjectMapper();
-    PatientExecutionState stateResponse = null;
+    PatientExecutionState state = null;
 
     try {
-      stateResponse = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-    } catch (JsonMappingException e1) {
 
-      String msg = "Unable to read/write execution state";
-      logger.error(msg, e1);
-      e1.printStackTrace();
-      throw new RuntimeException(msg);
+      state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
 
     } catch (JsonProcessingException e1) {
-
       String msg = "Unable to read/write execution state";
       logger.error(msg, e1);
-      e1.printStackTrace();
-      throw new RuntimeException(msg);
+      throw new RuntimeException(msg, e1);
     }
-    return stateResponse;
+
+    return state;
   }
 }

@@ -42,7 +42,7 @@ public class DirectEicrSender extends EicrSender {
       LaunchDetails details = (LaunchDetails) context;
       PatientExecutionState state = null;
 
-      state = ApplicationUtils.getDetailStatus(details, state);
+      state = ApplicationUtils.getDetailStatus(details);
 
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 

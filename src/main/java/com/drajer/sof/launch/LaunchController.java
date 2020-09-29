@@ -420,12 +420,12 @@ public class LaunchController {
         if (period.getStart() != null) {
           currentStateDetails.setStartDate(period.getStart());
         } else {
-          setStartDate(clientDetails, currentStateDetails);
+          currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
         }
         if (period.getEnd() != null) {
           currentStateDetails.setEndDate(period.getEnd());
         } else {
-          setEndDate(clientDetails, currentStateDetails);
+          currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
         }
       }
     }
@@ -446,28 +446,20 @@ public class LaunchController {
           if (period.getStart() != null) {
             currentStateDetails.setStartDate(period.getStart());
           } else {
-            setStartDate(clientDetails, currentStateDetails);
+            currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
           }
           if (period.getEnd() != null) {
             currentStateDetails.setEndDate(period.getEnd());
           } else {
-            setEndDate(clientDetails, currentStateDetails);
+            currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
           }
         }
       }
     }
   }
 
-  public void setStartDate(ClientDetails clientDetails, LaunchDetails currentStateDetails) {
-    Date startDate =
-        DateUtils.addHours(
-            new Date(), Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-    currentStateDetails.setStartDate(startDate);
-  }
-
-  public void setEndDate(ClientDetails clientDetails, LaunchDetails currentStateDetails) {
-    Date endDate =
-        DateUtils.addHours(new Date(), Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-    currentStateDetails.setEndDate(endDate);
+  private static Date getDate(String thresholdValue) {
+    Date date = DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
+    return date;
   }
 }

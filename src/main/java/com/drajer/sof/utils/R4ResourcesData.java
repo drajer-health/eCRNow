@@ -46,8 +46,6 @@ public class R4ResourcesData {
 
   private final Logger logger = LoggerFactory.getLogger(R4ResourcesData.class);
 
-  public Encounter encounter;
-
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<CodeableConcept>();
     if (encounter.getType() != null) {
@@ -714,7 +712,7 @@ public class R4ResourcesData {
     // Add to the bundle.
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of encounterCodes.
-    // Encounter encounter = null;
+    Encounter encounter = null;
     try {
       logger.info("Get Encounter Data");
       encounter = getEncounterData(context, client, launchDetails, r4FhirData, start, end);
@@ -899,5 +897,20 @@ public class R4ResourcesData {
       logger.error("Error in getting the ServiceRequest Data");
     }
     return bundle;
+  }
+
+  public Resource getResourceFromBundle(Bundle bundle, Class<?> resource) {
+    try {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        if (entry.getResource() != null) {
+          if (entry.getResource().getClass() == resource) {
+            return entry.getResource();
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting the Resource from Bundle");
+    }
+    return null;
   }
 }

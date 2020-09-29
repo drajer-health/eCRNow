@@ -176,7 +176,7 @@ public class PeriodicUpdateEicrActionTest {
 
       EventTypes.JobStatus periodicUpdateJobStatus = JobStatus.SCHEDULED;
 
-      when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+      when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
       when(mockState.getPeriodicUpdateJobStatus()).thenReturn(periodicUpdateJobStatus);
 
       when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
@@ -230,7 +230,7 @@ public class PeriodicUpdateEicrActionTest {
 
       EventTypes.JobStatus periodicUpdateJobStatus = JobStatus.SCHEDULED;
 
-      when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+      when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
       when(mockState.getPeriodicUpdateJobStatus()).thenReturn(periodicUpdateJobStatus);
       when(mockState.getCreateEicrStatus()).thenReturn(createEicrStatus);
       when(mockState.getCloseOutEicrStatus()).thenReturn(closeOutEicrStatus);
@@ -282,7 +282,7 @@ public class PeriodicUpdateEicrActionTest {
     when(mockDetails.getStartDate()).thenReturn(new Date());
 
     // Mock EcaUtils
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
     // Mock RelatedActions
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
