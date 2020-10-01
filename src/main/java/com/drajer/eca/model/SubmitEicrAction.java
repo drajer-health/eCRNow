@@ -33,23 +33,18 @@ public class SubmitEicrAction extends AbstractAction {
       logger.info(
           " Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());
 
-      String data =
-          "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
-
-      // ActionRepo.getInstance().getDirectTransport().sendData(details, data);
-
       if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 
         logger.info(" Related Actions exist, so check dependencies ");
 
         List<RelatedAction> racts = getRelatedActions();
 
-        for (RelatedAction ract : racts) {
+        for (RelatedAction actn : racts) {
 
-          if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+          if (actn.getRelationship() == ActionRelationshipType.AFTER) {
 
             // check if the action is completed.
-            String actionId = ract.getRelatedAction().getActionId();
+            String actionId = actn.getRelatedAction().getActionId();
 
             if (!state.hasActionCompleted(actionId)) {
 
@@ -64,8 +59,8 @@ public class SubmitEicrAction extends AbstractAction {
           } else {
             logger.info(
                 " This action is not dependent on the action relationship : {}, Action Id = {}",
-                ract.getRelationship(),
-                ract.getRelatedAction().getActionId());
+                actn.getRelationship(),
+                actn.getRelatedAction().getActionId());
           }
         }
       } else {

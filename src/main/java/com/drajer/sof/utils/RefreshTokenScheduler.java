@@ -1,8 +1,5 @@
 package com.drajer.sof.utils;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
@@ -164,73 +161,74 @@ public class RefreshTokenScheduler {
     }
     return tokenResponse;
   }
-
-  private void getResourcesData(LaunchDetails authDetails) {
-    FhirContext context = resourceData.getFhirContext(authDetails.getFhirVersion());
-    context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-    IGenericClient genericClient =
-        resourceData.createClient(
-            context, authDetails.getEhrServerURL(), authDetails.getAccessToken());
-    try {
-      resourceData.getResouceById(
-          authDetails, genericClient, context, "Patient", authDetails.getLaunchPatientId());
-    } catch (Exception e) {
-      logger.error("Error in getting Patient details");
-    }
-
-    try {
-      resourceData.getResouceById(
-          authDetails, genericClient, context, "Encounter", authDetails.getEncounterId());
-      // resourceData.getEncounterData(client, genericClient, ctx);
-    } catch (Exception e) {
-      logger.error("Error in getting Encounter details");
-    }
-
-    try {
-      resourceData.getResourceByPatientId(authDetails, genericClient, context, "Observation");
-      // resourceData.getObservationData(client, genericClient, ctx);
-    } catch (Exception e) {
-      logger.error("Error in getting Observation details");
-    }
-
-    try {
-      resourceData.getResourceByPatientId(authDetails, genericClient, context, "Condition");
-      // resourceData.getConditionData(client, genericClient, ctx);
-    } catch (Exception e) {
-      logger.error("Error in getting Condition details");
-    }
-
-    if (authDetails.getFhirVersion().equalsIgnoreCase("DSTU2")) {
+  /*
+    private void getResourcesData(LaunchDetails authDetails) {
+      FhirContext context = resourceData.getFhirContext(authDetails.getFhirVersion());
+      context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+      IGenericClient genericClient =
+          resourceData.createClient(
+              context, authDetails.getEhrServerURL(), authDetails.getAccessToken());
       try {
-        resourceData.getResourceByPatientId(
-            authDetails, genericClient, context, "MedicationAdministration");
-        // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
+        resourceData.getResouceById(
+            authDetails, genericClient, context, "Patient", authDetails.getLaunchPatientId());
       } catch (Exception e) {
-        logger.error("Error in getting MedicationAdministration details");
+        logger.error("Error in getting Patient details");
       }
 
       try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "MedicationOrder");
-        // resourceData.getMedicationOrderData(client, genericClient, ctx);
+        resourceData.getResouceById(
+            authDetails, genericClient, context, "Encounter", authDetails.getEncounterId());
+        // resourceData.getEncounterData(client, genericClient, ctx);
       } catch (Exception e) {
-        logger.error("Error in getting MedicationOrder details");
+        logger.error("Error in getting Encounter details");
       }
 
       try {
-        resourceData.getResourceByPatientId(
-            authDetails, genericClient, context, "MedicationStatement");
-        // resourceData.getMedicationStatementData(client, genericClient, ctx);
+        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Observation");
+        // resourceData.getObservationData(client, genericClient, ctx);
       } catch (Exception e) {
-        logger.error("Error in getting MedicationStatement details");
+        logger.error("Error in getting Observation details");
       }
-    } else if (authDetails.getFhirVersion().equalsIgnoreCase("R4")) {
+
       try {
-        resourceData.getResourceByPatientId(
-            authDetails, genericClient, context, "MedicationRequest");
-        // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
+        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Condition");
+        // resourceData.getConditionData(client, genericClient, ctx);
       } catch (Exception e) {
-        logger.error("Error in getting MedicationRequest details");
+        logger.error("Error in getting Condition details");
+      }
+
+      if (authDetails.getFhirVersion().equalsIgnoreCase("DSTU2")) {
+        try {
+          resourceData.getResourceByPatientId(
+              authDetails, genericClient, context, "MedicationAdministration");
+          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
+        } catch (Exception e) {
+          logger.error("Error in getting MedicationAdministration details");
+        }
+
+        try {
+          resourceData.getResourceByPatientId(authDetails, genericClient, context, "MedicationOrder");
+          // resourceData.getMedicationOrderData(client, genericClient, ctx);
+        } catch (Exception e) {
+          logger.error("Error in getting MedicationOrder details");
+        }
+
+        try {
+          resourceData.getResourceByPatientId(
+              authDetails, genericClient, context, "MedicationStatement");
+          // resourceData.getMedicationStatementData(client, genericClient, ctx);
+        } catch (Exception e) {
+          logger.error("Error in getting MedicationStatement details");
+        }
+      } else if (authDetails.getFhirVersion().equalsIgnoreCase("R4")) {
+        try {
+          resourceData.getResourceByPatientId(
+              authDetails, genericClient, context, "MedicationRequest");
+          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
+        } catch (Exception e) {
+          logger.error("Error in getting MedicationRequest details");
+        }
       }
     }
-  }
+  */
 }

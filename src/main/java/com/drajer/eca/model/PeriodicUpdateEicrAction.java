@@ -49,13 +49,13 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
           List<RelatedAction> racts = getRelatedActions();
 
-          for (RelatedAction ract : racts) {
+          for (RelatedAction actn : racts) {
 
             // Check for all actions AFTER which this action has to be executed for completion.
-            if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+            if (actn.getRelationship() == ActionRelationshipType.AFTER) {
 
               // check if the action is completed.
-              String actionId = ract.getRelatedAction().getActionId();
+              String actionId = actn.getRelatedAction().getActionId();
 
               if (!state.hasActionCompleted(actionId)) {
 
@@ -67,7 +67,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 logger.info(" Related Action has been completed : {}", actionId);
 
                 // Check if there is any timing constraint that needs to be handled.
-                if (ract.getDuration() != null
+                if (actn.getDuration() != null
                     && state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED) {
 
                   // Duration is not null, meaning that the create action has to be delayed by the
@@ -76,7 +76,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
                   WorkflowService.scheduleJob(
                       details.getId(),
-                      ract.getDuration(),
+                      actn.getDuration(),
                       EcrActionTypes.PERIODIC_UPDATE_EICR,
                       details.getStartDate());
                   state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
@@ -95,8 +95,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
             } else {
               logger.info(
                   " Action {} is related via {}",
-                  ract.getRelatedAction().getActionId(),
-                  ract.getRelationship());
+                  actn.getRelatedAction().getActionId(),
+                  actn.getRelationship());
             }
           }
         }
