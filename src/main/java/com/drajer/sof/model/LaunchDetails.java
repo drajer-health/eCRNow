@@ -105,6 +105,9 @@ public class LaunchDetails {
   @Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
   private String directRecipient;
 
+  @Column(name = "rest_api_url", nullable = true)
+  private String restAPIURL;
+
   @Column(name = "is_covid19", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid = true;
@@ -124,6 +127,10 @@ public class LaunchDetails {
   @Column(name = "is_system_launch", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
+
+  @Column(name = "is_logging_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isLoggingEnabled = false;
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -333,6 +340,14 @@ public class LaunchDetails {
     this.directPwd = directPwd;
   }
 
+  public String getRestAPIURL() {
+    return restAPIURL;
+  }
+
+  public void setRestAPIURL(String restAPIURL) {
+    this.restAPIURL = restAPIURL;
+  }
+
   public String getLaunchId() {
     return launchId;
   }
@@ -371,5 +386,13 @@ public class LaunchDetails {
 
   public void setIsSystem(Boolean isSystem) {
     this.isSystem = isSystem;
+  }
+
+  public Boolean getIsLoggingEnabled() {
+    return isLoggingEnabled;
+  }
+
+  public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
+    this.isLoggingEnabled = isLoggingEnabled;
   }
 }

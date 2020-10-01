@@ -62,6 +62,8 @@ public class LaunchController {
   //	@Autowired
   //	FhirEicrSender fhirEicrBundle;
 
+  // @Autowired RestApiSender xmlSender;
+
   private SecureRandom random = new SecureRandom();
 
   @CrossOrigin
@@ -123,25 +125,22 @@ public class LaunchController {
   @RequestMapping(value = "/api/submitBundle")
   public JSONObject submitBundle() throws IOException {
 
-  	StringBuilder contentBuilder = new StringBuilder();
+    StringBuilder contentBuilder = new StringBuilder();
 
-         try (Stream<String> stream = Files.lines( Paths.get("D:\\SampleBundle.json"), StandardCharsets.UTF_8))
-         {
-             stream.forEach(s -> contentBuilder.append(s).append("\n"));
-         }
-         catch (IOException e)
-         {
-             e.printStackTrace();
-         }
+    try (Stream<String> stream =
+        Files.lines(Paths.get("D:\\12742571_CreateEicrAction211629.xml"), StandardCharsets.UTF_8)) {
+      stream.forEach(s -> contentBuilder.append(s).append("\n"));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-  	String content = contentBuilder.toString();
-  	logger.info(content);
+    String content = contentBuilder.toString();
+    logger.info(content);
 
+    LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(388);
+    JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
 
-  	JSONObject response= fhirEicrBundle.submitBundle(content);
-
-
-  	return response;
+    return response;
   }*/
 
   @CrossOrigin
@@ -190,6 +189,7 @@ public class LaunchController {
           launchDetails.setDirectPwd(clientDetails.getDirectPwd());
           launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
           launchDetails.setDirectUser(clientDetails.getDirectUser());
+          launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
           launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
           launchDetails.setEncounterId(systemLaunch.getEncounterId());
           launchDetails.setExpiry(tokenResponse.getInt("expires_in"));
@@ -203,6 +203,7 @@ public class LaunchController {
           setStartAndEndDates(clientDetails, launchDetails);
 
           saveLaunchDetails(launchDetails);
+          response.setStatus(202);
 
         } else {
           logger.error(
@@ -211,6 +212,8 @@ public class LaunchController {
               HttpServletResponse.SC_BAD_REQUEST,
               "Launch Context is already present for Patient:::::" + systemLaunch.getPatientId());
         }
+      } else {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error in Launching the App");
       }
     } catch (Exception e) {
       logger.info("Error in Invoking System Launch");
@@ -392,6 +395,7 @@ public class LaunchController {
     currentStateDetails.setDirectHost(clientDetails.getDirectHost());
     currentStateDetails.setDirectPwd(clientDetails.getDirectPwd());
     currentStateDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
+    currentStateDetails.setRestAPIURL(clientDetails.getRestAPIURL());
     currentStateDetails.setIsCovid(clientDetails.getIsCovid());
 
     setStartAndEndDates(clientDetails, currentStateDetails);
