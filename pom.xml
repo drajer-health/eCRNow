@@ -19,6 +19,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<fhir.version>4.0.3</fhir.version>
+		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 
 	<dependencies>
@@ -235,7 +236,12 @@
 		<dependency>
 			<groupId>ch.qos.logback.contrib</groupId>
 			<artifactId>logback-json-classic</artifactId>
-			<version>0.1.5</version>
+			<version>${logback-contrib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback.contrib</groupId>
+			<artifactId>logback-jackson</artifactId>
+			<version>${logback-contrib.version}</version>
 		</dependency>
 </dependencies>
 
