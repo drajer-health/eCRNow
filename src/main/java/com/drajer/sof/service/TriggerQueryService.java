@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class TriggerQueryService implements AbstractQueryService {
 
-  @Autowired TriggerQueryDstu2Bundle generateDstu2Bundle;
+  @Autowired TriggerQueryDstu2Bundle generateDstu2Bundles;
 
-  @Autowired TriggerQueryR4Bundle generateR4Bundle;
+  @Autowired TriggerQueryR4Bundle generateR4Bundles;
 
   private final Logger logger = LoggerFactory.getLogger(TriggerQueryService.class);
 
@@ -31,7 +31,7 @@ public class TriggerQueryService implements AbstractQueryService {
       Dstu2FhirData dstu2FhirData = new Dstu2FhirData();
       Bundle bundle = new Bundle();
       try {
-        bundle = generateDstu2Bundle.createDSTU2Bundle(launchDetails, dstu2FhirData, start, end);
+        bundle = generateDstu2Bundles.createDSTU2Bundle(launchDetails, dstu2FhirData, start, end);
       } catch (Exception e) {
         logger.error("Error in Generating the DSTU2 Bundle");
       }
@@ -43,7 +43,7 @@ public class TriggerQueryService implements AbstractQueryService {
       R4FhirData r4FhirData = new R4FhirData();
       org.hl7.fhir.r4.model.Bundle bundle = new org.hl7.fhir.r4.model.Bundle();
       try {
-        bundle = generateR4Bundle.createR4Bundle(launchDetails, r4FhirData, start, end);
+        bundle = generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
       } catch (Exception e) {
         logger.error("Error in Generating the R4 Bundle");
       }

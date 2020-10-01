@@ -52,15 +52,15 @@ public class ClientDetailsController {
 
   @CrossOrigin
   @RequestMapping(value = "/api/clientDetails", method = RequestMethod.PUT)
-  public ResponseEntity<?> updateClientDetails(@RequestBody ClientDetails clientDetails) {
+  public ResponseEntity<?> updateClientDetails(@RequestBody ClientDetails clientDetail) {
     ClientDetails checkClientDetails =
-        clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
+        clientDetailsService.getClientDetailsByUrl(clientDetail.getFhirServerBaseURL());
     if (checkClientDetails == null
         || (checkClientDetails != null
-            && checkClientDetails.getId().equals(clientDetails.getId()))) {
+            && checkClientDetails.getId().equals(clientDetail.getId()))) {
       logger.info("Saving the Client Details");
-      clientDetailsService.saveOrUpdate(clientDetails);
-      return new ResponseEntity<>(clientDetails, HttpStatus.OK);
+      clientDetailsService.saveOrUpdate(clientDetail);
+      return new ResponseEntity<>(clientDetail, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
       JSONObject responseObject = new JSONObject();
