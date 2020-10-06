@@ -81,7 +81,8 @@ public class CdaGeneratorConstants {
 
   // FHIR Value Set URLS and values
   public static final String FHIR_IDTYPE_SYSTEM = "http://hl7.org/fhir/v2/0203";
-  public static final String FHIR_IDENTIFIER_TYPE_SYSTEM = "http://hl7.org/fhir/ValueSet/identifier-type";
+  public static final String FHIR_IDENTIFIER_TYPE_SYSTEM =
+      "http://hl7.org/fhir/ValueSet/identifier-type";
   public static final String FHIR_ARGO_RACE_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-race";
   public static final String FHIR_ARGO_ETHNICITY_EXT_URL =
@@ -111,7 +112,8 @@ public class CdaGeneratorConstants {
   public static final String FHIR_CONDITION_PROBLEM_CATEGORY = "problem";
   public static final String FHIR_CONDITION_HEALTH_CONCERN_CATEGORY = "health-concern";
   public static final String FHIR_LAB_RESULT_CATEGORY = "laboratory";
-  public static final String FHIR_OBSERVATION_CATEGORY_URL = "http://hl7.org/fhir/observation-category";
+  public static final String FHIR_OBSERVATION_CATEGORY_URL =
+      "http://hl7.org/fhir/observation-category";
   public static final String FHIR_DIAG_REPORT_CATEGORY = "LAB";
   public static final String FHIR_DIAG_REPORT_CATEGORY_URL =
       "http://hl7.org/fhir/ValueSet/diagnostic-service-sections";
@@ -144,9 +146,11 @@ public class CdaGeneratorConstants {
   public static final String REASON_FOR_VISIT_SEC_CODE_NAME = "Reason For Visit";
   public static final String REASON_FOR_VISIT_SEC_TITLE = "Reason For Visit";
 
-  public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_TEMPLATE_ID = "1.3.6.1.4.1.19376.1.5.3.1.3.4";
+  public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_TEMPLATE_ID =
+      "1.3.6.1.4.1.19376.1.5.3.1.3.4";
   public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_CODE = "10164-2";
-  public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_CODE_NAME = "History of Present Illness";
+  public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_CODE_NAME =
+      "History of Present Illness";
   public static final String HISTORY_OF_PRESENT_ILLNESS_SEC_TITLE = "History of Present Illness";
 
   // Encounter Related Information
@@ -201,7 +205,8 @@ public class CdaGeneratorConstants {
   public static final String DIAGNOSIS_DISPLAY_NAME = "Diagnosis";
   public static final String QRDA_DIAG_CONCERN_ACT_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.137";
   public static final String QRDA_DIAG_CONCERN_ACT_TEMPLATE_ID_EXT = "2017-08-01";
-  public static final String QRDA_SYMPTOM_CONCERN_ACT_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.138";
+  public static final String QRDA_SYMPTOM_CONCERN_ACT_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.138";
   public static final String QRDA_SYMPTOM_CONCERN_ACT_TEMPLATE_ID_EXT = "2017-08-01";
   public static final String QRDA_DIAG_ACTIVE_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.11";
   public static final String QRDA_DIAG_INACTIVE_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.13";
@@ -220,7 +225,8 @@ public class CdaGeneratorConstants {
   public static final String QRDA_PRIORITY_DIAG_CODE_NAME = "Principal";
   public static final String PROB_STATUS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.6";
   public static final String QRDA_DIAG_ACT_STATUS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.94";
-  public static final String QRDA_DIAG_RESOLVED_STATUS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.96";
+  public static final String QRDA_DIAG_RESOLVED_STATUS_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.96";
   public static final String STATUS_ACTIVE_CODE = "55561003";
   public static final String STATUS_RESOLVED_CODE = "413322009";
   public static final String QRDA_DIAG_STATUS_CODE = "33999-4";
@@ -237,13 +243,16 @@ public class CdaGeneratorConstants {
   public static final String PLAN_OF_CARE_ACT_TEMPLATE_ID_EXT = "2014-06-09";
   public static final String PLAN_OF_CARE_SUBS_ADM_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.42";
   public static final String PLAN_OF_CARE_SUBS_ADM_TEMPLATE_ID_EXT = "2014-06-09";
-  public static final String PLAN_OF_CARE_ACTIVITY_PROC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.41";
+  public static final String PLAN_OF_CARE_ACTIVITY_PROC_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.22.4.41";
   public static final String PLAN_OF_CARE_ACTIVITY_PROC_TEMPLATE_ID_EXT = "2014-06-09";
   public static final String PLAN_OF_CARE_ACTIVITY_OBSERVATION_TEMPLATE_ID =
       "2.16.840.1.113883.10.20.22.4.44";
   public static final String PLAN_OF_CARE_ACTIVITY_OBSERVATION_TEMPLATE_ID_EXT = "2014-06-09";
-  public static final String ASSESSMENT_SCALE_OBSERVATION_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.69";
-  public static final String ASSESSMENT_RECOMMENDED_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.145";
+  public static final String ASSESSMENT_SCALE_OBSERVATION_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.22.4.69";
+  public static final String ASSESSMENT_RECOMMENDED_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.145";
   public static final String ASSESSMENT_RECOMMENDED_TEMPLATE_ID_EXT = "2017-08-01";
   public static final String ASSESSMENT_PERFORMED_TEMPALTE_ID = "2.16.840.1.113883.10.20.24.3.144";
   public static final String ASSESSMENT_PERFORMED_TEMPALTE_ID_EXT = "2017-08-01";
@@ -368,7 +377,8 @@ public class CdaGeneratorConstants {
   public static final String DISCHARGE_MED_ENTRY_TEMPLATE_ID_EXT = "2016-03-01";
   public static final String DISCHARGE_MED_ACT_CODE = "10183-2";
   public static final String QRDA_DISCHARGE_MED_ACT_CODE = "75311-1";
-  public static final String QRDA_DISCHARGE_MED_ENTRY_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.105";
+  public static final String QRDA_DISCHARGE_MED_ENTRY_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.105";
   public static final String QRDA_DISCHARGE_MED_ENTRY_TEMPLATE_ID_EXT = "2018-10-01";
 
   // Lab Results Related Information
@@ -381,10 +391,12 @@ public class CdaGeneratorConstants {
   public static final String LAB_RESULTS_ORG_TEMPLATE_ID_EXT = "2015-08-01";
   public static final String LAB_RESULTS_ENTRY_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.2";
   public static final String LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT = "2015-08-01";
-  public static final String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.2";
+  public static final String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.15.2.3.2";
   public static final String TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT = "2016-12-01";
   public static final String QRDA_LAB_RESULTS_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.40";
-  public static final String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.38";
+  public static final String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.38";
   public static final String QRDA_LAB_TEST_PERFORMED_TEMPLATE_ID_EXT = "2017-08-01";
   public static final String QRDA_LAB_TEST_ORD_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.37";
   public static final String QRDA_LAB_TEST_ORD_TEMPLATE_ID_EXT = "2017-08-01";
@@ -423,12 +435,14 @@ public class CdaGeneratorConstants {
   public static final String ALLERGY_OBS_ASSERTION = "ASSERTION";
   public static final String ALLERGY_OBS_ASSERTION_CODESYSTEM = "2.16.840.1.113883.5.4";
   public static final String MED_ALLERGY_CODE = "419511003";
-  public static final String MED_ALLERGY_CODE_DISPLAY_NAME = "Propensity to adverse reaction to drug";
+  public static final String MED_ALLERGY_CODE_DISPLAY_NAME =
+      "Propensity to adverse reaction to drug";
   public static final String QRDA_MED_ALLERGY_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.44";
   public static final String QRDA_MED_ALLERGY_ENTRY_TEXT = "Medication Allergy";
   public static final String QRDA_MED_ALLERGY_CODE = "419199007";
   public static final String QRDA_MED_ALLERGY_CODE_DISPLAY_NAME = "Allergy to Substance";
-  public static final String QRDA_ALLERGY_INTOLERANCE_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.147";
+  public static final String QRDA_ALLERGY_INTOLERANCE_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.147";
   public static final String QRDA_ALLERGY_INTOLERANCE_TEMPLATE_ID_EXT = "2017-08-01";
 
   // Plan Of Care Related Information
@@ -446,9 +460,11 @@ public class CdaGeneratorConstants {
   public static final String IMMUNIZATION_SEC_TITLE = "IMMUNIZATIONS";
   public static final String IMMUNIZATION_ACTIVITY_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.52";
   public static final String IMMUNIZATION_ACTIVITY_TEMPLATE_ID_EXT = "2015-08-01";
-  public static final String IMMUNIZATION_MEDICATION_INFORMATION = "2.16.840.1.113883.10.20.22.4.54";
+  public static final String IMMUNIZATION_MEDICATION_INFORMATION =
+      "2.16.840.1.113883.10.20.22.4.54";
   public static final String IMMUNIZATION_MEDICATION_INFORMATION_EXT = "2014-06-09";
-  public static final String IMMUNIZATION_ADMINISTERED_TEMPLATE_ID = "2.16.840.1.113883.10.20.24.3.140";
+  public static final String IMMUNIZATION_ADMINISTERED_TEMPLATE_ID =
+      "2.16.840.1.113883.10.20.24.3.140";
   public static final String IMMUNIZATION_ADMINISTERED_TEMPLATE_ID_EXT = "2017-08-01";
 
   // SOCIAL History Related Information
@@ -536,11 +552,14 @@ public class CdaGeneratorConstants {
   public static final String HL7_DISCHARGE_CODE_SYSTEM_NAME = "HL7 Discharge Disposition";
   public static final String FDA_DEVICE_ID_AA = "2.16.840.1.113883.3.3719";
   public static final String NUBC_CODE_SYSTEM_OID = "2.16.840.1.113883.6.301";
-  public static final String NUBC_CODE_SYSTEM_DISPLAY_NAME = "National Uniform Billing Committee (NUBC)";
+  public static final String NUBC_CODE_SYSTEM_DISPLAY_NAME =
+      "National Uniform Billing Committee (NUBC)";
   public static final String HL7_SERVICE_LOCATION_CODESYSTEM = "2.16.840.1.113883.6.259";
-  public static final String HL7_SERVICE_LOCATION_CODESYSTEM_NAME = "HL7 Healthcare Service Location";
+  public static final String HL7_SERVICE_LOCATION_CODESYSTEM_NAME =
+      "HL7 Healthcare Service Location";
   public static final String SERVICE_DELIVERY_LOCATION_CODESYSTEM = "2.16.840.1.11388 3.5.111";
-  public static final String SERVICE_DELIVERY_LOCATION_CODESYSTEM_NAME = "ServiceDelveryLocationRoleType";
+  public static final String SERVICE_DELIVERY_LOCATION_CODESYSTEM_NAME =
+      "ServiceDelveryLocationRoleType";
 
   // Value Sets
   public static final String CONFIDENTIALITY_CODE = "N";
@@ -801,7 +820,8 @@ public class CdaGeneratorConstants {
   public static final String DEVICE_TABLE_COL_2_TITLE = "Device Date";
   public static final String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
   public static final String UNKNOWN_VALUE = "Unknown";
-  public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS = "Unknown History of Present Illness";
+  public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS =
+      "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
 
   // OID to URI Mapping
