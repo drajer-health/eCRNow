@@ -66,6 +66,7 @@ public class LaunchController {
 
   private final SecureRandom random = new SecureRandom();
 
+
   @CrossOrigin
   @RequestMapping("/api/launchDetails/{tokenId}")
   public LaunchDetails getLaunchDetailsById(@PathVariable("tokenId") Integer tokenId) {
@@ -125,25 +126,22 @@ public class LaunchController {
   @RequestMapping(value = "/api/submitBundle")
   public JSONObject submitBundle() throws IOException {
 
-  	StringBuilder contentBuilder = new StringBuilder();
+    StringBuilder contentBuilder = new StringBuilder();
 
-         try (Stream<String> stream = Files.lines( Paths.get("D:\\SampleBundle.json"), StandardCharsets.UTF_8))
-         {
-             stream.forEach(s -> contentBuilder.append(s).append("\n"));
-         }
-         catch (IOException e)
-         {
-             e.printStackTrace();
-         }
+    try (Stream<String> stream =
+        Files.lines(Paths.get("D:\\12742571_CreateEicrAction211629.xml"), StandardCharsets.UTF_8)) {
+      stream.forEach(s -> contentBuilder.append(s).append("\n"));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-  	String content = contentBuilder.toString();
-  	logger.info(content);
+    String content = contentBuilder.toString();
+    logger.info(content);
 
+    LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(388);
+    JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
 
-  	JSONObject response= fhirEicrBundle.submitBundle(content);
-
-
-  	return response;
+    return response;
   }*/
 
   @CrossOrigin
@@ -209,6 +207,8 @@ public class LaunchController {
           throw new ResponseStatusException(
               HttpStatus.BAD_REQUEST, "Please provide Patient Id and Encounter Id");
         }
+      } else {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error in Launching the App");
       }
     } else {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
@@ -390,6 +390,7 @@ public class LaunchController {
     currentStateDetails.setDirectHost(clientDetails.getDirectHost());
     currentStateDetails.setDirectPwd(clientDetails.getDirectPwd());
     currentStateDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
+    currentStateDetails.setRestAPIURL(clientDetails.getRestAPIURL());
     currentStateDetails.setIsCovid(clientDetails.getIsCovid());
 
     setStartAndEndDates(clientDetails, currentStateDetails);
