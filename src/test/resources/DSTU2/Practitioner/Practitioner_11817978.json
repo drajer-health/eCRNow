@@ -1,0 +1,104 @@
+{
+    "resourceType": "Practitioner",
+    "id": "11817978",
+    "meta": {
+        "versionId": "5",
+        "lastUpdated": "2020-09-14T16:12:25.000Z"
+    },
+    "text": {
+        "status": "generated",
+        "div": "<div><p><b>Practitioner</b></p><p><b>Name</b>: Carter, Kristin Cerner</p><p><b>Identifiers</b>: EXTERNALID: DEMODOCTORKC, MESSAGING: 11817978, NPI: 123456789</p><p><b>Gender</b>: Female</p><p><b>Status</b>: Active</p></div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "text": "External Identifier"
+            },
+            "value": "DEMODOCTORKC",
+            "period": {
+                "start": "2015-09-22T05:00:00.000Z"
+            }
+        },
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v2/0203",
+                        "code": "U",
+                        "display": "Unspecified identifier"
+                    }
+                ],
+                "text": "Messaging"
+            },
+            "value": "11817978",
+            "period": {
+                "start": "2015-09-22T05:00:00.000Z"
+            }
+        },
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v2/0203",
+                        "code": "NPI",
+                        "display": "National provider identifier"
+                    }
+                ],
+                "text": "National Provider Identifier"
+            },
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "123456789",
+            "period": {
+                "start": "2016-06-21T05:00:00.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": {
+        "use": "usual",
+        "text": "Carter, Kristin Cerner",
+        "family": [
+            "Carter"
+        ],
+        "given": [
+            "Kristin",
+            "Cerner"
+        ],
+        "period": {
+            "start": "2017-01-24T15:37:42.000Z"
+        }
+    },
+    "telecom": [
+        {
+            "system": "email",
+            "value": "kcarter@gmail.com",
+            "use": "work"
+        },
+        {
+            "system": "phone",
+            "value": "2122122211",
+            "use": "work"
+        },
+        {
+            "system": "fax",
+            "value": "2322223333",
+            "use": "work"
+        }
+    ],
+    "address": [
+        {
+            "use": "work",
+            "text": "1234 Main St\nKansas City, 64113\nUS",
+            "line": [
+                "1234 Main St"
+            ],
+            "city": "Kansas City",
+            "postalCode": "64113",
+            "country": "US"
+        }
+    ],
+    "gender": "female"
+}
