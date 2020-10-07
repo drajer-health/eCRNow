@@ -22,9 +22,11 @@
   "directUser": "test@ett.healthit.gov",
   "directPwd": "12345",
   "directRecipient": "connectathon@aimsplatform.sandbox.dmhisp.com",
+  "restAPIURL":null,
   "isCovid": true,
   "launchId": null,
   "launchState": 0,
   "redirectURI": null,
-  "authorizationCode": null
+  "authorizationCode": null,
+  "isLoggingEnabled":false
 }
