@@ -98,6 +98,12 @@ public class ValidationUtils {
         assertEquals(line.getValue(), streetAddressLine.getPartType().get(0));
         adIdx++;
       }
+    } else {
+
+      AdxpStreetAddressLine streetAddressLine = (AdxpStreetAddressLine) ad.getContent().get(adIdx);
+      assertNotNull(streetAddressLine);
+      validateNullFlavor(streetAddressLine, "NI");
+      adIdx++;
     }
 
     // city
