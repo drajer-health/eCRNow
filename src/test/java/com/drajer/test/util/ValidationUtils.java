@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.model.Eicr;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -28,11 +30,27 @@ import org.hl7.v3.AdxpState;
 import org.hl7.v3.AdxpStreetAddressLine;
 import org.hl7.v3.CD;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
+import org.hl7.v3.POCDMT000040Component3;
+import org.hl7.v3.POCDMT000040Section;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ValidationUtils {
+
+  private static final Map<String, String> sectionConversion = new HashMap<>();
+
+  static {
+    sectionConversion.put("PROBLEMS", "11450-4");
+    sectionConversion.put("ENCOUNTERS", "46240-8");
+    sectionConversion.put("RESULTS", "30954-2");
+    sectionConversion.put("MEDICATIONS", "29549-3");
+    sectionConversion.put("IMMUNIZATIONS", "11369-6");
+    sectionConversion.put("HISTORY", "29762-2");
+    sectionConversion.put("ILLNESS", "10164-2");
+    sectionConversion.put("VISITS", "29299-5");
+    sectionConversion.put("TREATMENTS", "18776-5");
+  }
 
   private static final Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
 
@@ -193,5 +211,23 @@ public class ValidationUtils {
     assertNotNull(instance);
     assertEquals(1, instance.getNullFlavor().size());
     assertEquals(nullFlavor, instance.getNullFlavor().get(0));
+  }
+
+  public static POCDMT000040Section getSection(
+      POCDMT000040ClinicalDocument cd, String requiredSection) {
+
+    List<POCDMT000040Component3> components = cd.getComponent().getStructuredBody().getComponent();
+    POCDMT000040Section section = null;
+    String code = null;
+
+    if (sectionConversion.containsKey(requiredSection)) {
+      code = sectionConversion.get(requiredSection);
+      for (POCDMT000040Component3 component : components) {
+        if (component.getSection().getCode().getCode().equals(code)) {
+          section = component.getSection();
+        }
+      }
+    }
+    return section;
   }
 }
