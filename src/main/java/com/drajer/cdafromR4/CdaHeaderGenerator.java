@@ -449,8 +449,8 @@ public class CdaHeaderGenerator {
 
       if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
 
-        logger.info(" Found Identifier with Type MR " );
-        
+        logger.info(" Found Identifier with Type MR ");
+
         String system =
             CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
         patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));

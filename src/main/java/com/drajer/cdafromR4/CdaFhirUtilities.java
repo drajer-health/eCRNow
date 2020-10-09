@@ -297,7 +297,7 @@ public class CdaFhirUtilities {
 
       addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
     }
-    
+
     return addrString.toString();
   }
 
