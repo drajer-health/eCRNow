@@ -2,6 +2,8 @@ package com.drajer.test.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+
+import com.drajer.sof.utils.FhirContextInitializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,13 +25,14 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class TestUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
-
+  
   public static String toJson(Object object) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+Z");
@@ -116,5 +119,12 @@ public class TestUtils {
       logger.error("Error in getting the Resource from Bundle");
     }
     return null;
+  }
+  
+  public static Bundle getR4BundleFromJson(String fileName) {
+	  
+	  String response = getFileContentAsString(fileName);     
+	  Bundle bundle = FhirContext.forR4().newJsonParser().parseResource(Bundle.class, response);
+	  return bundle;
   }
 }

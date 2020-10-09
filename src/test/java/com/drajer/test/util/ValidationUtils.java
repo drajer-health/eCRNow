@@ -1,11 +1,19 @@
 package com.drajer.test.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.model.Eicr;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -16,8 +24,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
+import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.v3.AD;
 import org.hl7.v3.ANY;
@@ -27,15 +38,45 @@ import org.hl7.v3.AdxpPostalCode;
 import org.hl7.v3.AdxpState;
 import org.hl7.v3.AdxpStreetAddressLine;
 import org.hl7.v3.CD;
+import org.hl7.v3.CE;
+import org.hl7.v3.CS;
+import org.hl7.v3.II;
+import org.hl7.v3.IVLTS;
+import org.hl7.v3.PN;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
+import org.hl7.v3.POCDMT000040Component3;
+import org.hl7.v3.POCDMT000040Section;
+import org.hl7.v3.QTY;
+import org.hl7.v3.StrucDocContent;
+import org.hl7.v3.StrucDocTable;
+import org.hl7.v3.StrucDocTbody;
+import org.hl7.v3.StrucDocTd;
+import org.hl7.v3.StrucDocText;
+import org.hl7.v3.StrucDocTh;
+import org.hl7.v3.StrucDocThead;
+import org.hl7.v3.StrucDocTr;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ValidationUtils {
 
-  private static final Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
+  private static final Map<String, String> sectionConversion = new HashMap<>();
 
+  static {
+    sectionConversion.put("PROBLEMS", "11450-4");
+    sectionConversion.put("ENCOUNTERS", "46240-8");
+    sectionConversion.put("RESULTS", "30954-2");
+    sectionConversion.put("MEDICATIONS", "29549-3");
+    sectionConversion.put("IMMUNIZATIONS", "11369-6");
+    sectionConversion.put("HISTORY", "29762-2");
+    sectionConversion.put("ILLNESS", "10164-2");
+    sectionConversion.put("VISITS", "29299-5");
+    sectionConversion.put("TREATMENTS", "18776-5");
+  }
+  
+  private static final Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
+  
   public static POCDMT000040ClinicalDocument getClinicalDocXml(Eicr eicr) {
 
     JAXBContext jaxbContext;
@@ -57,6 +98,24 @@ public class ValidationUtils {
 
     return clinicalDoc;
   }
+  
+  public static POCDMT000040Section getSection(
+	      POCDMT000040ClinicalDocument cd, String requiredSection) {
+
+	    List<POCDMT000040Component3> components = cd.getComponent().getStructuredBody().getComponent();
+	    POCDMT000040Section section = null;
+	    String code = null;
+
+	    if (sectionConversion.containsKey(requiredSection)) {
+	      code = sectionConversion.get(requiredSection);
+	      for (POCDMT000040Component3 component : components) {
+	        if (component.getSection().getCode().getCode().equals(code)) {
+	          section = component.getSection();
+	        }
+	      }
+	    }
+	    return section;
+	  }
 
   public static void validateAddress(List<Address> r4addr, List<AD> cdaAddr) {
 
@@ -146,11 +205,28 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateCode() {}
+  public static void validateCode(CE codes, String code, String codeSystem, String codeSystemName, String displayName) {
+	  
+	  assertNotNull(codes);
+	  assertEquals(code, codes.getCode());
+	  assertEquals(codeSystem, codes.getCodeSystem());
+	  assertEquals(codeSystemName, codes.getCodeSystemName());
+	  assertEquals(displayName, codes.getDisplayName());	  
+  }
 
   public static void validateIdentifier() {}
 
   public static void validateTelecom() {}
+  
+  public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
+	  
+	  QTY highTime = (QTY)((JAXBElement<? extends QTY>)effDtTm.getRest().get(0)).getValue();
+	  assertEquals(highTime.toString(), high);
+	  
+	  QTY lowTime = (QTY)((JAXBElement<? extends QTY>)effDtTm.getRest().get(1)).getValue();
+	  assertEquals(lowTime.toString(), low);
+	  
+  }
 
   public static void validateCodeWithTranslation(List<CodeableConcept> codes, CD code) {
 
@@ -193,5 +269,125 @@ public class ValidationUtils {
     assertNotNull(instance);
     assertEquals(1, instance.getNullFlavor().size());
     assertEquals(nullFlavor, instance.getNullFlavor().get(0));
+  }
+
+  public static void validateName(List<HumanName> r4name, PN cdaName) {
+	  
+  }
+  
+  public static void validateNarrativeTextWithTable(StrucDocText narrativeText) {
+	  
+      StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) narrativeText.getContent()
+              .get(0)).getValue();
+      
+      assertNotNull(table);
+      validateTableBorderAndWidth(table, "1", "100%");
+	  
+  }
+  
+  public static void validateTableBorderAndWidth(StrucDocTable table, String border, String width) {
+   
+	  assertNotNull(table);
+      assertEquals(border, table.getBorder());
+      assertEquals(width, table.getWidth());
+  }
+  
+  public static void validateTableHeadingTitles(StrucDocTable table, List<String> tableHeadingTitles)
+  {
+     StrucDocThead thead = table.getThead();
+     assertNotNull(thead);
+     List<Object> ths = thead.getTr().get(0).getThOrTd();
+     assertEquals(tableHeadingTitles.size(), ths.size());
+     int loopIndex = 0;
+     for (String s : tableHeadingTitles)
+     {
+    	 StrucDocTh th = (StrucDocTh)ths.get(loopIndex++);
+    	 assertEquals(s, th.getContent().get(0));
+     }
+  }
+  
+  public static void validateTableBody(StrucDocTable table, List<Pair<String, String>> rowValues) {
+	  
+	  List<StrucDocTr> trs = table.getTbody().get(0).getTr();
+	  
+	  assertFalse(trs.isEmpty());
+	  assertEquals(trs.size(), rowValues.size());
+	  
+	  int idx = -1;
+	  
+	  for (StrucDocTr tr: trs) {
+		  
+		  idx++;
+		  List<Object> tds = tr.getThOrTd();		  
+		  assertEquals(2, tds.size()); //Only two columns added in code, needs to change if code changes.
+		  
+		  //Column1
+		  StrucDocTd col1 = (StrucDocTd)tds.get(0);
+		  StrucDocContent rowCol1 = (StrucDocContent)(((JAXBElement <?>)col1.getContent().get(1)).getValue());
+		  assertEquals(  rowValues.get(idx).getValue0(), (String)rowCol1.getContent().get(0));
+		
+		  //Column2
+		  StrucDocTd col2 = (StrucDocTd)tds.get(1);
+		  StrucDocContent rowCol2 = (StrucDocContent)(((JAXBElement <?>)col2.getContent().get(1)).getValue());
+		  assertEquals(  rowValues.get(idx).getValue1(), (String)rowCol2.getContent().get(0));
+	  }
+	  
+  }
+  
+  public static void validateTemplateID(II templateID, String root, String extension) {
+	  
+	  assertNotNull(templateID);
+	  assertEquals(root, templateID.getRoot());
+	  if(extension != null) {
+		  assertEquals(extension, templateID.getExtension());
+	  }
+  }
+
+  public static void validateProblemSection(List<Condition> r4Conds, POCDMT000040Section problemSection) {
+	 
+	  ///POCDMT000040Section problemSection = cdaProblem.getSection();
+	  
+	  //TemplateID
+	  //Only one templateID should be present as per spec.
+	  validateTemplateID(problemSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.5.1", null);
+	  validateTemplateID(problemSection.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.2.5.1", "2015-08-01");
+	  
+	  //Code
+	  validateCode(problemSection.getCode(), "11450-4", "2.16.840.1.113883.6.1", "LOINC", "PROBLEM LIST");
+	  
+	  //Title - To Do
+	  //assertEquals(Arrays.asList("PROBLEMS - DIAGNOSES"), problemSection.getTitle().getAny());
+	  
+	  //Narrative Text of type Table
+	  StrucDocText docText = problemSection.getText();
+      StrucDocTable table = (StrucDocTable) ((JAXBElement<?>)docText.getContent().get(1)).getValue();
+	        
+      validateTableBorderAndWidth(table, "1", "100%");
+	  
+	  List<String> header = new ArrayList<>();
+	  header.add("Problem or Diagnosis");
+	  header.add("Problem Status");
+	  validateTableHeadingTitles(table, header);
+	  
+	  List<Pair<String, String>> rowValues = new ArrayList<>();
+	  String display = "";
+	  String status = "";
+	  
+	  for(Condition cond: r4Conds) {
+		 
+		 display = cond.getCode().getCodingFirstRep().getDisplay();
+		 if(cond.getClinicalStatus().getCodingFirstRep().getCode().contentEquals(ConditionClinical.ACTIVE.toCode()) 
+			 || cond.getClinicalStatus().getCodingFirstRep().getCode().contentEquals(ConditionClinical.RELAPSE.toCode())) {
+			
+			 status = "Active";
+		 } else {
+			 
+			 status = "Resolved";
+		 }
+		 Pair <String, String> row = new Pair<>(display, status);
+		 rowValues.add(row);
+	  }
+	  validateTableBody(table, rowValues);
+	  
   }
 }
