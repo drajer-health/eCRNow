@@ -12,7 +12,8 @@ class ClientDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            validated: false
+            validated: false,
+            isChecked: false
         };
         this.selectedClientDetails = this.props.selectedClientDetails;
         this.addNew = this.props.addNew ? this.props.addNew.addNew : false;
@@ -92,6 +93,17 @@ class ClientDetails extends Component {
         });
     }
 
+    handleToggleButton(e) {
+        console.log(e);
+        console.log(e.target.value);
+        if (this.state.isChecked) {
+            this.setState({ isChecked: false, isLoggingEnabled: false });
+        } else {
+            this.setState({ isChecked: true, isLoggingEnabled: true });
+        }
+        console.log(this.state);
+    }
+
     openClientDetailsList() {
         this.props.history.push('clientDetailsList');
     }
@@ -108,6 +120,7 @@ class ClientDetails extends Component {
 
     saveClientDetails() {
         console.log("clicked");
+        console.log(this.state.xdrRecipientAddress);
         var requestMethod = '';
         var clientDetails = {
             isProvider: this.state.launchType === "providerLaunch" ? true : false,
@@ -119,16 +132,19 @@ class ClientDetails extends Component {
             scopes: this.state.scopes,
             isDirect: this.state.directType === "direct" ? true : false,
             isXdr: this.state.directType === "xdr" ? true : false,
-            directHost: this.state.directHost,
-            directUser: this.state.directUserName,
-            directPwd: this.state.directPwd,
-            directRecipientAddress: this.state.directRecipientAddress,
-            xdrRecipientAddress: this.state.xdrRecipientAddress,
+            isRestAPI: this.state.directType === "restApi" ? true : false,
+            directHost: this.state.directHost ? this.state.directHost : null,
+            directUser: this.state.directUserName ? this.state.directUserName : null,
+            directPwd: this.state.directPwd ? this.state.directPwd : null,
+            directRecipientAddress: this.state.directRecipientAddress ? this.state.directRecipientAddress : null,
+            xdrRecipientAddress: this.state.xdrRecipientAddress ? this.state.xdrRecipientAddress : null,
+            restAPIURL: this.state.restAPIURL ? this.state.restAPIURL : null,
             assigningAuthorityId: this.state.assigningAuthorityId,
             encounterStartThreshold: this.state.startThreshold,
             encounterEndThreshold: this.state.endThreshold,
             isCovid: this.state.reportType === "covid19" ? true : false,
-            isFullEcr: this.state.reportType === "fullecr" ? true : false
+            isFullEcr: this.state.reportType === "fullecr" ? true : false,
+            isLoggingEnabled: this.state.isLoggingEnabled
         };
         if (!this.addNew && this.selectedClientDetails) {
             clientDetails['id'] = this.selectedClientDetails.id;
@@ -378,6 +394,12 @@ class ClientDetails extends Component {
                                                                 <Form.Check.Label>XDR</Form.Check.Label>
                                                             </Form.Check>
                                                         </Col>
+                                                        <Col sm={4}>
+                                                            <Form.Check type="radio" id="restApi">
+                                                                <Form.Check.Input type="radio" checked={this.state.directType === 'restApi'} value="restApi" onChange={e => this.handleDirectChange(e)} />
+                                                                <Form.Check.Label>Rest API</Form.Check.Label>
+                                                            </Form.Check>
+                                                        </Col>
                                                     </Row>
                                                 </Col>
                                             </Form.Group>
@@ -449,6 +471,22 @@ class ClientDetails extends Component {
                                                     </Form.Group>
                                                 </div>
                                             ) : ''}
+
+                                            {this.state.directType === 'restApi' ? (
+                                                <div>
+                                                    <Form.Group as={Row} controlId="restAPIURL">
+                                                        <Form.Label column sm={2}>
+                                                            Rest API URL:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" placeholder="Rest API URL" required={this.state.directType === 'restApi' ? true : false} name="restAPIURL" onChange={e => this.handleChange(e)} value={this.state.restAPIURL} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide Rest API URL.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                </div>
+                                            ) : ''}
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
@@ -514,6 +552,22 @@ class ClientDetails extends Component {
                                                             </Form.Check>
                                                         </Col>
                                                     </Row>
+                                                </Col>
+                                            </Form.Group>
+                                            <Form.Group as={Row} controlId="enableLogging">
+                                                <Form.Label column sm={2}>
+                                                    Enable Logging
+                                                </Form.Label>
+                                                <Col sm={9}>
+                                                    <Form.Check
+                                                        type="switch"
+                                                        id="enableLogging-switch"
+                                                        onChange={e => this.handleToggleButton(e)}
+                                                        label=""
+                                                        className="switchBtn"
+                                                        name="enableLogging"
+                                                        checked={this.state.isChecked}
+                                                    />
                                                 </Col>
                                             </Form.Group>
                                         </Card.Body>
