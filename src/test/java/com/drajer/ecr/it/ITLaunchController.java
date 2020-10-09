@@ -13,7 +13,6 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +24,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
-import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Section;
 import org.json.JSONObject;
@@ -140,19 +139,20 @@ public class ITLaunchController extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     assertNotNull(last.getData());
-    
-    //To-Do: This is temporary creating the bundle should be pushed to setup, will be changed later.
+
+    // To-Do: This is temporary creating the bundle should be pushed to setup, will be changed
+    // later.
     Bundle bundle = TestUtils.getR4BundleFromJson("R4/Condition/ConditionBundle_d2572364249.json");
     List<Condition> conditions = new ArrayList<>();
-    
+
     for (BundleEntryComponent entry : bundle.getEntry()) {
-        Condition condition = (Condition) entry.getResource();
-        conditions.add(condition);
+      Condition condition = (Condition) entry.getResource();
+      conditions.add(condition);
     }
-    
+
     POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
     POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "PROBLEMS");
-    
+
     ValidationUtils.validateProblemSection(conditions, section);
   }
 
