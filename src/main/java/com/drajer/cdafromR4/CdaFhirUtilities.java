@@ -297,8 +297,7 @@ public class CdaFhirUtilities {
 
       addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
     }
-
-    // logger.info(" Address String = " + addrString.toString());
+    
     return addrString.toString();
   }
 
@@ -314,7 +313,7 @@ public class CdaFhirUtilities {
             && tel.getSystem() == ContactPoint.ContactPointSystem.PHONE
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Tel No " + tel.getValue());
+          logger.info(" Found Telcom Number ");
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,
@@ -347,7 +346,7 @@ public class CdaFhirUtilities {
             && tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Email " + tel.getValue());
+          logger.info(" Found Email ");
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,

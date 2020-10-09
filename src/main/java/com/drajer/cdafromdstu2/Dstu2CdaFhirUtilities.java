@@ -289,7 +289,7 @@ public class Dstu2CdaFhirUtilities {
             && tel.getSystemElement().getValueAsEnum() == ContactPointSystemEnum.PHONE
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Tel No " + tel.getValue());
+          logger.info(" Found Telcom Number ");
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,
@@ -322,7 +322,7 @@ public class Dstu2CdaFhirUtilities {
             && tel.getSystemElement().getValueAsEnum() == ContactPointSystemEnum.EMAIL
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Email  " + tel.getValue());
+          logger.info(" Found Email  ");
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,

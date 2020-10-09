@@ -46,8 +46,6 @@ public class TriggerQueryR4Bundle {
     logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
     logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
 
-    // logger.info(context.newJsonParser().encodeResourceToString(bundle));
-
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()
             + "/TriggerQueryR4Bundle-"

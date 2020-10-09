@@ -183,8 +183,6 @@ public class CloseOutEicrAction extends AbstractAction {
 
                 logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
-                logger.info(ecr.getData());
-
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
                         + "/"

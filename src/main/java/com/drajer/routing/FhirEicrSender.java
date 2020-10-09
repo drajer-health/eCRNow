@@ -43,7 +43,7 @@ public class FhirEicrSender {
 
       bundleResponse = new JSONObject(response.getBody());
 
-      logger.info("Received response: " + response.getBody());
+      logger.info("Received response ");
 
       String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/BundleResponse.json";
       logger.info("Saving response to file:::::" + fileName);
