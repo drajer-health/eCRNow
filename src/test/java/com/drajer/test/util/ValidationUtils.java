@@ -23,6 +23,7 @@ import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
@@ -256,6 +257,9 @@ public class ValidationUtils {
           }
         }
       }
+    } else {
+    	
+    	validateNullFlavor(code, "NI");
     }
   }
 
@@ -309,8 +313,8 @@ public class ValidationUtils {
 
       idx++;
       List<Object> tds = tr.getThOrTd();
-      assertEquals(
-          2, tds.size()); // Only two columns added in code, needs to change if code changes.
+      // Only two columns added in code, needs to change if code changes.
+      assertEquals(2, tds.size());
 
       // Column1
       StrucDocTd col1 = (StrucDocTd) tds.get(0);
@@ -337,8 +341,6 @@ public class ValidationUtils {
 
   public static void validateProblemSection(
       List<Condition> r4Conds, POCDMT000040Section problemSection) {
-
-    /// POCDMT000040Section problemSection = cdaProblem.getSection();
 
     // TemplateID
     // Only one templateID should be present as per spec.
@@ -390,5 +392,56 @@ public class ValidationUtils {
       rowValues.add(row);
     }
     validateTableBody(table, rowValues);
+  }
+  
+  public static void validateReasonForVisitSection(
+	      Encounter r4Encounter, POCDMT000040Section resonForVisitSection) {
+	  
+	  // TemplateID
+	  validateTemplateID(
+			  resonForVisitSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.12", null);
+	  // Code
+	  validateCode(
+			  resonForVisitSection.getCode(), "29299-5", "2.16.840.1.113883.6.1", "LOINC", "Reason For Visit");	  
+	  
+	  // Title - To Do
+	  // assertEquals(Arrays.asList("Reason For Visit"), problemSection.getTitle().getAny());
+	  
+	  // Narrative Text of type Table
+	  StrucDocText docText = resonForVisitSection.getText();
+	  StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+
+	  validateTableBorderAndWidth(table, "1", "100%");
+
+	  List<String> header = new ArrayList<>();
+	  header.add("text");
+	  validateTableHeadingTitles(table, header);
+	  
+	  List<StrucDocTr> trs = table.getTbody().get(0).getTr();
+	  assertFalse(trs.isEmpty());
+	  //Only one row
+	  assertEquals(1, trs.size());
+	  //Only one column
+	  assertEquals(1, trs.get(0).getThOrTd().size());
+	  	  
+	  StrucDocTd col1 = (StrucDocTd)trs.get(0).getThOrTd().get(0);
+	  StrucDocContent rowCol1 =
+	          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
+	  String rowColValue = (String) rowCol1.getContent().get(0);
+	  
+	  if(r4Encounter.getReasonCodeFirstRep() != null) {
+		  
+		  if (!StringUtils.isEmpty(r4Encounter.getReasonCodeFirstRep().getText())) {
+			  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
+		  }
+	  } else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
+	          && !StringUtils.isEmpty(
+	        		  r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())){
+		  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
+	  } else {
+		  assertEquals(rowColValue, "Unknown Reason For Visit");
+	  }
+	  
+	   
   }
 }

@@ -27,6 +27,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Section;
 import org.json.JSONObject;
@@ -140,8 +141,9 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     assertNotNull(last.getData());
 
-    // To-Do: This is temporary creating the bundle should be pushed to setup, will be changed
+    // To-Do: This is temporary, creating the bundle should be pushed to setup, will be changed
     // later.
+    /*//Problem Section
     Bundle bundle = TestUtils.getR4BundleFromJson("R4/Condition/ConditionBundle_d2572364249.json");
     List<Condition> conditions = new ArrayList<>();
 
@@ -154,6 +156,14 @@ public class ITLaunchController extends BaseIntegrationTest {
     POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "PROBLEMS");
 
     ValidationUtils.validateProblemSection(conditions, section);
+    */
+    //Reason For Visit Section
+    Encounter encounter = TestUtils.getEncounterResourceFromJson("R4/Encounter/Encounter_97953900.json");
+    POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
+    POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "VISITS");
+    
+    ValidationUtils.validateReasonForVisitSection(encounter, section);
+    
   }
 
   private void getLaunchDetailAndStatus() {

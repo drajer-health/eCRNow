@@ -20,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,5 +124,12 @@ public class TestUtils {
     String response = getFileContentAsString(fileName);
     Bundle bundle = FhirContext.forR4().newJsonParser().parseResource(Bundle.class, response);
     return bundle;
+  }
+  
+  public static Encounter getEncounterResourceFromJson(String fileName) {
+
+	    String response = getFileContentAsString(fileName);
+	    return FhirContext.forR4().newJsonParser().parseResource(Encounter.class, response);
+	    
   }
 }
