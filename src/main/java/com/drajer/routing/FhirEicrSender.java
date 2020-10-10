@@ -50,7 +50,6 @@ public class FhirEicrSender {
       ApplicationUtils.saveDataToFile(response.getBody(), fileName);
 
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error("Error in Submitting Bundle to FHIR Endpoint: " + fhirServerURL);
     }
     return bundleResponse;

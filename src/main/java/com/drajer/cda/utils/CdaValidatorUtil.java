@@ -69,7 +69,7 @@ public class CdaValidatorUtil {
 
       logger.info(" **** End of XML validation from xsd **** ");
 
-      if (errorHandler.isException) return false;
+      if (errorHandler.getIsException()) return false;
 
     } catch (SAXException | IOException e) {
       logger.error("Message: Error validating XML Data " + e.getMessage());

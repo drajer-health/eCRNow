@@ -43,7 +43,6 @@ public class RestApiSender {
       logger.info("Received response: " + bundleResponse.toString());
 
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error("Error in Sending Eicr XML to Endpoint: " + ub.toString());
     }
     return bundleResponse;

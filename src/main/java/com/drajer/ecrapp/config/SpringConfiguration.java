@@ -24,7 +24,7 @@ public class SpringConfiguration {
   public static final String authorizationToken =
       "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde";
 
-  public static FhirContext ctx = FhirContext.forR4();
+  public static final FhirContext ctx = FhirContext.forR4();
 
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {

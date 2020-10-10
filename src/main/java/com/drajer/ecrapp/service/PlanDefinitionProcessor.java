@@ -59,14 +59,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlanDefinitionProcessor {
 
-  public static String COVID_SNOMED_USE_CONTEXT_CODE = "840539006";
+  public static final String COVID_SNOMED_USE_CONTEXT_CODE = "840539006";
 
-  public static String COVID_SNOMED_USE_CONTEXT_SYSTEM = "http://snomed.info/sct";
+  public static final String COVID_SNOMED_USE_CONTEXT_SYSTEM = "http://snomed.info/sct";
 
-  public static String GROUPER_VALUE_SET_REFERENCE_1 = "plandefinition-ersd-instance";
-  public static String GROUPER_VALUE_SET_REFERENCE_2 = "plandefinition-ersd-skeleton";
+  public static final String GROUPER_VALUE_SET_REFERENCE_1 = "plandefinition-ersd-instance";
+  public static final String GROUPER_VALUE_SET_REFERENCE_2 = "plandefinition-ersd-skeleton";
 
-  public static String ERSD_BUNDLE_ID_STRING = "rctc";
+  public static final String ERSD_BUNDLE_ID_STRING = "rctc";
 
   @Autowired
   @Qualifier("esrdGenericClient")
