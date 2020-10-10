@@ -10,6 +10,7 @@ import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.EICRValidator;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.ValidationUtils;
 import java.io.IOException;
@@ -172,10 +173,10 @@ public class ITLaunchController extends BaseIntegrationTest {
     for (String sectionName : validationSectionList) {
       String resourceFileName = "";
       if (sectionName.equalsIgnoreCase("ENCOUNTERS")) resourceFileName = "Encounter";
+      else if (sectionName.equalsIgnoreCase("VISITS")) resourceFileName = "Encounter";
       // TODO for other section map similarly
 
-      ValidationUtils.validateEICR(
-          clinicalDoc, sectionName, allResourceFiles.get(resourceFileName));
+      EICRValidator.validate(clinicalDoc, sectionName, allResourceFiles.get(resourceFileName));
     }
   }
 
