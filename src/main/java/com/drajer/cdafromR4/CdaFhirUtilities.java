@@ -4,6 +4,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
@@ -686,9 +687,10 @@ public class CdaFhirUtilities {
 
     if (names != null && names.size() > 0) {
 
-      if (names.stream().findFirst().isPresent()) {
+      Optional<HumanName> hName = names.stream().findFirst();
+      if (hName.isPresent()) {
 
-        HumanName name = names.stream().findFirst().get();
+        HumanName name = hName.get();
         List<StringType> ns = name.getGiven();
 
         for (StringType n : ns) {

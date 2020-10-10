@@ -421,25 +421,27 @@ public class PlanDefinitionProcessor {
       }
     }
 
-    if (acts != null && acts.containsKey(type)) {
+    if (acts != null) {
+      if (acts.containsKey(type)) {
 
-      acts.get(type).add(act);
+        acts.get(type).add(act);
 
-      logger.info(
-          " Map contained "
-              + type.toString()
-              + ", so added to map resulting in size "
-              + acts.size());
-    } else {
-      Set<AbstractAction> aa = new HashSet<AbstractAction>();
-      aa.add(act);
-      acts.put(type, aa);
+        logger.info(
+            " Map contained "
+                + type.toString()
+                + ", so added to map resulting in size "
+                + acts.size());
+      } else {
+        Set<AbstractAction> aa = new HashSet<AbstractAction>();
+        aa.add(act);
+        acts.put(type, aa);
 
-      logger.info(
-          " Map did not contain "
-              + type.toString()
-              + ", so added to map resulting in size "
-              + acts.size());
+        logger.info(
+            " Map did not contain "
+                + type.toString()
+                + ", so added to map resulting in size "
+                + acts.size());
+      }
     }
   }
 

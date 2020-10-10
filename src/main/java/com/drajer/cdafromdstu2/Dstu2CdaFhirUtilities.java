@@ -33,6 +33,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -683,8 +684,9 @@ public class Dstu2CdaFhirUtilities {
 
     if (names != null && names.size() > 0) {
 
-      if (names.stream().findFirst().isPresent()) {
-        HumanNameDt name = names.stream().findFirst().get();
+      Optional<HumanNameDt> hName = names.stream().findFirst();
+      if (hName.isPresent()) {
+        HumanNameDt name = hName.get();
 
         List<StringDt> ns = name.getGiven();
 
