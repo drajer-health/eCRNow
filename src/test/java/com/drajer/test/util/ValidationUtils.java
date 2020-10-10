@@ -42,6 +42,7 @@ import org.hl7.v3.IVLTS;
 import org.hl7.v3.PN;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Component3;
+import org.hl7.v3.POCDMT000040Entry;
 import org.hl7.v3.POCDMT000040Section;
 import org.hl7.v3.QTY;
 import org.hl7.v3.StrucDocContent;
@@ -216,11 +217,19 @@ public class ValidationUtils {
   public static void validateTelecom() {}
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
-
     QTY highTime = (QTY) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-    assertEquals(highTime.toString(), high);
-
     QTY lowTime = (QTY) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
+    if (high != null) {
+      assertEquals(highTime.toString(), high);
+    } else {
+      validateNullFlavor(highTime, "NI");
+    }
+    if (low != null) {
+      assertEquals(low.toString(), high);
+    } else {
+      validateNullFlavor(lowTime, "NI");
+    }
+
     assertEquals(lowTime.toString(), low);
   }
 
@@ -337,6 +346,15 @@ public class ValidationUtils {
     assertEquals(root, templateID.getRoot());
     if (extension != null) {
       assertEquals(extension, templateID.getExtension());
+    }
+  }
+
+  public static void validateID(II id, String root, String extension) {
+
+    assertNotNull(id);
+    assertEquals(root, id.getRoot());
+    if (extension != null) {
+      assertEquals(extension, id.getExtension());
     }
   }
 
@@ -487,7 +505,53 @@ public class ValidationUtils {
 
     validateTableBody(encounterTable, rowValues);
 
-    // TODO Entry
+    validateEncounterEntry(encounterSection.getEntry(), r4Encounter);
+  }
 
+  private static void validateEncounterEntry(
+      List<POCDMT000040Entry> entries, Encounter r4Encounter) {
+
+    int index = 0;
+    for (POCDMT000040Entry encounterEntry : entries) {
+
+      validateTemplateID(
+          encounterEntry.getEncounter().getTemplateId().get(0),
+          "2.16.840.1.113883.10.20.22.4.49",
+          null);
+      validateTemplateID(
+          encounterEntry.getEncounter().getTemplateId().get(1),
+          "2.16.840.1.113883.10.20.22.4.49",
+          "2015-08-01");
+
+      // Validate Id first occurrence
+      // TODO change this hardcoded value
+      validateID(
+          encounterEntry.getEncounter().getId().get(0),
+          "2.16.840.1.113883.1.1.1.1",
+          r4Encounter.getId());
+      index++;
+      // Validate Id subsequent occurrence
+      // TODO clarification about entrues size
+      for (int i = 0; i < r4Encounter.getIdentifier().size(); i++) {
+        String system = r4Encounter.getIdentifier().get(i).getSystem().split(":")[2];
+        String value = r4Encounter.getIdentifier().get(i).getValue();
+        validateID(encounterEntry.getEncounter().getId().get(1), system, value);
+      }
+      // TODO always nullFlavour question
+      validateNullFlavor(encounterEntry.getEncounter().getCode(), "NI");
+      String startDate =
+          (r4Encounter.getPeriod().getStart() == null)
+              ? null
+              : TestUtils.convertToString(r4Encounter.getPeriod().getStart());
+      String endDate =
+          (r4Encounter.getPeriod().getEnd() == null)
+              ? null
+              : TestUtils.convertToString(r4Encounter.getPeriod().getEnd());
+      // TODO Clarification on timestamp
+      // validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(),
+      // startDate, endDate);
+
+      System.out.println("End");
+    }
   }
 }
