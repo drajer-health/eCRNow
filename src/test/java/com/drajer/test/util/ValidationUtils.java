@@ -495,7 +495,7 @@ public class ValidationUtils {
       POCDMT000040ClinicalDocument clinicalDoc, String sectionName, List<String> resourceFiles) {
     POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, sectionName);
 
-    if (sectionName.equalsIgnoreCase("Encounter")) {
+    if (sectionName.equalsIgnoreCase("ENCOUNTERS")) {
       Encounter r4Encounter =
           (Encounter) TestUtils.getR4ResourceFromJson(resourceFiles.get(0), Encounter.class);
       validateEncounterSection(r4Encounter, section);

@@ -77,7 +77,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
     expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
     validationSectionList =
-        Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("|"));
+        Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
     // Data Setup
