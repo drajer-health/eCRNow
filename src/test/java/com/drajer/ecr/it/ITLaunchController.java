@@ -11,25 +11,19 @@ import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
-import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
-import org.hl7.v3.POCDMT000040Section;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -70,6 +64,9 @@ public class ITLaunchController extends BaseIntegrationTest {
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
 
+  List<String> validationSectionList;
+  Map<String, List<String>> allResourceFiles;
+
   WireMockHelper stubHelper;
 
   @Before
@@ -79,6 +76,9 @@ public class ITLaunchController extends BaseIntegrationTest {
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
     expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
+    validationSectionList =
+        Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("|"));
+    allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
     // Data Setup
     createTestClientDetailsInDB(clientDetailsFile);
@@ -141,29 +141,42 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     assertNotNull(last.getData());
 
-    // To-Do: This is temporary, creating the bundle should be pushed to setup, will be changed
+    // To-Do: This is temporary, creating the bundle should be pushed to setup, will
+    // be changed
     // later.
-    /*//Problem Section
-    Bundle bundle = TestUtils.getR4BundleFromJson("R4/Condition/ConditionBundle_d2572364249.json");
-    List<Condition> conditions = new ArrayList<>();
+    /*
+     * //Problem Section Bundle bundle =
+     * TestUtils.getR4BundleFromJson("R4/Condition/ConditionBundle_d2572364249.json"
+     * ); List<Condition> conditions = new ArrayList<>();
+     *
+     * for (BundleEntryComponent entry : bundle.getEntry()) { Condition condition =
+     * (Condition) entry.getResource(); conditions.add(condition); }
+     *
+     * POCDMT000040ClinicalDocument clinicalDoc =
+     * ValidationUtils.getClinicalDocXml(last); POCDMT000040Section section =
+     * ValidationUtils.getSection(clinicalDoc, "PROBLEMS");
+     *
+     * ValidationUtils.validateProblemSection(conditions, section);
+     */
+    // Reason For Visit Section
+    // Encounter encounter =
+    // TestUtils.getR4EncounterResourceFromJson("R4/Encounter/Encounter_97953900.json");
+    POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
+    // POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "VISITS");
+    // ValidationUtils.validateReasonForVisitSection(encounter, section);
 
-    for (BundleEntryComponent entry : bundle.getEntry()) {
-      Condition condition = (Condition) entry.getResource();
-      conditions.add(condition);
+    // POCDMT000040Section encounterSection =
+    // ValidationUtils.getSection(clinicalDoc, "ENCOUNTERS");
+    // ValidationUtils.validateEncounterSection(encounter, encounterSection);
+
+    for (String sectionName : validationSectionList) {
+      String resourceFileName = "";
+      if (sectionName.equalsIgnoreCase("ENCOUNTERS")) resourceFileName = "Encounter";
+      // TODO for other section map similarly
+
+      ValidationUtils.validateEICR(
+          clinicalDoc, sectionName, allResourceFiles.get(resourceFileName));
     }
-
-    POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
-    POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "PROBLEMS");
-
-    ValidationUtils.validateProblemSection(conditions, section);
-    */
-    //Reason For Visit Section
-    Encounter encounter = TestUtils.getEncounterResourceFromJson("R4/Encounter/Encounter_97953900.json");
-    POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
-    POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "VISITS");
-    
-    ValidationUtils.validateReasonForVisitSection(encounter, section);
-    
   }
 
   private void getLaunchDetailAndStatus() {

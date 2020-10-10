@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -20,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,8 @@ public class TestUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
 
+  static ObjectMapper mapper = new ObjectMapper();
+
   public static String toJson(Object object) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+Z");
@@ -40,7 +42,8 @@ public class TestUtils {
     return mapper.writeValueAsString(object);
   }
 
-  // This method compared two buffered readers line by line except for lines that are expected to
+  // This method compared two buffered readers line by line except for lines that
+  // are expected to
   // change in each test
   public static boolean compareStringBuffer(
       BufferedReader br1, BufferedReader br2, Set<Integer> exceptionSet) throws IOException {
@@ -72,7 +75,7 @@ public class TestUtils {
     if (count == 0) isSame = true;
     return isSame;
   }
-  // the file should be in test/resources folder, or the folderpath with filename
+
   public static String getFileContentAsString(String fileName) {
     String fileContent = "";
     InputStream stream = TestUtils.class.getResourceAsStream("/" + fileName);
@@ -125,11 +128,37 @@ public class TestUtils {
     Bundle bundle = FhirContext.forR4().newJsonParser().parseResource(Bundle.class, response);
     return bundle;
   }
-  
-  public static Encounter getEncounterResourceFromJson(String fileName) {
 
-	    String response = getFileContentAsString(fileName);
-	    return FhirContext.forR4().newJsonParser().parseResource(Encounter.class, response);
-	    
+  public static Object getR4ResourceFromJson(String fileName, Class clazz) {
+
+    String response = getFileContentAsString(fileName);
+    return FhirContext.forR4().newJsonParser().parseResource(clazz, response);
+  }
+
+  public static ObjectMapper getmapperObject() {
+    return mapper;
+  }
+
+  public static Object getFileContentAsObject(String fileName, Class clazz) {
+    String content = getFileContentAsString(fileName);
+    Object obj = null;
+    try {
+      obj = mapper.readValue(content, clazz);
+    } catch (Exception e) {
+
+      logger.info("Error in parsing json : " + fileName + " to Object");
+    }
+    return obj;
+  }
+
+  public static String convertToString(Date date) {
+
+    if (date != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+      return formatter.format(date);
+    } else {
+
+      return "Unknown";
+    }
   }
 }

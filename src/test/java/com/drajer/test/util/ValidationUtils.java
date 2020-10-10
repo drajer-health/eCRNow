@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.model.Eicr;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -258,8 +259,8 @@ public class ValidationUtils {
         }
       }
     } else {
-    	
-    	validateNullFlavor(code, "NI");
+
+      validateNullFlavor(code, "NI");
     }
   }
 
@@ -354,7 +355,8 @@ public class ValidationUtils {
         problemSection.getCode(), "11450-4", "2.16.840.1.113883.6.1", "LOINC", "PROBLEM LIST");
 
     // Title - To Do
-    // assertEquals(Arrays.asList("PROBLEMS - DIAGNOSES"), problemSection.getTitle().getAny());
+    // assertEquals(Arrays.asList("PROBLEMS - DIAGNOSES"),
+    // problemSection.getTitle().getAny());
 
     // Narrative Text of type Table
     StrucDocText docText = problemSection.getText();
@@ -393,55 +395,110 @@ public class ValidationUtils {
     }
     validateTableBody(table, rowValues);
   }
-  
+
   public static void validateReasonForVisitSection(
-	      Encounter r4Encounter, POCDMT000040Section resonForVisitSection) {
-	  
-	  // TemplateID
-	  validateTemplateID(
-			  resonForVisitSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.12", null);
-	  // Code
-	  validateCode(
-			  resonForVisitSection.getCode(), "29299-5", "2.16.840.1.113883.6.1", "LOINC", "Reason For Visit");	  
-	  
-	  // Title - To Do
-	  // assertEquals(Arrays.asList("Reason For Visit"), problemSection.getTitle().getAny());
-	  
-	  // Narrative Text of type Table
-	  StrucDocText docText = resonForVisitSection.getText();
-	  StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+      Encounter r4Encounter, POCDMT000040Section resonForVisitSection) {
 
-	  validateTableBorderAndWidth(table, "1", "100%");
+    // TemplateID
+    validateTemplateID(
+        resonForVisitSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.12", null);
+    // Code
+    validateCode(
+        resonForVisitSection.getCode(),
+        "29299-5",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "Reason For Visit");
 
-	  List<String> header = new ArrayList<>();
-	  header.add("text");
-	  validateTableHeadingTitles(table, header);
-	  
-	  List<StrucDocTr> trs = table.getTbody().get(0).getTr();
-	  assertFalse(trs.isEmpty());
-	  //Only one row
-	  assertEquals(1, trs.size());
-	  //Only one column
-	  assertEquals(1, trs.get(0).getThOrTd().size());
-	  	  
-	  StrucDocTd col1 = (StrucDocTd)trs.get(0).getThOrTd().get(0);
-	  StrucDocContent rowCol1 =
-	          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
-	  String rowColValue = (String) rowCol1.getContent().get(0);
-	  
-	  if(r4Encounter.getReasonCodeFirstRep() != null) {
-		  
-		  if (!StringUtils.isEmpty(r4Encounter.getReasonCodeFirstRep().getText())) {
-			  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
-		  }
-	  } else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
-	          && !StringUtils.isEmpty(
-	        		  r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())){
-		  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
-	  } else {
-		  assertEquals(rowColValue, "Unknown Reason For Visit");
-	  }
-	  
-	   
+    // Title - To Do
+    // assertEquals(Arrays.asList("Reason For Visit"),
+    // problemSection.getTitle().getAny());
+
+    // Narrative Text of type Table
+    StrucDocText docText = resonForVisitSection.getText();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+
+    validateTableBorderAndWidth(table, "1", "100%");
+
+    List<String> header = new ArrayList<>();
+    header.add("text");
+    validateTableHeadingTitles(table, header);
+
+    List<StrucDocTr> trs = table.getTbody().get(0).getTr();
+    assertFalse(trs.isEmpty());
+    // Only one row
+    assertEquals(1, trs.size());
+    // Only one column
+    assertEquals(1, trs.get(0).getThOrTd().size());
+
+    StrucDocTd col1 = (StrucDocTd) trs.get(0).getThOrTd().get(0);
+    StrucDocContent rowCol1 =
+        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
+    String rowColValue = (String) rowCol1.getContent().get(0);
+
+    if (r4Encounter.getReasonCodeFirstRep() != null) {
+
+      if (!StringUtils.isEmpty(r4Encounter.getReasonCodeFirstRep().getText())) {
+        assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
+      }
+    } else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
+        && !StringUtils.isEmpty(
+            r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
+      assertEquals(
+          rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
+    } else {
+      assertEquals(rowColValue, "Unknown Reason For Visit");
+    }
+  }
+
+  public static void validateEncounterSection(
+      Encounter r4Encounter, POCDMT000040Section encounterSection) {
+
+    validateTemplateID(
+        encounterSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.22.1", null);
+
+    validateTemplateID(
+        encounterSection.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.2.22.1", "2015-08-01");
+
+    validateCode(
+        encounterSection.getCode(),
+        "46240-8",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "History of Encounters");
+
+    // TODO Title
+
+    StrucDocText encounterText = encounterSection.getText();
+    StrucDocTable encounterTable =
+        (StrucDocTable) ((JAXBElement<?>) (encounterText.getContent().get(1))).getValue();
+
+    validateTableBorderAndWidth(encounterTable, "1", "100%");
+    validateTableHeadingTitles(
+        encounterTable,
+        new ArrayList<String>(Arrays.asList("Encounter Reason", "Date of Encounter")));
+
+    String encounterName = r4Encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
+    String date = TestUtils.convertToString(r4Encounter.getPeriod().getStart());
+    List<Pair<String, String>> rowValues = new ArrayList<>();
+
+    Pair<String, String> row = new Pair<>(encounterName, date);
+    rowValues.add(row);
+
+    validateTableBody(encounterTable, rowValues);
+
+    // TODO Entry
+
+  }
+
+  public static void validateEICR(
+      POCDMT000040ClinicalDocument clinicalDoc, String sectionName, List<String> resourceFiles) {
+    POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, sectionName);
+
+    if (sectionName.equalsIgnoreCase("Encounter")) {
+      Encounter r4Encounter =
+          (Encounter) TestUtils.getR4ResourceFromJson(resourceFiles.get(0), Encounter.class);
+      validateEncounterSection(r4Encounter, section);
+    }
   }
 }

@@ -6,6 +6,7 @@ testCase:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
+      ValidationSections: "ENCOUNTERS|VISITS"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -50,6 +51,7 @@ testCase:
       SystemLaunchPayload: "DSTU2/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       LaunchDataToBeSaved: "DSTU2/Misc/LaunchDetails/LaunchDataEntry1.json"
       ExpectedEICRFile: "DSTU2/Misc/ExpectedEICR/EICR_Expected.xml"
+      ValidationSections: "ENCOUNTERS|VISITS"
     resourceMappingData:
       Patient:
       - params: "12742571"
