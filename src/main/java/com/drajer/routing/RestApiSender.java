@@ -33,17 +33,20 @@ public class RestApiSender {
       ub.addParameter("encounterId", launchDetails.getEncounterId());
       ub.addParameter("setId", "123");
 
-      logger.info("Sending Eicr XML Document to Endpoint:::::" + ub.toString());
+      logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
       ResponseEntity<String> response =
           restTemplate.exchange(ub.toString(), HttpMethod.POST, request, String.class);
 
       bundleResponse = new JSONObject(response.getBody());
       bundleResponse.put("status", response.getStatusCodeValue());
 
-      logger.info("Received response: " + bundleResponse.toString());
+      logger.info("Received response: {}", bundleResponse.toString());
 
     } catch (Exception e) {
-      logger.error("Error in Sending Eicr XML to Endpoint: " + ub.toString());
+
+      if (ub != null) {
+        logger.error("Error in Sending Eicr XML to Endpoint: {}", ub.toString());
+      }
     }
     return bundleResponse;
   }

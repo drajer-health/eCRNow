@@ -421,7 +421,7 @@ public class PlanDefinitionProcessor {
       }
     }
 
-    if (acts.containsKey(type)) {
+    if (acts != null && acts.containsKey(type)) {
 
       acts.get(type).add(act);
 

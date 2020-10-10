@@ -686,34 +686,36 @@ public class CdaFhirUtilities {
 
     if (names != null && names.size() > 0) {
 
-      HumanName name = names.stream().findFirst().get();
-      List<StringType> ns = name.getGiven();
+      if (names.stream().findFirst().isPresent()) {
 
-      for (StringType n : ns) {
+        HumanName name = names.stream().findFirst().get();
+        List<StringType> ns = name.getGiven();
 
-        if (!StringUtils.isEmpty(n.getValue()))
+        for (StringType n : ns) {
+
+          if (!StringUtils.isEmpty(n.getValue()))
+            nameString.append(
+                CdaGeneratorUtils.getXmlForText(
+                    CdaGeneratorConstants.FIRST_NAME_EL_NAME, n.getValue()));
+        }
+
+        // If Empty create NF
+        if (StringUtils.isEmpty(nameString)) {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        if (name.getFamily() != null && !StringUtils.isEmpty(name.getFamily())) {
           nameString.append(
               CdaGeneratorUtils.getXmlForText(
-                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, n.getValue()));
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
+        } else {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
       }
-
-      // If Empty create NF
-      if (StringUtils.isEmpty(nameString)) {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForNFText(
-                CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-      }
-
-      if (name.getFamily() != null && !StringUtils.isEmpty(name.getFamily())) {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForText(
-                CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
-      } else {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForNFText(
-                CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-      }
-
       // Enough names for now.
     } else {
 

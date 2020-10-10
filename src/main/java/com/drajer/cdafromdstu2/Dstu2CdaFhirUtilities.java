@@ -683,34 +683,36 @@ public class Dstu2CdaFhirUtilities {
 
     if (names != null && names.size() > 0) {
 
-      HumanNameDt name = names.stream().findFirst().get();
+      if (names.stream().findFirst().isPresent()) {
+        HumanNameDt name = names.stream().findFirst().get();
 
-      List<StringDt> ns = name.getGiven();
+        List<StringDt> ns = name.getGiven();
 
-      for (StringDt n : ns) {
+        for (StringDt n : ns) {
 
-        if (!StringUtils.isEmpty(n.getValue()))
+          if (!StringUtils.isEmpty(n.getValue()))
+            nameString.append(
+                CdaGeneratorUtils.getXmlForText(
+                    CdaGeneratorConstants.FIRST_NAME_EL_NAME, name.getGivenFirstRep().getValue()));
+        }
+
+        // If Empty create NF
+        if (StringUtils.isEmpty(nameString)) {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        if (name.getFamilyFirstRep() != null
+            && !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
           nameString.append(
               CdaGeneratorUtils.getXmlForText(
-                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, name.getGivenFirstRep().getValue()));
-      }
-
-      // If Empty create NF
-      if (StringUtils.isEmpty(nameString)) {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForNFText(
-                CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-      }
-
-      if (name.getFamilyFirstRep() != null
-          && !StringUtils.isEmpty(name.getFamilyFirstRep().getValue())) {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForText(
-                CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamilyFirstRep().getValue()));
-      } else {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForNFText(
-                CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamilyFirstRep().getValue()));
+        } else {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
       }
     } else {
 
