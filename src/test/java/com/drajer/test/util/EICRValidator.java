@@ -2,6 +2,9 @@ package com.drajer.test.util;
 
 import java.util.List;
 import java.util.Map;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Section;
@@ -32,6 +35,16 @@ public class EICRValidator {
                 TestUtils.getR4ResourceFromJson(
                     allResourceFiles.get(resourceFileName).get(0), Encounter.class);
         ValidationUtils.validateReasonForVisitSection(r4Encounter, section);
+      } else if (sectionName.equalsIgnoreCase("PROBLEMS")) {
+        resourceFileName = "Condition";
+        Bundle conditionBundle =
+            TestUtils.getR4BundleFromJson(allResourceFiles.get(resourceFileName).get(0));
+        Condition condition = null;
+
+        for (BundleEntryComponent entry : conditionBundle.getEntry()) {
+          condition = (Condition) entry.getResource();
+        }
+        ValidationUtils.validateProblemSection(condition, section);
       }
       // TODO for other sections
     }

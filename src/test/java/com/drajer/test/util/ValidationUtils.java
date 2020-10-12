@@ -5,12 +5,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
+import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -44,6 +50,8 @@ import org.hl7.v3.PN;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Component3;
 import org.hl7.v3.POCDMT000040Entry;
+import org.hl7.v3.POCDMT000040EntryRelationship;
+import org.hl7.v3.POCDMT000040Observation;
 import org.hl7.v3.POCDMT000040Section;
 import org.hl7.v3.QTY;
 import org.hl7.v3.StrucDocContent;
@@ -234,12 +242,11 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateCodeWithTranslation(List<CodeableConcept> codes, CD code) {
+  public static void validateCodeWithTranslation(CodeableConcept codes, CD code) {
 
-    if (codes != null && codes.size() > 0) {
+    if (codes != null) {
 
-      CodeableConcept cd = codes.get(0);
-      List<Coding> codings = cd.getCoding();
+      List<Coding> codings = codes.getCoding();
 
       Boolean translation = false;
       int idx = -1;
@@ -359,8 +366,7 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateProblemSection(
-      List<Condition> r4Conds, POCDMT000040Section problemSection) {
+  public static void validateProblemSection(Condition cond, POCDMT000040Section problemSection) {
 
     // TemplateID
     // Only one templateID should be present as per spec.
@@ -392,27 +398,193 @@ public class ValidationUtils {
     String display = "";
     String status = "";
 
-    for (Condition cond : r4Conds) {
+    display = cond.getCode().getCodingFirstRep().getDisplay();
+    if (cond.getClinicalStatus()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(ConditionClinical.ACTIVE.toCode())
+        || cond.getClinicalStatus()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(ConditionClinical.RELAPSE.toCode())) {
 
-      display = cond.getCode().getCodingFirstRep().getDisplay();
-      if (cond.getClinicalStatus()
-              .getCodingFirstRep()
-              .getCode()
-              .contentEquals(ConditionClinical.ACTIVE.toCode())
-          || cond.getClinicalStatus()
-              .getCodingFirstRep()
-              .getCode()
-              .contentEquals(ConditionClinical.RELAPSE.toCode())) {
+      status = "Active";
+    } else {
 
-        status = "Active";
-      } else {
-
-        status = "Resolved";
-      }
-      Pair<String, String> row = new Pair<>(display, status);
-      rowValues.add(row);
+      status = "Resolved";
     }
-    validateTableBody(table, rowValues);
+    Pair<String, String> row = new Pair<>(display, status);
+    rowValues.add(row);
+
+    // validateTableBody(table, rowValues);
+
+    List<POCDMT000040Entry> entries = problemSection.getEntry();
+    validateEntries(cond, entries);
+  }
+
+  public static void validateEntries(Condition cond, List<POCDMT000040Entry> entries) {
+
+    for (POCDMT000040Entry entry : entries) {
+
+      assertEquals(entry.getTypeCode().value(), "DRIV");
+      assertEquals(entry.getAct().getClassCode().value(), "ACT");
+      assertEquals(entry.getAct().getMoodCode().value(), "EVN");
+
+      // validate template id
+      validateTemplateID(
+          entry.getAct().getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.3", null);
+      validateTemplateID(
+          entry.getAct().getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.3", "2015-08-01");
+
+      // TO-DO assertion for Identifier
+      // validateIdentifier();
+
+      validateCode(
+          entry.getAct().getCode(), "CONC", "2.16.840.1.113883.5.6", "HL7ActClass", "Concern");
+
+      // validating "active" status code
+      assertEquals(
+          entry.getAct().getStatusCode().getCode(),
+          cond.getClinicalStatus().getCoding().get(0).getCode());
+
+      // validate effective time
+      validateEffectiveDtTm(
+          entry.getAct().getEffectiveTime(),
+          TestUtils.convertToString(cond.getAbatementDateTimeType().getValue(), "yyyyMMdd"),
+          TestUtils.convertToString(cond.getOnsetDateTimeType().getValue(), "yyyyMMdd"));
+
+      // validate entryRelationship
+      List<POCDMT000040EntryRelationship> entryRelationships =
+          entry.getAct().getEntryRelationship();
+      validateEntryRelationships(entryRelationships, cond);
+    }
+  }
+
+  public static void validateEntryRelationships(
+      List<POCDMT000040EntryRelationship> entryRelationships, Condition cond) {
+
+    for (POCDMT000040EntryRelationship entryRelationship : entryRelationships) {
+      if (entryRelationship.getTypeCode().value().equals("SUBJ")) {
+        validateObservation(entryRelationship.getObservation(), cond);
+      } else if (entryRelationship.getTypeCode().value().equals("RSON")) {
+        validateObservationWithTriggerCodes(entryRelationship.getObservation(), cond);
+      }
+    }
+  }
+
+  public static void validateObservation(POCDMT000040Observation observation, Condition cond) {
+    assertEquals(observation.getClassCode().get(0), "OBS");
+    assertEquals(observation.getMoodCode().value(), "EVN");
+
+    validateTemplateID(observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
+    validateTemplateID(
+        observation.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.4", "2015-08-01");
+
+    // validateIdentifier();
+
+    // validateCodeWithTranslation(codes, code);
+    validateCode(
+        observation.getCode(), "282291009", "2.16.840.1.113883.6.96", "SNOMED-CT", "Diagnosis");
+    validateCode(
+        observation.getCode().getTranslation().get(0),
+        "29308-4",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "Diagnosis");
+
+    // validate statuscode
+    assertEquals(observation.getStatusCode().getCode(), "completed");
+
+    validateEffectiveDtTm(
+        observation.getEffectiveTime(),
+        TestUtils.convertToString(cond.getAbatementDateTimeType().getValue(), "yyyyMMdd"),
+        TestUtils.convertToString(cond.getOnsetDateTimeType().getValue(), "yyyyMMdd"));
+
+    // validate the value
+    CD code = (CD) observation.getValue().get(0);
+    validateCodeWithTranslation(cond.getCode(), code);
+  }
+
+  public static void validateObservationWithTriggerCodes(
+      POCDMT000040Observation observation, Condition cond) {
+    assertEquals(observation.getClassCode().get(0), "OBS");
+    assertEquals(observation.getMoodCode().value(), "EVN");
+
+    assertEquals(observation.isNegationInd(), false);
+
+    validateTemplateID(observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
+    validateTemplateID(
+        observation.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.4", "2015-08-01");
+    validateTemplateID(
+        observation.getTemplateId().get(2), "2.16.840.1.113883.10.20.15.2.3.3", "2016-12-01");
+
+    // validateIdentifier();
+
+    // validate Code
+    validateCode(
+        observation.getCode(), "282291009", "2.16.840.1.113883.6.96", "SNOMED-CT", "Diagnosis");
+    validateCode(
+        observation.getCode().getTranslation().get(0),
+        "29308-4",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "Diagnosis");
+
+    // validate statuscode
+    assertEquals(observation.getStatusCode().getCode(), "completed");
+
+    validateEffectiveDtTm(
+        observation.getEffectiveTime(),
+        TestUtils.convertToString(cond.getAbatementDateTimeType().getValue(), "yyyyMMdd"),
+        TestUtils.convertToString(cond.getOnsetDateTimeType().getValue(), "yyyyMMdd"));
+
+    // validate the value
+    validateValueCDWithValueSetAndVersion(cond, observation);
+    // code.get
+  }
+
+  public static void validateValueCDWithValueSetAndVersion(
+      Condition cond, POCDMT000040Observation observation) {
+
+    PatientExecutionState state = null;
+    LaunchDetails details = new LaunchDetails();
+    details.setStatus(
+        "{\"patientId\":\"12742571\",\"encounterId\":\"97953900\",\"matchTriggerStatus\":{\"actionId\":\"match-trigger\",\"jobStatus\":\"COMPLETED\",\"triggerMatchStatus\":true,\"matchedCodes\":[{\"matchedCodes\":[\"http://hl7.org/fhir/sid/icd-10-cm|U07.1\",\"http://snomed.info/sct|840539006\"],\"valueSet\":\"2.16.840.1.113762.1.4.1146.1123\",\"valueSetVersion\":\"1\",\"matchedPath\":\"Condition.code\"}]},\"createEicrStatus\":{\"actionId\":\"create-eicr\",\"jobStatus\":\"SCHEDULED\",\"eicrCreated\":false,\"eICRId\":\"\"},\"periodicUpdateStatus\":[{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"}],\"periodicUpdateJobStatus\":\"SCHEDULED\",\"closeOutEicrStatus\":{\"actionId\":\"\",\"jobStatus\":\"NOT_STARTED\",\"eicrClosed\":false,\"eICRId\":\"\"},\"validateEicrStatus\":[],\"submitEicrStatus\":[],\"rrStatus\":[],\"eicrsReadyForValidation\":[],\"eicrsForRRCheck\":[],\"eicrsReadyForSubmission\":[]}");
+    state = ApplicationUtils.getDetailStatus(details);
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+      if (mtc.hasMatchedTriggerCodes("Condition")) {
+        Set<String> matchedCodes = mtc.getMatchedCodes();
+        if (matchedCodes != null && matchedCodes.size() > 0) {
+          matchedCodes
+              .stream()
+              .filter(Objects::nonNull)
+              .findFirst()
+              .ifPresent(
+                  matchCode -> {
+                    String[] parts = matchCode.split("\\|");
+
+                    Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+
+                    CD code = (CD) observation.getValue().get(0);
+                    assertEquals(parts[1], code.getCode());
+                    assertEquals(csd.getValue0(), code.getCodeSystem());
+                    assertEquals(csd.getValue1(), code.getCodeSystemName());
+                    assertEquals("2.16.840.1.114222.4.11.7508", code.getValueSet());
+                    assertEquals("19/05/2016", code.getValueSetVersion());
+                  });
+        }
+      }
+    }
+  }
+
+  public static void validateCode(
+      CD codeObj, String code, String codeSystem, String codeSystemName, String displayName) {
+    assertEquals(codeObj.getCode(), code);
+    assertEquals(codeObj.getCodeSystem(), codeSystem);
+    assertEquals(codeObj.getCodeSystemName(), codeSystemName);
+    assertEquals(codeObj.getDisplayName(), displayName);
   }
 
   public static void validateReasonForVisitSection(
