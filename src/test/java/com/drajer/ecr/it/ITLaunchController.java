@@ -159,25 +159,9 @@ public class ITLaunchController extends BaseIntegrationTest {
      *
      * ValidationUtils.validateProblemSection(conditions, section);
      */
-    // Reason For Visit Section
-    // Encounter encounter =
-    // TestUtils.getR4EncounterResourceFromJson("R4/Encounter/Encounter_97953900.json");
     POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
-    // POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, "VISITS");
-    // ValidationUtils.validateReasonForVisitSection(encounter, section);
 
-    // POCDMT000040Section encounterSection =
-    // ValidationUtils.getSection(clinicalDoc, "ENCOUNTERS");
-    // ValidationUtils.validateEncounterSection(encounter, encounterSection);
-
-    for (String sectionName : validationSectionList) {
-      String resourceFileName = "";
-      if (sectionName.equalsIgnoreCase("ENCOUNTERS")) resourceFileName = "Encounter";
-      else if (sectionName.equalsIgnoreCase("VISITS")) resourceFileName = "Encounter";
-      // TODO for other section map similarly
-
-      EICRValidator.validate(clinicalDoc, sectionName, allResourceFiles.get(resourceFileName));
-    }
+    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles);
   }
 
   private void getLaunchDetailAndStatus() {
