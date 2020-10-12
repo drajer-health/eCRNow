@@ -732,7 +732,8 @@ public class ValidationUtils {
           r4Encounter.getIdentifier(), encounterEntry.getEncounter().getId(), r4Encounter.getId());
 
       // Code
-      validateCodeWithTranslation(r4Encounter.getType(), encounterEntry.getEncounter().getCode());
+      validateCodeWithTranslation(
+          r4Encounter.getType().get(0), encounterEntry.getEncounter().getCode());
 
       // Effective DtTm
       validateEffectiveDtTm(
