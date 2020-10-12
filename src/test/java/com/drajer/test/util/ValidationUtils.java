@@ -244,18 +244,20 @@ public class ValidationUtils {
   public static void validateTelecom(List<ContactPoint> cr4Contacts, List<TEL> telecoms) {}
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
-    TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
-    TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-    if (!high.equalsIgnoreCase("Unknown")) {
-      assertEquals(highTime.getValue(), high);
-    } else {
-      if (highTime.getNullFlavor().size() > 0) validateNullFlavor(highTime, "NI");
-    }
-    if (!low.equalsIgnoreCase("Unknown")) {
+
+    assertNotNull(effDtTm);
+    if (low != null && !low.isEmpty()) {
+      TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
       assertEquals(lowTime.getValue(), low);
-    } else {
-      if (lowTime.getNullFlavor().size() > 0) validateNullFlavor(lowTime, "NI");
     }
+
+    if (high != null && !high.isEmpty()) {
+      TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
+      assertEquals(highTime.getValue(), high);
+    }
+
+    // Note: Spec doesn't say anything on nullflavour and hence not supported.
+
   }
 
   public static void validateCodeWithTranslation(List<CodeableConcept> codes, CD code) {
@@ -527,6 +529,9 @@ public class ValidationUtils {
 
     String encounterName = r4Encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
     String date = TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMddHHmmss");
+    if (date == null) {
+      date = "Unknown";
+    }
     List<Pair<String, String>> rowValues = new ArrayList<>();
 
     Pair<String, String> row = new Pair<>(encounterName, date);
