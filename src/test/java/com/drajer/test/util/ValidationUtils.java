@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.model.Eicr;
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +27,6 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.AD;
@@ -220,11 +217,7 @@ public class ValidationUtils {
 
   public static void validateIdentifier() {}
 
-  public static void validateTelecom( List<ContactPoint> cr4Contacts, List<TEL> telecoms) {
-	  
-
-	  
-  }
+  public static void validateTelecom(List<ContactPoint> cr4Contacts, List<TEL> telecoms) {}
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
     TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
@@ -232,12 +225,12 @@ public class ValidationUtils {
     if (high != null) {
       assertEquals(highTime.getValue(), high);
     } else {
-    	if(highTime.getNullFlavor().size()>0)  validateNullFlavor(highTime, "NI");
+      if (highTime.getNullFlavor().size() > 0) validateNullFlavor(highTime, "NI");
     }
     if (low != null) {
       assertEquals(lowTime.getValue(), low);
     } else {
-    	if(lowTime.getNullFlavor().size()>0) validateNullFlavor(lowTime, "NI");
+      if (lowTime.getNullFlavor().size() > 0) validateNullFlavor(lowTime, "NI");
     }
   }
 
@@ -465,17 +458,17 @@ public class ValidationUtils {
     if (r4Encounter.getReasonCodeFirstRep() != null) {
 
       if (!StringUtils.isEmpty(r4Encounter.getReasonCodeFirstRep().getText())) {
-    	  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
-      }else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
-        && !StringUtils.isEmpty(
-            r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
-    	  assertEquals(
-          rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
-      }else {
-    	  assertEquals(rowColValue, "Unknown Reason For Visit");
+        assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
+      } else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
+          && !StringUtils.isEmpty(
+              r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
+        assertEquals(
+            rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
+      } else {
+        assertEquals(rowColValue, "Unknown Reason For Visit");
       }
     } else {
-    	assertEquals(rowColValue, "Unknown Reason For Visit");
+      assertEquals(rowColValue, "Unknown Reason For Visit");
     }
   }
 
