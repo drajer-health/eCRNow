@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.model.Eicr;
+
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,8 +26,10 @@ import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.AD;
@@ -52,6 +56,7 @@ import org.hl7.v3.StrucDocText;
 import org.hl7.v3.StrucDocTh;
 import org.hl7.v3.StrucDocThead;
 import org.hl7.v3.StrucDocTr;
+import org.hl7.v3.TEL;
 import org.hl7.v3.TS;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -215,7 +220,11 @@ public class ValidationUtils {
 
   public static void validateIdentifier() {}
 
-  public static void validateTelecom() {}
+  public static void validateTelecom( List<ContactPoint> cr4Contacts, List<TEL> telecoms) {
+	  
+
+	  
+  }
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
     TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
@@ -223,12 +232,12 @@ public class ValidationUtils {
     if (high != null) {
       assertEquals(highTime.getValue(), high);
     } else {
-      validateNullFlavor(highTime, "NI");
+    	if(highTime.getNullFlavor().size()>0)  validateNullFlavor(highTime, "NI");
     }
     if (low != null) {
       assertEquals(lowTime.getValue(), low);
     } else {
-      validateNullFlavor(lowTime, "NI");
+    	if(lowTime.getNullFlavor().size()>0) validateNullFlavor(lowTime, "NI");
     }
   }
 
