@@ -222,12 +222,12 @@ public class ValidationUtils {
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
     TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
     TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-    if (high != null) {
+    if (!high.equalsIgnoreCase("Unknown")) {
       assertEquals(highTime.getValue(), high);
     } else {
       if (highTime.getNullFlavor().size() > 0) validateNullFlavor(highTime, "NI");
     }
-    if (low != null) {
+    if (!low.equalsIgnoreCase("Unknown")) {
       assertEquals(lowTime.getValue(), low);
     } else {
       if (lowTime.getNullFlavor().size() > 0) validateNullFlavor(lowTime, "NI");
@@ -537,18 +537,13 @@ public class ValidationUtils {
         String value = r4Encounter.getIdentifier().get(i).getValue();
         validateID(encounterEntry.getEncounter().getId().get(1), system, value);
       }
-      // TODO always nullFlavour question
+
       validateCodeWithTranslation(null, encounterEntry.getEncounter().getCode());
-      String startDate =
-          (r4Encounter.getPeriod().getStart() == null)
-              ? null
-              : TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd");
-      String endDate =
-          (r4Encounter.getPeriod().getEnd() == null)
-              ? null
-              : TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd");
-      // TODO Clarification on timestamp
-      validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(), endDate, startDate);
+
+      validateEffectiveDtTm(
+          encounterEntry.getEncounter().getEffectiveTime(),
+          TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd"),
+          TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd"));
     }
   }
 }
