@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.AD;
@@ -213,7 +214,30 @@ public class ValidationUtils {
     assertEquals(displayName, codes.getDisplayName());
   }
 
-  public static void validateIdentifier() {}
+  public static void validateIdentifier(
+      List<Identifier> r4Identifiers, List<II> cdaIdentifiers, String entityId) {
+
+    int idx = 0;
+    if (entityId != null && !entityId.isEmpty()) {
+      // ToDo - hardcoded need to change to retrieve for clientdetails.
+      validateID(cdaIdentifiers.get(idx++), "2.16.840.1.113883.1.1.1.1", entityId);
+    }
+
+    for (Identifier id : r4Identifiers) {
+
+      String root;
+      if (id.getSystem() != null && id.getValue() != null) {
+        if (id.getSystem().contains("urn:oid")) {
+          root = id.getSystem().replace("urn:oid:", "");
+        } else {
+          // ToDo - hardcoded need to change to retrieve for clientdetails.
+          root = "2.16.840.1.113883.1.1.1.1";
+        }
+
+        validateID(cdaIdentifiers.get(idx++), root, id.getValue());
+      }
+    }
+  }
 
   public static void validateTelecom() {}
 
@@ -240,7 +264,7 @@ public class ValidationUtils {
       List<Coding> codings = cd.getCoding();
 
       Boolean translation = false;
-      int idx = -1;
+      int idx = 0;
 
       for (Coding c : codings) {
 
@@ -257,8 +281,7 @@ public class ValidationUtils {
             assertEquals(csd.getValue1(), code.getCodeSystemName());
           } else {
 
-            idx++;
-            CD transCode = code.getTranslation().get(idx);
+            CD transCode = code.getTranslation().get(idx++);
             assertEquals(c.getCode(), transCode.getCode());
             assertEquals(c.getDisplay(), transCode.getDisplayName());
             assertEquals(csd.getValue0(), transCode.getCodeSystem());
@@ -266,8 +289,11 @@ public class ValidationUtils {
           }
         }
       }
-    } else {
 
+      if (translation == false) {
+        validateNullFlavor(code, "NI");
+      }
+    } else {
       validateNullFlavor(code, "NI");
     }
   }
@@ -429,7 +455,7 @@ public class ValidationUtils {
 
     // Title - To Do
     // assertEquals(Arrays.asList("Reason For Visit"),
-    // problemSection.getTitle().getAny());
+    // resonForVisitSection.getTitle().getAny());
 
     // Narrative Text of type Table
     StrucDocText docText = resonForVisitSection.getText();
@@ -456,17 +482,17 @@ public class ValidationUtils {
     if (r4Encounter.getReasonCodeFirstRep() != null) {
 
       if (!StringUtils.isEmpty(r4Encounter.getReasonCodeFirstRep().getText())) {
-    	  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
-      }else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
-        && !StringUtils.isEmpty(
-            r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
-    	  assertEquals(
-          rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
-      }else {
-    	  assertEquals(rowColValue, "Unknown Reason For Visit");
+        assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
+      } else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
+          && !StringUtils.isEmpty(
+              r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
+        assertEquals(
+            rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
+      } else {
+        assertEquals(rowColValue, "Unknown Reason For Visit");
       }
     } else {
-    	assertEquals(rowColValue, "Unknown Reason For Visit");
+      assertEquals(rowColValue, "Unknown Reason For Visit");
     }
   }
 
@@ -523,20 +549,14 @@ public class ValidationUtils {
           "2.16.840.1.113883.10.20.22.4.49",
           "2015-08-01");
 
-      // Validate Id first occurrence
-      // TODO change this hardcoded value
-      validateID(
-          encounterEntry.getEncounter().getId().get(0),
-          "2.16.840.1.113883.1.1.1.1",
-          r4Encounter.getId());
+      // Identifier
+      validateIdentifier(
+          r4Encounter.getIdentifier(), encounterEntry.getEncounter().getId(), r4Encounter.getId());
 
-      for (int i = 0; i < r4Encounter.getIdentifier().size(); i++) {
-        String system = r4Encounter.getIdentifier().get(i).getSystem().split(":")[2];
-        String value = r4Encounter.getIdentifier().get(i).getValue();
-        validateID(encounterEntry.getEncounter().getId().get(1), system, value);
-      }
-      // TODO always nullFlavour question
-      validateCodeWithTranslation(null, encounterEntry.getEncounter().getCode());
+      // Code
+      validateCodeWithTranslation(r4Encounter.getType(), encounterEntry.getEncounter().getCode());
+
+      // Effective DtTm
       String startDate =
           (r4Encounter.getPeriod().getStart() == null)
               ? null

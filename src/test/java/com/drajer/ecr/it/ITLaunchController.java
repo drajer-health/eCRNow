@@ -103,7 +103,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     stubHelper.stopMockServer();
   }
 
-  @Parameters(name = "{index}: Execute TestSystemLaunch with Test Case = {0}")
+  @Parameters(name = "{index}: {0}")
   public static Collection<Object[]> data() {
     testDataGenerator = new TestDataGenerator("TestSystemLaunch.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
@@ -119,8 +119,6 @@ public class ITLaunchController extends BaseIntegrationTest {
 
   @Test
   public void testSystemLaunch() throws Exception {
-
-    // System.out.println("Port==" + wireMockHttpPort);
 
     headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -142,23 +140,6 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     assertNotNull(last.getData());
 
-    // To-Do: This is temporary, creating the bundle should be pushed to setup, will
-    // be changed
-    // later.
-    /*
-     * //Problem Section Bundle bundle =
-     * TestUtils.getR4BundleFromJson("R4/Condition/ConditionBundle_d2572364249.json"
-     * ); List<Condition> conditions = new ArrayList<>();
-     *
-     * for (BundleEntryComponent entry : bundle.getEntry()) { Condition condition =
-     * (Condition) entry.getResource(); conditions.add(condition); }
-     *
-     * POCDMT000040ClinicalDocument clinicalDoc =
-     * ValidationUtils.getClinicalDocXml(last); POCDMT000040Section section =
-     * ValidationUtils.getSection(clinicalDoc, "PROBLEMS");
-     *
-     * ValidationUtils.validateProblemSection(conditions, section);
-     */
     POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
 
     EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles);
