@@ -151,7 +151,6 @@ public class LoadingQueryR4Bundle {
     // logger.info("DiagnosticOrders Codes
     // Size=====>"+dstu2FhirData.getDiagnosticOrderCodes().size());
 
-    // logger.info(context.newJsonParser().encodeResourceToString(bundle));
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()
             + "/LoadingQueryR4Bundle-"

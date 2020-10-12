@@ -8,14 +8,17 @@
   "scopes": "launch,online_access,offline_access,user/Patient.read,user/Condition.read,user/Encounter.read,user/MedicationAdministration.read,user/MedicationOrder.read,user/MedicationStatement.read,user/Observation.read,user/Immunization.read,user/DiagnosticReport.read,user/Practitioner.read,patient/Patient.read,patient/Condition.read,patient/Encounter.read,patient/MedicationAdministration.read,patient/MedicationOrder.read,patient/MedicationStatement.read,patient/Observation.read,patient/Immunization.read,patient/DiagnosticReport.read",
   "isDirect": true,
   "isXdr": false,
+  "isRestAPI": false,
   "directHost": "ett.healthit.gov",
   "directUser": "test@ett.healthit.gov",
   "directPwd": "12345",
   "directRecipientAddress": "connectathon@aimsplatform.sandbox.dmhisp.com",
   "xdrRecipientAddress": null,
+  "restAPIURL": null,
   "assigningAuthorityId": "2.16.840.1.113883.1.1.1.1",
   "encounterStartThreshold": "2019-10-31T14:00:00.000+0000",
   "encounterEndThreshold": "2020-08-15T05:34:07.000+0000",
   "isCovid": true,
-  "isFullEcr": false
+  "isFullEcr": false,
+  "isLoggingEnabled": false
 }
