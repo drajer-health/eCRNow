@@ -465,15 +465,17 @@ public class ValidationUtils {
     if (r4Encounter.getReasonCodeFirstRep() != null) {
 
       if (!StringUtils.isEmpty(r4Encounter.getReasonCodeFirstRep().getText())) {
-        assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
-      }
-    } else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
+    	  assertEquals(rowColValue, r4Encounter.getReasonCodeFirstRep().getText());
+      }else if (r4Encounter.getReasonCodeFirstRep().getCodingFirstRep() != null
         && !StringUtils.isEmpty(
             r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay())) {
-      assertEquals(
+    	  assertEquals(
           rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
+      }else {
+    	  assertEquals(rowColValue, "Unknown Reason For Visit");
+      }
     } else {
-      assertEquals(rowColValue, "Unknown Reason For Visit");
+    	assertEquals(rowColValue, "Unknown Reason For Visit");
     }
   }
 
