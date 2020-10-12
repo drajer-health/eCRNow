@@ -248,7 +248,7 @@ public class LoadingQueryDstu2Bundle {
                     "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
               }
             } else {
-              logger.info("Medication Reference Found=============>" + medReference);
+              logger.info("Medication Reference Found=============>");
               Medication medication =
                   dstu2ResourcesData.getMedicationData(
                       context, client, launchDetails, dstu2FhirData, medReference);
@@ -360,8 +360,6 @@ public class LoadingQueryDstu2Bundle {
         "DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
     // logger.info("DiagnosticOrders Codes Size=====>" +
     // dstu2FhirData.getDiagnosticOrderCodes().size());
-
-    // logger.info(context.newJsonParser().encodeResourceToString(bundle));
 
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

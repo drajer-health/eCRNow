@@ -4,6 +4,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
@@ -298,7 +299,6 @@ public class CdaFhirUtilities {
       addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
     }
 
-    // logger.info(" Address String = " + addrString.toString());
     return addrString.toString();
   }
 
@@ -314,7 +314,7 @@ public class CdaFhirUtilities {
             && tel.getSystem() == ContactPoint.ContactPointSystem.PHONE
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Tel No " + tel.getValue());
+          logger.info(" Found Telcom Number ");
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,
@@ -347,7 +347,7 @@ public class CdaFhirUtilities {
             && tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Email " + tel.getValue());
+          logger.info(" Found Email ");
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,
@@ -687,34 +687,37 @@ public class CdaFhirUtilities {
 
     if (names != null && names.size() > 0) {
 
-      HumanName name = names.stream().findFirst().get();
-      List<StringType> ns = name.getGiven();
+      Optional<HumanName> hName = names.stream().findFirst();
+      if (hName.isPresent()) {
 
-      for (StringType n : ns) {
+        HumanName name = hName.get();
+        List<StringType> ns = name.getGiven();
 
-        if (!StringUtils.isEmpty(n.getValue()))
+        for (StringType n : ns) {
+
+          if (!StringUtils.isEmpty(n.getValue()))
+            nameString.append(
+                CdaGeneratorUtils.getXmlForText(
+                    CdaGeneratorConstants.FIRST_NAME_EL_NAME, n.getValue()));
+        }
+
+        // If Empty create NF
+        if (StringUtils.isEmpty(nameString)) {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        if (name.getFamily() != null && !StringUtils.isEmpty(name.getFamily())) {
           nameString.append(
               CdaGeneratorUtils.getXmlForText(
-                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, n.getValue()));
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
+        } else {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
       }
-
-      // If Empty create NF
-      if (StringUtils.isEmpty(nameString)) {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForNFText(
-                CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-      }
-
-      if (name.getFamily() != null && !StringUtils.isEmpty(name.getFamily())) {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForText(
-                CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
-      } else {
-        nameString.append(
-            CdaGeneratorUtils.getXmlForNFText(
-                CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-      }
-
       // Enough names for now.
     } else {
 

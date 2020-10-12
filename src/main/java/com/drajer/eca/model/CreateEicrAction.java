@@ -159,8 +159,6 @@ public class CreateEicrAction extends AbstractAction {
 
                 logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
-                logger.info(ecr.getData());
-
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
                         + "/"

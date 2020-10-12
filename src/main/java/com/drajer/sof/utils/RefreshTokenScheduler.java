@@ -53,7 +53,7 @@ public class RefreshTokenScheduler {
 
   class RunnableTask implements Runnable {
 
-    public LaunchDetails authDetails;
+    private LaunchDetails authDetails;
 
     public RunnableTask(LaunchDetails authDetails) {
       this.authDetails = authDetails;

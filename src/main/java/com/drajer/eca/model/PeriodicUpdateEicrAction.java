@@ -152,8 +152,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
                 logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
-                logger.info(ecr.getData());
-
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
                         + "/"

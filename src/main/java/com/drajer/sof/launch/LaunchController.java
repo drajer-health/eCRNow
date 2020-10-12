@@ -140,7 +140,6 @@ public class LaunchController {
     }
 
     String content = contentBuilder.toString();
-    logger.info(content);
 
     LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(388);
     JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
