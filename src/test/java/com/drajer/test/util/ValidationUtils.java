@@ -52,6 +52,7 @@ import org.hl7.v3.StrucDocText;
 import org.hl7.v3.StrucDocTh;
 import org.hl7.v3.StrucDocThead;
 import org.hl7.v3.StrucDocTr;
+import org.hl7.v3.TS;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,20 +218,18 @@ public class ValidationUtils {
   public static void validateTelecom() {}
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
-    QTY highTime = (QTY) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-    QTY lowTime = (QTY) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
+    TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
+    TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
     if (high != null) {
-      assertEquals(highTime.toString(), high);
+      assertEquals(highTime.getValue(), high);
     } else {
       validateNullFlavor(highTime, "NI");
     }
     if (low != null) {
-      assertEquals(low.toString(), high);
+      assertEquals(lowTime.getValue(), low);
     } else {
       validateNullFlavor(lowTime, "NI");
     }
-
-    assertEquals(lowTime.toString(), low);
   }
 
   public static void validateCodeWithTranslation(List<CodeableConcept> codes, CD code) {
@@ -499,7 +498,7 @@ public class ValidationUtils {
         new ArrayList<String>(Arrays.asList("Encounter Reason", "Date of Encounter")));
 
     String encounterName = r4Encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
-    String date = TestUtils.convertToString(r4Encounter.getPeriod().getStart());
+    String date = TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMddHHmmss");
     List<Pair<String, String>> rowValues = new ArrayList<>();
 
     Pair<String, String> row = new Pair<>(encounterName, date);
@@ -513,7 +512,6 @@ public class ValidationUtils {
   private static void validateEncounterEntry(
       List<POCDMT000040Entry> entries, Encounter r4Encounter) {
 
-    int index = 0;
     for (POCDMT000040Entry encounterEntry : entries) {
 
       validateTemplateID(
@@ -531,29 +529,24 @@ public class ValidationUtils {
           encounterEntry.getEncounter().getId().get(0),
           "2.16.840.1.113883.1.1.1.1",
           r4Encounter.getId());
-      index++;
-      // Validate Id subsequent occurrence
-      // TODO clarification about entrues size
+
       for (int i = 0; i < r4Encounter.getIdentifier().size(); i++) {
         String system = r4Encounter.getIdentifier().get(i).getSystem().split(":")[2];
         String value = r4Encounter.getIdentifier().get(i).getValue();
         validateID(encounterEntry.getEncounter().getId().get(1), system, value);
       }
       // TODO always nullFlavour question
-      validateNullFlavor(encounterEntry.getEncounter().getCode(), "NI");
+      validateCodeWithTranslation(null, encounterEntry.getEncounter().getCode());
       String startDate =
           (r4Encounter.getPeriod().getStart() == null)
               ? null
-              : TestUtils.convertToString(r4Encounter.getPeriod().getStart());
+              : TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd");
       String endDate =
           (r4Encounter.getPeriod().getEnd() == null)
               ? null
-              : TestUtils.convertToString(r4Encounter.getPeriod().getEnd());
+              : TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd");
       // TODO Clarification on timestamp
-      // validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(),
-      // startDate, endDate);
-
-      System.out.println("End");
+      validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(), endDate, startDate);
     }
   }
 }

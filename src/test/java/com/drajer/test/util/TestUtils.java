@@ -151,10 +151,10 @@ public class TestUtils {
     return obj;
   }
 
-  public static String convertToString(Date date) {
+  public static String convertToString(Date date, String pattern) {
 
     if (date != null) {
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+      SimpleDateFormat formatter = new SimpleDateFormat(pattern);
       return formatter.format(date);
     } else {
 
