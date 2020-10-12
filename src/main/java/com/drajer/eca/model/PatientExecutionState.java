@@ -145,17 +145,17 @@ public class PatientExecutionState {
 
   public Boolean hasActionCompleted(String actionId) {
 
-    if (actionId.contentEquals(matchTriggerStatus.getActionId())
-        && matchTriggerStatus.getJobStatus() == JobStatus.COMPLETED) {
-
+    JobStatus status = null;
+    if (actionId.contentEquals(matchTriggerStatus.getActionId())) {
       // Add check to see if a trigger matched ...For testing because of lack of data the check is
       // omitted.
-      return true;
-    } else if (actionId.contentEquals(createEicrStatus.getActionId())
-        && createEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
-      return true;
-    } else if (actionId.contentEquals(closeOutEicrStatus.getActionId())
-        && closeOutEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
+      status = matchTriggerStatus.getJobStatus();
+    } else if (actionId.contentEquals(createEicrStatus.getActionId())) {
+      status = createEicrStatus.getJobStatus();
+    } else if (actionId.contentEquals(closeOutEicrStatus.getActionId())) {
+      status = closeOutEicrStatus.getJobStatus();
+    }
+    if (status != null && status == JobStatus.COMPLETED) {
       return true;
     }
 

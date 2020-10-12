@@ -851,7 +851,7 @@ public class R4ResourcesData {
                     "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
               }
             } else {
-              logger.info("Medication Reference Found=============>" + medReference);
+              logger.info("Medication Reference Found=============>");
               Medication medication =
                   getMedicationData(context, client, launchDetails, r4FhirData, medReference);
               BundleEntryComponent medicationEntry =

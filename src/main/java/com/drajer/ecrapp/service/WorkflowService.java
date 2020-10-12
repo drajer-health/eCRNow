@@ -214,9 +214,9 @@ public class WorkflowService {
 
   class EicrActionExecuteJob implements Runnable {
 
-    public Integer launchDetailsId;
+    private Integer launchDetailsId;
 
-    public EcrActionTypes actionType;
+    private EcrActionTypes actionType;
 
     public EicrActionExecuteJob(Integer launchDetailsId, EcrActionTypes actionType) {
       this.launchDetailsId = launchDetailsId;

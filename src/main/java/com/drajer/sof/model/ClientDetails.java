@@ -55,6 +55,10 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isXdr;
 
+  @Column(name = "is_restapi", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isRestAPI;
+
   @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
   private String directHost;
 
@@ -69,6 +73,9 @@ public class ClientDetails {
 
   @Column(name = "xdr_recipient_address", nullable = true)
   private String xdrRecipientAddress;
+
+  @Column(name = "rest_api_url", nullable = true)
+  private String restAPIURL;
 
   @Column(name = "aa_id", nullable = true)
   private String assigningAuthorityId;
@@ -86,6 +93,10 @@ public class ClientDetails {
   @Column(name = "is_full_ecr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
+
+  @Column(name = "is_logging_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isLoggingEnabled;
 
   public Integer getId() {
     return id;
@@ -161,6 +172,22 @@ public class ClientDetails {
 
   public Boolean getIsXdr() {
     return isXdr;
+  }
+
+  public Boolean getIsRestAPI() {
+    return isRestAPI;
+  }
+
+  public void setIsRestAPI(Boolean isRestAPI) {
+    this.isRestAPI = isRestAPI;
+  }
+
+  public String getRestAPIURL() {
+    return restAPIURL;
+  }
+
+  public void setRestAPIURL(String restAPIURL) {
+    this.restAPIURL = restAPIURL;
   }
 
   public void setIsXdr(Boolean isXdr) {
@@ -247,6 +274,14 @@ public class ClientDetails {
     this.isFullEcr = isFullEcr;
   }
 
+  public Boolean getIsLoggingEnabled() {
+    return isLoggingEnabled;
+  }
+
+  public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
+    this.isLoggingEnabled = isLoggingEnabled;
+  }
+
   public void print() {
 
     logger.info(" **** Printing Client Details **** ");
@@ -261,15 +296,18 @@ public class ClientDetails {
     Log.info(" Scopes = " + scopes);
     Log.info(" Is Direct ? = " + isDirect);
     Log.info(" Is XDR = " + isXdr);
+    Log.info(" Is Rest API = " + isRestAPI);
     Log.info(" Direct Host = " + directHost);
     Log.info(" Direct pwd = " + directPwd);
     Log.info(" Direct Recipient Address = " + directRecipientAddress);
     Log.info(" XDR Recipient Address = " + xdrRecipientAddress);
+    Log.info(" Rest API URL = " + restAPIURL);
     Log.info(" Assigning Authority Id = " + assigningAuthorityId);
     Log.info(" Encounter Start Threshold = " + encounterStartThreshold);
     Log.info(" Encounter End Threshold = " + encounterEndThreshold);
     Log.info(" Is Covid = " + isCovid);
     Log.info(" Is Full ECR = " + isFullEcr);
+    Log.info(" Is Logging Enabled " + isLoggingEnabled);
 
     logger.info(" **** End Printing Client Details **** ");
   }

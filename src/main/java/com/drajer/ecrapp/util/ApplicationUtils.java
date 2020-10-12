@@ -121,15 +121,9 @@ public class ApplicationUtils {
 
           // logger.info(" Iterating over value sets to setup grouper ");
 
-          if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())) {
-
-            // logger.info(" Ids matched ");
-            valueSets.add(valueSet);
-            break;
-          } else if ((valueSet.getUrl() != null)
-              && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))) {
-
-            // logger.info("Urls Matched ");
+          if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
+              || ((valueSet.getUrl() != null)
+                  && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString())))) {
             valueSets.add(valueSet);
             break;
           }
@@ -137,14 +131,9 @@ public class ApplicationUtils {
 
         for (ValueSet valueSet : ValueSetSingleton.getInstance().getCovidValueSets()) {
 
-          if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())) {
-
-            // logger.info(" Ids matched ");
-            valueSets.add(valueSet);
-            break;
-          } else if ((valueSet.getUrl() != null)
-              && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))) {
-            // logger.info("Urls Matched ");
+          if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
+              || ((valueSet.getUrl() != null)
+                  && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString())))) {
             valueSets.add(valueSet);
             break;
           }

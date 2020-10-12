@@ -107,8 +107,6 @@ public class CloseOutEicrAction extends AbstractAction {
                   } catch (JsonProcessingException e) {
                     String msg = "Unable to read/write execution state";
                     logger.error(msg);
-                    e.printStackTrace();
-
                     throw new RuntimeException(msg);
                   }
                 } else {
@@ -182,8 +180,6 @@ public class CloseOutEicrAction extends AbstractAction {
                 EcaUtils.updateDetailStatus(details, newState);
 
                 logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
-
-                logger.info(ecr.getData());
 
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()

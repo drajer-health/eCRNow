@@ -59,14 +59,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlanDefinitionProcessor {
 
-  public static String COVID_SNOMED_USE_CONTEXT_CODE = "840539006";
+  public static final String COVID_SNOMED_USE_CONTEXT_CODE = "840539006";
 
-  public static String COVID_SNOMED_USE_CONTEXT_SYSTEM = "http://snomed.info/sct";
+  public static final String COVID_SNOMED_USE_CONTEXT_SYSTEM = "http://snomed.info/sct";
 
-  public static String GROUPER_VALUE_SET_REFERENCE_1 = "plandefinition-ersd-instance";
-  public static String GROUPER_VALUE_SET_REFERENCE_2 = "plandefinition-ersd-skeleton";
+  public static final String GROUPER_VALUE_SET_REFERENCE_1 = "plandefinition-ersd-instance";
+  public static final String GROUPER_VALUE_SET_REFERENCE_2 = "plandefinition-ersd-skeleton";
 
-  public static String ERSD_BUNDLE_ID_STRING = "rctc";
+  public static final String ERSD_BUNDLE_ID_STRING = "rctc";
 
   @Autowired
   @Qualifier("esrdGenericClient")
@@ -421,25 +421,27 @@ public class PlanDefinitionProcessor {
       }
     }
 
-    if (acts.containsKey(type)) {
+    if (acts != null) {
+      if (acts.containsKey(type)) {
 
-      acts.get(type).add(act);
+        acts.get(type).add(act);
 
-      logger.info(
-          " Map contained "
-              + type.toString()
-              + ", so added to map resulting in size "
-              + acts.size());
-    } else {
-      Set<AbstractAction> aa = new HashSet<AbstractAction>();
-      aa.add(act);
-      acts.put(type, aa);
+        logger.info(
+            " Map contained "
+                + type.toString()
+                + ", so added to map resulting in size "
+                + acts.size());
+      } else {
+        Set<AbstractAction> aa = new HashSet<AbstractAction>();
+        aa.add(act);
+        acts.put(type, aa);
 
-      logger.info(
-          " Map did not contain "
-              + type.toString()
-              + ", so added to map resulting in size "
-              + acts.size());
+        logger.info(
+            " Map did not contain "
+                + type.toString()
+                + ", so added to map resulting in size "
+                + acts.size());
+      }
     }
   }
 
