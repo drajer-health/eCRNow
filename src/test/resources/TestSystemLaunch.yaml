@@ -49,8 +49,7 @@ testCase:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
-      ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
-      ValidationSections: "ENCOUNTERS|VISITS"
+      ValidationSections: "VISITS"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -73,8 +72,7 @@ testCase:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
-      ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
-      ValidationSections: "ENCOUNTERS|VISITS"
+      ValidationSections: "VISITS"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -97,8 +95,7 @@ testCase:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
-      ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
-      ValidationSections: "ENCOUNTERS|VISITS"
+      ValidationSections: "VISITS"
     resourceMappingData:
       Patient:
       - params: "12742571"
