@@ -156,9 +156,7 @@ public class TestUtils {
     if (date != null) {
       SimpleDateFormat formatter = new SimpleDateFormat(pattern);
       return formatter.format(date);
-    } else {
-
-      return "Unknown";
     }
+    return null;
   }
 }

@@ -33,6 +33,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.AD;
@@ -223,23 +224,48 @@ public class ValidationUtils {
     assertEquals(displayName, codes.getDisplayName());
   }
 
-  public static void validateIdentifier() {}
+  public static void validateIdentifier(
+      List<Identifier> r4Identifiers, List<II> cdaIdentifiers, String entityId) {
+
+    int idx = 0;
+    if (entityId != null && !entityId.isEmpty()) {
+      // ToDo - hardcoded need to change to retrieve for clientdetails.
+      validateID(cdaIdentifiers.get(idx++), "2.16.840.1.113883.1.1.1.1", entityId);
+    }
+
+    for (Identifier id : r4Identifiers) {
+
+      String root;
+      if (id.getSystem() != null && id.getValue() != null) {
+        if (id.getSystem().contains("urn:oid")) {
+          root = id.getSystem().replace("urn:oid:", "");
+        } else {
+          // ToDo - hardcoded need to change to retrieve for clientdetails.
+          root = "2.16.840.1.113883.1.1.1.1";
+        }
+
+        validateID(cdaIdentifiers.get(idx++), root, id.getValue());
+      }
+    }
+  }
 
   public static void validateTelecom(List<ContactPoint> cr4Contacts, List<TEL> telecoms) {}
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
-    TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
-    TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-    if (!high.equalsIgnoreCase("Unknown")) {
-      assertEquals(highTime.getValue(), high);
-    } else {
-      if (highTime.getNullFlavor().size() > 0) validateNullFlavor(highTime, "NI");
-    }
-    if (!low.equalsIgnoreCase("Unknown")) {
+
+    assertNotNull(effDtTm);
+    if (low != null && !low.isEmpty()) {
+      TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
       assertEquals(lowTime.getValue(), low);
-    } else {
-      if (lowTime.getNullFlavor().size() > 0) validateNullFlavor(lowTime, "NI");
     }
+
+    if (high != null && !high.isEmpty()) {
+      TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
+      assertEquals(highTime.getValue(), high);
+    }
+
+    // Note: Spec doesn't say anything on nullflavour and hence not supported.
+
   }
 
   public static void validateCodeWithTranslation(CodeableConcept codes, CD code) {
@@ -249,7 +275,7 @@ public class ValidationUtils {
       List<Coding> codings = codes.getCoding();
 
       Boolean translation = false;
-      int idx = -1;
+      int idx = 0;
 
       for (Coding c : codings) {
 
@@ -266,8 +292,7 @@ public class ValidationUtils {
             assertEquals(csd.getValue1(), code.getCodeSystemName());
           } else {
 
-            idx++;
-            CD transCode = code.getTranslation().get(idx);
+            CD transCode = code.getTranslation().get(idx++);
             assertEquals(c.getCode(), transCode.getCode());
             assertEquals(c.getDisplay(), transCode.getDisplayName());
             assertEquals(csd.getValue0(), transCode.getCodeSystem());
@@ -275,8 +300,11 @@ public class ValidationUtils {
           }
         }
       }
-    } else {
 
+      if (translation == false) {
+        validateNullFlavor(code, "NI");
+      }
+    } else {
       validateNullFlavor(code, "NI");
     }
   }
@@ -603,7 +631,7 @@ public class ValidationUtils {
 
     // Title - To Do
     // assertEquals(Arrays.asList("Reason For Visit"),
-    // problemSection.getTitle().getAny());
+    // resonForVisitSection.getTitle().getAny());
 
     // Narrative Text of type Table
     StrucDocText docText = resonForVisitSection.getText();
@@ -673,6 +701,9 @@ public class ValidationUtils {
 
     String encounterName = r4Encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
     String date = TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMddHHmmss");
+    if (date == null) {
+      date = "Unknown";
+    }
     List<Pair<String, String>> rowValues = new ArrayList<>();
 
     Pair<String, String> row = new Pair<>(encounterName, date);
@@ -696,22 +727,14 @@ public class ValidationUtils {
           encounterEntry.getEncounter().getTemplateId().get(1),
           "2.16.840.1.113883.10.20.22.4.49",
           "2015-08-01");
+      // Identifier
+      validateIdentifier(
+          r4Encounter.getIdentifier(), encounterEntry.getEncounter().getId(), r4Encounter.getId());
 
-      // Validate Id first occurrence
-      // TODO change this hardcoded value
-      validateID(
-          encounterEntry.getEncounter().getId().get(0),
-          "2.16.840.1.113883.1.1.1.1",
-          r4Encounter.getId());
+      // Code
+      validateCodeWithTranslation(r4Encounter.getType(), encounterEntry.getEncounter().getCode());
 
-      for (int i = 0; i < r4Encounter.getIdentifier().size(); i++) {
-        String system = r4Encounter.getIdentifier().get(i).getSystem().split(":")[2];
-        String value = r4Encounter.getIdentifier().get(i).getValue();
-        validateID(encounterEntry.getEncounter().getId().get(1), system, value);
-      }
-
-      validateCodeWithTranslation(null, encounterEntry.getEncounter().getCode());
-
+      // Effective DtTm
       validateEffectiveDtTm(
           encounterEntry.getEncounter().getEffectiveTime(),
           TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd"),
