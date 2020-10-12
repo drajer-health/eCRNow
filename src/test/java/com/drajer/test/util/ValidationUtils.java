@@ -24,6 +24,7 @@ import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
@@ -53,6 +54,7 @@ import org.hl7.v3.StrucDocText;
 import org.hl7.v3.StrucDocTh;
 import org.hl7.v3.StrucDocThead;
 import org.hl7.v3.StrucDocTr;
+import org.hl7.v3.TEL;
 import org.hl7.v3.TS;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -239,20 +241,20 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateTelecom() {}
+  public static void validateTelecom(List<ContactPoint> cr4Contacts, List<TEL> telecoms) {}
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
     TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
     TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-    if (high != null) {
+    if (!high.equalsIgnoreCase("Unknown")) {
       assertEquals(highTime.getValue(), high);
     } else {
-      validateNullFlavor(highTime, "NI");
+      if (highTime.getNullFlavor().size() > 0) validateNullFlavor(highTime, "NI");
     }
-    if (low != null) {
+    if (!low.equalsIgnoreCase("Unknown")) {
       assertEquals(lowTime.getValue(), low);
     } else {
-      validateNullFlavor(lowTime, "NI");
+      if (lowTime.getNullFlavor().size() > 0) validateNullFlavor(lowTime, "NI");
     }
   }
 
@@ -548,7 +550,6 @@ public class ValidationUtils {
           encounterEntry.getEncounter().getTemplateId().get(1),
           "2.16.840.1.113883.10.20.22.4.49",
           "2015-08-01");
-
       // Identifier
       validateIdentifier(
           r4Encounter.getIdentifier(), encounterEntry.getEncounter().getId(), r4Encounter.getId());
@@ -557,16 +558,10 @@ public class ValidationUtils {
       validateCodeWithTranslation(r4Encounter.getType(), encounterEntry.getEncounter().getCode());
 
       // Effective DtTm
-      String startDate =
-          (r4Encounter.getPeriod().getStart() == null)
-              ? null
-              : TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd");
-      String endDate =
-          (r4Encounter.getPeriod().getEnd() == null)
-              ? null
-              : TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd");
-      // TODO Clarification on timestamp
-      validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(), endDate, startDate);
+      validateEffectiveDtTm(
+          encounterEntry.getEncounter().getEffectiveTime(),
+          TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd"),
+          TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd"));
     }
   }
 }
