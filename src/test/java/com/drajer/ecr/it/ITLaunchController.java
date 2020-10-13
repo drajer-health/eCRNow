@@ -140,6 +140,9 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     assertNotNull(last.getData());
 
+    getLaunchDetailAndStatus();
+    ValidationUtils.setLaunchDetails(launchDetails);
+
     POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(last);
 
     EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles);

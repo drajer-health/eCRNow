@@ -31,6 +31,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
@@ -72,6 +73,8 @@ public class ValidationUtils {
 
   private static final Map<String, String> sectionConversion = new HashMap<>();
 
+  private static LaunchDetails launchDetails;
+
   static {
     sectionConversion.put("PROBLEMS", "11450-4");
     sectionConversion.put("ENCOUNTERS", "46240-8");
@@ -85,6 +88,10 @@ public class ValidationUtils {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
+
+  public static void setLaunchDetails(LaunchDetails launchDetails) {
+    ValidationUtils.launchDetails = launchDetails;
+  }
 
   public static POCDMT000040ClinicalDocument getClinicalDocXml(Eicr eicr) {
 
@@ -230,7 +237,7 @@ public class ValidationUtils {
     int idx = 0;
     if (entityId != null && !entityId.isEmpty()) {
       // ToDo - hardcoded need to change to retrieve for clientdetails.
-      validateID(cdaIdentifiers.get(idx++), "2.16.840.1.113883.1.1.1.1", entityId);
+      validateID(cdaIdentifiers.get(idx++), launchDetails.getAssigningAuthorityId(), entityId);
     }
 
     for (Identifier id : r4Identifiers) {
@@ -241,7 +248,7 @@ public class ValidationUtils {
           root = id.getSystem().replace("urn:oid:", "");
         } else {
           // ToDo - hardcoded need to change to retrieve for clientdetails.
-          root = "2.16.840.1.113883.1.1.1.1";
+          root = launchDetails.getAssigningAuthorityId();
         }
 
         validateID(cdaIdentifiers.get(idx++), root, id.getValue());
@@ -250,6 +257,20 @@ public class ValidationUtils {
   }
 
   public static void validateTelecom(List<ContactPoint> cr4Contacts, List<TEL> telecoms) {}
+
+  public static void validateConditionEffectiveDtTm(Condition cond, IVLTS effDtTm) {
+    String onset = null;
+    String abatement = null;
+    if (cond.getOnset() != null && cond.getOnset() instanceof DateTimeType) {
+      DateTimeType dt = (DateTimeType) cond.getOnset();
+      onset = TestUtils.convertToString(dt.getValue(), "yyyyMMdd");
+    }
+    if (cond.getAbatement() != null && cond.getAbatement() instanceof DateTimeType) {
+      DateTimeType dt = (DateTimeType) cond.getAbatement();
+      abatement = TestUtils.convertToString(dt.getValue(), "yyyyMMdd");
+    }
+    validateEffectiveDtTm(effDtTm, abatement, onset);
+  }
 
   public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
 
@@ -394,7 +415,8 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateProblemSection(Condition cond, POCDMT000040Section problemSection) {
+  public static void validateProblemSection(
+      List<Condition> conditions, POCDMT000040Section problemSection) {
 
     // TemplateID
     // Only one templateID should be present as per spec.
@@ -426,66 +448,78 @@ public class ValidationUtils {
     String display = "";
     String status = "";
 
-    display = cond.getCode().getCodingFirstRep().getDisplay();
-    if (cond.getClinicalStatus()
-            .getCodingFirstRep()
-            .getCode()
-            .contentEquals(ConditionClinical.ACTIVE.toCode())
-        || cond.getClinicalStatus()
-            .getCodingFirstRep()
-            .getCode()
-            .contentEquals(ConditionClinical.RELAPSE.toCode())) {
+    for (Condition cond : conditions) {
+      display = cond.getCode().getCodingFirstRep().getDisplay();
+      if (cond.getClinicalStatus()
+              .getCodingFirstRep()
+              .getCode()
+              .contentEquals(ConditionClinical.ACTIVE.toCode())
+          || cond.getClinicalStatus()
+              .getCodingFirstRep()
+              .getCode()
+              .contentEquals(ConditionClinical.RELAPSE.toCode())) {
 
-      status = "Active";
-    } else {
+        status = "Active";
+      } else {
 
-      status = "Resolved";
+        status = "Resolved";
+      }
+      Pair<String, String> row = new Pair<>(display, status);
+      rowValues.add(row);
     }
-    Pair<String, String> row = new Pair<>(display, status);
-    rowValues.add(row);
 
     // validateTableBody(table, rowValues);
 
     List<POCDMT000040Entry> entries = problemSection.getEntry();
-    validateEntries(cond, entries);
+
+    for (Condition cond : conditions) {
+      for (POCDMT000040Entry entry : entries) {
+        validateConditionEntries(cond, entry);
+      }
+    }
   }
 
-  public static void validateEntries(Condition cond, List<POCDMT000040Entry> entries) {
+  public static void validateConditionEntries(Condition cond, POCDMT000040Entry entry) {
 
-    for (POCDMT000040Entry entry : entries) {
+    assertEquals(entry.getTypeCode().value(), "DRIV");
+    assertEquals(entry.getAct().getClassCode().value(), "ACT");
+    assertEquals(entry.getAct().getMoodCode().value(), "EVN");
 
-      assertEquals(entry.getTypeCode().value(), "DRIV");
-      assertEquals(entry.getAct().getClassCode().value(), "ACT");
-      assertEquals(entry.getAct().getMoodCode().value(), "EVN");
+    // validate template id
+    validateTemplateID(
+        entry.getAct().getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.3", null);
+    validateTemplateID(
+        entry.getAct().getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.3", "2015-08-01");
 
-      // validate template id
-      validateTemplateID(
-          entry.getAct().getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.3", null);
-      validateTemplateID(
-          entry.getAct().getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.3", "2015-08-01");
+    // TO-DO assertion for Identifier
+    // validateIdentifier();
 
-      // TO-DO assertion for Identifier
-      // validateIdentifier();
+    validateCode(
+        entry.getAct().getCode(), "CONC", "2.16.840.1.113883.5.6", "HL7ActClass", "Concern");
 
-      validateCode(
-          entry.getAct().getCode(), "CONC", "2.16.840.1.113883.5.6", "HL7ActClass", "Concern");
-
-      // validating "active" status code
-      assertEquals(
-          entry.getAct().getStatusCode().getCode(),
-          cond.getClinicalStatus().getCoding().get(0).getCode());
-
-      // validate effective time
-      validateEffectiveDtTm(
-          entry.getAct().getEffectiveTime(),
-          TestUtils.convertToString(cond.getAbatementDateTimeType().getValue(), "yyyyMMdd"),
-          TestUtils.convertToString(cond.getOnsetDateTimeType().getValue(), "yyyyMMdd"));
-
-      // validate entryRelationship
-      List<POCDMT000040EntryRelationship> entryRelationships =
-          entry.getAct().getEntryRelationship();
-      validateEntryRelationships(entryRelationships, cond);
+    // validating status code
+    if (cond.getClinicalStatus() != null
+        && cond.getClinicalStatus().getCodingFirstRep() != null
+        && !StringUtils.isEmpty(cond.getClinicalStatus().getCodingFirstRep().getCode())
+        && (cond.getClinicalStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .contentEquals(ConditionClinical.ACTIVE.toCode())
+            || cond.getClinicalStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .contentEquals(ConditionClinical.RELAPSE.toCode()))) {
+      assertEquals(entry.getAct().getStatusCode().getCode(), "active");
+    } else {
+      assertEquals(entry.getAct().getStatusCode().getCode(), "completed");
     }
+
+    // validate effective date time
+    validateConditionEffectiveDtTm(cond, entry.getAct().getEffectiveTime());
+
+    // validate entryRelationship
+    List<POCDMT000040EntryRelationship> entryRelationships = entry.getAct().getEntryRelationship();
+    validateEntryRelationships(entryRelationships, cond);
   }
 
   public static void validateEntryRelationships(
@@ -523,10 +557,8 @@ public class ValidationUtils {
     // validate statuscode
     assertEquals(observation.getStatusCode().getCode(), "completed");
 
-    validateEffectiveDtTm(
-        observation.getEffectiveTime(),
-        TestUtils.convertToString(cond.getAbatementDateTimeType().getValue(), "yyyyMMdd"),
-        TestUtils.convertToString(cond.getOnsetDateTimeType().getValue(), "yyyyMMdd"));
+    // validate effective date time
+    validateConditionEffectiveDtTm(cond, observation.getEffectiveTime());
 
     // validate the value
     CD code = (CD) observation.getValue().get(0);
@@ -561,10 +593,8 @@ public class ValidationUtils {
     // validate statuscode
     assertEquals(observation.getStatusCode().getCode(), "completed");
 
-    validateEffectiveDtTm(
-        observation.getEffectiveTime(),
-        TestUtils.convertToString(cond.getAbatementDateTimeType().getValue(), "yyyyMMdd"),
-        TestUtils.convertToString(cond.getOnsetDateTimeType().getValue(), "yyyyMMdd"));
+    // validate effective date time
+    validateConditionEffectiveDtTm(cond, observation.getEffectiveTime());
 
     // validate the value
     validateValueCDWithValueSetAndVersion(cond, observation);
@@ -575,10 +605,11 @@ public class ValidationUtils {
       Condition cond, POCDMT000040Observation observation) {
 
     PatientExecutionState state = null;
-    LaunchDetails details = new LaunchDetails();
-    details.setStatus(
-        "{\"patientId\":\"12742571\",\"encounterId\":\"97953900\",\"matchTriggerStatus\":{\"actionId\":\"match-trigger\",\"jobStatus\":\"COMPLETED\",\"triggerMatchStatus\":true,\"matchedCodes\":[{\"matchedCodes\":[\"http://hl7.org/fhir/sid/icd-10-cm|U07.1\",\"http://snomed.info/sct|840539006\"],\"valueSet\":\"2.16.840.1.113762.1.4.1146.1123\",\"valueSetVersion\":\"1\",\"matchedPath\":\"Condition.code\"}]},\"createEicrStatus\":{\"actionId\":\"create-eicr\",\"jobStatus\":\"SCHEDULED\",\"eicrCreated\":false,\"eICRId\":\"\"},\"periodicUpdateStatus\":[{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"}],\"periodicUpdateJobStatus\":\"SCHEDULED\",\"closeOutEicrStatus\":{\"actionId\":\"\",\"jobStatus\":\"NOT_STARTED\",\"eicrClosed\":false,\"eICRId\":\"\"},\"validateEicrStatus\":[],\"submitEicrStatus\":[],\"rrStatus\":[],\"eicrsReadyForValidation\":[],\"eicrsForRRCheck\":[],\"eicrsReadyForSubmission\":[]}");
-    state = ApplicationUtils.getDetailStatus(details);
+    // LaunchDetails details = new LaunchDetails();
+    // details.setStatus(
+    //
+    // "{\"patientId\":\"12742571\",\"encounterId\":\"97953900\",\"matchTriggerStatus\":{\"actionId\":\"match-trigger\",\"jobStatus\":\"COMPLETED\",\"triggerMatchStatus\":true,\"matchedCodes\":[{\"matchedCodes\":[\"http://hl7.org/fhir/sid/icd-10-cm|U07.1\",\"http://snomed.info/sct|840539006\"],\"valueSet\":\"2.16.840.1.113762.1.4.1146.1123\",\"valueSetVersion\":\"1\",\"matchedPath\":\"Condition.code\"}]},\"createEicrStatus\":{\"actionId\":\"create-eicr\",\"jobStatus\":\"SCHEDULED\",\"eicrCreated\":false,\"eICRId\":\"\"},\"periodicUpdateStatus\":[{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"}],\"periodicUpdateJobStatus\":\"SCHEDULED\",\"closeOutEicrStatus\":{\"actionId\":\"\",\"jobStatus\":\"NOT_STARTED\",\"eicrClosed\":false,\"eICRId\":\"\"},\"validateEicrStatus\":[],\"submitEicrStatus\":[],\"rrStatus\":[],\"eicrsReadyForValidation\":[],\"eicrsForRRCheck\":[],\"eicrsReadyForSubmission\":[]}");
+    state = ApplicationUtils.getDetailStatus(launchDetails);
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
 
     for (MatchedTriggerCodes mtc : mtcs) {
@@ -736,10 +767,13 @@ public class ValidationUtils {
           r4Encounter.getType().get(0), encounterEntry.getEncounter().getCode());
 
       // Effective DtTm
-      validateEffectiveDtTm(
-          encounterEntry.getEncounter().getEffectiveTime(),
-          TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd"),
-          TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd"));
+      String end = null;
+      String start = null;
+      if (r4Encounter.getPeriod() != null) {
+        end = TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd");
+        start = TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd");
+      }
+      validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(), end, start);
     }
   }
 }

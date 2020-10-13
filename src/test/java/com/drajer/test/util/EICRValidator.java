@@ -1,5 +1,6 @@
 package com.drajer.test.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.Bundle;
@@ -39,12 +40,13 @@ public class EICRValidator {
         resourceFileName = "Condition";
         Bundle conditionBundle =
             TestUtils.getR4BundleFromJson(allResourceFiles.get(resourceFileName).get(0));
-        Condition condition = null;
+        List<Condition> conditions = new ArrayList<>();
 
         for (BundleEntryComponent entry : conditionBundle.getEntry()) {
-          condition = (Condition) entry.getResource();
+          Condition condition = (Condition) entry.getResource();
+          conditions.add(condition);
         }
-        ValidationUtils.validateProblemSection(condition, section);
+        ValidationUtils.validateProblemSection(conditions, section);
       }
       // TODO for other sections
     }
