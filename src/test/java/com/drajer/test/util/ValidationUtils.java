@@ -477,6 +477,12 @@ public class ValidationUtils {
         validateConditionEntries(cond, entry);
       }
     }
+
+    // TODO This needs to be uncommented once the bug is fixed
+    /*int idx = 0;
+    for (Condition cond : conditions) {
+    	validateConditionEntries(cond, entries.get(idx++));
+      }*/
   }
 
   public static void validateConditionEntries(Condition cond, POCDMT000040Entry entry) {
@@ -491,7 +497,7 @@ public class ValidationUtils {
     validateTemplateID(
         entry.getAct().getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.3", "2015-08-01");
 
-    // TO-DO assertion for Identifier
+    // TO-DO assertion for Identifier(Random UUID is generated in code and populated.)
     // validateIdentifier();
 
     validateCode(
@@ -542,7 +548,8 @@ public class ValidationUtils {
     validateTemplateID(
         observation.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.4", "2015-08-01");
 
-    // validateIdentifier();
+    // validate Identifier
+    validateIdentifier(cond.getIdentifier(), observation.getId(), cond.getId());
 
     // validateCodeWithTranslation(codes, code);
     validateCode(
@@ -579,6 +586,7 @@ public class ValidationUtils {
         observation.getTemplateId().get(2), "2.16.840.1.113883.10.20.15.2.3.3", "2016-12-01");
 
     // validateIdentifier();
+    validateIdentifier(cond.getIdentifier(), observation.getId(), cond.getId());
 
     // validate Code
     validateCode(
