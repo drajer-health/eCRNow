@@ -47,6 +47,8 @@ public class EICRValidator {
           conditions.add(condition);
         }
         ValidationUtils.validateProblemSection(conditions, section);
+      }else if (sectionName.equalsIgnoreCase("ILLNESS")) {
+          resourceFileName = "Condition";
       }
       // TODO for other sections
     }
