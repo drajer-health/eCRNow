@@ -57,7 +57,7 @@ public class ITClientController extends BaseIntegrationTest {
     session.close();
   }
 
-  @Parameters(name = "{index}: Execute Test with TestCase= {0}")
+  @Parameters(name = "{index}: {0}")
   public static Collection<Object[]> data() {
     testDataGenerator = new TestDataGenerator("TestClientController.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();

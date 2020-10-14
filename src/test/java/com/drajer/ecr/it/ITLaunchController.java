@@ -10,16 +10,18 @@ import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.EICRValidator;
 import com.drajer.test.util.TestDataGenerator;
+import com.drajer.test.util.ValidationUtils;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
+import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -32,8 +34,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 public class ITLaunchController extends BaseIntegrationTest {
 
@@ -60,6 +60,9 @@ public class ITLaunchController extends BaseIntegrationTest {
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
 
+  List<String> validationSectionList;
+  Map<String, List<String>> allResourceFiles;
+
   WireMockHelper stubHelper;
 
   @Before
@@ -69,6 +72,9 @@ public class ITLaunchController extends BaseIntegrationTest {
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
     expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
+    validationSectionList =
+        Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
+    allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
     // Data Setup
     createTestClientDetailsInDB(clientDetailsFile);
@@ -92,7 +98,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     stubHelper.stopMockServer();
   }
 
-  @Parameters(name = "{index}: Execute TestSystemLaunch with Test Case = {0}")
+  @Parameters(name = "{index}: {0}")
   public static Collection<Object[]> data() {
     testDataGenerator = new TestDataGenerator("TestSystemLaunch.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
@@ -109,8 +115,6 @@ public class ITLaunchController extends BaseIntegrationTest {
   @Test
   public void testSystemLaunch() throws Exception {
 
-    // System.out.println("Port==" + wireMockHttpPort);
-
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
@@ -120,16 +124,24 @@ public class ITLaunchController extends BaseIntegrationTest {
         restTemplate.exchange(
             createURLWithPort(systemLaunchURI), HttpMethod.POST, entity, String.class);
     logger.info("Received Response. Waiting for EICR generation.....");
-    Thread.sleep(60000);
+    /*   Thread.sleep(60000);
 
-    Query query = session.createQuery("from Eicr order by id DESC");
-    query.setMaxResults(1);
-    Eicr last = (Eicr) query.uniqueResult();
-
+        Query query = session.createQuery("from Eicr order by id DESC");
+        query.setMaxResults(1);
+        Eicr last = (Eicr) query.uniqueResult();
+    */
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     assertTrue(response.getBody().contains("App is launched successfully"));
 
-    assertNotNull(last.getData());
+    Eicr createEicr = getCreateEicrDocument();
+    assertNotNull(createEicr.getData());
+
+    getLaunchDetailAndStatus();
+    ValidationUtils.setLaunchDetails(launchDetails);
+
+    POCDMT000040ClinicalDocument clinicalDoc = ValidationUtils.getClinicalDocXml(createEicr);
+
+    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles);
   }
 
   private void getLaunchDetailAndStatus() {
@@ -150,21 +162,24 @@ public class ITLaunchController extends BaseIntegrationTest {
     }
   }
 
-  private Document getCreateEicrDocument() {
-    Document eicrDoc = null;
+  private Eicr getCreateEicrDocument() {
+
     try {
 
-      if (state.getCreateEicrStatus().getEicrCreated()) {
-        Eicr createEicr =
-            session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId()));
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        InputSource doc = new InputSource(createEicr.getData());
-        eicrDoc = dBuilder.parse(doc);
-      }
+      do {
+
+        // Minimum 4 sec is required as App will execute
+        // createEicr workflow after 3 sec as per eRSD.
+        Thread.sleep(4000);
+        getLaunchDetailAndStatus();
+
+      } while (!state.getCreateEicrStatus().getEicrCreated());
+
+      return (session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId())));
+
     } catch (Exception e) {
       fail(e.getMessage() + "Error while retrieving EICR document");
     }
-    return eicrDoc;
+    return null;
   }
 }
