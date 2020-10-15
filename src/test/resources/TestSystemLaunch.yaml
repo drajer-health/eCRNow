@@ -32,7 +32,7 @@ testCase:
       - params:
           patient: "12742571"
           category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationBundle_1.json"
+        responseFilePath: "R4/Observation/ObservationLaboratory.json"
       - params:
           patient: "12742571"
           code: "http://loinc.org|90767-5"
