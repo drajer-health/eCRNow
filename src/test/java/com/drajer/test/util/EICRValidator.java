@@ -47,8 +47,17 @@ public class EICRValidator {
           conditions.add(condition);
         }
         ValidationUtils.validateProblemSection(conditions, section);
-      }else if (sectionName.equalsIgnoreCase("ILLNESS")) {
-          resourceFileName = "Condition";
+      } else if (sectionName.equalsIgnoreCase("ILLNESS")) {
+        resourceFileName = "Condition";
+        Bundle conditionBundle =
+            TestUtils.getR4BundleFromJson(allResourceFiles.get(resourceFileName).get(0));
+        List<Condition> conditions = new ArrayList<>();
+
+        for (BundleEntryComponent entry : conditionBundle.getEntry()) {
+          Condition condition = (Condition) entry.getResource();
+          conditions.add(condition);
+        }
+        ValidationUtils.validatePresentIllnessSection(conditions, section);
       }
       // TODO for other sections
     }

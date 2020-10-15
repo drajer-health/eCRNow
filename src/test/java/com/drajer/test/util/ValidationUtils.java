@@ -784,4 +784,66 @@ public class ValidationUtils {
       validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(), end, start);
     }
   }
+
+  public static void validatePresentIllnessSection(
+      List<Condition> conditions, POCDMT000040Section illnessSection) {
+
+    validateTemplateID(
+        illnessSection.getTemplateId().get(0), "1.3.6.1.4.1.19376.1.5.3.1.3.4", null);
+
+    validateCode(
+        illnessSection.getCode(),
+        "10164-2",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "History of Present Illness");
+
+    // TODO Title
+    // Narrative Text of type Table
+    StrucDocText docText = illnessSection.getText();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+
+    validateTableBorderAndWidth(table, "1", "100%");
+
+    List<String> header = new ArrayList<>();
+    header.add("Narrative Text");
+    validateTableHeadingTitles(table, header);
+
+    List<StrucDocTr> trs = table.getTbody().get(0).getTr();
+    assertFalse(trs.isEmpty());
+    // Only one row for every condition
+    // assertEquals(conditions.size(), trs.size());
+
+    // Only one column
+    assertEquals(1, trs.get(0).getThOrTd().size());
+
+    StrucDocTd col1 = (StrucDocTd) trs.get(0).getThOrTd().get(0);
+
+    StrucDocContent rowCol1 =
+        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
+    String rowColValue = (String) rowCol1.getContent().get(0);
+    String text = "Unknown History of Present Illness";
+
+    if (conditions != null && conditions.size() > 0) {
+      int idx = 1;
+      for (Condition prob : conditions) {
+        rowCol1 = (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(idx)).getValue());
+        rowColValue = (String) rowCol1.getContent().get(0);
+        String probDisplayName = "Unknown";
+        if (prob.getCode() != null && !StringUtils.isEmpty(prob.getCode().getText())) {
+
+          probDisplayName = prob.getCode().getText();
+          assertEquals(rowColValue, probDisplayName);
+        } else if (prob.getCode().getCodingFirstRep() != null
+            && !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
+
+          probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
+          assertEquals(rowColValue, probDisplayName);
+        }
+        idx++;
+      }
+    } else {
+      assertEquals(rowColValue, text);
+    }
+  }
 }
