@@ -32,7 +32,7 @@ testCase:
       - params:
           patient: "12742571"
           category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationBundle_1.json"
+        responseFilePath: "R4/Observation/ObservationLaboratory.json"
       - params:
           patient: "12742571"
           code: "http://loinc.org|90767-5"
@@ -41,6 +41,10 @@ testCase:
           patient: "12742571"
           code: "http://loinc.org|929762-2"
         responseFilePath: "R4/Observation/ObservationBundle_3.json"
+      Immunization:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Immunization/Immunization.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

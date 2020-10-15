@@ -124,12 +124,7 @@ public class ITLaunchController extends BaseIntegrationTest {
         restTemplate.exchange(
             createURLWithPort(systemLaunchURI), HttpMethod.POST, entity, String.class);
     logger.info("Received Response. Waiting for EICR generation.....");
-    /*   Thread.sleep(60000);
 
-        Query query = session.createQuery("from Eicr order by id DESC");
-        query.setMaxResults(1);
-        Eicr last = (Eicr) query.uniqueResult();
-    */
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     assertTrue(response.getBody().contains("App is launched successfully"));
 
@@ -170,7 +165,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 
         // Minimum 4 sec is required as App will execute
         // createEicr workflow after 3 sec as per eRSD.
-        Thread.sleep(4000);
+        // Thread.sleep(4000);
         getLaunchDetailAndStatus();
 
       } while (!state.getCreateEicrStatus().getEicrCreated());
