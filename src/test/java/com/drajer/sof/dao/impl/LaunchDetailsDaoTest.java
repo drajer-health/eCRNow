@@ -1,6 +1,6 @@
 package com.drajer.sof.dao.impl;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
@@ -77,6 +77,35 @@ public class LaunchDetailsDaoTest {
             patientID, encounterID, fhirServerUrl);
 
     assertNotNull(retrievedLaunchDetails);
+  }
+
+  @Test
+  public void deleteLaunchDetails() throws JsonParseException, JsonMappingException, IOException {
+    LaunchDetails launchDetails =
+        mapper.readValue(
+            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
+            LaunchDetails.class);
+
+    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
+
+    String patientID = savedLaunchDetails.getLaunchPatientId();
+    String encounterID = savedLaunchDetails.getEncounterId();
+    String fhirServerUrl = savedLaunchDetails.getEhrServerURL();
+
+    // Negative test
+    launchDetailsDaoImpl.delete(savedLaunchDetails);
+    LaunchDetails retrievedLaunchDetails =
+        launchDetailsDaoImpl.getLaunchDetailsByPatientAndEncounter(
+            patientID, encounterID, fhirServerUrl);
+
+    String errorMessage = "attempt to create delete event with null entity";
+    Exception exception =
+        assertThrows(
+            RuntimeException.class,
+            () -> {
+              launchDetailsDaoImpl.delete(retrievedLaunchDetails);
+            });
+    assertTrue(errorMessage.contains(errorMessage));
   }
 
   @Test

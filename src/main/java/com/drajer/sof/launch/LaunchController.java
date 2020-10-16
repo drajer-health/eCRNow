@@ -32,13 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -466,5 +460,25 @@ public class LaunchController {
   private static Date getDate(String thresholdValue) {
     Date date = DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
     return date;
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/launchDetails/", method = RequestMethod.DELETE)
+  public String deleteLaunchDetails(
+      @RequestBody SystemLaunch systemLaunch,
+      HttpServletRequest request,
+      HttpServletResponse response)
+      throws IOException {
+    LaunchDetails launchDetails =
+        authDetailsService.getLaunchDetailsByPatientAndEncounter(
+            systemLaunch.getPatientId(),
+            systemLaunch.getEncounterId(),
+            systemLaunch.getFhirServerURL());
+    if (launchDetails != null) {
+      authDetailsService.delete(launchDetails);
+      return "LaunchDetails deleted successfully.";
+    }
+    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Launch Details Not found");
+    return "Launch Details Not found";
   }
 }
