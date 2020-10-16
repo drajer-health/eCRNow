@@ -248,7 +248,7 @@ public class CreateEicrActionTest {
     when(mockDetails.getStartDate()).thenReturn(new Date());
 
     // Mock EcaUtils
-    when(EcaUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
     // Mock RelatedActions
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);

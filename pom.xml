@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.1.RELEASE</version>
+		<version>2.3.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
@@ -19,6 +19,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<fhir.version>4.0.3</fhir.version>
+		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 
 	<dependencies>
@@ -43,7 +44,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
-		
+
 		<!--mssql-->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
@@ -99,7 +100,7 @@
 			<artifactId>json</artifactId>
 			<version>20190722</version>
 		</dependency>
-		
+
 		<!-- Java stuff -->
 		<dependency>
    			<groupId>com.fasterxml.jackson.core</groupId>
@@ -112,20 +113,20 @@
     		<artifactId>javatuples</artifactId>
     		<version>1.2</version>
 		</dependency>
-		
+
 		<dependency>
   			<groupId>org.apache.commons</groupId>
   			<artifactId>commons-collections4</artifactId>
   			<version>4.4</version>
 		</dependency>
-		
+
 		<!--  Schematron Validator -->
 		<dependency>
   			<groupId>com.helger</groupId>
   			<artifactId>ph-schematron-validator</artifactId>
   			<version>5.6.0</version>
 		</dependency>
-		
+
 		<!--  Direct Dependencies -->
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -166,7 +167,7 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.3.6</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
@@ -184,23 +185,23 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
 		</dependency>
-		
+
 		<dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-api-mockito2</artifactId>
                 <version>2.0.7</version>
                 <scope>test</scope>
         </dependency>
- 
+
         <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-module-junit4</artifactId>
                 <version>2.0.7</version>
                 <scope>test</scope>
         </dependency>
-        
-        
-		
+
+
+
 		<!-- Spring Boot Test -->
 
 		<dependency>
@@ -214,7 +215,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -230,8 +231,19 @@
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 		    <artifactId>jackson-dataformat-yaml</artifactId>
  		   <version>2.11.1</version>
- 		   </dependency>		
-	</dependencies>
+		</dependency>
+		<!-- Dependency for formatting logs in json format -->
+		<dependency>
+			<groupId>ch.qos.logback.contrib</groupId>
+			<artifactId>logback-json-classic</artifactId>
+			<version>${logback-contrib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback.contrib</groupId>
+			<artifactId>logback-jackson</artifactId>
+			<version>${logback-contrib.version}</version>
+		</dependency>
+</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -239,8 +251,8 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>			
-			
+			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -356,7 +368,7 @@
 						<configuration>
 							<dataFile>${project.build.directory}/jacoco-ut.exec</dataFile>
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-						</configuration>						
+						</configuration>
 					</execution>
 					<!-- For Integration Test Coverage - jacoco-it.exec -->
                     <execution>
@@ -380,8 +392,8 @@
                             <dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
                         </configuration>
-                    </execution>	
-                    <!--  Merge both Unit and Integration Test Coverage to one report - jacoco.exec --> 
+                    </execution>
+                    <!--  Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
 			        <execution>
 			            <id>jacoco-merge-report-verify</id>
 			            <phase>verify</phase>
@@ -403,28 +415,28 @@
 			              <outputDirectory>${project.reporting.outputDirectory}/report</outputDirectory>
 			              <skip>${skip-jacoco-check}</skip>
 			              </configuration>
-			          </execution>                 			
+			          </execution>
 			</executions>
 			</plugin>
             <!-- Used for unit tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.21.0</version>                
+                <version>2.21.0</version>
 				<executions>
 					<execution>
 					<id>default-test</id>
 					<goals>
 						<goal>test</goal>
 					</goals>
-					<configuration> 
+					<configuration>
 	                    <argLine>${surefireArgLine}</argLine>
  	                    <skipTests>${skip.unit.tests}</skipTests>
 	                    <excludes>
 	                        <exclude>**/IT*.java</exclude>
 	                    </excludes>
 	                </configuration>
-					</execution>				
+					</execution>
 				</executions>
             </plugin>
             <!-- Used for integration tests -->
@@ -441,14 +453,14 @@
                         <configuration>
 				            <includes>
 				              <include>**/IT*.java</include>
-				            </includes>                            
+				            </includes>
                             <argLine>${failsafeArgLine}</argLine>
                             <skipTests>${skip.integration.tests}</skipTests>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-			
+
 			<plugin>
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
@@ -463,10 +475,10 @@
                     </execution>
                 </executions>
 			</plugin>
-			
+
 		</plugins>
 	</build>
-	
+
 	<reporting>
     <plugins>
       <plugin>

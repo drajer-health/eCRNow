@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
@@ -27,15 +28,10 @@ public class SubmitEicrAction extends AbstractAction {
       LaunchDetails details = (LaunchDetails) obj;
       PatientExecutionState state = null;
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
 
       logger.info(
           " Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());
-
-      String data =
-          "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
-
-      // ActionRepo.getInstance().getDirectTransport().sendData(details, data);
 
       if (getRelatedActions() != null && getRelatedActions().size() > 0) {
 
@@ -43,12 +39,12 @@ public class SubmitEicrAction extends AbstractAction {
 
         List<RelatedAction> racts = getRelatedActions();
 
-        for (RelatedAction ract : racts) {
+        for (RelatedAction actn : racts) {
 
-          if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+          if (actn.getRelationship() == ActionRelationshipType.AFTER) {
 
             // check if the action is completed.
-            String actionId = ract.getRelatedAction().getActionId();
+            String actionId = actn.getRelatedAction().getActionId();
 
             if (!state.hasActionCompleted(actionId)) {
 
@@ -63,8 +59,8 @@ public class SubmitEicrAction extends AbstractAction {
           } else {
             logger.info(
                 " This action is not dependent on the action relationship : {}, Action Id = {}",
-                ract.getRelationship(),
-                ract.getRelatedAction().getActionId());
+                actn.getRelationship(),
+                actn.getRelatedAction().getActionId());
           }
         }
       } else {

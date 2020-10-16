@@ -1,6 +1,7 @@
 package com.drajer.routing;
 
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import org.json.JSONObject;
@@ -42,14 +43,13 @@ public class FhirEicrSender {
 
       bundleResponse = new JSONObject(response.getBody());
 
-      logger.info("Received response: " + response.getBody());
+      logger.info("Received response ");
 
       String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/BundleResponse.json";
       logger.info("Saving response to file:::::" + fileName);
-      FhirContextInitializer.saveBundleToFile(response.getBody(), fileName);
+      ApplicationUtils.saveDataToFile(response.getBody(), fileName);
 
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error("Error in Submitting Bundle to FHIR Endpoint: " + fhirServerURL);
     }
     return bundleResponse;

@@ -22,6 +22,7 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.Dstu2ResourcesData;
@@ -247,7 +248,7 @@ public class LoadingQueryDstu2Bundle {
                     "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
               }
             } else {
-              logger.info("Medication Reference Found=============>" + medReference);
+              logger.info("Medication Reference Found=============>");
               Medication medication =
                   dstu2ResourcesData.getMedicationData(
                       context, client, launchDetails, dstu2FhirData, medReference);
@@ -360,14 +361,12 @@ public class LoadingQueryDstu2Bundle {
     // logger.info("DiagnosticOrders Codes Size=====>" +
     // dstu2FhirData.getDiagnosticOrderCodes().size());
 
-    // logger.info(context.newJsonParser().encodeResourceToString(bundle));
-
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()
             + "/LoadingQueryDSTU2Bundle-"
             + launchDetails.getLaunchPatientId()
             + ".json";
-    FhirContextInitializer.saveBundleToFile(
+    ApplicationUtils.saveDataToFile(
         context.newJsonParser().encodeResourceToString(bundle), fileName);
     return bundle;
   }

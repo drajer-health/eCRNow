@@ -466,8 +466,7 @@ public class Dstu2CdaHeaderGenerator {
 
       if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
 
-        logger.info(" Found Identifier with MR " + id.getSystem() + id.getValue());
-        ;
+        logger.info(" Found Identifier with Type MR ");
 
         String system =
             CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());

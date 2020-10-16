@@ -1,11 +1,9 @@
 package com.drajer.routing.impl;
 
 import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.EicrSender;
 import com.drajer.sof.model.LaunchDetails;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -29,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DirectEicrSender extends EicrSender {
 
-  private final Logger logger = LoggerFactory.getLogger(DirectEicrSender.class);
+  private static final Logger logger = LoggerFactory.getLogger(DirectEicrSender.class);
 
   private static final String FILE_NAME = "eICR Report";
 
@@ -42,23 +40,9 @@ public class DirectEicrSender extends EicrSender {
 
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
-      ObjectMapper mapper = new ObjectMapper();
       PatientExecutionState state = null;
 
-      try {
-        state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-      } catch (JsonMappingException e1) {
-
-        String msg = "Unable to read/write execution state";
-        logger.error(msg);
-        throw new RuntimeException(msg);
-
-      } catch (JsonProcessingException e1) {
-
-        String msg = "Unable to read/write execution state";
-        logger.error(msg);
-        throw new RuntimeException(msg);
-      }
+      state = ApplicationUtils.getDetailStatus(details);
 
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 

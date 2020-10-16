@@ -17,6 +17,7 @@ import com.drajer.sof.service.TriggerQueryService;
 import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,7 +66,6 @@ public class LaunchController {
   //	FhirEicrSender fhirEicrBundle;
 
   private final SecureRandom random = new SecureRandom();
-
 
   @CrossOrigin
   @RequestMapping("/api/launchDetails/{tokenId}")
@@ -121,7 +121,11 @@ public class LaunchController {
     return "Success";
   }
 
-  /** This Method is created to test Submit Bundle to FHIR endpoint * */
+  /**
+   * This Method is created to test Submit Bundle to FHIR endpoint *
+   *
+   * @throws IOException
+   */
   /*@CrossOrigin
   @RequestMapping(value = "/api/submitBundle")
   public JSONObject submitBundle() throws IOException {
@@ -136,7 +140,6 @@ public class LaunchController {
     }
 
     String content = contentBuilder.toString();
-    logger.info(content);
 
     LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(388);
     JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
@@ -149,7 +152,8 @@ public class LaunchController {
   public String invokeSystemLaunch(
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,
-      HttpServletResponse response) {
+      HttpServletResponse response)
+      throws IOException {
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
     if (clientDetails != null) {
@@ -421,18 +425,12 @@ public class LaunchController {
         if (period.getStart() != null) {
           currentStateDetails.setStartDate(period.getStart());
         } else {
-          Date startDate =
-              DateUtils.addHours(
-                  new Date(), Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-          currentStateDetails.setStartDate(startDate);
+          currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
         }
         if (period.getEnd() != null) {
           currentStateDetails.setEndDate(period.getEnd());
         } else {
-          Date endDate =
-              DateUtils.addHours(
-                  new Date(), Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-          currentStateDetails.setEndDate(endDate);
+          currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
         }
       }
     }
@@ -453,21 +451,20 @@ public class LaunchController {
           if (period.getStart() != null) {
             currentStateDetails.setStartDate(period.getStart());
           } else {
-            Date startDate =
-                DateUtils.addHours(
-                    new Date(), Integer.parseInt(clientDetails.getEncounterStartThreshold()));
-            currentStateDetails.setStartDate(startDate);
+            currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
           }
           if (period.getEnd() != null) {
             currentStateDetails.setEndDate(period.getEnd());
           } else {
-            Date endDate =
-                DateUtils.addHours(
-                    new Date(), Integer.parseInt(clientDetails.getEncounterEndThreshold()));
-            currentStateDetails.setEndDate(endDate);
+            currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
           }
         }
       }
     }
+  }
+
+  private static Date getDate(String thresholdValue) {
+    Date date = DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
+    return date;
   }
 }

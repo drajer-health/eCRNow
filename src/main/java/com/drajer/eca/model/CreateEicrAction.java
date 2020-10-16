@@ -29,7 +29,7 @@ public class CreateEicrAction extends AbstractAction {
       LaunchDetails details = (LaunchDetails) obj;
       PatientExecutionState state = null;
 
-      state = EcaUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(details);
       state.getCreateEicrStatus().setActionId(getActionId());
 
       logger.info(
@@ -49,13 +49,13 @@ public class CreateEicrAction extends AbstractAction {
 
           List<RelatedAction> racts = getRelatedActions();
 
-          for (RelatedAction ract : racts) {
+          for (RelatedAction act : racts) {
 
             // Check for all actions AFTER which this action has to be executed for completion.
-            if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+            if (act.getRelationship() == ActionRelationshipType.AFTER) {
 
               // check if the action is completed.
-              String actionId = ract.getRelatedAction().getActionId();
+              String actionId = act.getRelatedAction().getActionId();
 
               if (!state.hasActionCompleted(actionId)) {
 
@@ -67,7 +67,7 @@ public class CreateEicrAction extends AbstractAction {
                 logger.info(" Related Action has been completed : {}", actionId);
 
                 // Check if there is any timing constraint that needs to be handled.
-                if (ract.getDuration() != null
+                if (act.getDuration() != null
                     && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 
                   // Duration is not null, meaning that the create action has to be delayed by the
@@ -76,7 +76,7 @@ public class CreateEicrAction extends AbstractAction {
 
                   WorkflowService.scheduleJob(
                       details.getId(),
-                      ract.getDuration(),
+                      act.getDuration(),
                       EcrActionTypes.CREATE_EICR,
                       details.getStartDate());
                   state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
@@ -94,8 +94,8 @@ public class CreateEicrAction extends AbstractAction {
             } else {
               logger.info(
                   " Action {} is related via {}",
-                  ract.getRelatedAction().getActionId(),
-                  ract.getRelationship());
+                  act.getRelatedAction().getActionId(),
+                  act.getRelationship());
             }
           }
         }
@@ -158,8 +158,6 @@ public class CreateEicrAction extends AbstractAction {
                 EcaUtils.updateDetailStatus(details, newState);
 
                 logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
-
-                logger.info(ecr.getData());
 
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
