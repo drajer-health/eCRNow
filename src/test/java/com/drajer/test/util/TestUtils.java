@@ -122,6 +122,23 @@ public class TestUtils {
     return null;
   }
 
+  public static List<Resource> getResourcesFromBundle(Bundle bundle, Class<?> resource) {
+
+    List<Resource> resources = new ArrayList<>();
+    try {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        if (entry.getResource() != null) {
+          if (entry.getResource().getClass() == resource) {
+            resources.add(entry.getResource());
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting the Resource from Bundle");
+    }
+    return resources;
+  }
+
   public static Bundle getR4BundleFromJson(String fileName) {
 
     String response = getFileContentAsString(fileName);

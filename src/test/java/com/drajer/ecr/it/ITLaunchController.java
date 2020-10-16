@@ -165,7 +165,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 
         // Minimum 4 sec is required as App will execute
         // createEicr workflow after 3 sec as per eRSD.
-        // Thread.sleep(4000);
+        Thread.sleep(2000);
         getLaunchDetailAndStatus();
 
       } while (!state.getCreateEicrStatus().getEicrCreated());

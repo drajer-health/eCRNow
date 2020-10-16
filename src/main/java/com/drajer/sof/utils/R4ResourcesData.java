@@ -120,7 +120,7 @@ public class R4ResourcesData {
     List<Condition> conditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<CodeableConcept>();
     // Filter Conditions based on Encounter Reference
-    if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Condition condition = (Condition) entry.getResource();
         if (!condition.getEncounter().isEmpty()) {
@@ -182,7 +182,7 @@ public class R4ResourcesData {
     List<Observation> observations = new ArrayList<>();
     List<CodeableConcept> observationCodes = new ArrayList<CodeableConcept>();
     // Filter Observations based on Encounter Reference
-    if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         if (!observation.getEncounter().isEmpty()) {
@@ -208,7 +208,7 @@ public class R4ResourcesData {
             observationCodes.addAll(findLaboratoryCodes(observation));
           }
           // If Issued date is not present, Checking for Effective Date
-        } else if (!observation.getEffective().isEmpty()) {
+        } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
           Type effectiveDate = (Type) observation.getEffectiveDateTimeType();
           Date effDate = effectiveDate.dateTimeValue().getValue();
           if (effDate.after(start) && effDate.before(end)) {
@@ -317,7 +317,7 @@ public class R4ResourcesData {
     List<MedicationAdministration> medAdministrations = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<CodeableConcept>();
     // Filter MedicationAdministrations based on Encounter Reference
-    if (bundle != null && !encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (bundle != null && encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
         if (!medAdministration.getContext().isEmpty()) {
@@ -389,7 +389,7 @@ public class R4ResourcesData {
     List<MedicationStatement> medStatements = new ArrayList<MedicationStatement>();
     List<CodeableConcept> medicationCodes = new ArrayList<CodeableConcept>();
     // Filter MedicationAdministrations based on Encounter Reference
-    if (bundle != null && !encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (bundle != null && encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         MedicationStatement medStatement = (MedicationStatement) entry.getResource();
         if (!medStatement.getContext().isEmpty()) {
@@ -454,7 +454,7 @@ public class R4ResourcesData {
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
     List<CodeableConcept> diagnosticReportCodes = new ArrayList<CodeableConcept>();
     // Filter DiagnosticReports based on Encounter Reference
-    if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
         if (!diagnosticReport.getEncounter().isEmpty()) {
@@ -526,7 +526,7 @@ public class R4ResourcesData {
     List<Immunization> immunizations = new ArrayList<>();
     List<CodeableConcept> immunizationCodes = new ArrayList<CodeableConcept>();
     // Filter Immunizations based on Encounter Reference
-    if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         if (!immunization.getEncounter().isEmpty()) {
@@ -590,7 +590,7 @@ public class R4ResourcesData {
     List<ServiceRequest> serviceRequests = new ArrayList<ServiceRequest>();
     List<CodeableConcept> serviceRequestCodes = new ArrayList<CodeableConcept>();
     // Filter ServiceRequests based on Encounter Reference
-    if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
         if (!serviceRequest.getEncounter().isEmpty()) {
@@ -641,7 +641,7 @@ public class R4ResourcesData {
 
     List<Observation> observations = new ArrayList<>();
     // Filter Observations based on Encounter Reference
-    if (!encounter.getIdElement().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         if (!observation.getEncounter().isEmpty()) {
@@ -665,7 +665,7 @@ public class R4ResourcesData {
             observations.add(observation);
           }
           // If Issued date is not present, Checking for Effective Date
-        } else if (!observation.getEffective().isEmpty()) {
+        } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
           Type effectiveDate = (Type) observation.getEffectiveDateTimeType();
           Date effDate = effectiveDate.dateTimeValue().getValue();
           if (effDate.after(start) && effDate.before(end)) {
@@ -729,9 +729,11 @@ public class R4ResourcesData {
                         context,
                         "Practitioner",
                         practitionerReference.getReferenceElement().getIdPart());
-            BundleEntryComponent practitionerEntry =
-                new BundleEntryComponent().setResource(practitioner);
-            bundle.addEntry(practitionerEntry);
+            if (practitioner != null) {
+              BundleEntryComponent practitionerEntry =
+                  new BundleEntryComponent().setResource(practitioner);
+              bundle.addEntry(practitionerEntry);
+            }
           }
         }
       }

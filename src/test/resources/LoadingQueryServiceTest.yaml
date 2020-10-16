@@ -1,11 +1,9 @@
 ---
-testName: "TriggerQueryServiceTest"
+testName: "LoadingQueryServiceTest"
 testCase:
   eCR-R4-Resource-FilterByEncounter:
     fileData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
-      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
-      ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -36,6 +34,22 @@ testCase:
           patient: "12742571"
           category: "laboratory"
         responseFilePath: "R4/Observation/ObservationLaboratory.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//loinc.org%7C90767-5"
+        responseFilePath: "R4/Observation/ObservationLaboratory.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//loinc.org%7C29762-2"
+        responseFilePath: "R4/Observation/ObservationLaboratory.json"
+      Immunization:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Immunization/Immunization.json"
+      ServiceRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -56,6 +70,22 @@ testCase:
           patient: "12742571"
           category: "laboratory"
         responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//loinc.org%7C90767-5"
+        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//loinc.org%7C29762-2"
+        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      Immunization:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Immunization/Immunization_FilterByDtTm.json"
+      ServiceRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
