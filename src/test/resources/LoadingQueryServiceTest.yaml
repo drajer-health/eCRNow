@@ -11,9 +11,6 @@ testCase:
       Encounter:
       - params: "97953900"
         responseFilePath: "R4/Encounter/Encounter_97953900.json"
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
       Practitioner:
       - params: "11817978"
         responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
@@ -25,6 +22,9 @@ testCase:
         responseFilePath: "R4/Practitioner/Practitioner_4122625.json"
       - params: "607928"
         responseFilePath: "R4/Practitioner/Practitioner_607928.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
       Condition:
       - params:
           patient: "12742571"
