@@ -85,7 +85,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
         bodyvals.put(
             CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, probDisplayName);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum;
       }
     } else {
@@ -93,7 +93,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
       Map<String, String> bodyvals = new HashMap<String, String>();
       bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, text);
 
-      sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
     }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));

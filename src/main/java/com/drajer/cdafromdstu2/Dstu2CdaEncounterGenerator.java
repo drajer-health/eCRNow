@@ -85,7 +85,7 @@ public class Dstu2CdaEncounterGenerator {
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 
-      sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, 1));
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, 1));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 

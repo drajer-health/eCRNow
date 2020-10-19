@@ -83,7 +83,7 @@ public class CdaMedicationGenerator {
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
         ++rowNum; // TODO: ++rowNum or rowNum++
       }
@@ -142,7 +142,7 @@ public class CdaMedicationGenerator {
         }
 
         sb.append(
-            CdaGeneratorUtils.getXmlForPIVL_TS(
+            CdaGeneratorUtils.getXmlForPIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
 
         // add Dose quantity

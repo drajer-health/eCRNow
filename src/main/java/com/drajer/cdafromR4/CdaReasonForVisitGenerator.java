@@ -82,7 +82,7 @@ public class CdaReasonForVisitGenerator {
     Map<String, String> bodyvals = new HashMap<String, String>();
     bodyvals.put(CdaGeneratorConstants.TEXT_EL_NAME, text);
 
-    sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+    sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 

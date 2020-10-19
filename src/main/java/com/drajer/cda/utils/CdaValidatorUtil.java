@@ -21,6 +21,10 @@ import org.xml.sax.SAXException;
 
 /** Util class for validating Cda data. */
 public class CdaValidatorUtil {
+	
+	private CdaValidatorUtil() {
+		throw new IllegalStateException("Utility class");
+	}
 
   public static final Logger logger = LoggerFactory.getLogger(CdaValidatorUtil.class);
 

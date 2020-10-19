@@ -64,7 +64,7 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT,
             CdaFhirUtilities.getStringForType(birthSex));
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, 0));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, 0));
 
         birthSexXml = generateBirthSexEntry(data, details, birthSex);
       }
