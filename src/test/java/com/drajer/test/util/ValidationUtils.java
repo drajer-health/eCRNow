@@ -822,28 +822,24 @@ public class ValidationUtils {
     StrucDocContent rowCol1 =
         (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
     String rowColValue = (String) rowCol1.getContent().get(0);
-    String text = "Unknown History of Present Illness";
 
     if (conditions != null && conditions.size() > 0) {
       int idx = 1;
       for (Condition prob : conditions) {
         rowCol1 = (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(idx)).getValue());
         rowColValue = (String) rowCol1.getContent().get(0);
-        String probDisplayName = "Unknown";
         if (prob.getCode() != null && !StringUtils.isEmpty(prob.getCode().getText())) {
-
-          probDisplayName = prob.getCode().getText();
-          assertEquals(rowColValue, probDisplayName);
+          assertEquals(rowColValue, prob.getCode().getText());
         } else if (prob.getCode().getCodingFirstRep() != null
             && !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
-
-          probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
-          assertEquals(rowColValue, probDisplayName);
+          assertEquals(rowColValue, prob.getCode().getCodingFirstRep().getDisplay());
+        } else {
+          assertEquals(rowColValue, "Unknown");
         }
         idx++;
       }
     } else {
-      assertEquals(rowColValue, text);
+      assertEquals(rowColValue, "Unknown History of Present Illness");
     }
   }
 }
