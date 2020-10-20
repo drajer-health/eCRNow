@@ -170,10 +170,9 @@ public class ActionRepo {
             // if Trigger is populated then we can add it.
             List<ActionData> td = a.getTriggerData();
 
-            if (td != null && td.size() > 0) {
+            if (td != null && !td.isEmpty()) {
 
-              if (actionsByTriggers == null)
-                actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction>>();
+              if (actionsByTriggers == null) actionsByTriggers = new HashMap<>();
 
               for (ActionData ad : td) {
 
@@ -194,10 +193,9 @@ public class ActionRepo {
             // if Trigger is populated then we can add it.
             List<TimingSchedule> ts = a.getTimingData();
 
-            if (ts != null && ts.size() > 0) {
+            if (ts != null && !ts.isEmpty()) {
 
-              if (actionsByTriggers == null)
-                actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction>>();
+              if (actionsByTriggers == null) actionsByTriggers = new HashMap<>();
 
               for (TimingSchedule tsd : ts) {
 
@@ -227,7 +225,7 @@ public class ActionRepo {
 
     logger.info(" *************** Printing EicrTypes Repository **************** " + "\n");
 
-    if (actions != null) {
+    if (actions != null && logger.isInfoEnabled()) {
 
       for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
 
@@ -235,7 +233,7 @@ public class ActionRepo {
 
         Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null) {
+        if (aa != null && logger.isInfoEnabled()) {
 
           for (AbstractAction a : aa) {
 
@@ -252,7 +250,7 @@ public class ActionRepo {
     logger.info(
         " *************** Start Printing Trigger Types Repository **************** " + "\n");
 
-    if (actionsByTriggers != null) {
+    if (actionsByTriggers != null && logger.isInfoEnabled()) {
 
       for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
 
@@ -260,7 +258,7 @@ public class ActionRepo {
 
         Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null) {
+        if (aa != null && logger.isInfoEnabled()) {
 
           for (AbstractAction a : aa) {
 

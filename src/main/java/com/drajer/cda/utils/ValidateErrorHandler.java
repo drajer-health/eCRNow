@@ -24,24 +24,12 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   public void fatalError(SAXParseException exception) throws SAXException {
     isException = true;
-    logger.error(
-        "Message: Error validating XML Data at Line: "
-            + exception.getLineNumber()
-            + " Column: "
-            + exception.getColumnNumber()
-            + "; Message: "
-            + exception.getMessage());
+    warning(exception);
   }
 
   public void error(SAXParseException exception) throws SAXException {
     isException = true;
-    logger.error(
-        "Message: Error validating XML Data at Line: "
-            + exception.getLineNumber()
-            + " Column: "
-            + exception.getColumnNumber()
-            + "; Message: "
-            + exception.getMessage());
+    warning(exception);
   }
 
   public boolean getIsException() {

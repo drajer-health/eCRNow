@@ -32,7 +32,7 @@ public class CQLExpressionCondition extends AbstractCondition {
 
     printBase();
 
-    logger.info(" Expression = {}", expression.toString());
+    logger.info(" Expression = {}", expression);
 
     logger.info(" **** End Printing CQL Condition **** ");
   }

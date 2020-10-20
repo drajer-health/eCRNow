@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class CdaSocialHistoryGenerator {
 
+  private CdaSocialHistoryGenerator() {}
+
   private static final Logger logger = LoggerFactory.getLogger(CdaSocialHistoryGenerator.class);
 
   public static String generateSocialHistorySection(R4FhirData data, LaunchDetails details) {
@@ -32,15 +34,15 @@ public class CdaSocialHistoryGenerator {
     List<Observation> travelHistory = data.getTravelObs();
 
     if (birthSex != null
-        || (pregObs != null && pregObs.size() > 0)
-        || (travelHistory != null && travelHistory.size() > 0)) {
+        || (pregObs != null && !pregObs.isEmpty())
+        || (travelHistory != null && !travelHistory.isEmpty())) {
 
       sb.append(generateSocialHistorySectionHeader(""));
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
       sb.append(
@@ -56,7 +58,7 @@ public class CdaSocialHistoryGenerator {
 
       if (birthSex != null) {
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(
             CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
             CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
@@ -66,10 +68,10 @@ public class CdaSocialHistoryGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, 0));
 
-        birthSexXml = generateBirthSexEntry(data, details, birthSex);
+        birthSexXml = generateBirthSexEntry(birthSex);
       }
 
-      if (pregObs != null && pregObs.size() > 0) {
+      if (pregObs != null && !pregObs.isEmpty()) {
 
         logger.error(" Pregnancy Status Observation Found , translation not implemented ");
         // These are not available in FHIR right now reliably, so nothing to process until further
@@ -80,7 +82,7 @@ public class CdaSocialHistoryGenerator {
         // Setup XML Entries
       }
 
-      if (travelHistory != null && travelHistory.size() > 0) {
+      if (travelHistory != null && !travelHistory.isEmpty()) {
 
         logger.error(" Pregnancy Status Observation Found , translation not implemented ");
         // These are not available in FHIR right now reliably, so nothing to process until further
@@ -118,8 +120,7 @@ public class CdaSocialHistoryGenerator {
     return sb.toString();
   }
 
-  public static String generateBirthSexEntry(
-      R4FhirData data, LaunchDetails details, CodeType birthSex) {
+  public static String generateBirthSexEntry(CodeType birthSex) {
 
     StringBuilder sb = new StringBuilder();
 

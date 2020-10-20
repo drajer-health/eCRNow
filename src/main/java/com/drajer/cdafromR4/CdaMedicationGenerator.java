@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -10,19 +10,17 @@ import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.Dosage;
 import org.hl7.fhir.r4.model.MedicationStatement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdaMedicationGenerator {
 
-  private static final Logger logger = LoggerFactory.getLogger(CdaMedicationGenerator.class);
+  private CdaMedicationGenerator() {}
 
   public static String generateMedicationSection(R4FhirData data, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
     List<MedicationStatement> meds = data.getMedications();
 
-    if (meds != null && meds.size() > 0) {
+    if (meds != null && !meds.isEmpty()) {
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -54,7 +52,7 @@ public class CdaMedicationGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.MED_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.MED_TABLE_COL_2_TITLE);
 
@@ -79,7 +77,7 @@ public class CdaMedicationGenerator {
           dt = CdaFhirUtilities.getStringForType(med.getEffective());
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
 

@@ -1,8 +1,7 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,14 +9,12 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Encounter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdaReasonForVisitGenerator {
 
-  private static final Logger logger = LoggerFactory.getLogger(CdaReasonForVisitGenerator.class);
+  private CdaReasonForVisitGenerator() {}
 
-  public static String generateReasonForVisitSection(R4FhirData data, LaunchDetails details) {
+  public static String generateReasonForVisitSection(R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -55,7 +52,7 @@ public class CdaReasonForVisitGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
     // Create Table Header.
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     list.add(CdaGeneratorConstants.TEXT_EL_NAME);
     sb.append(
         CdaGeneratorUtils.getXmlForTableHeader(
@@ -79,7 +76,7 @@ public class CdaReasonForVisitGenerator {
       }
     }
 
-    Map<String, String> bodyvals = new HashMap<String, String>();
+    Map<String, String> bodyvals = new HashMap<>();
     bodyvals.put(CdaGeneratorConstants.TEXT_EL_NAME, text);
 
     sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));

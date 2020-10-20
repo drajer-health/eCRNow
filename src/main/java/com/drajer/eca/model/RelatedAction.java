@@ -9,7 +9,7 @@ public class RelatedAction {
 
   private ActionRelationshipType relationship;
 
-  private AbstractAction relatedAction;
+  private AbstractAction abstractAction;
 
   private Duration duration;
 
@@ -24,11 +24,11 @@ public class RelatedAction {
   }
 
   public AbstractAction getRelatedAction() {
-    return relatedAction;
+    return abstractAction;
   }
 
-  public void setRelatedAction(AbstractAction relatedAction) {
-    this.relatedAction = relatedAction;
+  public void setRelatedAction(AbstractAction abstractAction) {
+    this.abstractAction = abstractAction;
   }
 
   public Duration getDuration() {
@@ -43,9 +43,10 @@ public class RelatedAction {
 
     logger.info(" *** Printing Related Actions *** ");
 
-    if (relationship != null) logger.info(" Relationship = {}", relationship.toString());
+    if (relationship != null && logger.isInfoEnabled())
+      logger.info(" Relationship = {}", relationship.toString());
 
-    if (relatedAction != null) relatedAction.print();
+    if (abstractAction != null) abstractAction.print();
 
     if (duration != null) {
 
