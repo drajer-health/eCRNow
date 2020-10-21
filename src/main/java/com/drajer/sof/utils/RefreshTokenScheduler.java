@@ -36,6 +36,8 @@ public class RefreshTokenScheduler {
 
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
+  private static final String GRANT_TYPE = "grant_type";
+
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info("Scheduling Job to Get AccessToken");
     logger.info("Accesstoken Expires in========>" + authDetails.getExpiry());
@@ -45,10 +47,9 @@ public class RefreshTokenScheduler {
     CronTrigger cronTrigger = new CronTrigger(cronExpression);
     taskScheduler.schedule(new RunnableTask(authDetails), cronTrigger);
     logger.info(
-        "Job Scheduled to get AccessToken for every "
-            + minutes
-            + " minutes for Client: "
-            + authDetails.getClientId());
+        "Job Scheduled to get AccessToken for every {} minutes for Client: {}",
+        minutes,
+        authDetails.getClientId());
   }
 
   class RunnableTask implements Runnable {
@@ -79,7 +80,7 @@ public class RefreshTokenScheduler {
       if (!authDetails.getIsSystem()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("grant_type", "refresh_token");
+        map.add(GRANT_TYPE, "refresh_token");
         map.add("refresh_token", authDetails.getRefreshToken());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
@@ -94,7 +95,7 @@ public class RefreshTokenScheduler {
             Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("grant_type", "client_credentials");
+        map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
@@ -103,7 +104,7 @@ public class RefreshTokenScheduler {
         tokenResponse = new JSONObject(response.getBody());
       }
       logger.info("Received AccessToken for Client: " + authDetails.getClientId());
-      logger.info("Received AccessToken: " + tokenResponse);
+      logger.info("Received AccessToken: {}", tokenResponse);
       updateAccessToken(authDetails, tokenResponse);
 
     } catch (Exception e) {
@@ -142,7 +143,7 @@ public class RefreshTokenScheduler {
       String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
       headers.add("Authorization", "Basic " + base64EncodedString);
       MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-      map.add("grant_type", "client_credentials");
+      map.add(GRANT_TYPE, "client_credentials");
       map.add("scope", clientDetails.getScopes());
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
@@ -153,7 +154,7 @@ public class RefreshTokenScheduler {
               clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
       logger.info("Received AccessToken for Client: " + clientDetails.getClientId());
-      logger.info("Received AccessToken: " + tokenResponse);
+      logger.info("Received AccessToken: {}", tokenResponse);
 
     } catch (Exception e) {
       logger.error(

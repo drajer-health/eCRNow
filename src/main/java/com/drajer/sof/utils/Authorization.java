@@ -35,10 +35,10 @@ public class Authorization {
     ResponseEntity<String> response = null;
     JSONObject metadata = null;
     try {
-      logger.info("Getting Metadata information from URL:::::" + serverURL);
+      logger.info("Getting Metadata information from URL::::: {}", serverURL);
       response = restTemplate.exchange(serverURL, HttpMethod.GET, entity, String.class);
       metadata = new JSONObject(response.getBody());
-      logger.info("Received Metadata Information from URL:::::" + serverURL);
+      logger.info("Received Metadata Information from URL::::: {}", serverURL);
     } catch (Exception e) {
       logger.error("Error in getting Metadata information for URL:::::" + serverURL);
     }
@@ -49,7 +49,7 @@ public class Authorization {
       LaunchDetails authDetailsObject, ClientDetails clientDetails, Integer state) {
     // TODO Auto-generated method stub
     String authUrl = authDetailsObject.getAuthUrl();
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, String> params = new HashMap<>();
     params.put("response_type", "code");
     params.put("client_id", clientDetails.getClientId());
     params.put("redirect_uri", authDetailsObject.getRedirectURI());
@@ -89,8 +89,8 @@ public class Authorization {
           restTemplate.exchange(
               tokenDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
-      logger.info("Received AccessToken for Client: " + tokenDetails.getClientId());
-      logger.info("Received AccessToken: " + tokenResponse);
+      logger.info("Received AccessToken for Client: {}", tokenDetails.getClientId());
+      logger.info("Received AccessToken: {}", tokenResponse);
 
     } catch (Exception e) {
       logger.error(

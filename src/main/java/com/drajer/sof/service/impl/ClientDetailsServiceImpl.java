@@ -20,17 +20,14 @@ public class ClientDetailsServiceImpl implements ClientDetailsService {
   }
 
   public ClientDetails getClientDetailsById(Integer id) {
-    ClientDetails clientDetails = clientDetailsDao.getClientDetailsById(id);
-    return clientDetails;
+    return clientDetailsDao.getClientDetailsById(id);
   }
 
   public ClientDetails getClientDetailsByUrl(String url) {
-    ClientDetails clientDetails = clientDetailsDao.getClientDetailsByUrl(url);
-    return clientDetails;
+    return clientDetailsDao.getClientDetailsByUrl(url);
   }
 
   public List<ClientDetails> getAllClientDetails() {
-    List<ClientDetails> clientDetailsList = clientDetailsDao.getAllClientDetails();
-    return clientDetailsList;
+    return clientDetailsDao.getAllClientDetails();
   }
 }
