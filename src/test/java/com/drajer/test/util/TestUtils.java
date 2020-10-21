@@ -2,6 +2,7 @@ package com.drajer.test.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.ecrapp.model.Eicr;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,13 +16,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.v3.POCDMT000040ClinicalDocument;
+import org.hl7.v3.POCDMT000040Component3;
+import org.hl7.v3.POCDMT000040Section;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -175,5 +185,45 @@ public class TestUtils {
       return formatter.format(date);
     }
     return null;
+  }
+
+  public static POCDMT000040Section getSection(
+      POCDMT000040ClinicalDocument cd, String requiredSection) {
+
+    List<POCDMT000040Component3> components = cd.getComponent().getStructuredBody().getComponent();
+    POCDMT000040Section section = null;
+    String code = null;
+
+    if (ValueSetMapping.sectionConversion.containsKey(requiredSection)) {
+      code = ValueSetMapping.sectionConversion.get(requiredSection);
+      for (POCDMT000040Component3 component : components) {
+        if (component.getSection().getCode().getCode().equals(code)) {
+          section = component.getSection();
+        }
+      }
+    }
+    return section;
+  }
+
+  public static POCDMT000040ClinicalDocument getClinicalDocXml(Eicr eicr) {
+
+    JAXBContext jaxbContext;
+    Unmarshaller jaxbUnmarshaller;
+    POCDMT000040ClinicalDocument clinicalDoc = null;
+    try {
+      jaxbContext = JAXBContext.newInstance("org.hl7.v3:org.hl7.sdtc");
+      jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+      Source source = new StreamSource(IOUtils.toInputStream(eicr.getData()));
+
+      JAXBElement<POCDMT000040ClinicalDocument> root =
+          jaxbUnmarshaller.unmarshal(source, POCDMT000040ClinicalDocument.class);
+
+      clinicalDoc = root.getValue();
+    } catch (JAXBException e) {
+      logger.error("Error in unmarshalling EIRC. " + e.getMessage());
+    }
+
+    return clinicalDoc;
   }
 }

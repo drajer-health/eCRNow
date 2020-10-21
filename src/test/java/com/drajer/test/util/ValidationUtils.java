@@ -3,27 +3,20 @@ package com.drajer.test.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.Assertion.AssertCdaElement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
@@ -38,99 +31,37 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.AD;
-import org.hl7.v3.ANY;
 import org.hl7.v3.AdxpCity;
 import org.hl7.v3.AdxpCountry;
 import org.hl7.v3.AdxpPostalCode;
 import org.hl7.v3.AdxpState;
 import org.hl7.v3.AdxpStreetAddressLine;
 import org.hl7.v3.CD;
-import org.hl7.v3.CE;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTS;
 import org.hl7.v3.PN;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
-import org.hl7.v3.POCDMT000040Component3;
 import org.hl7.v3.POCDMT000040Entry;
 import org.hl7.v3.POCDMT000040EntryRelationship;
 import org.hl7.v3.POCDMT000040Observation;
 import org.hl7.v3.POCDMT000040Section;
-import org.hl7.v3.QTY;
 import org.hl7.v3.StrucDocContent;
 import org.hl7.v3.StrucDocTable;
 import org.hl7.v3.StrucDocTd;
 import org.hl7.v3.StrucDocText;
-import org.hl7.v3.StrucDocTh;
-import org.hl7.v3.StrucDocThead;
 import org.hl7.v3.StrucDocTr;
 import org.hl7.v3.TEL;
-import org.hl7.v3.TS;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ValidationUtils {
 
-  private static final Map<String, String> sectionConversion = new HashMap<>();
-
   private static LaunchDetails launchDetails;
-
-  static {
-    sectionConversion.put("PROBLEMS", "11450-4");
-    sectionConversion.put("ENCOUNTERS", "46240-8");
-    sectionConversion.put("RESULTS", "30954-2");
-    sectionConversion.put("MEDICATIONS", "29549-3");
-    sectionConversion.put("IMMUNIZATIONS", "11369-6");
-    sectionConversion.put("HISTORY", "29762-2");
-    sectionConversion.put("ILLNESS", "10164-2");
-    sectionConversion.put("VISITS", "29299-5");
-    sectionConversion.put("TREATMENTS", "18776-5");
-  }
 
   private static final Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
 
   public static void setLaunchDetails(LaunchDetails launchDetails) {
     ValidationUtils.launchDetails = launchDetails;
-  }
-
-  public static POCDMT000040ClinicalDocument getClinicalDocXml(Eicr eicr) {
-
-    JAXBContext jaxbContext;
-    Unmarshaller jaxbUnmarshaller;
-    POCDMT000040ClinicalDocument clinicalDoc = null;
-    try {
-      jaxbContext = JAXBContext.newInstance("org.hl7.v3:org.hl7.sdtc");
-      jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-      Source source = new StreamSource(IOUtils.toInputStream(eicr.getData()));
-
-      JAXBElement<POCDMT000040ClinicalDocument> root =
-          jaxbUnmarshaller.unmarshal(source, POCDMT000040ClinicalDocument.class);
-
-      clinicalDoc = root.getValue();
-    } catch (JAXBException e) {
-      logger.error("Error in unmarshalling EIRC. " + e.getMessage());
-    }
-
-    return clinicalDoc;
-  }
-
-  public static POCDMT000040Section getSection(
-      POCDMT000040ClinicalDocument cd, String requiredSection) {
-
-    List<POCDMT000040Component3> components = cd.getComponent().getStructuredBody().getComponent();
-    POCDMT000040Section section = null;
-    String code = null;
-
-    if (sectionConversion.containsKey(requiredSection)) {
-      code = sectionConversion.get(requiredSection);
-      for (POCDMT000040Component3 component : components) {
-        if (component.getSection().getCode().getCode().equals(code)) {
-          section = component.getSection();
-        }
-      }
-    }
-    return section;
   }
 
   public static void validateAddress(List<Address> r4addr, List<AD> cdaAddr) {
@@ -177,7 +108,7 @@ public class ValidationUtils {
 
       AdxpStreetAddressLine streetAddressLine = (AdxpStreetAddressLine) ad.getContent().get(adIdx);
       assertNotNull(streetAddressLine);
-      validateNullFlavor(streetAddressLine, "NI");
+      AssertCdaElement.assertNullFlavor(streetAddressLine, "NI");
       adIdx++;
     }
 
@@ -188,7 +119,7 @@ public class ValidationUtils {
     if (addr.getCity() != null) {
       assertEquals(addr.getCity(), city.getPartType().get(0));
     } else {
-      validateNullFlavor(city, "NI");
+      AssertCdaElement.assertNullFlavor(city, "NI");
     }
 
     // state
@@ -198,7 +129,7 @@ public class ValidationUtils {
     if (addr.getState() != null) {
       assertEquals(addr.getState(), state.getPartType().get(0));
     } else {
-      validateNullFlavor(state, "NI");
+      AssertCdaElement.assertNullFlavor(state, "NI");
     }
 
     // postal code
@@ -208,7 +139,7 @@ public class ValidationUtils {
     if (addr.getPostalCode() != null) {
       assertEquals(addr.getPostalCode(), postCode.getPartType().get(0));
     } else {
-      validateNullFlavor(postCode, "NI");
+      AssertCdaElement.assertNullFlavor(postCode, "NI");
     }
 
     // country
@@ -217,18 +148,8 @@ public class ValidationUtils {
     if (addr.getCountry() != null) {
       assertEquals(addr.getCountry(), country.getPartType().get(0));
     } else {
-      validateNullFlavor(country, "NI");
+      AssertCdaElement.assertNullFlavor(country, "NI");
     }
-  }
-
-  public static void validateCode(
-      CE codes, String code, String codeSystem, String codeSystemName, String displayName) {
-
-    assertNotNull(codes);
-    assertEquals(code, codes.getCode());
-    assertEquals(codeSystem, codes.getCodeSystem());
-    assertEquals(codeSystemName, codes.getCodeSystemName());
-    assertEquals(displayName, codes.getDisplayName());
   }
 
   public static void validateIdentifier(
@@ -236,8 +157,8 @@ public class ValidationUtils {
 
     int idx = 0;
     if (entityId != null && !entityId.isEmpty()) {
-      // ToDo - hardcoded need to change to retrieve for clientdetails.
-      validateID(cdaIdentifiers.get(idx++), launchDetails.getAssigningAuthorityId(), entityId);
+      AssertCdaElement.assertID(
+          cdaIdentifiers.get(idx++), launchDetails.getAssigningAuthorityId(), entityId);
     }
 
     for (Identifier id : r4Identifiers) {
@@ -247,16 +168,61 @@ public class ValidationUtils {
         if (id.getSystem().contains("urn:oid")) {
           root = id.getSystem().replace("urn:oid:", "");
         } else {
-          // ToDo - hardcoded need to change to retrieve for clientdetails.
           root = launchDetails.getAssigningAuthorityId();
         }
 
-        validateID(cdaIdentifiers.get(idx++), root, id.getValue());
+        AssertCdaElement.assertID(cdaIdentifiers.get(idx++), root, id.getValue());
       }
     }
   }
 
-  public static void validateTelecom(List<ContactPoint> cr4Contacts, List<TEL> telecoms) {}
+  public static void validateTelecoms(List<ContactPoint> r4Telecom, List<TEL> cdaTelecom) {
+
+    assertNotNull(cdaTelecom);
+    assertTrue(cdaTelecom.size() > 0);
+    ContactPoint phone = null;
+    ContactPoint email = null;
+    int idx = 0;
+
+    if (r4Telecom != null && r4Telecom.size() > 0) {
+
+      for (ContactPoint r4Tel : r4Telecom) {
+
+        if (r4Tel.getSystem() != null) {
+          if (r4Tel.getSystem() == ContactPoint.ContactPointSystem.PHONE) {
+            if (!StringUtils.isEmpty(r4Tel.getValue())) {
+              // TODO - Code supports only one instance of phone.
+              // If it supports multiple this needs to be changes to list.
+              if (phone == null) {
+                phone = r4Tel;
+              }
+            }
+          } else if (r4Tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL) {
+            if (!StringUtils.isEmpty(r4Tel.getValue())) {
+              if (email == null) {
+                // TODO - Code supports only one instance of email.
+                // If it supports multiple this needs to be changes to list.
+                email = r4Tel;
+              }
+            }
+          }
+        }
+      }
+
+      // TODO - Order matters here phone and then email.
+      // If code changes this needs to be changed.
+      if (phone != null) {
+        AssertCdaElement.assertTelecomPhone(phone, cdaTelecom.get(idx++));
+      }
+      if (email != null) {
+        AssertCdaElement.assertTelecomPhone(phone, cdaTelecom.get(idx++));
+      }
+
+    } else {
+
+      AssertCdaElement.assertNullFlavor(cdaTelecom.get(0), "NI");
+    }
+  }
 
   public static void validateConditionEffectiveDtTm(Condition cond, IVLTS effDtTm) {
     String onset = null;
@@ -269,24 +235,7 @@ public class ValidationUtils {
       DateTimeType dt = (DateTimeType) cond.getAbatement();
       abatement = TestUtils.convertToString(dt.getValue(), "yyyyMMdd");
     }
-    validateEffectiveDtTm(effDtTm, abatement, onset);
-  }
-
-  public static void validateEffectiveDtTm(IVLTS effDtTm, String high, String low) {
-
-    assertNotNull(effDtTm);
-    if (low != null && !low.isEmpty()) {
-      TS lowTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(0)).getValue();
-      assertEquals(lowTime.getValue(), low);
-    }
-
-    if (high != null && !high.isEmpty()) {
-      TS highTime = (TS) ((JAXBElement<? extends QTY>) effDtTm.getRest().get(1)).getValue();
-      assertEquals(highTime.getValue(), high);
-    }
-
-    // Note: Spec doesn't say anything on nullflavour and hence not supported.
-
+    AssertCdaElement.assertEffectiveDtTm(effDtTm, abatement, onset);
   }
 
   public static void validateCodeWithTranslation(CodeableConcept codes, CD code) {
@@ -323,17 +272,11 @@ public class ValidationUtils {
       }
 
       if (translation == false) {
-        validateNullFlavor(code, "NI");
+        AssertCdaElement.assertNullFlavor(code, "NI");
       }
     } else {
-      validateNullFlavor(code, "NI");
+      AssertCdaElement.assertNullFlavor(code, "NI");
     }
-  }
-
-  public static void validateNullFlavor(ANY instance, String nullFlavor) {
-    assertNotNull(instance);
-    assertEquals(1, instance.getNullFlavor().size());
-    assertEquals(nullFlavor, instance.getNullFlavor().get(0));
   }
 
   public static void validateName(List<HumanName> r4name, PN cdaName) {}
@@ -344,27 +287,7 @@ public class ValidationUtils {
         (StrucDocTable) ((JAXBElement<?>) narrativeText.getContent().get(0)).getValue();
 
     assertNotNull(table);
-    validateTableBorderAndWidth(table, "1", "100%");
-  }
-
-  public static void validateTableBorderAndWidth(StrucDocTable table, String border, String width) {
-
-    assertNotNull(table);
-    assertEquals(border, table.getBorder());
-    assertEquals(width, table.getWidth());
-  }
-
-  public static void validateTableHeadingTitles(
-      StrucDocTable table, List<String> tableHeadingTitles) {
-    StrucDocThead thead = table.getThead();
-    assertNotNull(thead);
-    List<Object> ths = thead.getTr().get(0).getThOrTd();
-    assertEquals(tableHeadingTitles.size(), ths.size());
-    int loopIndex = 0;
-    for (String s : tableHeadingTitles) {
-      StrucDocTh th = (StrucDocTh) ths.get(loopIndex++);
-      assertEquals(s, th.getContent().get(0));
-    }
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
   }
 
   public static void validateTableBody(StrucDocTable table, List<Pair<String, String>> rowValues) {
@@ -397,36 +320,18 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateTemplateID(II templateID, String root, String extension) {
-
-    assertNotNull(templateID);
-    assertEquals(root, templateID.getRoot());
-    if (extension != null) {
-      assertEquals(extension, templateID.getExtension());
-    }
-  }
-
-  public static void validateID(II id, String root, String extension) {
-
-    assertNotNull(id);
-    assertEquals(root, id.getRoot());
-    if (extension != null) {
-      assertEquals(extension, id.getExtension());
-    }
-  }
-
   public static void validateProblemSection(
       List<Condition> conditions, POCDMT000040Section problemSection) {
 
     // TemplateID
     // Only one templateID should be present as per spec.
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         problemSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.5.1", null);
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         problemSection.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.2.5.1", "2015-08-01");
 
     // Code
-    validateCode(
+    AssertCdaElement.assertCodeCE(
         problemSection.getCode(), "11450-4", "2.16.840.1.113883.6.1", "LOINC", "PROBLEM LIST");
 
     // Title - To Do
@@ -437,12 +342,12 @@ public class ValidationUtils {
     StrucDocText docText = problemSection.getText();
     StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
 
-    validateTableBorderAndWidth(table, "1", "100%");
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
     List<String> header = new ArrayList<>();
     header.add("Problem or Diagnosis");
     header.add("Problem Status");
-    validateTableHeadingTitles(table, header);
+    AssertCdaElement.assertTableHeader(table, header);
 
     List<Pair<String, String>> rowValues = new ArrayList<>();
     String display = "";
@@ -492,15 +397,15 @@ public class ValidationUtils {
     assertEquals(entry.getAct().getMoodCode().value(), "EVN");
 
     // validate template id
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         entry.getAct().getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.3", null);
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         entry.getAct().getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.3", "2015-08-01");
 
     // TO-DO assertion for Identifier(Random UUID is generated in code and populated.)
     // validateIdentifier();
 
-    validateCode(
+    AssertCdaElement.assertCodeCD(
         entry.getAct().getCode(), "CONC", "2.16.840.1.113883.5.6", "HL7ActClass", "Concern");
 
     // validating status code
@@ -544,17 +449,18 @@ public class ValidationUtils {
     assertEquals(observation.getClassCode().get(0), "OBS");
     assertEquals(observation.getMoodCode().value(), "EVN");
 
-    validateTemplateID(observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
+        observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
+    AssertCdaElement.assertTemplateID(
         observation.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.4", "2015-08-01");
 
     // validate Identifier
     validateIdentifier(cond.getIdentifier(), observation.getId(), cond.getId());
 
     // validateCodeWithTranslation(codes, code);
-    validateCode(
+    AssertCdaElement.assertCodeCD(
         observation.getCode(), "282291009", "2.16.840.1.113883.6.96", "SNOMED-CT", "Diagnosis");
-    validateCode(
+    AssertCdaElement.assertCodeCD(
         observation.getCode().getTranslation().get(0),
         "29308-4",
         "2.16.840.1.113883.6.1",
@@ -579,19 +485,20 @@ public class ValidationUtils {
 
     assertEquals(observation.isNegationInd(), false);
 
-    validateTemplateID(observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
+        observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
+    AssertCdaElement.assertTemplateID(
         observation.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.4", "2015-08-01");
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         observation.getTemplateId().get(2), "2.16.840.1.113883.10.20.15.2.3.3", "2016-12-01");
 
     // validateIdentifier();
     validateIdentifier(cond.getIdentifier(), observation.getId(), cond.getId());
 
     // validate Code
-    validateCode(
+    AssertCdaElement.assertCodeCD(
         observation.getCode(), "282291009", "2.16.840.1.113883.6.96", "SNOMED-CT", "Diagnosis");
-    validateCode(
+    AssertCdaElement.assertCodeCD(
         observation.getCode().getTranslation().get(0),
         "29308-4",
         "2.16.840.1.113883.6.1",
@@ -612,11 +519,9 @@ public class ValidationUtils {
   public static void validateValueCDWithValueSetAndVersion(
       Condition cond, POCDMT000040Observation observation) {
 
+    // TODO - Currently relying on MatchedCodes generated from code.
+    // Need to find better way to extract from r4 resources.
     PatientExecutionState state = null;
-    // LaunchDetails details = new LaunchDetails();
-    // details.setStatus(
-    //
-    // "{\"patientId\":\"12742571\",\"encounterId\":\"97953900\",\"matchTriggerStatus\":{\"actionId\":\"match-trigger\",\"jobStatus\":\"COMPLETED\",\"triggerMatchStatus\":true,\"matchedCodes\":[{\"matchedCodes\":[\"http://hl7.org/fhir/sid/icd-10-cm|U07.1\",\"http://snomed.info/sct|840539006\"],\"valueSet\":\"2.16.840.1.113762.1.4.1146.1123\",\"valueSetVersion\":\"1\",\"matchedPath\":\"Condition.code\"}]},\"createEicrStatus\":{\"actionId\":\"create-eicr\",\"jobStatus\":\"SCHEDULED\",\"eicrCreated\":false,\"eICRId\":\"\"},\"periodicUpdateStatus\":[{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"}],\"periodicUpdateJobStatus\":\"SCHEDULED\",\"closeOutEicrStatus\":{\"actionId\":\"\",\"jobStatus\":\"NOT_STARTED\",\"eicrClosed\":false,\"eICRId\":\"\"},\"validateEicrStatus\":[],\"submitEicrStatus\":[],\"rrStatus\":[],\"eicrsReadyForValidation\":[],\"eicrsForRRCheck\":[],\"eicrsReadyForSubmission\":[]}");
     state = ApplicationUtils.getDetailStatus(launchDetails);
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
 
@@ -646,22 +551,14 @@ public class ValidationUtils {
     }
   }
 
-  public static void validateCode(
-      CD codeObj, String code, String codeSystem, String codeSystemName, String displayName) {
-    assertEquals(codeObj.getCode(), code);
-    assertEquals(codeObj.getCodeSystem(), codeSystem);
-    assertEquals(codeObj.getCodeSystemName(), codeSystemName);
-    assertEquals(codeObj.getDisplayName(), displayName);
-  }
-
   public static void validateReasonForVisitSection(
       Encounter r4Encounter, POCDMT000040Section resonForVisitSection) {
 
     // TemplateID
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         resonForVisitSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.12", null);
     // Code
-    validateCode(
+    AssertCdaElement.assertCodeCE(
         resonForVisitSection.getCode(),
         "29299-5",
         "2.16.840.1.113883.6.1",
@@ -676,11 +573,11 @@ public class ValidationUtils {
     StrucDocText docText = resonForVisitSection.getText();
     StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
 
-    validateTableBorderAndWidth(table, "1", "100%");
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
     List<String> header = new ArrayList<>();
     header.add("text");
-    validateTableHeadingTitles(table, header);
+    AssertCdaElement.assertTableHeader(table, header);
 
     List<StrucDocTr> trs = table.getTbody().get(0).getTr();
     assertFalse(trs.isEmpty());
@@ -714,13 +611,13 @@ public class ValidationUtils {
   public static void validateEncounterSection(
       Encounter r4Encounter, POCDMT000040Section encounterSection) {
 
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         encounterSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.22.1", null);
 
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         encounterSection.getTemplateId().get(1), "2.16.840.1.113883.10.20.22.2.22.1", "2015-08-01");
 
-    validateCode(
+    AssertCdaElement.assertCodeCE(
         encounterSection.getCode(),
         "46240-8",
         "2.16.840.1.113883.6.1",
@@ -733,8 +630,8 @@ public class ValidationUtils {
     StrucDocTable encounterTable =
         (StrucDocTable) ((JAXBElement<?>) (encounterText.getContent().get(1))).getValue();
 
-    validateTableBorderAndWidth(encounterTable, "1", "100%");
-    validateTableHeadingTitles(
+    AssertCdaElement.assertTableBorderAndWidth(encounterTable, "1", "100%");
+    AssertCdaElement.assertTableHeader(
         encounterTable,
         new ArrayList<String>(Arrays.asList("Encounter Reason", "Date of Encounter")));
 
@@ -758,11 +655,11 @@ public class ValidationUtils {
 
     for (POCDMT000040Entry encounterEntry : entries) {
 
-      validateTemplateID(
+      AssertCdaElement.assertTemplateID(
           encounterEntry.getEncounter().getTemplateId().get(0),
           "2.16.840.1.113883.10.20.22.4.49",
           null);
-      validateTemplateID(
+      AssertCdaElement.assertTemplateID(
           encounterEntry.getEncounter().getTemplateId().get(1),
           "2.16.840.1.113883.10.20.22.4.49",
           "2015-08-01");
@@ -781,17 +678,18 @@ public class ValidationUtils {
         end = TestUtils.convertToString(r4Encounter.getPeriod().getEnd(), "yyyyMMdd");
         start = TestUtils.convertToString(r4Encounter.getPeriod().getStart(), "yyyyMMdd");
       }
-      validateEffectiveDtTm(encounterEntry.getEncounter().getEffectiveTime(), end, start);
+      AssertCdaElement.assertEffectiveDtTm(
+          encounterEntry.getEncounter().getEffectiveTime(), end, start);
     }
   }
 
   public static void validatePresentIllnessSection(
       List<Condition> conditions, POCDMT000040Section illnessSection) {
 
-    validateTemplateID(
+    AssertCdaElement.assertTemplateID(
         illnessSection.getTemplateId().get(0), "1.3.6.1.4.1.19376.1.5.3.1.3.4", null);
 
-    validateCode(
+    AssertCdaElement.assertCodeCE(
         illnessSection.getCode(),
         "10164-2",
         "2.16.840.1.113883.6.1",
@@ -803,11 +701,11 @@ public class ValidationUtils {
     StrucDocText docText = illnessSection.getText();
     StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
 
-    validateTableBorderAndWidth(table, "1", "100%");
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
     List<String> header = new ArrayList<>();
     header.add("Narrative Text");
-    validateTableHeadingTitles(table, header);
+    AssertCdaElement.assertTableHeader(table, header);
 
     List<StrucDocTr> trs = table.getTbody().get(0).getTr();
     assertFalse(trs.isEmpty());

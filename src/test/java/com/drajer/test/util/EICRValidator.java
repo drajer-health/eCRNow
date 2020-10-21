@@ -18,7 +18,7 @@ public class EICRValidator {
       Map<String, List<String>> allResourceFiles) {
 
     for (String sectionName : validationSectionList) {
-      POCDMT000040Section section = ValidationUtils.getSection(clinicalDoc, sectionName);
+      POCDMT000040Section section = TestUtils.getSection(clinicalDoc, sectionName);
       String resourceFileName = "";
       // TODO This can be made more abstract
       if (sectionName.equalsIgnoreCase("ENCOUNTERS")) {
