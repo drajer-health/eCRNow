@@ -463,7 +463,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/launchDetails/", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/api/launchDetails", method = RequestMethod.DELETE)
   public String deleteLaunchDetails(
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,
