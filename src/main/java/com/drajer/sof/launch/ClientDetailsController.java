@@ -36,7 +36,6 @@ public class ClientDetailsController {
   public ResponseEntity<?> createClientDetails(@RequestBody ClientDetails clientDetails) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
-    ;
     if (checkClientDetails == null) {
       logger.info("Saving the Client Details");
       clientDetailsService.saveOrUpdate(clientDetails);
@@ -55,9 +54,7 @@ public class ClientDetailsController {
   public ResponseEntity<?> updateClientDetails(@RequestBody ClientDetails clientDetail) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetail.getFhirServerBaseURL());
-    if (checkClientDetails == null
-        || (checkClientDetails != null
-            && checkClientDetails.getId().equals(clientDetail.getId()))) {
+    if (checkClientDetails == null || (checkClientDetails.getId().equals(clientDetail.getId()))) {
       logger.info("Saving the Client Details");
       clientDetailsService.saveOrUpdate(clientDetail);
       return new ResponseEntity<>(clientDetail, HttpStatus.OK);

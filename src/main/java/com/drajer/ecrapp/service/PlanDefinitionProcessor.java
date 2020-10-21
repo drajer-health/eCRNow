@@ -23,7 +23,6 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.ersd.service.ValueSetService;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,7 +46,6 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
-import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +101,7 @@ public class PlanDefinitionProcessor {
     Bundle ersdBundle = readErsdBundleFromFile();
     Bundle actualErsdBundle = null;
 
-    if (ersdBundle != null) {
+    if (ersdBundle != null && logger.isInfoEnabled()) {
 
       logger.info(
           " Bundle has been created with Entries : "
@@ -151,15 +149,13 @@ public class PlanDefinitionProcessor {
       }
 
       ValueSet valueSet = null;
-      List<UsageContext> usageContextList;
       PlanDefinition planDefinition = null;
       List<PlanDefinitionActionComponent> actions = null;
       List<TriggerDefinition> triggerDefinitionsList = null;
       Set<ValueSet> covidValuesets = new HashSet<>();
       Set<ValueSet> valuesets = new HashSet<>();
       Set<ValueSet> grouperValueSets = new HashSet<>();
-      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts =
-          new HashMap<EventTypes.EcrActionTypes, Set<AbstractAction>>();
+      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts = new HashMap<>();
 
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
@@ -251,7 +247,7 @@ public class PlanDefinitionProcessor {
             actions = planDefinition.getAction();
 
             logger.info(" Found Plan Definition ");
-            if (actions != null && actions.size() > 0) {
+            if (actions != null && !actions.isEmpty()) {
 
               for (PlanDefinitionActionComponent action : actions) {
 
@@ -265,7 +261,7 @@ public class PlanDefinitionProcessor {
 
                   triggerDefinitionsList = action.getTrigger();
 
-                  if (triggerDefinitionsList != null && triggerDefinitionsList.size() > 0) {
+                  if (triggerDefinitionsList != null && !triggerDefinitionsList.isEmpty()) {
 
                     logger.info(" Number of Trigger Definitions " + triggerDefinitionsList.size());
 
@@ -361,38 +357,28 @@ public class PlanDefinitionProcessor {
 
       acts.get(EcrActionTypes.RR_CHECK).add(act);
 
-      logger.info(" Map contained  RR CHECK so added to map resulting in size " + acts.size());
+      logger.info(" Map contained  RR CHECK so added to map resulting in size {}", acts.size());
     } else {
-      Set<AbstractAction> aa = new HashSet<AbstractAction>();
+      Set<AbstractAction> aa = new HashSet<>();
       aa.add(act);
       acts.put(EcrActionTypes.RR_CHECK, aa);
 
-      logger.info(" Map did not contain RR CHECK so added to map resulting in size " + acts.size());
+      logger.info(
+          " Map did not contain RR CHECK so added to map resulting in size {}", acts.size());
     }
   }
 
   private Bundle readErsdBundleFromFile() {
 
-    logger.info("About to read ERSD File " + ersdFileLocation);
-    InputStream in = null;
+    logger.info("About to read ERSD File {}", ersdFileLocation);
     Bundle bundle = null;
-    try {
+    try (InputStream in = new FileInputStream(new File(ersdFileLocation))) {
       logger.info("Reading ERSD File ");
-      in = new FileInputStream(new File(ersdFileLocation));
-      if (in != null) {
-        bundle = jsonParser.parseResource(Bundle.class, in);
-      }
+
+      bundle = jsonParser.parseResource(Bundle.class, in);
       logger.info("Completed Reading ERSD File");
     } catch (Exception e) {
       logger.error("Exception Reading ERSD File", e);
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (IOException e) {
-          logger.error("Exception while closing input stream");
-        }
-      }
     }
     return bundle;
   }
@@ -405,9 +391,9 @@ public class PlanDefinitionProcessor {
 
     act.setActionId(action.getId());
 
-    if (action.hasTrigger()) processTriggerDefinitions(action.getTrigger(), act, acts);
+    if (action.hasTrigger()) processTriggerDefinitions(action.getTrigger(), act);
 
-    if (action.hasCondition()) processConditions(action.getCondition(), act, acts);
+    if (action.hasCondition()) processConditions(action.getCondition(), act);
 
     if (action.hasRelatedAction()) processRelatedActions(action.getRelatedAction(), act, acts);
 
@@ -422,35 +408,30 @@ public class PlanDefinitionProcessor {
     }
 
     if (acts != null) {
-      if (acts.containsKey(type)) {
+      if (acts.containsKey(type) && logger.isInfoEnabled()) {
 
         acts.get(type).add(act);
 
         logger.info(
-            " Map contained "
-                + type.toString()
-                + ", so added to map resulting in size "
-                + acts.size());
+            " Map contained {}, so added to map resulting in size {}",
+            type.toString(),
+            acts.size());
       } else {
-        Set<AbstractAction> aa = new HashSet<AbstractAction>();
+        Set<AbstractAction> aa = new HashSet<>();
         aa.add(act);
         acts.put(type, aa);
 
         logger.info(
-            " Map did not contain "
-                + type.toString()
-                + ", so added to map resulting in size "
-                + acts.size());
+            " Map did not contain {}, so added to map resulting in size {}",
+            type.toString(),
+            acts.size());
       }
     }
   }
 
-  private void processTriggerDefinitions(
-      List<TriggerDefinition> tdlist,
-      AbstractAction act,
-      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
+  private void processTriggerDefinitions(List<TriggerDefinition> tdlist, AbstractAction act) {
 
-    if (tdlist != null && tdlist.size() > 0) {
+    if (tdlist != null && !tdlist.isEmpty()) {
 
       for (TriggerDefinition triggerDefinition : tdlist) {
 
@@ -553,11 +534,9 @@ public class PlanDefinitionProcessor {
   }
 
   private void processConditions(
-      List<PlanDefinitionActionConditionComponent> condlist,
-      AbstractAction act,
-      Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
+      List<PlanDefinitionActionConditionComponent> condlist, AbstractAction act) {
 
-    if (condlist != null && condlist.size() > 0) {
+    if (condlist != null && !condlist.isEmpty()) {
 
       for (PlanDefinitionActionConditionComponent cond : condlist) {
 
@@ -578,7 +557,7 @@ public class PlanDefinitionProcessor {
       AbstractAction act,
       Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts) {
 
-    if (rdlist != null && rdlist.size() > 0) {
+    if (rdlist != null && !rdlist.isEmpty()) {
 
       for (PlanDefinitionActionRelatedActionComponent rc : rdlist) {
 
@@ -607,7 +586,7 @@ public class PlanDefinitionProcessor {
 
         Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null && aa.size() > 0) {
+        if (aa != null && !aa.isEmpty()) {
 
           for (AbstractAction a : aa) {
 

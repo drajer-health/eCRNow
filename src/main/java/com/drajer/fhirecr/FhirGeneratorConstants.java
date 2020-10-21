@@ -2,6 +2,8 @@ package com.drajer.fhirecr;
 
 public class FhirGeneratorConstants {
 
+  private FhirGeneratorConstants() {}
+
   // FHIR Resource Type Constants.
 
   // EICR Metadata

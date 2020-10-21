@@ -17,8 +17,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public Eicr getEicrById(Integer id) {
-    Eicr eicr = (Eicr) getSession().get(Eicr.class, id);
-    return eicr;
+    return getSession().get(Eicr.class, id);
   }
 
   public ReportabilityResponse saveOrUpdate(ReportabilityResponse rr) {
@@ -27,8 +26,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public ReportabilityResponse getRRById(Integer id) {
-    ReportabilityResponse rr =
-        (ReportabilityResponse) getSession().get(ReportabilityResponse.class, id);
-    return rr;
+    return getSession().get(ReportabilityResponse.class, id);
   }
 }

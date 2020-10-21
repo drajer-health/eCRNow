@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class TimingSchedule {
 
-  public static enum TimingUnits {
+  public enum TimingUnits {
     // FHIR Timing Units based on UCUM
     // s | min | h | d | wk | mo | a
 
@@ -118,7 +118,7 @@ public class TimingSchedule {
     logger.info(" Max Frequency = {}", frequencyMax);
     logger.info(" Frequency Period = {}", frequencyPeriod);
 
-    if (frequencyPeriodUnit != null)
+    if (frequencyPeriodUnit != null && logger.isInfoEnabled())
       logger.info(" Frequency Period Unit {}", frequencyPeriodUnit.toString());
 
     logger.info(" *** End Printing Timing Schedule *** ");

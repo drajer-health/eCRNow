@@ -47,7 +47,7 @@ public class ValueSetSingleton {
 
     logger.info(" *** End Printing Grouper To Value Sets **** ");
 
-    if (grouperToCovidValueSetMap != null) {
+    if (grouperToCovidValueSetMap != null && logger.isInfoEnabled()) {
 
       logger.info(
           " *** Start Printing Grouper To Covid Value Sets **** "
@@ -166,18 +166,17 @@ public class ValueSetSingleton {
 
     if (grouperToValueSetMap != null) {
 
-      if (grouperToValueSetMap.containsKey(grouper)) {
+      if (grouperToValueSetMap.containsKey(grouper) && logger.isErrorEnabled()) {
 
-        logger.info(" Adding Value sets for Grouper  " + grouper + " Size = " + vs.size());
+        logger.info(" Adding Value sets for Grouper {} Size = {}", grouper, vs.size());
         grouperToValueSetMap.get(grouper).addAll(vs);
 
       } else {
 
         logger.info(
-            " Creating new entry and adding value sets for Grouper  "
-                + grouper
-                + " Size = "
-                + vs.size());
+            " Creating new entry and adding value sets for Grouper {} Size = {}",
+            grouper,
+            vs.size());
 
         grouperToValueSetMap.put(grouper, vs);
       }
@@ -185,12 +184,11 @@ public class ValueSetSingleton {
     } else {
 
       logger.info(
-          " Creating new entry and adding value sets for Grouper  "
-              + grouper
-              + " Size = "
-              + vs.size());
+          " Creating new entry and adding value sets for Grouper  {} Size = {}",
+          grouper,
+          vs.size());
 
-      grouperToValueSetMap = new HashMap<String, Set<ValueSet>>();
+      grouperToValueSetMap = new HashMap<>();
 
       grouperToValueSetMap.put(grouper, vs);
     }
@@ -200,20 +198,19 @@ public class ValueSetSingleton {
 
     if (grouperToCovidValueSetMap != null) {
 
-      if (grouperToCovidValueSetMap.containsKey(grouper)) {
+      if (grouperToCovidValueSetMap.containsKey(grouper) && logger.isInfoEnabled()) {
 
         logger.info(
-            " Adding Covid Value sets for Grouper that exists " + grouper + " Size = " + vs.size());
+            " Adding Covid Value sets for Grouper that exists {} Size = {}", grouper, vs.size());
 
         grouperToCovidValueSetMap.get(grouper).addAll(vs);
 
       } else {
 
         logger.info(
-            " Creating new entry and adding Covid value sets for Grouper that does not exist "
-                + grouper
-                + " Size = "
-                + vs.size());
+            " Creating new entry and adding Covid value sets for Grouper that does not exist {} Size = {}",
+            grouper,
+            vs.size());
 
         grouperToCovidValueSetMap.put(grouper, vs);
       }
@@ -221,11 +218,9 @@ public class ValueSetSingleton {
     } else {
 
       logger.info(
-          " Creating new entry and adding Covid Value sets for Grouper  "
-              + grouper
-              + " Size = "
-              + vs.size());
-
+          " Creating new entry and adding Covid Value sets for Grouper  {} Size = {}",
+          grouper,
+          vs.size());
       grouperToCovidValueSetMap = new HashMap<String, Set<ValueSet>>();
 
       grouperToCovidValueSetMap.put(grouper, vs);
@@ -235,7 +230,7 @@ public class ValueSetSingleton {
   public Set<String> getValueSetsAsStringForGrouper(String path) {
 
     String grouperId = null;
-    Set<String> retVal = new HashSet<String>();
+    Set<String> retVal = new HashSet<>();
     ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
     if (grouperValueSet != null) {
       grouperId = grouperValueSet.getId();
@@ -250,17 +245,17 @@ public class ValueSetSingleton {
   public Set<String> getCovidValueSetsAsStringForGrouper(String path) {
 
     String grouperId = null;
-    Set<String> retVal = new HashSet<String>();
+    Set<String> retVal = new HashSet<>();
 
     ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
 
     if (grouperValueSet != null) {
 
       grouperId = grouperValueSet.getId();
-      logger.info(" Found the grouper value set for " + path + " : Grouper Id = " + grouperId);
+      logger.info(" Found the grouper value set for {} : Grouper Id = {}", path, grouperId);
     } else {
 
-      logger.info(" Grouper not found for path " + path);
+      logger.info(" Grouper not found for path {}", path);
     }
 
     if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
@@ -273,7 +268,7 @@ public class ValueSetSingleton {
               + ((valuesets != null) ? valuesets.size() : "No value sets in the map"));
       retVal = ApplicationUtils.convertValueSetsToString(valuesets);
     } else {
-      logger.info("Did not find the value sets for the grouper for path " + path);
+      logger.info("Did not find the value sets for the grouper for path {}", path);
     }
 
     return retVal;

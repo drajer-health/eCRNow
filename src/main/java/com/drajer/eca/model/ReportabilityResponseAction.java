@@ -31,12 +31,9 @@ public class ReportabilityResponseAction extends AbstractAction {
       logger.info(
           " Executing RR Check Eicr Action , Prior Execution State : = {}", details.getStatus());
 
-      String data =
-          "This is a eICR report for patient with Encounter Id : " + details.getEncounterId();
-
       // ActionRepo.getInstance().getDirectTransport().sendData(details, data);
 
-      if (getRelatedActions() != null && getRelatedActions().size() > 0) {
+      if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
         logger.info(" Related Actions exist, so check dependencies ");
 
@@ -58,7 +55,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 
               Set<Integer> ids = state.getEicrsForRRCheck();
 
-              checkRRForEicrs(details, state, ids);
+              checkRRForEicrs(state, ids);
             }
           } else {
             logger.info(
@@ -73,7 +70,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 
         Set<Integer> ids = state.getEicrsForRRCheck();
 
-        checkRRForEicrs(details, state, ids);
+        checkRRForEicrs(state, ids);
       }
 
       EcaUtils.updateDetailStatus(details, state);
@@ -88,8 +85,7 @@ public class ReportabilityResponseAction extends AbstractAction {
     logger.info(" **** End Printing SubmitEicrAction **** ");
   }
 
-  public void checkRRForEicrs(
-      LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+  public void checkRRForEicrs(PatientExecutionState state, Set<Integer> ids) {
 
     for (Integer id : ids) {
 

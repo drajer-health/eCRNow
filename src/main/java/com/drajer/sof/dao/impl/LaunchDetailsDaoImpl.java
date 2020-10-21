@@ -18,8 +18,7 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
   }
 
   public LaunchDetails getAuthDetailsById(Integer id) {
-    LaunchDetails authDetails = (LaunchDetails) getSession().get(LaunchDetails.class, id);
-    return authDetails;
+    return getSession().get(LaunchDetails.class, id);
   }
 
   public LaunchDetails getLaunchDetailsByPatientAndEncounter(
@@ -28,15 +27,13 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
     criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
     criteria.add(Restrictions.eq("launchPatientId", patient));
     criteria.add(Restrictions.eq("encounterId", encounter));
-    LaunchDetails launchDetails = (LaunchDetails) criteria.uniqueResult();
-    return launchDetails;
+    return (LaunchDetails) criteria.uniqueResult();
   }
 
   public LaunchDetails getLaunchDetailsByState(int state) {
     Criteria criteria = getSession().createCriteria(LaunchDetails.class);
     criteria.add(Restrictions.eq("launchState", state));
-    LaunchDetails launchDetails = (LaunchDetails) criteria.uniqueResult();
-    return launchDetails;
+    return (LaunchDetails) criteria.uniqueResult();
   }
 
   public void delete(LaunchDetails launchDetails) {
