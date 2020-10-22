@@ -4,8 +4,6 @@ testCase:
   eCR-R4-Resource-FilterByEncounter:
     fileData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
-      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
-      ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -60,3 +58,20 @@ testCase:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
+# TODO - This test case will fail due to issue https://github.com/drajer-health/eCRNow/issues/66
+# Once issue is fixed this can be uncommented
+#  eCR-R4-Encounter-FetchByPatientId:
+#    fileData:
+#      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
+#    resourceMappingData:
+#      Patient:
+#      - params: "12742571"
+#        responseFilePath: "R4/Patient/Patient_12742571.json"
+#      Encounter:
+#      - params:
+#          patient: "12742571"
+#        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+#    otherMappingData:
+#      metadata: "R4/Misc/MetaData_r4.json"
+#      token: "R4/Misc/AccessToken.json"
+#      default: "R4/Misc/NoDataFound_Default.json"

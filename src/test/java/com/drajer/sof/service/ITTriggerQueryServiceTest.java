@@ -68,7 +68,7 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
     } catch (IOException e) {
-      fail("This exception is not expected fix test");
+      fail(e.getMessage() + "This exception is not expected fix test");
     }
 
     launchDetails.setEhrServerURL(
@@ -94,7 +94,9 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
 
   @After
   public void cleanUp() {
-    stubHelper.stopMockServer();
+    if (stubHelper != null) {
+      stubHelper.stopMockServer();
+    }
   }
 
   @Parameters(name = "{index}: {0}")
