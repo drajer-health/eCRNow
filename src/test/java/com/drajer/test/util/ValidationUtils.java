@@ -27,6 +27,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.StringType;
@@ -767,5 +768,30 @@ public class ValidationUtils {
     } else {
       assertTrue(rowValues.contains("Unknown History of Present Illness"));
     }
+  }
+
+  public static void validateSocialHistory(
+      List<Extension> listExtensions, POCDMT000040Section socialHistorySection) {
+    AssertCdaElement.assertTemplateID(
+        socialHistorySection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.17", null);
+    AssertCdaElement.assertTemplateID(
+        socialHistorySection.getTemplateId().get(1),
+        "2.16.840.1.113883.10.20.22.2.17",
+        "2015-08-01");
+    AssertCdaElement.assertCodeCE(
+        socialHistorySection.getCode(),
+        "29762-2",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "Social History");
+    StrucDocText docText = socialHistorySection.getText();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
+
+    AssertCdaElement.assertTableHeader(
+        table,
+        new ArrayList<String>(
+            Arrays.asList("Social History Observation", "Social History Observation Result")));
+    // TODO Body
   }
 }

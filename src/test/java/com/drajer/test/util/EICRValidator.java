@@ -7,6 +7,8 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Section;
 
@@ -58,6 +60,16 @@ public class EICRValidator {
           conditions.add(condition);
         }
         ValidationUtils.validatePresentIllnessSection(conditions, section);
+      } else if (sectionName.equalsIgnoreCase("HISTORY")) {
+        resourceFileName = "Patient";
+        Patient r4Patient =
+            (Patient)
+                TestUtils.getR4ResourceFromJson(
+                    allResourceFiles.get(resourceFileName).get(0), Patient.class);
+
+        List<Extension> listExtensions = r4Patient.getExtension();
+
+        ValidationUtils.validateSocialHistory(listExtensions, section);
       }
       // TODO for other sections
     }
