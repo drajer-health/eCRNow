@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
@@ -33,6 +34,7 @@ public class R4FhirData extends FhirData {
   private List<Observation> pregnancyObs;
   private List<Immunization> immunizations;
   private List<MedicationStatement> medications;
+  private List<MedicationRequest> medicationRequests;
   private List<MedicationAdministration> medicationAdministrations;
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
@@ -46,6 +48,7 @@ public class R4FhirData extends FhirData {
     pregnancyObs = new ArrayList<Observation>();
     immunizations = new ArrayList<Immunization>();
     medications = new ArrayList<MedicationStatement>();
+    medicationRequests = new ArrayList<MedicationRequest>();
     medicationAdministrations = new ArrayList<MedicationAdministration>();
     serviceRequests = new ArrayList<ServiceRequest>();
     medicationList = new ArrayList<Medication>();
@@ -153,6 +156,14 @@ public class R4FhirData extends FhirData {
 
   public void setMedications(List<MedicationStatement> medications) {
     this.medications = medications;
+  }
+
+  public List<MedicationRequest> getMedicationRequests() {
+    return medicationRequests;
+  }
+
+  public void setMedicationRequests(List<MedicationRequest> medicationRequests) {
+    this.medicationRequests = medicationRequests;
   }
 
   public List<MedicationAdministration> getMedicationAdministrations() {

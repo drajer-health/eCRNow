@@ -77,7 +77,7 @@ public class FhirContextInitializer {
     return resource;
   }
 
-  protected IBaseBundle getResourceByPatientId(
+  public IBaseBundle getResourceByPatientId(
       LaunchDetails authDetails,
       IGenericClient genericClient,
       FhirContext context,

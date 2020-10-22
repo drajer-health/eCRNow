@@ -3,10 +3,12 @@ package com.drajer.sof.launch;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
+import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.SystemLaunch;
@@ -18,13 +20,22 @@ import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.time.DateUtils;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Period;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,6 +72,8 @@ public class LaunchController {
   @Autowired ClientDetailsService clientDetailsService;
 
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Autowired RestApiSender xmlSender;
 
   //	@Autowired
   //	FhirEicrSender fhirEicrBundle;
@@ -126,14 +139,14 @@ public class LaunchController {
    *
    * @throws IOException
    */
-  /*@CrossOrigin
+  @CrossOrigin
   @RequestMapping(value = "/api/submitBundle")
   public JSONObject submitBundle() throws IOException {
 
     StringBuilder contentBuilder = new StringBuilder();
 
     try (Stream<String> stream =
-        Files.lines(Paths.get("D:\\12742571_CreateEicrAction211629.xml"), StandardCharsets.UTF_8)) {
+        Files.lines(Paths.get("D:\\12742571_CreateEicrAction144245.xml"), StandardCharsets.UTF_8)) {
       stream.forEach(s -> contentBuilder.append(s).append("\n"));
     } catch (IOException e) {
       e.printStackTrace();
@@ -141,11 +154,11 @@ public class LaunchController {
 
     String content = contentBuilder.toString();
 
-    LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(388);
+    LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(410);
     JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
 
     return response;
-  }*/
+  }
 
   @CrossOrigin
   @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
@@ -170,7 +183,7 @@ public class LaunchController {
         }
       }
       if (tokenResponse != null) {
-        if (systemLaunch.getPatientId() != null && systemLaunch.getEncounterId() != null) {
+        if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
               systemLaunch.getPatientId(),
               systemLaunch.getEncounterId(),
@@ -184,6 +197,8 @@ public class LaunchController {
             launchDetails.setScope(clientDetails.getScopes());
             launchDetails.setDirectHost(clientDetails.getDirectHost());
             launchDetails.setDirectPwd(clientDetails.getDirectPwd());
+            launchDetails.setSmtpPort(clientDetails.getSmtpPort());
+            launchDetails.setImapPort(clientDetails.getImapPort());
             launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
@@ -409,9 +424,9 @@ public class LaunchController {
     IGenericClient client =
         fhirContextInitializer.createClient(
             context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken());
-
     if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())
         && currentStateDetails.getEncounterId() != null) {
+      logger.info("DSTU2");
       Encounter encounter =
           (Encounter)
               fhirContextInitializer.getResouceById(
@@ -432,6 +447,49 @@ public class LaunchController {
         } else {
           currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
         }
+      }
+    } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
+      Encounter encounter = new Encounter();
+      // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
+      // and Find the latest Encounter
+      ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
+          (ca.uhn.fhir.model.dstu2.resource.Bundle)
+              fhirContextInitializer.getResourceByPatientId(
+                  currentStateDetails, client, context, "Encounter");
+      if (bundle.getEntry().size() > 0) {
+        Map<Encounter, Date> encounterMap = new HashMap<Encounter, Date>();
+        for (Entry entry : bundle.getEntry()) {
+          Encounter encounterEntry = (Encounter) entry.getResource();
+          logger.info(
+              "Received Encounter Id========>"
+                  + encounterEntry.getIdElement().getIdPart().toString());
+          encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+        }
+        encounter = Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+        if (encounter != null) {
+          currentStateDetails.setEncounterId(encounter.getIdElement().getIdPart().toString());
+          currentStateDetails.setSetId(
+              currentStateDetails.getLaunchPatientId()
+                  + "+"
+                  + encounter.getIdElement().getIdPart().toString());
+          if (encounter.getPeriod() != null) {
+            PeriodDt period = encounter.getPeriod();
+            if (period.getStart() != null) {
+              currentStateDetails.setStartDate(period.getStart());
+            } else {
+              currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
+            }
+            if (period.getEnd() != null) {
+              currentStateDetails.setEndDate(period.getEnd());
+            } else {
+              currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
+            }
+          }
+        }
+
+      } else {
+        currentStateDetails.setStartDate(null);
+        currentStateDetails.setEndDate(null);
       }
     }
 
@@ -459,6 +517,53 @@ public class LaunchController {
             currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
           }
         }
+      }
+    } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
+      org.hl7.fhir.r4.model.Encounter r4Encounter = new org.hl7.fhir.r4.model.Encounter();
+      // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
+      // and Find the latest Encounter
+      Bundle bundle =
+          (Bundle)
+              fhirContextInitializer.getResourceByPatientId(
+                  currentStateDetails, client, context, "Encounter");
+      logger.info(context.newJsonParser().encodeResourceToString(bundle));
+      if (bundle.getEntry().size() > 0) {
+        Map<org.hl7.fhir.r4.model.Encounter, Date> encounterMap =
+            new HashMap<org.hl7.fhir.r4.model.Encounter, Date>();
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          org.hl7.fhir.r4.model.Encounter encounterEntry =
+              (org.hl7.fhir.r4.model.Encounter) entry.getResource();
+          logger.info(
+              "Received Encounter Id========>"
+                  + encounterEntry.getIdElement().getIdPart().toString());
+          encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+        }
+        r4Encounter =
+            Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+        if (r4Encounter != null) {
+          currentStateDetails.setEncounterId(r4Encounter.getIdElement().getIdPart().toString());
+          currentStateDetails.setSetId(
+              currentStateDetails.getLaunchPatientId()
+                  + "+"
+                  + r4Encounter.getIdElement().getIdPart().toString());
+          if (r4Encounter.getPeriod() != null) {
+            Period period = r4Encounter.getPeriod();
+            if (period.getStart() != null) {
+              currentStateDetails.setStartDate(period.getStart());
+            } else {
+              currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
+            }
+            if (period.getEnd() != null) {
+              currentStateDetails.setEndDate(period.getEnd());
+            } else {
+              currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
+            }
+          }
+        }
+
+      } else {
+        currentStateDetails.setStartDate(null);
+        currentStateDetails.setEndDate(null);
       }
     }
   }

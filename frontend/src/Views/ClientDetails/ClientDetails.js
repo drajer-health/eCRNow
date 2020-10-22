@@ -136,6 +136,8 @@ class ClientDetails extends Component {
             directHost: this.state.directHost ? this.state.directHost : null,
             directUser: this.state.directUserName ? this.state.directUserName : null,
             directPwd: this.state.directPwd ? this.state.directPwd : null,
+            smtpPort: this.state.smtpPort ? this.state.smtpPort : null,
+            imapPort: this.state.imapPort ? this.state.imapPort : null,
             directRecipientAddress: this.state.directRecipientAddress ? this.state.directRecipientAddress : null,
             xdrRecipientAddress: this.state.xdrRecipientAddress ? this.state.xdrRecipientAddress : null,
             restAPIURL: this.state.restAPIURL ? this.state.restAPIURL : null,
@@ -144,7 +146,7 @@ class ClientDetails extends Component {
             encounterEndThreshold: this.state.endThreshold,
             isCovid: this.state.reportType === "covid19" ? true : false,
             isFullEcr: this.state.reportType === "fullecr" ? true : false,
-            isLoggingEnabled: this.state.isLoggingEnabled
+            isLoggingEnabled: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false
         };
         if (!this.addNew && this.selectedClientDetails) {
             clientDetails['id'] = this.selectedClientDetails.id;
@@ -450,6 +452,28 @@ class ClientDetails extends Component {
                                                             <Form.Control type="text" name="directRecipientAddress" required={this.state.directType === 'direct' ? true : false} placeholder="Direct Receipient Address" onChange={e => this.handleChange(e)} value={this.state.directRecipientAddress} />
                                                             <Form.Control.Feedback type="invalid">
                                                                 Please provide a Direct Recipient Address.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                    <Form.Group as={Row} controlId="smtpPort">
+                                                        <Form.Label column sm={2}>
+                                                            SMTP Port:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" name="smtpPort" required={this.state.directType === 'direct' ? true : false} placeholder="SMTP Port" onChange={e => this.handleChange(e)} value={this.state.smtpPort} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a SMTP Port.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                    <Form.Group as={Row} controlId="imapPort">
+                                                        <Form.Label column sm={2}>
+                                                            IMAP Port:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" name="imapPort" required={this.state.directType === 'direct' ? true : false} placeholder="IMAP Port" onChange={e => this.handleChange(e)} value={this.state.imapPort} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a IMAP Port.
                                                             </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>

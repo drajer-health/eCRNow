@@ -102,6 +102,12 @@ public class LaunchDetails {
   @Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
   private String directPwd;
 
+  @Column(name = "smtp_port", nullable = true)
+  private String smtpPort;
+
+  @Column(name = "imap_port", nullable = true)
+  private String imapPort;
+
   @Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
   private String directRecipient;
 
@@ -386,6 +392,22 @@ public class LaunchDetails {
 
   public void setIsSystem(Boolean isSystem) {
     this.isSystem = isSystem;
+  }
+
+  public String getSmtpPort() {
+    return smtpPort;
+  }
+
+  public void setSmtpPort(String smtpPort) {
+    this.smtpPort = smtpPort;
+  }
+
+  public String getImapPort() {
+    return imapPort;
+  }
+
+  public void setImapPort(String imapPort) {
+    this.imapPort = imapPort;
   }
 
   public Boolean getIsLoggingEnabled() {
