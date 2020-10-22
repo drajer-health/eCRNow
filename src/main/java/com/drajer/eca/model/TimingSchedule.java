@@ -119,7 +119,7 @@ public class TimingSchedule {
     logger.info(" Frequency Period = {}", frequencyPeriod);
 
     if (frequencyPeriodUnit != null && logger.isInfoEnabled())
-      logger.info(" Frequency Period Unit {}", frequencyPeriodUnit.toString());
+      logger.info(" Frequency Period Unit {}", frequencyPeriodUnit);
 
     logger.info(" *** End Printing Timing Schedule *** ");
   }

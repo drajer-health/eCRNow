@@ -112,7 +112,7 @@ public class CloseOutEicrActionTest {
       WorkflowService.scheduleJob(
           eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CLOSE_OUT_EICR), any(Date.class));
 
-      assertEquals(closeOutEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
+      assertEquals(JobStatus.SCHEDULED, closeOutEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 
@@ -157,7 +157,7 @@ public class CloseOutEicrActionTest {
       ApplicationUtils.saveDataToFile(
           eq("**** Printing Eicr from CLOSE OUT EICR ACTION ****"), anyString());
 
-      assertEquals(closeOutEicrStatus.getJobStatus(), JobStatus.COMPLETED);
+      assertEquals(JobStatus.COMPLETED, closeOutEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 
@@ -193,7 +193,7 @@ public class CloseOutEicrActionTest {
       PowerMockito.verifyStatic(EcaUtils.class, times(0));
       EcaUtils.createEicr(mockDetails);
 
-      assertEquals(closeOutEicrStatus.getJobStatus(), JobStatus.COMPLETED);
+      assertEquals(JobStatus.COMPLETED, closeOutEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 

@@ -487,9 +487,9 @@ public class ValidationUtils {
 
   public static void validateConditionEntries(Condition cond, POCDMT000040Entry entry) {
 
-    assertEquals(entry.getTypeCode().value(), "DRIV");
-    assertEquals(entry.getAct().getClassCode().value(), "ACT");
-    assertEquals(entry.getAct().getMoodCode().value(), "EVN");
+    assertEquals("DRIV", entry.getTypeCode().value());
+    assertEquals("ACT", entry.getAct().getClassCode().value());
+    assertEquals("EVN", entry.getAct().getMoodCode().value());
 
     // validate template id
     validateTemplateID(
@@ -515,9 +515,9 @@ public class ValidationUtils {
                 .getCodingFirstRep()
                 .getCode()
                 .contentEquals(ConditionClinical.RELAPSE.toCode()))) {
-      assertEquals(entry.getAct().getStatusCode().getCode(), "active");
+      assertEquals("active", entry.getAct().getStatusCode().getCode());
     } else {
-      assertEquals(entry.getAct().getStatusCode().getCode(), "completed");
+      assertEquals("completed", entry.getAct().getStatusCode().getCode());
     }
 
     // validate effective date time
@@ -541,8 +541,8 @@ public class ValidationUtils {
   }
 
   public static void validateObservation(POCDMT000040Observation observation, Condition cond) {
-    assertEquals(observation.getClassCode().get(0), "OBS");
-    assertEquals(observation.getMoodCode().value(), "EVN");
+    assertEquals("OBS", observation.getClassCode().get(0));
+    assertEquals("EVN", observation.getMoodCode().value());
 
     validateTemplateID(observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
     validateTemplateID(
@@ -562,7 +562,7 @@ public class ValidationUtils {
         "Diagnosis");
 
     // validate statuscode
-    assertEquals(observation.getStatusCode().getCode(), "completed");
+    assertEquals("completed", observation.getStatusCode().getCode());
 
     // validate effective date time
     validateConditionEffectiveDtTm(cond, observation.getEffectiveTime());
@@ -574,10 +574,10 @@ public class ValidationUtils {
 
   public static void validateObservationWithTriggerCodes(
       POCDMT000040Observation observation, Condition cond) {
-    assertEquals(observation.getClassCode().get(0), "OBS");
-    assertEquals(observation.getMoodCode().value(), "EVN");
+    assertEquals("OBS", observation.getClassCode().get(0));
+    assertEquals("EVN", observation.getMoodCode().value());
 
-    assertEquals(observation.isNegationInd(), false);
+    assertEquals(false, observation.isNegationInd());
 
     validateTemplateID(observation.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.4.4", null);
     validateTemplateID(
@@ -599,7 +599,7 @@ public class ValidationUtils {
         "Diagnosis");
 
     // validate statuscode
-    assertEquals(observation.getStatusCode().getCode(), "completed");
+    assertEquals("completed", observation.getStatusCode().getCode());
 
     // validate effective date time
     validateConditionEffectiveDtTm(cond, observation.getEffectiveTime());
@@ -704,10 +704,10 @@ public class ValidationUtils {
         assertEquals(
             rowColValue, r4Encounter.getReasonCodeFirstRep().getCodingFirstRep().getDisplay());
       } else {
-        assertEquals(rowColValue, "Unknown Reason For Visit");
+        assertEquals("Unknown Reason For Visit", rowColValue);
       }
     } else {
-      assertEquals(rowColValue, "Unknown Reason For Visit");
+      assertEquals("Unknown Reason For Visit", rowColValue);
     }
   }
 
