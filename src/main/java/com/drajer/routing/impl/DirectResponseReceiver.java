@@ -95,19 +95,18 @@ public class DirectResponseReceiver extends RRReceiver {
           Multipart multipart = (Multipart) message.getContent();
           for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = multipart.getBodyPart(i);
-            InputStream stream = bodyPart.getInputStream();
-
-            byte[] targetArray = IOUtils.toByteArray(stream);
 
             if (bodyPart.getFileName() != null) {
-              if ((bodyPart.getFileName().contains(".xml")
-                  || bodyPart.getFileName().contains(".XML"))) {
-                String filename = bodyPart.getFileName();
+              String filename = bodyPart.getFileName();
+              if ((filename.contains(".xml") || filename.contains(".XML"))) {
 
                 logger.info("Found XML Attachment");
 
-                FileUtils.writeByteArrayToFile(new File(bodyPart.getFileName()), targetArray);
-                File file1 = new File(bodyPart.getFileName());
+                try (InputStream stream = bodyPart.getInputStream()) {
+                  byte[] targetArray = IOUtils.toByteArray(stream);
+                  FileUtils.writeByteArrayToFile(new File(filename), targetArray);
+                }
+                File file1 = new File(filename);
                 FileBody fileBody = new FileBody(file1);
 
                 logger.info(
