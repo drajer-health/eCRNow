@@ -82,7 +82,9 @@ public class ITLaunchController extends BaseIntegrationTest {
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
     JSONObject jsonObject = new JSONObject(systemLaunchInputData);
     patientId = (String) jsonObject.get("patientId");
-    encounterID = (String) jsonObject.get("encounterId");
+    if (jsonObject.get("encounterId") instanceof String) {
+      encounterID = (String) jsonObject.get("encounterId");
+    }
     fhirServerUrl = (String) jsonObject.get("fhirServerURL");
 
     session.flush();
@@ -96,7 +98,9 @@ public class ITLaunchController extends BaseIntegrationTest {
 
   @After
   public void cleanUp() {
-    stubHelper.stopMockServer();
+    if (stubHelper != null) {
+      stubHelper.stopMockServer();
+    }
   }
 
   @Parameters(name = "{index}: {0}")

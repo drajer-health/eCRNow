@@ -8,30 +8,22 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
-import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
-import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -390,7 +382,7 @@ public class CdaFhirUtilities {
   	}
   }*/
 
-  public static Organization getOrganization(List<BundleEntryComponent> entries, Encounter en) {
+  /*public static Organization getOrganization(List<BundleEntryComponent> entries, Encounter en) {
 
     if (en.getServiceProvider().getReference() != null) {
 
@@ -406,9 +398,9 @@ public class CdaFhirUtilities {
 
     logger.info(" Did not find the organization resource for encounter ");
     return null;
-  }
+  }*/
 
-  public static Location getLocation(List<BundleEntryComponent> entries, Encounter en) {
+  /*public static Location getLocation(List<BundleEntryComponent> entries, Encounter en) {
 
     EncounterLocationComponent loc = en.getLocationFirstRep();
 
@@ -426,9 +418,9 @@ public class CdaFhirUtilities {
 
     logger.info(" Did not find the location resource for encounter ");
     return null;
-  }
+  }*/
 
-  public static Practitioner getPractitioner(List<BundleEntryComponent> entries, Encounter en) {
+  /*public static Practitioner getPractitioner(List<BundleEntryComponent> entries, Encounter en) {
 
     List<EncounterParticipantComponent> participants = en.getParticipant();
 
@@ -475,9 +467,9 @@ public class CdaFhirUtilities {
 
     logger.info(" Did not find the practitioner for encounter ");
     return null;
-  }
+  }*/
 
-  public static BundleEntryComponent getResourceEntryForId(
+  /*public static BundleEntryComponent getResourceEntryForId(
       String id, String type, List<BundleEntryComponent> entries) {
 
     for (BundleEntryComponent ent : entries) {
@@ -496,7 +488,7 @@ public class CdaFhirUtilities {
 
     logger.info(" Did not find entry for ID " + id + " Type : " + type);
     return null;
-  }
+  }*/
 
   public static String getCodeableConceptXml(
       List<CodeableConcept> cds, String cdName, Boolean valueTrue) {

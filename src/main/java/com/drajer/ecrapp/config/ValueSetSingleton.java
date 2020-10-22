@@ -265,7 +265,7 @@ public class ValueSetSingleton {
 
     if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
 
-      logger.info("Found the value sets for the grouper ");
+      logger.info(" Found the value sets for the grouper ");
       Set<ValueSet> valuesets = getGrouperToCovidValueSetMap().get(grouperId);
 
       logger.info(
@@ -273,7 +273,7 @@ public class ValueSetSingleton {
               + ((valuesets != null) ? valuesets.size() : "No value sets in the map"));
       retVal = ApplicationUtils.convertValueSetsToString(valuesets);
     } else {
-      logger.info("Did not find the value sets for the grouper for path " + path);
+      logger.info(" Did not find the value sets for the grouper for path " + path);
     }
 
     return retVal;

@@ -24,6 +24,9 @@ testCase:
         responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
       - params: "11938004"
         responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
       Condition:
       - params:
           patient: "12742571"
@@ -57,13 +60,10 @@ testCase:
     resourceMappingData:
       Patient:
       - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        responseFilePath: "R4/Patient/Pat_Deceased.json"
       Encounter:
       - params: "97953900"
         responseFilePath: "R4/Encounter/Encounter_97953900.json"
-      Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Condition:
       - params:
           patient: "12742571"
