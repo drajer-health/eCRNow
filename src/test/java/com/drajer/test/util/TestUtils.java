@@ -214,7 +214,7 @@ public class TestUtils {
       jaxbContext = JAXBContext.newInstance("org.hl7.v3:org.hl7.sdtc");
       jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-      Source source = new StreamSource(IOUtils.toInputStream(eicr.getData()));
+      Source source = new StreamSource(IOUtils.toInputStream(eicr.getData().replace("\n", "")));
 
       JAXBElement<POCDMT000040ClinicalDocument> root =
           jaxbUnmarshaller.unmarshal(source, POCDMT000040ClinicalDocument.class);

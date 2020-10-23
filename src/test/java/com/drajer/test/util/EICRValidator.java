@@ -7,6 +7,9 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Section;
 
@@ -21,7 +24,32 @@ public class EICRValidator {
       POCDMT000040Section section = TestUtils.getSection(clinicalDoc, sectionName);
       String resourceFileName = "";
       // TODO This can be made more abstract
-      if (sectionName.equalsIgnoreCase("ENCOUNTERS")) {
+      if (sectionName.equalsIgnoreCase("HEADER")) {
+
+        Patient r4Patient =
+            (Patient)
+                TestUtils.getR4ResourceFromJson(
+                    allResourceFiles.get("Patient").get(0), Patient.class);
+        Encounter r4Encounter =
+            (Encounter)
+                TestUtils.getR4ResourceFromJson(
+                    allResourceFiles.get("Encounter").get(0), Encounter.class);
+        Organization r4Organization =
+            (Organization)
+                TestUtils.getR4ResourceFromJson(
+                    allResourceFiles.get("Organization").get(0), Organization.class);
+
+        List<Practitioner> r4Practitioners = new ArrayList<>();
+        for (String practitioner : allResourceFiles.get("Practitioner")) {
+          Practitioner r4Practitioner =
+              (Practitioner) TestUtils.getR4ResourceFromJson(practitioner, Practitioner.class);
+          r4Practitioners.add(r4Practitioner);
+        }
+
+        ValidationUtils.validateHeader(
+            r4Patient, r4Encounter, r4Practitioners, r4Organization, clinicalDoc);
+
+      } else if (sectionName.equalsIgnoreCase("ENCOUNTERS")) {
         resourceFileName = "Encounter";
         Encounter r4Encounter =
             (Encounter)

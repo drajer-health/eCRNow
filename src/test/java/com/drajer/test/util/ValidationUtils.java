@@ -28,6 +28,9 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.AD;
@@ -40,9 +43,11 @@ import org.hl7.v3.CD;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTS;
 import org.hl7.v3.PN;
+import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Entry;
 import org.hl7.v3.POCDMT000040EntryRelationship;
 import org.hl7.v3.POCDMT000040Observation;
+import org.hl7.v3.POCDMT000040PatientRole;
 import org.hl7.v3.POCDMT000040Section;
 import org.hl7.v3.StrucDocContent;
 import org.hl7.v3.StrucDocTable;
@@ -309,13 +314,13 @@ public class ValidationUtils {
       // Column1
       StrucDocTd col1 = (StrucDocTd) tds.get(0);
       StrucDocContent rowCol1 =
-          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
+          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
       assertEquals(rowValues.get(idx).getValue0(), (String) rowCol1.getContent().get(0));
 
       // Column2
       StrucDocTd col2 = (StrucDocTd) tds.get(1);
       StrucDocContent rowCol2 =
-          (StrucDocContent) (((JAXBElement<?>) col2.getContent().get(1)).getValue());
+          (StrucDocContent) (((JAXBElement<?>) col2.getContent().get(0)).getValue());
       assertEquals(rowValues.get(idx).getValue1(), (String) rowCol2.getContent().get(0));
     }
   }
@@ -340,7 +345,7 @@ public class ValidationUtils {
 
     // Narrative Text of type Table
     StrucDocText docText = problemSection.getText();
-    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(0)).getValue();
 
     AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
@@ -571,7 +576,7 @@ public class ValidationUtils {
 
     // Narrative Text of type Table
     StrucDocText docText = resonForVisitSection.getText();
-    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(0)).getValue();
 
     AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
@@ -588,7 +593,7 @@ public class ValidationUtils {
 
     StrucDocTd col1 = (StrucDocTd) trs.get(0).getThOrTd().get(0);
     StrucDocContent rowCol1 =
-        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
+        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
     String rowColValue = (String) rowCol1.getContent().get(0);
 
     if (r4Encounter.getReasonCodeFirstRep() != null) {
@@ -628,7 +633,7 @@ public class ValidationUtils {
 
     StrucDocText encounterText = encounterSection.getText();
     StrucDocTable encounterTable =
-        (StrucDocTable) ((JAXBElement<?>) (encounterText.getContent().get(1))).getValue();
+        (StrucDocTable) ((JAXBElement<?>) (encounterText.getContent().get(0))).getValue();
 
     AssertCdaElement.assertTableBorderAndWidth(encounterTable, "1", "100%");
     AssertCdaElement.assertTableHeader(
@@ -699,7 +704,7 @@ public class ValidationUtils {
     // TODO Title
     // Narrative Text of type Table
     StrucDocText docText = illnessSection.getText();
-    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(0)).getValue();
 
     AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
@@ -718,13 +723,13 @@ public class ValidationUtils {
     StrucDocTd col1 = (StrucDocTd) trs.get(0).getThOrTd().get(0);
 
     StrucDocContent rowCol1 =
-        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(1)).getValue());
+        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
     String rowColValue = (String) rowCol1.getContent().get(0);
 
     if (conditions != null && conditions.size() > 0) {
-      int idx = 1;
+      int idx = 0;
       for (Condition prob : conditions) {
-        rowCol1 = (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(idx)).getValue());
+        rowCol1 = (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(idx++)).getValue());
         rowColValue = (String) rowCol1.getContent().get(0);
         if (prob.getCode() != null && !StringUtils.isEmpty(prob.getCode().getText())) {
           assertEquals(rowColValue, prob.getCode().getText());
@@ -734,10 +739,25 @@ public class ValidationUtils {
         } else {
           assertEquals(rowColValue, "Unknown");
         }
-        idx++;
       }
     } else {
       assertEquals(rowColValue, "Unknown History of Present Illness");
     }
+  }
+
+  public static void validateHeader(
+      Patient r4Patient,
+      Encounter r4Encounter,
+      List<Practitioner> r4Practitioner,
+      Organization r4Organization,
+      POCDMT000040ClinicalDocument eICR) {
+
+    POCDMT000040PatientRole patientRole = eICR.getRecordTarget().get(0).getPatientRole();
+    validatePatientRole(r4Patient, patientRole);
+  }
+
+  public static void validatePatientRole(Patient r4Patient, POCDMT000040PatientRole patientRole) {
+
+    // validateAddress(r4Patient.getAddress(), patientRole.getAddr());
   }
 }

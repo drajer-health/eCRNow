@@ -29,7 +29,7 @@ public class CdaGeneratorConstants {
   public static final String XSI_TYPE = "xsi:type=";
   public static final String XML_FILE_PATTERN = "*.xml";
 
-  // CCDA Header Releated
+  // CCDA Header Related
   public static final String DOC_HEADER_XML = "<?xml version=\"1.0\"?>" + "\n";
 
   public static final String CLINICAL_DOC_HEADER_XML =
@@ -45,17 +45,17 @@ public class CdaGeneratorConstants {
           + "XMLSchema-instance"
           + DOUBLE_QUOTE
           + "\n"
-          + "xmlns="
+          + " xmlns="
           + DOUBLE_QUOTE
           + "urn:hl7-org:v3"
           + DOUBLE_QUOTE
           + "\n"
-          + "xmlns:cda="
+          + " xmlns:cda="
           + DOUBLE_QUOTE
           + "urn:hl7-org:v3"
           + DOUBLE_QUOTE
           + "\n"
-          + "xmlns:sdtc="
+          + " xmlns:sdtc="
           + DOUBLE_QUOTE
           + "urn:hl7-org:sdtc"
           + DOUBLE_QUOTE

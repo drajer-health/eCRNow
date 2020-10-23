@@ -56,40 +56,43 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
 
   @Before
   public void triggerQuerySetUp() throws IOException {
-    tx = session.beginTransaction();
 
     try {
+
+      tx = session.beginTransaction();
+
       launchDetails =
           mapper.readValue(
-              this.getClass()
-                  .getClassLoader()
-                  .getResourceAsStream(testDataGenerator.getTestFile(testCaseId, "LaunchDetails")),
+              classLoader.getResourceAsStream(
+                  testDataGenerator.getTestFile(testCaseId, "LaunchDetails")),
               LaunchDetails.class);
+
+      launchDetails.setEhrServerURL(
+          launchDetails.getEhrServerURL().replace("port", "" + wireMockHttpPort));
+      launchDetails.setAccessToken(
+          launchDetails.getAccessToken().replace("port", "" + wireMockHttpPort));
+
       allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
-    } catch (IOException e) {
-      fail(e.getMessage() + "This exception is not expected fix test");
-    }
-
-    launchDetails.setEhrServerURL(
-        launchDetails.getEhrServerURL().replace("port", "" + wireMockHttpPort));
-    launchDetails.setAccessToken(
-        launchDetails.getAccessToken().replace("port", "" + wireMockHttpPort));
-
-    try {
       startDate = DateUtils.parseDate("20201001", "yyyyMMdd");
       endDate = DateUtils.parseDate("20201030", "yyyyMMdd");
-    } catch (ParseException e) {
-      fail("This exception is not expected fix test");
+
+      stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
+      logger.info("Creating wiremockstubs..");
+      stubHelper.stubResources(testDataGenerator.getResourceMappings(testCaseId));
+      stubHelper.stubAuthAndMetadata(testDataGenerator.getOtherMappings(testCaseId));
+
+    } catch (IOException e) {
+
+      fail(e.getMessage() + "This exception is not expected fix test");
+
+    } catch (ParseException e1) {
+
+      fail(e1.getMessage() + "This exception is not expected fix test");
     }
 
     session.flush();
     tx.commit();
-
-    stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
-    logger.info("Creating wiremockstubs..");
-    stubHelper.stubResources(testDataGenerator.getResourceMappings(testCaseId));
-    stubHelper.stubAuthAndMetadata(testDataGenerator.getOtherMappings(testCaseId));
   }
 
   @After
