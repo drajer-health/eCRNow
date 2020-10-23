@@ -372,14 +372,8 @@ public class LaunchController {
     currentStateDetails.setRefreshToken(accessTokenObject.getString("refresh_token"));
     currentStateDetails.setUserId(accessTokenObject.getString("user"));
     currentStateDetails.setExpiry(accessTokenObject.getInt("expires_in"));
-    currentStateDetails.setLaunchPatientId(
-        accessTokenObject.getString("patient") != null
-            ? accessTokenObject.getString("patient")
-            : null);
-    currentStateDetails.setEncounterId(
-        accessTokenObject.getString("encounter") != null
-            ? accessTokenObject.getString("encounter")
-            : null);
+    currentStateDetails.setLaunchPatientId(accessTokenObject.getString("patient"));
+    currentStateDetails.setEncounterId(accessTokenObject.getString("encounter"));
     currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
     currentStateDetails.setSetId(
         accessTokenObject.getString("patient") + "+" + accessTokenObject.getString("encounter"));
