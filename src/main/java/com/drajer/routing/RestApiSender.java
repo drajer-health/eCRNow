@@ -22,11 +22,14 @@ public class RestApiSender {
     JSONObject bundleResponse = null;
     URIBuilder ub = null;
     try {
+      String access_token = getAccessToken(launchDetails);
       RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
+      logger.info("Setting Access_token============>" + access_token);
+      headers.add("Authorization", "Bearer " + access_token);
       HttpEntity<String> request = new HttpEntity<String>(eicrXml, headers);
-
+      logger.info(launchDetails.getRestAPIURL());
       ub = new URIBuilder(launchDetails.getRestAPIURL());
       ub.addParameter("fhirServerURL", launchDetails.getEhrServerURL());
       ub.addParameter("patientId", launchDetails.getLaunchPatientId());
@@ -49,5 +52,28 @@ public class RestApiSender {
       }
     }
     return bundleResponse;
+  }
+
+  private String getAccessToken(LaunchDetails launchDetails) {
+    String access_token = "";
+    RestTemplate restTemplate = new RestTemplate();
+    JSONObject requestBody = new JSONObject();
+    requestBody.put("client_id", launchDetails.getClientId());
+    requestBody.put("client_secret", launchDetails.getClientSecret());
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    HttpEntity<String> request = new HttpEntity<String>(requestBody.toString(), headers);
+
+    logger.info(
+        "Sending Authorization request to Endpoint::::: {}",
+        launchDetails.getEhrAuthorizationUrl());
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            launchDetails.getEhrAuthorizationUrl(), HttpMethod.POST, request, String.class);
+
+    JSONObject responseObj = new JSONObject(response.getBody());
+    access_token = responseObj.getString("access_token");
+    logger.info("received Access_token====>" + access_token);
+    return access_token;
   }
 }

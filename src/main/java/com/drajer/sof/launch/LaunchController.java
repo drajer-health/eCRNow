@@ -139,26 +139,26 @@ public class LaunchController {
    *
    * @throws IOException
    */
-  @CrossOrigin
-  @RequestMapping(value = "/api/submitBundle")
-  public JSONObject submitBundle() throws IOException {
-
-    StringBuilder contentBuilder = new StringBuilder();
-
-    try (Stream<String> stream =
-        Files.lines(Paths.get("D:\\12742571_CreateEicrAction144245.xml"), StandardCharsets.UTF_8)) {
-      stream.forEach(s -> contentBuilder.append(s).append("\n"));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    String content = contentBuilder.toString();
-
-    LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(410);
-    JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
-
-    return response;
-  }
+	/*
+	 * @CrossOrigin
+	 * 
+	 * @RequestMapping(value = "/api/submitBundle") public JSONObject submitBundle()
+	 * throws IOException {
+	 * 
+	 * StringBuilder contentBuilder = new StringBuilder();
+	 * 
+	 * try (Stream<String> stream =
+	 * Files.lines(Paths.get("D:\\CreateEicrAction.xml"), StandardCharsets.UTF_8)) {
+	 * stream.forEach(s -> contentBuilder.append(s).append("\n")); } catch
+	 * (IOException e) { e.printStackTrace(); }
+	 * 
+	 * String content = contentBuilder.toString();
+	 * 
+	 * LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(415);
+	 * JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
+	 * 
+	 * return response; }
+	 */
 
   @CrossOrigin
   @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
@@ -210,6 +210,12 @@ public class LaunchController {
             launchDetails.setTokenUrl(clientDetails.getTokenURL());
             launchDetails.setVersionNumber("1");
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsLoggingEnabled(clientDetails.getIsLoggingEnabled());
+            launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
+            launchDetails.setTokenIntrospectionURL(clientDetails.getTokenIntrospectionURL());
+            launchDetails.setEhrClientId(clientDetails.getEhrClientId());
+            launchDetails.setEhrClientSecret(clientDetails.getEhrClientSecret());
+            launchDetails.setEhrAuthorizationUrl(clientDetails.getEhrAuthorizationUrl());
 
             setStartAndEndDates(clientDetails, launchDetails);
 
@@ -411,6 +417,10 @@ public class LaunchController {
     currentStateDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
     currentStateDetails.setRestAPIURL(clientDetails.getRestAPIURL());
     currentStateDetails.setIsCovid(clientDetails.getIsCovid());
+    currentStateDetails.setTokenIntrospectionURL(clientDetails.getTokenIntrospectionURL());
+    currentStateDetails.setEhrClientId(clientDetails.getEhrClientId());
+    currentStateDetails.setEhrClientSecret(clientDetails.getEhrClientSecret());
+    currentStateDetails.setEhrAuthorizationUrl(clientDetails.getEhrAuthorizationUrl());
 
     setStartAndEndDates(clientDetails, currentStateDetails);
 

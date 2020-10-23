@@ -104,6 +104,18 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isLoggingEnabled;
 
+  @Column(name = "token_introspection_url", nullable = true)
+  private String tokenIntrospectionURL;
+
+  @Column(name = "ehr_client_id", nullable = true)
+  private String ehrClientId;
+
+  @Column(name = "ehr_client_secret", nullable = true)
+  private String ehrClientSecret;
+
+  @Column(name = "ehr_authorization_url", nullable = true)
+  private String ehrAuthorizationUrl;
+
   public Integer getId() {
     return id;
   }
@@ -302,6 +314,38 @@ public class ClientDetails {
 
   public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
     this.isLoggingEnabled = isLoggingEnabled;
+  }
+
+  public String getTokenIntrospectionURL() {
+    return tokenIntrospectionURL;
+  }
+
+  public void setTokenIntrospectionURL(String tokenIntrospectionURL) {
+    this.tokenIntrospectionURL = tokenIntrospectionURL;
+  }
+
+  public String getEhrClientId() {
+    return ehrClientId;
+  }
+
+  public void setEhrClientId(String ehrClientId) {
+    this.ehrClientId = ehrClientId;
+  }
+
+  public String getEhrClientSecret() {
+    return ehrClientSecret;
+  }
+
+  public void setEhrClientSecret(String ehrClientSecret) {
+    this.ehrClientSecret = ehrClientSecret;
+  }
+
+  public String getEhrAuthorizationUrl() {
+    return ehrAuthorizationUrl;
+  }
+
+  public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
+    this.ehrAuthorizationUrl = ehrAuthorizationUrl;
   }
 
   public void print() {
