@@ -10,10 +10,14 @@
     "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: FHIRTest, COVIDONE</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Jan  2, 1970</p><p><b>Birth Sex</b>: Male</p><p><b>Administrative Gender</b>: Male</p><p><b>Marital Status</b>: Single</p></div>"
   },
   "extension": [
-    {
+  	{
       "valueCode": "M",
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
     },
+	{
+  		"valueCode": "M",
+ 		 "url": "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex"
+	},
     {
       "extension": [
         {

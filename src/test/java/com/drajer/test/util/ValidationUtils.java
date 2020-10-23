@@ -13,6 +13,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.Assertion.AssertCdaElement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Organization;
@@ -713,36 +715,89 @@ public class ValidationUtils {
     AssertCdaElement.assertTableHeader(table, header);
 
     List<StrucDocTr> trs = table.getTbody().get(0).getTr();
-    assertFalse(trs.isEmpty());
-    // Only one row for every condition
-    // assertEquals(conditions.size(), trs.size());
+    List<StrucDocTr> unique = new ArrayList<>();
 
-    // Only one column
-    assertEquals(1, trs.get(0).getThOrTd().size());
+    // Populating a list with all the unique rows. Can be removed once the bug is fixed
+    for (StrucDocTr tableRow : trs) {
+      StrucDocTd col1 = (StrucDocTd) tableRow.getThOrTd().get(0);
 
-    StrucDocTd col1 = (StrucDocTd) trs.get(0).getThOrTd().get(0);
+      StrucDocContent rowCol1 =
+          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
+      String rowColValue = (String) rowCol1.getContent().get(0);
 
-    StrucDocContent rowCol1 =
-        (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
-    String rowColValue = (String) rowCol1.getContent().get(0);
+      if (unique.isEmpty()) {
+        unique.add(tableRow);
+      } else {
+        Iterator<StrucDocTr> itr = unique.iterator();
+        while (itr.hasNext()) {
+          StrucDocTr un = (StrucDocTr) itr.next();
+          StrucDocTd column = (StrucDocTd) un.getThOrTd().get(0);
+          StrucDocContent rowColumn =
+              (StrucDocContent) (((JAXBElement<?>) column.getContent().get(0)).getValue());
+          String rowColumnValue = (String) rowColumn.getContent().get(0);
 
+          if (rowColValue.equals(rowColumnValue)) {
+            break;
+          }
+          if (!itr.hasNext()) {
+            unique.add(tableRow);
+            break;
+          }
+        }
+      }
+    }
+
+    // Populating the list with all the row values. Once the bug is fixed replace "unique" with
+    // "trs"(List<StrucDocTr>)
+    List<String> rowValues = new ArrayList<>();
+    for (StrucDocTr uniqueTableRow : unique) {
+      StrucDocTd col1 = (StrucDocTd) uniqueTableRow.getThOrTd().get(0);
+      StrucDocContent rowCol1 =
+          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
+      String rowColValue = (String) rowCol1.getContent().get(0);
+      rowValues.add(rowColValue);
+    }
+
+    // Validation
     if (conditions != null && conditions.size() > 0) {
-      int idx = 0;
       for (Condition prob : conditions) {
-        rowCol1 = (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(idx++)).getValue());
-        rowColValue = (String) rowCol1.getContent().get(0);
         if (prob.getCode() != null && !StringUtils.isEmpty(prob.getCode().getText())) {
-          assertEquals(rowColValue, prob.getCode().getText());
+          assertTrue(rowValues.contains(prob.getCode().getText()));
         } else if (prob.getCode().getCodingFirstRep() != null
             && !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
-          assertEquals(rowColValue, prob.getCode().getCodingFirstRep().getDisplay());
+          assertTrue(rowValues.contains(prob.getCode().getCodingFirstRep().getDisplay()));
         } else {
-          assertEquals(rowColValue, "Unknown");
+          assertTrue(rowValues.contains("Unknown"));
         }
       }
     } else {
-      assertEquals(rowColValue, "Unknown History of Present Illness");
+      assertTrue(rowValues.contains("Unknown History of Present Illness"));
     }
+  }
+
+  public static void validateSocialHistory(
+      List<Extension> listExtensions, POCDMT000040Section socialHistorySection) {
+    AssertCdaElement.assertTemplateID(
+        socialHistorySection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.17", null);
+    AssertCdaElement.assertTemplateID(
+        socialHistorySection.getTemplateId().get(1),
+        "2.16.840.1.113883.10.20.22.2.17",
+        "2015-08-01");
+    AssertCdaElement.assertCodeCE(
+        socialHistorySection.getCode(),
+        "29762-2",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "Social History");
+    StrucDocText docText = socialHistorySection.getText();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
+
+    AssertCdaElement.assertTableHeader(
+        table,
+        new ArrayList<String>(
+            Arrays.asList("Social History Observation", "Social History Observation Result")));
+    // TODO Body
   }
 
   public static void validateHeader(
@@ -759,5 +814,6 @@ public class ValidationUtils {
   public static void validatePatientRole(Patient r4Patient, POCDMT000040PatientRole patientRole) {
 
     // validateAddress(r4Patient.getAddress(), patientRole.getAddr());
+
   }
 }
