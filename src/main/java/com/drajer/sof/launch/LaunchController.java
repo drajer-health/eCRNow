@@ -157,7 +157,7 @@ public class LaunchController {
    */
 
   @CrossOrigin
-  @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
+  @RequestMapping(value = "/launch/systemLaunch", method = RequestMethod.POST)
   public String invokeSystemLaunch(
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,

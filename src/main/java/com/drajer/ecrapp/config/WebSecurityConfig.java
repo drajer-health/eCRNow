@@ -19,7 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     logger.info("*******************************************************************");
-    logger.info("In Web Security Config");
+    logger.info("Security Configuration");
     logger.info("*******************************************************************");
     http.csrf()
         .disable()
