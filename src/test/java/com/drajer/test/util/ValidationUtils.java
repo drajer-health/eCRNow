@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
@@ -391,10 +392,10 @@ public class ValidationUtils {
     }
 
     // TODO This needs to be uncommented once the bug is fixed
-    /*int idx = 0;
-    for (Condition cond : conditions) {
-    	validateConditionEntries(cond, entries.get(idx++));
-      }*/
+    /*
+     * int idx = 0; for (Condition cond : conditions) {
+     * validateConditionEntries(cond, entries.get(idx++)); }
+     */
   }
 
   public static void validateConditionEntries(Condition cond, POCDMT000040Entry entry) {
@@ -409,7 +410,8 @@ public class ValidationUtils {
     AssertCdaElement.assertTemplateID(
         entry.getAct().getTemplateId().get(1), "2.16.840.1.113883.10.20.22.4.3", "2015-08-01");
 
-    // TO-DO assertion for Identifier(Random UUID is generated in code and populated.)
+    // TO-DO assertion for Identifier(Random UUID is generated in code and
+    // populated.)
     // validateIdentifier();
 
     AssertCdaElement.assertCodeCD(
@@ -717,7 +719,8 @@ public class ValidationUtils {
     List<StrucDocTr> trs = table.getTbody().get(0).getTr();
     List<StrucDocTr> unique = new ArrayList<>();
 
-    // Populating a list with all the unique rows. Can be removed once the bug is fixed
+    // Populating a list with all the unique rows. Can be removed once the bug is
+    // fixed
     for (StrucDocTr tableRow : trs) {
       StrucDocTd col1 = (StrucDocTd) tableRow.getThOrTd().get(0);
 
@@ -747,7 +750,8 @@ public class ValidationUtils {
       }
     }
 
-    // Populating the list with all the row values. Once the bug is fixed replace "unique" with
+    // Populating the list with all the row values. Once the bug is fixed replace
+    // "unique" with
     // "trs"(List<StrucDocTr>)
     List<String> rowValues = new ArrayList<>();
     for (StrucDocTr uniqueTableRow : unique) {
@@ -790,14 +794,42 @@ public class ValidationUtils {
         "LOINC",
         "Social History");
     StrucDocText docText = socialHistorySection.getText();
-    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(1)).getValue();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(0)).getValue();
     AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
 
     AssertCdaElement.assertTableHeader(
         table,
         new ArrayList<String>(
             Arrays.asList("Social History Observation", "Social History Observation Result")));
-    // TODO Body
+
+    List<Pair<String, String>> rowValues = new ArrayList<>();
+
+    String obsRes = ((CodeType) listExtensions.get(0).getValue()).getValue();
+    String socCont = "Birth Sex";
+
+    Pair<String, String> row = new Pair<>(obsRes, socCont);
+    rowValues.add(row);
+
+    validateTableBody(table, rowValues);
+
+    validateSocialHistoryEntry(socialHistorySection.getEntry(), listExtensions);
+  }
+
+  private static void validateSocialHistoryEntry(
+      List<POCDMT000040Entry> entry, List<Extension> listExtensions) {
+    AssertCdaElement.assertTemplateID(
+        entry.get(0).getObservation().getTemplateId().get(0),
+        "2.16.840.1.113883.10.20.22.4.200",
+        "2016-06-01");
+    // AssertCdaElement.assertID(entry.get(0).getObservation().getId().get(0),
+    // "321f46ce-a356-412d-b464-96bac7e2ab15", null);
+    AssertCdaElement.assertCodeCD(
+        entry.get(0).getObservation().getCode(),
+        "76689-9",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "Birth Sex");
+    AssertCdaElement.assertStatusCode(entry.get(0).getObservation().getStatusCode(), "completed");
   }
 
   public static void validateHeader(

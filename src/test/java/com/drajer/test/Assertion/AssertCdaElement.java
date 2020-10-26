@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.v3.ANY;
 import org.hl7.v3.CD;
 import org.hl7.v3.CE;
+import org.hl7.v3.CS;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTS;
 import org.hl7.v3.QTY;
@@ -147,5 +148,9 @@ public class AssertCdaElement {
     assertEquals(codeObj.getCodeSystem(), codeSystem);
     assertEquals(codeObj.getCodeSystemName(), codeSystemName);
     assertEquals(codeObj.getDisplayName(), displayName);
+  }
+
+  public static void assertStatusCode(CS codeObj, String code) {
+    assertEquals(codeObj.getCode(), code);
   }
 }
