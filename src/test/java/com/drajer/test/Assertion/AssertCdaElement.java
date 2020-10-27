@@ -153,4 +153,11 @@ public class AssertCdaElement {
   public static void assertStatusCode(CS codeObj, String code) {
     assertEquals(codeObj.getCode(), code);
   }
+
+  public static void assertHistoryEntryValue(
+      CD cd, String code, String codeSystem, String codeSystemName) {
+    assertEquals(cd.getCode(), code);
+    assertEquals(cd.getCodeSystem(), codeSystem);
+    assertEquals(cd.getCodeSystemName(), codeSystemName);
+  }
 }

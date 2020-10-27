@@ -829,7 +829,13 @@ public class ValidationUtils {
         "2.16.840.1.113883.6.1",
         "LOINC",
         "Birth Sex");
+    String code = ((CodeType) listExtensions.get(0).getValue()).getValue();
     AssertCdaElement.assertStatusCode(entry.get(0).getObservation().getStatusCode(), "completed");
+    AssertCdaElement.assertHistoryEntryValue(
+        (CD) entry.get(0).getObservation().getValue().get(0),
+        code,
+        "2.16.840.1.113883.5.1",
+        "Administrative Gender");
   }
 
   public static void validateHeader(
