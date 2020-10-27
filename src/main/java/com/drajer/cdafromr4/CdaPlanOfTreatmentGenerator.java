@@ -2,12 +2,14 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 
 public class CdaPlanOfTreatmentGenerator {
 
   private CdaPlanOfTreatmentGenerator() {}
 
-  public static String generatePlanOfTreatmentSection() {
+  public static String generatePlanOfTreatmentSection(R4FhirData data, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
 

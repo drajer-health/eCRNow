@@ -63,26 +63,25 @@ public class ActionData {
   }
 
   public void print() {
+    if (logger.isInfoEnabled()) {
+      logger.info(" *** Printing Action Data *** ");
 
-    logger.info(" *** Printing Action Data *** ");
+      if (fhirDataType != null) logger.info(" Fhir Data Type = {}", fhirDataType.toString());
 
-    if (fhirDataType != null && logger.isInfoEnabled())
-      logger.info(" Fhir Data Type = {}", fhirDataType.toString());
+      if (triggerType != null) logger.info(" Trigger Type = {}", triggerType.toString());
 
-    if (triggerType != null && logger.isInfoEnabled())
-      logger.info(" Trigger Type = {}", triggerType.toString());
+      logger.info(" Path  = {}", path);
 
-    logger.info(" Path  = {}", path);
+      if (valueSet != null) logger.info(" ValueSet Canonical URL = {}", valueSet.getValue());
 
-    if (valueSet != null) logger.info(" ValueSet Canonical URL = {}", valueSet.getValue());
+      if (profiles != null) {
 
-    if (profiles != null) {
-
-      for (CanonicalType ct : profiles) {
-        logger.info(" Profile Name = {}", ct.getValue());
+        for (CanonicalType ct : profiles) {
+          logger.info(" Profile Name = {}", ct.getValue());
+        }
       }
-    }
 
-    logger.info(" *** End Printing Action Data *** ");
+      logger.info(" *** End Printing Action Data *** ");
+    }
   }
 }

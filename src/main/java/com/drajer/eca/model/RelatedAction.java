@@ -41,19 +41,20 @@ public class RelatedAction {
 
   public void print() {
 
-    logger.info(" *** Printing Related Actions *** ");
+    if (logger.isInfoEnabled()) {
+      logger.info(" *** Printing Related Actions *** ");
 
-    if (relationship != null && logger.isInfoEnabled())
-      logger.info(" Relationship = {}", relationship.toString());
+      if (relationship != null) logger.info(" Relationship = {}", relationship.toString());
 
-    if (abstractAction != null) abstractAction.print();
+      if (abstractAction != null) abstractAction.print();
 
-    if (duration != null) {
+      if (duration != null) {
 
-      logger.info(" Duration period = {}", duration.getValue());
-      logger.info(" Duration unit = {}", duration.getUnit());
+        logger.info(" Duration period = {}", duration.getValue());
+        logger.info(" Duration unit = {}", duration.getUnit());
+      }
+
+      logger.info("*** End Printing Related Actions *** ");
     }
-
-    logger.info("*** End Printing Related Actions *** ");
   }
 }

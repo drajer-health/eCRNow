@@ -108,19 +108,21 @@ public class TimingSchedule {
 
   public void print() {
 
-    logger.info(" *** Printing Timing Schedule *** ");
+    if (logger.isInfoEnabled()) {
+      logger.info(" *** Printing Timing Schedule *** ");
 
-    if (triggerType != null) logger.info("Trigger Type = {}", triggerType);
+      if (triggerType != null) logger.info("Trigger Type = {}", triggerType);
 
-    logger.info(" Num of repeats = {}", numOfRepeat);
-    logger.info(" Max repeats = {}", maxRepeat);
-    logger.info(" Frequency = {}", frequency);
-    logger.info(" Max Frequency = {}", frequencyMax);
-    logger.info(" Frequency Period = {}", frequencyPeriod);
+      logger.info(" Num of repeats = {}", numOfRepeat);
+      logger.info(" Max repeats = {}", maxRepeat);
+      logger.info(" Frequency = {}", frequency);
+      logger.info(" Max Frequency = {}", frequencyMax);
+      logger.info(" Frequency Period = {}", frequencyPeriod);
 
-    if (frequencyPeriodUnit != null && logger.isInfoEnabled())
-      logger.info(" Frequency Period Unit {}", frequencyPeriodUnit);
+      if (frequencyPeriodUnit != null)
+        logger.info(" Frequency Period Unit {}", frequencyPeriodUnit);
 
-    logger.info(" *** End Printing Timing Schedule *** ");
+      logger.info(" *** End Printing Timing Schedule *** ");
+    }
   }
 }

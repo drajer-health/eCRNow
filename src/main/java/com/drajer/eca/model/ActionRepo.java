@@ -221,57 +221,60 @@ public class ActionRepo {
 
   public void print() {
 
-    logger.info(" ***** Printing ACTION Repository ***** " + "\n");
+    if (logger.isInfoEnabled()) {
+      logger.info(" ***** Printing ACTION Repository ***** " + "\n");
 
-    logger.info(" *************** Printing EicrTypes Repository **************** " + "\n");
+      logger.info(" *************** Printing EicrTypes Repository **************** " + "\n");
 
-    if (actions != null && logger.isInfoEnabled()) {
+      if (actions != null) {
 
-      for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
+        for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
 
-        logger.info(" Printing Eicr Action Type : {}", ent.getKey().toString());
+          logger.info(" Printing Eicr Action Type : {}", ent.getKey().toString());
 
-        Set<AbstractAction> aa = ent.getValue();
+          Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null && logger.isInfoEnabled()) {
+          if (aa != null) {
 
-          for (AbstractAction a : aa) {
+            for (AbstractAction a : aa) {
 
-            logger.info(" Action that will be executed {}", a.toString());
+              logger.info(" Action that will be executed {}", a.toString());
 
-            // a.print();
+              // a.print();
+            }
           }
         }
       }
-    }
 
-    logger.info(" *************** End Printing EicrTypes Repository **************** " + "\n");
+      logger.info(" *************** End Printing EicrTypes Repository **************** " + "\n");
 
-    logger.info(
-        " *************** Start Printing Trigger Types Repository **************** " + "\n");
+      logger.info(
+          " *************** Start Printing Trigger Types Repository **************** " + "\n");
 
-    if (actionsByTriggers != null && logger.isInfoEnabled()) {
+      if (actionsByTriggers != null) {
 
-      for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
+        for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
 
-        logger.info(" Printing Trigger for Action {}", ent.getKey().toString());
+          logger.info(" Printing Trigger for Action {}", ent.getKey().toString());
 
-        Set<AbstractAction> aa = ent.getValue();
+          Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null && logger.isInfoEnabled()) {
+          if (aa != null) {
 
-          for (AbstractAction a : aa) {
+            for (AbstractAction a : aa) {
 
-            logger.info(" Action that will be executed {}", a.toString());
+              logger.info(" Action that will be executed {}", a.toString());
 
-            // a.print();
+              // a.print();
+            }
           }
         }
       }
+
+      logger.info(
+          " *************** End Printing Trigger Types Repository **************** " + "\n");
+
+      logger.info(" ***** End Printing ACTION Repository ***** " + "\n");
     }
-
-    logger.info(" *************** End Printing Trigger Types Repository **************** " + "\n");
-
-    logger.info(" ***** End Printing ACTION Repository ***** " + "\n");
   }
 }

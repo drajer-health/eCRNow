@@ -101,11 +101,13 @@ public class PlanDefinitionProcessor {
     Bundle ersdBundle = readErsdBundleFromFile();
     Bundle actualErsdBundle = null;
 
-    if (ersdBundle != null && logger.isInfoEnabled()) {
+    if (ersdBundle != null) {
 
-      logger.info(
-          " Bundle has been created with Entries : "
-              + ((ersdBundle.getEntry() != null) ? ersdBundle.getEntry().size() : " zero "));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            " Bundle has been created with Entries : "
+                + ((ersdBundle.getEntry() != null) ? ersdBundle.getEntry().size() : " zero "));
+      }
 
       // Check to see if this is a searchset bundle.
       if (ersdBundle.getType() == Bundle.BundleType.SEARCHSET) {
@@ -408,14 +410,16 @@ public class PlanDefinitionProcessor {
     }
 
     if (acts != null) {
-      if (acts.containsKey(type) && logger.isInfoEnabled()) {
+      if (acts.containsKey(type)) {
 
         acts.get(type).add(act);
 
-        logger.info(
-            " Map contained {}, so added to map resulting in size {}",
-            type.toString(),
-            acts.size());
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              " Map contained {}, so added to map resulting in size {}",
+              type.toString(),
+              acts.size());
+        }
       } else {
         Set<AbstractAction> aa = new HashSet<>();
         aa.add(act);

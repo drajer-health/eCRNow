@@ -42,7 +42,7 @@ public class CdaBodyGenerator {
       eICRBody.append(CdaSocialHistoryGenerator.generateSocialHistorySection(data, details));
 
       logger.info("Starting Plan Of Treatment Section generation ");
-      eICRBody.append(CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection());
+      eICRBody.append(CdaPlanOfTreatmentGenerator.generatePlanOfTreatmentSection(data, details));
 
       logger.info("Starting History of Present Illness Section generation ");
       eICRBody.append(

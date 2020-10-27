@@ -140,8 +140,10 @@ public abstract class AbstractAction {
 
       for (AbstractCondition cond : conds) {
 
-        if (!cond.evaluate(details) && logger.isInfoEnabled()) {
-          logger.info(" Condition Not met {}", cond.getConditionType().toString());
+        if (!cond.evaluate(details)) {
+          if (logger.isInfoEnabled()) {
+            logger.info(" Condition Not met {}", cond.getConditionType().toString());
+          }
           conditionsMet = false;
         }
       }
