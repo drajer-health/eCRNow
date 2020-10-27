@@ -312,7 +312,7 @@ public class LaunchController {
         currentLaunchDetails.setAuthorizationCode(code);
         JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
         if (accessTokenObject != null) {
-          logger.info("Received Access Token:::::" + accessTokenObject.getString(ACCESS_TOKEN));
+          logger.info("Received Access Token::::: {}", accessTokenObject.getString(ACCESS_TOKEN));
           if (accessTokenObject.get(PATIENT) != null && accessTokenObject.get(ENCOUNTER) != null) {
             isPatientLaunched =
                 checkWithExistingPatientAndEncounter(
@@ -330,8 +330,8 @@ public class LaunchController {
             saveLaunchDetails(currentLaunchDetails);
           } else {
             logger.error(
-                "Launch Context is already present for Patient:::::"
-                    + accessTokenObject.getString(PATIENT));
+                "Launch Context is already present for Patient::::: {}",
+                accessTokenObject.getString(PATIENT));
             response.sendError(
                 HttpServletResponse.SC_BAD_REQUEST,
                 "Launch Context is already present for Patient:::::"
@@ -381,6 +381,8 @@ public class LaunchController {
         accessTokenObject.getString(ENCOUNTER) != null
             ? accessTokenObject.getString(ENCOUNTER)
             : null);
+    currentStateDetails.setLaunchPatientId(accessTokenObject.getString("patient"));
+    currentStateDetails.setEncounterId(accessTokenObject.getString("encounter"));
     currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
     currentStateDetails.setSetId(
         accessTokenObject.getString(PATIENT) + "+" + accessTokenObject.getString(ENCOUNTER));
