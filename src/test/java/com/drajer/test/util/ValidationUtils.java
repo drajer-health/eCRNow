@@ -821,8 +821,7 @@ public class ValidationUtils {
         entry.get(0).getObservation().getTemplateId().get(0),
         "2.16.840.1.113883.10.20.22.4.200",
         "2016-06-01");
-    // AssertCdaElement.assertID(entry.get(0).getObservation().getId().get(0),
-    // "321f46ce-a356-412d-b464-96bac7e2ab15", null);
+    // Id validation not done as it is a system generated value
     AssertCdaElement.assertCodeCD(
         entry.get(0).getObservation().getCode(),
         "76689-9",
