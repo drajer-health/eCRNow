@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -38,11 +38,15 @@ import org.slf4j.LoggerFactory;
 
 public class CdaFhirUtilities {
 
+  private CdaFhirUtilities() {
+    throw new IllegalStateException("Utility class");
+  }
+
   public static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilities.class);
 
   public static Identifier getIdentifierForType(List<Identifier> ids, String type) {
 
-    if (ids != null && ids.size() > 0) {
+    if (ids != null && !ids.isEmpty()) {
 
       for (Identifier id : ids) {
 
@@ -50,7 +54,7 @@ public class CdaFhirUtilities {
 
           List<Coding> codings = id.getType().getCoding();
 
-          if (codings != null && codings.size() > 0) {
+          if (codings != null && !codings.isEmpty()) {
 
             for (Coding coding : codings) {
 
@@ -62,7 +66,7 @@ public class CdaFhirUtilities {
                   && coding.getCode() != null
                   && coding.getCode().contentEquals(type)) {
 
-                logger.info(" Found the Identifier for Patient for type " + type);
+                logger.info(" Found the Identifier for Patient for type {}", type);
                 return id;
               }
             }
@@ -71,17 +75,17 @@ public class CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Identifier for the patient for type " + type);
+    logger.info(" Did not find the Identifier for the patient for type {}", type);
     return null;
   }
 
   public static Patient.ContactComponent getGuardianContact(List<ContactComponent> ccs) {
 
-    if (ccs != null && ccs.size() > 0) {
+    if (ccs != null && !ccs.isEmpty()) {
 
       for (ContactComponent cc : ccs) {
 
-        if (cc.getRelationship() != null && cc.getRelationship().size() > 0) {
+        if (cc.getRelationship() != null && !cc.getRelationship().isEmpty()) {
 
           for (CodeableConcept cd : cc.getRelationship()) {
 
@@ -102,25 +106,25 @@ public class CdaFhirUtilities {
 
   public static Identifier getIdentifierForSystem(List<Identifier> ids, String system) {
 
-    if (ids != null && ids.size() > 0) {
+    if (ids != null && !ids.isEmpty()) {
 
       for (Identifier id : ids) {
 
         if (id.getSystem() != null && id.getSystem().contentEquals(system)) {
 
-          logger.info(" Found the Identifier for System: " + system);
+          logger.info(" Found the Identifier for System: {}", system);
           return id;
         }
       }
     }
 
-    logger.info(" Did not find the Identifier for  System : " + system);
+    logger.info(" Did not find the Identifier for  System : {}", system);
     return null;
   }
 
   public static Coding getCodingExtension(List<Extension> exts, String extUrl, String subextUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (Extension ext : exts) {
 
@@ -150,35 +154,35 @@ public class CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+    logger.info(" Did not find the Extension or sub extensions for the Url {}", extUrl);
     return null;
   }
 
   public static CodeType getCodeExtension(List<Extension> exts, String extUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (Extension ext : exts) {
 
-        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+        // if the top level extension has CodingDt then we will use it.
+        if (ext.getUrl() != null
+            && ext.getUrl().contentEquals(extUrl)
+            && ext.getValue() != null
+            && (ext.getValue() instanceof CodeType)) {
 
-          // if the top level extension has CodingDt then we will use it.
-          if (ext.getValue() != null && (ext.getValue() instanceof CodeType)) {
-
-            logger.info(" Found Extension at top level ");
-            return (CodeType) ext.getValue();
-          }
+          logger.info(" Found Extension at top level ");
+          return (CodeType) ext.getValue();
         }
       }
     }
 
-    logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+    logger.info(" Did not find the Extension or sub extensions for the Url {}", extUrl);
     return null;
   }
 
   public static Coding getLanguage(List<PatientCommunicationComponent> comms) {
 
-    if (comms != null && comms.size() > 0) {
+    if (comms != null && !comms.isEmpty()) {
 
       for (PatientCommunicationComponent comm : comms) {
 
@@ -199,7 +203,7 @@ public class CdaFhirUtilities {
 
     StringBuilder addrString = new StringBuilder(200);
 
-    if (addrs != null && addrs.size() > 0) {
+    if (addrs != null && !addrs.isEmpty()) {
 
       for (Address addr : addrs) {
 
@@ -214,7 +218,7 @@ public class CdaFhirUtilities {
           // Address Line
           List<StringType> lines = addr.getLine();
 
-          if (lines != null && lines.size() > 0) {
+          if (lines != null && !lines.isEmpty()) {
             addrString.append(
                 CdaGeneratorUtils.getXmlForText(
                     CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, lines.get(0).getValue()));
@@ -306,7 +310,7 @@ public class CdaFhirUtilities {
 
     StringBuilder telString = new StringBuilder(200);
 
-    if (tels != null && tels.size() > 0) {
+    if (tels != null && !tels.isEmpty()) {
 
       for (ContactPoint tel : tels) {
 
@@ -339,7 +343,7 @@ public class CdaFhirUtilities {
 
     StringBuilder telString = new StringBuilder(200);
 
-    if (tels != null && tels.size() > 0) {
+    if (tels != null && !tels.isEmpty()) {
 
       for (ContactPoint tel : tels) {
 
@@ -432,7 +436,7 @@ public class CdaFhirUtilities {
 
     List<EncounterParticipantComponent> participants = en.getParticipant();
 
-    if (participants != null && participants.size() > 0) {
+    if (participants != null && !participants.isEmpty()) {
 
       for (EncounterParticipantComponent part : participants) {
 
@@ -459,7 +463,7 @@ public class CdaFhirUtilities {
 
                 if (ent != null) {
 
-                  logger.info(" Found Practitioner for Id " + part.getIndividual().getReference());
+                  logger.info(" Found Practitioner for Id {}", part.getIndividual().getReference());
                   return (Practitioner) ent.getResource();
                 } else {
                   logger.info(
@@ -489,12 +493,12 @@ public class CdaFhirUtilities {
           ent.getResource().getId() != null
           && ent.getResource().getId().contentEquals(id)) {
 
-        logger.info(" Found entry for ID " + id + " Type : " + type);
+        logger.info(" Found entry for ID {} Type : {}", id, type);
         return ent;
       }
     }
 
-    logger.info(" Did not find entry for ID " + id + " Type : " + type);
+    logger.info(" Did not find entry for ID {} Type : {}", id, type);
     return null;
   }
 
@@ -502,18 +506,15 @@ public class CdaFhirUtilities {
       List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
 
     StringBuilder sb = new StringBuilder(500);
-    List<Coding> codes = new ArrayList<Coding>();
+    List<Coding> codes = new ArrayList<>();
 
-    if (cds != null && cds.size() > 0) {
+    if (cds != null && !cds.isEmpty()) {
 
       CodeableConcept cd = cds.get(0);
 
       List<Coding> codings = cd.getCoding();
 
-      if (codings != null && codings.size() > 0) {
-
-        Boolean found = false;
-        Boolean first = true;
+      if (codings != null && !codings.isEmpty()) {
 
         for (Coding code : codings) {
 
@@ -534,7 +535,7 @@ public class CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (codes != null && codes.size() > 0) {
+    if (codes != null && !codes.isEmpty()) {
 
       Boolean first = true;
       for (Coding c : codes) {
@@ -572,7 +573,7 @@ public class CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (codes.size() > 0) {
+    if (!codes.isEmpty()) {
 
       Boolean first = true;
       for (Coding c : codes) {
@@ -685,7 +686,7 @@ public class CdaFhirUtilities {
 
     StringBuilder nameString = new StringBuilder(200);
 
-    if (names != null && names.size() > 0) {
+    if (names != null && !names.isEmpty()) {
 
       Optional<HumanName> hName = names.stream().findFirst();
       if (hName.isPresent()) {
@@ -798,7 +799,7 @@ public class CdaFhirUtilities {
       if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
 
-        List<Coding> cds = new ArrayList<Coding>();
+        List<Coding> cds = new ArrayList<>();
         cds.add(cd);
         if (!valFlag) val += getCodingXml(cds, elName);
         else val += getCodingXmlForValue(cds, elName);
@@ -829,8 +830,6 @@ public class CdaFhirUtilities {
 
         val += getPeriodXml(pt, elName);
       } else if (dt instanceof CodeType) {
-
-        CodeType cd = (CodeType) dt;
 
         if (!valFlag)
           val += CdaGeneratorUtils.getNFXMLFoElement(elName, CdaGeneratorConstants.NF_NI);

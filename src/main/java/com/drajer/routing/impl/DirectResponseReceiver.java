@@ -42,13 +42,13 @@ public class DirectResponseReceiver extends RRReceiver {
 
       state = ApplicationUtils.getDetailStatus(details);
 
-      readMail(details, state);
+      readMail(details);
     }
 
     return null;
   }
 
-  public void readMail(LaunchDetails details, PatientExecutionState state) {
+  public void readMail(LaunchDetails details) {
 
     try {
 
@@ -74,7 +74,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
       Flags seen = new Flags(Flags.Flag.SEEN);
       FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-      Message messages[] = inbox.search(unseenFlagTerm);
+      Message[] messages = inbox.search(unseenFlagTerm);
 
       for (Message message : messages) {
 
@@ -110,8 +110,8 @@ public class DirectResponseReceiver extends RRReceiver {
                 FileBody fileBody = new FileBody(file1);
 
                 logger.info(
-                    " Need to determine what to do with the response received from :  "
-                        + senderAddress);
+                    " Need to determine what to do with the response received from :  {}",
+                    senderAddress);
               }
             }
           }
@@ -140,7 +140,7 @@ public class DirectResponseReceiver extends RRReceiver {
     Flags seen = new Flags(Flags.Flag.SEEN);
 
     FlagTerm seenFlagTerm = new FlagTerm(seen, true);
-    Message messages[] = inbox.search(seenFlagTerm);
+    Message[] messages = inbox.search(seenFlagTerm);
 
     for (Message message : messages) {
 

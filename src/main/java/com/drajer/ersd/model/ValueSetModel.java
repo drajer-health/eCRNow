@@ -9,12 +9,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "valueset")
-@TypeDefs({@TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class)})
+@TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class)
 public class ValueSetModel {
 
   @Id

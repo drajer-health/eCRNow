@@ -110,7 +110,7 @@ public class Dstu2CdaResultGenerator {
         }
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
         // Setup the Organizer and Entries
         StringBuilder lrEntry = new StringBuilder();

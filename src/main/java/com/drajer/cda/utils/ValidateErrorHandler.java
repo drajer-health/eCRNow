@@ -13,28 +13,24 @@ public class ValidateErrorHandler implements ErrorHandler {
   private static boolean isException = false;
 
   public void warning(SAXParseException exception) throws SAXException {
-    logger.error(
-        "Message: Error validating XML Data at Line: "
-            + exception.getLineNumber()
-            + " Column: "
-            + exception.getColumnNumber()
-            + "; Message: "
-            + exception.getMessage());
+    logMessage(exception);
   }
 
   public void fatalError(SAXParseException exception) throws SAXException {
     isException = true;
-    logger.error(
-        "Message: Error validating XML Data at Line: "
-            + exception.getLineNumber()
-            + " Column: "
-            + exception.getColumnNumber()
-            + "; Message: "
-            + exception.getMessage());
+    logMessage(exception);
   }
 
   public void error(SAXParseException exception) throws SAXException {
     isException = true;
+    logMessage(exception);
+  }
+
+  public boolean getIsException() {
+    return isException;
+  }
+
+  private static void logMessage(SAXParseException exception) {
     logger.error(
         "Message: Error validating XML Data at Line: "
             + exception.getLineNumber()
@@ -42,9 +38,5 @@ public class ValidateErrorHandler implements ErrorHandler {
             + exception.getColumnNumber()
             + "; Message: "
             + exception.getMessage());
-  }
-
-  public boolean getIsException() {
-    return isException;
   }
 }

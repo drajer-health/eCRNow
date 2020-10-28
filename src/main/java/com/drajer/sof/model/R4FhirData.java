@@ -39,16 +39,16 @@ public class R4FhirData extends FhirData {
 
   public R4FhirData() {
 
-    conditions = new ArrayList<Condition>();
-    diagReports = new ArrayList<DiagnosticReport>();
-    labResults = new ArrayList<Observation>();
-    travelObs = new ArrayList<Observation>();
-    pregnancyObs = new ArrayList<Observation>();
-    immunizations = new ArrayList<Immunization>();
-    medications = new ArrayList<MedicationStatement>();
-    medicationAdministrations = new ArrayList<MedicationAdministration>();
-    serviceRequests = new ArrayList<ServiceRequest>();
-    medicationList = new ArrayList<Medication>();
+    conditions = new ArrayList<>();
+    diagReports = new ArrayList<>();
+    labResults = new ArrayList<>();
+    travelObs = new ArrayList<>();
+    pregnancyObs = new ArrayList<>();
+    immunizations = new ArrayList<>();
+    medications = new ArrayList<>();
+    medicationAdministrations = new ArrayList<>();
+    serviceRequests = new ArrayList<>();
+    medicationList = new ArrayList<>();
   }
 
   public Bundle getData() {

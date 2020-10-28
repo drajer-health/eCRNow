@@ -2,7 +2,7 @@ package com.drajer.eca.model;
 
 public final class EventTypes {
 
-  public static enum WorkflowEvent {
+  public enum WorkflowEvent {
 
     // These are the two ways that the app can be initiated currently.
     SOF_LAUNCH,
@@ -11,7 +11,7 @@ public final class EventTypes {
     DEPENDENT_EVENT_COMPLETION
   }
 
-  public static enum JobStatus {
+  public enum JobStatus {
     NOT_STARTED,
     SCHEDULED,
     IN_PROGRESS,
@@ -33,7 +33,7 @@ public final class EventTypes {
   	DATA_ACCESS_ENDED
   } */
 
-  public static enum EcrActionTypes {
+  public enum EcrActionTypes {
 
     // These are the actions that can happen for eCR reporting.
     MATCH_TRIGGER,
@@ -63,7 +63,7 @@ public final class EventTypes {
   	AFTER_END
   }*/
 
-  public static enum ConditionType {
+  public enum ConditionType {
 
     // condition types in FHIR Plan Definition
     APPLICABILITY,

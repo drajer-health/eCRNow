@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 public class CdaEncounterGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaEncounterGenerator.class);
+
+  private CdaEncounterGenerator() {}
 
   public static String generateEncounterSection(R4FhirData data, LaunchDetails details) {
 
@@ -54,7 +56,7 @@ public class CdaEncounterGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.ENC_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.ENC_TABLE_COL_2_TITLE);
 
@@ -80,11 +82,11 @@ public class CdaEncounterGenerator {
         dt = CdaGeneratorUtils.getStringForDate(encounter.getPeriod().getStart());
       }
 
-      Map<String, String> bodyvals = new HashMap<String, String>();
+      Map<String, String> bodyvals = new HashMap<>();
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 
-      sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, 1));
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, 1));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 

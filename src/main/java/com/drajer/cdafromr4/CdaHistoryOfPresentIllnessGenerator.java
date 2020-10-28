@@ -1,25 +1,20 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.Condition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class CdaHistoryOfPresentIllnessGenerator {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(CdaHistoryOfPresentIllnessGenerator.class);
+  private CdaHistoryOfPresentIllnessGenerator() {}
 
-  public static String generateHistoryOfPresentIllnessSection(
-      R4FhirData data, LaunchDetails details) {
+  public static String generateHistoryOfPresentIllnessSection(R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -54,7 +49,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
     List<Condition> conds = data.getConditions();
 
     // Create Table Header.
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     list.add(CdaGeneratorConstants.NARRATIVE_TEXT_EL_NAME);
     sb.append(
         CdaGeneratorUtils.getXmlForTableHeader(
@@ -66,7 +61,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
     String text = CdaGeneratorConstants.UNKNOWN_HISTORY_OF_PRESENT_ILLNESS;
     int rowNum = 1;
 
-    if (conds != null && conds.size() > 0) {
+    if (conds != null && !conds.isEmpty()) {
 
       // Add Body Rows
       for (Condition prob : conds) {
@@ -81,11 +76,11 @@ public class CdaHistoryOfPresentIllnessGenerator {
           probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(
             CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, probDisplayName);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum;
       }
     } else {
@@ -93,7 +88,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
       Map<String, String> bodyvals = new HashMap<String, String>();
       bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, text);
 
-      sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+      sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
     }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));

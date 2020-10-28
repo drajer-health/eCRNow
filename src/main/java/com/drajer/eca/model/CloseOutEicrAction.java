@@ -46,7 +46,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
-        if (getRelatedActions() != null && getRelatedActions().size() > 0) {
+        if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
           List<RelatedAction> racts = getRelatedActions();
 
@@ -63,7 +63,7 @@ public class CloseOutEicrAction extends AbstractAction {
                     " Action {} is not completed , hence this action has to wait ", actionId);
                 relatedActsDone = false;
               } else {
-                logger.info(" Related Action that has been completed : " + actionId);
+                logger.info(" Related Action that has been completed : {}", actionId);
 
                 // Check if there is any timing constraint that needs to be handled.
                 if (ract.getDuration() != null
@@ -134,7 +134,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
             logger.info(" Related Actions Done and this action has not started ");
 
-            if (getTimingData() != null && getTimingData().size() > 0) {
+            if (getTimingData() != null && !getTimingData().isEmpty()) {
 
               logger.info(" Timing Data is present , so create a job based on timing data.");
               List<TimingSchedule> tsjobs = getTimingData();
@@ -165,7 +165,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
             if (newState.getMatchTriggerStatus().getTriggerMatchStatus()
                 && newState.getMatchTriggerStatus().getMatchedCodes() != null
-                && newState.getMatchTriggerStatus().getMatchedCodes().size() > 0) {
+                && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
 
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.

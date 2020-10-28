@@ -94,7 +94,7 @@ public class MatchTriggerActionTest {
     matchTriggerAction.execute(mockDetails, launchType);
 
     assertNotNull(mockDstu2Data);
-    assertEquals(matchTriggerStatus.getJobStatus(), JobStatus.COMPLETED);
+    assertEquals(JobStatus.COMPLETED, matchTriggerStatus.getJobStatus());
   }
 
   @Test
@@ -120,7 +120,7 @@ public class MatchTriggerActionTest {
     matchTriggerAction.execute(mockDetails, launchType);
 
     assertNotNull(mockR4Data);
-    assertEquals(matchTriggerStatus.getJobStatus(), JobStatus.COMPLETED);
+    assertEquals(JobStatus.COMPLETED, matchTriggerStatus.getJobStatus());
   }
 
   @Test(expected = RuntimeException.class)

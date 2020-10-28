@@ -108,7 +108,7 @@ public class CreateEicrActionTest {
       WorkflowService.scheduleJob(
           eq(1), any(Duration.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
 
-      assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
+      assertEquals(JobStatus.SCHEDULED, createEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 
@@ -143,7 +143,7 @@ public class CreateEicrActionTest {
       WorkflowService.scheduleJob(
           eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
 
-      assertEquals(createEicrStatus.getJobStatus(), JobStatus.SCHEDULED);
+      assertEquals(JobStatus.SCHEDULED, createEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 
@@ -187,7 +187,7 @@ public class CreateEicrActionTest {
       PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
       ApplicationUtils.saveDataToFile(eq("This is Eicr Document"), anyString());
 
-      assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
+      assertEquals(JobStatus.COMPLETED, createEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 
@@ -223,7 +223,7 @@ public class CreateEicrActionTest {
       PowerMockito.verifyStatic(EcaUtils.class, times(0));
       EcaUtils.createEicr(mockDetails);
 
-      assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
+      assertEquals(JobStatus.COMPLETED, createEicrStatus.getJobStatus());
 
     } catch (Exception e) {
 

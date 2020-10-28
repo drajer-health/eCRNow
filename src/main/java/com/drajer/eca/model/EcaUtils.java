@@ -1,8 +1,8 @@
 package com.drajer.eca.model;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
+import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
@@ -23,6 +23,10 @@ import org.slf4j.LoggerFactory;
 
 public class EcaUtils {
 
+  private EcaUtils() {
+    throw new IllegalStateException("Utility class");
+  }
+
   private static Logger logger = LoggerFactory.getLogger(EcaUtils.class);
 
   public static boolean matchTriggerCodesForDSTU2(
@@ -41,7 +45,7 @@ public class EcaUtils {
 
       List<CodeableConceptDt> ptCodes = data.getCodesForExpression(ad.getPath());
 
-      if (ptCodes != null && ptCodes.size() > 0) {
+      if (ptCodes != null && !ptCodes.isEmpty()) {
 
         logger.info(
             " Found a Total # of {} codes found for Patient {}", ptCodes.size(), ad.getPath());
@@ -71,7 +75,7 @@ public class EcaUtils {
 
       List<CodeableConcept> ptCodes = data.getR4CodesForExpression(ad.getPath());
 
-      if (ptCodes != null && ptCodes.size() > 0) {
+      if (ptCodes != null && !ptCodes.isEmpty()) {
 
         logger.info(" Found a Total # of {} codes found for Patient.", ad.getPath());
 
@@ -108,7 +112,7 @@ public class EcaUtils {
 
     Set<String> intersection = SetUtils.intersection(codesToMatch, codesToMatchAgainst);
 
-    if (intersection != null && intersection.size() > 0) {
+    if (intersection != null && !intersection.isEmpty()) {
 
       logger.info(" Number of Matched Codes = {}", intersection.size());
 

@@ -9,7 +9,7 @@ public class RelatedAction {
 
   private ActionRelationshipType relationship;
 
-  private AbstractAction relatedAction;
+  private AbstractAction abstractAction;
 
   private Duration duration;
 
@@ -24,11 +24,11 @@ public class RelatedAction {
   }
 
   public AbstractAction getRelatedAction() {
-    return relatedAction;
+    return abstractAction;
   }
 
-  public void setRelatedAction(AbstractAction relatedAction) {
-    this.relatedAction = relatedAction;
+  public void setRelatedAction(AbstractAction abstractAction) {
+    this.abstractAction = abstractAction;
   }
 
   public Duration getDuration() {
@@ -41,18 +41,20 @@ public class RelatedAction {
 
   public void print() {
 
-    logger.info(" *** Printing Related Actions *** ");
+    if (logger.isInfoEnabled()) {
+      logger.info(" *** Printing Related Actions *** ");
 
-    if (relationship != null) logger.info(" Relationship = {}", relationship.toString());
+      if (relationship != null) logger.info(" Relationship = {}", relationship.toString());
 
-    if (relatedAction != null) relatedAction.print();
+      if (abstractAction != null) abstractAction.print();
 
-    if (duration != null) {
+      if (duration != null) {
 
-      logger.info(" Duration period = {}", duration.getValue());
-      logger.info(" Duration unit = {}", duration.getUnit());
+        logger.info(" Duration period = {}", duration.getValue());
+        logger.info(" Duration unit = {}", duration.getUnit());
+      }
+
+      logger.info("*** End Printing Related Actions *** ");
     }
-
-    logger.info("*** End Printing Related Actions *** ");
   }
 }

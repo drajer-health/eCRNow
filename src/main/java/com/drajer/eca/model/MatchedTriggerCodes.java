@@ -49,11 +49,10 @@ public class MatchedTriggerCodes {
 
   public Boolean hasMatchedTriggerCodes(String type) {
 
-    if (matchedCodes != null
-        && matchedCodes.size() > 0
+    return matchedCodes != null
+        && !matchedCodes.isEmpty()
         && matchedPath != null
-        && matchedPath.contains(type)) return true;
-    else return false;
+        && matchedPath.contains(type);
   }
 
   public void addCodes(Set<String> codes) {

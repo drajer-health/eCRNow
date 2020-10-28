@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 public class CdaResultGenerator {
 
+  private CdaResultGenerator() {}
+
   private static final Logger logger = LoggerFactory.getLogger(CdaResultGenerator.class);
 
   public static String generateResultsSection(R4FhirData data, LaunchDetails details) {
@@ -33,7 +35,7 @@ public class CdaResultGenerator {
 
     List<Observation> results = data.getLabResults();
 
-    if (results != null && results.size() > 0) {
+    if (results != null && !results.isEmpty()) {
 
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -62,7 +64,7 @@ public class CdaResultGenerator {
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
@@ -90,7 +92,7 @@ public class CdaResultGenerator {
           }
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
         String val = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -108,7 +110,7 @@ public class CdaResultGenerator {
         }
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
         // Setup the Organizer and Entries
         StringBuilder lrEntry = new StringBuilder();
@@ -188,7 +190,7 @@ public class CdaResultGenerator {
         lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
         if (!triggerCodesAdded) {
-          lrEntry.append(addTriggerCodes(data, details, obs, cds));
+          lrEntry.append(addTriggerCodes(details, obs, cds));
           triggerCodesAdded = true;
         }
 
@@ -224,8 +226,7 @@ public class CdaResultGenerator {
     return hsb.toString();
   }
 
-  public static String addTriggerCodes(
-      R4FhirData data, LaunchDetails details, Observation obs, List<Coding> cds) {
+  public static String addTriggerCodes(LaunchDetails details, Observation obs, List<Coding> cds) {
 
     StringBuilder lrEntry = new StringBuilder();
 
@@ -281,7 +282,7 @@ public class CdaResultGenerator {
 
         Set<String> matchedCodes = mtc.getMatchedCodes();
 
-        if (matchedCodes != null && matchedCodes.size() > 0) {
+        if (matchedCodes != null && !matchedCodes.isEmpty()) {
 
           // Split the system and code.
           matchedCodes

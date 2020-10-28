@@ -25,7 +25,7 @@ public class RestApiSender {
       RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
-      HttpEntity<String> request = new HttpEntity<String>(eicrXml, headers);
+      HttpEntity<String> request = new HttpEntity<>(eicrXml, headers);
 
       ub = new URIBuilder(launchDetails.getRestAPIURL());
       ub.addParameter("fhirServerURL", launchDetails.getEhrServerURL());
@@ -33,14 +33,19 @@ public class RestApiSender {
       ub.addParameter("encounterId", launchDetails.getEncounterId());
       ub.addParameter("setId", "123");
 
-      logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
+      if (logger.isInfoEnabled()) {
+        logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
+      }
+
       ResponseEntity<String> response =
           restTemplate.exchange(ub.toString(), HttpMethod.POST, request, String.class);
 
       bundleResponse = new JSONObject(response.getBody());
       bundleResponse.put("status", response.getStatusCodeValue());
 
-      logger.info("Received response: {}", bundleResponse.toString());
+      if (logger.isInfoEnabled()) {
+        logger.info("Received response: {}", bundleResponse.toString());
+      }
 
     } catch (Exception e) {
 

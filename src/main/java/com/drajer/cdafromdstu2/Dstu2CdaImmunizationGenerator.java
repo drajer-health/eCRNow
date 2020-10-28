@@ -87,7 +87,7 @@ public class Dstu2CdaImmunizationGenerator {
         bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_2_BODY_CONTENT, dt);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
         ++rowNum; // TODO: ++rowNum or rowNum++
       }
