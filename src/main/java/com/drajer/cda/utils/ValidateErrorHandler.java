@@ -13,24 +13,24 @@ public class ValidateErrorHandler implements ErrorHandler {
   private static boolean isException = false;
 
   public void warning(SAXParseException exception) throws SAXException {
-    message(exception);
+    logMessage(exception);
   }
 
   public void fatalError(SAXParseException exception) throws SAXException {
     isException = true;
-    message(exception);
+    logMessage(exception);
   }
 
   public void error(SAXParseException exception) throws SAXException {
     isException = true;
-    message(exception);
+    logMessage(exception);
   }
 
   public boolean getIsException() {
     return isException;
   }
 
-  private static void message(SAXParseException exception) {
+  private static void logMessage(SAXParseException exception) {
     logger.error(
         "Message: Error validating XML Data at Line: "
             + exception.getLineNumber()
