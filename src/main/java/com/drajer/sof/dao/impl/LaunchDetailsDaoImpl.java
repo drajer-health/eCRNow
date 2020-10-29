@@ -38,4 +38,8 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
     LaunchDetails launchDetails = (LaunchDetails) criteria.uniqueResult();
     return launchDetails;
   }
+
+  public void delete(LaunchDetails launchDetails) {
+    getSession().delete(launchDetails);
+  }
 }
