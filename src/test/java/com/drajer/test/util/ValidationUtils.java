@@ -806,6 +806,7 @@ public class ValidationUtils {
           && extension
               .getUrl()
               .contentEquals("http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex")) {
+
         List<Pair<String, String>> rowValues = new ArrayList<>();
 
         String obsRes = ((CodeType) extension.getValue()).getValue();
