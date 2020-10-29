@@ -168,8 +168,8 @@ public class ITLaunchController extends BaseIntegrationTest {
 
       do {
 
-        // Minimum 4 sec is required as App will execute
-        // createEicr workflow after 3 sec as per eRSD.
+        // Minimum 2 sec is required as App will execute
+        // createEicr workflow after 2 sec as per eRSD.
         Thread.sleep(2000);
         getLaunchDetailAndStatus();
 
