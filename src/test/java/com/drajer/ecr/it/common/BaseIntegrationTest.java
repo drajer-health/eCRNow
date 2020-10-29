@@ -72,8 +72,9 @@ public abstract class BaseIntegrationTest {
 
   @After
   public void tearDown() {
-
-    session.close();
+    if (session != null) {
+      session.close();
+    }
   }
 
   protected String getSystemLaunchInputData(String systemLaunchFile) throws IOException {

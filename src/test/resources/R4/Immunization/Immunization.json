@@ -1,0 +1,203 @@
+{
+    "resourceType": "Bundle",
+    "id": "57ded0d8-408f-4872-b86f-8b9eccfa5fc4",
+    "type": "searchset",
+    "total": 3,
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization?patient=12742571"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization/M197287364",
+            "resource": {
+                "resourceType": "Immunization",
+                "id": "M197287364",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-29T08:53:25-05:00"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Immunization</b></p><p><b>Vaccine</b>: zoster vaccine, inactivated</p><p><b>Occurrence</b>: 2014</p><p><b>Patient</b>: PORTER, MITCHELL D</p><p><b>Status</b>: Completed</p></div>"
+                },
+                "status": "completed",
+                "vaccineCode": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2556421249",
+                            "display": "zoster vaccine, inactivated",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/cvx",
+                            "code": "187",
+                            "display": "zoster vaccine recombinant",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "zoster vaccine, inactivated"
+                },
+                "patient": {
+                    "reference": "Patient/12742571",
+                    "display": "FHIRTest, COVIDONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceDateTime": "2014",
+                "primarySource": false,
+                "reportOrigin": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200",
+                            "code": "19162977",
+                            "display": "Spouse",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Spouse"
+                },
+                "location": {
+                    "reference": "Location/29598629",
+                    "display": "ICU"
+                },
+                "doseQuantity": {
+                    "value": 0.0,
+                    "unit": "unknown unit",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{unknownunit}"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization/M197287360",
+            "resource": {
+                "resourceType": "Immunization",
+                "id": "M197287360",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-29T08:53:25-05:00"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Immunization</b></p><p><b>Vaccine</b>: tetanus toxoid</p><p><b>Occurrence</b>: 2000</p><p><b>Patient</b>: PORTER, MITCHELL D</p><p><b>Status</b>: Completed</p></div>"
+                },
+                "status": "completed",
+                "vaccineCode": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2798767",
+                            "display": "tetanus toxoid",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/cvx",
+                            "code": "112",
+                            "display": "tetanus toxoid, unspecified formulation",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "tetanus toxoid"
+                },
+                "patient": {
+                    "reference": "Patient/12742571",
+                    "display": "FHIRTest, COVIDONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceDateTime": "2000",
+                "primarySource": false,
+                "reportOrigin": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200",
+                            "code": "19162977",
+                            "display": "Spouse",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Spouse"
+                },
+                "location": {
+                    "reference": "Location/29598629",
+                    "display": "ICU"
+                },
+                "doseQuantity": {
+                    "value": 0.0,
+                    "unit": "unknown unit",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{unknownunit}"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization/M197287356",
+            "resource": {
+                "resourceType": "Immunization",
+                "id": "M197287356",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-29T08:53:25-05:00"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Immunization</b></p><p><b>Vaccine</b>: influenza virus vaccine, live</p><p><b>Occurrence</b>: 2019</p><p><b>Patient</b>: PORTER, MITCHELL D</p><p><b>Status</b>: Completed</p></div>"
+                },
+                "status": "completed",
+                "vaccineCode": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2820756",
+                            "display": "influenza virus vaccine, live",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/cvx",
+                            "code": "111",
+                            "display": "influenza virus vaccine, live, attenuated, for intranasal use",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "influenza virus vaccine, live"
+                },
+                "patient": {
+                    "reference": "Patient/12742571",
+                    "display": "FHIRTest, COVIDONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceDateTime": "2019",
+                "primarySource": false,
+                "reportOrigin": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/30200",
+                            "code": "19162977",
+                            "display": "Spouse",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Spouse"
+                },
+                "location": {
+                    "reference": "Location/29598629",
+                    "display": "ICU"
+                },
+                "doseQuantity": {
+                    "value": 0.0,
+                    "unit": "unknown unit",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{unknownunit}"
+                }
+            }
+        }
+    ]
+}

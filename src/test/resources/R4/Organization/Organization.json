@@ -1,0 +1,145 @@
+{
+    "resourceType": "Organization",
+    "id": "675844",
+    "meta": {
+        "versionId": "29",
+        "lastUpdated": "2018-05-22T16:46:28Z"
+    },
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Organization</b></p><p><b>Name</b>: Model Hospital</p><p><b>Status</b>: Active</p><p><b>TAXID</b>: 123456785</p></div>"
+    },
+    "identifier": [
+        {
+            "use": "official",
+            "system": "urn:oid:2.16.840.1.113883.4.4",
+            "value": "123456785"
+        }
+    ],
+    "active": true,
+    "type": [
+        {
+            "coding": [
+                {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/278",
+                    "code": "EMPLOYER",
+                    "display": "Employer",
+                    "userSelected": true
+                }
+            ],
+            "text": "Employer"
+        },
+        {
+            "coding": [
+                {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/278",
+                    "code": "FACILITY",
+                    "display": "Facility",
+                    "userSelected": true
+                }
+            ],
+            "text": "Facility"
+        },
+        {
+            "coding": [
+                {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/278",
+                    "code": "CLIENT",
+                    "display": "Client",
+                    "userSelected": true
+                }
+            ],
+            "text": "Client"
+        },
+        {
+            "coding": [
+                {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/278",
+                    "code": "LABORATORY",
+                    "display": "Exchange Lab",
+                    "userSelected": true
+                }
+            ],
+            "text": "Exchange Lab"
+        },
+        {
+            "coding": [
+                {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/278",
+                    "code": "PLACEOFSVC",
+                    "display": "Place of Service",
+                    "userSelected": true
+                },
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "prov",
+                    "display": "Healthcare Provider"
+                }
+            ],
+            "text": "Place of Service"
+        }
+    ],
+    "name": "Model Hospital",
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "5555550013",
+            "use": "work"
+        }
+    ],
+    "address": [
+        {
+            "use": "billing",
+            "text": "6276 Rockriver Drive\nKansas City, MO 64117\nUS",
+            "line": [
+                "6276 Rockriver Drive"
+            ],
+            "city": "Kansas City",
+            "state": "MO",
+            "postalCode": "64117",
+            "country": "US"
+        },
+        {
+            "use": "billing",
+            "text": "6276 Rockriver Drive\nKansas City, MO 64117\nUS",
+            "line": [
+                "6276 Rockriver Drive"
+            ],
+            "city": "Kansas City",
+            "state": "MO",
+            "postalCode": "64117",
+            "country": "US"
+        },
+        {
+            "text": "6276 Rockriver Drive\nKansas City, MO 64117\nUS",
+            "line": [
+                "6276 Rockriver Drive"
+            ],
+            "city": "Kansas City",
+            "state": "MO",
+            "postalCode": "64117",
+            "country": "US"
+        },
+        {
+            "use": "work",
+            "text": "6276 Rockriver Drive\nKansas City, MO 64117\nUS",
+            "line": [
+                "6276 Rockriver Drive"
+            ],
+            "city": "Kansas City",
+            "state": "MO",
+            "postalCode": "64117",
+            "country": "US"
+        },
+        {
+            "text": "6276 Rockriver Drive\nKansas City, MO 64117\nUS",
+            "line": [
+                "6276 Rockriver Drive"
+            ],
+            "city": "Kansas City",
+            "state": "MO",
+            "postalCode": "64117",
+            "country": "US"
+        }
+    ]
+}

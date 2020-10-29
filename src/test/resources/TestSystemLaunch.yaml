@@ -6,7 +6,7 @@ testCase:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
-      ValidationSections: "ENCOUNTERS|VISITS|PROBLEMS"
+      ValidationSections: "HEADER|ENCOUNTERS|VISITS|PROBLEMS|ILLNESS|HISTORY"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -24,6 +24,9 @@ testCase:
         responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
       - params: "11938004"
         responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
       Condition:
       - params:
           patient: "12742571"
@@ -32,7 +35,7 @@ testCase:
       - params:
           patient: "12742571"
           category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationBundle_1.json"
+        responseFilePath: "R4/Observation/ObservationLaboratory.json"
       - params:
           patient: "12742571"
           code: "http://loinc.org|90767-5"
@@ -41,6 +44,10 @@ testCase:
           patient: "12742571"
           code: "http://loinc.org|929762-2"
         responseFilePath: "R4/Observation/ObservationBundle_3.json"
+      Immunization:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Immunization/Immunization.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -53,13 +60,10 @@ testCase:
     resourceMappingData:
       Patient:
       - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        responseFilePath: "R4/Patient/Pat_Deceased.json"
       Encounter:
       - params: "97953900"
         responseFilePath: "R4/Encounter/Encounter_97953900.json"
-      Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Condition:
       - params:
           patient: "12742571"
@@ -110,6 +114,52 @@ testCase:
       - params:
           patient: "12742571"
         responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+  eCR-VR-cda-Header-Allvalues:
+    fileData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      ValidationSections: "HEADER"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      Practitioner:
+      - params: "11817978"
+        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+  eCR-VR-cda-HPI-All:
+    fileData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      ValidationSections: "ILLNESS"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/Condition_HistoryOfPresentIllness.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

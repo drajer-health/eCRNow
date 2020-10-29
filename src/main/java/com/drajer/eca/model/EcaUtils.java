@@ -47,8 +47,7 @@ public class EcaUtils {
 
       if (ptCodes != null && !ptCodes.isEmpty()) {
 
-        logger.info(
-            " Found a Total # of {} codes found for Patient {}", ptCodes.size(), ad.getPath());
+        logger.info(" Found total {} {}  for Patient", ptCodes.size(), ad.getPath());
 
         Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
         matchfound = matchTriggerCodes(details, ad, codesToMatch, state);
@@ -77,7 +76,7 @@ public class EcaUtils {
 
       if (ptCodes != null && !ptCodes.isEmpty()) {
 
-        logger.info(" Found a Total # of {} codes found for Patient.", ad.getPath());
+        logger.info(" Found total {} {} for Patient.", ptCodes.size(), ad.getPath());
 
         Set<String> codesToMatch = ApplicationUtils.convertR4CodeableConceptsToString(ptCodes);
         matchfound = matchTriggerCodes(details, ad, codesToMatch, state);
@@ -100,7 +99,6 @@ public class EcaUtils {
       logger.info(
           " Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
           codesToMatchAgainst.size());
-
     } else {
 
       codesToMatchAgainst =

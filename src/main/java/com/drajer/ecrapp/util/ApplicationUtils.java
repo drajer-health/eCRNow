@@ -39,7 +39,7 @@ public class ApplicationUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
 
-  public static Boolean isCodePresent(Set<ValueSet> valuesets, String code) {
+  /*public static Boolean isCodePresent(Set<ValueSet> valuesets, String code) {
     Boolean isCodePresent = false;
     ValueSetExpansionComponent valueSetExpansionComponent;
     List<ValueSetExpansionContainsComponent> valueSetExpansionContainsComponentList;
@@ -55,7 +55,7 @@ public class ApplicationUtils {
       }
     }
     return isCodePresent;
-  }
+  }*/
 
   public static List<CanonicalType> getValueSetListFromGrouper(String grouperId) {
 
