@@ -1,0 +1,478 @@
+{
+    "resourceType": "Bundle",
+    "id": "2e5a756a-6394-47a0-adf0-d619057e4843",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742571&category=laboratory"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287553",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287553",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-30T20:31:10.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742544</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Coronavirus COVID-19</p><p><b>Result</b>: Detected</p><p><b>Interpretation</b>: ABN</p><p><b>Effective Date</b>: Apr 30, 2020  8:25 A.M. UTC</p><p><b>Reference Range</b>: Not Detected</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287553-2020043020311100"
+                    }
+                ],
+                "basedOn": [
+                    {
+                        "reference": "ServiceRequest/311539757"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2572358253",
+                            "display": "Coronavirus COVID-19",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94500-6"
+                        }
+                    ],
+                    "text": "Coronavirus COVID-19"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-30T08:25:00.000Z",
+                "issued": "2020-10-13T20:31:10.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                                            "code": "OP",
+                                            "display": "ordering provider"
+                                        }
+                                    ],
+                                    "text": "ordering provider"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/11786044"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "260373001",
+                            "display": "Detected (qualifier value)"
+                        }
+                    ],
+                    "text": "Detected"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "201",
+                                "display": "ABN",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "A",
+                                "display": "Abnormal"
+                            }
+                        ],
+                        "text": "ABN"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        },
+                        "text": "Not Detected"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287553",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287553",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-30T20:31:10.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742544</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Coronavirus COVID-19</p><p><b>Result</b>: Detected</p><p><b>Interpretation</b>: ABN</p><p><b>Effective Date</b>: Apr 30, 2020  8:25 A.M. UTC</p><p><b>Reference Range</b>: Not Detected</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287553-2020043020311100"
+                    }
+                ],
+                "basedOn": [
+                    {
+                        "reference": "ServiceRequest/311539757"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2572358253",
+                            "display": "Coronavirus COVID-19",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94500-6"
+                        }
+                    ],
+                    "text": "Coronavirus COVID-19"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-10-13T08:25:00.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                                            "code": "OP",
+                                            "display": "ordering provider"
+                                        }
+                                    ],
+                                    "text": "ordering provider"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/11786044"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "260373001",
+                            "display": "Detected (qualifier value)"
+                        }
+                    ],
+                    "text": "Detected"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "201",
+                                "display": "ABN",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "A",
+                                "display": "Abnormal"
+                            }
+                        ],
+                        "text": "ABN"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        },
+                        "text": "Not Detected"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287553",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287553",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-10-13T20:31:10.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742544</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Coronavirus COVID-19</p><p><b>Result</b>: Detected</p><p><b>Interpretation</b>: ABN</p><p><b>Effective Date</b>: Apr 30, 2020  8:25 A.M. UTC</p><p><b>Reference Range</b>: Not Detected</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287553-2020043020311100"
+                    }
+                ],
+                "basedOn": [
+                    {
+                        "reference": "ServiceRequest/311539757"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2572358253",
+                            "display": "Coronavirus COVID-19",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94500-6"
+                        }
+                    ],
+                    "text": "Coronavirus COVID-19"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                                            "code": "OP",
+                                            "display": "ordering provider"
+                                        }
+                                    ],
+                                    "text": "ordering provider"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/11786044"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "260373001",
+                            "display": "Detected (qualifier value)"
+                        }
+                    ],
+                    "text": "Detected"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "201",
+                                "display": "ABN",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "A",
+                                "display": "Abnormal"
+                            }
+                        ],
+                        "text": "ABN"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        },
+                        "text": "Not Detected"
+                    }
+                ]
+            }
+        }                
+    ]
+}

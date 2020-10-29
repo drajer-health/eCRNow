@@ -60,17 +60,17 @@ public class CdaGeneratorConstants {
           + "XMLSchema-instance"
           + DOUBLE_QUOTE
           + "\n"
-          + "xmlns="
+          + " xmlns="
           + DOUBLE_QUOTE
           + "urn:hl7-org:v3"
           + DOUBLE_QUOTE
           + "\n"
-          + "xmlns:cda="
+          + " xmlns:cda="
           + DOUBLE_QUOTE
           + "urn:hl7-org:v3"
           + DOUBLE_QUOTE
           + "\n"
-          + "xmlns:sdtc="
+          + " xmlns:sdtc="
           + DOUBLE_QUOTE
           + "urn:hl7-org:sdtc"
           + DOUBLE_QUOTE

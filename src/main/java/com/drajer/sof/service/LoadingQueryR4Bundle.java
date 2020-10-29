@@ -50,7 +50,7 @@ public class LoadingQueryR4Bundle {
     try {
       logger.info("Get Preganancy Observation Data");
       List<Observation> observationList =
-          r4ResourcesData.getObservationData(
+          r4ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
       if (logger.isInfoEnabled()) {
         logger.info("Filtered Observations----> {}", observationList.size());
@@ -69,7 +69,7 @@ public class LoadingQueryR4Bundle {
     try {
       logger.info("Get Travel Observation Data");
       List<Observation> observationList =
-          r4ResourcesData.getObservationData(
+          r4ResourcesData.getTravelObservationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
       if (logger.isInfoEnabled()) {
         logger.info("Filtered Observations----> {}", observationList.size());
