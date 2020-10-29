@@ -58,9 +58,11 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
 
   @Before
   public void laoadingQuerySetUp() throws IOException {
-    tx = session.beginTransaction();
 
     try {
+
+      tx = session.beginTransaction();
+
       launchDetails =
           mapper.readValue(
               this.getClass()
@@ -68,34 +70,38 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
                   .getResourceAsStream(testDataGenerator.getTestFile(testCaseId, "LaunchDetails")),
               LaunchDetails.class);
       allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
-    } catch (IOException e) {
-      fail("This exception is not expected fix test");
-    }
 
-    launchDetails.setEhrServerURL(
-        launchDetails.getEhrServerURL().replace("port", "" + wireMockHttpPort));
-    launchDetails.setAccessToken(
-        launchDetails.getAccessToken().replace("port", "" + wireMockHttpPort));
+      launchDetails.setEhrServerURL(
+          launchDetails.getEhrServerURL().replace("port", "" + wireMockHttpPort));
+      launchDetails.setAccessToken(
+          launchDetails.getAccessToken().replace("port", "" + wireMockHttpPort));
 
-    try {
       startDate = DateUtils.parseDate("20201001", "yyyyMMdd");
       endDate = DateUtils.parseDate("20201030", "yyyyMMdd");
-    } catch (ParseException e) {
-      fail("This exception is not expected fix test");
+
+      stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
+      logger.info("Creating wiremockstubs..");
+      stubHelper.stubResources(testDataGenerator.getResourceMappings(testCaseId));
+      stubHelper.stubAuthAndMetadata(testDataGenerator.getOtherMappings(testCaseId));
+
+    } catch (IOException e) {
+
+      fail(e.getMessage() + "This exception is not expected fix test");
+    } catch (ParseException e1) {
+
+      fail(e1.getMessage() + "This exception is not expected fix test");
     }
 
     session.flush();
     tx.commit();
-
-    stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
-    logger.info("Creating wiremockstubs..");
-    stubHelper.stubResources(testDataGenerator.getResourceMappings(testCaseId));
-    stubHelper.stubAuthAndMetadata(testDataGenerator.getOtherMappings(testCaseId));
   }
 
   @After
   public void cleanUp() {
-    stubHelper.stopMockServer();
+
+    if (stubHelper != null) {
+      stubHelper.stopMockServer();
+    }
   }
 
   @Parameters(name = "{index}: {0}")
@@ -146,7 +152,7 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
     if (allResourceFiles.get("Practitioner") != null) {
       List<Resource> actualRsrc = TestUtils.getResourcesFromBundle(r4Bundle, Practitioner.class);
       assertNotNull(actualRsrc);
-      // Bug in the code adding duplicate Practitioner in the bundle.
+      // TODO - Bug in the code adding duplicate Practitioner in the bundle.
       // assertEquals(allResourceFiles.get("Practitioner").size(), actualRsrc.size());
     }
     // Observation
