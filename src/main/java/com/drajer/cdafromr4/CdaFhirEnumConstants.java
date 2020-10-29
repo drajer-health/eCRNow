@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 public class CdaFhirEnumConstants {
 

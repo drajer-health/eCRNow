@@ -7,8 +7,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
+import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.impl.EicrServiceImpl;

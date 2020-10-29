@@ -801,16 +801,22 @@ public class ValidationUtils {
         table,
         new ArrayList<String>(
             Arrays.asList("Social History Observation", "Social History Observation Result")));
+    for (Extension extension : listExtensions) {
+      if (extension.getUrl() != null
+          && extension
+              .getUrl()
+              .contentEquals("http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex")) {
+        List<Pair<String, String>> rowValues = new ArrayList<>();
 
-    List<Pair<String, String>> rowValues = new ArrayList<>();
+        String obsRes = ((CodeType) extension.getValue()).getValue();
+        String socCont = "Birth Sex";
 
-    String obsRes = ((CodeType) listExtensions.get(0).getValue()).getValue();
-    String socCont = "Birth Sex";
+        Pair<String, String> row = new Pair<>(obsRes, socCont);
+        rowValues.add(row);
 
-    Pair<String, String> row = new Pair<>(obsRes, socCont);
-    rowValues.add(row);
-
-    validateTableBody(table, rowValues);
+        validateTableBody(table, rowValues);
+      }
+    }
 
     validateSocialHistoryEntry(socialHistorySection.getEntry(), listExtensions);
   }

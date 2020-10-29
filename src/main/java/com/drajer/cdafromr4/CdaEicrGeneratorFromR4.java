@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;

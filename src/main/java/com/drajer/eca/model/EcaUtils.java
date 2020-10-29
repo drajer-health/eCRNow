@@ -1,8 +1,8 @@
 package com.drajer.eca.model;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
+import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
