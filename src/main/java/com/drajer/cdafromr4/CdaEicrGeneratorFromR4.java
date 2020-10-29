@@ -23,6 +23,8 @@ public class CdaEicrGeneratorFromR4 {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaEicrGeneratorFromR4.class);
 
+  private CdaEicrGeneratorFromR4() {}
+
   public static String convertR4FhirBundletoCdaEicr(R4FhirData data, LaunchDetails details) {
 
     StringBuilder eICR = new StringBuilder();

@@ -11,12 +11,10 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Immunization;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdaImmunizationGenerator {
 
-  private static final Logger logger = LoggerFactory.getLogger(CdaImmunizationGenerator.class);
+  private CdaImmunizationGenerator() {}
 
   public static String generateImmunizationSection(R4FhirData data, LaunchDetails details) {
 
@@ -24,7 +22,7 @@ public class CdaImmunizationGenerator {
 
     List<Immunization> imms = data.getImmunizations();
 
-    if (imms != null && imms.size() > 0) {
+    if (imms != null && !imms.isEmpty()) {
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -55,7 +53,7 @@ public class CdaImmunizationGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.IMM_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.IMM_TABLE_COL_2_TITLE);
 
@@ -83,11 +81,11 @@ public class CdaImmunizationGenerator {
           dt = imm.getOccurrenceDateTimeType().toString();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_2_BODY_CONTENT, dt);
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
         ++rowNum; // TODO: ++rowNum or rowNum++
       }
@@ -155,7 +153,7 @@ public class CdaImmunizationGenerator {
         sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
         sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
 
-        List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
+        List<CodeableConcept> cds = new ArrayList<>();
         cds.add(imm.getVaccineCode());
         sb.append(
             CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));

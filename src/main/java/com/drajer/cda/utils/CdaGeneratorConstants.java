@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorConstants {
 
+  private CdaGeneratorConstants() {
+    // not called
+  }
+
   private static final Logger logger = LoggerFactory.getLogger(CdaGeneratorConstants.class);
 
   // XML Related
@@ -25,11 +29,22 @@ public class CdaGeneratorConstants {
   public static final String PIPE = "|";
   public static final String COLON = ":";
   public static final String HYPHEN = "-";
-  public static final String EQUALS = "=";
+  public static final String EQUAL = "=";
   public static final String XSI_TYPE = "xsi:type=";
   public static final String XML_FILE_PATTERN = "*.xml";
+  public static final String TYPEID_ROOT = "typeId root=";
+  public static final String EXTENSION = "extension=";
+  public static final String ID_ROOT = "id root=";
+  public static final String CODE_WITH_EQUAL = "code=";
+  public static final String CODESYSTEM_WITH_EQUAL = "codeSystem=";
+  public static final String CODESYSTEMNAME_WITH_EQUAL = "codeSystemName=";
+  public static final String DISPLAYNAME_WITH_EQUAL = "displayName=";
+  public static final String VALUE_WITH_EQUAL = "value=";
+  public static final String NULLFLAVOR_WITH_EQUAL = "nullFlavor=";
+  public static final String UNIT_WITH_EQUAL = "unit=";
+  public static final String VALUESET = "sdtc:valueSet=";
 
-  // CCDA Header Related
+  // CCDA Header Releated
   public static final String DOC_HEADER_XML = "<?xml version=\"1.0\"?>" + "\n";
 
   public static final String CLINICAL_DOC_HEADER_XML =
@@ -69,13 +84,13 @@ public class CdaGeneratorConstants {
   // CCDA Header Related Information
   public static final String CDA_DOC_ROOT = "2.16.840.1.113883.1.3";
   public static final String CDA_DOC_EXT = "POCD_HD000040";
-  public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
+  // public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
   public static final String US_REALM_HEADER_EXT = "2015-08-01";
   public static final String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2";
   public static final String PUBLIC_HEALTH_EXT = "2016-12-01";
   public static final String PH_DOC_CODE = "55751-2";
   public static final String PH_DOC_DISPLAY_NAME = "Initial Public Health Case Report";
-  public static final String PH_REPORT_TITLE = "Initial Public Health Case Report";
+  // public static final String PH_REPORT_TITLE = "Initial Public Health Case Report";
 
   // FHIR Types
 

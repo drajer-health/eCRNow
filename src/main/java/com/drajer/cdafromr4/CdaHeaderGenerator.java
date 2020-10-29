@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 public class CdaHeaderGenerator {
 
+  private CdaHeaderGenerator() {}
+
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
   public static String createCdaHeader(R4FhirData data, LaunchDetails details) {
@@ -53,7 +55,7 @@ public class CdaHeaderGenerator {
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.PH_REPORT_TITLE));
+              CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.PH_DOC_DISPLAY_NAME));
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForEffectiveTime(
@@ -90,7 +92,7 @@ public class CdaHeaderGenerator {
           if (ent.getResource() instanceof Patient) {
 
             Patient p = (Patient) ent.getResource();
-            eICRHeader.append(getPatientDetails(data, p, details));
+            eICRHeader.append(getPatientDetails(p, details));
 
             break;
           }
@@ -190,8 +192,8 @@ public class CdaHeaderGenerator {
 
         List<CodeableConcept> cds = loc.getType();
 
-        List<Coding> codings = new ArrayList<Coding>();
-        ;
+        List<Coding> codings = new ArrayList<>();
+
         for (CodeableConcept cd : cds) {
 
           if (cd.getCoding() != null) {
@@ -207,7 +209,7 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      List<Address> addrs = new ArrayList<Address>();
+      List<Address> addrs = new ArrayList<>();
       addrs.add(loc.getAddress());
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
@@ -306,7 +308,7 @@ public class CdaHeaderGenerator {
           CdaGeneratorUtils.getXmlForText(
               CdaGeneratorConstants.NAME_EL_NAME, "Utah Outpatient Clinic"));
 
-      List<ContactPoint> cps = new ArrayList<ContactPoint>();
+      List<ContactPoint> cps = new ArrayList<>();
       ContactPoint cp = new ContactPoint();
       cp.setSystem(ContactPointSystem.PHONE);
       cp.setUse(ContactPointUse.HOME);
@@ -432,7 +434,7 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getPatientDetails(R4FhirData data, Patient p, LaunchDetails details) {
+  public static String getPatientDetails(Patient p, LaunchDetails details) {
 
     StringBuilder patientDetails = new StringBuilder();
 
@@ -457,16 +459,14 @@ public class CdaHeaderGenerator {
       } else {
 
         logger.info(" Using Resource Identifier as id ");
-        ;
         patientDetails.append(
             CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
       }
 
     } else {
       logger.info(" Using Resource Identifier as id ");
-      ;
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
     }
 
     // Add Address.
@@ -552,7 +552,7 @@ public class CdaHeaderGenerator {
     }
 
     // Adding Guardian
-    if (p.getContact() != null && p.getContact().size() > 0) {
+    if (p.getContact() != null && !p.getContact().isEmpty()) {
 
       ContactComponent guardianContact = CdaFhirUtilities.getGuardianContact(p.getContact());
 
@@ -568,7 +568,7 @@ public class CdaHeaderGenerator {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
-      List<HumanName> names = new ArrayList<HumanName>();
+      List<HumanName> names = new ArrayList<>();
       names.add(guardianContact.getName());
       patientDetails.append(CdaFhirUtilities.getNameXml(names));
 
@@ -608,9 +608,9 @@ public class CdaHeaderGenerator {
   }
 
   public static List<Address> getAddressDetails() {
-    List<Address> addrs = new ArrayList<Address>();
+    List<Address> addrs = new ArrayList<>();
     Address addr = new Address();
-    List<StringType> addrLine = new ArrayList<StringType>();
+    List<StringType> addrLine = new ArrayList<>();
     addrLine.add(new StringType("0987 Facility Drive"));
     addr.setLine(addrLine);
     addr.setCity("alt Lake City");

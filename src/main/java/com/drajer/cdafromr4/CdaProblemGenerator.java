@@ -25,6 +25,8 @@ import org.springframework.util.StringUtils;
 
 public class CdaProblemGenerator {
 
+  private CdaProblemGenerator() {}
+
   private static final Logger logger = LoggerFactory.getLogger(CdaProblemGenerator.class);
 
   public static String generateProblemSection(R4FhirData data, LaunchDetails details) {
@@ -33,7 +35,7 @@ public class CdaProblemGenerator {
 
     List<Condition> conds = data.getConditions();
 
-    if (conds != null && conds.size() > 0) {
+    if (conds != null && !conds.isEmpty()) {
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -62,7 +64,7 @@ public class CdaProblemGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_2_TITLE);
       sb.append(
@@ -84,7 +86,7 @@ public class CdaProblemGenerator {
           probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new HashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
 
         if (prob.getClinicalStatus() != null
@@ -107,7 +109,7 @@ public class CdaProblemGenerator {
               CdaGeneratorConstants.TABLE_RESOLVED_STATUS);
         }
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum; // TODO: ++rowNum or rowNum++
       }
 
@@ -182,7 +184,7 @@ public class CdaProblemGenerator {
         }
 
         sb.append(
-            CdaGeneratorUtils.getXmlForIVL_TS(
+            CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
         // Add the Problem Observation
@@ -225,10 +227,10 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
         sb.append(
-            CdaGeneratorUtils.getXmlForIVL_TS(
+            CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
-        List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
+        List<CodeableConcept> cds = new ArrayList<>();
         cds.add(pr.getCode());
         sb.append(
             CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
@@ -238,7 +240,7 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
         if (!triggerCodesAdded) {
-          sb.append(addTriggerCodes(data, details, pr, onset, abatement));
+          sb.append(addTriggerCodes(details, pr, onset, abatement));
           triggerCodesAdded = true;
         }
 
@@ -260,7 +262,7 @@ public class CdaProblemGenerator {
   }
 
   public static String addTriggerCodes(
-      R4FhirData data, LaunchDetails details, Condition cond, Date onset, Date abatement) {
+      LaunchDetails details, Condition cond, Date onset, Date abatement) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -324,12 +326,12 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
         sb.append(
-            CdaGeneratorUtils.getXmlForIVL_TS(
+            CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
         Set<String> matchedCodes = mtc.getMatchedCodes();
 
-        if (matchedCodes != null && matchedCodes.size() > 0) {
+        if (matchedCodes != null && !matchedCodes.isEmpty()) {
 
           // Split the system and code.
           matchedCodes
