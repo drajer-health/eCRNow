@@ -11,12 +11,8 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.Assertion.AssertCdaElement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
@@ -33,31 +29,11 @@ import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
-import org.hl7.v3.AD;
-import org.hl7.v3.AdxpCity;
-import org.hl7.v3.AdxpCountry;
-import org.hl7.v3.AdxpPostalCode;
-import org.hl7.v3.AdxpState;
-import org.hl7.v3.AdxpStreetAddressLine;
-import org.hl7.v3.CD;
-import org.hl7.v3.II;
-import org.hl7.v3.IVLTS;
-import org.hl7.v3.PN;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
-import org.hl7.v3.POCDMT000040Entry;
-import org.hl7.v3.POCDMT000040EntryRelationship;
-import org.hl7.v3.POCDMT000040Observation;
-import org.hl7.v3.POCDMT000040PatientRole;
-import org.hl7.v3.POCDMT000040Section;
-import org.hl7.v3.StrucDocContent;
-import org.hl7.v3.StrucDocTable;
-import org.hl7.v3.StrucDocTd;
-import org.hl7.v3.StrucDocText;
-import org.hl7.v3.StrucDocTr;
-import org.hl7.v3.TEL;
+import org.hl7.v3.*;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +43,8 @@ public class ValidationUtils {
   private static LaunchDetails launchDetails;
 
   private static final Logger logger = LoggerFactory.getLogger(ValidationUtils.class);
+
+  private static final String YYYY_MM_DD = "yyyyMMdd";
 
   public static void setLaunchDetails(LaunchDetails launchDetails) {
     ValidationUtils.launchDetails = launchDetails;
@@ -860,12 +838,93 @@ public class ValidationUtils {
       POCDMT000040ClinicalDocument eICR) {
 
     POCDMT000040PatientRole patientRole = eICR.getRecordTarget().get(0).getPatientRole();
-    validatePatientRole(r4Patient, patientRole);
+   /* validatePatientRole(r4Patient, patientRole); */
+
+    //guardian
+    List<ContactComponent> contacts = r4Patient.getContact();
+    ContactComponent contactcomp = null;
+    for (ContactComponent contact : contacts) {
+      final List<CodeableConcept> relationships = contact.getRelationship();
+      for (CodeableConcept relationship : relationships) {
+        if (relationship.getText().equalsIgnoreCase("guardian")
+                || relationship.getText().equalsIgnoreCase("guardianPerson")) {
+          contactcomp = contact;
+          break;
+        }
+      }
+    }
+
+    final POCDMT000040Patient cdaPatient = patientRole.getPatient();
+    //validateGuardian();
   }
 
   public static void validatePatientRole(Patient r4Patient, POCDMT000040PatientRole patientRole) {
-
+     //validateIdentifier(r4Patient.getIdentifier(),patientRole.getId(),r4Patient.getId());
     // validateAddress(r4Patient.getAddress(), patientRole.getAddr());
+    validateTelecoms(r4Patient.getTelecom(),patientRole.getTelecom());
+    validateBirthDate(r4Patient,patientRole);
+    //validateDeceasedDateTime(r4Patient, patientRole);
+    //validatePatientRace(r4Patient, patientRole);
 
+  }
+
+  public static void validateBirthDate(Patient r4Patient,POCDMT000040PatientRole patientRole) {
+    final Date birthDate = r4Patient.getBirthDate();
+    assertNotNull(birthDate);
+    final String yyyyMMdd = TestUtils.convertToString(birthDate, YYYY_MM_DD);
+    final POCDMT000040Patient xmlPatient = patientRole.getPatient();
+    final List<JAXBElement<?>> content = xmlPatient.getContent();
+    final JAXBElement<?> dateElement = content.get(2);
+    final TS dateValue = (TS) dateElement.getValue();
+    assertNotNull(dateValue);
+    assertNotNull(dateValue.getValue());
+    assertEquals(yyyyMMdd, dateValue.getValue());
+
+  }
+
+  public static void validateDeceasedDateTime(Patient r4Patient,POCDMT000040PatientRole patientRole) {
+    final POCDMT000040Patient xmlPatient = patientRole.getPatient();
+    final List<JAXBElement<?>> content = xmlPatient.getContent();
+    final JAXBElement<?> deceasedElement = content.get(3);
+    final BL deceasedValue = (BL) deceasedElement.getValue();
+    assertNotNull(deceasedValue);
+    if (deceasedValue.isValue()) {
+      // final DateTimeType deceasedDateTimeType = patient.getDeceasedDateTimeType(); //bug in the
+      // code, always throws an exception
+      // need to validate deceasd date time here after the bug is fixed.
+    }
+  }
+
+  private static void validatePatientRace(Patient patient, POCDMT000040PatientRole patientRole) {
+    final List<Extension> extensions = patient.getExtension();
+    final POCDMT000040Patient xmlPatient = patientRole.getPatient();
+    final List<JAXBElement<?>> content = xmlPatient.getContent();
+    final Extension raceExtension = extensions.get(1);
+    assertNotNull(raceExtension);
+    final Extension ethnicExtension = extensions.get(2);
+    assertNotNull(ethnicExtension);
+    final JAXBElement<?> raceCodeElement = content.get(4);
+    //System.out.println(content.get(4).getValue() instanceof  CE);
+    final CE raceValue = (CE) raceCodeElement.getValue();
+    assertNotNull(raceValue);
+    final JAXBElement<?> ethnicGroupElement = content.get(5);
+    final CE ethnicValue = (CE) ethnicGroupElement.getValue();
+    assertNotNull(ethnicValue);
+
+    final Extension extension = raceExtension.getExtension().get(0);
+    final Coding value = (Coding) extension.getValue();
+
+    assertEquals(value.getCode(), raceValue.getCode());
+    assertTrue(value.getSystem().contains(raceValue.getCodeSystem()));
+    assertEquals(value.getDisplay(), raceValue.getDisplayName());
+    assertEquals(raceValue.getCodeSystemName(), "Race & Ethnicity - CDC");
+  }
+
+  public static void validateGuardian(ContactComponent contact , POCDMT000040Guardian guardian) {
+
+    final List<TEL> cdaTelecom = guardian.getTelecom();
+    final List<ContactPoint> r4Telecom = contact.getTelecom();
+
+    validateTelecoms(r4Telecom, cdaTelecom);
   }
 }
