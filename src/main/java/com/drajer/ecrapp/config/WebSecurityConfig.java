@@ -1,8 +1,9 @@
 package com.drajer.ecrapp.config;
 
-import com.drajer.ecrapp.security.TokenFilter;
+import javax.servlet.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,18 +17,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
-  @Override
+  @Value("${token.validator.class}")
+  private String tokenFilterClassName;
+
   protected void configure(HttpSecurity http) throws Exception {
     logger.info("*******************************************************************");
-    logger.info("Security Configuration");
+    logger.info("Security Configuration" + tokenFilterClassName);
     logger.info("*******************************************************************");
-    http.csrf()
-        .disable()
-        .addFilterAfter(new TokenFilter(), UsernamePasswordAuthenticationFilter.class)
-        .authorizeRequests()
-        .antMatchers(HttpMethod.POST, "/api/**")
-        .permitAll()
-        .anyRequest()
-        .authenticated();
+    if (!tokenFilterClassName.isEmpty()) {
+      logger.info("Token Filter class Name is not empty");
+      Class classInstance = Class.forName(tokenFilterClassName);
+      logger.info(classInstance.getDeclaredMethods()[0].getName());
+      http.csrf()
+          .disable()
+          .addFilterAfter(
+              (Filter) classInstance.newInstance(), UsernamePasswordAuthenticationFilter.class)
+          .authorizeRequests()
+          .antMatchers(HttpMethod.POST, "/api/**")
+          .permitAll()
+          .anyRequest()
+          .authenticated();
+    } else {
+      logger.info("Token Filter class Name is empty");
+      http.csrf().disable().authorizeRequests().anyRequest().permitAll();
+    }
   }
 }

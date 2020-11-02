@@ -45,7 +45,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 
   private static final Logger logger = LoggerFactory.getLogger(ITLaunchController.class);
 
-  private final String systemLaunchURI = "/api/systemLaunch";
+  private final String systemLaunchURI = "/launch/systemLaunch";
 
   private static String systemLaunchInputData;
   private String patientId;
