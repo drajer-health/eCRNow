@@ -31,6 +31,7 @@ import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -850,6 +851,146 @@ public class ValidationUtils {
             "Administrative Gender");
       }
     }
+  }
+
+  public static void validateImmunizationsSection(
+      List<Immunization> immunizations, POCDMT000040Section immunizationsSection) {
+    // TemplateID
+    // Only one templateID should be present as per spec.
+    AssertCdaElement.assertTemplateID(
+        immunizationsSection.getTemplateId().get(0), "2.16.840.1.113883.10.20.22.2.2.1", null);
+    AssertCdaElement.assertTemplateID(
+        immunizationsSection.getTemplateId().get(1),
+        "2.16.840.1.113883.10.20.22.2.2.1",
+        "2015-08-01");
+
+    // Code
+    AssertCdaElement.assertCodeCE(
+        immunizationsSection.getCode(),
+        "11369-6",
+        "2.16.840.1.113883.6.1",
+        "LOINC",
+        "History of immunizations");
+
+    // TODO Title
+    // Narrative Text of type Table
+    StrucDocText docText = immunizationsSection.getText();
+    StrucDocTable table = (StrucDocTable) ((JAXBElement<?>) docText.getContent().get(0)).getValue();
+
+    AssertCdaElement.assertTableBorderAndWidth(table, "1", "100%");
+
+    List<String> header = new ArrayList<>();
+    header.add("Vaccine Name");
+    header.add("Vaccination Date");
+    AssertCdaElement.assertTableHeader(table, header);
+
+    List<StrucDocTr> trs = table.getTbody().get(0).getTr();
+    List<StrucDocTr> unique = new ArrayList<>();
+
+    // Populating a list with all the unique rows. Can be removed once the bug is
+    // fixed
+    for (StrucDocTr tableRow : trs) {
+      StrucDocTd col1 = (StrucDocTd) tableRow.getThOrTd().get(0);
+
+      StrucDocContent rowCol1 =
+          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
+      String rowColValue = (String) rowCol1.getContent().get(0);
+
+      if (unique.isEmpty()) {
+        unique.add(tableRow);
+      } else {
+        Iterator<StrucDocTr> itr = unique.iterator();
+        while (itr.hasNext()) {
+          StrucDocTr un = (StrucDocTr) itr.next();
+          StrucDocTd column = (StrucDocTd) un.getThOrTd().get(0);
+          StrucDocContent rowColumn =
+              (StrucDocContent) (((JAXBElement<?>) column.getContent().get(0)).getValue());
+          String rowColumnValue = (String) rowColumn.getContent().get(0);
+
+          if (rowColValue.equals(rowColumnValue)) {
+            break;
+          }
+          if (!itr.hasNext()) {
+            unique.add(tableRow);
+            break;
+          }
+        }
+      }
+    }
+
+    // Populating the list with all the row values. Once the bug is fixed replace
+    // "unique" with
+    // "trs"(List<StrucDocTr>)
+    List<String> firstColumn = new ArrayList<>();
+    List<String> secondColumn = new ArrayList<>();
+    for (StrucDocTr uniqueTableRow : unique) {
+      StrucDocTd col1 = (StrucDocTd) uniqueTableRow.getThOrTd().get(0);
+      StrucDocTd col2 = (StrucDocTd) uniqueTableRow.getThOrTd().get(1);
+      StrucDocContent rowCol1 =
+          (StrucDocContent) (((JAXBElement<?>) col1.getContent().get(0)).getValue());
+      StrucDocContent rowCol2 =
+          (StrucDocContent) (((JAXBElement<?>) col2.getContent().get(0)).getValue());
+      String rowCol1Value = (String) rowCol1.getContent().get(0);
+      String rowCol2Value = (String) rowCol2.getContent().get(0);
+      firstColumn.add(rowCol1Value);
+      secondColumn.add(rowCol2Value);
+    }
+
+    // Validation of table rows
+    for (Immunization immunization : immunizations) {
+      String dt = null;
+      if (immunization.getOccurrenceDateTimeType() != null) {
+        dt = immunization.getOccurrenceDateTimeType().toString();
+        assertTrue(firstColumn.contains(dt));
+      } else {
+        assertTrue(firstColumn.contains(null));
+      }
+      if (immunization.getVaccineCode() != null
+          && immunization.getVaccineCode().getCodingFirstRep() != null
+          && !StringUtils.isEmpty(immunization.getVaccineCode().getCodingFirstRep().getDisplay())) {
+        assertTrue(
+            secondColumn.contains(immunization.getVaccineCode().getCodingFirstRep().getDisplay()));
+      } else {
+        assertTrue(secondColumn.contains("Unknown"));
+      }
+    }
+
+    // Validate entries
+    for (Immunization immunization : immunizations) {
+      for (POCDMT000040Entry entry : immunizationsSection.getEntry()) {
+        String immunizationCode = immunization.getVaccineCode().getCoding().get(1).getCode();
+        String entryCode =
+            entry
+                .getSubstanceAdministration()
+                .getConsumable()
+                .getManufacturedProduct()
+                .getManufacturedMaterial()
+                .getCode()
+                .getCode();
+        if (immunizationCode.equals(entryCode)) {
+          validateImmunizationEntries(immunization, entry);
+        }
+      }
+    }
+  }
+
+  private static void validateImmunizationEntries(
+      Immunization immunization, POCDMT000040Entry entry) {
+
+    // TODO Auto-generated method stub
+    assertEquals("DRIV", entry.getTypeCode().value());
+    assertEquals("SBADM", entry.getSubstanceAdministration().getClassCode().get(0));
+    assertEquals("EVN", entry.getSubstanceAdministration().getMoodCode().value());
+
+    // validate template id
+    AssertCdaElement.assertTemplateID(
+        entry.getSubstanceAdministration().getTemplateId().get(0),
+        "2.16.840.1.113883.10.20.22.4.52",
+        null);
+    AssertCdaElement.assertTemplateID(
+        entry.getSubstanceAdministration().getTemplateId().get(1),
+        "2.16.840.1.113883.10.20.22.4.52",
+        "2015-08-01");
   }
 
   public static void validateHeader(

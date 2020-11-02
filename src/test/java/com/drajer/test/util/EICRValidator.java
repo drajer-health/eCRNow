@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -97,6 +98,17 @@ public class EICRValidator {
         List<Extension> listExtensions = r4Patient.getExtension();
 
         ValidationUtils.validateSocialHistory(listExtensions, section);
+      } else if (sectionName.equalsIgnoreCase("IMMUNIZATIONS")) {
+        resourceFileName = "Immunization";
+        Bundle immunizationBundle =
+            TestUtils.getR4BundleFromJson(allResourceFiles.get(resourceFileName).get(0));
+        List<Immunization> immunizations = new ArrayList<>();
+
+        for (BundleEntryComponent entry : immunizationBundle.getEntry()) {
+          Immunization immunization = (Immunization) entry.getResource();
+          immunizations.add(immunization);
+        }
+        ValidationUtils.validateImmunizationsSection(immunizations, section);
       }
       // TODO for other sections
     }
