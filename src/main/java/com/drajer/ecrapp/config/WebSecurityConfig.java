@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     logger.info("*******************************************************************");
     logger.info("Security Configuration" + tokenFilterClassName);
     logger.info("*******************************************************************");
-    if (!tokenFilterClassName.isEmpty()) {
+    if (!tokenFilterClassName.isEmpty() && tokenFilterClassName != null) {
       logger.info("Token Filter class Name is not empty");
       Class classInstance = Class.forName(tokenFilterClassName);
       logger.info(classInstance.getDeclaredMethods()[0].getName());

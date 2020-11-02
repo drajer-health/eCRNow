@@ -12,12 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+// @Component
 public class TokenFilter extends OncePerRequestFilter {
 
   private final Logger logger = LoggerFactory.getLogger(TokenFilter.class);
