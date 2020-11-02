@@ -43,7 +43,7 @@ public class RestApiSender {
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
       if (!access_token.isEmpty() && access_token != null) {
         logger.info("Setting Access_token============>" + access_token);
-        headers.add("Authorization", "Bearer " + access_token);
+        headers.add("Authorization", access_token);
       }
 
       HttpEntity<String> request = new HttpEntity<String>(eicrXml, headers);

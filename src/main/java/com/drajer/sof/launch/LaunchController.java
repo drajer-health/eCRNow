@@ -139,29 +139,29 @@ public class LaunchController {
    *
    * @throws IOException
    */
+	/*
+	 * @CrossOrigin
+	 * 
+	 * @RequestMapping(value = "/api/submitBundle") public JSONObject submitBundle()
+	 * throws IOException {
+	 * 
+	 * StringBuilder contentBuilder = new StringBuilder();
+	 * 
+	 * try (Stream<String> stream =
+	 * Files.lines(Paths.get("D:\\CreateEicrAction.xml"), StandardCharsets.UTF_8)) {
+	 * stream.forEach(s -> contentBuilder.append(s).append("\n")); } catch
+	 * (IOException e) { e.printStackTrace(); }
+	 * 
+	 * String content = contentBuilder.toString();
+	 * 
+	 * LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(415);
+	 * JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
+	 * 
+	 * return response; }
+	 */
+
   @CrossOrigin
-  @RequestMapping(value = "/api/submitBundle")
-  public JSONObject submitBundle() throws IOException {
-
-    StringBuilder contentBuilder = new StringBuilder();
-
-    try (Stream<String> stream =
-        Files.lines(Paths.get("D:\\CreateEicrAction.xml"), StandardCharsets.UTF_8)) {
-      stream.forEach(s -> contentBuilder.append(s).append("\n"));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    String content = contentBuilder.toString();
-
-    LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(415);
-    JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
-
-    return response;
-  }
-
-  @CrossOrigin
-  @RequestMapping(value = "/launch/systemLaunch", method = RequestMethod.POST)
+  @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
   public String invokeSystemLaunch(
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,
