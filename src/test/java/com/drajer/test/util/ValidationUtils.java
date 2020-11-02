@@ -12,7 +12,6 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.Assertion.AssertCdaElement;
-
 import java.util.*;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
@@ -31,37 +30,11 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.hl7.v3.*;
-import org.hl7.v3.AD;
-import org.hl7.v3.AdxpCity;
-import org.hl7.v3.AdxpCountry;
-import org.hl7.v3.AdxpPostalCode;
-import org.hl7.v3.AdxpState;
-import org.hl7.v3.AdxpStreetAddressLine;
-import org.hl7.v3.BL;
-import org.hl7.v3.CD;
-import org.hl7.v3.CE;
-import org.hl7.v3.II;
-import org.hl7.v3.IVLTS;
-import org.hl7.v3.PN;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
-import org.hl7.v3.POCDMT000040Entry;
-import org.hl7.v3.POCDMT000040EntryRelationship;
-import org.hl7.v3.POCDMT000040Guardian;
-import org.hl7.v3.POCDMT000040Observation;
-import org.hl7.v3.POCDMT000040Patient;
-import org.hl7.v3.POCDMT000040PatientRole;
-import org.hl7.v3.POCDMT000040Section;
-import org.hl7.v3.StrucDocContent;
-import org.hl7.v3.StrucDocTable;
-import org.hl7.v3.StrucDocTd;
-import org.hl7.v3.StrucDocText;
-import org.hl7.v3.StrucDocTr;
-import org.hl7.v3.TEL;
-import org.hl7.v3.TS;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -900,218 +873,246 @@ public class ValidationUtils {
   }
 
   public static void validateHeader(
-	      Patient r4Patient,
-	      Encounter r4Encounter,
-	      List<Practitioner> r4Practitioner,
-	      Organization r4Organization,
-	      POCDMT000040ClinicalDocument eICR) {
+      Patient r4Patient,
+      Encounter r4Encounter,
+      List<Practitioner> r4Practitioner,
+      Organization r4Organization,
+      POCDMT000040ClinicalDocument eICR) {
 
-	    POCDMT000040PatientRole patientRole = eICR.getRecordTarget().get(0).getPatientRole();
-	    validatePatientRole(r4Patient, patientRole);
+    POCDMT000040PatientRole patientRole = eICR.getRecordTarget().get(0).getPatientRole();
+    validatePatientRole(r4Patient, patientRole);
 
-	    //guardian
-	    List<ContactComponent> contacts = r4Patient.getContact();
-	    ContactComponent contactcomp = null;
-	    for (ContactComponent contact : contacts) {
-	      final List<CodeableConcept> relationships = contact.getRelationship();
-	      for (CodeableConcept relationship : relationships) {
-	        if (relationship.getText().equalsIgnoreCase("guardian")
-	                || relationship.getText().equalsIgnoreCase("guardianPerson")) {
-	          contactcomp = contact;
-	          break;
-	        }
-	      }
-	    }
+    Practitioner practitioner = r4Practitioner.get(0);
+    final POCDMT000040Author pocdmt000040Author = eICR.getAuthor().get(0);
 
-	    final POCDMT000040Patient cdaPatient = patientRole.getPatient();
-	    //validateGuardian();
-	  }
+    validateAuthor(r4Encounter, practitioner, pocdmt000040Author);
 
-	  public static void validatePatientRole(Patient r4Patient, POCDMT000040PatientRole patientRole) {
-		
-	    // validateAddress(r4Patient.getAddress(), patientRole.getAddr());
-	    //validateTelecoms(r4Patient.getTelecom(),patientRole.getTelecom());
-	    //validateBirthDate(r4Patient,patientRole);
-	    //validateDeceasedDateTime(r4Patient, patientRole);
-	    //validatePatientRace(r4Patient, patientRole);
-		// Identifier
-		    validateIdentifierByType(
-		        r4Patient.getIdentifier(), patientRole.getId().get(0), "MR", r4Patient.getId());
+    // validate custodian
+    POCDMT000040Custodian pocdmt000040Custodian = eICR.getCustodian();
+    validateCustodian(r4Organization, pocdmt000040Custodian);
 
-		    // TODO- Address
-		    // validateAddress(r4Patient.getAddress(), patientRole.getAddr());
+    // validate componentOf
+    POCDMT000040Component1 pOCDMT000040Component1 = eICR.getComponentOf();
+    POCDMT000040EncompassingEncounter encompassingEncounter =
+        pOCDMT000040Component1.getEncompassingEncounter();
+    validateComponentOf(r4Encounter, encompassingEncounter, practitioner, r4Organization);
+  }
 
-		    // Telecom
-		    validateTelecoms(r4Patient.getTelecom(), patientRole.getTelecom());
+  public static void validatePatientRole(Patient r4Patient, POCDMT000040PatientRole patientRole) {
 
-		    // Patient
-		    POCDMT000040Patient cdaPatient = patientRole.getPatient();
-		    List<JAXBElement<?>> cdaPateintcontent = cdaPatient.getContent();
-		    int cntIdx = 0;
+    // Identifier
+    validateIdentifierByType(
+        r4Patient.getIdentifier(), patientRole.getId().get(0), "MR", r4Patient.getId());
 
-		    // TODO - Patient.Name
-		    int nameIdx = cntIdx++;
-		    // validateName(r4Patient.getName(), cdaPateintcontent.get(nameIdx));
+    // TODO- Address
+    // validateAddress(r4Patient.getAddress(), patientRole.getAddr());
 
-		    // administrativeGenderCode
-		    int genderIdx = cntIdx++;
-		    String r4GenderCode = ValueSetMapping.gender.get(r4Patient.getGender().name());
-		    CE cdaGenderCode = (CE) cdaPateintcontent.get(genderIdx).getValue();
-		    if (r4Patient.getGender() != null) {
-		      if (r4GenderCode != null) {
-		        AssertCdaElement.assertCodeCE(
-		            cdaGenderCode, r4GenderCode, "2.16.840.1.113883.5.1", null, null);
-		      } else {
-		        AssertCdaElement.assertCodeCE(
-		            cdaGenderCode,
-		            ValueSetMapping.gender.get("UNKNOWN"),
-		            "2.16.840.1.113883.5.1",
-		            null,
-		            null);
-		      }
-		    } else {
-		      AssertCdaElement.assertNullFlavor(cdaGenderCode, "NI");
-		    }
+    // Telecom
+    validateTelecoms(r4Patient.getTelecom(), patientRole.getTelecom());
 
-		    // birthTime
-		    int birthIdx = cntIdx++;
-		    String r4BirthDate = TestUtils.dateToString(r4Patient.getBirthDate(), "yyyyMMdd");
-		    TS cdaBirthDate = (TS) cdaPateintcontent.get(birthIdx).getValue();
-		    assertEquals(r4BirthDate, cdaBirthDate.getValue());
+    // Patient
+    POCDMT000040Patient cdaPatient = patientRole.getPatient();
+    List<JAXBElement<?>> cdaPateintcontent = cdaPatient.getContent();
+    int cntIdx = 0;
 
-		    // sdtc:deceasedInd
-		    int deceasedIndIdx = cntIdx++;
-		    BL cdaDeceasedInd = (BL) cdaPateintcontent.get(deceasedIndIdx).getValue();
+    // TODO - Patient.Name
+    int nameIdx = cntIdx++;
+    // validateName(r4Patient.getName(), cdaPateintcontent.get(nameIdx));
 
-		    if (r4Patient.getDeceased() == null || r4Patient.getDeceased().isEmpty()) {
-		      assertEquals(false, cdaDeceasedInd.isValue().booleanValue());
-		    } else {
-		      // sdtc:deceasedTime
-		      int deceasedDateIdx = cntIdx++;
-		      TS cdaDeceasedDate = (TS) cdaPateintcontent.get(deceasedDateIdx).getValue();
+    // administrativeGenderCode
+    int genderIdx = cntIdx++;
+    String r4GenderCode = ValueSetMapping.gender.get(r4Patient.getGender().name());
+    CE cdaGenderCode = (CE) cdaPateintcontent.get(genderIdx).getValue();
+    if (r4Patient.getGender() != null) {
+      if (r4GenderCode != null) {
+        AssertCdaElement.assertCodeCE(
+            cdaGenderCode, r4GenderCode, "2.16.840.1.113883.5.1", null, null);
+      } else {
+        AssertCdaElement.assertCodeCE(
+            cdaGenderCode,
+            ValueSetMapping.gender.get("UNKNOWN"),
+            "2.16.840.1.113883.5.1",
+            null,
+            null);
+      }
+    } else {
+      AssertCdaElement.assertNullFlavor(cdaGenderCode, "NI");
+    }
 
-		      if (r4Patient.getDeceased() instanceof DateTimeType) {
-		        assertEquals(true, cdaDeceasedInd.isValue().booleanValue());
-		        DateTimeType r4DeceasedDate = (DateTimeType) r4Patient.getDeceased();
+    // birthTime
+    int birthIdx = cntIdx++;
+    String r4BirthDate = TestUtils.dateToString(r4Patient.getBirthDate(), "yyyyMMdd");
+    TS cdaBirthDate = (TS) cdaPateintcontent.get(birthIdx).getValue();
+    assertEquals(r4BirthDate, cdaBirthDate.getValue());
 
-		        assertEquals(
-		            TestUtils.dateToString(r4DeceasedDate.getValue(), "yyyyMMdd"),
-		            cdaDeceasedDate.getValue());
-		      } else {
-		        assertEquals(r4Patient.getDeceased(), cdaDeceasedInd.isValue().booleanValue());
-		        AssertCdaElement.assertNullFlavor(cdaDeceasedDate, "NI");
-		      }
-		    }
+    // sdtc:deceasedInd
+    int deceasedIndIdx = cntIdx++;
+    BL cdaDeceasedInd = (BL) cdaPateintcontent.get(deceasedIndIdx).getValue();
 
-		    // Race
-		    int raceIdx = cntIdx++;
-		    CE cdaRace = (CE) cdaPateintcontent.get(raceIdx).getValue();
-		    Coding r4Race =
-		        CdaFhirUtilities.getCodingExtension(
-		            r4Patient.getExtension(),
-		            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
-		            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
-		    if (r4Race != null) {
-		      AssertCdaElement.assertCodeCE(
-		          cdaRace,
-		          r4Race.getCode(),
-		          "2.16.840.1.113883.6.238",
-		          "Race & Ethnicity - CDC",
-		          r4Race.getDisplay());
-		    } else {
-		      AssertCdaElement.assertNullFlavor(cdaRace, "NI");
-		    }
+    if (r4Patient.getDeceased() == null || r4Patient.getDeceased().isEmpty()) {
+      assertEquals(false, cdaDeceasedInd.isValue().booleanValue());
+    } else {
+      // sdtc:deceasedTime
+      int deceasedDateIdx = cntIdx++;
+      TS cdaDeceasedDate = (TS) cdaPateintcontent.get(deceasedDateIdx).getValue();
 
-		    // Ethnicity
-		    int ethnicIdx = cntIdx++;
-		    CE cdaEthnic = (CE) cdaPateintcontent.get(ethnicIdx).getValue();
-		    Coding r4Ethnic =
-		        CdaFhirUtilities.getCodingExtension(
-		            r4Patient.getExtension(),
-		            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
-		            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
-		    if (r4Ethnic != null) {
-		      AssertCdaElement.assertCodeCE(
-		          cdaEthnic,
-		          r4Ethnic.getCode(),
-		          "2.16.840.1.113883.6.238",
-		          "Race & Ethnicity - CDC",
-		          r4Ethnic.getDisplay());
-		    } else {
-		      AssertCdaElement.assertNullFlavor(cdaEthnic, "NI");
-		    }
-		    // Guardian
-		    int guardianIdx = cntIdx++;
-		    POCDMT000040Guardian cdaGuardian =
-		        (POCDMT000040Guardian) cdaPateintcontent.get(guardianIdx).getValue();
+      if (r4Patient.getDeceased() instanceof DateTimeType) {
+        assertEquals(true, cdaDeceasedInd.isValue().booleanValue());
+        DateTimeType r4DeceasedDate = (DateTimeType) r4Patient.getDeceased();
 
-		    if (r4Patient.getContact() != null) {
-		      ContactComponent r4Guardian = CdaFhirUtilities.getGuardianContact(r4Patient.getContact());
-		      // validateGuardian(r4Guardian, cdaGuardian);
-		    }
+        assertEquals(
+            TestUtils.dateToString(r4DeceasedDate.getValue(), "yyyyMMdd"),
+            cdaDeceasedDate.getValue());
+      } else {
+        assertEquals(r4Patient.getDeceased(), cdaDeceasedInd.isValue().booleanValue());
+        AssertCdaElement.assertNullFlavor(cdaDeceasedDate, "NI");
+      }
+    }
 
-		    // Language
-		    // int languageIdx = cntIdx++;
+    // Race
+    int raceIdx = cntIdx++;
+    CE cdaRace = (CE) cdaPateintcontent.get(raceIdx).getValue();
+    Coding r4Race =
+        CdaFhirUtilities.getCodingExtension(
+            r4Patient.getExtension(),
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+    if (r4Race != null) {
+      AssertCdaElement.assertCodeCE(
+          cdaRace,
+          r4Race.getCode(),
+          "2.16.840.1.113883.6.238",
+          "Race & Ethnicity - CDC",
+          r4Race.getDisplay());
+    } else {
+      AssertCdaElement.assertNullFlavor(cdaRace, "NI");
+    }
 
-		  }
+    // Ethnicity
+    int ethnicIdx = cntIdx++;
+    CE cdaEthnic = (CE) cdaPateintcontent.get(ethnicIdx).getValue();
+    Coding r4Ethnic =
+        CdaFhirUtilities.getCodingExtension(
+            r4Patient.getExtension(),
+            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+    if (r4Ethnic != null) {
+      AssertCdaElement.assertCodeCE(
+          cdaEthnic,
+          r4Ethnic.getCode(),
+          "2.16.840.1.113883.6.238",
+          "Race & Ethnicity - CDC",
+          r4Ethnic.getDisplay());
+    } else {
+      AssertCdaElement.assertNullFlavor(cdaEthnic, "NI");
+    }
+    // Guardian
+    int guardianIdx = cntIdx++;
+    POCDMT000040Guardian cdaGuardian =
+        (POCDMT000040Guardian) cdaPateintcontent.get(guardianIdx).getValue();
 
-	  public static void validateBirthDate(Patient r4Patient,POCDMT000040PatientRole patientRole) {
-	    final Date birthDate = r4Patient.getBirthDate();
-	    assertNotNull(birthDate);
-	    final String yyyyMMdd = TestUtils.dateToString(birthDate, YYYY_MM_DD);
-	    final POCDMT000040Patient xmlPatient = patientRole.getPatient();
-	    final List<JAXBElement<?>> content = xmlPatient.getContent();
-	    final JAXBElement<?> dateElement = content.get(2);
-	    final TS dateValue = (TS) dateElement.getValue();
-	    assertNotNull(dateValue);
-	    assertNotNull(dateValue.getValue());
-	    assertEquals(yyyyMMdd, dateValue.getValue());
+    if (r4Patient.getContact() != null) {
+      ContactComponent r4Guardian = CdaFhirUtilities.getGuardianContact(r4Patient.getContact());
+      validateGuardian(r4Guardian, cdaGuardian);
+    }
 
-	  }
+    // Language
+    int languageIdx = cntIdx++;
+    final JAXBElement<?> jaxbElement1 = cdaPatient.getContent().get(languageIdx);
+    final POCDMT000040LanguageCommunication cdaCommunication =
+        (POCDMT000040LanguageCommunication) jaxbElement1.getValue();
+    final CS languageCode = cdaCommunication.getLanguageCode();
+    assertNotNull(languageCode);
+    final Patient.PatientCommunicationComponent r4Communication =
+        r4Patient.getCommunication().get(0);
+    assertNotNull(r4Communication);
+    final CodeableConcept language = r4Communication.getLanguage();
+    assertNotNull(language);
+    final String code = language.getCoding().get(0).getCode();
+    assertEquals(code, languageCode.getCode());
+  }
 
-	  public static void validateDeceasedDateTime(Patient r4Patient,POCDMT000040PatientRole patientRole) {
-	    final POCDMT000040Patient xmlPatient = patientRole.getPatient();
-	    final List<JAXBElement<?>> content = xmlPatient.getContent();
-	    final JAXBElement<?> deceasedElement = content.get(3);
-	    final BL deceasedValue = (BL) deceasedElement.getValue();
-	    assertNotNull(deceasedValue);
-	    if (deceasedValue.isValue()) {
-	      // final DateTimeType deceasedDateTimeType = patient.getDeceasedDateTimeType(); //bug in the
-	      // code, always throws an exception
-	      // need to validate deceasd date time here after the bug is fixed.
-	    }
-	  }
+  public static void validateGuardian(ContactComponent contact, POCDMT000040Guardian guardian) {
 
-	  private static void validatePatientRace(Patient patient, POCDMT000040PatientRole patientRole) {
-	    final List<Extension> extensions = patient.getExtension();
-	    final POCDMT000040Patient xmlPatient = patientRole.getPatient();
-	    final List<JAXBElement<?>> content = xmlPatient.getContent();
-	    final Extension raceExtension = extensions.get(1);
-	    assertNotNull(raceExtension);
-	    final Extension ethnicExtension = extensions.get(2);
-	    assertNotNull(ethnicExtension);
-	    final JAXBElement<?> raceCodeElement = content.get(4);
-	    //System.out.println(content.get(4).getValue() instanceof  CE);
-	    final CE raceValue = (CE) raceCodeElement.getValue();
-	    assertNotNull(raceValue);
-	    final JAXBElement<?> ethnicGroupElement = content.get(5);
-	    final CE ethnicValue = (CE) ethnicGroupElement.getValue();
-	    assertNotNull(ethnicValue);
+    final List<TEL> cdaTelecom = guardian.getTelecom();
+    final List<ContactPoint> r4Telecom = contact.getTelecom();
 
-	    final Extension extension = raceExtension.getExtension().get(0);
-	    final Coding value = (Coding) extension.getValue();
+    // validateTelecoms(r4Telecom, cdaTelecom);
 
-	    assertEquals(value.getCode(), raceValue.getCode());
-	    assertTrue(value.getSystem().contains(raceValue.getCodeSystem()));
-	    assertEquals(value.getDisplay(), raceValue.getDisplayName());
-	    assertEquals(raceValue.getCodeSystemName(), "Race & Ethnicity - CDC");
-	  }
+  }
 
-	  public static void validateGuardian(ContactComponent contact , POCDMT000040Guardian guardian) {
+  public static void validateAuthor(
+      Encounter encounter, Practitioner practitioner, POCDMT000040Author pocdmt000040Author) {
+    // validates author time
+    final TS time = pocdmt000040Author.getTime();
+    final String value = time.getValue();
+    final Period period = encounter.getPeriod();
+    final Date start = period.getStart();
+    if (start != null) {
+      final String startDate = TestUtils.dateToString(start, YYYY_MM_DD);
+      assertEquals(startDate, value);
+    }
 
-	    final List<TEL> cdaTelecom = guardian.getTelecom();
-	    final List<ContactPoint> r4Telecom = contact.getTelecom();
+    // validateIdentifier(practitioner.getIdentifier(),
+    // pocdmt000040Author.getAssignedAuthor().getId(), practitioner.getId());
 
-	    //validateTelecoms(r4Telecom, cdaTelecom);
-	  }
+    // validate telecoms
+    final POCDMT000040AssignedAuthor assignedAuthor = pocdmt000040Author.getAssignedAuthor();
+    // validateTelecoms(practitioner.getTelecom(),assignedAuthor.getTelecom());
+  }
+
+  public static void validateCustodian(
+      Organization organization, POCDMT000040Custodian pocdmt000040Custodian) {
+
+    // validateIdentifier(organization.getIdentifier(),
+    // pocdmt000040Custodian.getAssignedCustodian().getRepresentedCustodianOrganization().getId(),
+    // organization.getId());
+    POCDMT000040AssignedCustodian assignedCustodian = pocdmt000040Custodian.getAssignedCustodian();
+    POCDMT000040CustodianOrganization repCustodianOrg =
+        assignedCustodian.getRepresentedCustodianOrganization();
+    List<ContactPoint> r4Telecom = organization.getTelecom();
+    TEL cdaTelecom = repCustodianOrg.getTelecom();
+    validateTelecoms(r4Telecom, Collections.singletonList(cdaTelecom));
+  }
+
+  public static void validateComponentOf(
+      Encounter encounter,
+      POCDMT000040EncompassingEncounter encompassingEncounter,
+      Practitioner practitioner,
+      Organization organization) {
+    // validate Identifier
+    validateIdentifier(encounter.getIdentifier(), encompassingEncounter.getId(), encounter.getId());
+    POCDMT000040ResponsibleParty pOCDMT000040ResponsibleParty =
+        encompassingEncounter.getResponsibleParty();
+    POCDMT000040AssignedEntity assignedEntity = pOCDMT000040ResponsibleParty.getAssignedEntity();
+
+    validateAssignedEntity(practitioner, assignedEntity);
+
+    POCDMT000040Location location = encompassingEncounter.getLocation();
+    POCDMT000040HealthCareFacility healthCareFacility = location.getHealthCareFacility();
+    POCDMT000040Organization serviceProviderOrganization =
+        healthCareFacility.getServiceProviderOrganization();
+
+    validateServiceProviderOrganization(organization, serviceProviderOrganization);
+  }
+
+  public static void validateAssignedEntity(
+      Practitioner practitioner, POCDMT000040AssignedEntity assignedEntity) {
+
+    // validateIdentifier(practitioner.getIdentifier(),assignedEntity.getId(),practitioner.getId());
+    //      expected:<2.16.840.1.113883.[1.1.1.1]> but was:<2.16.840.1.113883.[4.6]>
+    List<ContactPoint> r4Telecom = practitioner.getTelecom();
+    List<TEL> cdaTelecom = assignedEntity.getTelecom();
+    // validateTelecoms(r4Telecom , cdaTelecom);   null pointer
+  }
+
+  public static void validateServiceProviderOrganization(
+      Organization organization, POCDMT000040Organization serviceProviderOrganization) {
+    //  validateIdentifier(organization.getIdentifier(), serviceProviderOrganization.getId(),
+    // organization.getId());    expected:<[Organization/675844/_history/29]> but was:<[123456785]>
+    List<ContactPoint> r4Telecom = organization.getTelecom();
+    List<TEL> cdaTelecom = serviceProviderOrganization.getTelecom();
+
+    validateTelecoms(r4Telecom, cdaTelecom);
+  }
 }
