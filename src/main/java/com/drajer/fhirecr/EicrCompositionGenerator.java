@@ -1,6 +1,5 @@
 package com.drajer.fhirecr;
 
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +7,12 @@ import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EicrCompositionGenerator {
 
-  private static final Logger logger = LoggerFactory.getLogger(EicrCompositionGenerator.class);
+  private EicrCompositionGenerator() {}
 
-  public static Composition convertR4FhirBundletoCdaEicr(R4FhirData data, LaunchDetails details) {
+  public static Composition convertR4FhirBundletoCdaEicr(R4FhirData data) {
 
     Composition comp = new Composition();
 
@@ -38,7 +35,7 @@ public class EicrCompositionGenerator {
     if (data.getEncounter() != null) comp.getEncounter().setResource(data.getEncounter());
 
     // Add Authors.
-    List<Reference> auths = new ArrayList<Reference>();
+    List<Reference> auths = new ArrayList<>();
 
     // Add organization
     if (data.getOrganization() != null)

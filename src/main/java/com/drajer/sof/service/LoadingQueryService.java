@@ -36,7 +36,7 @@ public class LoadingQueryService implements AbstractQueryService {
         logger.error("Error in Generating the DSTU2 Bundle");
       }
       dstu2FhirData.setData(bundle);
-      logger.info("Bundle Entry Size====>" + dstu2FhirData.getData().getEntry().size());
+      logger.info("Bundle Entry Size====> {}", dstu2FhirData.getData().getEntry().size());
       return dstu2FhirData;
     } else if (launchDetails.getFhirVersion().equalsIgnoreCase(FhirVersionEnum.R4.toString())) {
       R4FhirData r4FhirData = new R4FhirData();

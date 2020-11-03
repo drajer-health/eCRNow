@@ -133,7 +133,7 @@ public abstract class AbstractAction {
 
   public boolean matchCondition(LaunchDetails details) {
     boolean conditionsMet = true;
-    if (getPreConditions() != null && getPreConditions().size() > 0) {
+    if (getPreConditions() != null && !getPreConditions().isEmpty()) {
 
       logger.info(" Evaluating PreConditions ");
       List<AbstractCondition> conds = getPreConditions();
@@ -141,7 +141,9 @@ public abstract class AbstractAction {
       for (AbstractCondition cond : conds) {
 
         if (!cond.evaluate(details)) {
-          logger.info(" Condition Not met {}", cond.getConditionType().toString());
+          if (logger.isInfoEnabled()) {
+            logger.info(" Condition Not met {}", cond.getConditionType().toString());
+          }
           conditionsMet = false;
         }
       }

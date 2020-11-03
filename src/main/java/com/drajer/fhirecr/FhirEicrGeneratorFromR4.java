@@ -1,6 +1,5 @@
 package com.drajer.fhirecr;
 
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
@@ -20,9 +19,11 @@ import org.slf4j.LoggerFactory;
 
 public class FhirEicrGeneratorFromR4 {
 
+  private FhirEicrGeneratorFromR4() {}
+
   private static final Logger logger = LoggerFactory.getLogger(FhirEicrGeneratorFromR4.class);
 
-  public static String convertR4FhirBundletoCdaEicr(R4FhirData data, LaunchDetails details) {
+  public static String convertR4FhirBundletoCdaEicr(R4FhirData data) {
 
     StringBuilder eICR = new StringBuilder();
 

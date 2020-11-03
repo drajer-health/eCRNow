@@ -31,12 +31,12 @@ public class FhirEicrSender {
 
   public JSONObject submitBundle(String bundle) {
     JSONObject bundleResponse = null;
-    logger.info("Submitting Bundle to FHIR Server Endpoint:::::" + fhirServerURL);
+    logger.info("Submitting Bundle to FHIR Server Endpoint:::::{}", fhirServerURL);
     try {
       RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-      HttpEntity<String> request = new HttpEntity<String>(bundle, headers);
+      HttpEntity<String> request = new HttpEntity<>(bundle, headers);
 
       ResponseEntity<String> response =
           restTemplate.exchange(fhirServerURL, HttpMethod.POST, request, String.class);
@@ -46,7 +46,7 @@ public class FhirEicrSender {
       logger.info("Received response ");
 
       String fileName = ActionRepo.getInstance().getLogFileDirectory() + "/BundleResponse.json";
-      logger.info("Saving response to file:::::" + fileName);
+      logger.info("Saving response to file:::::{}", fileName);
       ApplicationUtils.saveDataToFile(response.getBody(), fileName);
 
     } catch (Exception e) {

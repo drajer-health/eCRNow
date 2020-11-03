@@ -1,0 +1,179 @@
+{
+    "resourceType": "Bundle",
+    "id": "070663f4-d8f6-46bf-9dbd-0496cb243b3d",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest?patient=12742571"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311446951",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "311446951",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-05-12T01:00:09.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: CBC w/ Diff</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Routine, 04/27/20 10:25:00 CDT, Once</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2921414",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "CBC w/ Diff"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Routine, 04/27/20 10:25:00 CDT, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "FHIRTest, COVIDONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2020-04-27T10:29:00.000-05:00",
+                            "end": "2020-05-03T00:01:30.000-05:00"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2020-04-27T10:25:02.000-05:00",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "locationReference": [
+                    {
+                        "reference": "Location/29598629",
+                        "display": "ICU"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311446953",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "311446953",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-05-12T01:00:09.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: D-Dimer</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Routine, 04/27/20 10:25:00 CDT, Once</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31558691",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "D-Dimer"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Routine, 04/27/20 10:25:00 CDT, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "FHIRTest, COVIDONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2020-04-27T10:29:00.000-05:00",
+                            "end": "2020-05-03T00:01:30.000-05:00"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2020-04-27T10:25:08.000-05:00",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "locationReference": [
+                    {
+                        "reference": "Location/29598629",
+                        "display": "ICU"
+                    }
+                ]
+            }
+        }
+    ]
+}

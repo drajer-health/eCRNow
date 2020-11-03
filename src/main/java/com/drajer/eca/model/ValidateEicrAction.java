@@ -32,7 +32,7 @@ public class ValidateEicrAction extends AbstractAction {
       logger.info(
           " Executing Validate Eicr Action , Prior Execution State : = {}", details.getStatus());
 
-      if (getRelatedActions() != null && getRelatedActions().size() > 0) {
+      if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
         logger.info(" Validation actions to be performed based on other related actions. ");
 

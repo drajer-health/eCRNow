@@ -54,7 +54,7 @@ public class MatchTriggerAction extends AbstractAction {
           // No timingData
 
           // We only expect to match codes. So get the paths and match the codes.
-          if (getTriggerData() != null && getTriggerData().size() > 0) {
+          if (getTriggerData() != null && !getTriggerData().isEmpty()) {
 
             // we have triggers to match against COVID Value Sets for now.
             // In the future we will use the specific paths provided by the ersd spec to match.
@@ -88,7 +88,7 @@ public class MatchTriggerAction extends AbstractAction {
           // No timingData
 
           // We only expect to match codes. So get the paths and match the codes.
-          if (getTriggerData() != null && getTriggerData().size() > 0) {
+          if (getTriggerData() != null && !getTriggerData().isEmpty()) {
 
             // we have triggers to match against COVID Value Sets for now.
             // In the future we will use the specific paths provided by the ersd spec to match.

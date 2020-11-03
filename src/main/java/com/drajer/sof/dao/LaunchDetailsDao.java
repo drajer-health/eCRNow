@@ -12,4 +12,6 @@ public interface LaunchDetailsDao {
       String patient, String encounter, String fhirServerUrl);
 
   LaunchDetails getLaunchDetailsByState(int state);
+
+  void delete(LaunchDetails launchDetails);
 }

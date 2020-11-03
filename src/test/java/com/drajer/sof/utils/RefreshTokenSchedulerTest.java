@@ -76,8 +76,8 @@ public class RefreshTokenSchedulerTest {
       JSONObject authresponse = token.getSystemAccessToken(clientDetails);
 
       verify(postRequestedFor(urlEqualTo("/authorization")));
-      assertEquals(authresponse.getString("access_token"), "eyJraWQiOiIy");
-      assertEquals(authresponse.getInt("expires_in"), 570);
+      assertEquals("eyJraWQiOiIy", authresponse.getString("access_token"));
+      assertEquals(570, authresponse.getInt("expires_in"));
 
     } catch (Exception e) {
 

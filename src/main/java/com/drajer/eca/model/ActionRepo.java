@@ -170,10 +170,9 @@ public class ActionRepo {
             // if Trigger is populated then we can add it.
             List<ActionData> td = a.getTriggerData();
 
-            if (td != null && td.size() > 0) {
+            if (td != null && !td.isEmpty()) {
 
-              if (actionsByTriggers == null)
-                actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction>>();
+              if (actionsByTriggers == null) actionsByTriggers = new HashMap<>();
 
               for (ActionData ad : td) {
 
@@ -194,10 +193,9 @@ public class ActionRepo {
             // if Trigger is populated then we can add it.
             List<TimingSchedule> ts = a.getTimingData();
 
-            if (ts != null && ts.size() > 0) {
+            if (ts != null && !ts.isEmpty()) {
 
-              if (actionsByTriggers == null)
-                actionsByTriggers = new HashMap<TriggerType, Set<AbstractAction>>();
+              if (actionsByTriggers == null) actionsByTriggers = new HashMap<>();
 
               for (TimingSchedule tsd : ts) {
 
@@ -223,57 +221,60 @@ public class ActionRepo {
 
   public void print() {
 
-    logger.info(" ***** Printing ACTION Repository ***** " + "\n");
+    if (logger.isInfoEnabled()) {
+      logger.info(" ***** Printing ACTION Repository ***** " + "\n");
 
-    logger.info(" *************** Printing EicrTypes Repository **************** " + "\n");
+      logger.info(" *************** Printing EicrTypes Repository **************** " + "\n");
 
-    if (actions != null) {
+      if (actions != null) {
 
-      for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
+        for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
 
-        logger.info(" Printing Eicr Action Type : {}", ent.getKey().toString());
+          logger.info(" Printing Eicr Action Type : {}", ent.getKey().toString());
 
-        Set<AbstractAction> aa = ent.getValue();
+          Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null) {
+          if (aa != null) {
 
-          for (AbstractAction a : aa) {
+            for (AbstractAction a : aa) {
 
-            logger.info(" Action that will be executed {}", a.toString());
+              logger.info(" Action that will be executed {}", a.toString());
 
-            // a.print();
+              // a.print();
+            }
           }
         }
       }
-    }
 
-    logger.info(" *************** End Printing EicrTypes Repository **************** " + "\n");
+      logger.info(" *************** End Printing EicrTypes Repository **************** " + "\n");
 
-    logger.info(
-        " *************** Start Printing Trigger Types Repository **************** " + "\n");
+      logger.info(
+          " *************** Start Printing Trigger Types Repository **************** " + "\n");
 
-    if (actionsByTriggers != null) {
+      if (actionsByTriggers != null) {
 
-      for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
+        for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
 
-        logger.info(" Printing Trigger for Action {}", ent.getKey().toString());
+          logger.info(" Printing Trigger for Action {}", ent.getKey().toString());
 
-        Set<AbstractAction> aa = ent.getValue();
+          Set<AbstractAction> aa = ent.getValue();
 
-        if (aa != null) {
+          if (aa != null) {
 
-          for (AbstractAction a : aa) {
+            for (AbstractAction a : aa) {
 
-            logger.info(" Action that will be executed {}", a.toString());
+              logger.info(" Action that will be executed {}", a.toString());
 
-            // a.print();
+              // a.print();
+            }
           }
         }
       }
+
+      logger.info(
+          " *************** End Printing Trigger Types Repository **************** " + "\n");
+
+      logger.info(" ***** End Printing ACTION Repository ***** " + "\n");
     }
-
-    logger.info(" *************** End Printing Trigger Types Repository **************** " + "\n");
-
-    logger.info(" ***** End Printing ACTION Repository ***** " + "\n");
   }
 }

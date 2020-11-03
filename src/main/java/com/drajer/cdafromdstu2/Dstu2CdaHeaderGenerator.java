@@ -53,7 +53,7 @@ public class Dstu2CdaHeaderGenerator {
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.PH_REPORT_TITLE));
+              CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.PH_DOC_DISPLAY_NAME));
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForEffectiveTime(

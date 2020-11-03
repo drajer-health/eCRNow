@@ -200,9 +200,9 @@ public class PeriodicUpdateEicrActionTest {
       ApplicationUtils.saveDataToFile(
           eq("**** Printing Eicr from Periodic Update EICR ACTION ****"), anyString());
 
-      assertEquals(createEicrStatus.getJobStatus(), JobStatus.COMPLETED);
-      assertEquals(createEicrStatus.geteICRId(), "10");
-      assertEquals(createEicrStatus.getEicrCreated(), true);
+      assertEquals(JobStatus.COMPLETED, createEicrStatus.getJobStatus());
+      assertEquals("10", createEicrStatus.geteICRId());
+      assertEquals(true, createEicrStatus.getEicrCreated());
 
     } catch (Exception e) {
 

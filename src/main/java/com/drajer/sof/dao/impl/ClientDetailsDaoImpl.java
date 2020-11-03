@@ -20,20 +20,17 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
   }
 
   public ClientDetails getClientDetailsById(Integer id) {
-    ClientDetails clientDetails = (ClientDetails) getSession().get(ClientDetails.class, id);
-    return clientDetails;
+    return getSession().get(ClientDetails.class, id);
   }
 
   public ClientDetails getClientDetailsByUrl(String url) {
     Criteria criteria = getSession().createCriteria(ClientDetails.class);
     criteria.add(Restrictions.eq("fhirServerBaseURL", url));
-    ClientDetails clientDetails = (ClientDetails) criteria.uniqueResult();
-    return clientDetails;
+    return (ClientDetails) criteria.uniqueResult();
   }
 
   public List<ClientDetails> getAllClientDetails() {
     Criteria criteria = getSession().createCriteria(ClientDetails.class);
-    List<ClientDetails> clientDetailsList = criteria.addOrder(Order.desc("id")).list();
-    return clientDetailsList;
+    return criteria.addOrder(Order.desc("id")).list();
   }
 }
