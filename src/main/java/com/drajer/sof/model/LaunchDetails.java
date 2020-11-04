@@ -102,6 +102,12 @@ public class LaunchDetails {
   @Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
   private String directPwd;
 
+  @Column(name = "smtp_port", nullable = true)
+  private String smtpPort;
+
+  @Column(name = "imap_port", nullable = true)
+  private String imapPort;
+
   @Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
   private String directRecipient;
 
@@ -131,6 +137,18 @@ public class LaunchDetails {
   @Column(name = "is_logging_enabled", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isLoggingEnabled = false;
+
+  @Column(name = "token_introspection_url", nullable = true)
+  private String tokenIntrospectionURL;
+
+  @Column(name = "ehr_client_id", nullable = true)
+  private String ehrClientId;
+
+  @Column(name = "ehr_client_secret", nullable = true)
+  private String ehrClientSecret;
+
+  @Column(name = "ehr_authorization_url", nullable = true)
+  private String ehrAuthorizationUrl;
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -388,11 +406,59 @@ public class LaunchDetails {
     this.isSystem = isSystem;
   }
 
+  public String getSmtpPort() {
+    return smtpPort;
+  }
+
+  public void setSmtpPort(String smtpPort) {
+    this.smtpPort = smtpPort;
+  }
+
+  public String getImapPort() {
+    return imapPort;
+  }
+
+  public void setImapPort(String imapPort) {
+    this.imapPort = imapPort;
+  }
+
   public Boolean getIsLoggingEnabled() {
     return isLoggingEnabled;
   }
 
   public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
     this.isLoggingEnabled = isLoggingEnabled;
+  }
+
+  public String getTokenIntrospectionURL() {
+    return tokenIntrospectionURL;
+  }
+
+  public void setTokenIntrospectionURL(String tokenIntrospectionURL) {
+    this.tokenIntrospectionURL = tokenIntrospectionURL;
+  }
+
+  public String getEhrClientId() {
+    return ehrClientId;
+  }
+
+  public void setEhrClientId(String ehrClientId) {
+    this.ehrClientId = ehrClientId;
+  }
+
+  public String getEhrClientSecret() {
+    return ehrClientSecret;
+  }
+
+  public void setEhrClientSecret(String ehrClientSecret) {
+    this.ehrClientSecret = ehrClientSecret;
+  }
+
+  public String getEhrAuthorizationUrl() {
+    return ehrAuthorizationUrl;
+  }
+
+  public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
+    this.ehrAuthorizationUrl = ehrAuthorizationUrl;
   }
 }
