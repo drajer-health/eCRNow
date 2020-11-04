@@ -33,7 +33,7 @@ public class SubmitEicrAction extends AbstractAction {
       logger.info(
           " Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());
 
-      if (getRelatedActions() != null && getRelatedActions().size() > 0) {
+      if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
         logger.info(" Related Actions exist, so check dependencies ");
 

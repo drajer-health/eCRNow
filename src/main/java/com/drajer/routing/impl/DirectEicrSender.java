@@ -1,6 +1,5 @@
 package com.drajer.routing.impl;
 
-import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.EicrSender;
 import com.drajer.sof.model.LaunchDetails;
@@ -40,9 +39,8 @@ public class DirectEicrSender extends EicrSender {
 
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
-      PatientExecutionState state = null;
 
-      state = ApplicationUtils.getDetailStatus(details);
+      ApplicationUtils.getDetailStatus(details);
 
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 
@@ -94,7 +92,7 @@ public class DirectEicrSender extends EicrSender {
     message.setFrom(new InternetAddress(username));
     message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receipientAddr));
     message.setSubject("eICR Report ");
-    message.setText("eICR Report");
+    message.setText(FILE_NAME);
     BodyPart messageBodyPart = new MimeBodyPart();
     Multipart multipart = new MimeMultipart();
     DataSource source = new ByteArrayDataSource(is, "application/xml; charset=UTF-8");

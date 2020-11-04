@@ -38,13 +38,16 @@ public class TriggerQueryR4Bundle {
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);
 
     // Setting bundle to FHIR Data
-    logger.info(
-        "------------------------------CodeableConcept Codes------------------------------");
-    logger.info("Encounter Codes Size=====>" + r4FhirData.getR4EncounterCodes().size());
-    logger.info("Conditions Codes Size=====>" + r4FhirData.getR4ConditionCodes().size());
-    logger.info("Observation Codes Size=====>" + r4FhirData.getR4LabResultCodes().size());
-    logger.info("Medication Codes Size=====>" + r4FhirData.getR4MedicationCodes().size());
-    logger.info("ServiceRequests Codes Size=====>" + r4FhirData.getR4ServiceRequestCodes().size());
+    if (logger.isInfoEnabled()) {
+      logger.info(
+          "------------------------------CodeableConcept Codes------------------------------");
+      logger.info("Encounter Codes Size=====> {}", r4FhirData.getR4EncounterCodes().size());
+      logger.info("Conditions Codes Size=====> {}", r4FhirData.getR4ConditionCodes().size());
+      logger.info("Observation Codes Size=====> {}", r4FhirData.getR4LabResultCodes().size());
+      logger.info("Medication Codes Size=====> {}", r4FhirData.getR4MedicationCodes().size());
+      logger.info(
+          "ServiceRequests Codes Size=====> {}", r4FhirData.getR4ServiceRequestCodes().size());
+    }
 
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

@@ -30,4 +30,9 @@ public class LaunchServiceImpl implements LaunchService {
   public LaunchDetails getLaunchDetailsByState(int state) {
     return authDetailsDao.getLaunchDetailsByState(state);
   }
+
+  @Override
+  public void delete(LaunchDetails launchDetails) {
+    authDetailsDao.delete(launchDetails);
+  }
 }

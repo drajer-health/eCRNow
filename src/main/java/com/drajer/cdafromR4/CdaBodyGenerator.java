@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CdaBodyGenerator {
+
+  private CdaBodyGenerator() {}
 
   private static final Logger logger = LoggerFactory.getLogger(CdaBodyGenerator.class);
 
@@ -44,11 +46,10 @@ public class CdaBodyGenerator {
 
       logger.info("Starting History of Present Illness Section generation ");
       eICRBody.append(
-          CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(
-              data, details));
+          CdaHistoryOfPresentIllnessGenerator.generateHistoryOfPresentIllnessSection(data));
 
       logger.info("Starting Reason For Visit Section generation ");
-      eICRBody.append(CdaReasonForVisitGenerator.generateReasonForVisitSection(data, details));
+      eICRBody.append(CdaReasonForVisitGenerator.generateReasonForVisitSection(data));
     }
 
     eICRBody.append(

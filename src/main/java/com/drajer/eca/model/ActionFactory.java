@@ -4,6 +4,8 @@ import com.drajer.eca.model.EventTypes.EcrActionTypes;
 
 public class ActionFactory {
 
+  private ActionFactory() {}
+
   public static AbstractAction getActionForType(EcrActionTypes type) {
 
     // We could use Supplier Interfaces in Java 8 ..but it may not be required because these actions

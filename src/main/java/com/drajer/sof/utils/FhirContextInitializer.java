@@ -18,6 +18,7 @@ public class FhirContextInitializer {
   private static final String DSTU2_1 = "DSTU2_1";
   private static final String DSTU3 = "DSTU3";
   private static final String R4 = "R4";
+  private static final String QUERY_PATIENT = "?patient=";
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
 
@@ -49,12 +50,12 @@ public class FhirContextInitializer {
    * @param access_token the name of the key to use to generate the token
    * @return a Generic Client
    */
-  public IGenericClient createClient(FhirContext context, String url, String access_token) {
+  public IGenericClient createClient(FhirContext context, String url, String accessToken) {
     logger.info("Initializing the Client");
     IGenericClient client = context.newRestfulGenericClient(url);
     // client.setLogRequestAndResponse(true);
     context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
-    client.registerInterceptor(new BearerTokenAuthInterceptor(access_token));
+    client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     logger.info("Initialized the Client");
     return client;
   }
@@ -67,7 +68,7 @@ public class FhirContextInitializer {
       String resourceId) {
     IBaseResource resource = null;
     try {
-      logger.info("Getting " + resourceName + " data");
+      logger.info("Getting {} data", resourceName);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
       // logger.info(resourceName + ":::::::::::::::::" +
       // context.newJsonParser().encodeResourceToString(resource));
@@ -87,7 +88,7 @@ public class FhirContextInitializer {
         authDetails.getEhrServerURL()
             + "/"
             + resourceName
-            + "?patient="
+            + QUERY_PATIENT
             + authDetails.getLaunchPatientId();
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
@@ -104,7 +105,7 @@ public class FhirContextInitializer {
         authDetails.getEhrServerURL()
             + "/"
             + resourceName
-            + "?patient="
+            + QUERY_PATIENT
             + authDetails.getLaunchPatientId()
             + "&category="
             + category;
@@ -124,7 +125,7 @@ public class FhirContextInitializer {
         authDetails.getEhrServerURL()
             + "/"
             + resourceName
-            + "?patient="
+            + QUERY_PATIENT
             + authDetails.getLaunchPatientId()
             + "&code="
             + system
@@ -140,22 +141,21 @@ public class FhirContextInitializer {
       FhirContext context,
       String resourceName,
       String url) {
-    logger.info("Invoking url:::::::::::::::" + url);
+    logger.info("Invoking url::::::::::::::: {}", url);
     IBaseBundle bundleResponse = null;
     try {
       logger.info(
-          "Getting "
-              + resourceName
-              + " data using Patient Id: "
-              + authDetails.getLaunchPatientId());
+          "Getting {} data using Patient Id: {}", resourceName, authDetails.getLaunchPatientId());
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         bundleResponse = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         Bundle bundle = (Bundle) bundleResponse;
-        logger.info(
-            "Total No of "
-                + resourceName
-                + " received:::::::::::::::::"
-                + bundle.getEntry().size());
+
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              "Total No of {} received::::::::::::::::: {}",
+              resourceName,
+              bundle.getEntry().size());
+        }
       } else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
         bundleResponse =
             genericClient
@@ -164,11 +164,13 @@ public class FhirContextInitializer {
                 .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
                 .execute();
         org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) bundleResponse;
-        logger.info(
-            "Total No of "
-                + resourceName
-                + " received:::::::::::::::::"
-                + bundle.getEntry().size());
+
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              "Total No of {} received::::::::::::::::: {}",
+              resourceName,
+              bundle.getEntry().size());
+        }
       }
     } catch (Exception e) {
       logger.info(

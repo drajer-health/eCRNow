@@ -42,13 +42,13 @@ public class DirectResponseReceiver extends RRReceiver {
 
       state = ApplicationUtils.getDetailStatus(details);
 
-      readMail(details, state);
+      readMail(details);
     }
 
     return null;
   }
 
-  public void readMail(LaunchDetails details, PatientExecutionState state) {
+  public void readMail(LaunchDetails details) {
 
     try {
 
@@ -74,7 +74,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
       Flags seen = new Flags(Flags.Flag.SEEN);
       FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-      Message messages[] = inbox.search(unseenFlagTerm);
+      Message[] messages = inbox.search(unseenFlagTerm);
 
       for (Message message : messages) {
 
@@ -95,24 +95,23 @@ public class DirectResponseReceiver extends RRReceiver {
           Multipart multipart = (Multipart) message.getContent();
           for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = multipart.getBodyPart(i);
-            InputStream stream = bodyPart.getInputStream();
-
-            byte[] targetArray = IOUtils.toByteArray(stream);
 
             if (bodyPart.getFileName() != null) {
-              if ((bodyPart.getFileName().contains(".xml")
-                  || bodyPart.getFileName().contains(".XML"))) {
-                String filename = bodyPart.getFileName();
+              String filename = bodyPart.getFileName();
+              if ((filename.contains(".xml") || filename.contains(".XML"))) {
 
                 logger.info("Found XML Attachment");
 
-                FileUtils.writeByteArrayToFile(new File(bodyPart.getFileName()), targetArray);
-                File file1 = new File(bodyPart.getFileName());
+                try (InputStream stream = bodyPart.getInputStream()) {
+                  byte[] targetArray = IOUtils.toByteArray(stream);
+                  FileUtils.writeByteArrayToFile(new File(filename), targetArray);
+                }
+                File file1 = new File(filename);
                 FileBody fileBody = new FileBody(file1);
 
                 logger.info(
-                    " Need to determine what to do with the response received from :  "
-                        + senderAddress);
+                    " Need to determine what to do with the response received from :  {}",
+                    senderAddress);
               }
             }
           }
@@ -141,7 +140,7 @@ public class DirectResponseReceiver extends RRReceiver {
     Flags seen = new Flags(Flags.Flag.SEEN);
 
     FlagTerm seenFlagTerm = new FlagTerm(seen, true);
-    Message messages[] = inbox.search(seenFlagTerm);
+    Message[] messages = inbox.search(seenFlagTerm);
 
     for (Message message : messages) {
 

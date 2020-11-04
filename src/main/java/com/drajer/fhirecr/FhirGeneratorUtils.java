@@ -7,12 +7,10 @@ import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FhirGeneratorUtils {
 
-  private static final Logger logger = LoggerFactory.getLogger(FhirGeneratorUtils.class);
+  private FhirGeneratorUtils() {}
 
   public static Coding getCoding(String system, String code, String display) {
 
@@ -82,7 +80,7 @@ public class FhirGeneratorUtils {
     if (cc != null && !StringUtils.isEmpty(cc.getText())) {
 
       retVal = cc.getText();
-    } else if (cc != null && cc.getCoding() != null && cc.getCoding().size() > 0) {
+    } else if (cc != null && cc.getCoding() != null && !cc.getCoding().isEmpty()) {
 
       for (Coding cd : cc.getCoding()) {
 

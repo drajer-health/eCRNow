@@ -103,7 +103,7 @@ public class Dstu2CdaProblemGenerator {
               CdaGeneratorConstants.TABLE_RESOLVED_STATUS);
         }
 
-        sb.append(CdaGeneratorUtils.AddTableRow(bodyvals, rowNum));
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum; // TODO: ++rowNum or rowNum++
       }
 
@@ -172,7 +172,7 @@ public class Dstu2CdaProblemGenerator {
         }
 
         sb.append(
-            CdaGeneratorUtils.getXmlForIVL_TS(
+            CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
         // Add the Problem Observation
@@ -217,7 +217,7 @@ public class Dstu2CdaProblemGenerator {
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
         sb.append(
-            CdaGeneratorUtils.getXmlForIVL_TS(
+            CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
         List<CodeableConceptDt> cds = new ArrayList<CodeableConceptDt>();
@@ -333,7 +333,7 @@ public class Dstu2CdaProblemGenerator {
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
         sb.append(
-            CdaGeneratorUtils.getXmlForIVL_TS(
+            CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
 
         Set<String> matchedCodes = mtc.getMatchedCodes();

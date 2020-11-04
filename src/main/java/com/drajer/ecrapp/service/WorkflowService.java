@@ -15,7 +15,6 @@ import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Date;
@@ -117,19 +116,12 @@ public class WorkflowService {
 
     logger.info(" ***** START EXECUTING EICR WORKFLOW ***** ");
 
-    ObjectMapper mapper = new ObjectMapper();
     PatientExecutionState state = null;
 
     try {
       logger.info(" Reading object State ");
       state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
       logger.info(" Finished Reading object State ");
-    } catch (JsonMappingException e1) {
-
-      String msg = "Unable to read/write execution state";
-      logger.error(msg);
-      throw new RuntimeException(msg);
-
     } catch (JsonProcessingException e1) {
 
       String msg = "Unable to read/write execution state";
@@ -196,11 +188,9 @@ public class WorkflowService {
       Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 
     logger.info(
-        "Get Launch Details from Database for Id  : "
-            + launchDetailsId
-            + " for Action Type "
-            + actionType
-            + " and start execution ");
+        "Get Launch Details from Database for Id  : {} for Action Type {} and start execution ",
+        launchDetailsId,
+        actionType);
 
     LaunchDetails launchDetails =
         ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
@@ -246,19 +236,19 @@ public class WorkflowService {
         .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 
     logger2.info(
-        "Job Scheduled for Action to executate for : " + actionType + " at time : " + t.toString());
+        "Job Scheduled for Action to executate for : {} at time : {}", actionType, t.toString());
   }
 
   public static void scheduleJob(
       Integer launchDetailsId, Duration d, EcrActionTypes actionType, Date timeRef) {
 
-    Instant t = ApplicationUtils.convertDurationToInstant(d, timeRef);
+    Instant t = ApplicationUtils.convertDurationToInstant(d);
 
     ActionRepo.getInstance()
         .getTaskScheduler()
         .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 
     logger2.info(
-        "Job Scheduled for Action to executate for : " + actionType + " at time : " + t.toString());
+        "Job Scheduled for Action to executate for : {} at time : {}", actionType, t.toString());
   }
 }

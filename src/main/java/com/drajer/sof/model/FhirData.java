@@ -27,23 +27,23 @@ public abstract class FhirData {
 
   public FhirData() {
 
-    conditionCodes = new ArrayList<CodeableConceptDt>();
-    labResultCodes = new ArrayList<CodeableConceptDt>();
-    labResultValues = new ArrayList<CodeableConceptDt>();
-    medicationCodes = new ArrayList<CodeableConceptDt>();
-    diagnosticOrderCodes = new ArrayList<CodeableConceptDt>();
-    encounterCodes = new ArrayList<CodeableConceptDt>();
-    immuniationCodes = new ArrayList<CodeableConceptDt>();
-    diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
+    conditionCodes = new ArrayList<>();
+    labResultCodes = new ArrayList<>();
+    labResultValues = new ArrayList<>();
+    medicationCodes = new ArrayList<>();
+    diagnosticOrderCodes = new ArrayList<>();
+    encounterCodes = new ArrayList<>();
+    immuniationCodes = new ArrayList<>();
+    diagnosticReportCodes = new ArrayList<>();
 
-    r4ConditionCodes = new ArrayList<CodeableConcept>();
-    r4LabResultCodes = new ArrayList<CodeableConcept>();
-    r4LabResultValues = new ArrayList<CodeableConcept>();
-    r4MedicationCodes = new ArrayList<CodeableConcept>();
-    r4ServiceRequestCodes = new ArrayList<CodeableConcept>();
-    r4EncounterCodes = new ArrayList<CodeableConcept>();
-    r4ImmunizationCodes = new ArrayList<CodeableConcept>();
-    r4DiagnosticReportCodes = new ArrayList<CodeableConcept>();
+    r4ConditionCodes = new ArrayList<>();
+    r4LabResultCodes = new ArrayList<>();
+    r4LabResultValues = new ArrayList<>();
+    r4MedicationCodes = new ArrayList<>();
+    r4ServiceRequestCodes = new ArrayList<>();
+    r4EncounterCodes = new ArrayList<>();
+    r4ImmunizationCodes = new ArrayList<>();
+    r4DiagnosticReportCodes = new ArrayList<>();
   }
 
   public List<CodeableConceptDt> getConditionCodes() {

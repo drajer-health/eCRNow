@@ -35,9 +35,11 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationUtils {
 
+  private ApplicationUtils() {}
+
   private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
 
-  public static Boolean isCodePresent(Set<ValueSet> valuesets, String code) {
+  /*public static Boolean isCodePresent(Set<ValueSet> valuesets, String code) {
     Boolean isCodePresent = false;
     ValueSetExpansionComponent valueSetExpansionComponent;
     List<ValueSetExpansionContainsComponent> valueSetExpansionContainsComponentList;
@@ -53,7 +55,7 @@ public class ApplicationUtils {
       }
     }
     return isCodePresent;
-  }
+  }*/
 
   public static List<CanonicalType> getValueSetListFromGrouper(String grouperId) {
 
@@ -61,11 +63,11 @@ public class ApplicationUtils {
 
     for (ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
 
-      logger.info(" Looking for grouper value set for " + grouperId);
+      logger.info(" Looking for grouper value set for {}", grouperId);
 
       if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
 
-        logger.info(" Found Grouper Value Set for " + grouperId);
+        logger.info(" Found Grouper Value Set for {}", grouperId);
 
         if (valueset.getCompose() != null && valueset.getCompose().getInclude() != null) {
 
@@ -100,7 +102,7 @@ public class ApplicationUtils {
 
       if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
 
-        logger.info(" Grouper Id " + grouperId);
+        logger.info(" Grouper Id {}", grouperId);
         valueSetGrouper = valueset;
       }
     }
@@ -194,11 +196,11 @@ public class ApplicationUtils {
 
   public static Set<String> convertValueSetsToString(Set<ValueSet> valuesets) {
 
-    Set<String> retVal = new HashSet<String>();
+    Set<String> retVal = new HashSet<>();
     ValueSetExpansionComponent valueSetExpansionComponent;
     List<ValueSetExpansionContainsComponent> valueSetExpansionContainsComponentList;
 
-    if (valuesets != null && valuesets.size() > 0) {
+    if (valuesets != null && !valuesets.isEmpty()) {
 
       for (ValueSet vs : valuesets) {
 
@@ -220,9 +222,9 @@ public class ApplicationUtils {
 
   public static Set<String> convertCodeableConceptsToString(List<CodeableConceptDt> codes) {
 
-    Set<String> retVal = new HashSet<String>();
+    Set<String> retVal = new HashSet<>();
 
-    if (codes != null && codes.size() > 0) {
+    if (codes != null && !codes.isEmpty()) {
 
       for (CodeableConceptDt cd : codes) {
 
@@ -243,9 +245,9 @@ public class ApplicationUtils {
 
   public static Set<String> convertR4CodeableConceptsToString(List<CodeableConcept> codes) {
 
-    Set<String> retVal = new HashSet<String>();
+    Set<String> retVal = new HashSet<>();
 
-    if (codes != null && codes.size() > 0) {
+    if (codes != null && !codes.isEmpty()) {
 
       for (CodeableConcept cd : codes) {
 
@@ -288,12 +290,12 @@ public class ApplicationUtils {
       d.setUnit("s");
     }
 
-    t = convertDurationToInstant(d, timeRef);
+    t = convertDurationToInstant(d);
 
     return t;
   }
 
-  public static Instant convertDurationToInstant(Duration d, Date timeRef) {
+  public static Instant convertDurationToInstant(Duration d) {
 
     Instant t = null;
 
@@ -322,7 +324,6 @@ public class ApplicationUtils {
       } else {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
-        ;
       }
     }
 
@@ -331,22 +332,13 @@ public class ApplicationUtils {
 
   public static void saveDataToFile(String data, String fileName) {
 
-    DataOutputStream outStream = null;
-    try {
+    try (DataOutputStream outStream =
+        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
 
-      logger.info(" Writing data to file: " + fileName);
-      outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
+      logger.info(" Writing data to file: {}", fileName);
       outStream.writeBytes(data);
     } catch (IOException e) {
       logger.debug(" Unable to write data to file: " + fileName, e);
-    } finally {
-      if (outStream != null) {
-        try {
-          outStream.close();
-        } catch (IOException e) {
-          logger.debug(" Unable to close Data output stream");
-        }
-      }
     }
   }
 

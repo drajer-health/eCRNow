@@ -35,6 +35,6 @@ public class RRReceiverController {
       logger.error("Error in Processing Eicr XML");
     }
 
-    return new ResponseEntity<String>("Success", HttpStatus.OK);
+    return new ResponseEntity<>("Success", HttpStatus.OK);
   }
 }

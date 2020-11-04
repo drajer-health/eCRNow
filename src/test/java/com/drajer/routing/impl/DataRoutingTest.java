@@ -89,13 +89,13 @@ public class DataRoutingTest {
             this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
             LaunchDetails.class);
 
-    doNothing().when(directResponseReceiverSpy).readMail(any(), any());
+    doNothing().when(directResponseReceiverSpy).readMail(any());
 
     // Test
     directResponseReceiverSpy.receiveRespone(context);
 
     // Validate
 
-    Mockito.verify(directResponseReceiverSpy, times(1)).readMail(any(), any());
+    Mockito.verify(directResponseReceiverSpy, times(1)).readMail(any());
   }
 }

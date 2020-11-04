@@ -7,8 +7,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import com.drajer.cdafromR4.CdaEicrGeneratorFromR4;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
+import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.impl.EicrServiceImpl;
@@ -98,8 +98,8 @@ public class EcaUtilsTest {
         EcaUtils.matchTriggerCodesForDSTU2(codePaths, mockDstu2Data, mockState, mockDetails);
 
     // Validate
-    assertEquals(matchTriggerStatus.getTriggerMatchStatus(), true);
-    assertEquals(result, true);
+    assertEquals(true, matchTriggerStatus.getTriggerMatchStatus());
+    assertEquals(true, result);
   }
 
   @Test
@@ -117,8 +117,8 @@ public class EcaUtilsTest {
         EcaUtils.matchTriggerCodesForDSTU2(codePaths, mockDstu2Data, mockState, mockDetails);
 
     // Validate
-    assertEquals(matchTriggerStatus.getTriggerMatchStatus(), true);
-    assertEquals(result, true);
+    assertEquals(true, matchTriggerStatus.getTriggerMatchStatus());
+    assertEquals(true, result);
   }
 
   @Test
@@ -136,8 +136,8 @@ public class EcaUtilsTest {
     Boolean result = EcaUtils.matchTriggerCodesForR4(codePaths, mockR4Data, mockState, mockDetails);
 
     // Validate
-    assertEquals(matchTriggerStatus.getTriggerMatchStatus(), true);
-    assertEquals(result, true);
+    assertEquals(true, matchTriggerStatus.getTriggerMatchStatus());
+    assertEquals(true, result);
   }
 
   @Test
@@ -154,8 +154,8 @@ public class EcaUtilsTest {
     Boolean result = EcaUtils.matchTriggerCodesForR4(codePaths, mockR4Data, mockState, mockDetails);
 
     // Validate
-    assertEquals(matchTriggerStatus.getTriggerMatchStatus(), true);
-    assertEquals(result, true);
+    assertEquals(true, matchTriggerStatus.getTriggerMatchStatus());
+    assertEquals(true, result);
   }
 
   @Test
@@ -176,7 +176,7 @@ public class EcaUtilsTest {
     Eicr eicr = EcaUtils.createEicr(mockDetails);
 
     // Validate
-    assertEquals(eicr.getData(), "This is DSTU2 EICR data");
+    assertEquals("This is DSTU2 EICR data", eicr.getData());
   }
 
   @Test
@@ -197,7 +197,7 @@ public class EcaUtilsTest {
     Eicr eicr = EcaUtils.createEicr(mockDetails);
 
     // Validate
-    assertEquals(eicr.getData(), "This is R4 EICR data");
+    assertEquals("This is R4 EICR data", eicr.getData());
   }
 
   public void setupMockForMatchTrigger() {

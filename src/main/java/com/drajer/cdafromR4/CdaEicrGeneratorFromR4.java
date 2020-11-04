@@ -1,4 +1,4 @@
-package com.drajer.cdafromR4;
+package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 public class CdaEicrGeneratorFromR4 {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaEicrGeneratorFromR4.class);
+
+  private CdaEicrGeneratorFromR4() {}
 
   public static String convertR4FhirBundletoCdaEicr(R4FhirData data, LaunchDetails details) {
 
