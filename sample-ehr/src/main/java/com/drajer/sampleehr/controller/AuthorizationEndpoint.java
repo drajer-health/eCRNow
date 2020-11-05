@@ -18,33 +18,35 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.drajer.sampleehr.service.EicrReceiverService;
+import com.drajer.sampleehr.service.AuthorizationService;
 
 @RestController
-public class EicrReceiverController {
+public class AuthorizationEndpoint {
 
-	@Autowired
-	EicrReceiverService eicrReceiverService;
+	private final Logger logger = LoggerFactory.getLogger(AuthorizationEndpoint.class);
 	
-	private final Logger logger = LoggerFactory.getLogger(EicrReceiverController.class);
-
+	@Autowired
+	AuthorizationService authService;
+	
 	@CrossOrigin
-	@RequestMapping(value = "/api/receiveEicr", method = RequestMethod.POST)
-	public ResponseEntity<String> saveEicrXML(@RequestParam Map<String,String> params, @RequestBody String eicrXml,HttpServletRequest request,
+	@RequestMapping(value = "/api/authorize", method = RequestMethod.POST)
+	public ResponseEntity<String> getAuthorization(@RequestBody Map<String,String> params,HttpServletRequest request,
 		      HttpServletResponse response) {
 		JSONObject responseObj =null;
-		logger.info("Received Eicr XML with Parameters");
+		logger.info("Received Authorization request with Parameters");
 		try {
-			if(!params.containsKey("fhirServerURL") || !params.containsKey("patientId") || !params.containsKey("encounterId") || !params.containsKey("setId")) {
-				return new ResponseEntity<String>("Please provide all the Requried Parameters FhirServerUrl,PatientId,EncounterId,SetId", HttpStatus.BAD_REQUEST);
+			if(!params.containsKey("client_id") || !params.containsKey("client_secret")) {
+				return new ResponseEntity<String>("Please provide all the Requried Parameters ClientId and ClientSecret", HttpStatus.BAD_REQUEST);
 			}
-			eicrReceiverService.saveEicrDetails(params, eicrXml);
 			responseObj = new JSONObject();
-			responseObj.put("message", "Received Eicr Details.");
+			responseObj.put("expires", "300");
+			responseObj.put("token_type", "bearer");
+			responseObj.put("access_token", authService.generateNewToken());
 		}catch(Exception e) {
-			logger.error("Error in Processing Eicr XML");
+			logger.error("Error in Authorization");
 		}
 
 		return new ResponseEntity<String>(responseObj.toString(), HttpStatus.OK);
 	}
+	
 }

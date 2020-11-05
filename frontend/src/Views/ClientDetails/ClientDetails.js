@@ -136,6 +136,8 @@ class ClientDetails extends Component {
             directHost: this.state.directHost ? this.state.directHost : null,
             directUser: this.state.directUserName ? this.state.directUserName : null,
             directPwd: this.state.directPwd ? this.state.directPwd : null,
+            smtpPort: this.state.smtpPort ? this.state.smtpPort : null,
+            imapPort: this.state.imapPort ? this.state.imapPort : null,
             directRecipientAddress: this.state.directRecipientAddress ? this.state.directRecipientAddress : null,
             xdrRecipientAddress: this.state.xdrRecipientAddress ? this.state.xdrRecipientAddress : null,
             restAPIURL: this.state.restAPIURL ? this.state.restAPIURL : null,
@@ -144,7 +146,11 @@ class ClientDetails extends Component {
             encounterEndThreshold: this.state.endThreshold,
             isCovid: this.state.reportType === "covid19" ? true : false,
             isFullEcr: this.state.reportType === "fullecr" ? true : false,
-            isLoggingEnabled: this.state.isLoggingEnabled
+            isLoggingEnabled: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false,
+            tokenIntrospectionURL: this.state.tokenIntrospectionURL ? this.state.tokenIntrospectionURL : null,
+            ehrClientId: this.state.ehrClientId ? this.state.ehrClientId : null,
+            ehrClientSecret: this.state.ehrClientSecret ? this.state.ehrClientSecret : null,
+            ehrAuthorizationUrl: this.state.ehrAuthorizationUrl ? this.state.ehrAuthorizationUrl : null
         };
         if (!this.addNew && this.selectedClientDetails) {
             clientDetails['id'] = this.selectedClientDetails.id;
@@ -453,6 +459,28 @@ class ClientDetails extends Component {
                                                             </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
+                                                    <Form.Group as={Row} controlId="smtpPort">
+                                                        <Form.Label column sm={2}>
+                                                            SMTP Port:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" name="smtpPort" required={this.state.directType === 'direct' ? true : false} placeholder="SMTP Port" onChange={e => this.handleChange(e)} value={this.state.smtpPort} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a SMTP Port.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                    <Form.Group as={Row} controlId="imapPort">
+                                                        <Form.Label column sm={2}>
+                                                            IMAP Port:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" name="imapPort" required={this.state.directType === 'direct' ? true : false} placeholder="IMAP Port" onChange={e => this.handleChange(e)} value={this.state.imapPort} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide a IMAP Port.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
                                                 </div>
                                             ) : ''}
 
@@ -482,6 +510,39 @@ class ClientDetails extends Component {
                                                             <Form.Control type="text" placeholder="Rest API URL" required={this.state.directType === 'restApi' ? true : false} name="restAPIURL" onChange={e => this.handleChange(e)} value={this.state.restAPIURL} />
                                                             <Form.Control.Feedback type="invalid">
                                                                 Please provide Rest API URL.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                    <Form.Group as={Row} controlId="ehrClientId">
+                                                        <Form.Label column sm={2}>
+                                                            Client Id:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" placeholder="Client Id" required={this.state.directType === 'restApi' ? true : false} name="ehrClientId" onChange={e => this.handleChange(e)} value={this.state.ehrClientId} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide ClientId.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                    <Form.Group as={Row} controlId="ehrClientSecret">
+                                                        <Form.Label column sm={2}>
+                                                            Client Secret:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" placeholder="Client Secret" required={this.state.directType === 'restApi' ? true : false} name="ehrClientSecret" onChange={e => this.handleChange(e)} value={this.state.ehrClientSecret} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide Client Secret.
+                                                            </Form.Control.Feedback>
+                                                        </Col>
+                                                    </Form.Group>
+                                                    <Form.Group as={Row} controlId="ehrAuthorizationUrl">
+                                                        <Form.Label column sm={2}>
+                                                            Authorization URL:
+                                                        </Form.Label>
+                                                        <Col sm={10}>
+                                                            <Form.Control type="text" placeholder="Authorization URL" required={this.state.directType === 'restApi' ? true : false} name="ehrAuthorizationUrl" onChange={e => this.handleChange(e)} value={this.state.ehrAuthorizationUrl} />
+                                                            <Form.Control.Feedback type="invalid">
+                                                                Please provide Authorization URL.
                                                             </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
@@ -568,6 +629,17 @@ class ClientDetails extends Component {
                                                         name="enableLogging"
                                                         checked={this.state.isChecked}
                                                     />
+                                                </Col>
+                                            </Form.Group>
+                                            <Form.Group as={Row} controlId="tokenIntrospectionURL">
+                                                <Form.Label column sm={2}>
+                                                    Token Introspection URL:
+                                                </Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control type="text" placeholder="Token Introspection URL" required name="tokenIntrospectionURL" onChange={e => this.handleChange(e)} value={this.state.tokenIntrospectionURL} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        Please provide a Token Introspection URL.
+                                                    </Form.Control.Feedback>
                                                 </Col>
                                             </Form.Group>
                                         </Card.Body>
