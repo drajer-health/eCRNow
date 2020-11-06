@@ -1,5 +1,8 @@
 package com.drajer.sof.launch;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -22,7 +25,12 @@ public class RRReceiverController {
   public ResponseEntity<String> rrReceiver(
       @RequestBody String obj, HttpServletRequest request, HttpServletResponse response) {
     try {
-      logger.info("Received Obj::::: {}", obj);
+      logger.info("Received Obj:::::" + obj);
+      DataOutputStream outStream =
+          new DataOutputStream(
+              new BufferedOutputStream(new FileOutputStream("D:\\RRReceiverXML.xml")));
+      outStream.writeBytes(obj);
+      outStream.close();
     } catch (Exception e) {
       logger.error("Error in Processing Eicr XML");
     }
