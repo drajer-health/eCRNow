@@ -48,39 +48,6 @@ public class EICRValidator {
 
         ValidationUtils.validateHeader(
             r4Patient, r4Encounter, r4Practitioners, r4Organization, clinicalDoc);
-        /*
-        if (sectionName.equalsIgnoreCase("HEADER")) {
-          resourceFileName = "Patient";
-          Patient patient =
-                  (Patient)
-                          TestUtils.getR4ResourceFromJson(
-                                  allResourceFiles.get(resourceFileName).get(0), Patient.class);
-          Encounter encounter =
-                  (Encounter)
-                          TestUtils.getR4ResourceFromJson(
-                                  allResourceFiles.get("Encounter").get(0), Encounter.class);
-          Practitioner practitioner =
-                  (Practitioner)
-                          TestUtils.getR4ResourceFromJson(
-                                  allResourceFiles.get("Practitioner").get(0), Practitioner.class);
-
-          Organization organization =
-                  (Organization)
-                          TestUtils.getR4ResourceFromJson(
-                                  allResourceFiles.get("Organization").get(0), Organization.class);
-          final POCDMT000040Author pocdmt000040Author = clinicalDoc.getAuthor().get(0);
-          final POCDMT000040RecordTarget pocdmt000040RecordTarget =
-                  clinicalDoc.getRecordTarget().get(0);
-          final POCDMT000040Custodian pocdmt000040Custodian = clinicalDoc.getCustodian();
-          final POCDMT000040AssignedEntity pOCDMT000040AssignedEntity =
-                  clinicalDoc
-                          .getComponentOf()
-                          .getEncompassingEncounter()
-                          .getResponsibleParty()
-                          .getAssignedEntity();
-          //ValidationUtils.validateRecordTarget(patient, pocdmt000040RecordTarget.getPatientRole());
-         // ValidationUtils.validatePatientRole(patient, pocdmt000040RecordTarget.getPatientRole());
-        } */
 
       } else if (sectionName.equalsIgnoreCase("ENCOUNTERS")) {
         resourceFileName = "Encounter";

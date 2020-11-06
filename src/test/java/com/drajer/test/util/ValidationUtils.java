@@ -60,14 +60,14 @@ public class ValidationUtils {
 
       // Only HOME and WORK addresses are Supported currently.
       // May need to change this validation once more address type are supported.
-      if (addr.getUseElement().getValue() == AddressUse.HOME || addr.getUseElement().getValue() == AddressUse.WORK) {
+      if (addr.getUseElement().getValue() == AddressUse.HOME
+          || addr.getUseElement().getValue() == AddressUse.WORK) {
 
         idx++;
         AD ad = cdaAddr.get(idx);
         assertNotNull(ad);
         validateAddress(addr, ad);
         break;
-
       }
     }
   }
