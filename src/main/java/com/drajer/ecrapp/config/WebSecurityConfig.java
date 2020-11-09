@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,6 +21,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Value("${token.validator.class}")
   private String tokenFilterClassName;
 
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers("/meta/**");
+  }
+
+  @Override
   protected void configure(HttpSecurity http) throws Exception {
     logger.info("*******************************************************************");
     logger.info("Security Configuration" + tokenFilterClassName);
