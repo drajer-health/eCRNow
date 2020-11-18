@@ -26,11 +26,11 @@ public class RRReceiverController {
       @RequestBody String obj, HttpServletRequest request, HttpServletResponse response) {
     try {
       logger.info("Received Obj:::::" + obj);
-      DataOutputStream outStream =
+      try (DataOutputStream outStream =
           new DataOutputStream(
-              new BufferedOutputStream(new FileOutputStream("D:\\RRReceiverXML.xml")));
-      outStream.writeBytes(obj);
-      outStream.close();
+              new BufferedOutputStream(new FileOutputStream("D:\\RRReceiverXML.xml")))) {
+        outStream.writeBytes(obj);
+      }
     } catch (Exception e) {
       logger.error("Error in Processing Eicr XML");
     }
