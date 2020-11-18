@@ -20,10 +20,6 @@ testCase:
       Practitioner:
       - params: "11817978"
         responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
-      - params: "4122622"
-        responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
-      - params: "11938004"
-        responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
       Organization:
       - params: "675844"
         responseFilePath: "R4/Organization/Organization.json"

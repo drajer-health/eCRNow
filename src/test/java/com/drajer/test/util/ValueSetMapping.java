@@ -31,12 +31,12 @@ public class ValueSetMapping {
     sectionConversion.put("TREATMENTS", "18776-5");
   }
 
-  public static final List<String> IndentifierURL;
+  public static final List<String> IndentifierTypeURL;
 
   static {
-    IndentifierURL = new ArrayList<>();
-    IndentifierURL.add("http://hl7.org/fhir/v2/0203");
-    IndentifierURL.add("http://hl7.org/fhir/ValueSet/identifier-type");
+    IndentifierTypeURL = new ArrayList<>();
+    IndentifierTypeURL.add("http://hl7.org/fhir/v2/0203");
+    IndentifierTypeURL.add("http://hl7.org/fhir/ValueSet/identifier-type");
   }
 
   public static final Map<String, String> gender;
