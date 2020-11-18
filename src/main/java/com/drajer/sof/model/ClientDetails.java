@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import jline.internal.Log;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
@@ -115,6 +117,10 @@ public class ClientDetails {
 
   @Column(name = "ehr_authorization_url", nullable = true)
   private String ehrAuthorizationUrl;
+
+  @Column(name = "last_updated_ts", nullable = false)
+  @CreationTimestamp
+  private Date lastUpdated;
 
   public Integer getId() {
     return id;
@@ -346,6 +352,14 @@ public class ClientDetails {
 
   public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
     this.ehrAuthorizationUrl = ehrAuthorizationUrl;
+  }
+
+  public Date getLastUpdated() {
+    return lastUpdated;
+  }
+
+  public void setLastUpdated(Date lastUpdated) {
+    this.lastUpdated = lastUpdated;
   }
 
   public void print() {
