@@ -28,9 +28,9 @@ public class RRReceiverController {
       logger.info("Received Obj:::::" + obj);
       try (DataOutputStream outStream =
           new DataOutputStream(
-              new BufferedOutputStream(new FileOutputStream("D:\\RRReceiverXML.xml")));
-      outStream.writeBytes(obj);
-      outStream.close();
+              new BufferedOutputStream(new FileOutputStream("D:\\RRReceiverXML.xml")))) {
+        outStream.writeBytes(obj);
+      }
     } catch (Exception e) {
       logger.error("Error in Processing Eicr XML");
     }
