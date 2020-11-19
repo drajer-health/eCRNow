@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDao {
 
   public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
-    getSession().saveOrUpdate(clientDetails);
+	  getSession().persist(clientDetails);
+    //getSession().saveOrUpdate(clientDetails);
     return clientDetails;
   }
 

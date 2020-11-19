@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import jline.internal.Log;
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -37,7 +38,10 @@ public class ClientDetails {
   @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
   private String clientId;
 
-  @Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "clientSecret", nullable = true, columnDefinition = "bytea")
+  @ColumnTransformer(
+      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String clientSecret;
 
   @Column(name = "fhir_server_base_url", nullable = false, unique = true)
@@ -67,7 +71,10 @@ public class ClientDetails {
   @Column(name = "direct_user", nullable = true)
   private String directUser;
 
-  @Column(name = "direct_pwd", nullable = true)
+  @Column(name = "direct_pwd", nullable = true, columnDefinition = "bytea")
+  @ColumnTransformer(
+	      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+	      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String directPwd;
 
   @Column(name = "smtp_port", nullable = true)
@@ -112,7 +119,10 @@ public class ClientDetails {
   @Column(name = "ehr_client_id", nullable = true)
   private String ehrClientId;
 
-  @Column(name = "ehr_client_secret", nullable = true)
+  @Column(name = "ehr_client_secret", nullable = true, columnDefinition = "bytea")
+  @ColumnTransformer(
+	      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+	      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String ehrClientSecret;
 
   @Column(name = "ehr_authorization_url", nullable = true)

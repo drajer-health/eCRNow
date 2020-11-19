@@ -10,6 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -30,7 +32,10 @@ public class LaunchDetails {
   @Column(name = "client_id", nullable = true)
   private String clientId;
 
-  @Column(name = "client_secret", nullable = true)
+  @Column(name = "client_secret", nullable = true,columnDefinition = "bytea")
+  @ColumnTransformer(
+	      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+	      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String clientSecret;
 
   @Column(name = "ehr_server_url", nullable = true)
@@ -42,7 +47,10 @@ public class LaunchDetails {
   @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
   private String tokenUrl;
 
-  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT",columnDefinition = "bytea")
+  @ColumnTransformer(
+	      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+	      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String accessToken;
 
   @Column(name = "user_id", nullable = true)
@@ -99,7 +107,10 @@ public class LaunchDetails {
   @Column(name = "direct_user", nullable = true) // Status can be active or completed.
   private String directUser;
 
-  @Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
+  @Column(name = "direct_pwd", nullable = true,columnDefinition = "bytea") // Status can be active or completed.
+  @ColumnTransformer(
+	      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+	      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String directPwd;
 
   @Column(name = "smtp_port", nullable = true)
@@ -144,7 +155,10 @@ public class LaunchDetails {
   @Column(name = "ehr_client_id", nullable = true)
   private String ehrClientId;
 
-  @Column(name = "ehr_client_secret", nullable = true)
+  @Column(name = "ehr_client_secret", nullable = true,columnDefinition = "bytea")
+  @ColumnTransformer(
+	      read = "pgp_sym_decrypt(clientSecret,current_setting('encrypt.key'))",
+	      write = "pgp_sym_encrypt(?,current_setting('encrypt.key'))")
   private String ehrClientSecret;
 
   @Column(name = "ehr_authorization_url", nullable = true)

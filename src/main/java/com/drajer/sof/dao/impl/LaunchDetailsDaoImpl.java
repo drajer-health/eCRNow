@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDao {
 
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
-    getSession().saveOrUpdate(authDetails);
+	  getSession().persist(authDetails);
+    // getSession().saveOrUpdate(authDetails);
     return authDetails;
   }
 
