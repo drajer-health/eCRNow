@@ -6,7 +6,7 @@ testCase:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       ExpectedEICRFile: "R4/Misc/ExpectedEICR/EICR_Expected.xml"
-      ValidationSections: "HEADER|ENCOUNTERS|VISITS|PROBLEMS|ILLNESS|HISTORY"
+      ValidationSections: "HEADER|ENCOUNTERS|VISITS|PROBLEMS|ILLNESS|HISTORY|IMMUNIZATIONS"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -20,10 +20,6 @@ testCase:
       Practitioner:
       - params: "11817978"
         responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
-      - params: "4122622"
-        responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
-      - params: "11938004"
-        responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
       Organization:
       - params: "675844"
         responseFilePath: "R4/Organization/Organization.json"
