@@ -221,7 +221,7 @@ public class WorkflowService {
         logger.info("Starting the Thread");
         Thread.currentThread().interrupt();
       } catch (Exception e) {
-        logger.info("Error in Getting Data=====>" + e.getMessage());
+        logger.info("Error in Getting Data=====>", e);
       }
     }
   }
