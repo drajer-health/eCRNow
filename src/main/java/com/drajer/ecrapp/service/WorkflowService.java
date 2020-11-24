@@ -9,6 +9,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.LaunchService;
@@ -52,6 +53,8 @@ public class WorkflowService {
   @Autowired EicrRRService eicrRRService;
 
   @Autowired DirectEicrSender directTansport;
+
+  @Autowired RestApiSender restApiTransport;
 
   @Autowired ObjectMapper mapper;
 

@@ -47,6 +47,8 @@ public class ActionRepo {
 
   DirectEicrSender directTransport;
 
+  DirectEicrSender restTransport;
+
   String schematronFileLocation;
 
   String logFileDirectory;
@@ -81,6 +83,14 @@ public class ActionRepo {
 
   public void setDirectTransport(DirectEicrSender directTransport) {
     this.directTransport = directTransport;
+  }
+
+  public DirectEicrSender getRestTransport() {
+    return restTransport;
+  }
+
+  public void setRestTransport(DirectEicrSender restTransport) {
+    this.restTransport = restTransport;
   }
 
   public String getSchematronFileLocation() {
