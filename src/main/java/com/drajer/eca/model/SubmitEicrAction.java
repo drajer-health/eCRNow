@@ -95,7 +95,7 @@ public class SubmitEicrAction extends AbstractAction {
       String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
 
       if (!StringUtils.isBlank(details.getRestAPIURL())) {
-        ActionRepo.getInstance().getRestTransport().sendData(details, data);
+        ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data);
       } else {
         ActionRepo.getInstance().getDirectTransport().sendData(details, data);
       }
