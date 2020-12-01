@@ -78,6 +78,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setDirectTransport(directTansport);
     ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
     ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
+    ActionRepo.getInstance().setRestTransport(restApiTransport);
 
     workflowInstance = this;
   }

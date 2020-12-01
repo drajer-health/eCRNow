@@ -7,7 +7,6 @@ import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
