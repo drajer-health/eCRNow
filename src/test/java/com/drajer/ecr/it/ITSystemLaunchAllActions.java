@@ -1,5 +1,10 @@
 package com.drajer.ecr.it;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -139,6 +144,49 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     validateActionStatus();
+  }
+
+  @Test
+  public void testSubmitEicrFromRestApi() {
+
+    // mock RESTAPI
+    stubFor(
+        post(urlEqualTo("/directurl"))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody("Reportability Response recieved from AIMS")
+                    .withHeader("Content-Type", "application/json; charset=utf-8")));
+    // mock EHR AuthURl
+    String accesstoken =
+        "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
+    stubFor(
+        post(urlEqualTo("/ehrauthurl"))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(accesstoken)
+                    .withHeader("Content-Type", "application/json; charset=utf-8")));
+
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
+    logger.info("Invoking systemLaunch...");
+    logger.info("Payload: \n" + systemLaunchInputData);
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            createURLWithPort(systemLaunchURI), HttpMethod.POST, entity, String.class);
+    logger.info("Received Response. Waiting for EICR generation.....");
+
+    assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+    assertTrue(response.getBody().contains("App is launched successfully"));
+
+    validateActionStatus();
+
+    verify(postRequestedFor(urlEqualTo("/ehrauthurl")));
+    verify(postRequestedFor(urlPathEqualTo("/directurl")));
   }
 
   private void getLaunchDetailAndStatus() {
