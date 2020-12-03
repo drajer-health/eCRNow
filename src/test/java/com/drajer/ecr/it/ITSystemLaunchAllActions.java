@@ -21,6 +21,8 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -149,9 +151,18 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   @Test
   public void testSubmitEicrFromRestApi() {
 
+    URL restApiUrl = null;
+    URL ehrAuthUrl = null;
+    try {
+      restApiUrl = new URL(clientDetails.getRestAPIURL());
+      ehrAuthUrl = new URL(clientDetails.getEhrAuthorizationUrl());
+
+    } catch (MalformedURLException e) {
+      fail(e.getMessage() + " This exception is not expected fix the test.");
+    }
     // mock RESTAPI
     stubFor(
-        post(urlEqualTo("/directurl"))
+        post(urlEqualTo(restApiUrl.getPath()))
             .atPriority(1)
             .willReturn(
                 aResponse()
@@ -162,7 +173,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     String accesstoken =
         "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
     stubFor(
-        post(urlEqualTo("/ehrauthurl"))
+        post(urlEqualTo(ehrAuthUrl.getPath()))
             .atPriority(1)
             .willReturn(
                 aResponse()
@@ -185,8 +196,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     validateActionStatus();
 
-    verify(postRequestedFor(urlEqualTo("/ehrauthurl")));
-    verify(postRequestedFor(urlPathEqualTo("/directurl")));
+    // verify(postRequestedFor(urlEqualTo(ehrAuthUrl.getPath())));
+    verify(postRequestedFor(urlPathEqualTo(restApiUrl.getPath())));
   }
 
   private void getLaunchDetailAndStatus() {
