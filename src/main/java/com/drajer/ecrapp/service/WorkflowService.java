@@ -9,6 +9,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.LaunchService;
@@ -53,6 +54,8 @@ public class WorkflowService {
 
   @Autowired DirectEicrSender directTansport;
 
+  @Autowired RestApiSender restApiTransport;
+
   @Autowired ObjectMapper mapper;
 
   @Value("${schematron.file.location}")
@@ -75,6 +78,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setDirectTransport(directTansport);
     ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
     ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
+    ActionRepo.getInstance().setRestTransport(restApiTransport);
 
     workflowInstance = this;
   }

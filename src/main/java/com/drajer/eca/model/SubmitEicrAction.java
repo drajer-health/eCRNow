@@ -7,6 +7,7 @@ import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,11 @@ public class SubmitEicrAction extends AbstractAction {
 
       String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
 
-      ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+      if (!StringUtils.isBlank(details.getRestAPIURL())) {
+        ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data);
+      } else {
+        ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+      }
 
       // Add a submission object every time.
       SubmitEicrStatus submitState = new SubmitEicrStatus();

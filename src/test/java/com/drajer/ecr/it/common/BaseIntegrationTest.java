@@ -64,6 +64,8 @@ public abstract class BaseIntegrationTest {
 
   protected int wireMockHttpPort;
 
+  protected ClientDetails clientDetails;
+
   @Before
   public void setUp() throws IOException {
     wireMockHttpPort = port + 1;
@@ -86,11 +88,21 @@ public abstract class BaseIntegrationTest {
   protected void createTestClientDetailsInDB(String clientDetailsFile) throws IOException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
-    ClientDetails clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
+    clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
 
     String fhirServerBaseURL =
         clientDetails.getFhirServerBaseURL().replace("port", "" + wireMockHttpPort);
     clientDetails.setFhirServerBaseURL(fhirServerBaseURL);
+
+    if (clientDetails.getRestAPIURL() != null) {
+      String restAPI = clientDetails.getRestAPIURL().replace("port", "" + wireMockHttpPort);
+      clientDetails.setRestAPIURL(restAPI);
+    }
+    if (clientDetails.getEhrAuthorizationUrl() != null) {
+      String ehrAuthUrl =
+          clientDetails.getEhrAuthorizationUrl().replace("port", "" + wireMockHttpPort);
+      clientDetails.setEhrAuthorizationUrl(ehrAuthUrl);
+    }
     String tokenURL = clientDetails.getTokenURL().replace("port", "" + wireMockHttpPort);
     clientDetails.setTokenURL(tokenURL);
     session.save(clientDetails);

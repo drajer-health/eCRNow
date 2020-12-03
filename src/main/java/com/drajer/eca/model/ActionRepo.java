@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.ecrapp.service.EicrRRService;
+import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
@@ -47,6 +48,8 @@ public class ActionRepo {
 
   DirectEicrSender directTransport;
 
+  RestApiSender restTransport;
+
   String schematronFileLocation;
 
   String logFileDirectory;
@@ -81,6 +84,14 @@ public class ActionRepo {
 
   public void setDirectTransport(DirectEicrSender directTransport) {
     this.directTransport = directTransport;
+  }
+
+  public RestApiSender getRestTransport() {
+    return restTransport;
+  }
+
+  public void setRestTransport(RestApiSender restTransport) {
+    this.restTransport = restTransport;
   }
 
   public String getSchematronFileLocation() {
