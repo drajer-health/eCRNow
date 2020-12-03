@@ -1237,13 +1237,14 @@ public class ValidationUtils {
       AssertCdaElement.assertNullFlavor(cdaEthnic, "NI");
     }
     // Guardian
-    int guardianIdx = cntIdx++;
-    POCDMT000040Guardian cdaGuardian =
-        (POCDMT000040Guardian) cdaPateintcontent.get(guardianIdx).getValue();
-
     if (r4Patient.getContact() != null) {
       ContactComponent r4Guardian = CdaFhirUtilities.getGuardianContact(r4Patient.getContact());
-      validateGuardian(r4Guardian, cdaGuardian);
+      if (r4Guardian != null) {
+        int guardianIdx = cntIdx++;
+        POCDMT000040Guardian cdaGuardian =
+            (POCDMT000040Guardian) cdaPateintcontent.get(guardianIdx).getValue();
+        validateGuardian(r4Guardian, cdaGuardian);
+      }
     }
 
     // Language

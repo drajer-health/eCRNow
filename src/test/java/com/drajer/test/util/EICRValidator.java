@@ -19,7 +19,8 @@ public class EICRValidator {
   public static void validate(
       POCDMT000040ClinicalDocument clinicalDoc,
       List<String> validationSectionList,
-      Map<String, List<String>> allResourceFiles) {
+      Map<String, List<String>> allResourceFiles,
+      POCDMT000040ClinicalDocument expectedclinicalDoc) {
 
     for (String sectionName : validationSectionList) {
       POCDMT000040Section section = TestUtils.getSection(clinicalDoc, sectionName);
