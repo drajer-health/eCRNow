@@ -305,7 +305,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   private void validateValidateStatus() throws InterruptedException {
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     getLaunchDetailAndStatus();
     if (state.getValidateEicrStatus() != null) {
       for (ValidateEicrStatus valStatus : state.getValidateEicrStatus()) {
@@ -316,7 +316,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   private void validateSubmitStatus() throws InterruptedException {
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     getLaunchDetailAndStatus();
     if (state.getSubmitEicrStatus() != null) {
       for (SubmitEicrStatus submitStatus : state.getSubmitEicrStatus()) {
