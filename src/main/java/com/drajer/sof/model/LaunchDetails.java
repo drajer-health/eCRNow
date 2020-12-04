@@ -150,6 +150,9 @@ public class LaunchDetails {
   @Column(name = "ehr_authorization_url", nullable = true)
   private String ehrAuthorizationUrl;
 
+  @Column(name = "x_request_id", nullable = true)
+  private String xRequestId;
+
   public Boolean getIsCovid() {
     return isCovid;
   }
@@ -460,5 +463,13 @@ public class LaunchDetails {
 
   public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
     this.ehrAuthorizationUrl = ehrAuthorizationUrl;
+  }
+
+  public String getxRequestId() {
+    return xRequestId;
+  }
+
+  public void setxRequestId(String xRequestId) {
+    this.xRequestId = xRequestId;
   }
 }

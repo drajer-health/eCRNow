@@ -41,6 +41,7 @@ public class RestApiSender {
       RestTemplate restTemplate = new RestTemplate();
 
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
+      headers.add("X-Request-ID", launchDetails.getxRequestId());
 
       if (!access_token.isEmpty() && access_token != null) {
         logger.info("Setting Access_token============>" + access_token);

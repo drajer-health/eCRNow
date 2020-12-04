@@ -165,6 +165,7 @@ public class LaunchController {
       throws IOException {
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
+    String requestIdHeadervalue = request.getHeader("X-Request-ID");
     if (clientDetails != null) {
       JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
       String fhirVersion = "";
@@ -212,6 +213,7 @@ public class LaunchController {
             launchDetails.setEhrClientId(clientDetails.getEhrClientId());
             launchDetails.setEhrClientSecret(clientDetails.getEhrClientSecret());
             launchDetails.setEhrAuthorizationUrl(clientDetails.getEhrAuthorizationUrl());
+            launchDetails.setxRequestId(requestIdHeadervalue);
 
             setStartAndEndDates(clientDetails, launchDetails);
 
@@ -258,6 +260,7 @@ public class LaunchController {
                   ? ""
                   : ":" + request.getServerPort())
               + request.getContextPath();
+      String requestIdHeadervalue = request.getHeader("X-Request-ID");
       Integer state = random.nextInt();
       logger.info("Random State Value==========> {}", state);
       LaunchDetails launchDetails = new LaunchDetails();
@@ -294,6 +297,7 @@ public class LaunchController {
           launchDetails.setClientId(clientDetails.getClientId());
           launchDetails.setScope(clientDetails.getScopes());
           launchDetails.setLaunchState(state);
+          launchDetails.setxRequestId(requestIdHeadervalue);
           String constructedAuthUrl =
               authorization.createAuthUrl(launchDetails, clientDetails, state);
           logger.info("Constructed Authorization URL::::: {}", constructedAuthUrl);

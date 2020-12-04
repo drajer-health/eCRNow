@@ -38,26 +38,28 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     List<Coding> codingList = new ArrayList<Coding>();
     Coding typeCoding = new Coding();
     typeCoding.setSystem("http://loinc.org");
-    typeCoding.setCode("55751-2");
-    typeCoding.setDisplay("Public health case report Document");
+    typeCoding.setCode("88085-6");
+    typeCoding.setDisplay("Reportability response report Document Public health");
     codingList.add(typeCoding);
     typeCode.setCoding(codingList);
-    typeCode.setText("Public health case report Document");
+    typeCode.setText("Reportability response report Document Public health");
     documentReference.setType(typeCode);
 
     // Set Doc Ref Category
-    List<CodeableConcept> codeableConceptList = new ArrayList<CodeableConcept>();
-    CodeableConcept categoryCodeableConcept = new CodeableConcept();
-    List<Coding> categoryCodingList = new ArrayList<Coding>();
-    Coding categoryCoding = new Coding();
-    categoryCoding.setSystem("http://loinc.org");
-    categoryCoding.setCode("88085-6");
-    categoryCoding.setDisplay("Reportability response report Document Public health");
-    categoryCodingList.add(categoryCoding);
-    categoryCodeableConcept.setCoding(categoryCodingList);
-    categoryCodeableConcept.setText("Reportability response report Document Public health");
-    codeableConceptList.add(categoryCodeableConcept);
-    documentReference.setCategory(codeableConceptList);
+    /*
+     * List<CodeableConcept> codeableConceptList = new ArrayList<CodeableConcept>();
+     * CodeableConcept categoryCodeableConcept = new CodeableConcept(); List<Coding>
+     * categoryCodingList = new ArrayList<Coding>(); Coding categoryCoding = new
+     * Coding(); categoryCoding.setSystem("http://loinc.org");
+     * categoryCoding.setCode("88085-6"); categoryCoding.
+     * setDisplay("Reportability response report Document Public health");
+     * categoryCodingList.add(categoryCoding);
+     * categoryCodeableConcept.setCoding(categoryCodingList);
+     * categoryCodeableConcept.
+     * setText("Reportability response report Document Public health");
+     * codeableConceptList.add(categoryCodeableConcept);
+     * documentReference.setCategory(codeableConceptList);
+     */
 
     // Set Subject
     Reference patientReference = new Reference();

@@ -50,18 +50,14 @@ public class RRReceiverController {
   public ResponseEntity<String> rrReceiver(
       @RequestBody String obj,
       @OptionalParam(name = "type") String type,
+      @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
       @OptionalParam(name = "fhirServerURL") String fhirServerURL,
       @OptionalParam(name = "patientId") String patientId,
       @OptionalParam(name = "encounter") String encounterId,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.info("Received Obj:::::" + obj);
-      /*
-       * DataOutputStream outStream = new DataOutputStream( new
-       * BufferedOutputStream(new FileOutputStream("D:\\RRReceiverXML.xml")));
-       * outStream.writeBytes(obj); outStream.close();
-       */
+      logger.debug("Received Obj:::::" + obj);
       // Construct the DocumentReference Resource
       DocumentReference docRef =
           rrReceieverService.constructDocumentReference(obj, type, patientId, encounterId);
@@ -98,7 +94,8 @@ public class RRReceiverController {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
     } catch (Exception e) {
-      logger.error("Error in Processing Eicr XML");
+      logger.error("Error in Processing the request");
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     return new ResponseEntity<>("Success", HttpStatus.OK);
