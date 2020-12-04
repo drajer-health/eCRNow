@@ -136,12 +136,18 @@ public class ITLaunchController extends BaseIntegrationTest {
     Eicr createEicr = getCreateEicrDocument();
     assertNotNull(createEicr.getData());
 
+    POCDMT000040ClinicalDocument expectedEicrDoc = null;
+    if (expectedEICRFile != null && !expectedEICRFile.isBlank()) {
+      String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
+      expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getData());
+    }
+
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr);
+    POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr.getData());
 
-    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles);
+    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles, expectedEicrDoc);
   }
 
   private void getLaunchDetailAndStatus() {
