@@ -137,7 +137,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     assertNotNull(createEicr.getData());
 
     POCDMT000040ClinicalDocument expectedEicrDoc = null;
-    if (expectedEICRFile != null && !expectedEICRFile.isBlank()) {
+    if (expectedEICRFile != null && !expectedEICRFile.isEmpty()) {
       String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
       expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getData());
     }
