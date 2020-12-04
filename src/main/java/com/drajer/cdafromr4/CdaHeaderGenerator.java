@@ -503,7 +503,7 @@ public class CdaHeaderGenerator {
         DateTimeType d = (DateTimeType) p.getDeceased();
         patientDetails.append(
             CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue().toString()));
+                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue()));
       } else {
         patientDetails.append(
             CdaGeneratorUtils.getXmlForNullEffectiveTime(
