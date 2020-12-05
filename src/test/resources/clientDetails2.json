@@ -20,6 +20,6 @@
   "encounterEndThreshold": "2019-08-15T05:34:07.000+0000",
   "isCovid": true,
   "isFullEcr": false,
-  "isLoggingEnabled": false,
+  "debugFhirQueryAndEicr": false,
   "lastUpdated": "2020-07-21T04:30:00.167+0000" 
 }

@@ -102,21 +102,9 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
 
-  @Column(name = "is_logging_enabled", nullable = false)
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isLoggingEnabled;
-
-  @Column(name = "token_introspection_url", nullable = true)
-  private String tokenIntrospectionURL;
-
-  @Column(name = "ehr_client_id", nullable = true)
-  private String ehrClientId;
-
-  @Column(name = "ehr_client_secret", nullable = true)
-  private String ehrClientSecret;
-
-  @Column(name = "ehr_authorization_url", nullable = true)
-  private String ehrAuthorizationUrl;
+  private Boolean debugFhirQueryAndEicr;
 
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -314,44 +302,12 @@ public class ClientDetails {
     this.isFullEcr = isFullEcr;
   }
 
-  public Boolean getIsLoggingEnabled() {
-    return isLoggingEnabled;
+  public Boolean getDebugFhirQueryAndEicr() {
+    return debugFhirQueryAndEicr;
   }
 
-  public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
-    this.isLoggingEnabled = isLoggingEnabled;
-  }
-
-  public String getTokenIntrospectionURL() {
-    return tokenIntrospectionURL;
-  }
-
-  public void setTokenIntrospectionURL(String tokenIntrospectionURL) {
-    this.tokenIntrospectionURL = tokenIntrospectionURL;
-  }
-
-  public String getEhrClientId() {
-    return ehrClientId;
-  }
-
-  public void setEhrClientId(String ehrClientId) {
-    this.ehrClientId = ehrClientId;
-  }
-
-  public String getEhrClientSecret() {
-    return ehrClientSecret;
-  }
-
-  public void setEhrClientSecret(String ehrClientSecret) {
-    this.ehrClientSecret = ehrClientSecret;
-  }
-
-  public String getEhrAuthorizationUrl() {
-    return ehrAuthorizationUrl;
-  }
-
-  public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
-    this.ehrAuthorizationUrl = ehrAuthorizationUrl;
+  public void setDebugFhirQueryAndEicr(Boolean debugFhirQueryAndEicr) {
+    this.debugFhirQueryAndEicr = debugFhirQueryAndEicr;
   }
 
   public Date getLastUpdated() {
@@ -387,7 +343,7 @@ public class ClientDetails {
     Log.info(" Encounter End Threshold = " + encounterEndThreshold);
     Log.info(" Is Covid = " + isCovid);
     Log.info(" Is Full ECR = " + isFullEcr);
-    Log.info(" Is Logging Enabled " + isLoggingEnabled);
+    Log.info(" Debug Fhir Query And Eicr " + debugFhirQueryAndEicr);
 
     logger.info(" **** End Printing Client Details **** ");
   }

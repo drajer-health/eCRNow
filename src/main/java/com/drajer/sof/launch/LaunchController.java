@@ -167,18 +167,34 @@ public class LaunchController {
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
     String requestIdHeadervalue = request.getHeader("X-Request-ID");
     if (clientDetails != null) {
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+
       String fhirVersion = "";
+      String tokenEndpoint = "";
       JSONObject object = authorization.getMetadata(systemLaunch.getFhirServerURL() + "/metadata");
       if (object != null) {
         logger.info("Reading Metadata information");
+        JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
+        JSONObject sec = security.getJSONObject("security");
+        JSONObject extension = (JSONObject) sec.getJSONArray("extension").get(0);
+        JSONArray innerExtension = extension.getJSONArray("extension");
         if (object.getString(FHIR_VERSION).equals("1.0.2")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
         if (object.getString(FHIR_VERSION).equals("4.0.0")) {
           fhirVersion = FhirVersionEnum.R4.toString();
         }
+
+        for (int i = 0; i < innerExtension.length(); i++) {
+          JSONObject urlExtension = innerExtension.getJSONObject(i);
+          if (urlExtension.getString("url").equals("token")) {
+            logger.info("Token URL:::::" + urlExtension.getString(VALUE_URI));
+            tokenEndpoint = urlExtension.getString(VALUE_URI);
+            clientDetails.setTokenURL(tokenEndpoint);
+          }
+        }
       }
+
+      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
@@ -207,15 +223,13 @@ public class LaunchController {
             launchDetails.setTokenUrl(clientDetails.getTokenURL());
             launchDetails.setVersionNumber("1");
             launchDetails.setIsSystem(clientDetails.getIsSystem());
-            launchDetails.setIsLoggingEnabled(clientDetails.getIsLoggingEnabled());
+            launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
-            launchDetails.setTokenIntrospectionURL(clientDetails.getTokenIntrospectionURL());
-            launchDetails.setEhrClientId(clientDetails.getEhrClientId());
-            launchDetails.setEhrClientSecret(clientDetails.getEhrClientSecret());
-            launchDetails.setEhrAuthorizationUrl(clientDetails.getEhrAuthorizationUrl());
             launchDetails.setxRequestId(requestIdHeadervalue);
 
             setStartAndEndDates(clientDetails, launchDetails);
+
+            clientDetailsService.saveOrUpdate(clientDetails);
 
             saveLaunchDetails(launchDetails);
 
@@ -408,10 +422,7 @@ public class LaunchController {
     currentStateDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
     currentStateDetails.setRestAPIURL(clientDetails.getRestAPIURL());
     currentStateDetails.setIsCovid(clientDetails.getIsCovid());
-    currentStateDetails.setTokenIntrospectionURL(clientDetails.getTokenIntrospectionURL());
-    currentStateDetails.setEhrClientId(clientDetails.getEhrClientId());
-    currentStateDetails.setEhrClientSecret(clientDetails.getEhrClientSecret());
-    currentStateDetails.setEhrAuthorizationUrl(clientDetails.getEhrAuthorizationUrl());
+    currentStateDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
 
     setStartAndEndDates(clientDetails, currentStateDetails);
 

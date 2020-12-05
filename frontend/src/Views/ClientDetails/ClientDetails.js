@@ -27,7 +27,7 @@ class ClientDetails extends Component {
             this.state.clientId = this.selectedClientDetails.clientId;
             this.state.clientSecret = this.selectedClientDetails.clientSecret;
             this.state.fhirServerBaseURL = this.selectedClientDetails.fhirServerBaseURL;
-            this.state.tokenEndpoint = this.selectedClientDetails.tokenURL;
+            // this.state.tokenEndpoint = this.selectedClientDetails.tokenURL;
             this.state.scopes = this.selectedClientDetails.scopes;
             if (this.selectedClientDetails.isDirect) {
                 this.state.directType = 'direct';
@@ -128,7 +128,7 @@ class ClientDetails extends Component {
             clientId: this.state.clientId,
             clientSecret: this.state.clientSecret ? this.state.clientSecret : null,
             fhirServerBaseURL: this.state.fhirServerBaseURL,
-            tokenURL: this.state.tokenEndpoint ? this.state.tokenEndpoint : null,
+            // tokenURL: this.state.tokenEndpoint ? this.state.tokenEndpoint : null,
             scopes: this.state.scopes,
             isDirect: this.state.directType === "direct" ? true : false,
             isXdr: this.state.directType === "xdr" ? true : false,
@@ -146,11 +146,11 @@ class ClientDetails extends Component {
             encounterEndThreshold: this.state.endThreshold,
             isCovid: this.state.reportType === "covid19" ? true : false,
             isFullEcr: this.state.reportType === "fullecr" ? true : false,
-            isLoggingEnabled: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false,
-            tokenIntrospectionURL: this.state.tokenIntrospectionURL ? this.state.tokenIntrospectionURL : null,
-            ehrClientId: this.state.ehrClientId ? this.state.ehrClientId : null,
-            ehrClientSecret: this.state.ehrClientSecret ? this.state.ehrClientSecret : null,
-            ehrAuthorizationUrl: this.state.ehrAuthorizationUrl ? this.state.ehrAuthorizationUrl : null
+            debugFhirQueryAndEicr: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false
+            // tokenIntrospectionURL: this.state.tokenIntrospectionURL ? this.state.tokenIntrospectionURL : null,
+            // ehrClientId: this.state.ehrClientId ? this.state.ehrClientId : null,
+            // ehrClientSecret: this.state.ehrClientSecret ? this.state.ehrClientSecret : null,
+            // ehrAuthorizationUrl: this.state.ehrAuthorizationUrl ? this.state.ehrAuthorizationUrl : null
         };
         if (!this.addNew && this.selectedClientDetails) {
             clientDetails['id'] = this.selectedClientDetails.id;
@@ -202,7 +202,7 @@ class ClientDetails extends Component {
                         clientId: "",
                         clientSecret: "",
                         fhirServerBaseURL: "",
-                        tokenEndpoint: "",
+                        // tokenEndpoint: "",
                         scopes: "",
                         directType: "direct",
                         directHost: "",
@@ -358,7 +358,7 @@ class ClientDetails extends Component {
                                                 </Col>
                                             </Form.Group>
 
-                                            {this.state.launchType === 'systemLaunch' ? (
+                                            {/* {this.state.launchType === 'systemLaunch' ? (
                                                 <Form.Group as={Row} controlId="formHorizontalTokenURL">
                                                     <Form.Label column sm={2}>
                                                         Token Endpoint:
@@ -371,7 +371,7 @@ class ClientDetails extends Component {
                                                         </Form.Control.Feedback>
                                                     </Col>
                                                 </Form.Group>
-                                            ) : ''}
+                                            ) : ''} */}
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
@@ -513,7 +513,7 @@ class ClientDetails extends Component {
                                                             </Form.Control.Feedback>
                                                         </Col>
                                                     </Form.Group>
-                                                    <Form.Group as={Row} controlId="ehrClientId">
+                                                    {/* <Form.Group as={Row} controlId="ehrClientId">
                                                         <Form.Label column sm={2}>
                                                             Client Id:
                                                         </Form.Label>
@@ -545,7 +545,7 @@ class ClientDetails extends Component {
                                                                 Please provide Authorization URL.
                                                             </Form.Control.Feedback>
                                                         </Col>
-                                                    </Form.Group>
+                                                    </Form.Group> */}
                                                 </div>
                                             ) : ''}
                                         </Card.Body>
@@ -615,9 +615,9 @@ class ClientDetails extends Component {
                                                     </Row>
                                                 </Col>
                                             </Form.Group>
-                                            <Form.Group as={Row} controlId="enableLogging">
+                                            <Form.Group as={Row} controlId="debugFhirQueryAndEicr">
                                                 <Form.Label column sm={2}>
-                                                    Enable Logging
+                                                Debug Fhir Query And Eicr
                                                 </Form.Label>
                                                 <Col sm={9}>
                                                     <Form.Check
@@ -626,12 +626,12 @@ class ClientDetails extends Component {
                                                         onChange={e => this.handleToggleButton(e)}
                                                         label=""
                                                         className="switchBtn"
-                                                        name="enableLogging"
+                                                        name="debugFhirQueryAndEicr"
                                                         checked={this.state.isChecked}
                                                     />
                                                 </Col>
                                             </Form.Group>
-                                            <Form.Group as={Row} controlId="tokenIntrospectionURL">
+                                            {/* <Form.Group as={Row} controlId="tokenIntrospectionURL">
                                                 <Form.Label column sm={2}>
                                                     Token Introspection URL:
                                                 </Form.Label>
@@ -641,7 +641,7 @@ class ClientDetails extends Component {
                                                         Please provide a Token Introspection URL.
                                                     </Form.Control.Feedback>
                                                 </Col>
-                                            </Form.Group>
+                                            </Form.Group> */}
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>

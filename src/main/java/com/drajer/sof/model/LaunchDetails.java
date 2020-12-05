@@ -134,21 +134,9 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
-  @Column(name = "is_logging_enabled", nullable = false)
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isLoggingEnabled = false;
-
-  @Column(name = "token_introspection_url", nullable = true)
-  private String tokenIntrospectionURL;
-
-  @Column(name = "ehr_client_id", nullable = true)
-  private String ehrClientId;
-
-  @Column(name = "ehr_client_secret", nullable = true)
-  private String ehrClientSecret;
-
-  @Column(name = "ehr_authorization_url", nullable = true)
-  private String ehrAuthorizationUrl;
+  private Boolean debugFhirQueryAndEicr = false;
 
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
@@ -425,44 +413,12 @@ public class LaunchDetails {
     this.imapPort = imapPort;
   }
 
-  public Boolean getIsLoggingEnabled() {
-    return isLoggingEnabled;
+  public Boolean getDebugFhirQueryAndEicr() {
+    return debugFhirQueryAndEicr;
   }
 
-  public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
-    this.isLoggingEnabled = isLoggingEnabled;
-  }
-
-  public String getTokenIntrospectionURL() {
-    return tokenIntrospectionURL;
-  }
-
-  public void setTokenIntrospectionURL(String tokenIntrospectionURL) {
-    this.tokenIntrospectionURL = tokenIntrospectionURL;
-  }
-
-  public String getEhrClientId() {
-    return ehrClientId;
-  }
-
-  public void setEhrClientId(String ehrClientId) {
-    this.ehrClientId = ehrClientId;
-  }
-
-  public String getEhrClientSecret() {
-    return ehrClientSecret;
-  }
-
-  public void setEhrClientSecret(String ehrClientSecret) {
-    this.ehrClientSecret = ehrClientSecret;
-  }
-
-  public String getEhrAuthorizationUrl() {
-    return ehrAuthorizationUrl;
-  }
-
-  public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
-    this.ehrAuthorizationUrl = ehrAuthorizationUrl;
+  public void setDebugFhirQueryAndEicr(Boolean debugFhirQueryAndEicr) {
+    this.debugFhirQueryAndEicr = debugFhirQueryAndEicr;
   }
 
   public String getxRequestId() {
