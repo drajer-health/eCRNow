@@ -5,15 +5,22 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AESEncryption {
 
   private static SecretKeySpec secretKey;
   private static byte[] key;
 
-  private static final String secret = "$ecretKey!!";
+  @Autowired private Environment environment;
+
+  private static String secret;
 
   public static void setKey(String myKey) {
     MessageDigest sha = null;
@@ -52,5 +59,10 @@ public class AESEncryption {
       System.out.println("Error while decrypting: " + e.toString());
     }
     return null;
+  }
+
+  @PostConstruct
+  public void getSecretKey() {
+    secret = environment.getRequiredProperty("security.key");
   }
 }
