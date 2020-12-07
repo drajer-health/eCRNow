@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(
@@ -22,6 +26,8 @@ import org.hibernate.annotations.Type;
 @DynamicUpdate
 // @TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
 public class LaunchDetails {
+
+  @Transient private final Logger logger = LoggerFactory.getLogger(LaunchDetails.class);
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -206,11 +212,11 @@ public class LaunchDetails {
   }
 
   public String getClientSecret() {
-    return clientSecret;
+    return AESEncryption.decrypt(clientSecret);
   }
 
   public void setClientSecret(String clientSecret) {
-    this.clientSecret = clientSecret;
+    this.clientSecret = AESEncryption.encrypt(clientSecret);
   }
 
   public String getEhrServerURL() {
@@ -342,11 +348,11 @@ public class LaunchDetails {
   }
 
   public String getDirectPwd() {
-    return directPwd;
+    return AESEncryption.decrypt(directPwd);
   }
 
   public void setDirectPwd(String directPwd) {
-    this.directPwd = directPwd;
+    this.directPwd = AESEncryption.encrypt(directPwd);
   }
 
   public String getRestAPIURL() {

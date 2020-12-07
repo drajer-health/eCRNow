@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -143,11 +144,11 @@ public class ClientDetails {
   }
 
   public String getClientSecret() {
-    return clientSecret;
+    return AESEncryption.decrypt(clientSecret);
   }
 
   public void setClientSecret(String clientSecret) {
-    this.clientSecret = clientSecret;
+    this.clientSecret = AESEncryption.encrypt(clientSecret);
   }
 
   public String getFhirServerBaseURL() {
@@ -223,11 +224,11 @@ public class ClientDetails {
   }
 
   public String getDirectPwd() {
-    return directPwd;
+    return AESEncryption.decrypt(directPwd);
   }
 
   public void setDirectPwd(String directPwd) {
-    this.directPwd = directPwd;
+    this.directPwd = AESEncryption.encrypt(directPwd);
   }
 
   public String getSmtpPort() {
