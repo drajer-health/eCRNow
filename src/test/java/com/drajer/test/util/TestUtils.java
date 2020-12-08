@@ -178,7 +178,7 @@ public class TestUtils {
     return obj;
   }
 
-  public static String convertToString(Date date, String pattern) {
+  public static String dateToString(Date date, String pattern) {
 
     if (date != null) {
       SimpleDateFormat formatter = new SimpleDateFormat(pattern);

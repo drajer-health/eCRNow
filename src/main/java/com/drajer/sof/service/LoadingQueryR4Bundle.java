@@ -49,7 +49,7 @@ public class LoadingQueryR4Bundle {
 
     // Get Pregnancy Observations
     try {
-      logger.info("Get Preganancy Observation Data");
+      logger.info("Get Pregnancy Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
@@ -63,7 +63,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Preganancy Observation Data");
+      logger.error("Error in getting Pregnancy Observation Data - {}, ", e, e);
     }
 
     // Get Travel Observations
@@ -82,7 +82,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Travel Observation Data");
+      logger.error("Error in getting Travel Observation Data - {}, ", e, e);
     }
 
     // Get Social History Observations (Occupation)
@@ -137,7 +137,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(medStatementEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the MedicationStatement Data");
+      logger.error("Error in getting the MedicationStatement Data - {}, ", e, e);
     }
 
     // Get Immunizations for Patients and laboratory category (Write a method).
@@ -160,7 +160,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(immunizationEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the Immunization Data");
+      logger.error("Error in getting the Immunization Data - {}, ", e, e);
     }
 
     // Get Diagnostic Reports for Patients (Write a method).
@@ -183,7 +183,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(diagnosticReportEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the DiagnosticReport Data");
+      logger.error("Error in getting the DiagnosticReport Data - {}, ", e, e);
     }
 
     // Setting bundle to FHIR Data

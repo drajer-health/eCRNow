@@ -36,7 +36,7 @@ public class AssertCdaElement {
 
   public static void assertTelecomPhone(TEL cdaTelecom, String value, String use) {
 
-    assertTrue(value.startsWith("tel:"));
+    assertTrue(cdaTelecom.getValue().startsWith("tel:"));
     if (use != null && !use.isEmpty()) {
       String useCode = ValueSetMapping.telecomUseCodes.get(use.toUpperCase());
       assertEquals(1, cdaTelecom.getUse().size());
@@ -144,20 +144,17 @@ public class AssertCdaElement {
 
   public static void assertCodeCD(
       CD codeObj, String code, String codeSystem, String codeSystemName, String displayName) {
-    assertEquals(codeObj.getCode(), code);
-    assertEquals(codeObj.getCodeSystem(), codeSystem);
-    assertEquals(codeObj.getCodeSystemName(), codeSystemName);
-    assertEquals(codeObj.getDisplayName(), displayName);
+    assertEquals(code, codeObj.getCode());
+    assertEquals(codeSystem, codeObj.getCodeSystem());
+    assertEquals(codeSystemName, codeObj.getCodeSystemName());
+    assertEquals(displayName, codeObj.getDisplayName());
   }
 
-  public static void assertStatusCode(CS codeObj, String code) {
-    assertEquals(codeObj.getCode(), code);
-  }
-
-  public static void assertHistoryEntryValue(
-      CD cd, String code, String codeSystem, String codeSystemName) {
-    assertEquals(cd.getCode(), code);
-    assertEquals(cd.getCodeSystem(), codeSystem);
-    assertEquals(cd.getCodeSystemName(), codeSystemName);
+  public static void assertCodeCS(
+      CS codeObj, String code, String codeSystem, String codeSystemName, String displayName) {
+    assertEquals(code, codeObj.getCode());
+    assertEquals(codeSystem, codeObj.getCodeSystem());
+    assertEquals(codeSystemName, codeObj.getCodeSystemName());
+    assertEquals(displayName, codeObj.getDisplayName());
   }
 }

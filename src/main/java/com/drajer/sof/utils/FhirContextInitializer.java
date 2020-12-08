@@ -86,7 +86,7 @@ public class FhirContextInitializer {
       // logger.info(resourceName + ":::::::::::::::::" +
       // context.newJsonParser().encodeResourceToString(resource));
     } catch (Exception e) {
-      logger.error("Error in getting " + resourceName + " resource by Id: " + resourceId);
+      logger.error("Error in getting " + resourceName + " resource by Id: " + resourceId, e);
     }
     return resource;
   }
@@ -190,7 +190,8 @@ public class FhirContextInitializer {
           "Error in getting "
               + resourceName
               + " resource by Patient Id: "
-              + authDetails.getLaunchPatientId());
+              + authDetails.getLaunchPatientId(),
+          e);
     }
 
     return bundleResponse;
