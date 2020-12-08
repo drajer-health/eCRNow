@@ -126,7 +126,7 @@ public class FhirContextInitializer {
     return bundleResponse;
   }
 
-  protected IBaseBundle getObservationByPatientIdAndCode(
+  protected IBaseBundle getResourceByPatientIdAndCode(
       LaunchDetails authDetails,
       IGenericClient genericClient,
       FhirContext context,
