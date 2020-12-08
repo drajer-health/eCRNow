@@ -10,7 +10,6 @@ import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.util.EICRValidator;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
@@ -19,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -26,7 +26,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -47,15 +46,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
-public class ITLaunchController extends BaseIntegrationTest {
+public class ITEicrHeaderSection extends BaseIntegrationTest {
 
   private String testCaseId;
 
-  public ITLaunchController(String testCaseId) {
+  public ITEicrHeaderSection(String testCaseId) {
     this.testCaseId = testCaseId;
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(ITLaunchController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ITEicrHeaderSection.class);
 
   private final String systemLaunchURI = "/api/systemLaunch";
 
@@ -74,6 +73,7 @@ public class ITLaunchController extends BaseIntegrationTest {
 
   List<String> validationSectionList;
   Map<String, List<String>> allResourceFiles;
+  List<Map<String, String>> fieldsToValidate;
 
   WireMockHelper stubHelper;
 
@@ -87,6 +87,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     validationSectionList =
         Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
+    fieldsToValidate = testDataGenerator.getValidate(testCaseId);
 
     // Data Setup
     createClientDetails(clientDetailsFile);
@@ -114,9 +115,9 @@ public class ITLaunchController extends BaseIntegrationTest {
     }
   }
 
-  @Parameters(name = "{index}: {0}")
+  @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("TestSystemLaunch.yaml");
+    testDataGenerator = new TestDataGenerator("HeaderSection.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
     Object[][] data = new Object[testCaseSet.size()][1];
     int count = 0;
@@ -129,7 +130,7 @@ public class ITLaunchController extends BaseIntegrationTest {
   }
 
   @Test
-  public void testSystemLaunch() throws Exception {
+  public void testEicrHeaderSection() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -147,20 +148,22 @@ public class ITLaunchController extends BaseIntegrationTest {
     Eicr createEicr = getCreateEicrDocument();
     assertNotNull(createEicr.getData());
 
-    POCDMT000040ClinicalDocument expectedEicrDoc = null;
+    /*POCDMT000040ClinicalDocument expectedEicrDoc = null;
     if (expectedEICRFile != null && !expectedEICRFile.isBlank()) {
       String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
       expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getData());
-    }
+
+    }*/
 
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr.getData());
+    // POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr.getData());
     Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getData());
     validateXml(eicrXmlDoc);
 
-    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles, expectedEicrDoc);
+    // EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles,
+    // expectedEicrDoc);
   }
 
   private void getLaunchDetailAndStatus() {
@@ -203,26 +206,63 @@ public class ITLaunchController extends BaseIntegrationTest {
   }
 
   private void validateXml(Document eicrXml) throws XPathExpressionException {
-    XPath xPath = XPathFactory.newInstance().newXPath();
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    
+   /* String expression = "/ClinicalDocument/recordTarget/patientRole/patient";	        
+    Node node = (Node) xPath.compile(expression).evaluate(
+  		  eicrXml, XPathConstants.NODE);
+    
+    //Node nNode = nodeList.item(0);
+    if (node.getNodeType() == Node.ELEMENT_NODE) {
+    	Element eElement = (Element) node;
+    	Element element1 = (Element) eElement
+    	          .getElementsByTagName("sdtc:deceasedInd");
+    	String streetAddress = element1.getAttribute("value");
+    	
+    	logger.info(streetAddress);
+    } */   
+    
+    if (fieldsToValidate != null) {
 
-    String expression = "/ClinicalDocument/recordTarget/patientRole/addr";
-    NodeList nodeList =
-        (NodeList) xPath.compile(expression).evaluate(eicrXml, XPathConstants.NODESET);
+      for (Map<String, String> field : fieldsToValidate) {
 
-    Node nNode = nodeList.item(0);
-    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-      Element eElement = (Element) nNode;
+        try {
 
-      String streetAddress =
-          eElement.getElementsByTagName("streetAddressLine").item(0).getTextContent();
-      String city = eElement.getElementsByTagName("city").item(0).getTextContent();
-      String state = eElement.getElementsByTagName("state").item(0).getTextContent();
-      String postalCode = eElement.getElementsByTagName("postalCode").item(0).getTextContent();
-      String country = eElement.getElementsByTagName("country").item(0).getTextContent();
+          String xPathExp = field.get("xPath");
+          if (field.containsKey("count")) {
+            try {
+              NodeList nodeList =
+                  (NodeList) xPath.compile(xPathExp).evaluate(eicrXml, XPathConstants.NODESET);
+              assertEquals(Integer.parseInt(field.get("count")), nodeList.getLength());
+            } catch (XPathExpressionException e) {
+              fail(e.getMessage() + ": Failed evaluate field " + xPathExp);
+            }
+          } else {
+
+            for (Entry<String, String> set : field.entrySet()) {
+
+              if (!set.getKey().equalsIgnoreCase("xPath")) {
+                String xPathFullExp = xPathExp + "/" + set.getKey();                
+                try {
+                  String fieldValue =
+                      (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);
+                  assertEquals(set.getValue(), fieldValue);
+                } catch (XPathExpressionException e) {
+                  fail(e.getMessage() + ": Failed evaluate field " + xPathExp);
+                }
+              }
+            }
+          }
+
+        } catch (Exception e) {
+          fail(e.getMessage() + ": This exception is not expected fix the test");
+        }
+      }
+
+    } else {
+
+      fail("validate field is not configured in the test");
     }
-
-    expression = "/ClinicalDocument/recordTarget/patientRole/addr[1]/streetAddressLine";
-    String streetAddress =
-        (String) xPath.compile(expression).evaluate(eicrXml, XPathConstants.STRING);
-  }
+}
+  
 }
