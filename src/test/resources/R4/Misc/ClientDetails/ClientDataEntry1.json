@@ -20,7 +20,6 @@
   "encounterEndThreshold": "30",
   "isCovid": true,
   "isFullEcr": false,
-  "isLoggingEnabled": false,
-  "ehrAuthorizationUrl": "http://localhost:port/ehrauthurl",
-  "lastUpdated": "2020-07-21T04:30:00.167+0000"  
+  "debugFhirQueryAndEicr": false,
+  "lastUpdated": "2020-07-21T04:30:00.167+0000" 
 }

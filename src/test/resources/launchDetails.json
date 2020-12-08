@@ -28,5 +28,5 @@
   "launchState": 0,
   "redirectURI": null,
   "authorizationCode": null,
-  "isLoggingEnabled":false
+  "debugFhirQueryAndEicr":false
 }

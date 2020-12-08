@@ -146,7 +146,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     validateActionStatus();
   }
 
-  @Test
+  // @Test
   public void testSubmitEicrFromRestApi() {
 
     // mock RESTAPI

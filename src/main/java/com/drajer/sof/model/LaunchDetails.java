@@ -1,5 +1,6 @@
 package com.drajer.sof.model;
 
+import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(
@@ -22,6 +26,8 @@ import org.hibernate.annotations.Type;
 @DynamicUpdate
 // @TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
 public class LaunchDetails {
+
+  @Transient private final Logger logger = LoggerFactory.getLogger(LaunchDetails.class);
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -134,21 +140,12 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
-  @Column(name = "is_logging_enabled", nullable = false)
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isLoggingEnabled = false;
+  private Boolean debugFhirQueryAndEicr = false;
 
-  @Column(name = "token_introspection_url", nullable = true)
-  private String tokenIntrospectionURL;
-
-  @Column(name = "ehr_client_id", nullable = true)
-  private String ehrClientId;
-
-  @Column(name = "ehr_client_secret", nullable = true)
-  private String ehrClientSecret;
-
-  @Column(name = "ehr_authorization_url", nullable = true)
-  private String ehrAuthorizationUrl;
+  @Column(name = "x_request_id", nullable = true)
+  private String xRequestId;
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -215,11 +212,11 @@ public class LaunchDetails {
   }
 
   public String getClientSecret() {
-    return clientSecret;
+    return AESEncryption.decrypt(clientSecret);
   }
 
   public void setClientSecret(String clientSecret) {
-    this.clientSecret = clientSecret;
+    this.clientSecret = AESEncryption.encrypt(clientSecret);
   }
 
   public String getEhrServerURL() {
@@ -351,11 +348,11 @@ public class LaunchDetails {
   }
 
   public String getDirectPwd() {
-    return directPwd;
+    return AESEncryption.decrypt(directPwd);
   }
 
   public void setDirectPwd(String directPwd) {
-    this.directPwd = directPwd;
+    this.directPwd = AESEncryption.encrypt(directPwd);
   }
 
   public String getRestAPIURL() {
@@ -422,43 +419,19 @@ public class LaunchDetails {
     this.imapPort = imapPort;
   }
 
-  public Boolean getIsLoggingEnabled() {
-    return isLoggingEnabled;
+  public Boolean getDebugFhirQueryAndEicr() {
+    return debugFhirQueryAndEicr;
   }
 
-  public void setIsLoggingEnabled(Boolean isLoggingEnabled) {
-    this.isLoggingEnabled = isLoggingEnabled;
+  public void setDebugFhirQueryAndEicr(Boolean debugFhirQueryAndEicr) {
+    this.debugFhirQueryAndEicr = debugFhirQueryAndEicr;
   }
 
-  public String getTokenIntrospectionURL() {
-    return tokenIntrospectionURL;
+  public String getxRequestId() {
+    return xRequestId;
   }
 
-  public void setTokenIntrospectionURL(String tokenIntrospectionURL) {
-    this.tokenIntrospectionURL = tokenIntrospectionURL;
-  }
-
-  public String getEhrClientId() {
-    return ehrClientId;
-  }
-
-  public void setEhrClientId(String ehrClientId) {
-    this.ehrClientId = ehrClientId;
-  }
-
-  public String getEhrClientSecret() {
-    return ehrClientSecret;
-  }
-
-  public void setEhrClientSecret(String ehrClientSecret) {
-    this.ehrClientSecret = ehrClientSecret;
-  }
-
-  public String getEhrAuthorizationUrl() {
-    return ehrAuthorizationUrl;
-  }
-
-  public void setEhrAuthorizationUrl(String ehrAuthorizationUrl) {
-    this.ehrAuthorizationUrl = ehrAuthorizationUrl;
+  public void setxRequestId(String xRequestId) {
+    this.xRequestId = xRequestId;
   }
 }
