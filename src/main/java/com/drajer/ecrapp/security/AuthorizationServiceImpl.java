@@ -25,12 +25,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
     HttpEntity<String> request = new HttpEntity<String>(requestBody.toString(), headers);
 
-    logger.info(
-        "Sending Authorization request to Endpoint::::: {}",
-        launchDetails.getEhrAuthorizationUrl());
+    logger.info("Sending Authorization request to Endpoint::::: {}", launchDetails.getRestAPIURL());
     ResponseEntity<String> response =
         restTemplate.exchange(
-            launchDetails.getEhrAuthorizationUrl(), HttpMethod.POST, request, String.class);
+            launchDetails.getRestAPIURL(), HttpMethod.POST, request, String.class);
 
     JSONObject responseObj = new JSONObject(response.getBody());
     access_token = responseObj.getString("access_token");
