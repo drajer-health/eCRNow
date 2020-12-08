@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContextComponent;
+import org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus;
 import org.hl7.fhir.r4.model.Enumerations.DocumentReferenceStatus;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
@@ -32,6 +33,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
 
     // Set Doc Ref Status
     documentReference.setStatus(DocumentReferenceStatus.CURRENT);
+    documentReference.setDocStatus(ReferredDocumentStatus.FINAL);
 
     // Set Doc Ref Type
     CodeableConcept typeCode = new CodeableConcept();
