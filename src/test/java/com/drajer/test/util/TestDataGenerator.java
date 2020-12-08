@@ -83,4 +83,8 @@ public class TestDataGenerator {
     }
     return resourceMap;
   }
+
+  public List<Map<String, String>> getValidate(String testCaseId) {
+    return getTestDataVO().getTestCase().get(testCaseId).getvalidate();
+  }
 }

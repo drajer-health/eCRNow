@@ -1,0 +1,83 @@
+---
+testName: "TestSystemLaunch"
+testCase:
+  eCR-patient-name-addr-telecom:
+    fileData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      ValidationSections: "HEADER"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      Practitioner:
+      - params: "11817978"
+        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/addr"
+      count: 1
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/addr[1]"
+      streetAddressLine: "2801 ROCK CREEK PKWY"
+      city: "KANSAS CITY"
+      state: "MO"
+      postalCode: "64117"
+      country: "US"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/name"
+      count: 1
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/name[1]"
+      given: "COVIDONE"
+      family: "FHIRTest"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/telecom"
+      count: 1
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/telecom[1]"
+      '@value': "tel:(212)555-5554"
+      '@use': "MC"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/birthTime"
+      '@value': "19700102"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/deceasedInd"
+      '@value': "false"
+  eCR-patient-deceased:
+    fileData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      ValidationSections: "HEADER"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Pat_Deceased.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      Practitioner:
+      - params: "11817978"
+        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/deceasedTime"
+      '@value': "2020-10-13"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/deceasedInd"
+      '@value': "true"
