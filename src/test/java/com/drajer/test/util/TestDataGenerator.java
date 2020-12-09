@@ -21,7 +21,7 @@ public class TestDataGenerator {
     this.testYamlFileName = testYamlFileName;
   }
 
-  //ClassLoader classLoader = this.getClass().getClassLoader();
+  // ClassLoader classLoader = this.getClass().getClassLoader();
 
   static ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
 

@@ -41,8 +41,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
@@ -83,7 +81,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     tx = session.beginTransaction();
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
-    
+
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
     fieldsToValidate = testDataGenerator.getValidate(testCaseId);
 
@@ -151,7 +149,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getData());
     validateXml(eicrXmlDoc);
-
   }
 
   private void getLaunchDetailAndStatus() {
@@ -195,7 +192,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private void validateXml(Document eicrXml) throws XPathExpressionException {
     final XPath xPath = XPathFactory.newInstance().newXPath();
-  
+
     if (fieldsToValidate != null) {
 
       for (Map<String, String> field : fieldsToValidate) {
@@ -216,7 +213,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
             for (Entry<String, String> set : field.entrySet()) {
 
               if (!set.getKey().equalsIgnoreCase("xPath")) {
-                String xPathFullExp = xPathExp + "/" + set.getKey();                
+                String xPathFullExp = xPathExp + "/" + set.getKey();
                 try {
                   String fieldValue =
                       (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);
@@ -237,6 +234,5 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
       fail("validate field is not configured in the test");
     }
-}
-  
+  }
 }
