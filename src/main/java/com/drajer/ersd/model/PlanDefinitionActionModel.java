@@ -1,12 +1,11 @@
 package com.drajer.ersd.model;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Entity
+// @Entity - No need to persist.
 @Table(name = "plandefinitionactions")
 @DynamicUpdate
 public class PlanDefinitionActionModel {

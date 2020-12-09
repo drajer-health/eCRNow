@@ -56,38 +56,30 @@ public class CdaEicrGeneratorFromR4 {
             data.setOrganization((Organization) ent.getResource());
           } else if (ent.getResource() instanceof Condition) {
             logger.info(" Bundle contains Condition ");
+
+            // Problem List
+
+            // Encounter Diagnosis List
+
+            // Pregnancy Code
             data.getConditions().add((Condition) ent.getResource());
+
+            // Compare Codes for Pregnancy Condition  and sort it out.
+
           } else if (ent.getResource() instanceof Observation) {
 
             Observation obs = (Observation) ent.getResource();
-            /*	if(obs.getCategory() != null &&
-               obs.getCategory().getCodingFirstRep() != null &&
-               obs.getCategory().getCodingFirstRep().getCode() != null &&
-               obs.getCategory().getCodingFirstRep().getCode().contentEquals(CdaGeneratorConstants.FHIR_LAB_RESULT_CATEGORY)) {
 
-            	logger.info(" Bundle contains Lab Results ");
-            	data.getLabResults().add((Observation)ent.getResource());
-            }
-            else if(obs.getCategory() != null &&
-               obs.getCategory().getCodingFirstRep() != null &&
-               obs.getCategory().getCodingFirstRep().getCode() != null ) {
-            	logger.info( "Code for Observation Category =  " + obs.getCategory().getCodingFirstRep().getCode());
-
-            }*/
+            // Split into Lab Results.
 
             // Compare Code for Travel Obs
 
-            // Compare Codes for Pregnancy Obs and sort it out.
+            // Compare Occupational data.
 
           } else if (ent.getResource() instanceof DiagnosticReport) {
             logger.info(" Bundle contains Diagnostic Report ");
             data.getDiagReports().add((DiagnosticReport) ent.getResource());
-          }
-          /*	else if(ent.getResource() instanceof DiagnosticOrder) {
-          	logger.info(" Bundle contains Diagnostic Order ");
-          	data.getDiagOrders().add((DiagnosticOrder)ent.getResource());
-          }*/
-          else if (ent.getResource() instanceof MedicationStatement) {
+          } else if (ent.getResource() instanceof MedicationStatement) {
             logger.info(" Bundle contains MedicationStatement ");
             data.getMedications().add((MedicationStatement) ent.getResource());
           } else if (ent.getResource() instanceof Immunization) {

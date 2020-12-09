@@ -169,7 +169,7 @@ public class EcaUtils {
       if (eICR != null) {
         // Create the object for persistence.
         ecr = new Eicr();
-        ecr.setData(eICR);
+        ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
       }
     } else {

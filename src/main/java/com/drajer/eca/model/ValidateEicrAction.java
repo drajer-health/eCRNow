@@ -89,7 +89,7 @@ public class ValidateEicrAction extends AbstractAction {
 
       if (id != 0) {
         logger.info(" Found eICR with Id {} to validate ", id);
-        String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
+        String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getEicrData();
 
         // Validate incoming XML
         if (StringUtils.isNotEmpty(eICR)) {

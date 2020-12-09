@@ -133,6 +133,8 @@ public class CdaGeneratorConstants {
   public static final String FHIR_DIAG_REPORT_CATEGORY_URL =
       "http://hl7.org/fhir/ValueSet/diagnostic-service-sections";
   public static final String FHIR_CVX_URL = "http://hl7.org/fhir/sid/cvx";
+  public static final String FHIR_RXNORM_URL = "http://www.nlm.nih.gov/research/umls/rxnorm";
+  public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
@@ -903,7 +905,7 @@ public class CdaGeneratorConstants {
     if (!StringUtils.isEmpty(val)) {
 
       if (val.contentEquals("home")) {
-        return "H";
+        return "HP";
       } else if (val.contentEquals("work")) {
         return "WP";
       } else if (val.contentEquals("mobile")) {

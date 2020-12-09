@@ -2,6 +2,7 @@ package com.drajer.ecrapp.util;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import ca.uhn.fhir.parser.IParser;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.ValueSetSingleton;
@@ -11,8 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
@@ -20,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -32,10 +37,18 @@ import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ApplicationUtils {
 
-  private ApplicationUtils() {}
+  @Autowired
+  @Qualifier("jsonParser")
+  IParser jsonParser;
+
+  public ApplicationUtils() {}
 
   private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
 
@@ -428,5 +441,20 @@ public class ApplicationUtils {
     }
 
     return state;
+  }
+
+  public Bundle readBundleFromFile(String filename) {
+
+    logger.info("About to read File {}", filename);
+    Bundle bundle = null;
+    try (InputStream in = new FileInputStream(new File(filename))) {
+      logger.info("Reading File ");
+
+      bundle = jsonParser.parseResource(Bundle.class, in);
+      logger.info("Completed Reading File");
+    } catch (Exception e) {
+      logger.error("Exception Reading File", e);
+    }
+    return bundle;
   }
 }
