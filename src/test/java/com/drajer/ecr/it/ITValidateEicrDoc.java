@@ -83,9 +83,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     tx = session.beginTransaction();
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
-    expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
-    //validationSectionList =
-    //   Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
+    
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
     fieldsToValidate = testDataGenerator.getValidate(testCaseId);
 
@@ -117,7 +115,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("HeaderSection.yaml");
+    testDataGenerator = new TestDataGenerator("/test-yaml/problemSection.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
     Object[][] data = new Object[testCaseSet.size()][1];
     int count = 0;
@@ -148,22 +146,12 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     Eicr createEicr = getCreateEicrDocument();
     assertNotNull(createEicr.getData());
 
-    /*POCDMT000040ClinicalDocument expectedEicrDoc = null;
-    if (expectedEICRFile != null && !expectedEICRFile.isBlank()) {
-      String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
-      expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getData());
-
-    }*/
-
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    // POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr.getData());
     Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getData());
     validateXml(eicrXmlDoc);
 
-    // EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles,
-    // expectedEicrDoc);
   }
 
   private void getLaunchDetailAndStatus() {
@@ -207,21 +195,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private void validateXml(Document eicrXml) throws XPathExpressionException {
     final XPath xPath = XPathFactory.newInstance().newXPath();
-    
-   /* String expression = "/ClinicalDocument/recordTarget/patientRole/patient";	        
-    Node node = (Node) xPath.compile(expression).evaluate(
-  		  eicrXml, XPathConstants.NODE);
-    
-    //Node nNode = nodeList.item(0);
-    if (node.getNodeType() == Node.ELEMENT_NODE) {
-    	Element eElement = (Element) node;
-    	Element element1 = (Element) eElement
-    	          .getElementsByTagName("sdtc:deceasedInd");
-    	String streetAddress = element1.getAttribute("value");
-    	
-    	logger.info(streetAddress);
-    } */   
-    
+  
     if (fieldsToValidate != null) {
 
       for (Map<String, String> field : fieldsToValidate) {
