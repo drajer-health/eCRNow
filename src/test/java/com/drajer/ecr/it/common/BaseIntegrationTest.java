@@ -53,8 +53,6 @@ public abstract class BaseIntegrationTest {
   protected HttpHeaders headers = new HttpHeaders();
 
   protected static ObjectMapper mapper = new ObjectMapper();
-  // private static JAXBContext jaxbContext = JAXBContext.newInstance("org.hl7.v3:org.hl7.sdtc");
-  // private static Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
   protected static final String URL = "http://localhost:";
   protected String baseUrl = "/FHIR";

@@ -20,10 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
@@ -41,10 +37,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
 public class ITLaunchController extends BaseIntegrationTest {
@@ -199,29 +191,5 @@ public class ITLaunchController extends BaseIntegrationTest {
       fail(e.getMessage() + "Error while retrieving EICR document");
     }
     return null;
-  }
-
-  private void validateXml(Document eicrXml) throws XPathExpressionException {
-    XPath xPath = XPathFactory.newInstance().newXPath();
-
-    String expression = "/ClinicalDocument/recordTarget/patientRole/addr";
-    NodeList nodeList =
-        (NodeList) xPath.compile(expression).evaluate(eicrXml, XPathConstants.NODESET);
-
-    Node nNode = nodeList.item(0);
-    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-      Element eElement = (Element) nNode;
-
-      String streetAddress =
-          eElement.getElementsByTagName("streetAddressLine").item(0).getTextContent();
-      String city = eElement.getElementsByTagName("city").item(0).getTextContent();
-      String state = eElement.getElementsByTagName("state").item(0).getTextContent();
-      String postalCode = eElement.getElementsByTagName("postalCode").item(0).getTextContent();
-      String country = eElement.getElementsByTagName("country").item(0).getTextContent();
-    }
-
-    expression = "/ClinicalDocument/recordTarget/patientRole/addr[1]/streetAddressLine";
-    String streetAddress =
-        (String) xPath.compile(expression).evaluate(eicrXml, XPathConstants.STRING);
   }
 }
