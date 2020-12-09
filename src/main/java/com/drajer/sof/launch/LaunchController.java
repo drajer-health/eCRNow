@@ -413,8 +413,8 @@ public class LaunchController {
     currentStateDetails.setLaunchPatientId(accessTokenObject.getString(PATIENT));
     currentStateDetails.setEncounterId(accessTokenObject.getString(ENCOUNTER));
     currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
-    currentStateDetails.setSetId(
-        accessTokenObject.getString(PATIENT) + "+" + accessTokenObject.getString(ENCOUNTER));
+    //    currentStateDetails.setSetId(
+    //        accessTokenObject.getString(PATIENT) + "+" + accessTokenObject.getString(ENCOUNTER));
     currentStateDetails.setVersionNumber("1");
     currentStateDetails.setDirectUser(clientDetails.getDirectUser());
     currentStateDetails.setDirectHost(clientDetails.getDirectHost());
@@ -480,10 +480,10 @@ public class LaunchController {
         encounter = Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
         if (encounter != null) {
           currentStateDetails.setEncounterId(encounter.getIdElement().getIdPart().toString());
-          currentStateDetails.setSetId(
-              currentStateDetails.getLaunchPatientId()
-                  + "+"
-                  + encounter.getIdElement().getIdPart().toString());
+          //          currentStateDetails.setSetId(
+          //              currentStateDetails.getLaunchPatientId()
+          //                  + "+"
+          //                  + encounter.getIdElement().getIdPart().toString());
           if (encounter.getPeriod() != null) {
             PeriodDt period = encounter.getPeriod();
             if (period.getStart() != null) {
@@ -554,10 +554,10 @@ public class LaunchController {
             Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
         if (r4Encounter != null) {
           currentStateDetails.setEncounterId(r4Encounter.getIdElement().getIdPart().toString());
-          currentStateDetails.setSetId(
-              currentStateDetails.getLaunchPatientId()
-                  + "+"
-                  + r4Encounter.getIdElement().getIdPart().toString());
+          //          currentStateDetails.setSetId(
+          //              currentStateDetails.getLaunchPatientId()
+          //                  + "+"
+          //                  + r4Encounter.getIdElement().getIdPart().toString());
           if (r4Encounter.getPeriod() != null) {
             Period period = r4Encounter.getPeriod();
             if (period.getStart() != null) {
