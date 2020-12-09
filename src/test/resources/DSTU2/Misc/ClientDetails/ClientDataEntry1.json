@@ -20,5 +20,5 @@
   "encounterEndThreshold": "30",
   "isCovid": true,
   "isFullEcr": false,
-  "isLoggingEnabled": false
+  "debugFhirQueryAndEicr": false
 }

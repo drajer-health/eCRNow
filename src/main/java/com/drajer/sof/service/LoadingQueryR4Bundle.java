@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
@@ -82,6 +83,43 @@ public class LoadingQueryR4Bundle {
       }
     } catch (Exception e) {
       logger.error("Error in getting Travel Observation Data - {}, ", e, e);
+    }
+
+    // Get Social History Observations (Occupation)
+    try {
+      logger.info("Get Social History Observation Data (Occupation)");
+      List<Observation> observationList =
+          r4ResourcesData.getSocialHistoryObservationDataOccupation(
+              context, client, launchDetails, r4FhirData, encounter, start, end);
+      if (logger.isInfoEnabled()) {
+        logger.info("Filtered Social Hx Occupation Observations----> {}", observationList.size());
+      }
+      r4FhirData.setOccupationObs(observationList);
+      for (Observation observation : observationList) {
+        BundleEntryComponent observationsEntry =
+            new BundleEntryComponent().setResource(observation);
+        bundle.addEntry(observationsEntry);
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting Social History Observation(Occupation) Data");
+    }
+
+    // Get Pregnancy Conditions
+    try {
+      logger.info("Get Pregnancy Conditions");
+      List<Condition> conditionList =
+          r4ResourcesData.getPregnancyConditions(
+              context, client, launchDetails, r4FhirData, encounter, start, end);
+      if (logger.isInfoEnabled()) {
+        logger.info("Filtered Pregnancy Conditions----> {}", conditionList.size());
+      }
+      r4FhirData.setPregnancyConditions(conditionList);
+      for (Condition condition : conditionList) {
+        BundleEntryComponent conditionEntry = new BundleEntryComponent().setResource(condition);
+        bundle.addEntry(conditionEntry);
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting Pregnancy Conditions");
     }
 
     try {

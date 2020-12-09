@@ -48,6 +48,7 @@ public class R4ResourcesData {
   private final Logger logger = LoggerFactory.getLogger(R4ResourcesData.class);
 
   private static final String OBSERVATION = "Observation";
+  private static final String CONDITION = "Condition";
 
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<>();
@@ -242,7 +243,7 @@ public class R4ResourcesData {
       Date end) {
     Bundle bundle =
         (Bundle)
-            resourceData.getObservationByPatientIdAndCode(
+            resourceData.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,
@@ -265,7 +266,7 @@ public class R4ResourcesData {
       Date end) {
     Bundle bundle =
         (Bundle)
-            resourceData.getObservationByPatientIdAndCode(
+            resourceData.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,
@@ -275,7 +276,74 @@ public class R4ResourcesData {
     List<Observation> observations = new ArrayList<>();
     observations = filterObservation(bundle, encounter, start, end);
 
+    for (String travelSnomedCode : QueryConstants.TRAVEL_HISTORY_SNOMED_CODES) {
+      Bundle travelHisWithSNOMEDCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  OBSERVATION,
+                  travelSnomedCode,
+                  QueryConstants.SNOMED_CODE_SYSTEM);
+      List<Observation> travelobs = new ArrayList<>();
+      travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
+      observations.addAll(travelobs);
+    }
+
     return observations;
+  }
+
+  public List<Observation> getSocialHistoryObservationDataOccupation(
+      FhirContext context,
+      IGenericClient client,
+      LaunchDetails launchDetails,
+      R4FhirData r4FhirData,
+      Encounter encounter,
+      Date start,
+      Date end) {
+    List<Observation> observations = new ArrayList<>();
+    for (String occupationCode : QueryConstants.OCCUPATION_SNOMED_CODES) {
+      Bundle occupationCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  OBSERVATION,
+                  occupationCode,
+                  QueryConstants.SNOMED_CODE_SYSTEM);
+      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+        observations.add((Observation) entryComp.getResource());
+      }
+    }
+    return observations;
+  }
+
+  public List<Condition> getPregnancyConditions(
+      FhirContext context,
+      IGenericClient client,
+      LaunchDetails launchDetails,
+      R4FhirData r4FhirData,
+      Encounter encounter,
+      Date start,
+      Date end) {
+    List<Condition> conditions = new ArrayList<>();
+    for (String pregnancySnomedCode : QueryConstants.PREGNANCY_SNOMED_CODES) {
+      Bundle occupationCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  CONDITION,
+                  pregnancySnomedCode,
+                  QueryConstants.SNOMED_CODE_SYSTEM);
+      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+        conditions.add((Condition) entryComp.getResource());
+      }
+    }
+    return conditions;
   }
 
   private List<CodeableConcept> findMedicationCodes(MedicationAdministration medAdministration) {
@@ -780,6 +848,7 @@ public class R4ResourcesData {
           (Patient)
               fhirContextInitializer.getResouceById(
                   launchDetails, client, context, "Patient", launchDetails.getLaunchPatientId());
+      r4FhirData.setPatient(patient);
       BundleEntryComponent patientEntry = new BundleEntryComponent();
       patientEntry.setResource(patient);
       bundle.addEntry(patientEntry);
@@ -797,7 +866,9 @@ public class R4ResourcesData {
     try {
       logger.info("Get Encounter Data");
       encounter = getEncounterData(context, client, launchDetails, r4FhirData, start, end);
+      r4FhirData.setEncounter(encounter);
       if (encounter.getParticipant() != null) {
+        List<Practitioner> practitionerList = new ArrayList<Practitioner>();
         List<EncounterParticipantComponent> participants = encounter.getParticipant();
         for (EncounterParticipantComponent participant : participants) {
           if (participant.getIndividual() != null) {
@@ -810,6 +881,7 @@ public class R4ResourcesData {
                         context,
                         "Practitioner",
                         practitionerReference.getReferenceElement().getIdPart());
+            practitionerList.add(practitioner);
             if (practitioner != null) {
               BundleEntryComponent practitionerEntry =
                   new BundleEntryComponent().setResource(practitioner);
@@ -817,6 +889,7 @@ public class R4ResourcesData {
             }
           }
         }
+        r4FhirData.setPractitionersList(practitionerList);
       }
       if (encounter.getServiceProvider() != null) {
         Reference organizationReference = encounter.getServiceProvider();
@@ -831,8 +904,10 @@ public class R4ResourcesData {
         BundleEntryComponent organizationEntry =
             new BundleEntryComponent().setResource(organization);
         bundle.addEntry(organizationEntry);
+        r4FhirData.setOrganization(organization);
       }
       if (encounter.getLocation() != null) {
+        List<Location> locationList = new ArrayList<Location>();
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.getLocation() != null) {
@@ -845,11 +920,13 @@ public class R4ResourcesData {
                         context,
                         "Location",
                         locationReference.getReferenceElement().getIdPart());
+            locationList.add(locationResource);
             BundleEntryComponent locationEntry =
                 new BundleEntryComponent().setResource(locationResource);
             bundle.addEntry(locationEntry);
           }
         }
+        r4FhirData.setLocationList(locationList);
       }
       BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
       bundle.addEntry(encounterEntry);

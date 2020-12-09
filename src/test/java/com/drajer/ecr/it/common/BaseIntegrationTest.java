@@ -98,10 +98,10 @@ public abstract class BaseIntegrationTest {
       String restAPI = clientDetails.getRestAPIURL().replace("port", "" + wireMockHttpPort);
       clientDetails.setRestAPIURL(restAPI);
     }
-    if (clientDetails.getEhrAuthorizationUrl() != null) {
+    if (clientDetails.getFhirServerBaseURL() != null) {
       String ehrAuthUrl =
-          clientDetails.getEhrAuthorizationUrl().replace("port", "" + wireMockHttpPort);
-      clientDetails.setEhrAuthorizationUrl(ehrAuthUrl);
+          clientDetails.getFhirServerBaseURL().replace("port", "" + wireMockHttpPort);
+      clientDetails.setFhirServerBaseURL(ehrAuthUrl);
     }
     String tokenURL = clientDetails.getTokenURL().replace("port", "" + wireMockHttpPort);
     clientDetails.setTokenURL(tokenURL);

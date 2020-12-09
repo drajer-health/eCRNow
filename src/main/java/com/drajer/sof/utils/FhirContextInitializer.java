@@ -2,11 +2,13 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import com.drajer.sof.model.LaunchDetails;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -58,6 +60,17 @@ public class FhirContextInitializer {
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     logger.info("Initialized the Client");
     return client;
+  }
+
+  public MethodOutcome submitResource(IGenericClient genericClient, Resource resource) {
+    MethodOutcome outcome = new MethodOutcome();
+    try {
+      outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
+    } catch (Exception e) {
+      logger.error("Error in Submitting the resource:::::" + resource.getResourceType().name());
+    }
+
+    return outcome;
   }
 
   public IBaseResource getResouceById(
@@ -113,7 +126,7 @@ public class FhirContextInitializer {
     return bundleResponse;
   }
 
-  protected IBaseBundle getObservationByPatientIdAndCode(
+  protected IBaseBundle getResourceByPatientIdAndCode(
       LaunchDetails authDetails,
       IGenericClient genericClient,
       FhirContext context,

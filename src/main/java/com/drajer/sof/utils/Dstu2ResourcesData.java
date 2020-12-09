@@ -285,7 +285,7 @@ public class Dstu2ResourcesData {
       Date end) {
     Bundle bundle =
         (Bundle)
-            resourceData.getObservationByPatientIdAndCode(
+            resourceData.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,
@@ -308,7 +308,7 @@ public class Dstu2ResourcesData {
       Date end) {
     Bundle bundle =
         (Bundle)
-            resourceData.getObservationByPatientIdAndCode(
+            resourceData.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,

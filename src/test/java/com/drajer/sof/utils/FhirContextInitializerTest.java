@@ -114,7 +114,7 @@ public class FhirContextInitializerTest {
     IBaseBundle bundleResponse =
         ReflectionTestUtils.invokeMethod(
             fhirContextInitializer,
-            "getObservationByPatientIdAndCode",
+            "getResourceByPatientIdAndCode",
             launchDetails,
             client,
             context,

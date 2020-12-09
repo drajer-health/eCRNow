@@ -51,18 +51,17 @@ public class TokenFilter extends OncePerRequestFilter {
         clientDetailsService.getClientDetailsByUrl(requestBodyObj.getString("fhirServerURL"));
 
     // Read the Token Instrospection URL, Client Id and Client Secret from Client Details
-    String tokenIntrospectionURL = clientDetails.getTokenIntrospectionURL();
+    // String tokenIntrospectionURL = clientDetails.getTokenIntrospectionURL();
     String clientId = clientDetails.getClientId();
     String clientSecret = clientDetails.getClientSecret();
 
-    if (validateAccessToken(tokenIntrospectionURL, clientId, clientSecret)) {
+    if (validateAccessToken(clientId, clientSecret)) {
       chain.doFilter(request, response);
     }
   }
 
   // Validate the AccessToken Using Token Introspection URL
-  private boolean validateAccessToken(
-      String tokenIntrospectionURL, String clientId, String clientSecret) {
+  private boolean validateAccessToken(String clientId, String clientSecret) {
 
     // Enable the Below code when the Introspection URL is ready to test
     /**

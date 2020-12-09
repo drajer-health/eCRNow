@@ -24,14 +24,18 @@ public class R4FhirData extends FhirData {
 
   private Patient patient;
   private Practitioner practitioner;
+  private List<Practitioner> practitionersList;
   private Encounter encounter;
   private Location location;
+  private List<Location> locationList;
   private Organization organization;
   private List<Condition> conditions;
+  private List<Condition> pregnancyConditions;
   private List<DiagnosticReport> diagReports;
   private List<Observation> labResults;
   private List<Observation> travelObs;
   private List<Observation> pregnancyObs;
+  private List<Observation> occupationObs;
   private List<Immunization> immunizations;
   private List<MedicationStatement> medications;
   private List<MedicationRequest> medicationRequests;
@@ -41,11 +45,15 @@ public class R4FhirData extends FhirData {
 
   public R4FhirData() {
 
+    locationList = new ArrayList<Location>();
+    practitionersList = new ArrayList<Practitioner>();
     conditions = new ArrayList<Condition>();
+    pregnancyConditions = new ArrayList<Condition>();
     diagReports = new ArrayList<DiagnosticReport>();
     labResults = new ArrayList<Observation>();
     travelObs = new ArrayList<Observation>();
     pregnancyObs = new ArrayList<Observation>();
+    occupationObs = new ArrayList<Observation>();
     immunizations = new ArrayList<Immunization>();
     medications = new ArrayList<MedicationStatement>();
     medicationRequests = new ArrayList<MedicationRequest>();
@@ -78,6 +86,14 @@ public class R4FhirData extends FhirData {
     this.practitioner = practitioner;
   }
 
+  public List<Practitioner> getPractitionersList() {
+    return practitionersList;
+  }
+
+  public void setPractitionersList(List<Practitioner> practitionersList) {
+    this.practitionersList = practitionersList;
+  }
+
   public Encounter getEncounter() {
     return encounter;
   }
@@ -94,6 +110,14 @@ public class R4FhirData extends FhirData {
     this.location = location;
   }
 
+  public List<Location> getLocationList() {
+    return locationList;
+  }
+
+  public void setLocationList(List<Location> locationList) {
+    this.locationList = locationList;
+  }
+
   public Organization getOrganization() {
     return organization;
   }
@@ -108,6 +132,14 @@ public class R4FhirData extends FhirData {
 
   public void setConditions(List<Condition> conditions) {
     this.conditions = conditions;
+  }
+
+  public List<Condition> getPregnancyConditions() {
+    return pregnancyConditions;
+  }
+
+  public void setPregnancyConditions(List<Condition> pregnancyConditions) {
+    this.pregnancyConditions = pregnancyConditions;
   }
 
   public List<DiagnosticReport> getDiagReports() {
@@ -140,6 +172,14 @@ public class R4FhirData extends FhirData {
 
   public void setPregnancyObs(List<Observation> pregnancyObs) {
     this.pregnancyObs = pregnancyObs;
+  }
+
+  public List<Observation> getOccupationObs() {
+    return occupationObs;
+  }
+
+  public void setOccupationObs(List<Observation> occupationObs) {
+    this.occupationObs = occupationObs;
   }
 
   public List<Immunization> getImmunizations() {
