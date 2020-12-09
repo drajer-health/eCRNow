@@ -1248,7 +1248,7 @@ public class ValidationUtils {
     }
 
     // Language
-    int languageIdx = cntIdx++;
+    /*int languageIdx = cntIdx++;
     POCDMT000040LanguageCommunication cdaCommunication =
         (POCDMT000040LanguageCommunication) cdaPateintcontent.get(languageIdx).getValue();
     CS languageCode = cdaCommunication.getLanguageCode();
@@ -1259,7 +1259,7 @@ public class ValidationUtils {
       AssertCdaElement.assertCodeCS(languageCode, r4Coding.getCode(), null, null, null);
     } else {
       AssertCdaElement.assertNullFlavor(languageCode, "NI");
-    }
+    }*/
   }
 
   public static void validateGuardian(

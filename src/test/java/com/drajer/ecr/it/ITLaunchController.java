@@ -10,6 +10,7 @@ import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.EICRValidator;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
@@ -138,16 +139,16 @@ public class ITLaunchController extends BaseIntegrationTest {
     POCDMT000040ClinicalDocument expectedEicrDoc = null;
     if (expectedEICRFile != null && !expectedEICRFile.isEmpty()) {
       String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
-      expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getData());
+      expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getEicrData());
     }
 
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr.getData());
+    POCDMT000040ClinicalDocument clinicalDoc =
+        TestUtils.getClinicalDocXml(createEicr.getEicrData());
 
     EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles, expectedEicrDoc);
-
   }
 
   private void getLaunchDetailAndStatus() {
