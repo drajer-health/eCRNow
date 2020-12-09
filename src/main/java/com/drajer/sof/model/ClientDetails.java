@@ -327,7 +327,6 @@ public class ClientDetails {
     Log.info(" Provider Launch = " + isProvider);
     Log.info(" System Launch = " + isSystem);
     Log.info(" Client Id = " + clientId);
-    Log.info(" Client Secret = " + clientSecret);
     Log.info(" FHIR Server URL = " + fhirServerBaseURL);
     Log.info(" Token URL = " + tokenURL);
     Log.info(" Scopes = " + scopes);
@@ -335,7 +334,6 @@ public class ClientDetails {
     Log.info(" Is XDR = " + isXdr);
     Log.info(" Is Rest API = " + isRestAPI);
     Log.info(" Direct Host = " + directHost);
-    Log.info(" Direct pwd = " + directPwd);
     Log.info(" Direct Recipient Address = " + directRecipientAddress);
     Log.info(" XDR Recipient Address = " + xdrRecipientAddress);
     Log.info(" Rest API URL = " + restAPIURL);
