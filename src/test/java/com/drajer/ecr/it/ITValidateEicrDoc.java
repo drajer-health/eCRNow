@@ -46,15 +46,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
-public class ITEicrHeaderSection extends BaseIntegrationTest {
+public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private String testCaseId;
 
-  public ITEicrHeaderSection(String testCaseId) {
+  public ITValidateEicrDoc(String testCaseId) {
     this.testCaseId = testCaseId;
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(ITEicrHeaderSection.class);
+  private static final Logger logger = LoggerFactory.getLogger(ITValidateEicrDoc.class);
 
   private final String systemLaunchURI = "/api/systemLaunch";
 
@@ -84,8 +84,8 @@ public class ITEicrHeaderSection extends BaseIntegrationTest {
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
     expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
-    validationSectionList =
-        Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
+    //validationSectionList =
+    //   Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
     fieldsToValidate = testDataGenerator.getValidate(testCaseId);
 
@@ -130,7 +130,7 @@ public class ITEicrHeaderSection extends BaseIntegrationTest {
   }
 
   @Test
-  public void testEicrHeaderSection() throws Exception {
+  public void testEicrDocument() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -233,7 +233,7 @@ public class ITEicrHeaderSection extends BaseIntegrationTest {
             try {
               NodeList nodeList =
                   (NodeList) xPath.compile(xPathExp).evaluate(eicrXml, XPathConstants.NODESET);
-              assertEquals(Integer.parseInt(field.get("count")), nodeList.getLength());
+              assertEquals(xPathExp, Integer.parseInt(field.get("count")), nodeList.getLength());
             } catch (XPathExpressionException e) {
               fail(e.getMessage() + ": Failed evaluate field " + xPathExp);
             }
@@ -246,7 +246,7 @@ public class ITEicrHeaderSection extends BaseIntegrationTest {
                 try {
                   String fieldValue =
                       (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);
-                  assertEquals(set.getValue(), fieldValue);
+                  assertEquals(xPathFullExp, set.getValue(), fieldValue);
                 } catch (XPathExpressionException e) {
                   fail(e.getMessage() + ": Failed evaluate field " + xPathExp);
                 }

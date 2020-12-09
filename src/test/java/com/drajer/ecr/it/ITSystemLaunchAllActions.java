@@ -155,10 +155,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   public void testSubmitEicrFromRestApi() {
 
     URL restApiUrl = null;
-    URL ehrAuthUrl = null;
+    //URL ehrAuthUrl = null;
     try {
       restApiUrl = new URL(clientDetails.getRestAPIURL());
-      ehrAuthUrl = new URL(clientDetails.getEhrAuthorizationUrl());
+      //ehrAuthUrl = new URL(clientDetails.getEhrAuthorizationUrl());
 
     } catch (MalformedURLException e) {
       fail(e.getMessage() + " This exception is not expected fix the test.");
@@ -172,7 +172,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
                     .withStatus(200)
                     .withBody("Reportability Response recieved from AIMS")
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
-    // mock EHR AuthURl
+/*    // mock EHR AuthURl
     String accesstoken =
         "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
     stubFor(
@@ -183,7 +183,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
                     .withStatus(200)
                     .withBody(accesstoken)
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
-
+*/
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
