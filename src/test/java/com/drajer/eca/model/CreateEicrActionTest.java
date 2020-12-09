@@ -178,7 +178,7 @@ public class CreateEicrActionTest {
       when(mockTriggerStatus.getMatchedCodes()).thenReturn(matchedCodes);
 
       when(mockEicr.getId()).thenReturn(10);
-      when(mockEicr.getData()).thenReturn("This is Eicr Document");
+      when(mockEicr.getEicrData()).thenReturn("This is Eicr Document");
 
       // Test
       createtEicrAction.execute(mockDetails, launchType);

@@ -91,7 +91,7 @@ public class SubmitEicrAction extends AbstractAction {
 
       logger.info(" Found eICR with Id {} to submit ", id);
 
-      String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getData();
+      String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getEicrData();
 
       if (!StringUtils.isBlank(details.getRestAPIURL())) {
         ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data);

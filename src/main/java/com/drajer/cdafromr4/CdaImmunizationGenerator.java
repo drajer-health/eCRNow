@@ -155,8 +155,22 @@ public class CdaImmunizationGenerator {
 
         List<CodeableConcept> cds = new ArrayList<>();
         cds.add(imm.getVaccineCode());
-        sb.append(
-            CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+
+        String codeXml =
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_CVX_URL,
+                true);
+
+        if (!codeXml.isEmpty()) {
+          sb.append(codeXml);
+        } else {
+          sb.append(
+              CdaFhirUtilities.getCodeableConceptXml(
+                  cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+        }
 
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));

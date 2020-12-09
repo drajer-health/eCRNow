@@ -359,6 +359,19 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getXmlForNullValueCDWithoutEndTag(String cdName, String code) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + cdName
+        + CdaGeneratorConstants.SPACE
+        + "xsi:type=\"CD\""
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + code
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+  }
+
   public static String getXmlForNullCDWithoutEndTag(String cdName, String code) {
     return CdaGeneratorConstants.START_XMLTAG
         + cdName

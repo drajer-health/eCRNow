@@ -147,7 +147,7 @@ public class CloseOutEicrActionTest {
       when(mockTriggerStatus.getMatchedCodes()).thenReturn(matchedCodes);
 
       when(mockEicr.getId()).thenReturn(10);
-      when(mockEicr.getData()).thenReturn("**** Printing Eicr from CLOSE OUT EICR ACTION ****");
+      when(mockEicr.getEicrData()).thenReturn("**** Printing Eicr from CLOSE OUT EICR ACTION ****");
 
       // Test
       closeOutEicrAction.execute(mockDetails, launchType);
