@@ -1,11 +1,10 @@
 package com.drajer.ersd.model;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
+// @Entity - No need to persist.
 @Table(name = "valuesetgrouper")
 public class ValueSetGrouperModel {
 

@@ -136,7 +136,18 @@ public class CdaResultGenerator {
         lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
         // Fix the Code to be the same as the result code..
-        lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        String codeXml =
+            CdaFhirUtilities.getCodingXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                true);
+
+        if (!codeXml.isEmpty()) {
+          lrEntry.append(codeXml);
+        } else {
+          lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        }
 
         lrEntry.append(
             CdaGeneratorUtils.getXmlForCD(
@@ -160,7 +171,18 @@ public class CdaResultGenerator {
 
         lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
-        lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        codeXml =
+            CdaFhirUtilities.getCodingXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                true);
+
+        if (!codeXml.isEmpty()) {
+          lrEntry.append(codeXml);
+        } else {
+          lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        }
 
         lrEntry.append(
             CdaGeneratorUtils.getXmlForCD(
@@ -267,7 +289,18 @@ public class CdaResultGenerator {
         lrEntry.append(
             CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId()));
 
-        lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        String codeXml =
+            CdaFhirUtilities.getCodingXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                true);
+
+        if (!codeXml.isEmpty()) {
+          lrEntry.append(codeXml);
+        } else {
+          lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        }
 
         lrEntry.append(
             CdaGeneratorUtils.getXmlForCD(

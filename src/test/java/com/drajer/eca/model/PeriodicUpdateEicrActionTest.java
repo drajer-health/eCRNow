@@ -189,7 +189,7 @@ public class PeriodicUpdateEicrActionTest {
       when(mockTriggerStatus.getMatchedCodes()).thenReturn(matchedCodes);
       when(EcaUtils.createEicr(mockDetails)).thenReturn(mockEicr);
       when(mockEicr.getId()).thenReturn(10);
-      when(mockEicr.getData())
+      when(mockEicr.getEicrData())
           .thenReturn("**** Printing Eicr from Periodic Update EICR ACTION ****");
 
       // Test

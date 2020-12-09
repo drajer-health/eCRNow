@@ -128,8 +128,49 @@ public class CdaEncounterGenerator {
       }
 
       List<CodeableConcept> cds = encounter.getType();
-      sb.append(
-          CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+
+      // Try to see if there is a CPT code first, if not try ICD-10, if not try SNOMED.
+      String codeXml =
+          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+              cds,
+              CdaGeneratorConstants.CODE_EL_NAME,
+              false,
+              CdaGeneratorConstants.FHIR_CPT_URL,
+              false);
+
+      if (!codeXml.isEmpty()) {
+        sb.append(codeXml);
+      } else {
+        codeXml =
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_ICD10_CM_URL,
+                false);
+
+        if (!codeXml.isEmpty()) {
+          sb.append(codeXml);
+        } else {
+
+          codeXml =
+              CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                  cds,
+                  CdaGeneratorConstants.CODE_EL_NAME,
+                  false,
+                  CdaGeneratorConstants.FHIR_SNOMED_URL,
+                  false);
+
+          if (!codeXml.isEmpty()) {
+            sb.append(codeXml);
+          } else {
+
+            sb.append(
+                CdaFhirUtilities.getCodeableConceptXml(
+                    cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+          }
+        }
+      }
 
       sb.append(
           CdaFhirUtilities.getPeriodXml(

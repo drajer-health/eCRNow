@@ -40,7 +40,7 @@ public class EicrDaoTest {
 
     Eicr savedEicr = eicrDaoImpl.saveOrUpdate(eicr);
 
-    assertEquals(eicr.getData(), savedEicr.getData());
+    assertEquals(eicr.getEicrData(), savedEicr.getEicrData());
   }
 
   @Test
@@ -65,7 +65,7 @@ public class EicrDaoTest {
 
     ReportabilityResponse savedRR = eicrDaoImpl.saveOrUpdate(rr);
 
-    assertEquals(rr.getData(), savedRR.getData());
+    assertEquals(rr.getRrData(), savedRR.getRrData());
   }
 
   @Test
