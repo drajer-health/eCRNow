@@ -3,7 +3,6 @@ package com.drajer.ersd.model;
 import com.drajer.ecrapp.config.JSONObjectUserType;
 import java.util.Date;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -11,7 +10,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.UpdateTimestamp;
 
-@Entity
+// @Entity - No need to persist.
 @Table(name = "valueset")
 @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class)
 public class ValueSetModel {

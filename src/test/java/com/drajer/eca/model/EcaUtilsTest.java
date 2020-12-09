@@ -176,7 +176,7 @@ public class EcaUtilsTest {
     Eicr eicr = EcaUtils.createEicr(mockDetails);
 
     // Validate
-    assertEquals("This is DSTU2 EICR data", eicr.getData());
+    assertEquals("This is DSTU2 EICR data", eicr.getEicrData());
   }
 
   @Test
@@ -197,7 +197,7 @@ public class EcaUtilsTest {
     Eicr eicr = EcaUtils.createEicr(mockDetails);
 
     // Validate
-    assertEquals("This is R4 EICR data", eicr.getData());
+    assertEquals("This is R4 EICR data", eicr.getEicrData());
   }
 
   public void setupMockForMatchTrigger() {

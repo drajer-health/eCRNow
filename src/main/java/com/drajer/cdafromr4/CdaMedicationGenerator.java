@@ -165,9 +165,21 @@ public class CdaMedicationGenerator {
         sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
         sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
 
-        sb.append(
-            CdaFhirUtilities.getXmlForType(
-                med.getMedication(), CdaGeneratorConstants.CODE_EL_NAME, false));
+        String codeXml =
+            CdaFhirUtilities.getXmlForTypeForCodeSystem(
+                med.getMedication(),
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_RXNORM_URL,
+                true);
+
+        if (!codeXml.isEmpty()) {
+          sb.append(codeXml);
+        } else {
+          sb.append(
+              CdaFhirUtilities.getXmlForType(
+                  med.getMedication(), CdaGeneratorConstants.CODE_EL_NAME, false));
+        }
 
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));

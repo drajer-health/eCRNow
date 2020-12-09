@@ -199,6 +199,44 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static Coding getCodingForCodeSystem(CodeableConcept cd, String codeSystemUrl) {
+
+    if (cd != null) {
+
+      List<Coding> cds = cd.getCoding();
+
+      if (cds != null && !cds.isEmpty()) {
+
+        for (Coding c : cds) {
+
+          if (c.getSystem().contentEquals(codeSystemUrl)) {
+
+            return c;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  public static Coding getLanguageForCodeSystem(
+      List<PatientCommunicationComponent> comms, String codeSystemUrl) {
+
+    if (comms != null && !comms.isEmpty()) {
+
+      for (PatientCommunicationComponent comm : comms) {
+
+        Coding c = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+
+        if (c != null) return c;
+      }
+    }
+
+    logger.info(" Did not find the communication language ");
+    return null;
+  }
+
   public static String getAddressXml(List<Address> addrs) {
 
     StringBuilder addrString = new StringBuilder(200);
@@ -502,6 +540,39 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static String getCodeableConceptXmlForCodeSystem(
+      List<CodeableConcept> cds,
+      String cdName,
+      Boolean valueTrue,
+      String codeSystemUrl,
+      Boolean csOptional) {
+
+    StringBuilder sb = new StringBuilder(500);
+    List<Coding> codes = new ArrayList<>();
+
+    if (cds != null && !cds.isEmpty()) {
+
+      CodeableConcept cd = cds.get(0);
+
+      List<Coding> codings = cd.getCoding();
+
+      if (codings != null && !codings.isEmpty()) {
+
+        for (Coding code : codings) {
+
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
+
+          if (!StringUtils.isEmpty(csd.getValue0())) codes.add(code);
+        }
+      }
+    }
+
+    if (!valueTrue) sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
+    else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
+
+    return sb.toString();
+  }
+
   public static String getCodeableConceptXml(
       List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
 
@@ -529,6 +600,63 @@ public class CdaFhirUtilities {
     else sb.append(getCodingXmlForValue(codes, cdName));
 
     return sb.toString();
+  }
+
+  public static String getCodingXmlForCodeSystem(
+      List<Coding> codes, String cdName, String codeSystemUrl, Boolean csOptional) {
+
+    StringBuilder sb = new StringBuilder(200);
+    StringBuilder translations = new StringBuilder(200);
+
+    Boolean foundCodeForCodeSystem = false;
+
+    if (codes != null && !codes.isEmpty()) {
+
+      for (Coding c : codes) {
+
+        Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+        if (!csd.getValue0().isEmpty() && csd.getValue0().contentEquals(codeSystemUrl)) {
+
+          logger.debug("Found the Coding for Codesystem " + codeSystemUrl);
+          sb.append(
+              CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+                  cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          foundCodeForCodeSystem = true;
+        } else if (!csd.getValue0().isEmpty()) {
+
+          logger.debug("Found the Coding for a different Codesystem " + csd.getValue0());
+          translations.append(
+              CdaGeneratorUtils.getXmlForCD(
+                  CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                  c.getCode(),
+                  csd.getValue0(),
+                  csd.getValue1(),
+                  c.getDisplay()));
+        }
+      }
+
+      // At least one code is there so...close the tag
+      if (!foundCodeForCodeSystem) {
+
+        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        sb.append(
+            CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
+      }
+
+      sb.append(translations);
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+
+    } else {
+      sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
+    }
+
+    if (!csOptional) {
+      return sb.toString();
+    } else {
+      return new StringBuilder("").toString();
+    }
   }
 
   public static String getCodingXml(List<Coding> codes, String cdName) {
@@ -567,6 +695,64 @@ public class CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  public static String getCodingXmlForValueForCodeSystem(
+      List<Coding> codes, String cdName, String codeSystemUrl, Boolean csOptional) {
+
+    StringBuilder sb = new StringBuilder(200);
+    StringBuilder translations = new StringBuilder(200);
+
+    Boolean foundCodeForCodeSystem = false;
+
+    if (codes != null && !codes.isEmpty()) {
+
+      for (Coding c : codes) {
+
+        Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+        if (!csd.getValue0().isEmpty() && csd.getValue0().contentEquals(codeSystemUrl)) {
+
+          logger.debug("Found the Coding for Codesystem " + codeSystemUrl);
+          sb.append(
+              CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
+                  c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          foundCodeForCodeSystem = true;
+        } else if (!csd.getValue0().isEmpty()) {
+
+          logger.debug("Found the Coding for a different Codesystem " + csd.getValue0());
+          translations.append(
+              CdaGeneratorUtils.getXmlForCD(
+                  CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                  c.getCode(),
+                  csd.getValue0(),
+                  csd.getValue1(),
+                  c.getDisplay()));
+        }
+      }
+
+      // At least one code is there so...close the tag
+      if (!foundCodeForCodeSystem) {
+
+        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        sb.append(
+            CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag(
+                cdName, CdaGeneratorConstants.NF_OTH));
+      }
+
+      sb.append(translations);
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
+
+    } else {
+      sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
+    }
+
+    if (!csOptional) {
+      return sb.toString();
+    } else {
+      return new StringBuilder("").toString();
+    }
   }
 
   public static String getCodingXmlForValue(List<Coding> codes, String cdName) {
@@ -812,6 +998,59 @@ public class CdaFhirUtilities {
 
         if (!valFlag) val += getCodingXml(cds, elName);
         else val += getCodingXmlForValue(cds, elName);
+
+      } else if (dt instanceof Quantity) {
+
+        Quantity qt = (Quantity) dt;
+
+        val += getQuantityXml(qt, elName, valFlag);
+
+      } else if (dt instanceof DateTimeType) {
+
+        DateTimeType d = (DateTimeType) dt;
+
+        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
+
+      } else if (dt instanceof Period) {
+        Period pt = (Period) dt;
+
+        val += getPeriodXml(pt, elName);
+      } else if (dt instanceof CodeType) {
+
+        if (!valFlag)
+          val += CdaGeneratorUtils.getNFXMLFoElement(elName, CdaGeneratorConstants.NF_NI);
+        else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
+      }
+
+      logger.info(" Printing the class name " + dt.getClass());
+      return val;
+    }
+
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getXmlForTypeForCodeSystem(
+      Type dt, String elName, Boolean valFlag, String codeSystemUrl, Boolean csOptional) {
+
+    if (dt != null) {
+
+      String val = "";
+      if (dt instanceof Coding) {
+        Coding cd = (Coding) dt;
+
+        List<Coding> cds = new ArrayList<>();
+        cds.add(cd);
+        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+
+      } else if (dt instanceof CodeableConcept) {
+
+        CodeableConcept cd = (CodeableConcept) dt;
+
+        List<Coding> cds = cd.getCoding();
+
+        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else if (dt instanceof Quantity) {
 

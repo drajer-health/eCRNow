@@ -232,8 +232,21 @@ public class CdaProblemGenerator {
 
         List<CodeableConcept> cds = new ArrayList<>();
         cds.add(pr.getCode());
-        sb.append(
-            CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
+
+        String codeXml =
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.VAL_EL_NAME,
+                true,
+                CdaGeneratorConstants.FHIR_SNOMED_URL,
+                true);
+
+        if (!codeXml.isEmpty()) {
+          sb.append(codeXml);
+        } else {
+          sb.append(
+              CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
+        }
 
         // End Tag for Entry Relationship
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));

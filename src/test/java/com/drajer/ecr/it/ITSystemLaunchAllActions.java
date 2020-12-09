@@ -254,7 +254,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertNotNull(state.getCreateEicrStatus().geteICRId());
     assertTrue((state.getCreateEicrStatus().geteICRId() != ""));
     createEicr = getEicrDocument(state.getCreateEicrStatus().geteICRId());
-    assertNotNull(createEicr.getData());
+    assertNotNull(createEicr.getEicrData());
     assertTrue(state.getCreateEicrStatus().getEicrCreated());
   }
 
@@ -273,7 +273,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
         assertNotNull(periodicStatus.geteICRId());
         assertTrue((periodicStatus.geteICRId() != ""));
         Eicr eicr = getEicrDocument(periodicStatus.geteICRId());
-        assertNotNull(eicr.getData());
+        assertNotNull(eicr.getEicrData());
         periodicEicr.add(eicr);
       }
     }
@@ -289,7 +289,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertNotNull(state.getCloseOutEicrStatus().geteICRId());
     assertTrue((state.getCloseOutEicrStatus().geteICRId() != ""));
     closeOutEicr = getEicrDocument(state.getCloseOutEicrStatus().geteICRId());
-    assertNotNull(closeOutEicr.getData());
+    assertNotNull(closeOutEicr.getEicrData());
     assertTrue(state.getCloseOutEicrStatus().getEicrClosed());
   }
 

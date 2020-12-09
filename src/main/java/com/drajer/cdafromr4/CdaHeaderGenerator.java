@@ -586,7 +586,9 @@ public class CdaHeaderGenerator {
 
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
-    Coding language = CdaFhirUtilities.getLanguage(p.getCommunication());
+    Coding language =
+        CdaFhirUtilities.getLanguageForCodeSystem(
+            p.getCommunication(), CdaGeneratorConstants.FHIR_LANGUAGE_CODESYSTEM_URL);
 
     if (language != null && language.getCode() != null) {
       patientDetails.append(

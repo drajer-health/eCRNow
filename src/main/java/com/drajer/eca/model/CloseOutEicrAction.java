@@ -190,7 +190,7 @@ public class CloseOutEicrAction extends AbstractAction {
                         + LocalDateTime.now().getMinute()
                         + LocalDateTime.now().getSecond()
                         + ".xml";
-                ApplicationUtils.saveDataToFile(ecr.getData(), fileName);
+                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
                 logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
               }
