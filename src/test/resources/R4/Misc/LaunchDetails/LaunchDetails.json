@@ -16,7 +16,7 @@
   "encounterId": "97953900",
   "status": "{\"patientId\":\"4342009\",\"encounterId\":\"4027912\",\"matchTriggerStatus\":{\"actionId\":\"match-trigger\",\"jobStatus\":\"COMPLETED\",\"triggerMatchStatus\":false,\"matchedCodes\":[]},\"createEicrStatus\":{\"actionId\":\"create-eicr\",\"jobStatus\":\"COMPLETED\",\"eicrCreated\":false,\"eICRId\":\"0\"},\"periodicUpdateStatus\":[{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"},{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"},{\"actionId\":\"periodic-update-eicr\",\"jobStatus\":\"NOT_STARTED\",\"eicrUpdated\":false,\"eICRId\":\"\"}],\"periodicUpdateJobStatus\":\"SCHEDULED\",\"closeOutEicrStatus\":{\"actionId\":\"close-out-eicr\",\"jobStatus\":\"COMPLETED\",\"eicrClosed\":false,\"eICRId\":\"0\"},\"validateEicrStatus\":[],\"submitEicrStatus\":[],\"rrStatus\":[],\"eicrsReadyForSubmission\":[],\"eicrsReadyForValidation\":[0],\"eicrsForRRCheck\":[]}",
   "assigningAuthorityId": "2.16.840.1.113883.1.1.1.1",
-  "setId": "4342009+4027912",
+  "setId": 1,
   "versionNumber": "1",
   "directHost": "ett.healthit.gov",
   "directUser": "test@ett.healthit.gov",

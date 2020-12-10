@@ -869,6 +869,7 @@ public class R4ResourcesData {
       r4FhirData.setEncounter(encounter);
       if (encounter.getParticipant() != null) {
         List<Practitioner> practitionerList = new ArrayList<Practitioner>();
+        Map<String, String> practitionerMap = new HashMap<String, String>();
         List<EncounterParticipantComponent> participants = encounter.getParticipant();
         for (EncounterParticipantComponent participant : participants) {
           if (participant.getIndividual() != null) {
@@ -881,11 +882,19 @@ public class R4ResourcesData {
                         context,
                         "Practitioner",
                         practitionerReference.getReferenceElement().getIdPart());
-            practitionerList.add(practitioner);
-            if (practitioner != null) {
-              BundleEntryComponent practitionerEntry =
-                  new BundleEntryComponent().setResource(practitioner);
-              bundle.addEntry(practitionerEntry);
+            logger.info("Practitioner Id======>" + practitioner.getIdElement().getIdPart());
+            logger.info(
+                "Map Contains===>"
+                    + practitionerMap.containsKey(practitioner.getIdElement().getIdPart()));
+            if (!practitionerMap.containsKey(practitioner.getIdElement().getIdPart())) {
+              practitionerList.add(practitioner);
+              practitionerMap.put(
+                  practitioner.getIdElement().getIdPart(), practitioner.getResourceType().name());
+              if (practitioner != null) {
+                BundleEntryComponent practitionerEntry =
+                    new BundleEntryComponent().setResource(practitioner);
+                bundle.addEntry(practitionerEntry);
+              }
             }
           }
         }

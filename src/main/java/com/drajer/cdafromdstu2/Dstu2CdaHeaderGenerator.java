@@ -73,7 +73,7 @@ public class Dstu2CdaHeaderGenerator {
           CdaGeneratorUtils.getXmlForIIWithElName(
               CdaGeneratorConstants.SET_ID_EL_NAME,
               details.getAssigningAuthorityId(),
-              details.getSetId()));
+              String.valueOf(details.getSetId())));
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForValue(

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Identifier;
 import org.slf4j.Logger;
@@ -69,10 +70,16 @@ public class CdaEncounterGenerator {
 
       String actDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-      if (encounter.getTypeFirstRep() != null
+      if (encounter.getClass_() != null
+          && encounter.getClass_().getCode() != null
+          && !StringUtils.isEmpty(encounter.getClass_().getDisplay())) {
+        logger.info("Found Encounter Class value, so using it for display");
+        actDisplayName = encounter.getClass_().getDisplay();
+      } else if (encounter.getTypeFirstRep() != null
           && encounter.getTypeFirstRep().getCodingFirstRep() != null
           && !StringUtils.isEmpty(encounter.getTypeFirstRep().getCodingFirstRep().getDisplay())) {
 
+        logger.info("Did not find Encounter class, but Found Encounter Type value, so using it ");
         actDisplayName = encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
       }
 
@@ -127,47 +134,71 @@ public class CdaEncounterGenerator {
         }
       }
 
-      List<CodeableConcept> cds = encounter.getType();
+      String codeXml = "";
 
-      // Try to see if there is a CPT code first, if not try ICD-10, if not try SNOMED.
-      String codeXml =
-          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-              cds,
-              CdaGeneratorConstants.CODE_EL_NAME,
-              false,
-              CdaGeneratorConstants.FHIR_CPT_URL,
-              false);
+      if (encounter.getClass_() != null) {
+        Coding encClass = encounter.getClass_();
+        List<Coding> codes = new ArrayList<Coding>();
+        codes.add(encClass);
+        codeXml =
+            CdaFhirUtilities.getCodingXmlForCodeSystem(
+                codes,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_ENCOUNTER_CLASS_URL,
+                true);
+      }
 
       if (!codeXml.isEmpty()) {
+        logger.info("Found Encounter class information, so use it ");
         sb.append(codeXml);
       } else {
+
+        List<CodeableConcept> cds = encounter.getType();
+
+        // Try to see if there is a CPT code first, if not try ICD-10, if not try SNOMED.
         codeXml =
             CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
                 cds,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
-                CdaGeneratorConstants.FHIR_ICD10_CM_URL,
-                false);
+                CdaGeneratorConstants.FHIR_CPT_URL,
+                true);
 
         if (!codeXml.isEmpty()) {
+          logger.info("Found Encounter Information using CPT, so using it ");
           sb.append(codeXml);
         } else {
-
           codeXml =
               CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
                   cds,
                   CdaGeneratorConstants.CODE_EL_NAME,
                   false,
-                  CdaGeneratorConstants.FHIR_SNOMED_URL,
-                  false);
+                  CdaGeneratorConstants.FHIR_ICD10_CM_URL,
+                  true);
 
           if (!codeXml.isEmpty()) {
+            logger.info("Found Encounter Information using ICD10, so using it ");
             sb.append(codeXml);
           } else {
 
-            sb.append(
-                CdaFhirUtilities.getCodeableConceptXml(
-                    cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+            codeXml =
+                CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                    cds,
+                    CdaGeneratorConstants.CODE_EL_NAME,
+                    false,
+                    CdaGeneratorConstants.FHIR_SNOMED_URL,
+                    true);
+
+            if (!codeXml.isEmpty()) {
+              logger.info("Found Encounter Information using SNOMED, so using it ");
+              sb.append(codeXml);
+            } else {
+              logger.info(
+                  "Append Encounter Information using other code systems if found or append null");
+              sb.append(
+                  CdaFhirUtilities.getCodeableConceptXml(
+                      cds, CdaGeneratorConstants.CODE_EL_NAME, false));
+            }
           }
         }
       }

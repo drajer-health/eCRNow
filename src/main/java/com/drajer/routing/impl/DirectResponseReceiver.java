@@ -28,6 +28,9 @@ import org.slf4j.LoggerFactory;
 public class DirectResponseReceiver extends RRReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class);
+  
+  private static final String IMAP="imaps";
+  private static final String INBOX="Inbox";
 
   @Override
   public Object receiveRespone(Object context) {
@@ -64,12 +67,12 @@ public class DirectResponseReceiver extends RRReceiver {
       Properties props = new Properties();
       Session session = Session.getInstance(props, null);
 
-      Store store = session.getStore("imap");
-      int port = 143; // Integer.parseInt(prop.getProperty("port"));
+      Store store = session.getStore(IMAP);
+      int port = 993; // Integer.parseInt(prop.getProperty("port"));
       logger.info("Connecting to IMAP Inbox");
       store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
 
-      Folder inbox = store.getFolder("Inbox");
+      Folder inbox = store.getFolder(INBOX);
       inbox.open(Folder.READ_WRITE);
 
       Flags seen = new Flags(Flags.Flag.SEEN);
@@ -131,11 +134,11 @@ public class DirectResponseReceiver extends RRReceiver {
     Properties props = new Properties();
     Session session = Session.getInstance(props, null);
 
-    Store store = session.getStore("imap");
-    int port = 143; // Integer.parseInt(prop.getProperty("port"));
+    Store store = session.getStore(IMAP);
+    int port = 993; // Integer.parseInt(prop.getProperty("port"));
     store.connect(host, username, password);
 
-    Folder inbox = store.getFolder("Inbox");
+    Folder inbox = store.getFolder(INBOX);
     inbox.open(Folder.READ_WRITE);
     Flags seen = new Flags(Flags.Flag.SEEN);
 

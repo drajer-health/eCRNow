@@ -12,4 +12,6 @@ public interface EicrDao {
   ReportabilityResponse saveOrUpdate(ReportabilityResponse rr);
 
   ReportabilityResponse getRRById(Integer id);
+
+  Integer getMaxSetId(Eicr eicr);
 }

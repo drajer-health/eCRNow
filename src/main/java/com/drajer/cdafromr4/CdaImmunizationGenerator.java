@@ -162,7 +162,7 @@ public class CdaImmunizationGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_CVX_URL,
-                true);
+                false);
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);

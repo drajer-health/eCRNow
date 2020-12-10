@@ -135,6 +135,8 @@ public class CdaGeneratorConstants {
   public static final String FHIR_CVX_URL = "http://hl7.org/fhir/sid/cvx";
   public static final String FHIR_RXNORM_URL = "http://www.nlm.nih.gov/research/umls/rxnorm";
   public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
+  public static final String FHIR_ENCOUNTER_CLASS_URL =
+      "http://terminology.hl7.org/CodeSystem/v3-ActCode";
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
