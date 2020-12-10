@@ -239,7 +239,7 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.VAL_EL_NAME,
                 true,
                 CdaGeneratorConstants.FHIR_SNOMED_URL,
-                true);
+                false);
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);

@@ -249,7 +249,6 @@ public class CdaFhirUtilities {
             || addr.getUseElement().getValue() == AddressUse.WORK) {
 
           logger.info(" Found Home or Work Address ");
-
           addrString.append(
               CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
 
@@ -257,9 +256,13 @@ public class CdaFhirUtilities {
           List<StringType> lines = addr.getLine();
 
           if (lines != null && !lines.isEmpty()) {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, lines.get(0).getValue()));
+
+            for (StringType s : lines) {
+              addrString.append(
+                  CdaGeneratorUtils.getXmlForText(
+                      CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, s.getValue()));
+            }
+
           } else {
             addrString.append(
                 CdaGeneratorUtils.getXmlForNFText(
@@ -616,9 +619,11 @@ public class CdaFhirUtilities {
 
         Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
-        if (!csd.getValue0().isEmpty() && csd.getValue0().contentEquals(codeSystemUrl)) {
+        if (!csd.getValue0().isEmpty()
+            && c.getSystem().contentEquals(codeSystemUrl)
+            && !foundCodeForCodeSystem) {
 
-          logger.debug("Found the Coding for Codesystem " + codeSystemUrl);
+          logger.info("Found the Coding for Codesystem " + codeSystemUrl);
           sb.append(
               CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                   cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -626,7 +631,7 @@ public class CdaFhirUtilities {
           foundCodeForCodeSystem = true;
         } else if (!csd.getValue0().isEmpty()) {
 
-          logger.debug("Found the Coding for a different Codesystem " + csd.getValue0());
+          logger.info("Found the Coding for a different Codesystem " + csd.getValue0());
           translations.append(
               CdaGeneratorUtils.getXmlForCD(
                   CdaGeneratorConstants.TRANSLATION_EL_NAME,
@@ -634,6 +639,9 @@ public class CdaFhirUtilities {
                   csd.getValue0(),
                   csd.getValue1(),
                   c.getDisplay()));
+        } else {
+          logger.info(
+              " Did not find the code system mapping from FHIR to CDA for " + c.getSystem());
         }
       }
 
@@ -645,6 +653,7 @@ public class CdaFhirUtilities {
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
 
+      logger.info(" Sb = " + sb.toString());
       sb.append(translations);
       sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 
@@ -652,7 +661,7 @@ public class CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (!csOptional) {
+    if (foundCodeForCodeSystem || (!csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();
@@ -711,7 +720,9 @@ public class CdaFhirUtilities {
 
         Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
-        if (!csd.getValue0().isEmpty() && csd.getValue0().contentEquals(codeSystemUrl)) {
+        if (!csd.getValue0().isEmpty()
+            && c.getSystem().contentEquals(codeSystemUrl)
+            && !foundCodeForCodeSystem) {
 
           logger.debug("Found the Coding for Codesystem " + codeSystemUrl);
           sb.append(
@@ -748,7 +759,7 @@ public class CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (!csOptional) {
+    if (foundCodeForCodeSystem || (!csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();

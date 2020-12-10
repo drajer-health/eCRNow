@@ -3,19 +3,7 @@ package com.drajer.cdafromr4;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Immunization;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +22,7 @@ public class CdaEicrGeneratorFromR4 {
       Bundle bundle = data.getData();
       if (bundle != null) {
 
-        List<BundleEntryComponent> entries = bundle.getEntry();
+        /* List<BundleEntryComponent> entries = bundle.getEntry();
 
         for (BundleEntryComponent ent : entries) {
 
@@ -86,7 +74,7 @@ public class CdaEicrGeneratorFromR4 {
             logger.info(" Bundle contains Immunization ");
             data.getImmunizations().add((Immunization) ent.getResource());
           }
-        }
+        }*/
 
         eICR.append(CdaHeaderGenerator.createCdaHeader(data, details));
         eICR.append(CdaBodyGenerator.generateCdaBody(data, details));
