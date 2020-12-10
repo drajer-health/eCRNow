@@ -113,7 +113,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("/test-yaml/problemSection.yaml");
+    testDataGenerator = new TestDataGenerator("/test-yaml/resultSection.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
     Object[][] data = new Object[testCaseSet.size()][1];
     int count = 0;
@@ -142,12 +142,12 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     Eicr createEicr = getCreateEicrDocument();
-    assertNotNull(createEicr.getData());
+    assertNotNull(createEicr.getEicrData());
 
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getData());
+    Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getEicrData());
     validateXml(eicrXmlDoc);
   }
 
