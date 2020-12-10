@@ -266,7 +266,7 @@ public class LaunchController {
       logger.info("Received Launch Parameter::::: {}", launch);
       logger.info("Received FHIR Server Base URL::::: {}", iss);
       String uri =
-          request.getScheme()
+          "https"
               + "://"
               + request.getServerName()
               + ("http".equals(request.getScheme()) && request.getServerPort() == 80
@@ -316,9 +316,9 @@ public class LaunchController {
               authorization.createAuthUrl(launchDetails, clientDetails, state);
           logger.info("Constructed Authorization URL::::: {}", constructedAuthUrl);
           authDetailsService.saveOrUpdate(launchDetails);
-          // response.sendRedirect(constructedAuthUrl);
-          response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-          response.setHeader("Location", constructedAuthUrl);
+          response.sendRedirect(constructedAuthUrl);
+          // response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+          // response.setHeader("Location", constructedAuthUrl);
         }
       } catch (Exception e) {
         logger.error("Error in getting Authorization with Server");
