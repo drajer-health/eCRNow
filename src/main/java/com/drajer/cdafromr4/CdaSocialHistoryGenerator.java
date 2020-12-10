@@ -29,7 +29,7 @@ public class CdaSocialHistoryGenerator {
     // Then we can generte the entries. Till then it will be empty section.
     CodeType birthSex =
         CdaFhirUtilities.getCodeExtension(
-            data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_ARGO_BIRTHSEX_EXT_URL);
+            data.getPatient().getExtension(), CdaGeneratorConstants.FHIR_USCORE_BIRTHSEX_EXT_URL);
     List<Observation> pregObs = data.getPregnancyObs();
     List<Observation> travelHistory = data.getTravelObs();
 
@@ -151,12 +151,9 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForValueCD(
-            CdaFhirUtilities.getStringForType(birthSex),
-            CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_OID,
-            CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_NAME,
-            ""));
+    String birsex = CdaFhirUtilities.getStringForType(birthSex);
+
+    sb.append(CdaFhirUtilities.getBirthSexXml(birsex));
 
     // End Tag for Entry Relationship
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));

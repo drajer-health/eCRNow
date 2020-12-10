@@ -843,6 +843,41 @@ public class CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getBirthSexXml(String birthSex) {
+
+    String s = "";
+
+    if (birthSex != null && (birthSex.contentEquals("M"))) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForValueCD(
+              birthSex,
+              CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_OID,
+              CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_NAME,
+              "Male");
+    } else if (birthSex != null && (birthSex.contentEquals("F"))) {
+      s +=
+          CdaGeneratorUtils.getXmlForValueCD(
+              birthSex,
+              CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_OID,
+              CdaGeneratorConstants.BIRTH_SEX_CODESYSTEM_NAME,
+              "Female");
+    } else if (birthSex != null && (birthSex.contentEquals("UNK"))) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForNullValueCD(
+              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_UNK);
+    } else {
+
+      logger.info(" Did not find the birth sex for the patient ");
+      s +=
+          CdaGeneratorUtils.getXmlForNullValueCD(
+              CdaGeneratorConstants.VAL_EL_NAME, CdaGeneratorConstants.NF_NI);
+    }
+
+    return s;
+  }
+
   public static String getGenderXml(AdministrativeGender gender) {
 
     String s = "";
