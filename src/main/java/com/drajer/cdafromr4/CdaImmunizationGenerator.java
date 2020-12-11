@@ -11,10 +11,14 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Immunization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdaImmunizationGenerator {
 
   private CdaImmunizationGenerator() {}
+
+  private static final Logger logger = LoggerFactory.getLogger(CdaImmunizationGenerator.class);
 
   public static String generateImmunizationSection(R4FhirData data, LaunchDetails details) {
 
@@ -78,7 +82,7 @@ public class CdaImmunizationGenerator {
 
         String dt = null;
         if (imm.getOccurrenceDateTimeType() != null) {
-          dt = imm.getOccurrenceDateTimeType().toString();
+          dt = imm.getOccurrenceDateTimeType().getValue().toString();
         }
 
         Map<String, String> bodyvals = new HashMap<>();
@@ -125,10 +129,12 @@ public class CdaImmunizationGenerator {
 
         // Set up Effective Time for start and End time.
         if (imm.getOccurrenceDateTimeType() != null) {
+          logger.info(" Date Value = " + imm.getOccurrenceDateTimeType().getValue());
+          logger.info(" Date Value = " + imm.getOccurrenceDateTimeType().getValue().toString());
           sb.append(
               CdaGeneratorUtils.getXmlForEffectiveTime(
                   CdaGeneratorConstants.EFF_TIME_EL_NAME,
-                  imm.getOccurrenceDateTimeType().toString()));
+                  imm.getOccurrenceDateTimeType().getValue()));
         } else {
           sb.append(
               CdaGeneratorUtils.getXmlForNullEffectiveTime(
