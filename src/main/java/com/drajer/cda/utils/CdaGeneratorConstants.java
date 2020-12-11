@@ -95,7 +95,7 @@ public class CdaGeneratorConstants {
   // FHIR Types
 
   // FHIR Value Set URLS and values
-  public static final String FHIR_IDTYPE_SYSTEM = "http://hl7.org/fhir/v2/0203";
+  public static final String FHIR_IDTYPE_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0203";
   public static final String FHIR_IDENTIFIER_TYPE_SYSTEM =
       "http://hl7.org/fhir/ValueSet/identifier-type";
   public static final String FHIR_ARGO_RACE_EXT_URL =
@@ -142,6 +142,8 @@ public class CdaGeneratorConstants {
   public static final String CDA_MALE_CODE = "M";
   public static final String CDA_FEMALE_CODE = "F";
   public static final String CDA_UNK_GENDER = "UN";
+
+  public static final String RCTC_OID = "2.16.840.1.114222.4.11.7508";
 
   public static final String CCDA_CCD_TEMPLATE_ID1 = "2.16.840.1.113883.10.20.22.1.1";
   public static final String CCDA_CCD_TEMPLATE_ID1_EXT = "2015-08-01";

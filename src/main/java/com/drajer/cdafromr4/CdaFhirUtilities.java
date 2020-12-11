@@ -47,7 +47,9 @@ public class CdaFhirUtilities {
 
   public static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilities.class);
 
-  public static Identifier getIdentifierForType(List<Identifier> ids, String type) {
+  public static List<Identifier> getIdentifierForType(List<Identifier> ids, String type) {
+
+    List<Identifier> returnIds = new ArrayList<Identifier>();
 
     if (ids != null && !ids.isEmpty()) {
 
@@ -70,7 +72,7 @@ public class CdaFhirUtilities {
                   && coding.getCode().contentEquals(type)) {
 
                 logger.info(" Found the Identifier for Patient for type {}", type);
-                return id;
+                returnIds.add(id);
               }
             }
           }
@@ -79,7 +81,7 @@ public class CdaFhirUtilities {
     }
 
     logger.info(" Did not find the Identifier for the patient for type {}", type);
-    return null;
+    return returnIds;
   }
 
   public static Patient.ContactComponent getGuardianContact(List<ContactComponent> ccs) {

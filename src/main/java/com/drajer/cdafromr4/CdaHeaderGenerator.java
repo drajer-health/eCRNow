@@ -443,24 +443,36 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
 
-    Identifier id =
+    List<Identifier> ids =
         CdaFhirUtilities.getIdentifierForType(
             p.getIdentifier(), CdaFhirEnumConstants.FHIR_ID_TYPE_MR);
 
-    if (id != null) {
+    Boolean addOnce = true;
 
-      if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
+    if (ids != null && !ids.isEmpty()) {
 
-        logger.info(" Found Identifier with Type MR ");
+      for (Identifier id : ids) {
 
-        String system =
-            CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
-        patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
-      } else {
+        if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
 
-        logger.info(" Using Resource Identifier as id ");
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+          logger.debug(" Found Identifier with Type MR ");
+
+          String system =
+              CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
+
+          patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
+
+        } else {
+
+          logger.debug(" Using Resource Identifier as id ");
+
+          if (addOnce) {
+            patientDetails.append(
+                CdaGeneratorUtils.getXmlForII(
+                    details.getAssigningAuthorityId(), p.getId().toString()));
+            addOnce = false;
+          }
+        }
       }
 
     } else {
@@ -472,8 +484,11 @@ public class CdaHeaderGenerator {
     // Add Address.
     patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress()));
 
-    // Add Telecom
+    // Add Telecom (Phone)
     patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom()));
+
+    // Add Telecom (Email)
+    patientDetails.append(CdaFhirUtilities.getEmailXml(p.getTelecom()));
 
     // Add patient
     patientDetails.append(

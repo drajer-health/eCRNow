@@ -37,6 +37,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Enumerations.FHIRAllTypes;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionComponent;
@@ -194,42 +195,15 @@ public class PlanDefinitionProcessor {
               valuesets.add(valueSet);
             }
 
-            /*
-            usageContextList = valueSet.getUseContext();
+          } else if (bundleEntry.getResource().getResourceType().equals(ResourceType.Library)) {
+            logger.info(" Found the Library ");
+            Library lib = (Library) bundleEntry.getResource();
 
-            if (!usageContextList.isEmpty()) {
+            if (lib.getId().contains("rctc")) {
 
-            	logger.info(" Value Set Usage Context Not empty ");
-
-            		for (UsageContext usageContext : usageContextList) {
-            			if (Optional.ofNullable(usageContext).isPresent()) {
-
-            				if(usageContext.getValue() != null )
-
-            				if (usageContext.getValueCodeableConcept() != null && usageContext
-            						.getValueCodeableConcept().getText().equalsIgnoreCase("COVID-19")) {
-
-            					logger.info("Processing value set with id : " + valueSet.getId());
-
-            					valueSetService.createValueSet(valueSet);
-            					covidValuesets.add(valueSet);
-            					valuesets.add(valueSet);
-            				}
-            				else {
-
-            					logger.info(" Creating Value Set");
-            					valueSetService.createValueSet(valueSet);
-            					valuesets.add(valueSet);
-            				}
-            			}
-            		}
-            } else {
-
-            	logger.info(" Creating Value Set Grouper ");
-            	valueSetService.createValueSetGrouper(valueSet);
-            	grouperValueSets.add(valueSet);
+              logger.info(" Adding Rctc Version to the Action Repo" + lib.getVersion());
+              ActionRepo.getInstance().setRctcVersion(lib.getVersion());
             }
-            */
           }
         }
       }
