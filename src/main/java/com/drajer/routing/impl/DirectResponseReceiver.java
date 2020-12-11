@@ -30,7 +30,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class);
 
-  private static final String IMAP = "imap";
+  private static final String IMAP = "imaps";
   private static final String INBOX = "Inbox";
 
   @Autowired ApplicationUtils applicationUtils;
@@ -71,7 +71,7 @@ public class DirectResponseReceiver extends RRReceiver {
       Session session = Session.getInstance(props, null);
 
       Store store = session.getStore(IMAP);
-      int port = 143; // Integer.parseInt(prop.getProperty("port"));
+      int port = 993; // Integer.parseInt(prop.getProperty("port"));
       logger.info("Connecting to IMAP Inbox");
       store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
 
