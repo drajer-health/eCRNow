@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AESEncryption {
-	
-	private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
+
+  private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
 
   private static SecretKeySpec secretKey;
   private static byte[] key;
@@ -66,8 +65,8 @@ public class AESEncryption {
       cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
       return new String(cipher.doFinal(strToDecrypt.getBytes()));
     } catch (Exception e) {
-    	logger.error("Error while decrypting: " + e.toString());
-    } 
+      logger.error("Error while decrypting: " + e.toString());
+    }
     return null;
   }
 
