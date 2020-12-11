@@ -35,10 +35,16 @@ class ClientDetails extends Component {
             if (this.selectedClientDetails.isXdr) {
                 this.state.directType = 'xdr';
             }
+            if (this.selectedClientDetails.isRestAPI) {
+                this.state.directType = 'restApi';
+            }
             this.state.directHost = this.selectedClientDetails.directHost;
             this.state.directUserName = this.selectedClientDetails.directUser;
             this.state.directPwd = this.selectedClientDetails.directPwd;
             this.state.directRecipientAddress = this.selectedClientDetails.directRecipientAddress;
+            this.state.smtpPort = this.selectedClientDetails.smtpPort;
+            this.state.imapPort = this.selectedClientDetails.imapPort;
+            this.state.restAPIURL= this.selectedClientDetails.restAPIURL;
             this.state.xdrRecipientAddress = this.selectedClientDetails.xdrRecipientAddress;
             this.state.assigningAuthorityId = this.selectedClientDetails.assigningAuthorityId;
             this.state.startThreshold = this.selectedClientDetails.encounterStartThreshold;
@@ -146,7 +152,8 @@ class ClientDetails extends Component {
             encounterEndThreshold: this.state.endThreshold,
             isCovid: this.state.reportType === "covid19" ? true : false,
             isFullEcr: this.state.reportType === "fullecr" ? true : false,
-            debugFhirQueryAndEicr: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false
+            debugFhirQueryAndEicr: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false,
+            lastUpdated:new Date()
             // tokenIntrospectionURL: this.state.tokenIntrospectionURL ? this.state.tokenIntrospectionURL : null,
             // ehrClientId: this.state.ehrClientId ? this.state.ehrClientId : null,
             // ehrClientSecret: this.state.ehrClientSecret ? this.state.ehrClientSecret : null,
