@@ -122,10 +122,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public static Collection<Object[]> data() {
 
     List<TestDataGenerator> testDataGenerator = new ArrayList<>();
-    testDataGenerator.add(new TestDataGenerator("/test-yaml/headerSection.yaml"));
-    testDataGenerator.add(new TestDataGenerator("/test-yaml/problemSection.yaml"));
-    testDataGenerator.add(new TestDataGenerator("/test-yaml/encounterSection.yaml"));
-    testDataGenerator.add(new TestDataGenerator("/test-yaml/resultSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
 
     int totalTestcount =
         testDataGenerator.get(0).getAllTestCases().size()

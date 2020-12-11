@@ -22,7 +22,7 @@ public class TestDataGenerator {
     this.testYamlFileName = testYamlFileName;
   }
 
-  // ClassLoader classLoader = this.getClass().getClassLoader();
+  ClassLoader classLoader = this.getClass().getClassLoader();
 
   static ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
 
@@ -30,7 +30,7 @@ public class TestDataGenerator {
 
     if (testData == null) {
       try {
-        InputStream is = this.getClass().getResourceAsStream(this.testYamlFileName);
+        InputStream is = classLoader.getResourceAsStream(this.testYamlFileName);
         testData = ymlMapper.readValue(is, TestDataVO.class);
 
       } catch (IOException e) {
