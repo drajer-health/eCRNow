@@ -150,7 +150,6 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     POCDMT000040ClinicalDocument clinicalDoc =
         TestUtils.getClinicalDocXml(createEicr.getEicrData());
-
     EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles, expectedEicrDoc);
   }
 

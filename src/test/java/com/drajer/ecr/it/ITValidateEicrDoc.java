@@ -91,7 +91,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public void launchTestSetUp() throws IOException {
     logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
-    
+
     // Data Setup
     createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
@@ -132,7 +132,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
             + testDataGenerator.get(1).getAllTestCases().size()
             + testDataGenerator.get(2).getAllTestCases().size()
             + testDataGenerator.get(3).getAllTestCases().size();
-    
+
     Object[][] data = new Object[totalTestcount][7];
 
     int count = 0;
