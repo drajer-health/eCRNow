@@ -15,6 +15,7 @@ public class TestDataGenerator {
   String testYamlFileName;
 
   ObjectMapper mapper = new ObjectMapper();
+  private TestDataVO testData = null;
 
   public TestDataGenerator(String testYamlFileName) {
     super();
@@ -26,13 +27,15 @@ public class TestDataGenerator {
   static ObjectMapper ymlMapper = new ObjectMapper(new YAMLFactory());
 
   private TestDataVO getTestDataVO() {
-    TestDataVO testData = null;
-    try {
-      InputStream is = this.getClass().getResourceAsStream(this.testYamlFileName);
-      testData = ymlMapper.readValue(is, TestDataVO.class);
 
-    } catch (IOException e) {
-      System.out.println("Error in reading file:" + testYamlFileName);
+    if (testData == null) {
+      try {
+        InputStream is = this.getClass().getResourceAsStream(this.testYamlFileName);
+        testData = ymlMapper.readValue(is, TestDataVO.class);
+
+      } catch (IOException e) {
+        System.out.println("Error in reading file:" + testYamlFileName);
+      }
     }
     return testData;
   }

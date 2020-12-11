@@ -14,6 +14,7 @@ import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -47,9 +48,29 @@ import org.w3c.dom.NodeList;
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private String testCaseId;
+  String clientDetailsFile;
+  String systemLaunchFile;
+  Map<String, List<String>> allResourceFiles;
+  Map<String, ?> allResourceMapping;
+  Map<String, ?> allOtherMapping;
+  List<Map<String, String>> fieldsToValidate;
 
-  public ITValidateEicrDoc(String testCaseId) {
+  public ITValidateEicrDoc(
+      String testCaseId,
+      String clientDetails,
+      String payLoad,
+      Map<String, List<String>> resourceFiles,
+      List<Map<String, String>> validateFields,
+      Map<String, ?> resourceMapping,
+      Map<String, ?> otherMapping) {
+
     this.testCaseId = testCaseId;
+    this.clientDetailsFile = clientDetails;
+    this.systemLaunchFile = payLoad;
+    this.allResourceFiles = resourceFiles;
+    this.fieldsToValidate = validateFields;
+    this.allResourceMapping = resourceMapping;
+    this.allOtherMapping = otherMapping;
   }
 
   private static final Logger logger = LoggerFactory.getLogger(ITValidateEicrDoc.class);
@@ -61,17 +82,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   private String encounterID;
   private String fhirServerUrl;
 
-  static TestDataGenerator testDataGenerator;
-  String clientDetailsFile;
-  String systemLaunchFile;
-  String expectedEICRFile;
-
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
-
-  List<String> validationSectionList;
-  Map<String, List<String>> allResourceFiles;
-  List<Map<String, String>> fieldsToValidate;
 
   WireMockHelper stubHelper;
 
@@ -79,12 +91,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public void launchTestSetUp() throws IOException {
     logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
-    clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
-    systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
-
-    allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
-    fieldsToValidate = testDataGenerator.getValidate(testCaseId);
-
+    
     // Data Setup
     createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
@@ -100,8 +107,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
     logger.info("Creating wiremockstubs..");
-    stubHelper.stubResources(testDataGenerator.getResourceMappings(testCaseId));
-    stubHelper.stubAuthAndMetadata(testDataGenerator.getOtherMappings(testCaseId));
+    stubHelper.stubResources(allResourceMapping);
+    stubHelper.stubAuthAndMetadata(allOtherMapping);
   }
 
   @After
@@ -113,13 +120,38 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("/test-yaml/resultSection.yaml");
-    Set<String> testCaseSet = testDataGenerator.getAllTestCases();
-    Object[][] data = new Object[testCaseSet.size()][1];
+
+    List<TestDataGenerator> testDataGenerator = new ArrayList<>();
+    testDataGenerator.add(new TestDataGenerator("/test-yaml/headerSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("/test-yaml/problemSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("/test-yaml/encounterSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("/test-yaml/resultSection.yaml"));
+
+    int totalTestcount =
+        testDataGenerator.get(0).getAllTestCases().size()
+            + testDataGenerator.get(1).getAllTestCases().size()
+            + testDataGenerator.get(2).getAllTestCases().size()
+            + testDataGenerator.get(3).getAllTestCases().size();
+    
+    Object[][] data = new Object[totalTestcount][7];
+
     int count = 0;
-    for (String testCase : testCaseSet) {
-      data[count][0] = testCase;
-      count++;
+    for (TestDataGenerator testData : testDataGenerator) {
+
+      Set<String> testCaseSet = testData.getAllTestCases();
+
+      for (String testCase : testCaseSet) {
+
+        data[count][0] = testCase;
+        data[count][1] = testData.getTestFile(testCase, "ClientDataToBeSaved");
+        data[count][2] = testData.getTestFile(testCase, "SystemLaunchPayload");
+        data[count][3] = testData.getResourceFiles(testCase);
+        data[count][4] = testData.getValidate(testCase);
+        data[count][5] = testData.getResourceMappings(testCase);
+        data[count][6] = testData.getOtherMappings(testCase);
+
+        count++;
+      }
     }
 
     return Arrays.asList(data);
