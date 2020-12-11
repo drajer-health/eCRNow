@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 public class DirectResponseReceiver extends RRReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class);
-  
-  private static final String IMAP="imaps";
-  private static final String INBOX="Inbox";
+
+  private static final String IMAP = "imaps";
+  private static final String INBOX = "Inbox";
 
   @Override
   public Object receiveRespone(Object context) {
