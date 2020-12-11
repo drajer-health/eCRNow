@@ -40,7 +40,7 @@ testCase:
       count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/text/table/tbody/tr[1]"
       'td[1]/content': "Inpatient"
-      'td[2]/content': "20200512191056"
+#      'td[2]/content': "20200512191056"
     - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/id"

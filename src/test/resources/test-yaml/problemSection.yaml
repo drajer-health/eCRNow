@@ -60,7 +60,7 @@ testCase:
       'code/@codeSystemName': "HL7ActClass"
       'code/@displayName': "Concern"
       'statusCode/@code': "active"
-      'effectiveTime/low/@value': "20200514"
+#      'effectiveTime/low/@value': "20200514"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship"
       count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]"
@@ -86,7 +86,7 @@ testCase:
       'code/translation/@codeSystemName': "LOINC"
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200514"
+#      'effectiveTime/low/@value': "20200514"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
@@ -125,7 +125,7 @@ testCase:
       'code/translation/@codeSystemName': "LOINC"
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200514"
+#      'effectiveTime/low/@value': "20200514"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
 #      'type': "CD"
       '@code': "U07.1"
@@ -187,7 +187,7 @@ testCase:
       'code/@codeSystemName': "HL7ActClass"
       'code/@displayName': "Concern"
       'statusCode/@code': "active"
-      'effectiveTime/low/@value': "20200429"
+#      'effectiveTime/low/@value': "20200429"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship"
       count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]"
@@ -213,7 +213,7 @@ testCase:
       'code/translation/@codeSystemName': "LOINC"
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200429"
+#      'effectiveTime/low/@value': "20200429"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
@@ -252,7 +252,7 @@ testCase:
       'code/translation/@codeSystemName': "LOINC"
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200429"
+ #     'effectiveTime/low/@value': "20200429"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
       '@type': "CD"
       '@code': "840544004"
@@ -286,7 +286,7 @@ testCase:
       'code/translation/@codeSystemName': "LOINC"
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200429"
+#      'effectiveTime/low/@value': "20200429"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value/translation"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value"
@@ -344,7 +344,7 @@ testCase:
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act"
 #      'id[1]/@root': ""
       'statusCode/@code': "active"
-      'effectiveTime/low/@value': "20200427"
+#      'effectiveTime/low/@value': "20200427"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship"
       count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/id"
@@ -353,7 +353,7 @@ testCase:
       'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id[1]/@extension': "d2572356773"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200427"
+#      'effectiveTime/low/@value': "20200427"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
@@ -368,7 +368,7 @@ testCase:
       'translation/@displayName': "Coronavirus infection, unspecified"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200427"
+#      'effectiveTime/low/@value': "20200427"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
       '@type': "CD"
       '@code': "B34.2"
@@ -385,7 +385,7 @@ testCase:
       'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id[1]/@extension': "d2572356771"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200425"
+#      'effectiveTime/low/@value': "20200425"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value/translation"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value"
