@@ -209,8 +209,15 @@
         }
       ],
       "address": {
+        "id": "CI-24326634-0",
         "use": "home",
-        "text": "\nUS",
+        "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+        "line": [
+          "2802 ROCK CREEK PKWY"
+        ],
+        "city": "KANSAS CITY",
+        "state": "MO",
+        "postalCode": "64117",
         "country": "US",
         "period": {
           "start": "2020-09-09T22:24:03.000Z"
@@ -264,8 +271,15 @@
         }
       ],
       "address": {
+        "id": "CI-24326634-0",
         "use": "home",
-        "text": "\nUS",
+        "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+        "line": [
+          "2802 ROCK CREEK PKWY"
+        ],
+        "city": "KANSAS CITY",
+        "state": "MO",
+        "postalCode": "64117",
         "country": "US",
         "period": {
           "start": "2020-09-09T22:24:03.000Z"

@@ -225,4 +225,12 @@ public class TestUtils {
 
     return clinicalDoc;
   }
+
+  public static Document getXmlDocuments(String xmlContent)
+      throws ParserConfigurationException, SAXException, IOException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document document = builder.parse(IOUtils.toInputStream(xmlContent.replace("\n", "")));
+    return document;
+  }
 }
