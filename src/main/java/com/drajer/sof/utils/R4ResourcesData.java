@@ -277,7 +277,7 @@ public class R4ResourcesData {
     List<Observation> observations = new ArrayList<>();
     observations = filterObservation(bundle, encounter, start, end);
 
-    for (String travelSnomedCode : QueryConstants.TRAVEL_HISTORY_SNOMED_CODES) {
+    for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
       Bundle travelHisWithSNOMEDCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
@@ -304,7 +304,7 @@ public class R4ResourcesData {
       Date start,
       Date end) {
     List<Observation> observations = new ArrayList<>();
-    for (String occupationCode : QueryConstants.OCCUPATION_SNOMED_CODES) {
+    for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
       Bundle occupationCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
@@ -319,7 +319,7 @@ public class R4ResourcesData {
       }
     }
 
-    for (String occupationCode : QueryConstants.OCCUPATION_LOINC_CODES) {
+    for (String occupationCode : QueryConstants.getOccupationLoincCodes()) {
       Bundle occupationCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
@@ -345,8 +345,9 @@ public class R4ResourcesData {
       Date start,
       Date end) {
     List<Condition> conditions = new ArrayList<>();
-    for (String pregnancySnomedCode : QueryConstants.PREGNANCY_SNOMED_CODES) {
-      Bundle pregnancyCodesbundle =
+
+    for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
+      Bundle occupationCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
                   launchDetails,

@@ -15,8 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +37,6 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(Parameterized.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = SpringConfiguration.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -93,7 +90,7 @@ public abstract class BaseIntegrationTest {
     return systemLaunchInputData;
   }
 
-  protected void createTestClientDetailsInDB(String clientDetailsFile) throws IOException {
+  protected void createClientDetails(String clientDetailsFile) throws IOException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
     clientDetailString = clientDetailString.replace("port", "" + wireMockHttpPort);
