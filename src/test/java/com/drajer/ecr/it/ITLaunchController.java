@@ -26,6 +26,7 @@ import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
@@ -118,6 +119,7 @@ public class ITLaunchController extends BaseIntegrationTest {
   }
 
   @Test
+  @Ignore
   public void testSystemLaunch() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);

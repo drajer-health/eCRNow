@@ -13,6 +13,7 @@ import java.util.Map;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
@@ -317,6 +318,21 @@ public class R4ResourcesData {
         observations.add((Observation) entryComp.getResource());
       }
     }
+
+    for (String occupationCode : QueryConstants.OCCUPATION_LOINC_CODES) {
+      Bundle occupationCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  OBSERVATION,
+                  occupationCode,
+                  QueryConstants.LOINC_CODE_SYSTEM);
+      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+        observations.add((Observation) entryComp.getResource());
+      }
+    }
     return observations;
   }
 
@@ -330,7 +346,7 @@ public class R4ResourcesData {
       Date end) {
     List<Condition> conditions = new ArrayList<>();
     for (String pregnancySnomedCode : QueryConstants.PREGNANCY_SNOMED_CODES) {
-      Bundle occupationCodesbundle =
+      Bundle pregnancyCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
                   launchDetails,
@@ -339,8 +355,14 @@ public class R4ResourcesData {
                   CONDITION,
                   pregnancySnomedCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
-      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-        conditions.add((Condition) entryComp.getResource());
+      for (BundleEntryComponent entryComp : pregnancyCodesbundle.getEntry()) {
+        Condition condition = (Condition) entryComp.getResource();
+        List<Coding> conditionCodes = condition.getCode().getCoding();
+        for (Coding conditionCoding : conditionCodes) {
+          if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)) {
+            conditions.add(condition);
+          }
+        }
       }
     }
     return conditions;
@@ -882,10 +904,6 @@ public class R4ResourcesData {
                         context,
                         "Practitioner",
                         practitionerReference.getReferenceElement().getIdPart());
-            logger.info("Practitioner Id======>" + practitioner.getIdElement().getIdPart());
-            logger.info(
-                "Map Contains===>"
-                    + practitionerMap.containsKey(practitioner.getIdElement().getIdPart()));
             if (!practitionerMap.containsKey(practitioner.getIdElement().getIdPart())) {
               practitionerList.add(practitioner);
               practitionerMap.put(

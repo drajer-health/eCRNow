@@ -185,7 +185,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getNFXMLFoElement(String element, String nf) {
+  public static String getNFXMLForElement(String element, String nf) {
     return CdaGeneratorConstants.START_XMLTAG
         + element
         + " nullFlavor="
@@ -1450,6 +1450,39 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.VAL_EL_NAME
         + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
         + "\n";
+  }
+
+  public static String getXmlForValueString(String value) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.ST_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + value
+        + CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.FORWARD_SLASH
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + "\n";
+  }
+
+  public static String getNFXmlForValueString(String value) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.ST_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + value
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
   public static String getXmlForQuantity(

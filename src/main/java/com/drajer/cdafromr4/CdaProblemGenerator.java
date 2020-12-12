@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Set;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -169,19 +168,8 @@ public class CdaProblemGenerator {
                   CdaGeneratorConstants.COMPLETED_STATUS));
         }
 
-        Date onset = null;
-        Date abatement = null;
-        if (pr.getOnset() != null && pr.getOnset() instanceof DateTimeType) {
-
-          DateTimeType dt = (DateTimeType) pr.getOnset();
-          onset = dt.getValue();
-        }
-
-        if (pr.getAbatement() != null && pr.getAbatement() instanceof DateTimeType) {
-
-          DateTimeType dt = (DateTimeType) pr.getAbatement();
-          abatement = dt.getValue();
-        }
+        Date onset = CdaFhirUtilities.getActualDate(pr.getOnset());
+        Date abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
