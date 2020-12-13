@@ -347,7 +347,7 @@ public class R4ResourcesData {
     List<Condition> conditions = new ArrayList<>();
 
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
-      Bundle occupationCodesbundle =
+      Bundle pregnancyCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
                   launchDetails,
@@ -897,19 +897,15 @@ public class R4ResourcesData {
         for (EncounterParticipantComponent participant : participants) {
           if (participant.getIndividual() != null) {
             Reference practitionerReference = participant.getIndividual();
-            Practitioner practitioner =
-                (Practitioner)
-                    fhirContextInitializer.getResouceById(
-                        launchDetails,
-                        client,
-                        context,
-                        "Practitioner",
-                        practitionerReference.getReferenceElement().getIdPart());
-            if (!practitionerMap.containsKey(practitioner.getIdElement().getIdPart())) {
-              practitionerList.add(practitioner);
-              practitionerMap.put(
-                  practitioner.getIdElement().getIdPart(), practitioner.getResourceType().name());
+            String practitionerID = practitionerReference.getReferenceElement().getIdPart();
+            if (!practitionerMap.containsKey(practitionerID)) {
+              Practitioner practitioner =
+                  (Practitioner)
+                      fhirContextInitializer.getResouceById(
+                          launchDetails, client, context, "Practitioner", practitionerID);
               if (practitioner != null) {
+                practitionerList.add(practitioner);
+                practitionerMap.put(practitionerID, practitioner.getResourceType().name());
                 BundleEntryComponent practitionerEntry =
                     new BundleEntryComponent().setResource(practitioner);
                 bundle.addEntry(practitionerEntry);
@@ -917,7 +913,9 @@ public class R4ResourcesData {
             }
           }
         }
-        r4FhirData.setPractitionersList(practitionerList);
+        if (practitionerList != null) {
+          r4FhirData.setPractitionersList(practitionerList);
+        }
       }
       if (encounter.getServiceProvider() != null) {
         Reference organizationReference = encounter.getServiceProvider();

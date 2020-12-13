@@ -98,14 +98,14 @@ public class CdaHeaderGenerator {
           }
         }
 
-        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter()));
+        eICRHeader.append(getAuthorXml(data.getPractitionersList().get(0), data.getEncounter()));
 
         eICRHeader.append(getCustodianXml(data.getOrganization(), details));
 
         eICRHeader.append(
             getEncompassingEncounter(
                 data.getEncounter(),
-                data.getPractitioner(),
+                data.getPractitionersList().get(0),
                 data.getLocation(),
                 data.getOrganization(),
                 details));

@@ -31,8 +31,8 @@ testCase:
       title: "PROBLEMS - DIAGNOSES"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/thead/tr/th"
       count: 2
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
-#      count: 1
+    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
+      count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr[1]/td"
       count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table"
@@ -40,8 +40,8 @@ testCase:
       'thead/tr/th[2]': "Problem Status"
       'tbody/tr[1]/td[1]/content': "Disease caused by 2019-nCoV"
       'tbody/tr[1]/td[2]/content': "Active"
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
-#      count: 1
+    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
+      count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]"
       '@typeCode': "DRIV"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/templateId"
@@ -90,7 +90,7 @@ testCase:
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
-#     'type': "CD"
+      '@type': "CD"
       '@code': "840539006"
       '@codeSystem': "2.16.840.1.113883.6.96"
       '@codeSystemName': "sct"
@@ -127,7 +127,7 @@ testCase:
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200514"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
-#      'type': "CD"
+      '@type': "CD"
       '@code': "U07.1"
       '@codeSystem': "2.16.840.1.113883.6.90"
       '@codeSystemName': "icd-10-cm"
@@ -160,15 +160,15 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
-#      count: 2
+    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
+      count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table"
       'tbody/tr[1]/td[1]/content': "Suspected disease caused by 2019-nCoV"
       'tbody/tr[1]/td[2]/content': "Active"
       'tbody/tr[2]/td[1]/content': "Disease caused by 2019-nCoV"
       'tbody/tr[2]/td[2]/content': "Active"
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
-#      count: 2
+    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
+      count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]"
       '@typeCode': "DRIV"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/templateId"
@@ -330,15 +330,15 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
-#      count: 2
+    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
+      count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table"
       'tbody/tr[1]/td[1]/content': "Coronavirus infection (disorder)"
       'tbody/tr[1]/td[2]/content': "Active"
       'tbody/tr[2]/td[1]/content': "Suspected coronavirus infection (situation)"
       'tbody/tr[2]/td[2]/content': "Active"
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
-#      count: 2
+    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
+      count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/id"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act"

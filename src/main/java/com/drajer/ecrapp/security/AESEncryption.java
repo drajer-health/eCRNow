@@ -31,8 +31,6 @@ public class AESEncryption {
 
   private static String secret;
 
-  private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
-
   public static void setKey(String myKey) {
     MessageDigest sha = null;
     try {
