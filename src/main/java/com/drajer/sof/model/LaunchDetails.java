@@ -94,7 +94,7 @@ public class LaunchDetails {
   private String assigningAuthorityId;
 
   @Column(name = "set_id", nullable = true) // Status can be active or completed.
-  private String setId;
+  private Integer setId;
 
   @Column(name = "ver_number", nullable = true) // Status can be active or completed.
   private String versionNumber;
@@ -179,11 +179,11 @@ public class LaunchDetails {
     this.assigningAuthorityId = assigningAuthorityId;
   }
 
-  public String getSetId() {
+  public Integer getSetId() {
     return setId;
   }
 
-  public void setSetId(String setId) {
+  public void setSetId(Integer setId) {
     this.setId = setId;
   }
 

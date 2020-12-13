@@ -135,6 +135,8 @@ public class CdaGeneratorConstants {
   public static final String FHIR_CVX_URL = "http://hl7.org/fhir/sid/cvx";
   public static final String FHIR_RXNORM_URL = "http://www.nlm.nih.gov/research/umls/rxnorm";
   public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
+  public static final String FHIR_ENCOUNTER_CLASS_URL =
+      "http://terminology.hl7.org/CodeSystem/v3-ActCode";
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
@@ -449,8 +451,10 @@ public class CdaGeneratorConstants {
   public static final String ALLERGY_OBS_TEMPLATE_ID_EXT = "2014-06-09";
   public static final String ALLERGY_CONC_ACT_CODE = "CONC";
   public static final String ALLERGY_CONC_ACT_NAME = "Concern";
-  public static final String ALLERGY_OBS_ASSERTION = "ASSERTION";
-  public static final String ALLERGY_OBS_ASSERTION_CODESYSTEM = "2.16.840.1.113883.5.4";
+  public static final String OBS_ASSERTION = "ASSERTION";
+  public static final String OBS_ASSERTION_DISPLAY = "Assertion";
+  public static final String OBS_ASSERTION_CODESYSTEM = "2.16.840.1.113883.5.4";
+  public static final String OBS_ASSERTION_CODESYSTEM_NAME = "HL7ActCode";
   public static final String MED_ALLERGY_CODE = "419511003";
   public static final String MED_ALLERGY_CODE_DISPLAY_NAME =
       "Propensity to adverse reaction to drug";
@@ -490,10 +494,25 @@ public class CdaGeneratorConstants {
   public static final String SOC_HISTORY_SEC_NAME = "Social History";
   public static final String SOC_HISTORY_SEC_TITLE = "SOCIAL HISTORY";
   public static final String SOC_HISTORY_SEC_TEMPLATE_ID_EXT = "2015-08-01";
+  public static final String SOC_HISTORY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.38";
+  public static final String SOC_HISTORY_OBS_TEMPLATE_ID_EXT = "2015-08-01";
+  public static final String SNOMED_OCC_HISTORY_CODE = "364703007";
+  public static final String SNOMED_OCC_HISTORY_CODE_DISPLAY = "Employment Detail";
+  public static final String LOINC_OCC_HISTORY_CODE = "11295-3";
+  public static final String LOINC_OCC_HISTORY_CODE_DISPLAY = "Current employment - Reported";
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.200";
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
+  public static final String PREGNANCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
+  public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.1";
+  public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID_EXT = "2016-12-01";
+  public static final String TRAVEL_HISTORY_SNOMED_CODE = "420008001";
+  public static final String TRAVEL_HISTORY_SNOMED_CODE_DISPLAY = "Travel";
   public static final String BIRTH_SEX_CODE = "76689-9";
   public static final String BIRTH_SEX_DISPLAY = "Birth Sex";
+  public static final String PREGNANCY_CONDITION_DISPLAY = "Pregnancy Condition";
+  public static final String PREGNANCY_OBSERVATION_DISPLAY = "Pregnancy Observation";
+  public static final String OCCUPATION_HISTORY_DISPLAY = "Occupation History";
+  public static final String TRAVEL_HISTORY_DISPLAY = "Travel History";
   public static final String BIRTH_SEX_CODESYSTEM_OID = "2.16.840.1.113883.5.1";
   public static final String BIRTH_SEX_CODESYSTEM_NAME = "Administrative Gender";
 
@@ -770,6 +789,7 @@ public class CdaGeneratorConstants {
   public static final String IVL_TS_TYPE = "IVL_TS";
   public static final String INT_TYPE = "INT";
   public static final String ED_TYPE = "ED";
+  public static final String ST_TYPE = "ST";
 
   // Table Values
   public static final int TABLE_BORDER = 1;

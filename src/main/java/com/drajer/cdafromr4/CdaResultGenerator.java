@@ -136,12 +136,13 @@ public class CdaResultGenerator {
         lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
         // Fix the Code to be the same as the result code..
+        logger.info("Find the Loinc Code as a priority first for Lab Results");
         String codeXml =
             CdaFhirUtilities.getCodingXmlForCodeSystem(
                 cds,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_LOINC_URL,
-                true);
+                false);
 
         if (!codeXml.isEmpty()) {
           lrEntry.append(codeXml);
@@ -171,12 +172,13 @@ public class CdaResultGenerator {
 
         lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
+        logger.info("Find the Loinc Code as priority for Lab Results");
         codeXml =
             CdaFhirUtilities.getCodingXmlForCodeSystem(
                 cds,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_LOINC_URL,
-                true);
+                false);
 
         if (!codeXml.isEmpty()) {
           lrEntry.append(codeXml);

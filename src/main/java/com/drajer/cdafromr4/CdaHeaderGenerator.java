@@ -75,7 +75,7 @@ public class CdaHeaderGenerator {
           CdaGeneratorUtils.getXmlForIIWithElName(
               CdaGeneratorConstants.SET_ID_EL_NAME,
               details.getAssigningAuthorityId(),
-              details.getSetId()));
+              String.valueOf(details.getSetId())));
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForValue(
@@ -98,14 +98,14 @@ public class CdaHeaderGenerator {
           }
         }
 
-        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter()));
+        eICRHeader.append(getAuthorXml(data.getPractitionersList().get(0), data.getEncounter()));
 
         eICRHeader.append(getCustodianXml(data.getOrganization(), details));
 
         eICRHeader.append(
             getEncompassingEncounter(
                 data.getEncounter(),
-                data.getPractitioner(),
+                data.getPractitionersList().get(0),
                 data.getLocation(),
                 data.getOrganization(),
                 details));

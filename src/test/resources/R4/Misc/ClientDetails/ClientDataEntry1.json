@@ -11,7 +11,7 @@
   "isRestAPI": true,
   "directHost": "ett.healthit.gov",
   "directUser": "test@ett.healthit.gov",
-  "directPwd": "12345",
+  "directPwd": "ecrtest",
   "directRecipientAddress": "connectathon@aimsplatform.sandbox.dmhisp.com",
   "xdrRecipientAddress": null,
   "restAPIURL": "http://localhost:port/directurl",

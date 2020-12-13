@@ -13,6 +13,7 @@ import java.util.Map;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
@@ -317,6 +318,21 @@ public class R4ResourcesData {
         observations.add((Observation) entryComp.getResource());
       }
     }
+
+    for (String occupationCode : QueryConstants.getOccupationLoincCodes()) {
+      Bundle occupationCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  OBSERVATION,
+                  occupationCode,
+                  QueryConstants.LOINC_CODE_SYSTEM);
+      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+        observations.add((Observation) entryComp.getResource());
+      }
+    }
     return observations;
   }
 
@@ -329,8 +345,9 @@ public class R4ResourcesData {
       Date start,
       Date end) {
     List<Condition> conditions = new ArrayList<>();
+
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
-      Bundle occupationCodesbundle =
+      Bundle pregnancyCodesbundle =
           (Bundle)
               resourceData.getResourceByPatientIdAndCode(
                   launchDetails,
@@ -339,8 +356,14 @@ public class R4ResourcesData {
                   CONDITION,
                   pregnancySnomedCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
-      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-        conditions.add((Condition) entryComp.getResource());
+      for (BundleEntryComponent entryComp : pregnancyCodesbundle.getEntry()) {
+        Condition condition = (Condition) entryComp.getResource();
+        List<Coding> conditionCodes = condition.getCode().getCoding();
+        for (Coding conditionCoding : conditionCodes) {
+          if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)) {
+            conditions.add(condition);
+          }
+        }
       }
     }
     return conditions;
@@ -869,27 +892,30 @@ public class R4ResourcesData {
       r4FhirData.setEncounter(encounter);
       if (encounter.getParticipant() != null) {
         List<Practitioner> practitionerList = new ArrayList<Practitioner>();
+        Map<String, String> practitionerMap = new HashMap<String, String>();
         List<EncounterParticipantComponent> participants = encounter.getParticipant();
         for (EncounterParticipantComponent participant : participants) {
           if (participant.getIndividual() != null) {
             Reference practitionerReference = participant.getIndividual();
-            Practitioner practitioner =
-                (Practitioner)
-                    fhirContextInitializer.getResouceById(
-                        launchDetails,
-                        client,
-                        context,
-                        "Practitioner",
-                        practitionerReference.getReferenceElement().getIdPart());
-            practitionerList.add(practitioner);
-            if (practitioner != null) {
-              BundleEntryComponent practitionerEntry =
-                  new BundleEntryComponent().setResource(practitioner);
-              bundle.addEntry(practitionerEntry);
+            String practitionerID = practitionerReference.getReferenceElement().getIdPart();
+            if (!practitionerMap.containsKey(practitionerID)) {
+              Practitioner practitioner =
+                  (Practitioner)
+                      fhirContextInitializer.getResouceById(
+                          launchDetails, client, context, "Practitioner", practitionerID);
+              if (practitioner != null) {
+                practitionerList.add(practitioner);
+                practitionerMap.put(practitionerID, practitioner.getResourceType().name());
+                BundleEntryComponent practitionerEntry =
+                    new BundleEntryComponent().setResource(practitioner);
+                bundle.addEntry(practitionerEntry);
+              }
             }
           }
         }
-        r4FhirData.setPractitionersList(practitionerList);
+        if (practitionerList != null) {
+          r4FhirData.setPractitionersList(practitionerList);
+        }
       }
       if (encounter.getServiceProvider() != null) {
         Reference organizationReference = encounter.getServiceProvider();

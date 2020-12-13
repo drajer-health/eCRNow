@@ -869,8 +869,7 @@ public class Dstu2CdaFhirUtilities {
 
         CodeDt cd = (CodeDt) dt;
 
-        if (!valFlag)
-          val += CdaGeneratorUtils.getNFXMLFoElement(elName, CdaGeneratorConstants.NF_NI);
+        if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
       }
 

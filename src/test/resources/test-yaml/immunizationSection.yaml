@@ -44,8 +44,8 @@ testCase:
       title: "IMMUNIZATIONS"
     - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/thead/tr/th"
       count: 2
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/tbody/tr"
-#      count: 3
+    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/tbody/tr"
+      count: 3
     - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/tbody/tr[1]/td"
       count: 2
     - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table"
@@ -57,8 +57,8 @@ testCase:
 #      'tbody/tr[2]/td[2]/content': "2000"
 #      'tbody/tr[3]/td[1]/content': "influenza virus vaccine, live, attenuated, for intranasal use"
 #      'tbody/tr[3]/td[2]/content': "2019"
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry"
-#      count: 3
+    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry"
+      count: 3
     - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]"
       '@typeCode': "DRIV"
     - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration/templateId"

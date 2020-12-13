@@ -1,5 +1,8 @@
 package com.drajer.ecr.it.common;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestUtils;
@@ -20,7 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
@@ -85,24 +93,17 @@ public abstract class BaseIntegrationTest {
   protected void createClientDetails(String clientDetailsFile) throws IOException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
-    clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
+    clientDetailString = clientDetailString.replace("port", "" + wireMockHttpPort);
 
-    String fhirServerBaseURL =
-        clientDetails.getFhirServerBaseURL().replace("port", "" + wireMockHttpPort);
-    clientDetails.setFhirServerBaseURL(fhirServerBaseURL);
+    headers.setContentType(MediaType.APPLICATION_JSON);
 
-    if (clientDetails.getRestAPIURL() != null) {
-      String restAPI = clientDetails.getRestAPIURL().replace("port", "" + wireMockHttpPort);
-      clientDetails.setRestAPIURL(restAPI);
-    }
-    if (clientDetails.getFhirServerBaseURL() != null) {
-      String ehrAuthUrl =
-          clientDetails.getFhirServerBaseURL().replace("port", "" + wireMockHttpPort);
-      clientDetails.setFhirServerBaseURL(ehrAuthUrl);
-    }
-    String tokenURL = clientDetails.getTokenURL().replace("port", "" + wireMockHttpPort);
-    clientDetails.setTokenURL(tokenURL);
-    session.save(clientDetails);
+    HttpEntity<String> entity = new HttpEntity<String>(clientDetailString, headers);
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
+    clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+
+    assertEquals("Failed to save client details", HttpStatus.OK, response.getStatusCode());
   }
 
   protected String createURLWithPort(String uri) {

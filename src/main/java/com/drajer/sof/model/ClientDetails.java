@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import jline.internal.Log;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -323,28 +322,26 @@ public class ClientDetails {
 
     logger.info(" **** Printing Client Details **** ");
 
-    Log.info(" Id = " + id);
-    Log.info(" Provider Launch = " + isProvider);
-    Log.info(" System Launch = " + isSystem);
-    Log.info(" Client Id = " + clientId);
-    Log.info(" Client Secret = " + clientSecret);
-    Log.info(" FHIR Server URL = " + fhirServerBaseURL);
-    Log.info(" Token URL = " + tokenURL);
-    Log.info(" Scopes = " + scopes);
-    Log.info(" Is Direct ? = " + isDirect);
-    Log.info(" Is XDR = " + isXdr);
-    Log.info(" Is Rest API = " + isRestAPI);
-    Log.info(" Direct Host = " + directHost);
-    Log.info(" Direct pwd = " + directPwd);
-    Log.info(" Direct Recipient Address = " + directRecipientAddress);
-    Log.info(" XDR Recipient Address = " + xdrRecipientAddress);
-    Log.info(" Rest API URL = " + restAPIURL);
-    Log.info(" Assigning Authority Id = " + assigningAuthorityId);
-    Log.info(" Encounter Start Threshold = " + encounterStartThreshold);
-    Log.info(" Encounter End Threshold = " + encounterEndThreshold);
-    Log.info(" Is Covid = " + isCovid);
-    Log.info(" Is Full ECR = " + isFullEcr);
-    Log.info(" Debug Fhir Query And Eicr " + debugFhirQueryAndEicr);
+    logger.info(" Id = " + id);
+    logger.info(" Provider Launch = " + isProvider);
+    logger.info(" System Launch = " + isSystem);
+    logger.info(" Client Id = " + clientId);
+    logger.info(" FHIR Server URL = " + fhirServerBaseURL);
+    logger.info(" Token URL = " + tokenURL);
+    logger.info(" Scopes = " + scopes);
+    logger.info(" Is Direct ? = " + isDirect);
+    logger.info(" Is XDR = " + isXdr);
+    logger.info(" Is Rest API = " + isRestAPI);
+    logger.info(" Direct Host = " + directHost);
+    logger.info(" Direct Recipient Address = " + directRecipientAddress);
+    logger.info(" XDR Recipient Address = " + xdrRecipientAddress);
+    logger.info(" Rest API URL = " + restAPIURL);
+    logger.info(" Assigning Authority Id = " + assigningAuthorityId);
+    logger.info(" Encounter Start Threshold = " + encounterStartThreshold);
+    logger.info(" Encounter End Threshold = " + encounterEndThreshold);
+    logger.info(" Is Covid = " + isCovid);
+    logger.info(" Is Full ECR = " + isFullEcr);
+    logger.info(" Debug Fhir Query And Eicr " + debugFhirQueryAndEicr);
 
     logger.info(" **** End Printing Client Details **** ");
   }

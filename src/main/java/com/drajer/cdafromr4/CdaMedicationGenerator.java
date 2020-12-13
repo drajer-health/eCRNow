@@ -171,7 +171,7 @@ public class CdaMedicationGenerator {
                 CdaGeneratorConstants.CODE_EL_NAME,
                 false,
                 CdaGeneratorConstants.FHIR_RXNORM_URL,
-                true);
+                false);
 
         if (!codeXml.isEmpty()) {
           sb.append(codeXml);
