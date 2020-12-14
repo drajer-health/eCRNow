@@ -252,8 +252,9 @@ public class R4ResourcesData {
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = filterObservation(bundle, encounter, start, end);
-
+    if (bundle != null) {
+      observations = filterObservation(bundle, encounter, start, end);
+    }
     return observations;
   }
 
@@ -275,7 +276,9 @@ public class R4ResourcesData {
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
-    observations = filterObservation(bundle, encounter, start, end);
+    if (bundle != null) {
+      observations = filterObservation(bundle, encounter, start, end);
+    }
 
     for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
       Bundle travelHisWithSNOMEDCodesbundle =
@@ -288,8 +291,12 @@ public class R4ResourcesData {
                   travelSnomedCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
       List<Observation> travelobs = new ArrayList<>();
-      travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
-      observations.addAll(travelobs);
+      if (travelHisWithSNOMEDCodesbundle != null) {
+        travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
+      }
+      if (travelobs != null && travelobs.size() > 0) {
+        observations.addAll(travelobs);
+      }
     }
 
     return observations;
@@ -314,8 +321,10 @@ public class R4ResourcesData {
                   OBSERVATION,
                   occupationCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
-      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-        observations.add((Observation) entryComp.getResource());
+      if (occupationCodesbundle != null) {
+        for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+          observations.add((Observation) entryComp.getResource());
+        }
       }
     }
 
@@ -329,8 +338,10 @@ public class R4ResourcesData {
                   OBSERVATION,
                   occupationCode,
                   QueryConstants.LOINC_CODE_SYSTEM);
-      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-        observations.add((Observation) entryComp.getResource());
+      if (occupationCodesbundle != null) {
+        for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+          observations.add((Observation) entryComp.getResource());
+        }
       }
     }
     return observations;
@@ -356,12 +367,14 @@ public class R4ResourcesData {
                   CONDITION,
                   pregnancySnomedCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
-      for (BundleEntryComponent entryComp : pregnancyCodesbundle.getEntry()) {
-        Condition condition = (Condition) entryComp.getResource();
-        List<Coding> conditionCodes = condition.getCode().getCoding();
-        for (Coding conditionCoding : conditionCodes) {
-          if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)) {
-            conditions.add(condition);
+      if (pregnancyCodesbundle != null) {
+        for (BundleEntryComponent entryComp : pregnancyCodesbundle.getEntry()) {
+          Condition condition = (Condition) entryComp.getResource();
+          List<Coding> conditionCodes = condition.getCode().getCoding();
+          for (Coding conditionCoding : conditionCodes) {
+            if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)) {
+              conditions.add(condition);
+            }
           }
         }
       }
