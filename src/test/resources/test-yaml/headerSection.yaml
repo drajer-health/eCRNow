@@ -34,8 +34,13 @@ testCase:
 #      '@extension': "490056856" 
     - xPath: "/ClinicalDocument/recordTarget/patientRole/addr"
       count: 1
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/addr/streetAddressLine"
+      count: 4
     - xPath: "/ClinicalDocument/recordTarget/patientRole/addr[1]"
-      streetAddressLine: "2801 ROCK CREEK PKWY"
+      'streetAddressLine[1]': "2801 ROCK CREEK PKWY"
+      'streetAddressLine[2]': "Downtown"
+      'streetAddressLine[3]': "Old street road"
+      'streetAddressLine[4]': "near walmart"    
       city: "KANSAS CITY"
       state: "MO"
       postalCode: "64117"
@@ -70,9 +75,10 @@ testCase:
       count: 2
     - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/guardian/telecom[1]"
       '@value': "tel:(212)555-5553"
-#      '@use': "HP"
-#    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/guardian/telecom[2]"
-#      '@value': "mailto:dharris@gmail.com"
+      '@use': "HP"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/guardian/telecom[2]"
+      '@value': "mailto:dharris@gmail.com"
+      '@use': "HP"
     - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/guardian/guardianPerson/name"
       count: 1
     - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/guardian/guardianPerson/name[1]"
@@ -80,8 +86,8 @@ testCase:
       family: "HARRIS"
     - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/languageCommunication"
       count: 1
-#    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/languageCommunication[1]/languageCode"
-#      '@code': "en"
+    - xPath: "/ClinicalDocument/recordTarget/patientRole/patient/languageCommunication[1]/languageCode"
+      '@code': "en"
   eCR-patient-deceased:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
