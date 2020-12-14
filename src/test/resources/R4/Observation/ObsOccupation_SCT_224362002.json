@@ -1,0 +1,165 @@
+{
+    "resourceType": "Bundle",
+    "id": "64ed8418-b15d-4e7d-977d-f11c9f307f0f",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742540&code=http%3A%2F%2Fsnomed.info%2Fsct%7C224362002"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-16-73079709",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-16-73079709",
+                "meta": {
+                    "versionId": "73079709",
+                    "lastUpdated": "2020-04-28T19:04:12.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742540</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Employment/School</p><p><b>Issued Date</b>: Apr 28, 2020  7:04 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "224362002",
+                            "display": "Employment status (observable entity)"
+                        }
+                    ],
+                    "text": "Employment/School"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:04:12.000Z",
+                "hasMember": [
+                    {
+                        "reference": "Observation/SH-73079709-q4625873"
+                    },
+                    {
+                        "reference": "Observation/SH-73079709-q4625889"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-73079709-q4625873",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-73079709-q4625873",
+                "meta": {
+                    "versionId": "73079709",
+                    "lastUpdated": "2020-04-28T19:04:12.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742540</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Question</b>: SHX Employment/School status</p><p><b>Response</b>: Student</p><p><b>Issued Date</b>: Apr 28, 2020  7:04 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "224362002",
+                            "display": "Employment status (observable entity)"
+                        }
+                    ],
+                    "text": "SHX Employment/School status"
+                },
+                "subject": {
+                    "reference": "Patient/12742540"
+                },
+                "issued": "2020-04-28T19:04:12.000Z",
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "65853000",
+                            "display": "Student (occupation)"
+                        }
+                    ],
+                    "text": "Student"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-73079709-q4625889",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-73079709-q4625889",
+                "meta": {
+                    "versionId": "73079709",
+                    "lastUpdated": "2020-04-28T19:04:12.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742540</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Question</b>: SHX Highest education level</p><p><b>Response</b>: Some college</p><p><b>Issued Date</b>: Apr 28, 2020  7:04 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "82589-3"
+                        }
+                    ],
+                    "text": "SHX Highest education level"
+                },
+                "subject": {
+                    "reference": "Patient/12742540"
+                },
+                "issued": "2020-04-28T19:04:12.000Z",
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "LA12458-8"
+                        }
+                    ],
+                    "text": "Some college"
+                }
+            }
+        }
+    ]
+}

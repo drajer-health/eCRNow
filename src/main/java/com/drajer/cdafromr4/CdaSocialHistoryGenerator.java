@@ -182,12 +182,12 @@ public class CdaSocialHistoryGenerator {
         sb.append(pregObsXml);
       }
 
-      if (!StringUtils.isEmpty(travelHistoryXml)) {
-        sb.append(travelHistoryXml);
-      }
-
       if (!StringUtils.isEmpty(occHistoryXml)) {
         sb.append(occHistoryXml);
+      }
+
+      if (!StringUtils.isEmpty(travelHistoryXml)) {
+        sb.append(travelHistoryXml);
       }
 
       sb.append(generateSocialHistorySectionEndHeader());

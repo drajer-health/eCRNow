@@ -98,14 +98,19 @@ public class CdaHeaderGenerator {
           }
         }
 
-        eICRHeader.append(getAuthorXml(data.getPractitionersList().get(0), data.getEncounter()));
+        Practitioner practitioner = null;
+        if (data.getPractitionersList() != null && !data.getPractitionersList().isEmpty()) {
+          practitioner = data.getPractitionersList().get(0);
+        }
+
+        eICRHeader.append(getAuthorXml(practitioner, data.getEncounter()));
 
         eICRHeader.append(getCustodianXml(data.getOrganization(), details));
 
         eICRHeader.append(
             getEncompassingEncounter(
                 data.getEncounter(),
-                data.getPractitionersList().get(0),
+                practitioner,
                 data.getLocation(),
                 data.getOrganization(),
                 details));
