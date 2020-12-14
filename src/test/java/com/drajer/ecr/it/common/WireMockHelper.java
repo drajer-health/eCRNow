@@ -121,13 +121,17 @@ public class WireMockHelper {
         logger.info("Stub Created for default: " + "/FHIR/.*");
       } else if (key.equalsIgnoreCase("metadata")) {
         url = baseUrl + "/" + key;
+        // TODO - Change to pull token url from client detail instead of hard coding.
+        String tokenUrl = "http://localhost:" + wireMockPort + "/FHIR/token";
+        String response = TestUtils.getFileContentAsString((String) otherMappings.get(key));
+        response = response.replace("Replace this with mock URL for test", tokenUrl);
         stubFor(
             get(urlEqualTo(url))
                 .atPriority(1)
                 .willReturn(
                     aResponse()
                         .withStatus(200)
-                        .withBody(TestUtils.getFileContentAsString((String) otherMappings.get(key)))
+                        .withBody(response)
                         .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
         logger.info("Stub Created for Metadata uri: " + url);
       } else if (key.equalsIgnoreCase("token")) {

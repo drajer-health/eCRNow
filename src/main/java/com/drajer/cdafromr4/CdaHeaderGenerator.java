@@ -98,14 +98,14 @@ public class CdaHeaderGenerator {
           }
         }
 
-        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter()));
+        eICRHeader.append(getAuthorXml(data.getPractitionersList().get(0), data.getEncounter()));
 
         eICRHeader.append(getCustodianXml(data.getOrganization(), details));
 
         eICRHeader.append(
             getEncompassingEncounter(
                 data.getEncounter(),
-                data.getPractitioner(),
+                data.getPractitionersList().get(0),
                 data.getLocation(),
                 data.getOrganization(),
                 details));
@@ -503,7 +503,7 @@ public class CdaHeaderGenerator {
         DateTimeType d = (DateTimeType) p.getDeceased();
         patientDetails.append(
             CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue().toString()));
+                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue()));
       } else {
         patientDetails.append(
             CdaGeneratorUtils.getXmlForNullEffectiveTime(
@@ -556,32 +556,33 @@ public class CdaHeaderGenerator {
 
       ContactComponent guardianContact = CdaFhirUtilities.getGuardianContact(p.getContact());
 
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
-
-      // Add Telecom
       if (guardianContact != null) {
+
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+
+        // Add Telecom
         patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));
         patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
-      }
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
-      List<HumanName> names = new ArrayList<>();
-      if (guardianContact != null) {
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+        List<HumanName> names = new ArrayList<>();
         names.add(guardianContact.getName());
+
+        patientDetails.append(CdaFhirUtilities.getNameXml(names));
+
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
       }
-      patientDetails.append(CdaFhirUtilities.getNameXml(names));
-
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
-
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
     }
 
     patientDetails.append(

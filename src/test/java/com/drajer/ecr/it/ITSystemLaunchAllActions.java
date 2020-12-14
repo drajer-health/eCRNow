@@ -21,6 +21,8 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +34,8 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +46,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+@RunWith(Parameterized.class)
 @TestPropertySource(properties = "ersd.file.location=src/test/resources/AppData/ersd.json")
 public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
@@ -89,7 +94,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
     // Data Setup
-    createTestClientDetailsInDB(clientDetailsFile);
+    createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
     JSONObject jsonObject = new JSONObject(systemLaunchInputData);
     patientId = (String) jsonObject.get("patientId");
@@ -146,30 +151,39 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     validateActionStatus();
   }
 
-  // @Test
+  @Test
   public void testSubmitEicrFromRestApi() {
 
+    URL restApiUrl = null;
+    // URL ehrAuthUrl = null;
+    try {
+      restApiUrl = new URL(clientDetails.getRestAPIURL());
+      // ehrAuthUrl = new URL(clientDetails.getEhrAuthorizationUrl());
+
+    } catch (MalformedURLException e) {
+      fail(e.getMessage() + " This exception is not expected fix the test.");
+    }
     // mock RESTAPI
     stubFor(
-        post(urlEqualTo("/directurl"))
+        post(urlEqualTo(restApiUrl.getPath()))
             .atPriority(1)
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withBody("Reportability Response recieved from AIMS")
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
-    // mock EHR AuthURl
-    String accesstoken =
-        "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
-    stubFor(
-        post(urlEqualTo("/ehrauthurl"))
-            .atPriority(1)
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withBody(accesstoken)
-                    .withHeader("Content-Type", "application/json; charset=utf-8")));
-
+    /*    // mock EHR AuthURl
+        String accesstoken =
+            "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
+        stubFor(
+            post(urlEqualTo(ehrAuthUrl.getPath()))
+                .atPriority(1)
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withBody(accesstoken)
+                        .withHeader("Content-Type", "application/json; charset=utf-8")));
+    */
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
@@ -185,8 +199,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     validateActionStatus();
 
-    verify(postRequestedFor(urlEqualTo("/ehrauthurl")));
-    verify(postRequestedFor(urlPathEqualTo("/directurl")));
+    // verify(postRequestedFor(urlEqualTo(ehrAuthUrl.getPath())));
+    verify(postRequestedFor(urlPathEqualTo(restApiUrl.getPath())));
   }
 
   private void getLaunchDetailAndStatus() {
@@ -294,7 +308,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   private void validateValidateStatus() throws InterruptedException {
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     getLaunchDetailAndStatus();
     if (state.getValidateEicrStatus() != null) {
       for (ValidateEicrStatus valStatus : state.getValidateEicrStatus()) {
@@ -305,7 +319,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   private void validateSubmitStatus() throws InterruptedException {
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     getLaunchDetailAndStatus();
     if (state.getSubmitEicrStatus() != null) {
       for (SubmitEicrStatus submitStatus : state.getSubmitEicrStatus()) {

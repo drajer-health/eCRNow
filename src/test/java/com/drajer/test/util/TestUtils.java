@@ -2,7 +2,6 @@ package com.drajer.test.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import com.drajer.ecrapp.model.Eicr;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -205,7 +204,7 @@ public class TestUtils {
     return section;
   }
 
-  public static POCDMT000040ClinicalDocument getClinicalDocXml(Eicr eicr) {
+  public static POCDMT000040ClinicalDocument getClinicalDocXml(String eicr) {
 
     JAXBContext jaxbContext;
     Unmarshaller jaxbUnmarshaller;
@@ -214,7 +213,7 @@ public class TestUtils {
       jaxbContext = JAXBContext.newInstance("org.hl7.v3:org.hl7.sdtc");
       jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-      Source source = new StreamSource(IOUtils.toInputStream(eicr.getEicrData().replace("\n", "")));
+      Source source = new StreamSource(IOUtils.toInputStream(eicr.replace("\n", "")));
 
       JAXBElement<POCDMT000040ClinicalDocument> root =
           jaxbUnmarshaller.unmarshal(source, POCDMT000040ClinicalDocument.class);
@@ -225,5 +224,13 @@ public class TestUtils {
     }
 
     return clinicalDoc;
+  }
+
+  public static Document getXmlDocuments(String xmlContent)
+      throws ParserConfigurationException, SAXException, IOException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document document = builder.parse(IOUtils.toInputStream(xmlContent.replace("\n", "")));
+    return document;
   }
 }

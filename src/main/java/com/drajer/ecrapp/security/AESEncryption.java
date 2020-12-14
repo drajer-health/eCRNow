@@ -40,9 +40,9 @@ public class AESEncryption {
       key = Arrays.copyOf(key, 16);
       secretKey = new SecretKeySpec(key, "AES");
     } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+      logger.error("Error while setting secret key: {}", e.toString());
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+      logger.error("Error while setting secret key: {}", e.toString());
     }
   }
 
@@ -54,7 +54,7 @@ public class AESEncryption {
       String enc = new String(cipher.doFinal(strToEncrypt.getBytes()));
       return enc;
     } catch (Exception e) {
-      logger.error("Error while encrypting: " + e.toString());
+      logger.error("Error while encrypting: {}", e.toString());
     }
     return null;
   }
@@ -66,7 +66,7 @@ public class AESEncryption {
       cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
       return new String(cipher.doFinal(strToDecrypt.getBytes()));
     } catch (Exception e) {
-      logger.error("Error while decrypting: " + e.toString());
+      logger.error("Error while decrypting: {}", e.toString());
     }
     return null;
   }
