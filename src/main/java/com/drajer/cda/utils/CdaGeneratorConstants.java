@@ -137,6 +137,10 @@ public class CdaGeneratorConstants {
   public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
   public static final String FHIR_ENCOUNTER_CLASS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ActCode";
+  public static final String FHIR_PARTICIPANT_TYPE =
+      "http://terminology.hl7.org/CodeSystem/participant-type";
+  public static final String FHIR_PARTICIPANT_TYPE_V3 =
+      "http://terminology.hl7.org/CodeSystem/v3-ParticipationType";
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";

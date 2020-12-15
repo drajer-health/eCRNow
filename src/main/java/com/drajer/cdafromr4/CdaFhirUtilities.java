@@ -2,6 +2,7 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -481,54 +482,63 @@ public class CdaFhirUtilities {
     return null;
   }
 
-  public static Practitioner getPractitioner(List<BundleEntryComponent> entries, Encounter en) {
+  public static List<Practitioner> getPractitionersForType(
+      R4FhirData data, V3ParticipationType type) {
 
-    List<EncounterParticipantComponent> participants = en.getParticipant();
+    List<Practitioner> practs = new ArrayList<Practitioner>();
 
-    if (participants != null && !participants.isEmpty()) {
+    if (data != null && data.getEncounter() != null) {
 
-      for (EncounterParticipantComponent part : participants) {
+      List<EncounterParticipantComponent> participants = data.getEncounter().getParticipant();
 
-        if (part.getIndividual().getReference() != null) {
+      if (participants != null && !participants.isEmpty()) {
 
-          logger.info(" Individual is present ");
+        for (EncounterParticipantComponent part : participants) {
 
-          List<CodeableConcept> types = part.getType();
+          if (part.getIndividual() != null && part.getIndividual().getReference() != null) {
 
-          for (CodeableConcept conc : types) {
+            logger.info(" Individual is present ");
 
-            List<Coding> typeCodes = conc.getCoding();
+            List<CodeableConcept> types = part.getType();
 
-            for (Coding cd : typeCodes) {
+            if (types != null && !types.isEmpty()) {
 
-              if (cd.getCode().contentEquals(V3ParticipationType.PPRF.toString())) {
+              for (CodeableConcept conc : types) {
 
-                // Found the participant.
-                // Look for the Practitioner.
+                List<Coding> typeCodes = conc.getCoding();
 
-                BundleEntryComponent ent =
-                    getResourceEntryForId(
-                        part.getIndividual().getReference(), "Practitioner", entries);
+                if (typeCodes != null && !typeCodes.isEmpty()) {
 
-                if (ent != null) {
+                  for (Coding cd : typeCodes) {
 
-                  logger.info(" Found Practitioner for Id {}", part.getIndividual().getReference());
-                  return (Practitioner) ent.getResource();
-                } else {
-                  logger.info(
-                      " Did not find the practitioner for : "
-                          + part.getIndividual().getReference());
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    if (cd.getSystem() != null
+                        && (cd.getSystem()
+                                .contentEquals(CdaGeneratorConstants.FHIR_PARTICIPANT_TYPE)
+                            || cd.getSystem()
+                                .contentEquals(CdaGeneratorConstants.FHIR_PARTICIPANT_TYPE_V3))) {
 
-    logger.info(" Did not find the practitioner for encounter ");
-    return null;
-  }
+                      if (cd.getCode() != null && cd.getCode().contentEquals(type.toString())) {
+
+                        Practitioner pr = data.getPractitionerById(part.getIndividual().getId());
+
+                        if (pr != null) {
+
+                          logger.info(" Found Practitioner for Type " + type);
+                          practs.add(pr);
+                        } // found practitioner
+                      } // Found Type that we need
+                    } // Found participants that use standard code systems
+                  } // For all Codings
+                } // Codings present
+              } // For all Codeable Concepts
+            } // Codeable Concept present
+          } // PArticipant is an individual
+        } // For all EncounteR ParticipantComponents
+      } // Participants not empty
+    } // Encounter not null
+
+    return practs;
+  } // Method end
 
   public static BundleEntryComponent getResourceEntryForId(
       String id, String type, List<BundleEntryComponent> entries) {

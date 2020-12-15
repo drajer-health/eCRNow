@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,9 +99,9 @@ public class CdaHeaderGenerator {
           }
         }
 
-        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter()));
+        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter(), data));
 
-        eICRHeader.append(getCustodianXml(data.getOrganization(), details));
+        eICRHeader.append(getCustodianXml(data.getOrganization(), details, data));
 
         eICRHeader.append(
             getEncompassingEncounter(
@@ -108,7 +109,8 @@ public class CdaHeaderGenerator {
                 data.getPractitioner(),
                 data.getLocation(),
                 data.getOrganization(),
-                details));
+                details,
+                data));
       }
     }
 
@@ -251,7 +253,7 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getAuthorXml(Practitioner pr, Encounter en) {
+  public static String getAuthorXml(Practitioner pr, Encounter en, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -270,7 +272,16 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
 
-    sb.append(getPractitionerXml(pr));
+    List<Practitioner> practs =
+        CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.AUT);
+
+    if (practs != null && !practs.isEmpty()) {
+      logger.info(" Found a Practitioner who is an Author ");
+      sb.append(getPractitionerXml(practs.get(0)));
+    } else {
+      logger.info(" Found a Practitioner who is an Author ");
+      sb.append(getPractitionerXml(null));
+    }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
@@ -333,7 +344,7 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getCustodianXml(Organization org, LaunchDetails details) {
+  public static String getCustodianXml(Organization org, LaunchDetails details, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -351,7 +362,12 @@ public class CdaHeaderGenerator {
   }
 
   public static String getEncompassingEncounter(
-      Encounter en, Practitioner pr, Location loc, Organization org, LaunchDetails details) {
+      Encounter en,
+      Practitioner pr,
+      Location loc,
+      Organization org,
+      LaunchDetails details,
+      R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(2000);
 
