@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.UUID;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
@@ -24,7 +25,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.mime.content.FileBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class DirectResponseReceiver extends RRReceiver {
 
@@ -32,8 +32,6 @@ public class DirectResponseReceiver extends RRReceiver {
 
   private static final String IMAP = "imaps";
   private static final String INBOX = "Inbox";
-
-  @Autowired ApplicationUtils applicationUtils;
 
   @Override
   public Object receiveRespone(Object context) {
@@ -106,7 +104,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
               if ((bodyPart.getFileName().contains(".xml")
                   || bodyPart.getFileName().contains(".XML"))) {
-                String filename = applicationUtils.getRandomString(12) + ".xml";
+                String filename = UUID.randomUUID() + "_" + bodyPart.getFileName();
                 logger.info("Found XML Attachment");
 
                 try (InputStream stream = bodyPart.getInputStream()) {
