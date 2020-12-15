@@ -56,7 +56,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
   eCR-R4-Resource-FilterByDtTm:
     fileData:
-      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
     resourceMappingData:
       Patient:
       - params: "12742571"

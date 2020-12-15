@@ -14,10 +14,6 @@
       "valueCode": "M",
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
     },
-	{
-  		"valueCode": "M",
- 		 "url": "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex"
-	},
     {
       "extension": [
         {
@@ -120,6 +116,15 @@
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
       }
+    },
+    {
+      "system": "email",
+      "value": "coviddonefhir@gmail.com",
+      "use": "home",
+      "rank": "1",
+      "period": {
+        "start": "2020-07-28T14:53:41.000Z"
+      }
     }
   ],
   "gender": "male",
@@ -130,7 +135,10 @@
       "use": "home",
       "text": "2801 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
       "line": [
-        "2801 ROCK CREEK PKWY"
+        "2801 ROCK CREEK PKWY",
+        "Downtown",
+        "Old street road",
+        "near walmart"
       ],
       "city": "KANSAS CITY",
       "state": "MO",
