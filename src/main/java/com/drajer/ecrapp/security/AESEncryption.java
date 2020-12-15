@@ -23,9 +23,9 @@ public class AESEncryption {
   private static SecretKeySpec secretKey;
   private static byte[] key;
 
-  private static byte[] iv;
+  private static byte[] iv = new SecureRandom().generateSeed(16);
 
-  private static IvParameterSpec ivSpec;
+  private static IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
   @Autowired private Environment environment;
 
@@ -48,7 +48,6 @@ public class AESEncryption {
 
   public static String encrypt(String strToEncrypt) {
     try {
-      setKey(secret);
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
       cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
       String enc = new String(cipher.doFinal(strToEncrypt.getBytes()));
@@ -61,7 +60,6 @@ public class AESEncryption {
 
   public static String decrypt(String strToDecrypt) {
     try {
-      setKey(secret);
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
       cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
       return new String(cipher.doFinal(strToDecrypt.getBytes()));
@@ -74,8 +72,6 @@ public class AESEncryption {
   @PostConstruct
   public void getSecretKey() {
     secret = environment.getRequiredProperty("security.key");
-    SecureRandom random = new SecureRandom();
-    iv = random.generateSeed(16);
-    ivSpec = new IvParameterSpec(iv);
+    setKey(secret);
   }
 }
