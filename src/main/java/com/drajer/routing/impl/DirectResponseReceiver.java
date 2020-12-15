@@ -104,7 +104,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
               if ((bodyPart.getFileName().contains(".xml")
                   || bodyPart.getFileName().contains(".XML"))) {
-                String filename = UUID.randomUUID() + "_" + bodyPart.getFileName();
+                String filename = UUID.randomUUID() + ".xml";
                 logger.info("Found XML Attachment");
 
                 try (InputStream stream = bodyPart.getInputStream()) {
