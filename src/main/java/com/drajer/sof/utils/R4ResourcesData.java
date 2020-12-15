@@ -794,7 +794,7 @@ public class R4ResourcesData {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
         // Checking If ServiceRequest DateTime is present in ServiceRequest
         // resource
-        if (serviceRequest.getOccurrence().isDateTime()) {
+        if (serviceRequest.getOccurrence() != null && serviceRequest.getOccurrence().isDateTime()) {
           if (serviceRequest.getOccurrenceDateTimeType() != null) {
             if (serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
                 && serviceRequest

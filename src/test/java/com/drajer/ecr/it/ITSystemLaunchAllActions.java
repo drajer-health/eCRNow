@@ -120,7 +120,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   @Parameters(name = "{index}: {0}")
   public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("TestSystemLaunchAllActions.yaml");
+    testDataGenerator = new TestDataGenerator("test-yaml/systemLaunchAllActionsTest.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
     Object[][] data = new Object[testCaseSet.size()][1];
     int count = 0;

@@ -111,7 +111,7 @@
                 "encounter": {
                     "reference": "Encounter/97953900"
                 },
-                "occurrenceDateTime": "2020-10-29T08:53:25-05:00",                                
+                "occurrenceDateTime": "2020-11-29T08:53:25-05:00",                                
                 "primarySource": false,
                 "reportOrigin": {
                     "coding": [
@@ -174,7 +174,7 @@
                 "encounter": {
                     "reference": "Encounter/97953900"
                 },
-                "occurrenceDateTime": "2020-10-29T08:53:25-05:00",                 
+                "occurrenceString": "January 2012",                
                 "primarySource": false,
                 "reportOrigin": {
                     "coding": [
