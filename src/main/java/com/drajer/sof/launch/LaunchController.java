@@ -436,6 +436,9 @@ public class LaunchController {
     IGenericClient client =
         fhirContextInitializer.createClient(
             context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken());
+    PeriodDt dstu2Period = null;
+    Period r4Period = null;
+
     if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())
         && currentStateDetails.getEncounterId() != null) {
       logger.info("DSTU2");
@@ -448,17 +451,7 @@ public class LaunchController {
                   "Encounter",
                   currentStateDetails.getEncounterId());
       if (encounter.getPeriod() != null) {
-        PeriodDt period = encounter.getPeriod();
-        if (period.getStart() != null) {
-          currentStateDetails.setStartDate(period.getStart());
-        } else {
-          currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
-        }
-        if (period.getEnd() != null) {
-          currentStateDetails.setEndDate(period.getEnd());
-        } else {
-          currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
-        }
+        dstu2Period = encounter.getPeriod();
       }
     } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
       Encounter encounter = new Encounter();
@@ -485,23 +478,9 @@ public class LaunchController {
           //                  + "+"
           //                  + encounter.getIdElement().getIdPart().toString());
           if (encounter.getPeriod() != null) {
-            PeriodDt period = encounter.getPeriod();
-            if (period.getStart() != null) {
-              currentStateDetails.setStartDate(period.getStart());
-            } else {
-              currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
-            }
-            if (period.getEnd() != null) {
-              currentStateDetails.setEndDate(period.getEnd());
-            } else {
-              currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
-            }
+            dstu2Period = encounter.getPeriod();
           }
         }
-
-      } else {
-        currentStateDetails.setStartDate(null);
-        currentStateDetails.setEndDate(null);
       }
     }
 
@@ -517,17 +496,7 @@ public class LaunchController {
                   currentStateDetails.getEncounterId());
       if (r4Encounter != null) {
         if (r4Encounter.getPeriod() != null) {
-          Period period = r4Encounter.getPeriod();
-          if (period.getStart() != null) {
-            currentStateDetails.setStartDate(period.getStart());
-          } else {
-            currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
-          }
-          if (period.getEnd() != null) {
-            currentStateDetails.setEndDate(period.getEnd());
-          } else {
-            currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
-          }
+          r4Period = r4Encounter.getPeriod();
         }
       }
     } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
@@ -559,24 +528,37 @@ public class LaunchController {
           //                  + "+"
           //                  + r4Encounter.getIdElement().getIdPart().toString());
           if (r4Encounter.getPeriod() != null) {
-            Period period = r4Encounter.getPeriod();
-            if (period.getStart() != null) {
-              currentStateDetails.setStartDate(period.getStart());
-            } else {
-              currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
-            }
-            if (period.getEnd() != null) {
-              currentStateDetails.setEndDate(period.getEnd());
-            } else {
-              currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
-            }
+            r4Period = r4Encounter.getPeriod();
           }
         }
-
-      } else {
-        currentStateDetails.setStartDate(null);
-        currentStateDetails.setEndDate(null);
       }
+    }
+
+    if (dstu2Period != null) {
+      if (dstu2Period.getStart() != null) {
+        currentStateDetails.setStartDate(dstu2Period.getStart());
+      } else {
+        currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
+      }
+      if (dstu2Period.getEnd() != null) {
+        currentStateDetails.setEndDate(dstu2Period.getEnd());
+      } else {
+        currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
+      }
+    } else if (r4Period != null) {
+      if (r4Period.getStart() != null) {
+        currentStateDetails.setStartDate(r4Period.getStart());
+      } else {
+        currentStateDetails.setStartDate(getDate(clientDetails.getEncounterStartThreshold()));
+      }
+      if (r4Period.getEnd() != null) {
+        currentStateDetails.setEndDate(r4Period.getEnd());
+      } else {
+        currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
+      }
+    } else {
+      currentStateDetails.setStartDate(null);
+      currentStateDetails.setEndDate(null);
     }
   }
 

@@ -21,7 +21,15 @@
 		<fhir.version>4.0.3</fhir.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
-
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>9.4.35.v20201120</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

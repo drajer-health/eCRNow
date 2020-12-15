@@ -10,6 +10,7 @@ import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.EICRValidator;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
@@ -25,7 +26,10 @@ import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+@RunWith(Parameterized.class)
 public class ITLaunchController extends BaseIntegrationTest {
 
   private String testCaseId;
@@ -77,7 +82,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
     // Data Setup
-    createTestClientDetailsInDB(clientDetailsFile);
+    createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
     JSONObject jsonObject = new JSONObject(systemLaunchInputData);
     patientId = (String) jsonObject.get("patientId");
@@ -117,6 +122,7 @@ public class ITLaunchController extends BaseIntegrationTest {
   }
 
   @Test
+  @Ignore
   public void testSystemLaunch() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -135,12 +141,18 @@ public class ITLaunchController extends BaseIntegrationTest {
     Eicr createEicr = getCreateEicrDocument();
     assertNotNull(createEicr.getEicrData());
 
+    POCDMT000040ClinicalDocument expectedEicrDoc = null;
+    if (expectedEICRFile != null && !expectedEICRFile.isEmpty()) {
+      String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
+      expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getEicrData());
+    }
+
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    POCDMT000040ClinicalDocument clinicalDoc = TestUtils.getClinicalDocXml(createEicr);
-
-    // EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles);
+    POCDMT000040ClinicalDocument clinicalDoc =
+        TestUtils.getClinicalDocXml(createEicr.getEicrData());
+    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles, expectedEicrDoc);
   }
 
   private void getLaunchDetailAndStatus() {

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.UUID;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
@@ -100,9 +101,10 @@ public class DirectResponseReceiver extends RRReceiver {
             BodyPart bodyPart = multipart.getBodyPart(i);
 
             if (bodyPart.getFileName() != null) {
-              String filename = bodyPart.getFileName();
-              if ((filename.contains(".xml") || filename.contains(".XML"))) {
 
+              if ((bodyPart.getFileName().contains(".xml")
+                  || bodyPart.getFileName().contains(".XML"))) {
+                String filename = UUID.randomUUID() + "_" + bodyPart.getFileName();
                 logger.info("Found XML Attachment");
 
                 try (InputStream stream = bodyPart.getInputStream()) {

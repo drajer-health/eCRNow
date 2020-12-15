@@ -189,7 +189,25 @@
                 "encounter": {
                     "reference": "Encounter/97953900"
                 },
-                "occurrenceDateTime": "2020-10-28T14:33:32.000-05:00",                
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2020-05-19T16:02:00.000-05:00",
+                            "end": "2020-05-19T16:02:00.000-05:00"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },                
                 "authoredOn": "2020-04-27T10:25:08.000-05:00",
                 "requester": {
                     "reference": "Practitioner/4122622",

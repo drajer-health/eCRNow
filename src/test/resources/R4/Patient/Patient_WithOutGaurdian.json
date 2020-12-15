@@ -14,6 +14,10 @@
       "valueCode": "M",
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
     },
+	{
+  		"valueCode": "M",
+ 		 "url": "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex"
+	},
     {
       "extension": [
         {
@@ -116,15 +120,6 @@
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
       }
-    },
-    {
-      "system": "email",
-      "value": "coviddonefhir@gmail.com",
-      "use": "home",
-      "rank": "1",
-      "period": {
-        "start": "2020-07-28T14:53:41.000Z"
-      }
     }
   ],
   "gender": "male",
@@ -135,10 +130,7 @@
       "use": "home",
       "text": "2801 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
       "line": [
-        "2801 ROCK CREEK PKWY",
-        "Downtown",
-        "Old street road",
-        "near walmart"
+        "2801 ROCK CREEK PKWY"
       ],
       "city": "KANSAS CITY",
       "state": "MO",
@@ -217,77 +209,8 @@
         }
       ],
       "address": {
-        "id": "CI-24326634-0",
         "use": "home",
-        "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-        "line": [
-          "2802 ROCK CREEK PKWY"
-        ],
-        "city": "KANSAS CITY",
-        "state": "MO",
-        "postalCode": "64117",
-        "country": "US",
-        "period": {
-          "start": "2020-09-09T22:24:03.000Z"
-        }
-      },
-      "period": {
-        "start": "2020-05-12T13:40:56.000Z"
-      }
-    },
-    {
-      "relationship": [
-        {
-          "coding": [
-            {
-              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
-              "code": "1156",
-              "display": "Guardian",
-              "userSelected": true
-            }
-          ],
-          "text": "Guardian"
-        }
-      ],
-      "name": {
-        "id": "CI-12742541-0",
-        "use": "official",
-        "text": "HARRIS, DANA",
-        "family": "HARRIS",
-        "given": [
-          "DANA"
-        ]
-      },
-      "telecom": [
-        {
-          "system": "phone",
-          "value": "2125555553",
-          "use": "home",
-          "rank": "1",
-          "period": {
-            "start": "2020-04-27T16:36:47.000Z"
-          }
-        },
-        {
-          "system": "email",
-          "value": "dharris@gmail.com",
-          "use": "home",
-          "rank": "1",
-          "period": {
-            "start": "2020-07-28T14:53:41.000Z"
-          }
-        }
-      ],
-      "address": {
-        "id": "CI-24326634-0",
-        "use": "home",
-        "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-        "line": [
-          "2802 ROCK CREEK PKWY"
-        ],
-        "city": "KANSAS CITY",
-        "state": "MO",
-        "postalCode": "64117",
+        "text": "\nUS",
         "country": "US",
         "period": {
           "start": "2020-09-09T22:24:03.000Z"

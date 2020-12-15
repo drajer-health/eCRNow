@@ -32,7 +32,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     JSONObject responseObj = new JSONObject(response.getBody());
     access_token = responseObj.getString("access_token");
-    logger.info("received Access_token====>" + access_token);
+    logger.info("received Access_token====> {}", access_token);
     return access_token;
   }
 }

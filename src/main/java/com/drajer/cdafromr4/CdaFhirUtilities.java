@@ -369,7 +369,7 @@ public class CdaFhirUtilities {
 
           String use = "";
           if (tel.getUse() != null) {
-            use = use = CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode());
+            use = CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode());
           }
 
           telString.append(
@@ -647,14 +647,14 @@ public class CdaFhirUtilities {
           break;
         }
 
-        // If display is at the Codeable Concept level, use it in case we dont find anything else
-        if (!StringUtils.isEmpty(cd.getText())) {
+        // If display is at the Codeable Concept level, use it in case we don't find anything else
+        if (cd != null && !StringUtils.isEmpty(cd.getText())) {
           anyCdDisplay = cd.getText();
         }
       }
     }
 
-    if (!StringUtils.isEmpty(disp.getValue0())) return disp.getValue0();
+    if (disp != null && !StringUtils.isEmpty(disp.getValue0())) return disp.getValue0();
     else if (!StringUtils.isEmpty(anyCdDisplay)) return anyCdDisplay;
     else return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
@@ -1104,13 +1104,13 @@ public class CdaFhirUtilities {
   public static String getCombinationStringForCodeSystem(
       CodeableConcept code, Type value, String codeSystemUrl, Boolean csOptional) {
 
-    Pair<String, Boolean> codeString = null;
+    Pair<String, Boolean> codeString = new Pair<>("", false);
     if (code != null) {
 
       codeString = getCodeableConceptDisplayForCodeSystem(code, codeSystemUrl, csOptional);
     }
 
-    Pair<String, Boolean> valueString = null;
+    Pair<String, Boolean> valueString = new Pair<>("", false);
     if (value instanceof CodeableConcept) {
 
       CodeableConcept vCode = (CodeableConcept) value;
