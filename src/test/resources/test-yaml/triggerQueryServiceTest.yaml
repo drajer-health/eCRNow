@@ -1,9 +1,11 @@
 ---
 testName: "TriggerQueryServiceTest"
 testCase:
-  eCR-R4-Resource-FilterByEncounter:
+  eCR-R4-TriggerQuery-FilterByEncounter:
     fileData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -25,22 +27,37 @@ testCase:
         responseFilePath: "R4/Practitioner/Practitioner_4122625.json"
       - params: "607928"
         responseFilePath: "R4/Practitioner/Practitioner_607928.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
       Condition:
       - params:
           patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
       Observation:
       - params:
           patient: "12742571"
           category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationLaboratory.json"
+        responseFilePath: "R4/Observation/ObservationWithMultipleEntries.json"
+      ServiceRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
-  eCR-R4-Resource-FilterByDtTm:
+    validate:
+    - Observation: 26
+      Condition: 2
+      Organization: 1
+      Practitioner: 5
+      ServiceRequest: 2
+  eCR-R4-TriggerQuery-FilterByDtTm:
     fileData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -54,24 +71,34 @@ testCase:
           patient: "12742571"
           category: "laboratory"
         responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      ServiceRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
-# TODO - This test case will fail due to issue https://github.com/drajer-health/eCRNow/issues/66
-# Once issue is fixed this can be uncommented
-#  eCR-R4-Encounter-FetchByPatientId:
-#    fileData:
-#      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
-#    resourceMappingData:
-#      Patient:
-#      - params: "12742571"
-#        responseFilePath: "R4/Patient/Patient_12742571.json"
-#      Encounter:
-#      - params:
-#          patient: "12742571"
-#        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
-#    otherMappingData:
-#      metadata: "R4/Misc/MetaData_r4.json"
-#      token: "R4/Misc/AccessToken.json"
-#      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - Observation: 3
+      Condition: 2
+      ServiceRequest: 2
+  eCR-R4-Encounter-FetchByPatientId:
+    fileData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - Encounter: 1

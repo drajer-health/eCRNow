@@ -1,7 +1,7 @@
 ---
 testName: "LoadingQueryServiceTest"
 testCase:
-  eCR-R4-Resource-FilterByEncounter:
+  eCR-R4-LoadQuery-FilterByEncounter:
     fileData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
       StartDate: "20201001"
@@ -80,12 +80,13 @@ testCase:
     - Observation: 26
       TravelObservation: 2
       OccupationObservation: 3
+      Organization: 1
       Condition: 2
       PergnancyCondition: 1
       Practitioner: 5
       Immunization: 3
       ServiceRequest: 2
-  eCR-R4-Resource-FilterByDtTm:
+  eCR-R4-LoadQuery-FilterByDtTm:
     fileData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
       StartDate: "20201001"

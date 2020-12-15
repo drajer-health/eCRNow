@@ -3,7 +3,6 @@ package com.drajer.sof.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
@@ -139,8 +138,6 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
     }
 
     assertNotNull("Failed to generate r4Data", r4FhirData);
-    // Bundle generatedBundle = r4FhirData.getData();
-    // assertNotNull("Failed to generate bundle", generatedBundle);
     validateBundle(r4FhirData);
   }
 
@@ -155,6 +152,9 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
           int resourceCount = Integer.parseInt(set.getValue());
 
           switch (resourceName) {
+            case "Encounter":
+              assertNotNull(r4FhirData.getEncounter());
+              break;
             case "Practitioner":
               assertNotNull(r4FhirData.getPractitionersList());
               assertEquals(resourceName, resourceCount, r4FhirData.getPractitionersList().size());
@@ -200,64 +200,5 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
     } else {
       fail("Validate fields not configured for test " + testCaseId);
     }
-
-    /*    // Patient
-    if (allResourceFiles.get("Patient") != null) {
-      Patient patient = (Patient) TestUtils.getResourceFromBundle(r4Bundle, Patient.class);
-      assertNotNull(patient);
-    }
-    // Encounter
-    if (allResourceFiles.get("Encounter") != null) {
-      Encounter encounter = (Encounter) TestUtils.getResourceFromBundle(r4Bundle, Encounter.class);
-      assertNotNull(encounter);
-    }
-    // Conditions
-    if (allResourceFiles.get("Condition") != null) {
-      List<Resource> actualRsrc = TestUtils.getResourcesFromBundle(r4Bundle, Condition.class);
-      Bundle conditionBundle =
-          TestUtils.getR4BundleFromJson(allResourceFiles.get("Condition").get(0));
-      assertNotNull(actualRsrc);
-      assertEquals(conditionBundle.getEntry().size(), actualRsrc.size());
-    }
-    // Practitioner
-    if (allResourceFiles.get("Practitioner") != null) {
-      List<Resource> actualRsrc = TestUtils.getResourcesFromBundle(r4Bundle, Practitioner.class);
-      assertNotNull(actualRsrc);
-      // TODO - Bug in the code adding duplicate Practitioner in the bundle.
-      // assertEquals(allResourceFiles.get("Practitioner").size(), actualRsrc.size());
-    }
-    // Observation
-    if (allResourceFiles.get("Observation") != null) {
-      List<Resource> actualRsrc = TestUtils.getResourcesFromBundle(r4Bundle, Observation.class);
-      int obsBundleSize = 0;
-      for (String filename : allResourceFiles.get("Observation")) {
-        Bundle observationBundle = TestUtils.getR4BundleFromJson(filename);
-        obsBundleSize = obsBundleSize + observationBundle.getEntry().size();
-      }
-      // assertNotNull(actualRsrc);
-      // assertEquals(obsBundleSize, actualRsrc.size());
-    }
-    // Immunization
-    if (allResourceFiles.get("Immunization") != null) {
-      List<Resource> actualRsrc = TestUtils.getResourcesFromBundle(r4Bundle, Immunization.class);
-      int imunBundleSize = 0;
-      for (String filename : allResourceFiles.get("Immunization")) {
-        Bundle immunBundle = TestUtils.getR4BundleFromJson(filename);
-        imunBundleSize = imunBundleSize + immunBundle.getEntry().size();
-      }
-      assertNotNull(actualRsrc);
-      assertEquals(imunBundleSize, actualRsrc.size());
-    }
-    // ServiceRequest
-    if (allResourceFiles.get("ServiceRequest") != null) {
-      List<Resource> actualRsrc = TestUtils.getResourcesFromBundle(r4Bundle, ServiceRequest.class);
-      int srBundleSize = 0;
-      for (String filename : allResourceFiles.get("ServiceRequest")) {
-        Bundle srBundle = TestUtils.getR4BundleFromJson(filename);
-        srBundleSize = srBundleSize + srBundle.getEntry().size();
-      }
-      assertNotNull(actualRsrc);
-      assertEquals(srBundleSize, actualRsrc.size());
-    }*/
   }
 }
