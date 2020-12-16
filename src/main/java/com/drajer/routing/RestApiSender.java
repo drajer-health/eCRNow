@@ -77,11 +77,11 @@ public class RestApiSender {
       }
 
     } catch (Exception e) {
-        logger.error("RestAPI Exception", e);
+      logger.error("RestAPI Exception", e);
 
-        if (ub != null) {
-          logger.error("Error in Sending Eicr XML to Endpoint: {}", ub.toString());
-        }
+      if (ub != null) {
+        logger.error("Error in Sending Eicr XML to Endpoint: {}", ub.toString());
+      }
     }
     return bundleResponse;
   }
