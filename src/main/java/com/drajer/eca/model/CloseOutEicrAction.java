@@ -67,9 +67,10 @@ public class CloseOutEicrAction extends AbstractAction {
 
                 // Check if there is any timing constraint that needs to be handled.
                 if (ract.getDuration() != null
-                    && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
+                    && state.getCloseOutEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
 
-                  // Duration is not null, meaning that the create action has to be delayed by the
+                  // Duration is not null, meaning that the close out action has to be delayed by
+                  // the
                   // duration.
                   logger.info(" Schedule the job for Close Out EICR Action based on the duration.");
 
