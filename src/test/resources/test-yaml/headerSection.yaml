@@ -11,7 +11,7 @@ testCase:
         responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
       - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+        responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
       Practitioner:
       - params: "11817978"
         responseFilePath: "R4/Practitioner/Practitioner_11817978.json"

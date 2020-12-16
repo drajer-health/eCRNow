@@ -141,6 +141,8 @@ public class CdaGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/participant-type";
   public static final String FHIR_PARTICIPANT_TYPE_V3 =
       "http://terminology.hl7.org/CodeSystem/v3-ParticipationType";
+  public static final String FHIR_LOC_ROLE_CODE_TYPE_V3 =
+      "http://terminology.hl7.org/CodeSystem/v3-RoleCode";
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
@@ -740,6 +742,7 @@ public class CdaGeneratorConstants {
   public static final String ASSIGNED_PERSON_EL_NAME = "assignedPerson";
   public static final String REP_ORG_EL_NAME = "representedOrganization";
   public static final String ENCOMPASSING_ENC_EL_NAME = "encompassingEncounter";
+  public static final String ENCOUNTER_PARTICIPANT_EL_NAME = "encounterParticipant";
   public static final String COMPONENT_OF_EL_NAME = "componentOf";
   public static final String RESP_PARTY_EL_NAME = "responsibleParty";
   public static final String LOCATION_EL_NAME = "location";
