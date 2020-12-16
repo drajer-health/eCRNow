@@ -503,8 +503,11 @@ public class CdaFhirUtilities {
 
             if (types != null && !types.isEmpty()) {
 
+              logger.info(" Codeable Concepts present for individuals ");
+
               for (CodeableConcept conc : types) {
 
+                logger.info(" Get Coding information for codeable concept ");
                 List<Coding> typeCodes = conc.getCoding();
 
                 if (typeCodes != null && !typeCodes.isEmpty()) {
@@ -517,17 +520,42 @@ public class CdaFhirUtilities {
                             || cd.getSystem()
                                 .contentEquals(CdaGeneratorConstants.FHIR_PARTICIPANT_TYPE_V3))) {
 
+                      logger.info(" Found Practitioner for Participation code system ");
+
                       if (cd.getCode() != null && cd.getCode().contentEquals(type.toString())) {
 
-                        Practitioner pr = data.getPractitionerById(part.getIndividual().getId());
+                        logger.info(" Found Practitioner for Code and CodeSystem ");
 
-                        if (pr != null) {
+                        logger.info(" part.getIndividual = " + part.getIndividual().getDisplay());
+                        if (part.getIndividual().getReferenceElement() != null)
+                          logger.info(
+                              " part .getIndivi = "
+                                  + part.getIndividual().getReferenceElement().toString());
 
-                          logger.info(" Found Practitioner for Type " + type);
-                          practs.add(pr);
-                        } // found practitioner
+                        if (part.getIndividual().getReferenceElement() != null
+                            && part.getIndividual().getReferenceElement().getIdPart() != null) {
+
+                          Practitioner pr =
+                              data.getPractitionerById(
+                                  part.getIndividual().getReferenceElement().getIdPart());
+
+                          if (pr != null) {
+
+                            logger.info(" Found Practitioner for Type " + type);
+                            practs.add(pr);
+                          } // Found Practitioenr
+                        } // Valid Reference
+                        else {
+                          logger.info(" Individual Ref Id is null ");
+                        }
                       } // Found Type that we need
+                      else {
+                        logger.info(" Did not find the code for type " + type.toString());
+                      }
                     } // Found participants that use standard code systems
+                    else {
+                      logger.info(" Did not find participants using standard code system ");
+                    }
                   } // For all Codings
                 } // Codings present
               } // For all Codeable Concepts
