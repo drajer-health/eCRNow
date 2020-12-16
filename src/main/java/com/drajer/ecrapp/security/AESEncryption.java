@@ -66,7 +66,7 @@ public class AESEncryption {
       cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
       return new String(cipher.doFinal(strToDecrypt.getBytes()));
     } catch (Exception e) {
-      logger.info("Error while decrypting: {}", e.toString());
+      logger.info("Error while decrypting: {}", e, e);
     }
     return null;
   }
