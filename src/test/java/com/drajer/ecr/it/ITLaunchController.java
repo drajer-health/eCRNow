@@ -10,10 +10,7 @@ import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.util.EICRValidator;
 import com.drajer.test.util.TestDataGenerator;
-import com.drajer.test.util.TestUtils;
-import com.drajer.test.util.ValidationUtils;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,11 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -53,11 +47,7 @@ public class ITLaunchController extends BaseIntegrationTest {
   private final String systemLaunchURI = "/api/systemLaunch";
 
   private static String systemLaunchInputData;
-  private String patientId;
-  private String encounterID;
-  private String fhirServerUrl;
-
-  static TestDataGenerator testDataGenerator;
+  private static TestDataGenerator testDataGenerator;
   String clientDetailsFile;
   String systemLaunchFile;
   String expectedEICRFile;
@@ -76,20 +66,9 @@ public class ITLaunchController extends BaseIntegrationTest {
     tx = session.beginTransaction();
     clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
     systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
-    expectedEICRFile = testDataGenerator.getTestFile(testCaseId, "ExpectedEICRFile");
-    validationSectionList =
-        Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
-    allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
 
-    // Data Setup
     createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
-    JSONObject jsonObject = new JSONObject(systemLaunchInputData);
-    patientId = (String) jsonObject.get("patientId");
-    if (jsonObject.get("encounterId") instanceof String) {
-      encounterID = (String) jsonObject.get("encounterId");
-    }
-    fhirServerUrl = (String) jsonObject.get("fhirServerURL");
 
     session.flush();
     tx.commit();
@@ -107,7 +86,7 @@ public class ITLaunchController extends BaseIntegrationTest {
     }
   }
 
-  @Parameters(name = "{index}: {0}")
+  @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     testDataGenerator = new TestDataGenerator("test-yaml/launchControllerTest.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
@@ -122,10 +101,10 @@ public class ITLaunchController extends BaseIntegrationTest {
   }
 
   @Test
-  @Ignore
   public void testSystemLaunch() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", testCaseId);
 
     HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
     logger.info("Invoking systemLaunch...");
@@ -140,28 +119,13 @@ public class ITLaunchController extends BaseIntegrationTest {
 
     Eicr createEicr = getCreateEicrDocument();
     assertNotNull(createEicr.getEicrData());
-
-    POCDMT000040ClinicalDocument expectedEicrDoc = null;
-    if (expectedEICRFile != null && !expectedEICRFile.isEmpty()) {
-      String expectedEicr = TestUtils.getFileContentAsString(expectedEICRFile);
-      expectedEicrDoc = TestUtils.getClinicalDocXml(createEicr.getEicrData());
-    }
-
-    getLaunchDetailAndStatus();
-    ValidationUtils.setLaunchDetails(launchDetails);
-
-    POCDMT000040ClinicalDocument clinicalDoc =
-        TestUtils.getClinicalDocXml(createEicr.getEicrData());
-    EICRValidator.validate(clinicalDoc, validationSectionList, allResourceFiles, expectedEicrDoc);
   }
 
   private void getLaunchDetailAndStatus() {
 
     try {
       Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
-      criteria.add(Restrictions.eq("launchPatientId", patientId));
-      criteria.add(Restrictions.eq("encounterId", encounterID));
+      criteria.add(Restrictions.eq("xRequestId", testCaseId));
       launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);

@@ -27,7 +27,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,10 +74,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   private final String systemLaunchURI = "/api/systemLaunch";
 
   private static String systemLaunchInputData;
-  private String patientId;
-  private String encounterID;
-  private String fhirServerUrl;
-
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
 
@@ -92,13 +87,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     // Data Setup
     createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
-    JSONObject jsonObject = new JSONObject(systemLaunchInputData);
-    patientId = (String) jsonObject.get("patientId");
-    if (jsonObject.get("encounterId") instanceof String) {
-      encounterID = (String) jsonObject.get("encounterId");
-    }
-    fhirServerUrl = (String) jsonObject.get("fhirServerURL");
-
     session.flush();
     tx.commit();
 
@@ -160,6 +148,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public void testEicrDocument() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", testCaseId);
 
     HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
     logger.info("Invoking systemLaunch...");
@@ -186,9 +175,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     try {
       Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
-      criteria.add(Restrictions.eq("launchPatientId", patientId));
-      criteria.add(Restrictions.eq("encounterId", encounterID));
+      criteria.add(Restrictions.eq("xRequestId", testCaseId));
       launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
