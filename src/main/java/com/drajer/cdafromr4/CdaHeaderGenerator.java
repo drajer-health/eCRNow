@@ -5,7 +5,9 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
@@ -14,8 +16,6 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.HumanName;
@@ -99,23 +99,13 @@ public class CdaHeaderGenerator {
           }
         }
 
-        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter(), data));
+        HashMap<V3ParticipationType, List<Practitioner>> prs = getSortedPractitionerList(data);
 
-        Practitioner practitioner = null;
-        if (data.getPractitionersList() != null && !data.getPractitionersList().isEmpty()) {
-          practitioner = data.getPractitionersList().get(0);
-        }
+        eICRHeader.append(getAuthorXml(data, data.getEncounter(), prs));
 
-        eICRHeader.append(getCustodianXml(data.getOrganization(), details, data));
+        eICRHeader.append(getCustodianXml(details, data));
 
-        eICRHeader.append(
-            getEncompassingEncounter(
-                data.getEncounter(),
-                practitioner,
-                data.getLocation(),
-                data.getOrganization(),
-                details,
-                data));
+        eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
       }
     }
 
@@ -178,12 +168,13 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getLocationXml(Location loc) {
+  public static String getLocationXml(Location loc, Organization org) {
 
     StringBuilder sb = new StringBuilder(500);
 
     if (loc != null) {
 
+      logger.info(" Location is not null, so get the location populated");
       Identifier npi =
           CdaFhirUtilities.getIdentifierForSystem(
               loc.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
@@ -199,16 +190,15 @@ public class CdaHeaderGenerator {
 
         List<CodeableConcept> cds = loc.getType();
 
-        List<Coding> codings = new ArrayList<>();
+        String typeXml =
+            CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+                cds,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                false,
+                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                false);
 
-        for (CodeableConcept cd : cds) {
-
-          if (cd.getCoding() != null) {
-            codings.addAll(cd.getCoding());
-          }
-        }
-
-        sb.append(CdaFhirUtilities.getCodingXml(codings, CdaGeneratorConstants.CODE_EL_NAME));
+        sb.append(typeXml);
       } else {
         List<Coding> codes = null;
         sb.append(CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME));
@@ -221,44 +211,66 @@ public class CdaHeaderGenerator {
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
+    } else if (org != null) {
+
+      logger.info(" Location is null, so get the location populated using Organization details ");
+      Identifier npi =
+          CdaFhirUtilities.getIdentifierForSystem(
+              org.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+
+      if (npi != null) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+      } else {
+        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, org.getId()));
+      }
+
+      if (org.getType() != null) {
+
+        List<CodeableConcept> cds = org.getType();
+
+        String typeXml =
+            CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false);
+
+        sb.append(typeXml);
+      } else {
+        List<Coding> codes = null;
+        sb.append(CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME));
+      }
+
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+
+      if (org.getAddress() != null) {
+        List<Address> addrs = org.getAddress();
+        sb.append(CdaFhirUtilities.getAddressXml(addrs));
+      } else {
+        List<Address> addrs = null;
+        sb.append(CdaFhirUtilities.getAddressXml(addrs));
+      }
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+
     } else {
 
-      // ***************
-      // NOTE : THIS IS TEMPORARY --------
-      // For Connectathon testing add defaults, this needs to be removed after connectathon and
-      // replaced with the commented out code.
-      // ***************
+      logger.info(" Location is null, Organization is null, so populate using null flavors ");
+
       sb.append(
           CdaGeneratorUtils.getXmlForII(
               CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
       sb.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.CODE_EL_NAME,
-              "OF",
-              "2.16.840.1.113883.5.111",
-              "HL7RoleCode",
-              "Outpatient Facility"));
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
-
-      List<Address> addrs = getAddressDetails();
+      List<Address> addrs = null;
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
-
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
-
-      /*	sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
-      sb.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
-      List<AddressDt> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME)); */
-
     }
 
     return sb.toString();
   }
 
-  public static String getAuthorXml(Practitioner pr, Encounter en, R4FhirData data) {
+  public static String getAuthorXml(
+      R4FhirData data, Encounter en, HashMap<V3ParticipationType, List<Practitioner>> practMap) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -277,14 +289,46 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
 
-    List<Practitioner> practs =
-        CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.AUT);
+    List<Practitioner> practs = new ArrayList<Practitioner>();
+    Boolean foundAuthor = false;
 
-    if (practs != null && !practs.isEmpty()) {
-      logger.info(" Found a Practitioner who is an Author ");
-      sb.append(getPractitionerXml(practs.get(0)));
+    if (practMap != null && !practMap.isEmpty()) {
+
+      if (practMap.containsKey(V3ParticipationType.AUT)) {
+
+        logger.info(" Found Practitioner who is an Author ");
+        practs.addAll(practMap.get(V3ParticipationType.AUT));
+        foundAuthor = true;
+      } else if (practMap.containsKey(V3ParticipationType.PPRF)) {
+
+        logger.info(" Found Practitioner who is a PPRF for an Author");
+        practs.addAll(practMap.get(V3ParticipationType.PPRF));
+        foundAuthor = true;
+      } else if (practMap.containsKey(V3ParticipationType.ATND)) {
+        logger.info(" Found Practitioner who is an ATND for an Author ");
+        practs.addAll(practMap.get(V3ParticipationType.ATND));
+        foundAuthor = true;
+      } else if (practMap.containsKey(V3ParticipationType.SPRF)) {
+        logger.info(" Found Practitioner who is an SPRF for an Author");
+        practs.addAll(practMap.get(V3ParticipationType.SPRF));
+        foundAuthor = true;
+      }
+
+      logger.info(" Practs size = " + practs.size());
+      if (practs != null && !practs.isEmpty()) {
+
+        logger.info(" Practs is not empty, adding XML for Practitioner ");
+        Practitioner pr = practs.get(0);
+        sb.append(getPractitionerXml(pr));
+      } else {
+        logger.info(" Practs is null or empty after author checking ");
+      }
     } else {
-      logger.info(" Found a Practitioner who is an Author ");
+      logger.info(" Pract Map is null or empty ");
+    }
+
+    if (!foundAuthor) {
+      logger.info(" Did not find author ");
       sb.append(getPractitionerXml(null));
     }
 
@@ -313,43 +357,23 @@ public class CdaHeaderGenerator {
 
     } else {
 
-      // ***************
-      // NOTE : THIS IS TEMPORARY --------
-      // For Connectathon testing add defaults, this needs to be removed after connectathon and
-      // replaced with the commented out code.
-      // ***************
-      sb.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), "UtahOutpatientClinic"));
+      // Code that will replace the code above after testing.
+      sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
       sb.append(
           CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.NAME_EL_NAME, "Utah Outpatient Clinic"));
+              CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 
-      List<ContactPoint> cps = new ArrayList<>();
-      ContactPoint cp = new ContactPoint();
-      cp.setSystem(ContactPointSystem.PHONE);
-      cp.setUse(ContactPointUse.HOME);
-      cp.setValue("5557770123");
-      cps.add(cp);
+      List<ContactPoint> cps = null;
       sb.append(CdaFhirUtilities.getTelecomXml(cps));
 
-      List<Address> addrs = getAddressDetails();
+      List<Address> addrs = null;
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
-      // Code that will replace the code above after testing.
-      /* sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
-      sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
-
-      List<ContactPointDt> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps));
-
-      List<AddressDt> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs)); */
-
     }
 
     return sb.toString();
   }
 
-  public static String getCustodianXml(Organization org, LaunchDetails details, R4FhirData data) {
+  public static String getCustodianXml(LaunchDetails details, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -357,7 +381,7 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(org, details));
+    sb.append(getOrganizationXml(data.getOrganization(), details));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
@@ -368,9 +392,7 @@ public class CdaHeaderGenerator {
 
   public static String getEncompassingEncounter(
       Encounter en,
-      Practitioner pr,
-      Location loc,
-      Organization org,
+      HashMap<V3ParticipationType, List<Practitioner>> practMap,
       LaunchDetails details,
       R4FhirData data) {
 
@@ -399,9 +421,7 @@ public class CdaHeaderGenerator {
         }
       }
 
-      sb.append(
-          CdaFhirUtilities.getCodeableConceptXml(
-              en.getType(), CdaGeneratorConstants.CODE_EL_NAME, false));
+      sb.append(CdaEncounterGenerator.getEncounterCodeXml(en));
       sb.append(
           CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else {
@@ -418,28 +438,31 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-    sb.append(getPractitionerXml(pr));
+    sb.append(getXmlForRelevantPractitioner(practMap));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(org, details));
+    sb.append(getOrganizationXml(data.getOrganization(), details));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RESP_PARTY_EL_NAME));
 
+    // Add all practitioners
+    sb.append(getXmlForAllRelevantPractitioners(practMap));
+
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
 
-    sb.append(getLocationXml(loc));
+    sb.append(getLocationXml(data.getLocation(), data.getOrganization()));
 
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(org, details));
+    sb.append(getOrganizationXml(data.getOrganization(), details));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
@@ -451,6 +474,139 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMPONENT_OF_EL_NAME));
+
+    return sb.toString();
+  }
+
+  public static HashMap<V3ParticipationType, List<Practitioner>> getSortedPractitionerList(
+      R4FhirData data) {
+
+    HashMap<V3ParticipationType, List<Practitioner>> practitionerMap = new HashMap<>();
+
+    // Add Authors
+    List<Practitioner> practs =
+        CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.AUT);
+
+    if (practs != null && !practs.isEmpty()) {
+
+      logger.info(" Found Author Practitioner " + practs.size());
+      practitionerMap.put(V3ParticipationType.AUT, practs);
+    }
+
+    // Add PPRF
+    practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.PPRF);
+
+    if (practs != null && !practs.isEmpty()) {
+
+      logger.info(" Found PPRF Practitioners " + practs.size());
+      practitionerMap.put(V3ParticipationType.PPRF, practs);
+    }
+
+    // Add SPRF
+    practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.SPRF);
+
+    if (practs != null && !practs.isEmpty()) {
+
+      logger.info(" Found SPRF Practitioners " + practs.size());
+      practitionerMap.put(V3ParticipationType.SPRF, practs);
+    }
+
+    // Add PPRF
+    practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.ATND);
+
+    if (practs != null && !practs.isEmpty()) {
+
+      logger.info(" Found ATND Practitioners " + practs.size());
+      practitionerMap.put(V3ParticipationType.ATND, practs);
+    }
+
+    return practitionerMap;
+  }
+
+  public static String getXmlForRelevantPractitioner(
+      HashMap<V3ParticipationType, List<Practitioner>> practMap) {
+
+    StringBuilder practXml = new StringBuilder();
+
+    List<Practitioner> practs = new ArrayList<Practitioner>();
+    Boolean foundPrimaryPerformer = false;
+
+    if (practMap != null && !practMap.isEmpty()) {
+
+      if (practMap.containsKey(V3ParticipationType.PPRF)) {
+
+        logger.info(" Found Practitioner who is a Primary Performer ");
+        practs.addAll(practMap.get(V3ParticipationType.PPRF));
+        foundPrimaryPerformer = true;
+      } else if (practMap.containsKey(V3ParticipationType.ATND)) {
+        logger.info(" Found Practitioner who is an ATND for a Primary performer ");
+        practs.addAll(practMap.get(V3ParticipationType.ATND));
+        foundPrimaryPerformer = true;
+      } else if (practMap.containsKey(V3ParticipationType.SPRF)) {
+        logger.info(" Found Practitioner who is an SPRF for a Pimary Performer");
+        practs.addAll(practMap.get(V3ParticipationType.SPRF));
+        foundPrimaryPerformer = true;
+      }
+
+      logger.info(" Practs size = " + practs.size());
+      if (practs != null && !practs.isEmpty()) {
+
+        logger.info(" Practs is not empty, adding XML for Practitioner ");
+        Practitioner pr = practs.get(0);
+        practXml.append(getPractitionerXml(pr));
+      } else {
+        logger.info(" Practs is null or empty after author checking ");
+      }
+    } else {
+      logger.info(" Pract Map is null or empty ");
+    }
+
+    if (!foundPrimaryPerformer) {
+      logger.info(" Did not find author ");
+      practXml.append(getPractitionerXml(null));
+    }
+
+    return practXml.toString();
+  }
+
+  public static String getXmlForAllRelevantPractitioners(
+      HashMap<V3ParticipationType, List<Practitioner>> practs) {
+
+    StringBuilder sb = new StringBuilder();
+
+    if (practs != null && !practs.isEmpty()) {
+
+      for (Map.Entry<V3ParticipationType, List<Practitioner>> pr : practs.entrySet()) {
+
+        List<Practitioner> prs = pr.getValue();
+
+        for (Practitioner p : prs) {
+
+          if (pr.getKey() == V3ParticipationType.ATND
+              || pr.getKey() == V3ParticipationType.DIS
+              || pr.getKey() == V3ParticipationType.ADM
+              || pr.getKey() == V3ParticipationType.REF
+              || pr.getKey() == V3ParticipationType.CON) {
+
+            sb.append(
+                CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+                    CdaGeneratorConstants.ENCOUNTER_PARTICIPANT_EL_NAME, pr.getKey().toString()));
+            sb.append(
+                CdaGeneratorUtils.getXmlForStartElement(
+                    CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+
+            sb.append(getPractitionerXml(p));
+
+            sb.append(
+                CdaGeneratorUtils.getXmlForEndElement(
+                    CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+            sb.append(
+                CdaGeneratorUtils.getXmlForEndElement(
+                    CdaGeneratorConstants.ENCOUNTER_PARTICIPANT_EL_NAME));
+          }
+        }
+      }
+    }
 
     return sb.toString();
   }
@@ -596,6 +752,15 @@ public class CdaHeaderGenerator {
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+
+        // Add address if found
+        if (guardianContact.getAddress() != null) {
+
+          logger.info(" Adding Address for Guardian");
+          List<Address> addrs = new ArrayList<Address>();
+          addrs.add(guardianContact.getAddress());
+          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
+        }
 
         // Add Telecom
         patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));
