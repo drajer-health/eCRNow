@@ -1,71 +1,68 @@
 package com.drajer.ecrapp.security;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Base64;
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class AESEncryption {
 
   private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
-  private static SecretKeySpec secretKey;
-  private static byte[] key;
 
   @Autowired private Environment environment;
 
-  private static String secret;
+  private static String secretKey;
 
-  public static void setKey(String myKey) {
-    MessageDigest sha = null;
-    try {
-      key = myKey.getBytes("UTF-8");
-      sha = MessageDigest.getInstance("SHA-1");
-      key = sha.digest(key);
-      key = Arrays.copyOf(key, 16);
-      secretKey = new SecretKeySpec(key, "AES");
-    } catch (NoSuchAlgorithmException e) {
-      logger.error("Error while setting secret key: {}", e.toString());
-    } catch (UnsupportedEncodingException e) {
-      logger.error("Error while setting secret key: {}", e.toString());
-    }
-  }
+  private static IvParameterSpec iv;
 
-  public static String encrypt(String strToEncrypt) {
+  private static SecretKeySpec skeySpec;
+
+  public static String encrypt(String value) {
     try {
-      setKey(secret);
-      Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-      cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-      return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-    } catch (Exception e) {
-      logger.error("Error while encrypting: {}", e.toString());
+      Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+      cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+      byte[] encrypted = cipher.doFinal(value.getBytes());
+
+      return Base64.encodeBase64String(encrypted);
+    } catch (Exception ex) {
+      logger.error("Error while encrypting: {}", ex.toString(), ex);
     }
     return null;
   }
 
-  public static String decrypt(String strToDecrypt) {
+  public static String decrypt(String encrypted) {
     try {
-      setKey(secret);
-      Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-      cipher.init(Cipher.DECRYPT_MODE, secretKey);
-      return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-    } catch (Exception e) {
-      logger.error("Error while decrypting: " + e.toString());
+      Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+      cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+
+      byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
+
+      return new String(original);
+    } catch (Exception ex) {
+      logger.error("Error while decrypting: {}", ex.toString(), ex);
     }
     return null;
   }
 
   @PostConstruct
   public void getSecretKey() {
-    secret = environment.getRequiredProperty("security.key");
+    try {
+      secretKey = environment.getRequiredProperty("security.key");
+      byte[] keyBytes = secretKey.getBytes("UTF-16");
+      iv = new IvParameterSpec(Arrays.copyOf(keyBytes, 16));
+      skeySpec = new SecretKeySpec(Arrays.copyOf(keyBytes, 16), "AES");
+    } catch (UnsupportedEncodingException e) {
+      logger.error("Error while converting String to Bytes: {}", e.toString(), e);
+    }
   }
 }
