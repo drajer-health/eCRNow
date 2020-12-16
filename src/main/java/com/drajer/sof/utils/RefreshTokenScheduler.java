@@ -108,7 +108,8 @@ public class RefreshTokenScheduler {
       updateAccessToken(authDetails, tokenResponse);
 
     } catch (Exception e) {
-      logger.error("Error in Getting the AccessToken for the client: " + authDetails.getClientId(), e);
+      logger.error(
+          "Error in Getting the AccessToken for the client: " + authDetails.getClientId(), e);
     }
     return tokenResponse;
   }
