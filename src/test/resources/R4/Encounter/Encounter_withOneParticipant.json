@@ -107,18 +107,18 @@
           "coding": [
             {
               "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-              "code": "1116",
-              "display": "Admitting Physician",
+              "code": "1119",
+              "display": "Attending Physician",
               "userSelected": true
             },
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-              "code": "ADM",
-              "display": "admitter",
+              "code": "ATND",
+              "display": "attender",
               "userSelected": false
             }
           ],
-          "text": "Admitting Physician"
+          "text": "Attending Physician"
         }
       ],
       "period": {
