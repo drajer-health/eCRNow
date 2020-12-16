@@ -29,7 +29,7 @@ public class RestApiSender {
     String access_token = null;
     try {
       HttpHeaders headers = new HttpHeaders();
-      logger.info("IN INitialization");
+      logger.info("In Initialization");
 
       if (!authServiceImplClassName.isEmpty()) {
 
@@ -77,10 +77,11 @@ public class RestApiSender {
       }
 
     } catch (Exception e) {
+        logger.error("RestAPI Exception", e);
 
-      if (ub != null) {
-        logger.error("Error in Sending Eicr XML to Endpoint: {}", ub.toString());
-      }
+        if (ub != null) {
+          logger.error("Error in Sending Eicr XML to Endpoint: {}", ub.toString());
+        }
     }
     return bundleResponse;
   }
