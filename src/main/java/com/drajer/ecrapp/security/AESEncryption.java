@@ -8,7 +8,6 @@ import java.util.Base64;
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AESEncryption {
 
-	private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
+  private static final Logger logger = LoggerFactory.getLogger(AESEncryption.class);
   private static SecretKeySpec secretKey;
   private static byte[] key;
 
@@ -35,9 +34,9 @@ public class AESEncryption {
       key = Arrays.copyOf(key, 16);
       secretKey = new SecretKeySpec(key, "AES");
     } catch (NoSuchAlgorithmException e) {
-    	logger.error("Error while setting secret key: {}", e.toString());
+      logger.error("Error while setting secret key: {}", e.toString());
     } catch (UnsupportedEncodingException e) {
-    	logger.error("Error while setting secret key: {}", e.toString());
+      logger.error("Error while setting secret key: {}", e.toString());
     }
   }
 
@@ -48,7 +47,7 @@ public class AESEncryption {
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
       return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
     } catch (Exception e) {
-    	logger.error("Error while encrypting: {}", e.toString());
+      logger.error("Error while encrypting: {}", e.toString());
     }
     return null;
   }
@@ -60,7 +59,7 @@ public class AESEncryption {
       cipher.init(Cipher.DECRYPT_MODE, secretKey);
       return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
     } catch (Exception e) {
-    	logger.error("Error while decrypting: " + e.toString());
+      logger.error("Error while decrypting: " + e.toString());
     }
     return null;
   }
