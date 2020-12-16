@@ -165,14 +165,14 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     }
     // mock RESTAPI
     stubFor(
-        post(urlEqualTo(restApiUrl.getPath()))
+        post(urlPathEqualTo(restApiUrl.getPath()))
             .atPriority(1)
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withBody("Reportability Response recieved from AIMS")
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
-    /*    // mock EHR AuthURl
+    /*  // mock EHR AuthURl
         String accesstoken =
             "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
         stubFor(
