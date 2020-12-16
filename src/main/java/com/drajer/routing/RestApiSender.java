@@ -2,10 +2,12 @@ package com.drajer.routing;
 
 import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
+import java.lang.reflect.Method;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,28 +22,19 @@ public class RestApiSender {
 
   private final Logger logger = LoggerFactory.getLogger(RestApiSender.class);
 
-  @Value("${authorization.service.impl.class}")
-  private String authServiceImplClassName;
+  @Autowired(required = false)
+  private AuthorizationService authorizationService;
 
   public JSONObject sendEicrXmlDocument(LaunchDetails launchDetails, String eicrXml) {
     JSONObject bundleResponse = null;
     URIBuilder ub = null;
-    String access_token = null;
+    String accessToken = null;
     try {
       HttpHeaders headers = new HttpHeaders();
       logger.info("In Initialization");
 
-      if (!authServiceImplClassName.isEmpty()) {
-
-        Class<?> clazz = Class.forName(authServiceImplClassName);
-        AuthorizationService authService =
-            (AuthorizationService) clazz.getConstructor().newInstance();
-        access_token = authService.getAuthorizationHeader(launchDetails);
-
-        /*Class classInstance = Class.forName(authServiceImplClassName);
-        Method authMethod = classInstance.getMethod("getAuthorizationHeader", LaunchDetails.class);
-        logger.info(authMethod.getName());
-        access_token = (String) authMethod.invoke(classInstance.newInstance(), launchDetails);*/
+      if (authorizationService != null) {
+          accessToken = authorizationService.getAuthorizationHeader(launchDetails);
       }
 
       RestTemplate restTemplate = new RestTemplate();
@@ -49,9 +42,9 @@ public class RestApiSender {
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
       headers.add("X-Request-ID", launchDetails.getxRequestId());
 
-      if (access_token != null && !access_token.isEmpty()) {
-        logger.info("Setting Access_token============>" + access_token);
-        headers.add("Authorization", access_token);
+      if (accessToken != null && !accessToken.isEmpty()) {
+        logger.info("Setting Access_token============>" + accessToken);
+        headers.add("Authorization", accessToken);
       }
 
       HttpEntity<String> request = new HttpEntity<String>(eicrXml, headers);
