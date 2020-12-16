@@ -86,7 +86,8 @@ public class R4ResourcesData {
         // falling in between Start and End Date
         if (!encounterEntry.getPeriod().isEmpty()) {
           Period period = encounterEntry.getPeriod();
-          if (period.getStart().after(start) || period.getEnd().before(end)) {
+          if (period.getStart().after(start)
+              || (period.getEnd() != null && period.getEnd().before(end))) {
             encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
           }
           // If period is not present using LastUpdatedDate in meta information to filter
@@ -794,7 +795,7 @@ public class R4ResourcesData {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
         // Checking If ServiceRequest DateTime is present in ServiceRequest
         // resource
-        if (serviceRequest.getOccurrence().isDateTime()) {
+        if (serviceRequest.getOccurrence() != null && serviceRequest.getOccurrence().isDateTime()) {
           if (serviceRequest.getOccurrenceDateTimeType() != null) {
             if (serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
                 && serviceRequest

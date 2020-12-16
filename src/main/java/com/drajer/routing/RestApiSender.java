@@ -1,7 +1,7 @@
 package com.drajer.routing;
 
+import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
-import java.lang.reflect.Method;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,16 +32,16 @@ public class RestApiSender {
       logger.info("IN INitialization");
 
       if (!authServiceImplClassName.isEmpty()) {
-        /*
-         * Class<?> clazz = Class.forName(authServiceImplClassName);
-         * AuthorizationService authService = (AuthorizationService)
-         * clazz.getConstructor().newInstance(); access_token =
-         * authService.getAuthorizationHeader(launchDetails);
-         */
-        Class classInstance = Class.forName(authServiceImplClassName);
+
+        Class<?> clazz = Class.forName(authServiceImplClassName);
+        AuthorizationService authService =
+            (AuthorizationService) clazz.getConstructor().newInstance();
+        access_token = authService.getAuthorizationHeader(launchDetails);
+
+        /*Class classInstance = Class.forName(authServiceImplClassName);
         Method authMethod = classInstance.getMethod("getAuthorizationHeader", LaunchDetails.class);
         logger.info(authMethod.getName());
-        access_token = (String) authMethod.invoke(classInstance.newInstance(), launchDetails);
+        access_token = (String) authMethod.invoke(classInstance.newInstance(), launchDetails);*/
       }
 
       RestTemplate restTemplate = new RestTemplate();

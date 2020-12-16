@@ -48,18 +48,16 @@ import org.w3c.dom.NodeList;
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private String testCaseId;
-  String clientDetailsFile;
-  String systemLaunchFile;
-  Map<String, List<String>> allResourceFiles;
-  Map<String, ?> allResourceMapping;
-  Map<String, ?> allOtherMapping;
-  List<Map<String, String>> fieldsToValidate;
+  private String clientDetailsFile;
+  private String systemLaunchFile;
+  private Map<String, ?> allResourceMapping;
+  private Map<String, ?> allOtherMapping;
+  private List<Map<String, String>> fieldsToValidate;
 
   public ITValidateEicrDoc(
       String testCaseId,
       String clientDetails,
       String payLoad,
-      Map<String, List<String>> resourceFiles,
       List<Map<String, String>> validateFields,
       Map<String, ?> resourceMapping,
       Map<String, ?> otherMapping) {
@@ -67,7 +65,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     this.testCaseId = testCaseId;
     this.clientDetailsFile = clientDetails;
     this.systemLaunchFile = payLoad;
-    this.allResourceFiles = resourceFiles;
     this.fieldsToValidate = validateFields;
     this.allResourceMapping = resourceMapping;
     this.allOtherMapping = otherMapping;
@@ -128,16 +125,15 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
 
-    int totalTestcount =
-        testDataGenerator.get(0).getAllTestCases().size()
-            + testDataGenerator.get(1).getAllTestCases().size()
-            + testDataGenerator.get(2).getAllTestCases().size()
-            + testDataGenerator.get(3).getAllTestCases().size()
-            + testDataGenerator.get(4).getAllTestCases().size()
-            + testDataGenerator.get(5).getAllTestCases().size();
+    int totalTestcount = 0;
+    for (TestDataGenerator testData : testDataGenerator) {
+      totalTestcount = totalTestcount + testData.getAllTestCases().size();
+    }
 
-    Object[][] data = new Object[totalTestcount][7];
+    Object[][] data = new Object[totalTestcount][6];
 
     int count = 0;
     for (TestDataGenerator testData : testDataGenerator) {
@@ -149,10 +145,9 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
         data[count][0] = testCase;
         data[count][1] = testData.getTestFile(testCase, "ClientDataToBeSaved");
         data[count][2] = testData.getTestFile(testCase, "SystemLaunchPayload");
-        data[count][3] = testData.getResourceFiles(testCase);
-        data[count][4] = testData.getValidate(testCase);
-        data[count][5] = testData.getResourceMappings(testCase);
-        data[count][6] = testData.getOtherMappings(testCase);
+        data[count][3] = testData.getValidate(testCase);
+        data[count][4] = testData.getResourceMappings(testCase);
+        data[count][5] = testData.getOtherMappings(testCase);
 
         count++;
       }

@@ -1,0 +1,133 @@
+---
+testName: "LoadingQueryServiceTest"
+testCase:
+  eCR-R4-LoadQuery-FilterByEncounter:
+    fileData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params: "97953900"
+        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      Practitioner:
+      - params: "11817978"
+        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      - params: "4122622"
+        responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
+      - params: "11938004"
+        responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
+      - params: "4122625"
+        responseFilePath: "R4/Practitioner/Practitioner_4122625.json"
+      - params: "607928"
+        responseFilePath: "R4/Practitioner/Practitioner_607928.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//snomed.info/sct%7C77386006"
+        responseFilePath: "R4/Condition/CondPergnancy_SCT_77386006.json"
+      Observation:
+      - params:
+          patient: "12742571"
+          category: "laboratory"
+        responseFilePath: "R4/Observation/ObservationWithMultipleEntries.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//snomed.info/sct%7C34831000175105"
+        responseFilePath: "R4/Observation/ObsTravel_SCT_34831000175105.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//snomed.info/sct%7C224362002"
+        responseFilePath: "R4/Observation/ObsOccupation_SCT_224362002.json"
+#      - params:
+#          patient: "12742571"
+#          code: "http%3A%2F%2Floinc.org%7C90767-5"
+#        responseFilePath: "R4/Observation/ObservationPernancy-90767-5.json"
+#      - params:
+#          patient: "12742571"
+#          code: "http%3A%2F%2Floinc.org%7C29762-2"
+#        responseFilePath: "R4/Observation/ObservationTravel-29762-2.json"
+#      - params:
+#          patient: "12742571"
+#          code: "http%3A%2F%2Fsnomed.info%2Fsct%7C161085007"
+#        responseFilePath: "R4/Observation/ObservationTravel-161085007.json"
+#      - params:
+#          patient: "12742571"
+#          code: "http%3A%2F%2Fsnomed.info%2Fsct%7C443846001"
+#        responseFilePath: "R4/Observation/ObservationTravel-443846001.json"
+      Immunization:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Immunization/Immunization.json"
+      ServiceRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - Observation: 26
+      TravelObservation: 2
+      OccupationObservation: 3
+      Organization: 1
+      Condition: 2
+      PergnancyCondition: 1
+      Practitioner: 5
+      Immunization: 3
+      ServiceRequest: 2
+  eCR-R4-LoadQuery-FilterByDtTm:
+    fileData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Condition:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Condition/Condition_FilterByDtTm.json"
+      Observation:
+      - params:
+          patient: "12742571"
+          category: "laboratory"
+        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//loinc.org%7C90767-5"
+        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//loinc.org%7C29762-2"
+        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+      Immunization:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Immunization/Immunization_FilterByDtTm.json"
+      ServiceRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - Observation: 3
+      Condition: 2
+      TravelObservation: 3
+      PregnancyObservation: 3
+      Immunization: 2
+      ServiceRequest: 2
