@@ -1,5 +1,5 @@
 ---
-testName: "TestSystemLaunch"
+testName: "ResultSectionTest"
 testCase:
   eCR-result-withAndWithoutTriggerCode:
     fileData:
@@ -137,7 +137,7 @@ testCase:
       'value/@codeSystemName': "sct"
 #      'value/@displayName': "Detected (qualifier value)"
       'value/@valueSet': "2.16.840.1.114222.4.11.7508"
-      'value/@valueSetVersion': "19/05/2016"
+      'value/@valueSetVersion': "2020-07-09"
     - xPath: "/ClinicalDocument/component/structuredBody/component[3]/section/entry[2]"
       '@typeCode': "DRIV"
     - xPath: "/ClinicalDocument/component/structuredBody/component[3]/section/entry[2]/organizer/templateId"

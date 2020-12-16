@@ -56,6 +56,10 @@ public class ActionRepo {
 
   String xsdSchemasLocation;
 
+  String rctcOid;
+
+  String rctcVersion;
+
   private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
   public static ActionRepo getInstance() {
@@ -63,6 +67,22 @@ public class ActionRepo {
       instance = new ActionRepo();
     }
     return instance;
+  }
+
+  public String getRctcOid() {
+    return rctcOid;
+  }
+
+  public void setRctcOid(String rctcOid) {
+    this.rctcOid = rctcOid;
+  }
+
+  public String getRctcVersion() {
+    return rctcVersion;
+  }
+
+  public void setRctcVersion(String rctcVersion) {
+    this.rctcVersion = rctcVersion;
   }
 
   public String getLogFileDirectory() {

@@ -2,6 +2,7 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -331,8 +332,8 @@ public class CdaResultGenerator {
                     Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
                     // For Connectathon, until we get the right test data finish testing.
-                    String vs = "2.16.840.1.114222.4.11.7508";
-                    String vsVersion = "19/05/2016";
+                    String vs = CdaGeneratorConstants.RCTC_OID;
+                    String vsVersion = ActionRepo.getInstance().getRctcVersion();
                     lrEntry.append(
                         CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                             parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1745,7 +1746,12 @@ public class CdaGeneratorUtils {
     if (systemValue != null && systemValue.contains("urn:oid")) {
       return systemValue.replace("urn:oid:", "");
     } else {
-      return aaId;
+
+      Pair<String, String> system = CdaGeneratorConstants.getOID(systemValue);
+
+      if (!system.getValue0().isEmpty()) {
+        return system.getValue0();
+      } else return aaId;
     }
   }
 }

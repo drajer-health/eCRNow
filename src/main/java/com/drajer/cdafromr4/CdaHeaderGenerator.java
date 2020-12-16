@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,14 +99,14 @@ public class CdaHeaderGenerator {
           }
         }
 
+        eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter(), data));
+
         Practitioner practitioner = null;
         if (data.getPractitionersList() != null && !data.getPractitionersList().isEmpty()) {
           practitioner = data.getPractitionersList().get(0);
         }
 
-        eICRHeader.append(getAuthorXml(practitioner, data.getEncounter()));
-
-        eICRHeader.append(getCustodianXml(data.getOrganization(), details));
+        eICRHeader.append(getCustodianXml(data.getOrganization(), details, data));
 
         eICRHeader.append(
             getEncompassingEncounter(
@@ -113,7 +114,8 @@ public class CdaHeaderGenerator {
                 practitioner,
                 data.getLocation(),
                 data.getOrganization(),
-                details));
+                details,
+                data));
       }
     }
 
@@ -256,7 +258,7 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getAuthorXml(Practitioner pr, Encounter en) {
+  public static String getAuthorXml(Practitioner pr, Encounter en, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -275,7 +277,19 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
 
-    sb.append(getPractitionerXml(pr));
+    List<Practitioner> practs = null;
+    practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.ATND);
+    if (practs == null || practs.isEmpty()) {
+      practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.ADM);
+    }
+
+    if (practs != null && !practs.isEmpty()) {
+      logger.info(" Found a Practitioner who is an Attending or Admittign physician");
+      sb.append(getPractitionerXml(practs.get(0)));
+    } else {
+      logger.info(" NO Practitioner found who is an Attending or Admittign physician ");
+      sb.append(getPractitionerXml(null));
+    }
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
@@ -338,7 +352,7 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getCustodianXml(Organization org, LaunchDetails details) {
+  public static String getCustodianXml(Organization org, LaunchDetails details, R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -356,7 +370,12 @@ public class CdaHeaderGenerator {
   }
 
   public static String getEncompassingEncounter(
-      Encounter en, Practitioner pr, Location loc, Organization org, LaunchDetails details) {
+      Encounter en,
+      Practitioner pr,
+      Location loc,
+      Organization org,
+      LaunchDetails details,
+      R4FhirData data) {
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -402,7 +421,19 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-    sb.append(getPractitionerXml(pr));
+    List<Practitioner> practs = null;
+    practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.ATND);
+    if (practs == null || practs.isEmpty()) {
+      practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.ADM);
+    }
+
+    if (practs != null && !practs.isEmpty()) {
+      logger.info(" Found a Practitioner who is an Attending or Admittign physician");
+      sb.append(getPractitionerXml(practs.get(0)));
+    } else {
+      logger.info(" NO Practitioner found who is an Attending or Admittign physician ");
+      sb.append(getPractitionerXml(null));
+    }
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -448,24 +479,36 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
 
-    Identifier id =
+    List<Identifier> ids =
         CdaFhirUtilities.getIdentifierForType(
             p.getIdentifier(), CdaFhirEnumConstants.FHIR_ID_TYPE_MR);
 
-    if (id != null) {
+    Boolean addOnce = true;
 
-      if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
+    if (ids != null && !ids.isEmpty()) {
 
-        logger.info(" Found Identifier with Type MR ");
+      for (Identifier id : ids) {
 
-        String system =
-            CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
-        patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
-      } else {
+        if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
 
-        logger.info(" Using Resource Identifier as id ");
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+          logger.debug(" Found Identifier with Type MR ");
+
+          String system =
+              CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
+
+          patientDetails.append(CdaGeneratorUtils.getXmlForII(system, id.getValue()));
+
+        } else {
+
+          logger.debug(" Using Resource Identifier as id ");
+
+          if (addOnce) {
+            patientDetails.append(
+                CdaGeneratorUtils.getXmlForII(
+                    details.getAssigningAuthorityId(), p.getId().toString()));
+            addOnce = false;
+          }
+        }
       }
 
     } else {
@@ -477,8 +520,11 @@ public class CdaHeaderGenerator {
     // Add Address.
     patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress()));
 
-    // Add Telecom
+    // Add Telecom (Phone)
     patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom()));
+
+    // Add Telecom (Email)
+    patientDetails.append(CdaFhirUtilities.getEmailXml(p.getTelecom()));
 
     // Add patient
     patientDetails.append(

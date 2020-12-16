@@ -1,6 +1,5 @@
 package com.drajer.routing.impl;
 
-import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.EicrSender;
 import com.drajer.sof.model.LaunchDetails;
 import java.io.InputStream;
@@ -40,7 +39,7 @@ public class DirectEicrSender extends EicrSender {
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
 
-      ApplicationUtils.getDetailStatus(details);
+      // ApplicationUtils.getDetailStatus(details);
 
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 
