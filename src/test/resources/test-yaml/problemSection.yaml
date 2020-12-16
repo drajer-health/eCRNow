@@ -1,5 +1,5 @@
 ---
-testName: "TestSystemLaunch"
+testName: "ProblemSectionTest"
 testCase:
   eCR-problem-withOnlyTriggerCode:
     fileData:
@@ -133,7 +133,7 @@ testCase:
       '@codeSystemName': "icd-10-cm"
 #      '@displayName': "Disease caused by 2019-nCoV"
       '@valueSet': "2.16.840.1.114222.4.11.7508"
-      '@valueSetVersion': "19/05/2016"
+      '@valueSetVersion': "2020-07-09"
   eCR-problem-withTwoTriggerCode:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -260,7 +260,7 @@ testCase:
       '@codeSystemName': "sct"
 #      '@displayName': "Suspected disease caused by 2019-nCoV"
       '@valueSet': "2.16.840.1.114222.4.11.7508"
-      '@valueSetVersion': "19/05/2016"
+      '@valueSetVersion': "2020-07-09"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]"
@@ -376,7 +376,7 @@ testCase:
       '@codeSystemName': "icd-10-cm"
 #      '@displayName': "Coronavirus infection, unspecified"
       '@valueSet': "2.16.840.1.114222.4.11.7508"
-      '@valueSetVersion': "19/05/2016"
+      '@valueSetVersion': "2020-07-09"
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship"
       count: 1
     - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/id"

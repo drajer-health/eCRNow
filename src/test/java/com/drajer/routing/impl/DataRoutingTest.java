@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Properties;
 import javax.mail.Message;
@@ -20,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -29,13 +29,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(Session.class)
 public class DataRoutingTest {
 
-  ObjectMapper mapper = new ObjectMapper();
-
   @InjectMocks DirectEicrSender directEicrSender;
 
   private Transport mockTransport;
   private Session mockSession;
   private Properties mockProperties;
+  @Mock LaunchDetails launchDetails;
 
   @Before
   public void setup() {
@@ -50,23 +49,23 @@ public class DataRoutingTest {
     PowerMockito.mockStatic(Session.class);
     when(Session.getInstance(any(), any())).thenReturn(mockSession);
     when(mockSession.getProperties()).thenReturn(mockProperties);
+
+    when(launchDetails.getDirectHost()).thenReturn("ett.healthit.gov");
+    when(launchDetails.getDirectUser()).thenReturn("test@ett.healthit.gov");
+    when(launchDetails.getDirectPwd()).thenReturn("test123");
+    when(launchDetails.getDirectRecipient()).thenReturn("noone@somewhere.coms");
   }
 
   @Test
   public void sendDataTest() throws Exception {
     try {
 
-      // Setup
-      Object context =
-          mapper.readValue(
-              this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-              LaunchDetails.class);
       String data = "This is a EICR report";
 
       when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
 
       // Test
-      directEicrSender.sendData(context, data);
+      directEicrSender.sendData(launchDetails, data);
 
       // Validate
       verify(mockTransport, times(1)).sendMessage(any(Message.class), any());
@@ -84,15 +83,10 @@ public class DataRoutingTest {
     DirectResponseReceiver directResponseReceiverSpy = Mockito.spy(directReceiver);
 
     // Setup
-    Object context =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
-
     doNothing().when(directResponseReceiverSpy).readMail(any());
 
     // Test
-    directResponseReceiverSpy.receiveRespone(context);
+    directResponseReceiverSpy.receiveRespone(launchDetails);
 
     // Validate
 

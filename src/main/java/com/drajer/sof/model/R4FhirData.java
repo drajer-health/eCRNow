@@ -2,6 +2,7 @@ package com.drajer.sof.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -17,8 +18,12 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class R4FhirData extends FhirData {
+
+  private static final Logger logger = LoggerFactory.getLogger(R4FhirData.class);
 
   private Bundle data;
 
@@ -42,6 +47,53 @@ public class R4FhirData extends FhirData {
   private List<MedicationAdministration> medicationAdministrations;
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
+
+  private Address jurisdiction;
+
+  public void prepareJurisdicationData() {
+
+    if (location != null && location.getAddress() != null) {
+      logger.info(" Using Location information from the Encounter for Jurisdiction");
+      jurisdiction = location.getAddress();
+    } else if (organization != null && organization.getAddressFirstRep() != null) {
+      logger.info(
+          " Using Organization information from Encounter.serviceProvider as Jurisdiction ");
+      jurisdiction = organization.getAddressFirstRep();
+    }
+  }
+
+  public Boolean hasRequiredDataForEicr() {
+
+    Boolean requiredDataPresent = true;
+
+    // Check Patient and Encounter.
+    if (patient == null) {
+      logger.info(" Patient is null, cannot generate eICR ");
+      requiredDataPresent = false;
+    }
+
+    if (encounter == null) {
+      logger.info(" Encounter is null, cannot generate eICR ");
+      requiredDataPresent = false;
+    }
+
+    if (jurisdiction == null) {
+      logger.info(" Jurisdiction is null, cannot generate eICR ");
+      requiredDataPresent = false;
+    }
+
+    return requiredDataPresent;
+  }
+
+  public Practitioner getPractitionerById(String id) {
+
+    for (Practitioner pr : practitionersList) {
+
+      if (pr.getId().contains(id)) return pr;
+    }
+
+    return null;
+  }
 
   public R4FhirData() {
 
