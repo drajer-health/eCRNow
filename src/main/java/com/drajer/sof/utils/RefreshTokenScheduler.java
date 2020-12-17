@@ -66,7 +66,7 @@ public class RefreshTokenScheduler {
         getAccessToken(this.authDetails);
         Thread.currentThread().interrupt();
       } catch (Exception e) {
-        logger.info("Error in Getting AccessToken=====>" + e.getMessage());
+        logger.info("Error in Getting AccessToken=====>" + e);
       }
     }
   }

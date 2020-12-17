@@ -44,7 +44,7 @@ public class CdaValidatorUtil {
           " **** Error loading XSD file from the location : "
               + ActionRepo.getInstance().getXsdSchemasLocation()
               + " Message: "
-              + e.getMessage());
+              + e);
     }
     return schema;
   }
@@ -76,7 +76,7 @@ public class CdaValidatorUtil {
       if (errorHandler.getIsException()) return false;
 
     } catch (SAXException | IOException e) {
-      logger.error("Message: Error validating XML Data " + e.getMessage());
+      logger.error("Message: Error validating XML Data " + e);
       return false;
     }
     return true;
@@ -104,7 +104,7 @@ public class CdaValidatorUtil {
         output =
             aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrData)));
       } catch (Exception e) {
-        logger.error("Unable to read/write execution state: " + e.getMessage());
+        logger.error("Unable to read/write execution state: " + e);
       }
 
       if (output != null) {
