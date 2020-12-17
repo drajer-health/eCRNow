@@ -2,13 +2,11 @@ package com.drajer.routing;
 
 import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
-import java.lang.reflect.Method;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -34,7 +32,7 @@ public class RestApiSender {
       logger.info("In Initialization");
 
       if (authorizationService != null) {
-          accessToken = authorizationService.getAuthorizationHeader(launchDetails);
+        accessToken = authorizationService.getAuthorizationHeader(launchDetails);
       }
 
       RestTemplate restTemplate = new RestTemplate();
