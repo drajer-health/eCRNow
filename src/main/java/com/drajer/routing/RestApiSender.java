@@ -23,8 +23,7 @@ public class RestApiSender {
   @Autowired(required = false)
   private AuthorizationService authorizationService;
 
-  @Autowired
-  private RestTemplate restTemplate;
+  @Autowired private RestTemplate restTemplate;
 
   public JSONObject sendEicrXmlDocument(LaunchDetails launchDetails, String eicrXml) {
     JSONObject bundleResponse = null;
