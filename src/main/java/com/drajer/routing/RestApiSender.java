@@ -24,8 +24,7 @@ public class RestApiSender {
   @Value("${authorization.service.impl.class}")
   private String authServiceImplClassName;
 
-  @Autowired
-  private RestTemplate restTemplate;
+  @Autowired private RestTemplate restTemplate;
 
   public JSONObject sendEicrXmlDocument(LaunchDetails launchDetails, String eicrXml) {
     JSONObject bundleResponse = null;
