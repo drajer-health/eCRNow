@@ -6,6 +6,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,9 @@ public class RestApiSender {
 
   @Value("${authorization.service.impl.class}")
   private String authServiceImplClassName;
+
+  @Autowired
+  private RestTemplate restTemplate;
 
   public JSONObject sendEicrXmlDocument(LaunchDetails launchDetails, String eicrXml) {
     JSONObject bundleResponse = null;
@@ -43,8 +47,6 @@ public class RestApiSender {
         logger.info(authMethod.getName());
         access_token = (String) authMethod.invoke(classInstance.newInstance(), launchDetails);*/
       }
-
-      RestTemplate restTemplate = new RestTemplate();
 
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
       headers.add("X-Request-ID", launchDetails.getxRequestId());
