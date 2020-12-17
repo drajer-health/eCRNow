@@ -23,6 +23,9 @@ public class RestApiSender {
   @Autowired(required = false)
   private AuthorizationService authorizationService;
 
+  @Autowired
+  private RestTemplate restTemplate;
+
   public JSONObject sendEicrXmlDocument(LaunchDetails launchDetails, String eicrXml) {
     JSONObject bundleResponse = null;
     URIBuilder ub = null;
@@ -34,8 +37,6 @@ public class RestApiSender {
       if (authorizationService != null) {
         accessToken = authorizationService.getAuthorizationHeader(launchDetails);
       }
-
-      RestTemplate restTemplate = new RestTemplate();
 
       headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
       headers.add("X-Request-ID", launchDetails.getxRequestId());
