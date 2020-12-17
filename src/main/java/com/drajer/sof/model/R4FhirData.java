@@ -87,6 +87,7 @@ public class R4FhirData extends FhirData {
 
   public Practitioner getPractitionerById(String id) {
 
+    logger.info(" Id for retrieving practitioner = " + id);
     for (Practitioner pr : practitionersList) {
 
       if (pr.getId().contains(id)) return pr;

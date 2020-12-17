@@ -87,7 +87,7 @@ public class LaunchController {
   @RequestMapping(value = "/api/launchDetails", method = RequestMethod.POST)
   public LaunchDetails saveLaunchDetails(@RequestBody LaunchDetails launchDetails) {
 
-    logger.info(" Saving Launch Context");
+    logger.info(" Saving Launch Context", launchDetails);
     authDetailsService.saveOrUpdate(launchDetails);
 
     logger.info("Scheduling refresh token job ");
