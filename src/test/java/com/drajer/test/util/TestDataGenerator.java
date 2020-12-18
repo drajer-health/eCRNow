@@ -91,8 +91,8 @@ public class TestDataGenerator {
   public List<Map<String, String>> getValidate(String testCaseId) {
     return getTestDataVO().getTestCase().get(testCaseId).getvalidate();
   }
-  
+
   public TestCase getTestCaseByID(String testCaseId) {
-	  return getTestDataVO().getTestCase().get(testCaseId);
+    return getTestDataVO().getTestCase().get(testCaseId);
   }
 }

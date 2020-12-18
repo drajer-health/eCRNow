@@ -1,5 +1,5 @@
 ---
-testName: "TestSystemLaunch"
+testName: "EncounterSectionValidation"
 testCase:
   eCR-encounter:
     fileData:
@@ -57,7 +57,7 @@ testCase:
     - xPath: "entry/encounter/"
       'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id[1]/@extension': "97953900"
-      'id[2]/@root': "5.5.5.5.5.5"
+      'id[2]/@root': "2.16.840.1.113883.4.4"
       'id[2]/@extension': "98314717"
       'code/@code': "IMP"
       'code/@codeSystem': "2.16.840.1.113883.5.4"

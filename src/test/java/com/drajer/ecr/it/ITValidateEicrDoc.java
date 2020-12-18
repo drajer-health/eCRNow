@@ -1,10 +1,12 @@
 package com.drajer.ecr.it;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.ecr.it.common.WireMockHelper;
@@ -158,12 +160,20 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     Eicr createEicr = getCreateEicrDocument();
-    assertNotNull(createEicr.getEicrData());
+    String eICRXml = createEicr.getEicrData();
+    assertNotNull(eICRXml);
+    assertFalse(eICRXml.isEmpty());
 
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getEicrData());
+    assertTrue(
+        "Schema Validation Failed, check the logs", CdaValidatorUtil.validateEicrXMLData(eICRXml));
+    assertTrue(
+        "Schematron Validation Failed, check the logs",
+        CdaValidatorUtil.validateEicrToSchematron(eICRXml));
+
+    Document eicrXmlDoc = TestUtils.getXmlDocuments(eICRXml);
     validateXml(eicrXmlDoc);
   }
 
@@ -205,9 +215,9 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   }
 
   private void validateXml(Document eicrXml) throws XPathExpressionException {
-    
-	final XPath xPath = XPathFactory.newInstance().newXPath();
-	final String baseXPath = testData.get("BaseXPath");
+
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    final String baseXPath = testData.get("BaseXPath");
 
     if (fieldsToValidate != null) {
 
