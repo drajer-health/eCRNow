@@ -1,4 +1,4 @@
-package com.drajer.ecr.it.common;
+package com.drajer.test.model;
 
 import java.util.List;
 import java.util.Map;

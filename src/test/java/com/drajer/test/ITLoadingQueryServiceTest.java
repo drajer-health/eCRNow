@@ -1,15 +1,16 @@
-package com.drajer.sof.service;
+package com.drajer.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import com.drajer.ecr.it.common.BaseIntegrationTest;
-import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
+import com.drajer.test.util.WireMockHelper;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(Parameterized.class)
-public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
+public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
 
   private String testCaseId;
   private String launchDetailsFile;
@@ -40,7 +41,7 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
   private Map<String, ?> allOtherMapping;
   private List<Map<String, String>> fieldsToValidate;
 
-  public ITTriggerQueryServiceTest(
+  public ITLoadingQueryServiceTest(
       String testCaseId,
       String launchDetails,
       String startDate,
@@ -60,14 +61,14 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
 
   private LaunchDetails launchDetails;
 
-  @Autowired TriggerQueryService triggerQueryService;
+  @Autowired LoadingQueryService loadingQueryService;
 
   WireMockHelper stubHelper;
 
-  private static final Logger logger = LoggerFactory.getLogger(ITTriggerQueryServiceTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(ITLoadingQueryServiceTest.class);
 
   @Before
-  public void triggerQuerySetUp() throws IOException {
+  public void laoadingQuerySetUp() throws IOException {
 
     try {
 
@@ -86,13 +87,13 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
 
       fail(e.getMessage() + "This exception is not expected fix test");
     }
-
     session.flush();
     tx.commit();
   }
 
   @After
   public void cleanUp() {
+
     if (stubHelper != null) {
       stubHelper.stopMockServer();
     }
@@ -102,7 +103,7 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
   public static Collection<Object[]> data() {
 
     TestDataGenerator testDataGenerator =
-        new TestDataGenerator("test-yaml/triggerQueryServiceTest.yaml");
+        new TestDataGenerator("test-yaml/loadingQueryServiceTest.yaml");
 
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
     Object[][] data = new Object[testCaseSet.size()][7];
@@ -122,14 +123,14 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void triggerQueryServiceTest() throws IOException {
+  public void loadingQueryServiceTest() throws IOException {
 
     R4FhirData r4FhirData = null;
 
     try {
       r4FhirData =
           (R4FhirData)
-              triggerQueryService.getData(
+              loadingQueryService.getData(
                   launchDetails,
                   DateUtils.parseDate(startDate, "yyyyMMdd"),
                   DateUtils.parseDate(endDate, "yyyyMMdd"));

@@ -1,4 +1,4 @@
-package com.drajer.ecr.it;
+package com.drajer.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,13 +8,13 @@ import static org.junit.Assert.fail;
 
 import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecr.it.common.BaseIntegrationTest;
-import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
+import com.drajer.test.util.WireMockHelper;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

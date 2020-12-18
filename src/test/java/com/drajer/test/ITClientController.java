@@ -1,8 +1,7 @@
-package com.drajer.ecr.it;
+package com.drajer.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.drajer.ecr.it.common.BaseIntegrationTest;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
