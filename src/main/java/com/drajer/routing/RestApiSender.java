@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,8 +20,7 @@ public class RestApiSender {
 
   private final Logger logger = LoggerFactory.getLogger(RestApiSender.class);
 
-  @Autowired
-  private AuthorizationService authorizationService;
+  @Autowired private AuthorizationService authorizationService;
 
   @Autowired private RestTemplate restTemplate;
 
