@@ -21,8 +21,7 @@ public class RestApiSender {
 
   private final Logger logger = LoggerFactory.getLogger(RestApiSender.class);
 
-  @Autowired(required = false)
-  @Qualifier("OAuthIpaasServiceImpl")
+  @Autowired
   private AuthorizationService authorizationService;
 
   @Autowired private RestTemplate restTemplate;
