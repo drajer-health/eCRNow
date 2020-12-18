@@ -47,23 +47,20 @@ import org.w3c.dom.NodeList;
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private String testCaseId;
-  private String clientDetailsFile;
-  private String systemLaunchFile;
+  private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
   private Map<String, ?> allOtherMapping;
   private List<Map<String, String>> fieldsToValidate;
 
   public ITValidateEicrDoc(
       String testCaseId,
-      String clientDetails,
-      String payLoad,
+      Map<String, String> testData,
       List<Map<String, String>> validateFields,
       Map<String, ?> resourceMapping,
       Map<String, ?> otherMapping) {
 
     this.testCaseId = testCaseId;
-    this.clientDetailsFile = clientDetails;
-    this.systemLaunchFile = payLoad;
+    this.testData = testData;
     this.fieldsToValidate = validateFields;
     this.allResourceMapping = resourceMapping;
     this.allOtherMapping = otherMapping;
@@ -85,8 +82,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     tx = session.beginTransaction();
 
     // Data Setup
-    createClientDetails(clientDetailsFile);
-    systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
+    createClientDetails(testData.get("ClientDataToBeSaved"));
+    systemLaunchInputData = getSystemLaunchInputData(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
 
@@ -121,7 +118,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       totalTestcount = totalTestcount + testData.getAllTestCases().size();
     }
 
-    Object[][] data = new Object[totalTestcount][6];
+    Object[][] data = new Object[totalTestcount][5];
 
     int count = 0;
     for (TestDataGenerator testData : testDataGenerator) {
@@ -131,11 +128,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       for (String testCase : testCaseSet) {
 
         data[count][0] = testCase;
-        data[count][1] = testData.getTestFile(testCase, "ClientDataToBeSaved");
-        data[count][2] = testData.getTestFile(testCase, "SystemLaunchPayload");
-        data[count][3] = testData.getValidate(testCase);
-        data[count][4] = testData.getResourceMappings(testCase);
-        data[count][5] = testData.getOtherMappings(testCase);
+        data[count][1] = testData.getTestCaseByID(testCase).getFileData();
+        data[count][2] = testData.getValidate(testCase);
+        data[count][3] = testData.getResourceMappings(testCase);
+        data[count][4] = testData.getOtherMappings(testCase);
 
         count++;
       }
@@ -209,7 +205,9 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   }
 
   private void validateXml(Document eicrXml) throws XPathExpressionException {
-    final XPath xPath = XPathFactory.newInstance().newXPath();
+    
+	final XPath xPath = XPathFactory.newInstance().newXPath();
+	final String baseXPath = testData.get("BaseXPath");
 
     if (fieldsToValidate != null) {
 
@@ -217,7 +215,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
         try {
 
-          String xPathExp = field.get("xPath");
+          String xPathExp = baseXPath + field.get("xPath");
           if (field.containsKey("count")) {
             try {
               NodeList nodeList =
@@ -231,7 +229,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
             for (Entry<String, String> set : field.entrySet()) {
 
               if (!set.getKey().equalsIgnoreCase("xPath")) {
-                String xPathFullExp = xPathExp + "/" + set.getKey();
+                String xPathFullExp = xPathExp + set.getKey();
                 try {
                   String fieldValue =
                       (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);

@@ -5,6 +5,7 @@ testCase:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[9]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -27,28 +28,29 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/templateId"
+    - xPath: "templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section"
+    - xPath: ""
       'templateId/@root': "2.16.840.1.113883.10.20.22.2.12"
       'code/@code': "29299-5"
       'code/@codeSystem': "2.16.840.1.113883.6.1"
       'code/@codeSystemName': "LOINC"
       'code/@displayName': "Reason For Visit"
       title: "Reason For Visit"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/thead/tr/th"
+    - xPath: "text/table/thead/tr/th"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr[1]/td"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table"
+    - xPath: "text/table/"
       'thead/tr/th[1]': "text"
       'tbody/tr[1]/td[1]/content': "Shortness of Breath, Cough, Rule out COVID-19"
   eCR-ReasonForVisit-withDisplay:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[9]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -71,19 +73,20 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/thead/tr/th"
+    - xPath: "text/table/thead/tr/th"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr[1]/td"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table"
+    - xPath: "text/table/"
       'thead/tr/th[1]': "text"
       'tbody/tr[1]/td[1]/content': "COVID-19 Symptoms"
   eCR-ReasonForVisit-withUnknown:
     fileData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[9]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -111,12 +114,12 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/thead/tr/th"
+    - xPath: "text/table/thead/tr/th"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr[1]/td"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[9]/section/text/table"
+    - xPath: "text/table/"
       'thead/tr/th[1]': "text"
       'tbody/tr[1]/td[1]/content': "Unknown Reason For Visit"

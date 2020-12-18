@@ -1,5 +1,6 @@
 package com.drajer.test.util;
 
+import com.drajer.ecr.it.common.TestCase;
 import com.drajer.ecr.it.common.TestDataVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -89,5 +90,9 @@ public class TestDataGenerator {
 
   public List<Map<String, String>> getValidate(String testCaseId) {
     return getTestDataVO().getTestCase().get(testCaseId).getvalidate();
+  }
+  
+  public TestCase getTestCaseByID(String testCaseId) {
+	  return getTestDataVO().getTestCase().get(testCaseId);
   }
 }
