@@ -51,17 +51,16 @@ public class RestApiSender {
       headers.add("X-Request-ID", launchDetails.getxRequestId());
 
       if (access_token != null && !access_token.isEmpty()) {
-        logger.info("Setting Access_token============>" + access_token);
+        logger.info("Setting Access_token============>{}", access_token);
         headers.add("Authorization", access_token);
       }
 
-      HttpEntity<String> request = new HttpEntity<String>(eicrXml, headers);
+      HttpEntity<String> request = new HttpEntity<>(eicrXml, headers);
       logger.info(launchDetails.getRestAPIURL());
       ub = new URIBuilder(launchDetails.getRestAPIURL());
       ub.addParameter("fhirServerURL", launchDetails.getEhrServerURL());
       ub.addParameter("patientId", launchDetails.getLaunchPatientId());
       ub.addParameter("encounterId", launchDetails.getEncounterId());
-      ub.addParameter("setId", "123");
 
       if (logger.isInfoEnabled()) {
         logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
@@ -78,11 +77,7 @@ public class RestApiSender {
       }
 
     } catch (Exception e) {
-      logger.error("RestAPI Exception", e);
-
-      if (ub != null) {
-        logger.error("Error in Sending Eicr XML to Endpoint: {}", ub.toString());
-      }
+      logger.error("Caught Exception attempting to send to {}", ub, e);
     }
     return bundleResponse;
   }
