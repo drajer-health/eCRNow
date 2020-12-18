@@ -2,7 +2,7 @@
 testName: "TriggerQueryServiceTest"
 testCase:
   eCR-R4-TriggerQuery-FilterByEncounter:
-    fileData:
+    testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
       StartDate: "20201001"
       EndDate: "20201030"
@@ -54,7 +54,7 @@ testCase:
       Practitioner: 5
       ServiceRequest: 2
   eCR-R4-TriggerQuery-FilterByDtTm:
-    fileData:
+    testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
       StartDate: "20201001"
       EndDate: "20201030"
@@ -84,7 +84,7 @@ testCase:
       Condition: 2
       ServiceRequest: 2
   eCR-R4-Encounter-FetchByPatientId:
-    fileData:
+    testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
       StartDate: "20201001"
       EndDate: "20201030"

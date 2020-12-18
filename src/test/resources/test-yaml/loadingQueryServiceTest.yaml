@@ -2,7 +2,7 @@
 testName: "LoadingQueryServiceTest"
 testCase:
   eCR-R4-LoadQuery-FilterByEncounter:
-    fileData:
+    testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
       StartDate: "20201001"
       EndDate: "20201030"
@@ -87,7 +87,7 @@ testCase:
       Immunization: 3
       ServiceRequest: 2
   eCR-R4-LoadQuery-FilterByDtTm:
-    fileData:
+    testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
       StartDate: "20201001"
       EndDate: "20201030"

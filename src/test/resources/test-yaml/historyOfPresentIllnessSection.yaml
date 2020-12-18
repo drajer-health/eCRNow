@@ -2,7 +2,7 @@
 testName: "HistoryOfPresentIllnessSectionTest"
 testCase:
   eCR-historyOfPresentIllness-withOnlyTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[8]/section/"
@@ -47,7 +47,7 @@ testCase:
       'thead/tr/th[1]': "Narrative Text"
       'tbody/tr[1]/td[1]/content': "Disease caused by 2019 novel coronavirus"
   eCR-historyOfPresentIllness-withTwoTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[8]/section/"
@@ -93,7 +93,7 @@ testCase:
       'tbody/tr[1]/td[1]/content': "Suspected disease caused by 2019 novel coronavirus"
       'tbody/tr[2]/td[1]/content': "Disease caused by 2019 novel coronavirus"
   eCR-historyOfPresentIllness-withAndWithoutTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[8]/section/"

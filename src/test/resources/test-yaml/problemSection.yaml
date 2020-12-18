@@ -2,7 +2,7 @@
 testName: "ProblemSectionTest"
 testCase:
   eCR-problem-withOnlyTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
@@ -143,7 +143,7 @@ testCase:
       '@valueSet': "2.16.840.1.114222.4.11.7508"
       '@valueSetVersion': "2020-07-09"
   eCR-problem-withTwoTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
@@ -309,7 +309,7 @@ testCase:
       'translation/@codeSystemName': "icd-10-cm"
       'translation/@displayName': "2019-nCoV acute respiratory disease"
   eCR-problem-withAndWithoutTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"

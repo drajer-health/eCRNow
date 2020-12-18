@@ -14,7 +14,6 @@ import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
 import com.drajer.test.util.WireMockHelper;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,7 +129,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       for (String testCase : testCaseSet) {
 
         data[count][0] = testCase;
-        data[count][1] = testData.getTestCaseByID(testCase).getFileData();
+        data[count][1] = testData.getTestCaseByID(testCase).getTestData();
         data[count][2] = testData.getValidate(testCase);
         data[count][3] = testData.getResourceMappings(testCase);
         data[count][4] = testData.getOtherMappings(testCase);
@@ -173,7 +172,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
         "Schematron Validation Failed, check the logs",
         CdaValidatorUtil.validateEicrToSchematron(eICRXml));
 
-    Document eicrXmlDoc = TestUtils.getXmlDocuments(eICRXml);
+    Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
     validateXml(eicrXmlDoc);
   }
 

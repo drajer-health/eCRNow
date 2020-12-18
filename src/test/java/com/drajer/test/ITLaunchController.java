@@ -10,7 +10,6 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,8 +63,8 @@ public class ITLaunchController extends BaseIntegrationTest {
   public void launchTestSetUp() throws IOException {
     logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
-    clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
-    systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
+    clientDetailsFile = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved");
+    systemLaunchFile = testDataGenerator.getTestData(testCaseId, "SystemLaunchPayload");
 
     createClientDetails(clientDetailsFile);
     systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);

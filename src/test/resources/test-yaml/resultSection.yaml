@@ -2,7 +2,7 @@
 testName: "ResultSectionTest"
 testCase:
   eCR-result-withAndWithoutTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[3]/section/"
@@ -193,7 +193,7 @@ testCase:
       'interpretationCode/@codeSystemName': "v3-ObservationInterpretation"
       'interpretationCode/@displayName': "Abnormal"
   eCR-result-withNoObservations:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[3]/section/"

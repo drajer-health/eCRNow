@@ -10,7 +10,6 @@ import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -110,9 +109,9 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
     int count = 0;
     for (String testCase : testCaseSet) {
       data[count][0] = testCase;
-      data[count][1] = testDataGenerator.getTestFile(testCase, "LaunchDetails");
-      data[count][2] = testDataGenerator.getTestFile(testCase, "StartDate");
-      data[count][3] = testDataGenerator.getTestFile(testCase, "EndDate");
+      data[count][1] = testDataGenerator.getTestData(testCase, "LaunchDetails");
+      data[count][2] = testDataGenerator.getTestData(testCase, "StartDate");
+      data[count][3] = testDataGenerator.getTestData(testCase, "EndDate");
       data[count][4] = testDataGenerator.getValidate(testCase);
       data[count][5] = testDataGenerator.getResourceMappings(testCase);
       data[count][6] = testDataGenerator.getOtherMappings(testCase);

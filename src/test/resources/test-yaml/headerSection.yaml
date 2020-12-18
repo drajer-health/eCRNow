@@ -2,7 +2,7 @@
 testName: "HeaderSectionTest"
 testCase:
   eCR-patient-name-addr-telecom-gaurdian-language:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/recordTarget/patientRole/"
@@ -92,7 +92,7 @@ testCase:
       'guardianPerson/name/given': "DANA"
       'guardianPerson/name/family': "HARRIS"
   eCR-patient-deceased:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/recordTarget/patientRole/"
@@ -122,7 +122,7 @@ testCase:
       'deceasedTime/@value': "20201013"
       'deceasedInd/@value': "true"
   eCR-header-author:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/"
@@ -177,7 +177,7 @@ testCase:
       'name/given[2]': "Cerner"
       'name/family': "Carter"
   eCR-header-custodian:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/custodian/assignedCustodian/"
@@ -221,7 +221,7 @@ testCase:
       'telecom/@value': "tel:(555)555-0013"
       'telecom/@use': "WP"
   eCR-header-encompassingEncounter:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/componentOf/encompassingEncounter/"

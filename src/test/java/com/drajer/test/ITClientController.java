@@ -39,6 +39,8 @@ public class ITClientController extends BaseIntegrationTest {
 
   static int testClientDetailsId;
 
+  ClientDetails clientDetails;
+
   static TestDataGenerator testDataGenerator;
   String clientURI = "/api/clientDetails";
 
@@ -50,8 +52,8 @@ public class ITClientController extends BaseIntegrationTest {
   @Before
   public void clientTestSetUp() throws IOException {
     logger.info("Executing Tests with TestCase: " + testCaseId);
-    clientDetailsFile2 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
-    clientDetailsFile1 = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved2");
+    clientDetailsFile2 = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved");
+    clientDetailsFile1 = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved2");
   }
 
   @After
@@ -179,9 +181,7 @@ public class ITClientController extends BaseIntegrationTest {
     createTestClientDetailsInDB();
     ResponseEntity<String> response =
         restTemplate.exchange(
-            createURLWithPort(
-                clientURI
-                    + "?url=https://fhirsave-ehr.sandboxcerner.com/dstu2/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca"),
+            createURLWithPort(clientURI + "?url=" + clientDetails.getFhirServerBaseURL()),
             HttpMethod.GET,
             null,
             String.class);
@@ -218,8 +218,9 @@ public class ITClientController extends BaseIntegrationTest {
     tx = session.beginTransaction();
     clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile2);
 
-    testClientDetailsId =
-        (int) session.save(mapper.readValue(clientDetailString, ClientDetails.class));
+    clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
+
+    testClientDetailsId = (int) session.save(clientDetails);
     session.flush();
     tx.commit();
   }

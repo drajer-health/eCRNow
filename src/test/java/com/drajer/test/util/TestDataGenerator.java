@@ -41,15 +41,16 @@ public class TestDataGenerator {
     return testData;
   }
 
-  public String getTestFile(String testCaseId, String fileName) {
+  public String getTestData(String testCaseId, String testDataElement) {
 
-    return (String) getTestDataVO().getTestCase().get(testCaseId).getFileData().get(fileName);
+    return (String)
+        getTestDataVO().getTestCase().get(testCaseId).getTestData().get(testDataElement);
   }
 
   public String getValidationSections(String testCaseId) {
 
     return (String)
-        getTestDataVO().getTestCase().get(testCaseId).getFileData().get("ValidationSections");
+        getTestDataVO().getTestCase().get(testCaseId).getTestData().get("ValidationSections");
   }
 
   public Map<String, ?> getResourceMappings(String testCaseId) {

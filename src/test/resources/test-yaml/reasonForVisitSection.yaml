@@ -2,7 +2,7 @@
 testName: "ReasonForVisitSectionTest"
 testCase:
   eCR-ReasonForVisit-withText:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[9]/section/"
@@ -47,7 +47,7 @@ testCase:
       'thead/tr/th[1]': "text"
       'tbody/tr[1]/td[1]/content': "Shortness of Breath, Cough, Rule out COVID-19"
   eCR-ReasonForVisit-withDisplay:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[9]/section/"
@@ -83,7 +83,7 @@ testCase:
       'thead/tr/th[1]': "text"
       'tbody/tr[1]/td[1]/content': "COVID-19 Symptoms"
   eCR-ReasonForVisit-withUnknown:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[9]/section/"
