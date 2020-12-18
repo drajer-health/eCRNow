@@ -36,7 +36,7 @@ public class RestApiSender {
         accessToken = authorizationService.getAuthorizationHeader(launchDetails);
       }
 
-      headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
+      headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
       headers.add("X-Request-ID", launchDetails.getxRequestId());
 
       if (accessToken != null && !accessToken.isEmpty()) {
