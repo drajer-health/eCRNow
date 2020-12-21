@@ -66,7 +66,7 @@ public class RefreshTokenScheduler {
         getAccessToken(this.authDetails);
         Thread.currentThread().interrupt();
       } catch (Exception e) {
-        logger.info("Error in Getting AccessToken=====>" + e);
+        logger.info("Error in Getting AccessToken=====>", e);
       }
     }
   }
@@ -109,7 +109,7 @@ public class RefreshTokenScheduler {
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: " + authDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the client: {}", authDetails.getClientId(), e);
     }
     return tokenResponse;
   }
@@ -154,12 +154,12 @@ public class RefreshTokenScheduler {
           restTemplate.exchange(
               clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
-      logger.info("Received AccessToken for Client: " + clientDetails.getClientId());
+      logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());
       logger.info("Received AccessToken: {}", tokenResponse);
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: " + clientDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the client: {} ", clientDetails.getClientId(), e);
     }
     return tokenResponse;
   }
@@ -174,7 +174,7 @@ public class RefreshTokenScheduler {
         resourceData.getResouceById(
             authDetails, genericClient, context, "Patient", authDetails.getLaunchPatientId());
       } catch (Exception e) {
-        logger.error("Error in getting Patient details");
+        logger.error("Error in getting Patient details", e);
       }
 
       try {
@@ -182,21 +182,21 @@ public class RefreshTokenScheduler {
             authDetails, genericClient, context, "Encounter", authDetails.getEncounterId());
         // resourceData.getEncounterData(client, genericClient, ctx);
       } catch (Exception e) {
-        logger.error("Error in getting Encounter details");
+        logger.error("Error in getting Encounter details", e);
       }
 
       try {
         resourceData.getResourceByPatientId(authDetails, genericClient, context, "Observation");
         // resourceData.getObservationData(client, genericClient, ctx);
       } catch (Exception e) {
-        logger.error("Error in getting Observation details");
+        logger.error("Error in getting Observation details", e);
       }
 
       try {
         resourceData.getResourceByPatientId(authDetails, genericClient, context, "Condition");
         // resourceData.getConditionData(client, genericClient, ctx);
       } catch (Exception e) {
-        logger.error("Error in getting Condition details");
+        logger.error("Error in getting Condition details", e);
       }
 
       if (authDetails.getFhirVersion().equalsIgnoreCase("DSTU2")) {
@@ -205,14 +205,14 @@ public class RefreshTokenScheduler {
               authDetails, genericClient, context, "MedicationAdministration");
           // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
         } catch (Exception e) {
-          logger.error("Error in getting MedicationAdministration details");
+          logger.error("Error in getting MedicationAdministration details", e);
         }
 
         try {
           resourceData.getResourceByPatientId(authDetails, genericClient, context, "MedicationOrder");
           // resourceData.getMedicationOrderData(client, genericClient, ctx);
         } catch (Exception e) {
-          logger.error("Error in getting MedicationOrder details");
+          logger.error("Error in getting MedicationOrder details", e);
         }
 
         try {
@@ -220,7 +220,7 @@ public class RefreshTokenScheduler {
               authDetails, genericClient, context, "MedicationStatement");
           // resourceData.getMedicationStatementData(client, genericClient, ctx);
         } catch (Exception e) {
-          logger.error("Error in getting MedicationStatement details");
+          logger.error("Error in getting MedicationStatement details", e);
         }
       } else if (authDetails.getFhirVersion().equalsIgnoreCase("R4")) {
         try {
@@ -228,7 +228,7 @@ public class RefreshTokenScheduler {
               authDetails, genericClient, context, "MedicationRequest");
           // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
         } catch (Exception e) {
-          logger.error("Error in getting MedicationRequest details");
+          logger.error("Error in getting MedicationRequest details", e);
         }
       }
     }
