@@ -129,7 +129,7 @@ public class WorkflowService {
     } catch (JsonProcessingException e1) {
 
       String msg = "Unable to read/write execution state";
-      logger.error(msg);
+      logger.error(msg, e1);
       throw new RuntimeException(msg);
     }
 

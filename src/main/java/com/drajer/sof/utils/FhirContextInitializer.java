@@ -49,7 +49,7 @@ public class FhirContextInitializer {
    * Creates a GenericClient with standard intercepters used throughout the services.
    *
    * @param url the base URL of the FHIR server to connect to
-   * @param access_token the name of the key to use to generate the token
+   * @param accessToken the name of the key to use to generate the token
    * @return a Generic Client
    */
   public IGenericClient createClient(FhirContext context, String url, String accessToken) {
@@ -67,7 +67,8 @@ public class FhirContextInitializer {
     try {
       outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
     } catch (Exception e) {
-      logger.error("Error in Submitting the resource:::::" + resource.getResourceType().name());
+      logger.error(
+          "Error in Submitting the resource::::: {}", resource.getResourceType().name(), e);
     }
 
     return outcome;
@@ -86,7 +87,7 @@ public class FhirContextInitializer {
       // logger.info(resourceName + ":::::::::::::::::" +
       // context.newJsonParser().encodeResourceToString(resource));
     } catch (Exception e) {
-      logger.error("Error in getting " + resourceName + " resource by Id: " + resourceId, e);
+      logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }
     return resource;
   }
@@ -187,10 +188,9 @@ public class FhirContextInitializer {
       }
     } catch (Exception e) {
       logger.info(
-          "Error in getting "
-              + resourceName
-              + " resource by Patient Id: "
-              + authDetails.getLaunchPatientId(),
+          "Error in getting {} resource by Patient Id: {}",
+          resourceName,
+          authDetails.getLaunchPatientId(),
           e);
     }
 
