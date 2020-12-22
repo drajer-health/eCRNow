@@ -35,7 +35,7 @@ public class QueryConstants {
     return PREGNANCY_SNOMED_CODES;
   }
   
-  public enum RequestMode{
+  public enum RequestModeEnum{
 	  Validation,
 	  Production
   }
