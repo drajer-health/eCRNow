@@ -90,6 +90,7 @@ public class RRReceiverController {
             fhirContextInitializer.createClient(context, fhirServerURL, access_token);
 
         MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
+        logger.info("DocumentReference Id::::: " + outcome.getId().getIdPart());
       } else {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
