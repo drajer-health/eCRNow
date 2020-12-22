@@ -1,4 +1,4 @@
-package com.drajer.ecr.it.common;
+package com.drajer.test.model;
 
 public class StubVO {
 

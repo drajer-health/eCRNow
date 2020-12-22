@@ -1,10 +1,10 @@
-package com.drajer.ecr.it.common;
+package com.drajer.test.model;
 
 import java.util.List;
 import java.util.Map;
 
 public class TestCase {
-  private Map<String, String> fileData;
+  private Map<String, String> testData;
   private Map<String, ?> resourceMappingData;
   private Map<String, String> otherMappingData;
   private List<Map<String, String>> validate;
@@ -15,7 +15,7 @@ public class TestCase {
       Map<String, String> otherMappingData,
       List<Map<String, String>> validate) {
     super();
-    this.fileData = fileData;
+    this.testData = fileData;
     this.resourceMappingData = resourceMappingData;
     this.otherMappingData = otherMappingData;
     this.validate = validate;
@@ -25,12 +25,12 @@ public class TestCase {
     super();
   }
 
-  public Map<String, String> getFileData() {
-    return fileData;
+  public Map<String, String> getTestData() {
+    return testData;
   }
 
-  public void setFileData(Map<String, String> fileData) {
-    this.fileData = fileData;
+  public void setTestData(Map<String, String> testData) {
+    this.testData = testData;
   }
 
   public Map<String, ?> getResourceMappingData() {

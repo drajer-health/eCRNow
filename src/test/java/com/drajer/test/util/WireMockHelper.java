@@ -1,4 +1,4 @@
-package com.drajer.ecr.it.common;
+package com.drajer.test.util;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
@@ -8,7 +8,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-import com.drajer.test.util.TestUtils;
+import com.drajer.test.model.StubVO;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 import java.util.LinkedHashMap;

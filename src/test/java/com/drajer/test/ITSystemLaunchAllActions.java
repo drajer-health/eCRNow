@@ -1,4 +1,4 @@
-package com.drajer.ecr.it;
+package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -14,11 +14,10 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.PeriodicUpdateEicrStatus;
 import com.drajer.eca.model.SubmitEicrStatus;
 import com.drajer.eca.model.ValidateEicrStatus;
-import com.drajer.ecr.it.common.BaseIntegrationTest;
-import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
+import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -86,8 +85,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
     // Retrieve test data from TestSystemLaunchAllActions.yaml file
-    clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
-    systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
+    clientDetailsFile = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved");
+    systemLaunchFile = testDataGenerator.getTestData(testCaseId, "SystemLaunchPayload");
     validationSectionList =
         Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
