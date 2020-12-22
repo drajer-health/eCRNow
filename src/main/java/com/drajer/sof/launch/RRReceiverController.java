@@ -57,7 +57,7 @@ public class RRReceiverController {
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.debug("Received Obj:::::" + obj);
+      logger.debug("Received Obj::::: {}", obj);
       // Construct the DocumentReference Resource
       DocumentReference docRef =
           rrReceieverService.constructDocumentReference(obj, type, patientId, encounterId);
@@ -90,7 +90,7 @@ public class RRReceiverController {
             fhirContextInitializer.createClient(context, fhirServerURL, access_token);
 
         MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
-        logger.info("DocumentReference Id::::: " + outcome.getId().getIdPart());
+        logger.info("DocumentReference Id::::: {}", outcome.getId().getIdPart());
       } else {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }

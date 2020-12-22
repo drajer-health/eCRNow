@@ -94,8 +94,8 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     documentReference.setContext(contextComp);
 
     logger.info(
-        "DocumentReference Object===========>"
-            + FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference));
+        "DocumentReference Object===========> {}",
+        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference));
 
     return documentReference;
   }
