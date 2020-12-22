@@ -87,25 +87,4 @@ public class RestApiSender {
     sb.append("'}");
     return sb.toString();
   }
-
-  /*
-   * private String getAccessToken(LaunchDetails launchDetails) { String
-   * access_token = ""; RestTemplate restTemplate = new RestTemplate(); JSONObject
-   * requestBody = new JSONObject(); requestBody.put("client_id",
-   * launchDetails.getClientId()); requestBody.put("client_secret",
-   * launchDetails.getClientSecret()); HttpHeaders headers = new HttpHeaders();
-   * headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-   * HttpEntity<String> request = new HttpEntity<String>(requestBody.toString(),
-   * headers);
-   *
-   * logger.info( "Sending Authorization request to Endpoint::::: {}",
-   * launchDetails.getEhrAuthorizationUrl()); ResponseEntity<String> response =
-   * restTemplate.exchange( launchDetails.getEhrAuthorizationUrl(),
-   * HttpMethod.POST, request, String.class);
-   *
-   * JSONObject responseObj = new JSONObject(response.getBody()); access_token =
-   * responseObj.getString("access_token");
-   * logger.info("received Access_token====>" + access_token); return
-   * access_token; }
-   */
 }
