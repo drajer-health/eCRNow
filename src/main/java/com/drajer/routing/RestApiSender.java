@@ -50,7 +50,6 @@ public class RestApiSender {
       ub.addParameter("fhirServerURL", launchDetails.getEhrServerURL());
       ub.addParameter("patientId", launchDetails.getLaunchPatientId());
       ub.addParameter("encounterId", launchDetails.getEncounterId());
-      ub.addParameter("setId", "123");
 
       if (logger.isInfoEnabled()) {
         logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
