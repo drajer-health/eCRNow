@@ -76,15 +76,15 @@ public class RestApiSender {
 
   private static String constructJson(LaunchDetails launchDetails) {
     StringBuilder sb = new StringBuilder(200);
-    sb.append("{'fhirServerURL':'");
+    sb.append("{\"fhirServerURL\":\"");
     sb.append(launchDetails.getEhrServerURL());
-    sb.append("','patientId':'");
+    sb.append("\",\"patientId\":\"");
     sb.append(launchDetails.getLaunchPatientId());
-    sb.append("','encounterId':'");
+    sb.append("\",\"encounterId\":\"");
     sb.append(launchDetails.getEncounterId());
-    sb.append("','ecrRequestId':'");
+    sb.append("\",\"ecrRequestId\":\"");
     sb.append(launchDetails.getxRequestId());
-    sb.append("'}");
+    sb.append("\"}");
     return sb.toString();
   }
 }
