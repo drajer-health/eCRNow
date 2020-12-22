@@ -1,8 +1,7 @@
 package com.drajer.sof.model;
 
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.security.AESEncryption;
-import com.drajer.sof.utils.QueryConstants;
-
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -150,7 +149,7 @@ public class LaunchDetails {
   private String xRequestId;
 
   @Column(name = "request_mode", nullable = true)
-  private String requestMode = QueryConstants.RequestModeEnum.Production.toString();
+  private String requestMode = EventTypes.RequestModeEnum.Production.toString();
 
   public Boolean getIsCovid() {
     return isCovid;

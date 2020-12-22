@@ -34,9 +34,4 @@ public class QueryConstants {
   public static String[] getPregnancySmtCodes() {
     return PREGNANCY_SNOMED_CODES;
   }
-  
-  public enum RequestModeEnum{
-	  Validation,
-	  Production
-  }
 }
