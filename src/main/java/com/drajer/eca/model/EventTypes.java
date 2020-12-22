@@ -71,6 +71,11 @@ public final class EventTypes {
     STOP
   }
 
+  public enum RequestModeEnum {
+    Validation,
+    Production
+  }
+
   public EcrActionTypes getEcrActionTypes(String s) {
 
     if (s.equalsIgnoreCase("match-trigger")) return EcrActionTypes.MATCH_TRIGGER;
