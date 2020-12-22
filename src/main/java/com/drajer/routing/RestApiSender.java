@@ -37,19 +37,18 @@ public class RestApiSender {
       }
 
       headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-      headers.add("X-Request-ID", launchDetails.getxRequestId());
 
       if (accessToken != null && !accessToken.isEmpty()) {
         logger.info("Setting Access_token============>" + accessToken);
         headers.add("Authorization", accessToken);
       }
 
-      HttpEntity<String> request = new HttpEntity<String>(eicrXml, headers);
+      String json = constructJson(launchDetails);
+
+      HttpEntity<String> request = new HttpEntity<>(json, headers);
       logger.info(launchDetails.getRestAPIURL());
+
       ub = new URIBuilder(launchDetails.getRestAPIURL());
-      ub.addParameter("fhirServerURL", launchDetails.getEhrServerURL());
-      ub.addParameter("patientId", launchDetails.getLaunchPatientId());
-      ub.addParameter("encounterId", launchDetails.getEncounterId());
 
       if (logger.isInfoEnabled()) {
         logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
@@ -73,6 +72,20 @@ public class RestApiSender {
       }
     }
     return bundleResponse;
+  }
+
+  private static String constructJson(LaunchDetails launchDetails) {
+    StringBuilder sb = new StringBuilder(200);
+    sb.append("{'fhirServerURL':'");
+    sb.append(launchDetails.getEhrServerURL());
+    sb.append("','patientId':'");
+    sb.append(launchDetails.getLaunchPatientId());
+    sb.append("','encounterId':'");
+    sb.append(launchDetails.getEncounterId());
+    sb.append("','ecrRequestId':'");
+    sb.append(launchDetails.getxRequestId());
+    sb.append("'}");
+    return sb.toString();
   }
 
   /*
