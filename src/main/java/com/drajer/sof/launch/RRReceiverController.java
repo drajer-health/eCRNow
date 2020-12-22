@@ -53,7 +53,7 @@ public class RRReceiverController {
       @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
       @OptionalParam(name = "fhirServerURL") String fhirServerURL,
       @OptionalParam(name = "patientId") String patientId,
-      @OptionalParam(name = "encounter") String encounterId,
+      @OptionalParam(name = "encounterId") String encounterId,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
@@ -94,7 +94,7 @@ public class RRReceiverController {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
     } catch (Exception e) {
-      logger.error("Error in Processing the request");
+      logger.error("Error in Processing the request", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
