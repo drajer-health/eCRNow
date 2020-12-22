@@ -226,6 +226,9 @@ public class LaunchController {
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
             launchDetails.setxRequestId(requestIdHeadervalue);
+            if (systemLaunch.getRequestMode() != null) {
+              launchDetails.setRequestMode(systemLaunch.getRequestMode());
+            }
 
             setStartAndEndDates(clientDetails, launchDetails);
 

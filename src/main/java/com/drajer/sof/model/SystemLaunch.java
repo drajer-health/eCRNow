@@ -5,6 +5,7 @@ public class SystemLaunch {
   private String fhirServerURL;
   private String patientId;
   private String encounterId;
+  private String requestMode;
 
   public String getFhirServerURL() {
     return fhirServerURL;
@@ -28,5 +29,13 @@ public class SystemLaunch {
 
   public void setEncounterId(String encounterId) {
     this.encounterId = encounterId;
+  }
+
+  public String getRequestMode() {
+    return requestMode;
+  }
+
+  public void setRequestMode(String requestMode) {
+    this.requestMode = requestMode;
   }
 }
