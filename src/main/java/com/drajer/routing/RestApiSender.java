@@ -50,7 +50,7 @@ public class RestApiSender {
       logger.info(launchDetails.getRestAPIURL());
 
       ub = new URIBuilder(launchDetails.getRestAPIURL());
-      
+
       if (logger.isInfoEnabled()) {
         logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
       }
