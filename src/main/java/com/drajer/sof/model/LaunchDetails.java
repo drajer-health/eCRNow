@@ -1,6 +1,8 @@
 package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
+import com.drajer.sof.utils.QueryConstants;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -146,6 +148,9 @@ public class LaunchDetails {
 
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
+
+  @Column(name = "request_mode", nullable = true)
+  private String requestMode = QueryConstants.RequestMode.Production.toString();
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -433,5 +438,13 @@ public class LaunchDetails {
 
   public void setxRequestId(String xRequestId) {
     this.xRequestId = xRequestId;
+  }
+
+  public String getRequestMode() {
+    return requestMode;
+  }
+
+  public void setRequestMode(String requestMode) {
+    this.requestMode = requestMode;
   }
 }
