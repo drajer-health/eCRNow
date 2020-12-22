@@ -2,7 +2,7 @@
 testName: "TestSystemLaunch"
 testCase:
   TestCase001:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry2.json"
       ClientDataToBeSaved2: "R4/Misc/ClientDetails/ClientDetails1.json"
     resourceMappingData: null

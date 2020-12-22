@@ -1,10 +1,11 @@
 ---
-testName: "TestSystemLaunch"
+testName: "EncounterSectionValidation"
 testCase:
   eCR-encounter:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[2]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -27,36 +28,40 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section"
-      title: "ENCOUNTERS"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/text/table/thead/tr/th"
+    - xPath: "templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/text/table/thead/tr"
-      'th[1]': "Encounter Reason"
-      'th[2]': "Date of Encounter"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/text/table/tbody/tr"
+    - xPath: ""
+      'templateId[1]/@root': "2.16.840.1.113883.10.20.22.2.22.1"
+      'templateId[2]/@root': "2.16.840.1.113883.10.20.22.2.22.1"
+      'templateId[2]/@extension': "2015-08-01"
+      'code/@code': "46240-8"
+      'code/@codeSystem': "2.16.840.1.113883.6.1"
+      'code/@codeSystemName': "LOINC"
+      'code/@displayName': "History of Encounters"
+      'title': "ENCOUNTERS"
+    - xPath: "text/table/thead/tr/th"
+      count: 2
+    - xPath: "text/table/tbody/tr"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr/td"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/text/table/tbody/tr[1]"
-      'td[1]/content': "inpatient encounter"
-#      'td[2]/content': "20200512191056"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry"
+    - xPath: "text/table/"
+      'thead/tr/th[1]': "Encounter Reason"
+      'thead/tr/th[2]': "Date of Encounter"
+      'tbody/tr/td[1]/content': "inpatient encounter"
+#      'tbody/tr/td[2]/content': "20200512191056"
+    - xPath: "entry"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/id"
+    - xPath: "entry/encounter/id"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/id[1]"
-      '@root': "2.16.840.1.113883.1.1.1.1"
-#      '@extension': "97953900"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/id[2]"
-      '@root': "5.5.5.5.5.5"
-      '@extension': "98314717"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/code"
-      '@code': "IMP"
-      '@codeSystem': "2.16.840.1.113883.5.4"
-      '@codeSystemName': "v3-ActCode"
-      '@displayName': "inpatient encounter"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/effectiveTime/low"
-      '@value': "20200512"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[2]/section/entry[1]/encounter/effectiveTime/high"
-      '@nullFlavor': "NI" 
+    - xPath: "entry/encounter/"
+      'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
+#      'id[1]/@extension': "97953900"
+      'id[2]/@root': "2.16.840.1.113883.4.4"
+      'id[2]/@extension': "98314717"
+      'code/@code': "IMP"
+      'code/@codeSystem': "2.16.840.1.113883.5.4"
+      'code/@codeSystemName': "v3-ActCode"
+      'code/@displayName': "inpatient encounter"
+      'effectiveTime/low/@value': "20200512"
+      'effectiveTime/high/@nullFlavor': "NI" 

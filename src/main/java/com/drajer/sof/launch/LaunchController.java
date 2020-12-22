@@ -321,7 +321,7 @@ public class LaunchController {
           // response.setHeader("Location", constructedAuthUrl);
         }
       } catch (Exception e) {
-        logger.error("Error in getting Authorization with Server");
+        logger.error("Error in getting Authorization with Server", e);
       }
     } else {
       throw new Exception("Launch or Issuer URL is missing");

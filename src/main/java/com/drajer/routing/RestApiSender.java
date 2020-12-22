@@ -46,10 +46,11 @@ public class RestApiSender {
       String json = constructJson(launchDetails);
 
       HttpEntity<String> request = new HttpEntity<>(json, headers);
+
       logger.info(launchDetails.getRestAPIURL());
 
       ub = new URIBuilder(launchDetails.getRestAPIURL());
-
+      
       if (logger.isInfoEnabled()) {
         logger.info("Sending Eicr XML Document to Endpoint::::: {}", ub.toString());
       }

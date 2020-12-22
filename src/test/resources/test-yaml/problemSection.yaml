@@ -2,9 +2,10 @@
 testName: "ProblemSectionTest"
 testCase:
   eCR-problem-withOnlyTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -27,28 +28,35 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section"
-      title: "PROBLEMS - DIAGNOSES"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/thead/tr/th"
+    - xPath: ""
+      'templateId[1]/@root': "2.16.840.1.113883.10.20.22.2.5.1"
+      'templateId[2]/@root': "2.16.840.1.113883.10.20.22.2.5.1"
+      'templateId[2]/@extension': "2015-08-01"
+      'code/@code': "11450-4"
+      'code/@codeSystem': "2.16.840.1.113883.6.1"
+      'code/@codeSystemName': "LOINC"
+      'code/@displayName': "PROBLEM LIST"
+      'title': "PROBLEMS - DIAGNOSES"
+    - xPath: "text/table/thead/tr/th"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr[1]/td"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table"
+    - xPath: "text/table/"
       'thead/tr/th[1]': "Problem or Diagnosis"
       'thead/tr/th[2]': "Problem Status"
       'tbody/tr[1]/td[1]/content': "Disease caused by 2019-nCoV"
       'tbody/tr[1]/td[2]/content': "Active"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
+    - xPath: "entry"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]"
+    - xPath: "entry[1]/"
       '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/templateId"
+    - xPath: "entry[1]/act/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/id"
+    - xPath: "entry[1]/act/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act"
+    - xPath: "entry[1]/act/"
       '@classCode': "ACT"
       '@moodCode': "EVN"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.3"
@@ -61,17 +69,17 @@ testCase:
       'code/@displayName': "Concern"
       'statusCode/@code': "active"
 #      'effectiveTime/low/@value': "20200514"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship"
+    - xPath: "entry[1]/act/entryRelationship"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]"
+    - xPath: "entry[1]/act/entryRelationship[1]/"
       '@typeCode': "SUBJ"
       'observation/@classCode': "OBS"
       'observation/@moodCode': "EVN"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/templateId"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/id"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@extension': "2015-08-01"
@@ -87,9 +95,9 @@ testCase:
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200514"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/value/"
       '@type': "CD"
       '@code': "840539006"
       '@codeSystem': "2.16.840.1.113883.6.96"
@@ -99,16 +107,16 @@ testCase:
       'translation/@codeSystem': "2.16.840.1.113883.6.90"
       'translation/@codeSystemName': "icd-10-cm"
       'translation/@displayName': "2019-nCoV acute respiratory disease"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]"
+    - xPath: "entry[1]/act/entryRelationship[2]/"
       '@typeCode': "RSON"
       'observation/@classCode': "OBS"
       'observation/@moodCode': "EVN"
       'observation/@negationInd': "false"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/templateId"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/templateId"
       count: 3
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/id"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@extension': "2015-08-01"
@@ -126,7 +134,7 @@ testCase:
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200514"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/value/"
       '@type': "CD"
       '@code': "U07.1"
       '@codeSystem': "2.16.840.1.113883.6.90"
@@ -135,9 +143,10 @@ testCase:
       '@valueSet': "2.16.840.1.114222.4.11.7508"
       '@valueSetVersion': "2020-07-09"
   eCR-problem-withTwoTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -160,22 +169,22 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table"
+    - xPath: "text/table/"
       'tbody/tr[1]/td[1]/content': "Suspected disease caused by 2019-nCoV"
       'tbody/tr[1]/td[2]/content': "Active"
       'tbody/tr[2]/td[1]/content': "Disease caused by 2019-nCoV"
       'tbody/tr[2]/td[2]/content': "Active"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
+    - xPath: "entry"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]"
+    - xPath: "entry[1]/"
       '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/templateId"
+    - xPath: "entry[1]/act/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/id"
+    - xPath: "entry[1]/act/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act"
+    - xPath: "entry[1]/act/"
       '@classCode': "ACT"
       '@moodCode': "EVN"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.3"
@@ -188,17 +197,17 @@ testCase:
       'code/@displayName': "Concern"
       'statusCode/@code': "active"
 #      'effectiveTime/low/@value': "20200429"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship"
+    - xPath: "entry[1]/act/entryRelationship"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]"
+    - xPath: "entry[1]/act/entryRelationship[1]/"
       '@typeCode': "SUBJ"
       'observation/@classCode': "OBS"
       'observation/@moodCode': "EVN"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/templateId"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/id"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@extension': "2015-08-01"
@@ -214,9 +223,9 @@ testCase:
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200429"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/value/"
       '@type': "CD"
       '@code': "840544004"
       '@codeSystem': "2.16.840.1.113883.6.96"
@@ -226,16 +235,16 @@ testCase:
       'translation/@codeSystem': "2.16.840.1.113883.6.90"
       'translation/@codeSystemName': "icd-10-cm"
       'translation/@displayName': "Contact with and (suspected) exposure to other viral communicable diseases"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]"
+    - xPath: "entry[1]/act/entryRelationship[2]/"
       '@typeCode': "RSON"
       'observation/@classCode': "OBS"
       'observation/@moodCode': "EVN"
       'observation/@negationInd': "false"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/templateId"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/templateId"
       count: 3
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/id"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@extension': "2015-08-01"
@@ -253,7 +262,7 @@ testCase:
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
  #     'effectiveTime/low/@value': "20200429"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/value/"
       '@type': "CD"
       '@code': "840544004"
       '@codeSystem': "2.16.840.1.113883.6.96"
@@ -261,17 +270,17 @@ testCase:
 #      '@displayName': "Suspected disease caused by 2019-nCoV"
       '@valueSet': "2.16.840.1.114222.4.11.7508"
       '@valueSetVersion': "2020-07-09"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship"
+    - xPath: "entry[2]/act/entryRelationship"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]"
+    - xPath: "entry[2]/act/entryRelationship[1]/"
       '@typeCode': "SUBJ"
       'observation/@classCode': "OBS"
       'observation/@moodCode': "EVN"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/templateId"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/id"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.4"
       'templateId[2]/@extension': "2015-08-01"
@@ -287,9 +296,9 @@ testCase:
       'code/translation/@displayName': "Diagnosis"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200429"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value/translation"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/value/translation"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/value/"
       '@type': "CD"
       '@code': "840539006"
       '@codeSystem': "2.16.840.1.113883.6.96"
@@ -300,9 +309,10 @@ testCase:
       'translation/@codeSystemName': "icd-10-cm"
       'translation/@displayName': "2019-nCoV acute respiratory disease"
   eCR-problem-withAndWithoutTriggerCode:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -330,33 +340,33 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/text/table"
+    - xPath: "text/table/"
       'tbody/tr[1]/td[1]/content': "Coronavirus infection (disorder)"
       'tbody/tr[1]/td[2]/content': "Active"
       'tbody/tr[2]/td[1]/content': "Suspected coronavirus infection (situation)"
       'tbody/tr[2]/td[2]/content': "Active"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry"
+    - xPath: "entry"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/id"
+    - xPath: "entry[1]/act/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act"
+    - xPath: "entry[1]/act/"
 #      'id[1]/@root': ""
       'statusCode/@code': "active"
 #      'effectiveTime/low/@value': "20200427"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship"
+    - xPath: "entry[1]/act/entryRelationship"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/id"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/"
       'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id[1]/@extension': "d2572356773"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200427"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value/translation"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/value/translation"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[1]/observation/value"
+    - xPath: "entry[1]/act/entryRelationship[1]/observation/value/"
       '@type': "CD"
       '@code': "186747009"
       '@codeSystem': "2.16.840.1.113883.6.96"
@@ -366,10 +376,10 @@ testCase:
       'translation/@codeSystem': "2.16.840.1.113883.6.90"
       'translation/@codeSystemName': "icd-10-cm"
       'translation/@displayName': "Coronavirus infection, unspecified"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200427"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[1]/act/entryRelationship[2]/observation/value"
+    - xPath: "entry[1]/act/entryRelationship[2]/observation/value/"
       '@type': "CD"
       '@code': "B34.2"
       '@codeSystem': "2.16.840.1.113883.6.90"
@@ -377,18 +387,18 @@ testCase:
 #      '@displayName': "Coronavirus infection, unspecified"
       '@valueSet': "2.16.840.1.114222.4.11.7508"
       '@valueSetVersion': "2020-07-09"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship"
+    - xPath: "entry[2]/act/entryRelationship"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/id"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/"
       'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id[1]/@extension': "d2572356771"
       'statusCode/@code': "completed"
 #      'effectiveTime/low/@value': "20200425"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value/translation"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/value/translation"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[1]/section/entry[2]/act/entryRelationship[1]/observation/value"
+    - xPath: "entry[2]/act/entryRelationship[1]/observation/value/"
       '@type': "CD"
       '@code': "700217006"
       '@codeSystem': "2.16.840.1.113883.6.96"

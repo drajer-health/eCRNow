@@ -1,18 +1,19 @@
-package com.drajer.ecr.it;
+package com.drajer.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecr.it.common.BaseIntegrationTest;
-import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.ValidationUtils;
+import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +28,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,23 +48,20 @@ import org.w3c.dom.NodeList;
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private String testCaseId;
-  private String clientDetailsFile;
-  private String systemLaunchFile;
+  private Map<String, String> testData;
   private Map<String, ?> allResourceMapping;
   private Map<String, ?> allOtherMapping;
   private List<Map<String, String>> fieldsToValidate;
 
   public ITValidateEicrDoc(
       String testCaseId,
-      String clientDetails,
-      String payLoad,
+      Map<String, String> testData,
       List<Map<String, String>> validateFields,
       Map<String, ?> resourceMapping,
       Map<String, ?> otherMapping) {
 
     this.testCaseId = testCaseId;
-    this.clientDetailsFile = clientDetails;
-    this.systemLaunchFile = payLoad;
+    this.testData = testData;
     this.fieldsToValidate = validateFields;
     this.allResourceMapping = resourceMapping;
     this.allOtherMapping = otherMapping;
@@ -75,10 +72,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   private final String systemLaunchURI = "/api/systemLaunch";
 
   private static String systemLaunchInputData;
-  private String patientId;
-  private String encounterID;
-  private String fhirServerUrl;
-
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
 
@@ -90,15 +83,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     tx = session.beginTransaction();
 
     // Data Setup
-    createClientDetails(clientDetailsFile);
-    systemLaunchInputData = getSystemLaunchInputData(systemLaunchFile);
-    JSONObject jsonObject = new JSONObject(systemLaunchInputData);
-    patientId = (String) jsonObject.get("patientId");
-    if (jsonObject.get("encounterId") instanceof String) {
-      encounterID = (String) jsonObject.get("encounterId");
-    }
-    fhirServerUrl = (String) jsonObject.get("fhirServerURL");
-
+    createClientDetails(testData.get("ClientDataToBeSaved"));
+    systemLaunchInputData = getSystemLaunchInputData(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
 
@@ -133,7 +119,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       totalTestcount = totalTestcount + testData.getAllTestCases().size();
     }
 
-    Object[][] data = new Object[totalTestcount][6];
+    Object[][] data = new Object[totalTestcount][5];
 
     int count = 0;
     for (TestDataGenerator testData : testDataGenerator) {
@@ -143,11 +129,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       for (String testCase : testCaseSet) {
 
         data[count][0] = testCase;
-        data[count][1] = testData.getTestFile(testCase, "ClientDataToBeSaved");
-        data[count][2] = testData.getTestFile(testCase, "SystemLaunchPayload");
-        data[count][3] = testData.getValidate(testCase);
-        data[count][4] = testData.getResourceMappings(testCase);
-        data[count][5] = testData.getOtherMappings(testCase);
+        data[count][1] = testData.getTestCaseByID(testCase).getTestData();
+        data[count][2] = testData.getValidate(testCase);
+        data[count][3] = testData.getResourceMappings(testCase);
+        data[count][4] = testData.getOtherMappings(testCase);
 
         count++;
       }
@@ -160,6 +145,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public void testEicrDocument() throws Exception {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", testCaseId);
 
     HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
     logger.info("Invoking systemLaunch...");
@@ -173,12 +159,20 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     Eicr createEicr = getCreateEicrDocument();
-    assertNotNull(createEicr.getEicrData());
+    String eICRXml = createEicr.getEicrData();
+    assertNotNull(eICRXml);
+    assertFalse(eICRXml.isEmpty());
 
     getLaunchDetailAndStatus();
     ValidationUtils.setLaunchDetails(launchDetails);
 
-    Document eicrXmlDoc = TestUtils.getXmlDocuments(createEicr.getEicrData());
+    assertTrue(
+        "Schema Validation Failed, check the logs", CdaValidatorUtil.validateEicrXMLData(eICRXml));
+    assertTrue(
+        "Schematron Validation Failed, check the logs",
+        CdaValidatorUtil.validateEicrToSchematron(eICRXml));
+
+    Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
     validateXml(eicrXmlDoc);
   }
 
@@ -186,9 +180,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     try {
       Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
-      criteria.add(Restrictions.eq("launchPatientId", patientId));
-      criteria.add(Restrictions.eq("encounterId", encounterID));
+      criteria.add(Restrictions.eq("xRequestId", testCaseId));
       launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
@@ -222,7 +214,9 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   }
 
   private void validateXml(Document eicrXml) throws XPathExpressionException {
+
     final XPath xPath = XPathFactory.newInstance().newXPath();
+    final String baseXPath = testData.get("BaseXPath");
 
     if (fieldsToValidate != null) {
 
@@ -230,7 +224,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
         try {
 
-          String xPathExp = field.get("xPath");
+          String xPathExp = baseXPath + field.get("xPath");
           if (field.containsKey("count")) {
             try {
               NodeList nodeList =
@@ -244,7 +238,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
             for (Entry<String, String> set : field.entrySet()) {
 
               if (!set.getKey().equalsIgnoreCase("xPath")) {
-                String xPathFullExp = xPathExp + "/" + set.getKey();
+                String xPathFullExp = xPathExp + set.getKey();
                 try {
                   String fieldValue =
                       (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);

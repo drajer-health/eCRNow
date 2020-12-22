@@ -65,7 +65,7 @@ public class LoadingQueryDstu2Bundle {
       patientEntry.setResource(patient);
       bundle.addEntry(patientEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Patient Data");
+      logger.error("Error in getting Patient Data", e);
     }
 
     // Step 1: Get Encounters for Patient based on encId. (Create a method to get
@@ -133,7 +133,7 @@ public class LoadingQueryDstu2Bundle {
       Entry encounterEntry = new Entry().setResource(encounter);
       bundle.addEntry(encounterEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Encounter Data");
+      logger.error("Error in getting Encounter Data", e);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)
@@ -156,7 +156,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(conditionsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Condition Data");
+      logger.error("Error in getting Condition Data", e);
     }
 
     // Get Observations for Patients and laboratory category (Write a method).
@@ -178,7 +178,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Observation Data");
+      logger.error("Error in getting Observation Data", e);
     }
 
     // Get Pregnancy Observations
@@ -194,7 +194,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Pregnancy Observation Data");
+      logger.error("Error in getting Pregnancy Observation Data", e);
     }
 
     // Get Travel Observations
@@ -210,7 +210,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Travel Observation Data");
+      logger.error("Error in getting Travel Observation Data", e);
     }
 
     // Get MedicationAdministration for Patients and laboratory category (Write a
@@ -266,7 +266,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(medAdministrationEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the MedicationAdministration Data");
+      logger.error("Error in getting the MedicationAdministration Data", e);
     }
 
     try {
@@ -281,7 +281,7 @@ public class LoadingQueryDstu2Bundle {
       }
       dstu2FhirData.setMedications(medStatementsList);
     } catch (Exception e) {
-      logger.error("Error in getting the MedicationStatement Data");
+      logger.error("Error in getting the MedicationStatement Data", e);
     }
 
     // Get DiagnosticOrders for Patients (Write a method).
@@ -305,7 +305,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(diagnosticOrderEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the DiagnosticOrder Data");
+      logger.error("Error in getting the DiagnosticOrder Data", e);
     }
 
     // Get Immunizations for Patients and laboratory category (Write a method).
@@ -325,7 +325,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(immunizationEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the Immunization Data");
+      logger.error("Error in getting the Immunization Data", e);
     }
 
     // Get Diagnostic Reports for Patients (Write a method).
@@ -345,7 +345,7 @@ public class LoadingQueryDstu2Bundle {
         bundle.addEntry(diagnosticReportEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the DiagnosticReport Data");
+      logger.error("Error in getting the DiagnosticReport Data", e);
     }
 
     // Setting bundle to FHIR Data

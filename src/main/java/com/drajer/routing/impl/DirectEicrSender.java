@@ -61,7 +61,7 @@ public class DirectEicrSender extends EicrSender {
       } catch (Exception e) {
 
         String msg = "Unable to send Direct Message";
-        logger.error(msg);
+        logger.error(msg, e);
 
         throw new RuntimeException(msg);
       }

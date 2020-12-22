@@ -10,18 +10,20 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.gclient.IUntypedQuery;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@Ignore
 public class FhirContextInitializerTest {
 
   private IUntypedQuery mockIUntypedQuery;
@@ -32,8 +34,6 @@ public class FhirContextInitializerTest {
   private FhirContext context;
   private IGenericClient client;
   private LaunchDetails launchDetails;
-
-  ObjectMapper mapper = new ObjectMapper();
 
   @InjectMocks FhirContextInitializer fhirContextInitializer;
 
@@ -48,15 +48,10 @@ public class FhirContextInitializerTest {
     mockIquery2 = Mockito.mock(IQuery.class);
     mockBundle = Mockito.mock(Bundle.class);
 
-    try {
-      launchDetails =
-          mapper.readValue(
-              this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-              LaunchDetails.class);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    launchDetails =
+        (LaunchDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
   }
 
   @Test

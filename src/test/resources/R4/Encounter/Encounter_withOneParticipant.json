@@ -29,7 +29,7 @@
         ],
         "text": "FIN NBR"
       },
-      "system": "urn:oid:5.5.5.5.5.5",
+      "system": "urn:oid:2.16.840.1.113883.4.4",
       "value": "98314717",
       "period": {
         "start": "2020-05-12T13:40:56.000Z"

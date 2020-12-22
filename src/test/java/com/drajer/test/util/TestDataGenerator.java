@@ -1,6 +1,7 @@
 package com.drajer.test.util;
 
-import com.drajer.ecr.it.common.TestDataVO;
+import com.drajer.test.model.TestCase;
+import com.drajer.test.model.TestDataVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
@@ -40,15 +41,16 @@ public class TestDataGenerator {
     return testData;
   }
 
-  public String getTestFile(String testCaseId, String fileName) {
+  public String getTestData(String testCaseId, String testDataElement) {
 
-    return (String) getTestDataVO().getTestCase().get(testCaseId).getFileData().get(fileName);
+    return (String)
+        getTestDataVO().getTestCase().get(testCaseId).getTestData().get(testDataElement);
   }
 
   public String getValidationSections(String testCaseId) {
 
     return (String)
-        getTestDataVO().getTestCase().get(testCaseId).getFileData().get("ValidationSections");
+        getTestDataVO().getTestCase().get(testCaseId).getTestData().get("ValidationSections");
   }
 
   public Map<String, ?> getResourceMappings(String testCaseId) {
@@ -89,5 +91,9 @@ public class TestDataGenerator {
 
   public List<Map<String, String>> getValidate(String testCaseId) {
     return getTestDataVO().getTestCase().get(testCaseId).getvalidate();
+  }
+
+  public TestCase getTestCaseByID(String testCaseId) {
+    return getTestDataVO().getTestCase().get(testCaseId);
   }
 }
