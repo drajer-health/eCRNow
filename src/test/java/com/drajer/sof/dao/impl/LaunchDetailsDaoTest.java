@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,18 @@ public class LaunchDetailsDaoTest {
 
   @Autowired private LaunchDetailsDaoImpl launchDetailsDaoImpl;
 
-  ObjectMapper mapper = new ObjectMapper();
+  private static LaunchDetails launchDetails = null;
+
+  @Before
+  public void setUp() {
+    launchDetails =
+        (LaunchDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
+  }
 
   @Test
   public void saveLaunchDetails() throws JsonParseException, JsonMappingException, IOException {
-    LaunchDetails launchDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
 
     LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 
@@ -48,10 +53,6 @@ public class LaunchDetailsDaoTest {
 
   @Test
   public void getAuthDetailsById() throws JsonParseException, JsonMappingException, IOException {
-    LaunchDetails launchDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
 
     LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
     LaunchDetails retrievedLaunchDetails =
@@ -63,10 +64,6 @@ public class LaunchDetailsDaoTest {
   @Test
   public void getLaunchDetailsByPatientAndEncounter()
       throws JsonParseException, JsonMappingException, IOException {
-    LaunchDetails launchDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
 
     LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
     String patientID = savedLaunchDetails.getLaunchPatientId();
@@ -81,10 +78,6 @@ public class LaunchDetailsDaoTest {
 
   @Test
   public void deleteLaunchDetails() throws JsonParseException, JsonMappingException, IOException {
-    LaunchDetails launchDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
 
     LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 
@@ -111,10 +104,6 @@ public class LaunchDetailsDaoTest {
   @Test
   public void getLaunchDetailsByState()
       throws JsonParseException, JsonMappingException, IOException {
-    LaunchDetails launchDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-            LaunchDetails.class);
 
     LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
 

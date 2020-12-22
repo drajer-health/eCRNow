@@ -36,7 +36,7 @@ public class AESEncryption {
 
       return Base64.encodeBase64String(encrypted);
     } catch (Exception ex) {
-      logger.error("Error while encrypting: {}", ex.toString());
+      logger.error("Error while encrypting: {} ", ex);
     }
 
     return null;
@@ -52,7 +52,7 @@ public class AESEncryption {
 
       return new String(original);
     } catch (Exception ex) {
-      logger.error("Error while decrypting: {}", ex.toString());
+      logger.error("Error while decrypting:", ex);
     }
 
     return null;
@@ -66,7 +66,7 @@ public class AESEncryption {
       iv = new IvParameterSpec(Arrays.copyOf(keyBytes, 16));
       skeySpec = new SecretKeySpec(Arrays.copyOf(keyBytes, 16), "AES");
     } catch (UnsupportedEncodingException e) {
-      logger.error("Error while converting String to Bytes: {}", e.toString());
+      logger.error("Error while converting String to Bytes:", e);
     }
   }
 }

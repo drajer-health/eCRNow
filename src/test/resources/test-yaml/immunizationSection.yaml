@@ -2,9 +2,10 @@
 testName: "TestSystemLaunch"
 testCase:
   eCR-immunization-withThreeVaccine:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[5]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -31,9 +32,9 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/templateId"
+    - xPath: "templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section"
+    - xPath: ""
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.2.2.1"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.2.2.1"
       'templateId[2]/@extension': "2015-08-01"
@@ -41,14 +42,14 @@ testCase:
       'code/@codeSystem': "2.16.840.1.113883.6.1"
       'code/@codeSystemName': "LOINC"
       'code/@displayName': "History of immunizations"      
-      title: "IMMUNIZATIONS"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/thead/tr/th"
+      'title': "IMMUNIZATIONS"
+    - xPath: "text/table/thead/tr/th"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 3
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr[1]/td"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/text/table"
+    - xPath: "text/table/"
       'thead/tr/th[1]': "Vaccine Name"
       'thead/tr/th[2]': "Vaccination Date"
 #      'tbody/tr[1]/td[1]/content': "zoster vaccine recombinant"
@@ -57,15 +58,15 @@ testCase:
 #      'tbody/tr[2]/td[2]/content': "2000"
 #      'tbody/tr[3]/td[1]/content': "influenza virus vaccine, live, attenuated, for intranasal use"
 #      'tbody/tr[3]/td[2]/content': "2019"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry"
+    - xPath: "entry"
       count: 3
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]"
+    - xPath: "entry[1]/"
       '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration/templateId"
+    - xPath: "entry[1]/substanceAdministration/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration/id"
+    - xPath: "entry[1]/substanceAdministration/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration"
+    - xPath: "entry[1]/substanceAdministration/"
       '@classCode': "SBADM"
       '@moodCode': "EVN"
 #      '@negationInd': "false"
@@ -76,26 +77,26 @@ testCase:
 #      'id[1]/@extension': "M197287364"
 #      'statusCode/@code': "completed"
 #      'effectiveTime/@value': "2014"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration/consumable/manufacturedProduct/templateId"
+    - xPath: "entry[1]/substanceAdministration/consumable/manufacturedProduct/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration/consumable/manufacturedProduct"
+    - xPath: "entry[1]/substanceAdministration/consumable/manufacturedProduct/"
       '@classCode': "MANU"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.54"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.54"
       'templateId[2]/@extension': "2014-06-09"
 #      'id[1]/@root': ""
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[1]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial"
+    - xPath: "entry[1]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
       'code/@code': "187"
       'code/@codeSystem': "2.16.840.1.113883.12.292"
       'code/@codeSystemName': "cvx"
       'code/@displayName': "zoster vaccine recombinant"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]"
+    - xPath: "entry[2]/"
       '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]/substanceAdministration/templateId"
+    - xPath: "entry[2]/substanceAdministration/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]/substanceAdministration/id"
+    - xPath: "entry[2]/substanceAdministration/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]/substanceAdministration"
+    - xPath: "entry[2]/substanceAdministration/"
       '@classCode': "SBADM"
       '@moodCode': "EVN"
 #      '@negationInd': "false"
@@ -106,26 +107,26 @@ testCase:
 #      'id[1]/@extension': "M197287360"
 #      'statusCode/@code': "completed"
 #      'effectiveTime/@value': "2000"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]/substanceAdministration/consumable/manufacturedProduct/templateId"
+    - xPath: "entry[2]/substanceAdministration/consumable/manufacturedProduct/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]/substanceAdministration/consumable/manufacturedProduct"
+    - xPath: "entry[2]/substanceAdministration/consumable/manufacturedProduct/"
       '@classCode': "MANU"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.54"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.54"
       'templateId[2]/@extension': "2014-06-09"
 #      'id[1]/@root': ""
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[2]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial"
+    - xPath: "entry[2]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
       'code/@code': "112"
       'code/@codeSystem': "2.16.840.1.113883.12.292"
       'code/@codeSystemName': "cvx"
       'code/@displayName': "tetanus toxoid, unspecified formulation"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]"
+    - xPath: "entry[3]/"
       '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]/substanceAdministration/templateId"
+    - xPath: "entry[3]/substanceAdministration/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]/substanceAdministration/id"
+    - xPath: "entry[3]/substanceAdministration/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]/substanceAdministration"
+    - xPath: "entry[3]/substanceAdministration/"
       '@classCode': "SBADM"
       '@moodCode': "EVN"
 #      '@negationInd': "false"
@@ -136,23 +137,24 @@ testCase:
 #      'id[1]/@extension': "M197287356"
 #      'statusCode/@code': "completed"
 #      'effectiveTime/@value': "2019"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]/substanceAdministration/consumable/manufacturedProduct/templateId"
+    - xPath: "entry[3]/substanceAdministration/consumable/manufacturedProduct/templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]/substanceAdministration/consumable/manufacturedProduct"
+    - xPath: "entry[3]/substanceAdministration/consumable/manufacturedProduct/"
       '@classCode': "MANU"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.54"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.54"
       'templateId[2]/@extension': "2014-06-09"
 #      'id[1]/@root': ""
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/entry[3]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial"
+    - xPath: "entry[3]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
       'code/@code': "111"
       'code/@codeSystem': "2.16.840.1.113883.12.292"
       'code/@codeSystemName': "cvx"
       'code/@displayName': "influenza virus vaccine, live, attenuated, for intranasal use"
   eCR-immunization-withNoVaccine:
-    fileData:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[5]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -175,9 +177,9 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section/templateId"
+    - xPath: "templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[5]/section"
+    - xPath: ""
       '@nullFlavor': "NI"
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.2.2.1"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.2.2.1"
@@ -186,5 +188,5 @@ testCase:
       'code/@codeSystem': "2.16.840.1.113883.6.1"
       'code/@codeSystemName': "LOINC"
       'code/@displayName': "History of immunizations"      
-      title: "IMMUNIZATIONS"
-      text: "No ImmunizationInformation"
+      'title': "IMMUNIZATIONS"
+      'text': "No ImmunizationInformation"

@@ -1,7 +1,5 @@
 package com.drajer.routing.impl;
 
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.RRReceiver;
 import com.drajer.sof.model.LaunchDetails;
 import java.io.File;
@@ -42,9 +40,9 @@ public class DirectResponseReceiver extends RRReceiver {
 
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
-      PatientExecutionState state = null;
+      // PatientExecutionState state = null;
 
-      state = ApplicationUtils.getDetailStatus(details);
+      // state = ApplicationUtils.getDetailStatus(details);
 
       readMail(details);
     }

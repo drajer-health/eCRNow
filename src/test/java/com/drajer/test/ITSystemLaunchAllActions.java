@@ -1,10 +1,9 @@
-package com.drajer.ecr.it;
+package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,11 +14,10 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.PeriodicUpdateEicrStatus;
 import com.drajer.eca.model.SubmitEicrStatus;
 import com.drajer.eca.model.ValidateEicrStatus;
-import com.drajer.ecr.it.common.BaseIntegrationTest;
-import com.drajer.ecr.it.common.WireMockHelper;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
+import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -87,8 +85,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Executing Tests with TestCase: " + testCaseId);
     tx = session.beginTransaction();
     // Retrieve test data from TestSystemLaunchAllActions.yaml file
-    clientDetailsFile = testDataGenerator.getTestFile(testCaseId, "ClientDataToBeSaved");
-    systemLaunchFile = testDataGenerator.getTestFile(testCaseId, "SystemLaunchPayload");
+    clientDetailsFile = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved");
+    systemLaunchFile = testDataGenerator.getTestData(testCaseId, "SystemLaunchPayload");
     validationSectionList =
         Arrays.asList(testDataGenerator.getValidationSections(testCaseId).split("\\|"));
     allResourceFiles = testDataGenerator.getResourceFiles(testCaseId);
@@ -120,7 +118,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   @Parameters(name = "{index}: {0}")
   public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("TestSystemLaunchAllActions.yaml");
+    testDataGenerator = new TestDataGenerator("test-yaml/systemLaunchAllActionsTest.yaml");
     Set<String> testCaseSet = testDataGenerator.getAllTestCases();
     Object[][] data = new Object[testCaseSet.size()][1];
     int count = 0;
@@ -165,14 +163,14 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     }
     // mock RESTAPI
     stubFor(
-        post(urlEqualTo(restApiUrl.getPath()))
+        post(urlPathEqualTo(restApiUrl.getPath()))
             .atPriority(1)
             .willReturn(
                 aResponse()
                     .withStatus(200)
                     .withBody("Reportability Response recieved from AIMS")
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
-    /*    // mock EHR AuthURl
+    /*  // mock EHR AuthURl
         String accesstoken =
             "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
         stubFor(

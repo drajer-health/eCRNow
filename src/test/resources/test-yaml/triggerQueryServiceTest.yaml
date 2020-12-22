@@ -1,9 +1,11 @@
 ---
-testName: "LoadingQueryServiceTest"
+testName: "TriggerQueryServiceTest"
 testCase:
-  eCR-R4-Resource-FilterByEncounter:
-    fileData:
+  eCR-R4-TriggerQuery-FilterByEncounter:
+    testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -11,6 +13,9 @@ testCase:
       Encounter:
       - params: "97953900"
         responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
       Practitioner:
       - params: "11817978"
         responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
@@ -28,35 +33,31 @@ testCase:
       Condition:
       - params:
           patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
       Observation:
       - params:
           patient: "12742571"
           category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationLaboratory.json"
-      - params:
-          patient: "12742571"
-          code: "http%3A//loinc.org%7C90767-5"
-        responseFilePath: "R4/Observation/ObservationLaboratory.json"
-      - params:
-          patient: "12742571"
-          code: "http%3A//loinc.org%7C29762-2"
-        responseFilePath: "R4/Observation/ObservationLaboratory.json"
-      Immunization:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Immunization/Immunization.json"
+        responseFilePath: "R4/Observation/ObservationWithMultipleEntries.json"
       ServiceRequest:
       - params:
           patient: "12742571"
-        responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
+        responseFilePath: "R4/ServiceRequest/ServiceRequest.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
-  eCR-R4-Resource-FilterByDtTm:
-    fileData:
-      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
+    validate:
+    - Observation: 26
+      Condition: 2
+      Organization: 1
+      Practitioner: 5
+      ServiceRequest: 2
+  eCR-R4-TriggerQuery-FilterByDtTm:
+    testData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -70,18 +71,6 @@ testCase:
           patient: "12742571"
           category: "laboratory"
         responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
-      - params:
-          patient: "12742571"
-          code: "http%3A//loinc.org%7C90767-5"
-        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
-      - params:
-          patient: "12742571"
-          code: "http%3A//loinc.org%7C29762-2"
-        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
-      Immunization:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Immunization/Immunization_FilterByDtTm.json"
       ServiceRequest:
       - params:
           patient: "12742571"
@@ -90,3 +79,26 @@ testCase:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - Observation: 3
+      Condition: 2
+      ServiceRequest: 2
+  eCR-R4-Encounter-FetchByPatientId:
+    testData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+    - Encounter: 1

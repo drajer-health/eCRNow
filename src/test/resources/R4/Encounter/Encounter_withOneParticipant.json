@@ -29,7 +29,7 @@
         ],
         "text": "FIN NBR"
       },
-      "system": "urn:oid:5.5.5.5.5.5",
+      "system": "urn:oid:2.16.840.1.113883.4.4",
       "value": "98314717",
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
@@ -107,18 +107,18 @@
           "coding": [
             {
               "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-              "code": "1116",
-              "display": "Admitting Physician",
+              "code": "1119",
+              "display": "Attending Physician",
               "userSelected": true
             },
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-              "code": "ADM",
-              "display": "admitter",
+              "code": "ATND",
+              "display": "attender",
               "userSelected": false
             }
           ],
-          "text": "Admitting Physician"
+          "text": "Attending Physician"
         }
       ],
       "period": {

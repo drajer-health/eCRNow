@@ -87,7 +87,7 @@ public class LaunchController {
   @RequestMapping(value = "/api/launchDetails", method = RequestMethod.POST)
   public LaunchDetails saveLaunchDetails(@RequestBody LaunchDetails launchDetails) {
 
-    logger.info(" Saving Launch Context");
+    logger.info(" Saving Launch Context", launchDetails);
     authDetailsService.saveOrUpdate(launchDetails);
 
     logger.info("Scheduling refresh token job ");
@@ -324,7 +324,7 @@ public class LaunchController {
           // response.setHeader("Location", constructedAuthUrl);
         }
       } catch (Exception e) {
-        logger.error("Error in getting Authorization with Server");
+        logger.error("Error in getting Authorization with Server", e);
       }
     } else {
       throw new Exception("Launch or Issuer URL is missing");

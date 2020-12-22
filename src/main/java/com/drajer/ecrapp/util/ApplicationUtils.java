@@ -351,7 +351,7 @@ public class ApplicationUtils {
       logger.info(" Writing data to file: {}", fileName);
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.debug(" Unable to write data to file: " + fileName, e);
+      logger.debug(" Unable to write data to file: {}", fileName, e);
     }
   }
 

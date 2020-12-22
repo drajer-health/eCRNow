@@ -1,4 +1,4 @@
-package com.drajer.ecr.it.common;
+package com.drajer.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;

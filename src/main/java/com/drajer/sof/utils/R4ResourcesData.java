@@ -86,7 +86,8 @@ public class R4ResourcesData {
         // falling in between Start and End Date
         if (!encounterEntry.getPeriod().isEmpty()) {
           Period period = encounterEntry.getPeriod();
-          if (period.getStart().after(start) || period.getEnd().before(end)) {
+          if (period.getStart().after(start)
+              || (period.getEnd() != null && period.getEnd().before(end))) {
             encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
           }
           // If period is not present using LastUpdatedDate in meta information to filter
@@ -794,7 +795,7 @@ public class R4ResourcesData {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
         // Checking If ServiceRequest DateTime is present in ServiceRequest
         // resource
-        if (serviceRequest.getOccurrence().isDateTime()) {
+        if (serviceRequest.getOccurrence() != null && serviceRequest.getOccurrence().isDateTime()) {
           if (serviceRequest.getOccurrenceDateTimeType() != null) {
             if (serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
                 && serviceRequest
@@ -889,7 +890,7 @@ public class R4ResourcesData {
       patientEntry.setResource(patient);
       bundle.addEntry(patientEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Patient Data");
+      logger.error("Error in getting Patient Data", e);
     }
     // Step 1: Get Encounters for Patient based on encId. (Create a method to get
     // encounters)
@@ -970,7 +971,7 @@ public class R4ResourcesData {
       BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
       bundle.addEntry(encounterEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Encounter Data");
+      logger.error("Error in getting Encounter Data", e);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)
@@ -994,7 +995,7 @@ public class R4ResourcesData {
         bundle.addEntry(conditionsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Condition Data");
+      logger.error("Error in getting Condition Data", e);
     }
 
     // Get Observations for Patients and laboratory category (Write a method).
@@ -1018,7 +1019,7 @@ public class R4ResourcesData {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Observation Data");
+      logger.error("Error in getting Observation Data", e);
     }
 
     // Get MedicationAdministration for Patients and laboratory category (Write a
@@ -1145,7 +1146,7 @@ public class R4ResourcesData {
         bundle.addEntry(serviceRequestEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the ServiceRequest Data");
+      logger.error("Error in getting the ServiceRequest Data", e);
     }
     return bundle;
   }
@@ -1160,7 +1161,7 @@ public class R4ResourcesData {
         }
       }
     } catch (Exception e) {
-      logger.error("Error in getting the Resource from Bundle");
+      logger.error("Error in getting the Resource from Bundle", e);
     }
     return null;
   }
