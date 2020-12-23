@@ -86,7 +86,7 @@ Change the logfile location to reflect where you want to log the data.
 
 5. Run the App using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -jar ./target/ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -jar ./target/ecr-now.war```
 
 6. **App configuration for EHR server:** 
 
