@@ -957,9 +957,4 @@ public class CdaGeneratorConstants {
       return "WP";
     }
   }
-
-  public static String getCodeForFhirStatusCodes(String val) {
-
-    return "";
-  }
 }

@@ -995,14 +995,14 @@ public class CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (dt != null) {
+    if (dt != null && dt.getValue() != null) {
 
       sb.append(
-          CdaGeneratorUtils.getXmlForQuantity(
+          CdaGeneratorUtils.getXmlForQuantityWithUnits(
               elName, dt.getValue().toString(), dt.getUnit(), valFlag));
 
     } else {
-      sb.append(CdaGeneratorUtils.getXmlForNullValuePQ(CdaGeneratorConstants.NF_NI));
+      sb.append(CdaGeneratorUtils.getXmlForNfQuantity(elName, CdaGeneratorConstants.NF_NI));
     }
 
     return sb.toString();
@@ -1177,6 +1177,28 @@ public class CdaFhirUtilities {
     return codeString.getValue0() + CdaGeneratorConstants.HYPHEN + valueString.getValue0();
   }
 
+  public static String getStringForQuantity(Quantity qt) {
+
+    String val = "";
+
+    if (qt != null
+        && qt.getValueElement() != null
+        && qt.getSystemElement() != null
+        && qt.getUnit() != null) {
+
+      val +=
+          qt.getValueElement().getValueAsString()
+              + CdaGeneratorConstants.PIPE
+              + qt.getSystemElement().getValueAsString()
+              + CdaGeneratorConstants.PIPE
+              + qt.getUnit();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    return val;
+  }
+
   public static String getStringForType(Type dt) {
 
     if (dt != null) {
@@ -1214,17 +1236,7 @@ public class CdaFhirUtilities {
 
         Quantity qt = (Quantity) dt;
 
-        if (qt.getValueElement() != null && qt.getSystemElement() != null && qt.getUnit() != null) {
-
-          val +=
-              qt.getValueElement().getValueAsString()
-                  + CdaGeneratorConstants.PIPE
-                  + qt.getSystemElement().getValueAsString()
-                  + CdaGeneratorConstants.PIPE
-                  + qt.getUnit();
-        } else {
-          val += CdaGeneratorConstants.UNKNOWN_VALUE;
-        }
+        val += getStringForQuantity(qt);
 
       } else if (dt instanceof DateTimeType) {
 
@@ -1436,5 +1448,27 @@ public class CdaFhirUtilities {
     }
 
     return "";
+  }
+
+  public static String getStatusCodeForFhirMedStatusCodes(String val) {
+
+    if (val.equalsIgnoreCase("active")
+        || val.equalsIgnoreCase("in-progress")
+        || val.equalsIgnoreCase("intended")
+        || val.equalsIgnoreCase("not-taken")) {
+      return "active";
+    } else if (val.equalsIgnoreCase("completed")) {
+      return "completed";
+    } else if (val.equalsIgnoreCase("entered-in-error")) {
+      return "nullified";
+    } else if (val.equalsIgnoreCase("stopped")) {
+      return "aborted";
+    } else if (val.equalsIgnoreCase("on-hold")) {
+      return "suspended";
+    } else if (val.equalsIgnoreCase("unknown") || val.equalsIgnoreCase("draft")) {
+      return "held";
+    } else if (val.equalsIgnoreCase("cancelled")) {
+      return "held";
+    } else return "completed";
   }
 }
