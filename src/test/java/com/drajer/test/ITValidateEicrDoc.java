@@ -173,7 +173,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
         CdaValidatorUtil.validateEicrToSchematron(eICRXml));
 
     Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
-    // validateXml(eicrXmlDoc);
+    validateXml(eicrXmlDoc);
   }
 
   private void getLaunchDetailAndStatus() {
