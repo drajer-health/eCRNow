@@ -49,8 +49,8 @@ public class MatchTriggerAction extends AbstractAction {
           Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
 
           // For Match Trigger Action, we expect the following
-          // No preConditions;
-          // No relatedActions;
+          // No preConditions
+          // No relatedActions
           // No timingData
 
           // We only expect to match codes. So get the paths and match the codes.
@@ -83,8 +83,8 @@ public class MatchTriggerAction extends AbstractAction {
           R4FhirData r4Data = (R4FhirData) data;
 
           // For Match Trigger Action, we expect the following
-          // No preConditions;
-          // No relatedActions;
+          // No preConditions
+          // No relatedActions
           // No timingData
 
           // We only expect to match codes. So get the paths and match the codes.

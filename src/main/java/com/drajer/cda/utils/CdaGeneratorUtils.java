@@ -1218,7 +1218,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1254,7 +1254,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1443,7 +1443,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1474,7 +1474,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE

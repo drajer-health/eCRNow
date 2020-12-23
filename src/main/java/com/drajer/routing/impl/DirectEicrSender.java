@@ -39,17 +39,12 @@ public class DirectEicrSender extends EicrSender {
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
 
-      // ApplicationUtils.getDetailStatus(details);
-
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 
       try {
 
         logger.info(
-            " Sending Mail from "
-                + details.getDirectUser()
-                + " to : "
-                + details.getDirectRecipient());
+            " Sending Mail from {} to {}", details.getDirectUser(), details.getDirectRecipient());
         sendMail(
             details.getDirectHost(),
             details.getDirectUser(),

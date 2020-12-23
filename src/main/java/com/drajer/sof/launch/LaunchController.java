@@ -52,6 +52,7 @@ public class LaunchController {
   private static final String VALUE_URI = "valueUri";
   private static final String PATIENT = "patient";
   private static final String ENCOUNTER = "encounter";
+  private static final String EXTENSION = "extension";
 
   @Autowired LaunchService authDetailsService;
 
@@ -70,9 +71,6 @@ public class LaunchController {
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   @Autowired RestApiSender xmlSender;
-
-  //	@Autowired
-  //	FhirEicrSender fhirEicrBundle;
 
   private final SecureRandom random = new SecureRandom();
 
@@ -175,8 +173,8 @@ public class LaunchController {
         logger.info("Reading Metadata information");
         JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
         JSONObject sec = security.getJSONObject("security");
-        JSONObject extension = (JSONObject) sec.getJSONArray("extension").get(0);
-        JSONArray innerExtension = extension.getJSONArray("extension");
+        JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
+        JSONArray innerExtension = extension.getJSONArray(EXTENSION);
         if (object.getString(FHIR_VERSION).equals("1.0.2")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
@@ -187,7 +185,7 @@ public class LaunchController {
         for (int i = 0; i < innerExtension.length(); i++) {
           JSONObject urlExtension = innerExtension.getJSONObject(i);
           if (urlExtension.getString("url").equals("token")) {
-            logger.info("Token URL:::::" + urlExtension.getString(VALUE_URI));
+            logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
             clientDetails.setTokenURL(tokenEndpoint);
           }
@@ -290,8 +288,8 @@ public class LaunchController {
           logger.info("Reading Metadata information");
           JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
           JSONObject sec = security.getJSONObject("security");
-          JSONObject extension = (JSONObject) sec.getJSONArray("extension").get(0);
-          JSONArray innerExtension = extension.getJSONArray("extension");
+          JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
+          JSONArray innerExtension = extension.getJSONArray(EXTENSION);
           if (object.getString(FHIR_VERSION).equals("1.0.2")) {
             launchDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
           }
@@ -301,11 +299,11 @@ public class LaunchController {
           for (int i = 0; i < innerExtension.length(); i++) {
             JSONObject urlExtension = innerExtension.getJSONObject(i);
             if (urlExtension.getString("url").equals("authorize")) {
-              logger.info("Authorize URL:::::" + urlExtension.getString(VALUE_URI));
+              logger.info("Authorize URL::::: {}", urlExtension.getString(VALUE_URI));
               launchDetails.setAuthUrl(urlExtension.getString(VALUE_URI));
             }
             if (urlExtension.getString("url").equals("token")) {
-              logger.info("Token URL:::::" + urlExtension.getString(VALUE_URI));
+              logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
               launchDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
             }
           }
@@ -320,8 +318,6 @@ public class LaunchController {
           logger.info("Constructed Authorization URL::::: {}", constructedAuthUrl);
           authDetailsService.saveOrUpdate(launchDetails);
           response.sendRedirect(constructedAuthUrl);
-          // response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-          // response.setHeader("Location", constructedAuthUrl);
         }
       } catch (Exception e) {
         logger.error("Error in getting Authorization with Server", e);
@@ -416,8 +412,6 @@ public class LaunchController {
     currentStateDetails.setLaunchPatientId(accessTokenObject.getString(PATIENT));
     currentStateDetails.setEncounterId(accessTokenObject.getString(ENCOUNTER));
     currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
-    //    currentStateDetails.setSetId(
-    //        accessTokenObject.getString(PATIENT) + "+" + accessTokenObject.getString(ENCOUNTER));
     currentStateDetails.setVersionNumber("1");
     currentStateDetails.setDirectUser(clientDetails.getDirectUser());
     currentStateDetails.setDirectHost(clientDetails.getDirectHost());
@@ -464,22 +458,17 @@ public class LaunchController {
           (ca.uhn.fhir.model.dstu2.resource.Bundle)
               fhirContextInitializer.getResourceByPatientId(
                   currentStateDetails, client, context, "Encounter");
-      if (bundle.getEntry().size() > 0) {
-        Map<Encounter, Date> encounterMap = new HashMap<Encounter, Date>();
+      if (!bundle.getEntry().isEmpty()) {
+        Map<Encounter, Date> encounterMap = new HashMap<>();
         for (Entry entry : bundle.getEntry()) {
           Encounter encounterEntry = (Encounter) entry.getResource();
-          logger.info(
-              "Received Encounter Id========>"
-                  + encounterEntry.getIdElement().getIdPart().toString());
+          String encounterId = encounterEntry.getIdElement().getIdPart();
+          logger.info("Received Encounter Id========> {}", encounterId);
           encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
         }
         encounter = Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
         if (encounter != null) {
-          currentStateDetails.setEncounterId(encounter.getIdElement().getIdPart().toString());
-          //          currentStateDetails.setSetId(
-          //              currentStateDetails.getLaunchPatientId()
-          //                  + "+"
-          //                  + encounter.getIdElement().getIdPart().toString());
+          currentStateDetails.setEncounterId(encounter.getIdElement().getIdPart());
           if (encounter.getPeriod() != null) {
             dstu2Period = encounter.getPeriod();
           }
@@ -497,39 +486,31 @@ public class LaunchController {
                   context,
                   "Encounter",
                   currentStateDetails.getEncounterId());
-      if (r4Encounter != null) {
-        if (r4Encounter.getPeriod() != null) {
-          r4Period = r4Encounter.getPeriod();
-        }
+      if (r4Encounter != null && r4Encounter.getPeriod() != null) {
+        r4Period = r4Encounter.getPeriod();
       }
     } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
-      org.hl7.fhir.r4.model.Encounter r4Encounter = new org.hl7.fhir.r4.model.Encounter();
+      org.hl7.fhir.r4.model.Encounter r4Encounter;
       // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
       // and Find the latest Encounter
       Bundle bundle =
           (Bundle)
               fhirContextInitializer.getResourceByPatientId(
                   currentStateDetails, client, context, "Encounter");
-      logger.info(context.newJsonParser().encodeResourceToString(bundle));
-      if (bundle.getEntry().size() > 0) {
-        Map<org.hl7.fhir.r4.model.Encounter, Date> encounterMap =
-            new HashMap<org.hl7.fhir.r4.model.Encounter, Date>();
+
+      if (!bundle.getEntry().isEmpty()) {
+        Map<org.hl7.fhir.r4.model.Encounter, Date> encounterMap = new HashMap<>();
         for (BundleEntryComponent entry : bundle.getEntry()) {
           org.hl7.fhir.r4.model.Encounter encounterEntry =
               (org.hl7.fhir.r4.model.Encounter) entry.getResource();
-          logger.info(
-              "Received Encounter Id========>"
-                  + encounterEntry.getIdElement().getIdPart().toString());
+          String encounterId = encounterEntry.getIdElement().getIdPart();
+          logger.info("Received Encounter Id========> {}", encounterId);
           encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
         }
         r4Encounter =
             Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
         if (r4Encounter != null) {
-          currentStateDetails.setEncounterId(r4Encounter.getIdElement().getIdPart().toString());
-          //          currentStateDetails.setSetId(
-          //              currentStateDetails.getLaunchPatientId()
-          //                  + "+"
-          //                  + r4Encounter.getIdElement().getIdPart().toString());
+          currentStateDetails.setEncounterId(r4Encounter.getIdElement().getIdPart());
           if (r4Encounter.getPeriod() != null) {
             r4Period = r4Encounter.getPeriod();
           }

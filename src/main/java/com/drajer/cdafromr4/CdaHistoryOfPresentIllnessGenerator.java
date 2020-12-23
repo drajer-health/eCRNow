@@ -85,7 +85,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
       }
     } else {
 
-      Map<String, String> bodyvals = new HashMap<String, String>();
+      Map<String, String> bodyvals = new HashMap<>();
       bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, text);
 
       sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));

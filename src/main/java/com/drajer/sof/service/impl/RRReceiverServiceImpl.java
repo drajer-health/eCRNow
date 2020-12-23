@@ -37,7 +37,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
 
     // Set Doc Ref Type
     CodeableConcept typeCode = new CodeableConcept();
-    List<Coding> codingList = new ArrayList<Coding>();
+    List<Coding> codingList = new ArrayList<>();
     Coding typeCoding = new Coding();
     typeCoding.setSystem("http://loinc.org");
     typeCoding.setCode("88085-6");
@@ -69,12 +69,10 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     documentReference.setSubject(patientReference);
 
     // Set Doc Ref Content
-    List<DocumentReferenceContentComponent> contentList =
-        new ArrayList<DocumentReference.DocumentReferenceContentComponent>();
+    List<DocumentReferenceContentComponent> contentList = new ArrayList<>();
     DocumentReferenceContentComponent contentComp = new DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
     attachment.setContentType("application/xml;charset=utf-8");
-    // String encodedString = Base64.getEncoder().encodeToString(obj.getBytes());
     attachment.setData(obj.getBytes());
     contentComp.setAttachment(attachment);
     contentList.add(contentComp);
@@ -82,7 +80,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
 
     // Set Doc Ref Context
     DocumentReferenceContextComponent contextComp = new DocumentReferenceContextComponent();
-    List<Reference> encounterRefList = new ArrayList<Reference>();
+    List<Reference> encounterRefList = new ArrayList<>();
     Reference encounterReference = new Reference();
     encounterReference.setReference("Encounter/" + encounterId);
     encounterRefList.add(encounterReference);
@@ -93,9 +91,9 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     contextComp.setPeriod(period);
     documentReference.setContext(contextComp);
 
-    logger.info(
-        "DocumentReference Object===========> {}",
-        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference));
+    String docReference =
+        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+    logger.info("DocumentReference Object===========> {}", docReference);
 
     return documentReference;
   }

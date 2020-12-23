@@ -47,7 +47,7 @@ public class LoadingQueryDstu2Bundle {
   public Bundle createDSTU2Bundle(
       LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Date start, Date end) {
     Bundle bundle = new Bundle();
-    logger.info("Initializing FHIR Context for Version::::" + launchDetails.getFhirVersion());
+    logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
     IGenericClient client =
@@ -149,7 +149,7 @@ public class LoadingQueryDstu2Bundle {
       List<Condition> conditionsList =
           dstu2ResourcesData.getConditionData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered ConditionsList---->" + conditionsList.size());
+      logger.info("Filtered ConditionsList----> {}", conditionsList.size());
       dstu2FhirData.setConditions(conditionsList);
       for (Condition condition : conditionsList) {
         Entry conditionsEntry = new Entry().setResource(condition);
@@ -171,7 +171,7 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations---->" + observationList.size());
+      logger.info("Filtered Observations----> {}", observationList.size());
       dstu2FhirData.setLabResults(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -187,7 +187,7 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations---->" + observationList.size());
+      logger.info("Filtered Observations----> {}", observationList.size());
       dstu2FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -203,7 +203,7 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getTravelObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations---->" + observationList.size());
+      logger.info("Filtered Observations----> {}", observationList.size());
       dstu2FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -228,37 +228,37 @@ public class LoadingQueryDstu2Bundle {
       List<MedicationAdministration> medAdministrationsList =
           dstu2ResourcesData.getMedicationAdministrationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+      logger.info(
+          "Filtered MedicationAdministration-----------> {}", medAdministrationsList.size());
       dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
       for (MedicationAdministration medAdministration : medAdministrationsList) {
-        if (!medAdministration.getMedication().isEmpty()
-            && medAdministration.getMedication() != null) {
-          if (medAdministration.getMedication() instanceof ResourceReferenceDt) {
-            BaseResourceReferenceDt medRef =
-                (BaseResourceReferenceDt) medAdministration.getMedication();
-            String medReference = medRef.getReference().getValue();
-            if (medReference.startsWith("#")) {
-              BaseContainedDt medAdministrationContained = medAdministration.getContained();
-              List<Medication> containedResources =
-                  (List<Medication>) medAdministrationContained.getContainedResources();
-              if (containedResources
-                  .stream()
-                  .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
-                logger.info(
-                    "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
-              }
-            } else {
-              logger.info("Medication Reference Found=============>");
-              Medication medication =
-                  dstu2ResourcesData.getMedicationData(
-                      context, client, launchDetails, dstu2FhirData, medReference);
-              Entry medicationEntry = new Entry().setResource(medication);
-              bundle.addEntry(medicationEntry);
-              if (medication != null) {
-                List<Medication> medicationList = new ArrayList<Medication>();
-                medicationList.add(medication);
-                dstu2FhirData.setMedicationList(medicationList);
-              }
+        if (medAdministration.getMedication() != null
+            && !medAdministration.getMedication().isEmpty()
+            && medAdministration.getMedication() instanceof ResourceReferenceDt) {
+          BaseResourceReferenceDt medRef =
+              (BaseResourceReferenceDt) medAdministration.getMedication();
+          String medReference = medRef.getReference().getValue();
+          if (medReference.startsWith("#")) {
+            BaseContainedDt medAdministrationContained = medAdministration.getContained();
+            List<Medication> containedResources =
+                (List<Medication>) medAdministrationContained.getContainedResources();
+            if (containedResources
+                .stream()
+                .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+              logger.info(
+                  "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+            }
+          } else {
+            logger.info("Medication Reference Found=============>");
+            Medication medication =
+                dstu2ResourcesData.getMedicationData(
+                    context, client, launchDetails, dstu2FhirData, medReference);
+            Entry medicationEntry = new Entry().setResource(medication);
+            bundle.addEntry(medicationEntry);
+            if (medication != null) {
+              List<Medication> medicationList = new ArrayList<>();
+              medicationList.add(medication);
+              dstu2FhirData.setMedicationList(medicationList);
             }
           }
         }
@@ -274,7 +274,7 @@ public class LoadingQueryDstu2Bundle {
       List<MedicationStatement> medStatementsList =
           dstu2ResourcesData.getMedicationStatementData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered MedicationStatement----------->" + medStatementsList.size());
+      logger.info("Filtered MedicationStatement-----------> {}", medStatementsList.size());
       for (MedicationStatement medStatement : medStatementsList) {
         Entry medStatementEntry = new Entry().setResource(medStatement);
         bundle.addEntry(medStatementEntry);
@@ -298,7 +298,7 @@ public class LoadingQueryDstu2Bundle {
       List<DiagnosticOrder> diagnosticOrdersList =
           dstu2ResourcesData.getDiagnosticOrderData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      System.out.println("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+      logger.info("Filtered DiagnosticOrders-----------> {}", diagnosticOrdersList.size());
       dstu2FhirData.setDiagOrders(diagnosticOrdersList);
       for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
         Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
@@ -318,7 +318,7 @@ public class LoadingQueryDstu2Bundle {
       List<Immunization> immunizationsList =
           dstu2ResourcesData.getImmunizationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Immunizations----------->" + immunizationsList.size());
+      logger.info("Filtered Immunizations-----------> {}", immunizationsList.size());
       dstu2FhirData.setImmunizations(immunizationsList);
       for (Immunization immunization : immunizationsList) {
         Entry immunizationEntry = new Entry().setResource(immunization);
@@ -338,7 +338,7 @@ public class LoadingQueryDstu2Bundle {
       List<DiagnosticReport> diagnosticReportList =
           dstu2ResourcesData.getDiagnosticReportData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+      logger.info("Filtered DiagnosticReports-----------> {}", diagnosticReportList.size());
       dstu2FhirData.setDiagReports(diagnosticReportList);
       for (DiagnosticReport diagnosticReport : diagnosticReportList) {
         Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);
@@ -351,15 +351,13 @@ public class LoadingQueryDstu2Bundle {
     // Setting bundle to FHIR Data
     logger.info(
         "------------------------------CodeableConcept Codes------------------------------");
-    logger.info("Encounter Codes Size=====>" + dstu2FhirData.getEncounterCodes().size());
-    logger.info("Conditions Codes Size=====>" + dstu2FhirData.getConditionCodes().size());
-    logger.info("Observation Codes Size=====>" + dstu2FhirData.getLabResultCodes().size());
-    logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
-    logger.info("Immunization Codes Size=====>" + dstu2FhirData.getImmuniationCodes().size());
+    logger.info("Encounter Codes Size=====> {}", dstu2FhirData.getEncounterCodes().size());
+    logger.info("Conditions Codes Size=====> {}", dstu2FhirData.getConditionCodes().size());
+    logger.info("Observation Codes Size=====> {}", dstu2FhirData.getLabResultCodes().size());
+    logger.info("Medication Codes Size=====> {}", dstu2FhirData.getMedicationCodes().size());
+    logger.info("Immunization Codes Size=====> {}", dstu2FhirData.getImmuniationCodes().size());
     logger.info(
-        "DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
-    // logger.info("DiagnosticOrders Codes Size=====>" +
-    // dstu2FhirData.getDiagnosticOrderCodes().size());
+        "DiagnosticReport Codes Size=====> {}", dstu2FhirData.getDiagnosticReportCodes().size());
 
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

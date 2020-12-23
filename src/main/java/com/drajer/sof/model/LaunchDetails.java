@@ -149,7 +149,7 @@ public class LaunchDetails {
   private String xRequestId;
 
   @Column(name = "request_mode", nullable = true)
-  private String requestMode = EventTypes.RequestModeEnum.Production.toString();
+  private String requestMode = EventTypes.RequestModeEnum.PRODUCTION.toString();
 
   public Boolean getIsCovid() {
     return isCovid;

@@ -55,7 +55,7 @@ public class CdaFhirUtilities {
 
   public static List<Identifier> getIdentifierForType(List<Identifier> ids, String type) {
 
-    List<Identifier> returnIds = new ArrayList<Identifier>();
+    List<Identifier> returnIds = new ArrayList<>();
 
     if (ids != null && !ids.isEmpty()) {
 
@@ -490,7 +490,7 @@ public class CdaFhirUtilities {
   public static List<Practitioner> getPractitionersForType(
       R4FhirData data, V3ParticipationType type) {
 
-    List<Practitioner> practs = new ArrayList<Practitioner>();
+    List<Practitioner> practs = new ArrayList<>();
 
     if (data != null && data.getEncounter() != null) {
 
@@ -531,11 +531,11 @@ public class CdaFhirUtilities {
 
                         logger.info(" Found Practitioner for Code and CodeSystem ");
 
-                        logger.info(" part.getIndividual = " + part.getIndividual().getDisplay());
+                        logger.info(" part.getIndividual = {}", part.getIndividual().getDisplay());
                         if (part.getIndividual().getReferenceElement() != null)
                           logger.info(
-                              " part .getIndivi = "
-                                  + part.getIndividual().getReferenceElement().toString());
+                              " part.getIndividual = {}",
+                              part.getIndividual().getReferenceElement().toString());
 
                         if (part.getIndividual().getReferenceElement() != null
                             && part.getIndividual().getReferenceElement().getIdPart() != null) {
@@ -546,7 +546,7 @@ public class CdaFhirUtilities {
 
                           if (pr != null) {
 
-                            logger.info(" Found Practitioner for Type " + type);
+                            logger.info(" Found Practitioner for Type {}", type.toString());
                             practs.add(pr);
                           } // Found Practitioenr
                         } // Valid Reference
@@ -555,7 +555,7 @@ public class CdaFhirUtilities {
                         }
                       } // Found Type that we need
                       else {
-                        logger.info(" Did not find the code for type " + type.toString());
+                        logger.info(" Did not find the code for type {}", type.toString());
                       }
                     } // Found participants that use standard code systems
                     else {
@@ -788,7 +788,7 @@ public class CdaFhirUtilities {
             && c.getSystem().contentEquals(codeSystemUrl)
             && !foundCodeForCodeSystem) {
 
-          logger.info("Found the Coding for Codesystem " + codeSystemUrl);
+          logger.info("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
               CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                   cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -796,7 +796,7 @@ public class CdaFhirUtilities {
           foundCodeForCodeSystem = true;
         } else if (!csd.getValue0().isEmpty()) {
 
-          logger.info("Found the Coding for a different Codesystem " + csd.getValue0());
+          logger.info("Found the Coding for a different Codesystem {}", csd.getValue0());
           translations.append(
               CdaGeneratorUtils.getXmlForCD(
                   CdaGeneratorConstants.TRANSLATION_EL_NAME,
@@ -806,7 +806,7 @@ public class CdaFhirUtilities {
                   c.getDisplay()));
         } else {
           logger.info(
-              " Did not find the code system mapping from FHIR to CDA for " + c.getSystem());
+              " Did not find the code system mapping from FHIR to CDA for {}", c.getSystem());
         }
       }
 
@@ -818,7 +818,7 @@ public class CdaFhirUtilities {
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
 
-      logger.info(" Sb = " + sb.toString());
+      logger.info(" Sb = {}", sb.toString());
       sb.append(translations);
       sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 
@@ -889,7 +889,7 @@ public class CdaFhirUtilities {
             && c.getSystem().contentEquals(codeSystemUrl)
             && !foundCodeForCodeSystem) {
 
-          logger.debug("Found the Coding for Codesystem " + codeSystemUrl);
+          logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
               CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                   c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -897,7 +897,7 @@ public class CdaFhirUtilities {
           foundCodeForCodeSystem = true;
         } else if (!csd.getValue0().isEmpty()) {
 
-          logger.debug("Found the Coding for a different Codesystem " + csd.getValue0());
+          logger.debug("Found the Coding for a different Codesystem {}", csd.getValue0());
           translations.append(
               CdaGeneratorUtils.getXmlForCD(
                   CdaGeneratorConstants.TRANSLATION_EL_NAME,
@@ -1166,7 +1166,7 @@ public class CdaFhirUtilities {
       valueString = getCodeableConceptDisplayForCodeSystem(vCode, codeSystemUrl, csOptional);
     } else if (value instanceof Coding) {
       Coding vCd = (Coding) value;
-      List<Coding> cds = new ArrayList<Coding>();
+      List<Coding> cds = new ArrayList<>();
       cds.add(vCd);
       valueString = getCodingDisplayForCodeSystem(cds, codeSystemUrl, csOptional);
     } else if (value instanceof StringType) {
@@ -1254,7 +1254,7 @@ public class CdaFhirUtilities {
         val += st.getValue();
       }
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name {}", dt.getClass());
       return val;
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -1367,14 +1367,14 @@ public class CdaFhirUtilities {
     state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
-    List<String> matchedCodesForUrl = new ArrayList<String>();
+    List<String> matchedCodesForUrl = new ArrayList<>();
 
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
       if (mtc.hasMatchedTriggerCodes(matchResourceType)) {
 
-        logger.info(" Found Matched Codes for Resource Type " + matchResourceType);
+        logger.info(" Found Matched Codes for Resource Type {}", matchResourceType);
 
         Set<String> matchedCodes = mtc.getMatchedCodes();
 
@@ -1418,7 +1418,7 @@ public class CdaFhirUtilities {
             && c.getSystem().contentEquals(csUrl)
             && isCodePresent(matchedCodes, c.getCode())) {
 
-          logger.info("Found the Coding for Codesystem " + csUrl + " and Code = " + c.getCode());
+          logger.info("Found the Coding for Codesystem {} and Code =  {}", csUrl, c.getCode());
 
           return c.getCode();
         }

@@ -94,14 +94,15 @@ public class ApplicationUtils {
             valueSetIdList = conceptSetComponent.getValueSet();
           }
 
-          logger.info(
-              " Value Set Id List Size = "
-                  + ((valueSetIdList == null) ? "Null" : valueSetIdList.size()));
+          if (valueSetIdList != null && !valueSetIdList.isEmpty()) {
+            logger.info(" Value Set Id List Size = " + valueSetIdList.size());
+          } else {
+            logger.info(" Value Set Id List is NULL");
+          }
         }
         break;
       } else {
-
-        logger.info(" Value Set Id = " + valueset.getId() + " does not macth grouper Id ");
+        logger.info(" Value Set Id {}  does not match grouper Id ", valueset.getId());
       }
     }
     return valueSetIdList;
@@ -133,8 +134,6 @@ public class ApplicationUtils {
       for (CanonicalType canonicalType : valueSetIdList) {
 
         for (ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
-
-          // logger.info(" Iterating over value sets to setup grouper ");
 
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
               || ((valueSet.getUrl() != null)
@@ -361,7 +360,7 @@ public class ApplicationUtils {
 
     if (v != null) {
 
-      logger.info(" Checking Value Set Id " + v.getId());
+      logger.info(" Checking Value Set Id {}", v.getId());
 
       if (v.getUseContextFirstRep() != null) {
 
@@ -375,13 +374,8 @@ public class ApplicationUtils {
               && (cc.getCodingFirstRep().getCode() != null
                   && cc.getCodingFirstRep()
                       .getCode()
-                      .contentEquals(
-                          PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE))) { // &&
-            //	( cc.getCodingFirstRep().getSystem() != null &&
-            //
-            // cc.getCodingFirstRep().getSystem().contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_SYSTEM) )) {
-
-            logger.info(" Found COVID VALUE SET = " + v.getId());
+                      .contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE))) {
+            logger.info(" Found COVID VALUE SET = {}", v.getId());
             retVal = true;
           }
         }
