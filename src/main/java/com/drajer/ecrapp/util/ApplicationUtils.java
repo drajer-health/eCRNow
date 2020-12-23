@@ -95,7 +95,7 @@ public class ApplicationUtils {
           }
 
           if (valueSetIdList != null && !valueSetIdList.isEmpty()) {
-            logger.info(" Value Set Id List Size = " + valueSetIdList.size());
+            logger.info(" Value Set Id List Size = {}", valueSetIdList.size());
           } else {
             logger.info(" Value Set Id List is NULL");
           }
@@ -165,20 +165,20 @@ public class ApplicationUtils {
 
       for (CanonicalType canonicalType : valueSetIdList) {
 
-        logger.info(" Checking Value set " + canonicalType.getValueAsString());
+        logger.info(" Checking Value set {}", canonicalType.getValueAsString());
 
         for (ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
 
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
               && isACovidValueSet(valueSet)) {
-            logger.info(" Found a Covid Value Set for Grouper using Id " + valueSet.getId());
+            logger.info(" Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           } else if ((valueSet.getUrl() != null)
               && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))
               && isACovidValueSet(valueSet)) {
 
-            logger.info("Urls Matched for a Covid Value Set" + valueSet.getId());
+            logger.info("Urls Matched for a Covid Value Set {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           }
@@ -189,13 +189,13 @@ public class ApplicationUtils {
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
               && isACovidValueSet(valueSet)) {
 
-            logger.info(" Found a Covid Value Set for Grouper using Id " + valueSet.getId());
+            logger.info(" Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           } else if ((valueSet.getUrl() != null)
               && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))
               && isACovidValueSet(valueSet)) {
-            logger.info("Urls Matched for a Covid Value Set" + valueSet.getId());
+            logger.info("Urls Matched for a Covid Value Set {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           }
@@ -409,7 +409,7 @@ public class ApplicationUtils {
                   || rr.getReference()
                       .contains(PlanDefinitionProcessor.GROUPER_VALUE_SET_REFERENCE_2))) {
 
-            logger.info(" Found Grouper VALUE SET = " + v.getId());
+            logger.info(" Found Grouper VALUE SET = {}", v.getId());
             retVal = true;
           }
         }
