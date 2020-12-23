@@ -55,9 +55,6 @@ public class RRReceiverController {
       @RequestBody String obj,
       @OptionalParam(name = "type") String type,
       @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
-      @OptionalParam(name = "fhirServerURL") String fhirServerURL,
-      @OptionalParam(name = "patientId") String patientId,
-      @OptionalParam(name = "encounter") String encounterId,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
@@ -95,7 +92,8 @@ public class RRReceiverController {
             JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
             String access_token = tokenResponse.getString(ACCESS_TOKEN);
             String fhirVersion = "";
-            JSONObject object = authorization.getMetadata(fhirServerURL + "/metadata");
+            JSONObject object =
+                authorization.getMetadata(launchDetails.getEhrServerURL() + "/metadata");
             if (object != null) {
               logger.info("Reading Metadata information");
               if (object.getString(FHIR_VERSION).equals("1.0.2")) {
@@ -111,7 +109,8 @@ public class RRReceiverController {
 
             // Initialize the Client
             IGenericClient client =
-                fhirContextInitializer.createClient(context, fhirServerURL, access_token);
+                fhirContextInitializer.createClient(
+                    context, launchDetails.getEhrServerURL(), access_token);
 
             MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
             logger.info("DocumentReference Id::::: " + outcome.getId().getIdPart());
