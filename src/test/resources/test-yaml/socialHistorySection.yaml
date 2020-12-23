@@ -128,7 +128,7 @@ testCase:
       'code/@codeSystemName': "HL7ActCode"
       'code/@displayName': "Assertion"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200101"
+#      'effectiveTime/low/@value': "20200101"
 #      'effectiveTime/high/@value': "20200101"
       'value/@type': "CD"
       'value/@code': "77386006"

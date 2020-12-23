@@ -43,7 +43,6 @@ public class RefreshTokenScheduler {
     logger.info("Accesstoken Expires in========>" + authDetails.getExpiry());
     long minutes = TimeUnit.SECONDS.toMinutes(authDetails.getExpiry());
     String cronExpression = "0 " + "0/" + minutes + " * * * ?";
-    // String cronExpression = "0/60 * * * * ?";
     CronTrigger cronTrigger = new CronTrigger(cronExpression);
     taskScheduler.schedule(new RunnableTask(authDetails), cronTrigger);
     logger.info(
@@ -75,7 +74,7 @@ public class RefreshTokenScheduler {
     JSONObject tokenResponse = null;
     logger.info("Getting AccessToken for Client: " + authDetails.getClientId());
     try {
-      RestTemplate restTemplate = new RestTemplate();
+      RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       if (!authDetails.getIsSystem()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -84,7 +83,7 @@ public class RefreshTokenScheduler {
         map.add("refresh_token", authDetails.getRefreshToken());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
-            restTemplate.exchange(
+            resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
       } else {
@@ -99,7 +98,7 @@ public class RefreshTokenScheduler {
         map.add("scope", authDetails.getScope());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
-            restTemplate.exchange(
+            resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
       }
@@ -127,16 +126,13 @@ public class RefreshTokenScheduler {
     } catch (Exception e) {
       logger.error("Error in Updating the AccessToken value into database: ", e);
     }
-
-    // getResourcesData(existingAuthDetails);
-
   }
 
   public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
     logger.info("Getting AccessToken for Client: " + clientDetails.getClientId());
     try {
-      RestTemplate restTemplate = new RestTemplate();
+      RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -148,10 +144,8 @@ public class RefreshTokenScheduler {
       map.add("scope", clientDetails.getScopes());
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
-      // clientDetails.print();
-
       ResponseEntity<?> response =
-          restTemplate.exchange(
+          resTemplate.exchange(
               clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
       logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());

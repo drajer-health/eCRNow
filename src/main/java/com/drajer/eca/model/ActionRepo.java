@@ -270,8 +270,6 @@ public class ActionRepo {
             for (AbstractAction a : aa) {
 
               logger.info(" Action that will be executed {}", a.toString());
-
-              // a.print();
             }
           }
         }
@@ -295,8 +293,6 @@ public class ActionRepo {
             for (AbstractAction a : aa) {
 
               logger.info(" Action that will be executed {}", a.toString());
-
-              // a.print();
             }
           }
         }

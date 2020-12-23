@@ -109,7 +109,7 @@ public class CdaValidatorUtil {
       if (output != null) {
         List<Object> objs = output.getActivePatternAndFiredRuleAndFailedAssert();
         boolean foundFailures = false;
-        logger.info(" Number of Failed Assertions " + objs.size());
+        logger.info(" Number of Failed Assertions {}", objs.size());
 
         for (Object obj : objs) {
           if (obj instanceof FailedAssert) {

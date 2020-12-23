@@ -60,7 +60,7 @@ testCase:
       'administrativeGenderCode/@codeSystem': "2.16.840.1.113883.5.1"
       'name/given': "COVIDONE"
       'name/family': "FHIRTest"
-      'birthTime/@value': "19700102"
+      'birthTime/@value': "19700102000000"
       'deceasedInd/@value': "false"
       'raceCode/@code': "2054-5"
       'raceCode/@codeSystem': "2.16.840.1.113883.6.238"
@@ -119,7 +119,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
     - xPath: "patient/"
-      'deceasedTime/@value': "20201013"
+      'deceasedTime/@value': "20201013000000"
       'deceasedInd/@value': "true"
   eCR-header-author:
     testData:
@@ -150,8 +150,8 @@ testCase:
     validate:
     - xPath: "author"
       count: 1
-    - xPath: "author/"
-      'time/@value': "20200512"
+   # - xPath: "author/"
+   #   'time/@value': "20200512"
     - xPath: "author/assignedAuthor/id"
       count: 1
     - xPath: "author/assignedAuthor/addr"
@@ -258,7 +258,7 @@ testCase:
       'code/@codeSystem': "2.16.840.1.113883.5.4"
       'code/@codeSystemName': "v3-ActCode"
       'code/@displayName': "inpatient encounter"
-      'effectiveTime/low/@value': "20200512"
+#      'effectiveTime/low/@value': "20200512"
       'effectiveTime/high/@nullFlavor': "NI"
     - xPath: "responsibleParty/assignedEntity/id"
       count: 1

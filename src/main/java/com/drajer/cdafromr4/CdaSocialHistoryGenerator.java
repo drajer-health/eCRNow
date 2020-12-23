@@ -278,7 +278,7 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
             CdaGeneratorConstants.LOINC_OCC_HISTORY_CODE_DISPLAY));
 
-    List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
+    List<CodeableConcept> cds = new ArrayList<>();
     cds.add(obs.getCode());
     sb.append(
         CdaFhirUtilities.getCodeableConceptXml(

@@ -63,5 +63,5 @@ testCase:
       'code/@codeSystem': "2.16.840.1.113883.5.4"
       'code/@codeSystemName': "v3-ActCode"
       'code/@displayName': "inpatient encounter"
-      'effectiveTime/low/@value': "20200512"
+#      'effectiveTime/low/@value': "20200512"
       'effectiveTime/high/@nullFlavor': "NI" 

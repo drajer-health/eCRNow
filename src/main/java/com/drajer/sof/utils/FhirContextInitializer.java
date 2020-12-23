@@ -55,7 +55,6 @@ public class FhirContextInitializer {
   public IGenericClient createClient(FhirContext context, String url, String accessToken) {
     logger.info("Initializing the Client");
     IGenericClient client = context.newRestfulGenericClient(url);
-    // client.setLogRequestAndResponse(true);
     context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     logger.info("Initialized the Client");
@@ -84,8 +83,6 @@ public class FhirContextInitializer {
     try {
       logger.info("Getting {} data", resourceName);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
-      // logger.info(resourceName + ":::::::::::::::::" +
-      // context.newJsonParser().encodeResourceToString(resource));
     } catch (Exception e) {
       logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }

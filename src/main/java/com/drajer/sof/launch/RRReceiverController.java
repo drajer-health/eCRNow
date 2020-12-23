@@ -69,7 +69,7 @@ public class RRReceiverController {
       // about the FHIR Server Version.
       if (clientDetails != null) {
         JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
-        String access_token = tokenResponse.getString(ACCESS_TOKEN);
+        String accessToken = tokenResponse.getString(ACCESS_TOKEN);
         String fhirVersion = "";
         JSONObject object = authorization.getMetadata(fhirServerURL + "/metadata");
         if (object != null) {
@@ -87,7 +87,7 @@ public class RRReceiverController {
 
         // Initialize the Client
         IGenericClient client =
-            fhirContextInitializer.createClient(context, fhirServerURL, access_token);
+            fhirContextInitializer.createClient(context, fhirServerURL, accessToken);
 
         MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
         logger.info("DocumentReference Id::::: {}", outcome.getId().getIdPart());

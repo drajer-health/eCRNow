@@ -43,6 +43,7 @@ public class CdaGeneratorConstants {
   public static final String NULLFLAVOR_WITH_EQUAL = "nullFlavor=";
   public static final String UNIT_WITH_EQUAL = "unit=";
   public static final String VALUESET = "sdtc:valueSet=";
+  public static final String VALUESET_VERSION = "sdtc:valueSetVersion=";
 
   // CCDA Header Releated
   public static final String DOC_HEADER_XML = "<?xml version=\"1.0\"?>" + "\n";
@@ -955,10 +956,5 @@ public class CdaGeneratorConstants {
     } else {
       return "WP";
     }
-  }
-
-  public static String getCodeForFhirStatusCodes(String val) {
-
-    return "";
   }
 }
