@@ -88,6 +88,8 @@ Change the logfile location to reflect where you want to log the data.
 
 ```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -jar ./target/ecr-now.war```
 
+The security.key is something that you can configure in the environment or your container approach and is used for encrypting sensitive information such as clientids, client secrets and direct transport account information in the database.
+
 6. **App configuration for EHR server:** 
 
 Once the App is up and running, you can access the App configuration screen by launching the URL:
