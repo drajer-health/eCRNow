@@ -208,6 +208,8 @@ public class CdaPlanOfTreatmentGenerator {
       effDate = sr.getAuthoredOn();
     }
 
+    if (effDate != null) {}
+
     sb.append(
         CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate));
 

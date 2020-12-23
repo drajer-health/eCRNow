@@ -632,7 +632,7 @@ public class R4ResourcesData {
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
     List<CodeableConcept> diagnosticReportCodes = new ArrayList<>();
     // Filter DiagnosticReports based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
         if (!diagnosticReport.getEncounter().isEmpty()) {
@@ -648,7 +648,7 @@ public class R4ResourcesData {
       }
       // If Encounter Id is not present using start and end dates to filter
       // DiagnosticOrders
-    } else {
+    } else if (bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
         // Checking If Issued Date is present in Observation resource
