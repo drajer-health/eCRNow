@@ -13,5 +13,7 @@ public interface LaunchDetailsDao {
 
   LaunchDetails getLaunchDetailsByState(int state);
 
+  LaunchDetails getLaunchDetailsByXRequestId(String xRequestId);
+
   void delete(LaunchDetails launchDetails);
 }

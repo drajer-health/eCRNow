@@ -145,7 +145,7 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
-  @Column(name = "x_request_id", nullable = true)
+  @Column(name = "x_request_id", nullable = true, unique = true)
   private String xRequestId;
 
   @Column(name = "request_mode", nullable = true)
