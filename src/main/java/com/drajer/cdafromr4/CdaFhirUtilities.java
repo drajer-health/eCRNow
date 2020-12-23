@@ -2,11 +2,16 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Address.AddressUse;
@@ -587,6 +592,22 @@ public class CdaFhirUtilities {
 
     logger.info(" Did not find entry for ID {} Type : {}", id, type);
     return null;
+  }
+
+  public static Boolean isCodingPresentForCodeSystem(List<Coding> codings, String codeSystemUrl) {
+
+    Boolean foundCodeSystem = false;
+
+    for (Coding c : codings) {
+
+      if (c.getSystem().contentEquals(codeSystemUrl)) {
+
+        foundCodeSystem = true;
+        break;
+      }
+    }
+
+    return foundCodeSystem;
   }
 
   public static Pair<String, Boolean> getCodingDisplayForCodeSystem(
@@ -1336,5 +1357,84 @@ public class CdaFhirUtilities {
     else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
 
     return val;
+  }
+
+  public static List<String> getMatchedCodesForResourceAndUrl(
+      LaunchDetails details, String matchResourceType, String csUrl) {
+
+    PatientExecutionState state = null;
+
+    state = ApplicationUtils.getDetailStatus(details);
+
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+    List<String> matchedCodesForUrl = new ArrayList<String>();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+
+      // Add each code as an entry relationship observation
+      if (mtc.hasMatchedTriggerCodes(matchResourceType)) {
+
+        logger.info(" Found Matched Codes for Resource Type " + matchResourceType);
+
+        Set<String> matchedCodes = mtc.getMatchedCodes();
+
+        if (matchedCodes != null && !matchedCodes.isEmpty()) {
+
+          // Split the system and code.
+          for (String s : matchedCodes) {
+            String[] parts = s.split("\\|");
+            if (parts[0].contentEquals(csUrl)) {
+              matchedCodesForUrl.add(parts[1]);
+            }
+          }
+        }
+      }
+    }
+
+    return matchedCodesForUrl;
+  }
+
+  public static Boolean isCodePresent(List<String> codes, String code) {
+
+    for (String c : codes) {
+      if (c.contentEquals(code)) return true;
+    }
+
+    return false;
+  }
+
+  public static String getMatchingCodeFromCodingForCodeSystem(
+      List<String> matchedCodes, List<Coding> cds, String csUrl) {
+
+    if (matchedCodes != null && cds != null && !cds.isEmpty()) {
+
+      for (Coding c : cds) {
+
+        Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+        if (!csd.getValue0().isEmpty()
+            && !c.getCode().isEmpty()
+            && !c.getSystem().isEmpty()
+            && c.getSystem().contentEquals(csUrl)
+            && isCodePresent(matchedCodes, c.getCode())) {
+
+          logger.info("Found the Coding for Codesystem " + csUrl + " and Code = " + c.getCode());
+
+          return c.getCode();
+        }
+      }
+    }
+
+    return "";
+  }
+
+  public static String getMatchingCodeFromCodeableConceptForCodeSystem(
+      List<String> matchedCodes, CodeableConcept cd, String csUrl) {
+
+    if (cd != null && cd.getCoding() != null && !cd.getCoding().isEmpty()) {
+      return getMatchingCodeFromCodingForCodeSystem(matchedCodes, cd.getCoding(), csUrl);
+    }
+
+    return "";
   }
 }

@@ -512,6 +512,11 @@ public class CdaGeneratorConstants {
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
   public static final String PREGNANCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.1";
+  public static final String PLANNED_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.44";
+  public static final String PLANNED_OBS_TEMPLATE_ID_EXT = "2014-06-09";
+  public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE =
+      "2.16.840.1.113883.10.20.15.2.3.4";
+  public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT = "2016-12-01";
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID_EXT = "2016-12-01";
   public static final String TRAVEL_HISTORY_SNOMED_CODE = "420008001";
   public static final String TRAVEL_HISTORY_SNOMED_CODE_DISPLAY = "Travel";
@@ -859,6 +864,10 @@ public class CdaGeneratorConstants {
   public static final String SOC_HISTORY_TABLE_COL_1_BODY_CONTENT = "socContent";
   public static final String SOC_HISTORY_TABLE_COL_2_TITLE = "Social History Observation Result";
   public static final String SOC_HISTORY_TABLE_COL_2_BODY_CONTENT = "socObservationResult";
+  public static final String POT_OBS_TABLE_COL_1_TITLE = "Planned Observation";
+  public static final String POT_OBS_TABLE_COL_1_BODY_CONTENT = "potObsContent";
+  public static final String POT_OBS_TABLE_COL_2_TITLE = "Planned Observation Date";
+  public static final String POT_OBS_TABLE_COL_2_BODY_CONTENT = "potObsDate";
   public static final String PAYOR_TABLE_COL_1_TITLE = "Insurance Provider";
   public static final String PAYOR_TABLE_COL_1_BODY_CONTENT = "payor";
   public static final String DEVICE_TABLE_COL_1_TITLE = "Device Name";
@@ -946,5 +955,10 @@ public class CdaGeneratorConstants {
     } else {
       return "WP";
     }
+  }
+
+  public static String getCodeForFhirStatusCodes(String val) {
+
+    return "";
   }
 }

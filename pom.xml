@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.5.RELEASE</version>
+		<version>2.3.7.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
@@ -116,9 +116,9 @@
 
 		<!-- Java stuff -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.10.3</version>
+   			<groupId>com.fasterxml.jackson.core</groupId>
+   			<artifactId>jackson-databind</artifactId>
+   			<version>2.11.3</version>
 		</dependency>
 
 		<dependency>
@@ -178,7 +178,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
+			<version>4.5.13</version>
 		</dependency>
 
 		<dependency>
@@ -295,6 +295,8 @@
 							<executable>npm</executable>
 							<arguments>
 								<argument>install</argument>
+								<argument>--production</argument>
+								<argument>--no-optional</argument>
 							</arguments>
 						</configuration>
 						<goals>
