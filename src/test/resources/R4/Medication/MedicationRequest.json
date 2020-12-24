@@ -1,0 +1,1003 @@
+{
+  "resourceType": "Bundle",
+  "id": "851c0273-d7f5-4ff0-a7b3-67e2173b1418",
+  "type": "searchset",
+  "total": 6,
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest?patient=12742571"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311503471",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "311503471",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-04-29T13:55:18.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Medication Request</b></p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Medication</b>: LORazepam</p><p><b>Dosage Instructions</b>: 7.03 mg = 1.76 mL, IV Push, every 6 hr, PRN: sedation</p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Authored On</b>: Apr 29, 2020  1:34 P.M. UTC</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "inpatient",
+                "display": "Inpatient",
+                "userSelected": false
+              }
+            ]
+          }
+        ],
+        "reportedBoolean": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "6470",
+              "display": "Lorazepam",
+              "userSelected": false
+            },
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+              "code": "2762370",
+              "display": "LORazepam",
+              "userSelected": true
+            }
+          ],
+          "text": "LORazepam"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "authoredOn": "2020-04-29T08:34:47.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        },
+        "note": [
+          {
+            "text": "Target Dose: LORazepam 0.1 mg/kg  4/29/2020 8:34:49 AM"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "7.03 mg = 1.76 mL, IV Push, every 6 hr, PRN: sedation",
+            "patientInstruction": "7.03 Milligrams Intravenous Push every 6 hours as needed for sedation. Refills: 0.",
+            "timing": {
+              "repeat": {
+                "boundsPeriod": {
+                  "start": "2020-04-29T08:34:00.000-05:00"
+                }
+              },
+              "code": {
+                "coding": [
+                  {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                    "code": "696553",
+                    "display": "every 6 hr",
+                    "userSelected": true
+                  },
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                    "code": "Q6H",
+                    "display": "Q6H",
+                    "userSelected": false
+                  }
+                ],
+                "text": "every 6 hr"
+              }
+            },
+            "asNeededCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4005",
+                  "code": "40092431",
+                  "display": "sedation",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "17971005",
+                  "display": "Sedated (finding)",
+                  "userSelected": false
+                }
+              ],
+              "text": "sedation"
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
+                  "code": "318172",
+                  "display": "IV Push",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "47625008",
+                  "display": "Intravenous route (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "IV Push"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 7.03,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-04-29T08:34:47.000-05:00"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311503467",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "311503467",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-04-29T13:54:37.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Medication Request</b></p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Medication</b>: albuterol</p><p><b>Dosage Instructions</b>: 1.25 mg, NEB, every 4 hr, PRN: wheezing</p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Authored On</b>: Apr 29, 2020  1:32 P.M. UTC</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "inpatient",
+                "display": "Inpatient",
+                "userSelected": false
+              }
+            ]
+          }
+        ],
+        "reportedBoolean": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "435",
+              "display": "Albuterol",
+              "userSelected": false
+            },
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+              "code": "2748619",
+              "display": "albuterol",
+              "userSelected": true
+            }
+          ],
+          "text": "albuterol"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "authoredOn": "2020-04-29T08:32:15.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        },
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                "code": "U07.1",
+                "display": "2019-nCoV acute respiratory disease",
+                "userSelected": true
+              }
+            ],
+            "text": "Disease caused by 2019 novel coronavirus"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "1.25 mg, NEB, every 4 hr, PRN: wheezing",
+            "patientInstruction": "1.25 Milligrams Nebulized inhalation (inhale using nebulizer) every 4 hours as needed for wheezing. Refills: 0.",
+            "timing": {
+              "repeat": {
+                "boundsPeriod": {
+                  "start": "2020-04-29T08:32:00.000-05:00"
+                }
+              },
+              "code": {
+                "coding": [
+                  {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                    "code": "696547",
+                    "display": "every 4 hr",
+                    "userSelected": true
+                  },
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                    "code": "Q4H",
+                    "display": "Q4H",
+                    "userSelected": false
+                  }
+                ],
+                "text": "every 4 hr"
+              }
+            },
+            "asNeededCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4005",
+                  "code": "2820840",
+                  "display": "wheezing",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "56018004",
+                  "display": "Wheezing (finding)",
+                  "userSelected": false
+                }
+              ],
+              "text": "wheezing"
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
+                  "code": "318178",
+                  "display": "NEB",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "447694001",
+                  "display": "Respiratory tract route (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "NEB"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.25,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-04-29T08:32:15.000-05:00"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311503469",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "311503469",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-04-29T13:55:40.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Medication Request</b></p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Medication</b>: cefepime</p><p><b>Dosage Instructions</b>: 1,000 mg, IV Piggyback, every 12 hr</p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Authored On</b>: Apr 29, 2020  1:34 P.M. UTC</p></div>"
+        },
+        "contained": [
+          {
+            "resourceType": "Medication",
+            "id": "2752724",
+            "code": {
+              "text": "cefepime"
+            },
+            "form": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4002",
+                  "code": "318213",
+                  "display": "Injection",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "385218009",
+                  "display": "Injection (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Injection"
+            },
+            "ingredient": [
+              {
+                "itemCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                      "code": "1665093",
+                      "display": "cefepime 1000 MG Injection",
+                      "userSelected": false
+                    },
+                    {
+                      "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+                      "code": "273262959",
+                      "display": "cefepime",
+                      "userSelected": true
+                    }
+                  ],
+                  "text": "cefepime"
+                },
+                "strength": {
+                  "numerator": {
+                    "value": 1000.0,
+                    "unit": "mg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg"
+                  },
+                  "denominator": {
+                    "value": 100.0,
+                    "unit": "mL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mL"
+                  }
+                }
+              },
+              {
+                "itemCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                      "code": "1807631",
+                      "display": "50 ML Sodium Chloride 9 MG/ML Injection",
+                      "userSelected": false
+                    },
+                    {
+                      "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+                      "code": "273249901",
+                      "display": "Sodium Chloride 0.9%",
+                      "userSelected": true
+                    }
+                  ],
+                  "text": "Sodium Chloride 0.9%"
+                },
+                "strength": {
+                  "numerator": {
+                    "value": 100.0,
+                    "unit": "mL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mL"
+                  },
+                  "denominator": {
+                    "value": 100.0,
+                    "unit": "mL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mL"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "inpatient",
+                "display": "Inpatient",
+                "userSelected": false
+              }
+            ]
+          }
+        ],
+        "reportedBoolean": false,
+        "medicationReference": {
+          "reference": "#2752724",
+          "display": "cefepime"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "authoredOn": "2020-04-29T08:34:14.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        },
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                "code": "U07.1",
+                "display": "2019-nCoV acute respiratory disease",
+                "userSelected": true
+              }
+            ],
+            "text": "Disease caused by 2019 novel coronavirus"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "1,000 mg, IV Piggyback, every 12 hr",
+            "patientInstruction": "IV Piggyback every 12 hours. Refills: 0.",
+            "timing": {
+              "repeat": {
+                "boundsPeriod": {
+                  "start": "2020-04-29T09:00:00.000-05:00"
+                }
+              },
+              "code": {
+                "coding": [
+                  {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                    "code": "696536",
+                    "display": "every 12 hr",
+                    "userSelected": true
+                  }
+                ],
+                "text": "every 12 hr"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
+                  "code": "318173",
+                  "display": "IV Piggyback",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "47625008",
+                  "display": "Intravenous route (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "IV Piggyback"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 100.0,
+                  "unit": "mL",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-04-29T08:34:14.000-05:00"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311477549",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "311477549",
+        "meta": {
+          "versionId": "0",
+          "lastUpdated": "2020-04-28T18:29:18.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Medication Request</b></p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Medication</b>: cetirizine-pseudoephedrine (ZyrTEC-D 5 mg-120 mg oral tablet, extended release)</p><p><b>Dosage Instructions</b>: 1 tab, Oral, BID, 60 tab, 0 Refill(s)</p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Authored On</b>: Apr 28, 2020  6:27 P.M. UTC</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "community",
+                "display": "Community",
+                "userSelected": false
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medication-statement-category",
+                "code": "patientspecified",
+                "display": "Patient Specified",
+                "userSelected": false
+              }
+            ]
+          }
+        ],
+        "reportedBoolean": true,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1014583",
+              "display": "12 HR cetirizine hydrochloride 5 MG / Pseudoephedrine Hydrochloride 120 MG Extended Release Tablet [Zyrtec-D]",
+              "userSelected": false
+            },
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+              "code": "2752963",
+              "display": "ZyrTEC-D 5 mg-120 mg oral tablet, extended release",
+              "userSelected": true
+            }
+          ],
+          "text": "cetirizine-pseudoephedrine (ZyrTEC-D 5 mg-120 mg oral tablet, extended release)"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "authoredOn": "2020-04-28T13:27:51.000-05:00",
+        "requester": {
+          "extension": [
+            {
+              "valueCode": "unknown",
+              "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+            }
+          ]
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4009",
+              "code": "2338",
+              "display": "Soft Stop",
+              "userSelected": true
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "continuous",
+              "display": "Continuous long term therapy",
+              "userSelected": false
+            }
+          ],
+          "text": "Maintenance"
+        },
+        "dosageInstruction": [
+          {
+            "text": "1 tab, Oral, BID, 60 tab, 0 Refill(s)",
+            "patientInstruction": "1 tab Oral (given by mouth) 2 times a day.",
+            "timing": {
+              "repeat": {
+                "boundsPeriod": {
+                  "start": "2020-04-28T13:27:00.000-05:00"
+                }
+              },
+              "code": {
+                "coding": [
+                  {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                    "code": "696528",
+                    "display": "BID",
+                    "userSelected": true
+                  },
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                    "code": "BID",
+                    "display": "BID",
+                    "userSelected": false
+                  }
+                ],
+                "text": "BID"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
+                  "code": "318185",
+                  "display": "Oral",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Oral"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "tab",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "{tbl}"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-04-28T13:27:51.000-05:00"
+          },
+          "numberOfRepeatsAllowed": 0,
+          "quantity": {
+            "value": 60.0,
+            "unit": "tab",
+            "system": "http://unitsofmeasure.org",
+            "code": "{tbl}"
+          }
+        },
+        "substitution": {
+          "allowedBoolean": true
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311477547",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "311477547",
+        "meta": {
+          "versionId": "0",
+          "lastUpdated": "2020-04-28T18:29:18.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Medication Request</b></p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Medication</b>: citalopram (citalopram 20 mg oral tablet)</p><p><b>Dosage Instructions</b>: 20 mg = 1 tab, Oral, Daily, 30 tab, 0 Refill(s)</p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Authored On</b>: Apr 28, 2020  6:27 P.M. UTC</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "community",
+                "display": "Community",
+                "userSelected": false
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medication-statement-category",
+                "code": "patientspecified",
+                "display": "Patient Specified",
+                "userSelected": false
+              }
+            ]
+          }
+        ],
+        "reportedBoolean": true,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "200371",
+              "display": "Citalopram 20 MG Oral Tablet",
+              "userSelected": false
+            },
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+              "code": "2753913",
+              "display": "citalopram 20 mg oral tablet",
+              "userSelected": true
+            }
+          ],
+          "text": "citalopram (citalopram 20 mg oral tablet)"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "authoredOn": "2020-04-28T13:27:05.000-05:00",
+        "requester": {
+          "extension": [
+            {
+              "valueCode": "unknown",
+              "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+            }
+          ]
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4009",
+              "code": "2338",
+              "display": "Soft Stop",
+              "userSelected": true
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "continuous",
+              "display": "Continuous long term therapy",
+              "userSelected": false
+            }
+          ],
+          "text": "Maintenance"
+        },
+        "dosageInstruction": [
+          {
+            "text": "20 mg = 1 tab, Oral, Daily, 30 tab, 0 Refill(s)",
+            "patientInstruction": "1 tab Oral (given by mouth) every day.",
+            "timing": {
+              "repeat": {
+                "boundsPeriod": {
+                  "start": "2020-04-28T13:27:00.000-05:00"
+                }
+              },
+              "code": {
+                "coding": [
+                  {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                    "code": "696530",
+                    "display": "Daily",
+                    "userSelected": true
+                  },
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                    "code": "QD",
+                    "display": "QD",
+                    "userSelected": false
+                  }
+                ],
+                "text": "Daily"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
+                  "code": "318185",
+                  "display": "Oral",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Oral"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "tab",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "{tbl}"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-04-28T13:27:05.000-05:00"
+          },
+          "numberOfRepeatsAllowed": 0,
+          "quantity": {
+            "value": 30.0,
+            "unit": "tab",
+            "system": "http://unitsofmeasure.org",
+            "code": "{tbl}"
+          }
+        },
+        "substitution": {
+          "allowedBoolean": true
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311477551",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "311477551",
+        "meta": {
+          "versionId": "0",
+          "lastUpdated": "2020-04-28T18:29:18.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Medication Request</b></p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Medication</b>: norgestimate-ethinyl estradiol (Ortho Tri-Cyclen oral tablet)</p><p><b>Dosage Instructions</b>: 1 tab, Oral, Daily, 28 tab, 0 Refill(s)</p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Authored On</b>: Apr 28, 2020  6:28 P.M. UTC</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "community",
+                "display": "Community",
+                "userSelected": false
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medication-statement-category",
+                "code": "patientspecified",
+                "display": "Patient Specified",
+                "userSelected": false
+              }
+            ]
+          }
+        ],
+        "reportedBoolean": true,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "749785",
+              "display": "{7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.18 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.215 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.25 MG Oral Tablet) / 7 (Inert Ingredients 1 MG Oral Tablet) } Pack [Or",
+              "userSelected": false
+            },
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/synonym",
+              "code": "2757825",
+              "display": "Ortho Tri-Cyclen oral tablet",
+              "userSelected": true
+            }
+          ],
+          "text": "norgestimate-ethinyl estradiol (Ortho Tri-Cyclen oral tablet)"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "authoredOn": "2020-04-28T13:28:15.000-05:00",
+        "requester": {
+          "extension": [
+            {
+              "valueCode": "unknown",
+              "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+            }
+          ]
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4009",
+              "code": "2338",
+              "display": "Soft Stop",
+              "userSelected": true
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "continuous",
+              "display": "Continuous long term therapy",
+              "userSelected": false
+            }
+          ],
+          "text": "Maintenance"
+        },
+        "dosageInstruction": [
+          {
+            "text": "1 tab, Oral, Daily, 28 tab, 0 Refill(s)",
+            "patientInstruction": "1 tab Oral (given by mouth) every day.",
+            "timing": {
+              "repeat": {
+                "boundsPeriod": {
+                  "start": "2020-04-28T13:28:00.000-05:00"
+                }
+              },
+              "code": {
+                "coding": [
+                  {
+                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                    "code": "696530",
+                    "display": "Daily",
+                    "userSelected": true
+                  },
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                    "code": "QD",
+                    "display": "QD",
+                    "userSelected": false
+                  }
+                ],
+                "text": "Daily"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4001",
+                  "code": "318185",
+                  "display": "Oral",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route (qualifier value)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Oral"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "tab",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "{tbl}"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-04-28T13:28:15.000-05:00"
+          },
+          "numberOfRepeatsAllowed": 0,
+          "quantity": {
+            "value": 28.0,
+            "unit": "tab",
+            "system": "http://unitsofmeasure.org",
+            "code": "{tbl}"
+          }
+        },
+        "substitution": {
+          "allowedBoolean": true
+        }
+      }
+    }
+  ]
+}
