@@ -43,7 +43,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     map.put("token", "R4/Misc/AccessToken.json");
     map.put("metaData", "R4/Misc/MetaData_r4.json");
 
-    stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
+    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
     stubHelper.stubAuthAndMetadata(map);
 
     stubFor(

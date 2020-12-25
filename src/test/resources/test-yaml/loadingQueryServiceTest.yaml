@@ -82,7 +82,7 @@ testCase:
       OccupationObservation: 3
       Organization: 1
       Condition: 2
-      PergnancyCondition: 1
+      PregnancyCondition: 1
       Practitioner: 5
       Immunization: 3
       ServiceRequest: 2

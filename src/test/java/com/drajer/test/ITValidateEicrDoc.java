@@ -36,10 +36,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -68,27 +65,23 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(ITValidateEicrDoc.class);
-
-  private final String systemLaunchURI = "/api/systemLaunch";
-
-  private static String systemLaunchInputData;
+  private static String systemLaunchPayload;
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
-
   WireMockHelper stubHelper;
 
   @Before
   public void launchTestSetUp() throws IOException {
-    logger.info("Executing Tests with TestCase: " + testCaseId);
+    logger.info("Executing Test: {}", testCaseId);
     tx = session.beginTransaction();
 
     // Data Setup
     createClientDetails(testData.get("ClientDataToBeSaved"));
-    systemLaunchInputData = getSystemLaunchInputData(testData.get("SystemLaunchPayload"));
+    systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
 
-    stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
+    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
     logger.info("Creating wiremockstubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
@@ -123,41 +116,27 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     int count = 0;
     for (TestDataGenerator testData : testDataGenerator) {
-
       Set<String> testCaseSet = testData.getAllTestCases();
-
       for (String testCase : testCaseSet) {
-
         data[count][0] = testCase;
         data[count][1] = testData.getTestCaseByID(testCase).getTestData();
         data[count][2] = testData.getValidate(testCase);
         data[count][3] = testData.getResourceMappings(testCase);
         data[count][4] = testData.getOtherMappings(testCase);
-
         count++;
       }
     }
-
     return Arrays.asList(data);
   }
 
   @Test
   public void testEicrDocument() throws Exception {
-
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.add("X-Request-ID", testCaseId);
-
-    HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
-    logger.info("Invoking systemLaunch...");
-    logger.info("Payload: \n" + systemLaunchInputData);
-    ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort(systemLaunchURI), HttpMethod.POST, entity, String.class);
-    logger.info("Received Response. Waiting for EICR generation.....");
+    ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     assertTrue(response.getBody().contains("App is launched successfully"));
 
+    logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
     String eICRXml = createEicr.getEicrData();
     assertNotNull(eICRXml);
@@ -177,7 +156,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   }
 
   private void getLaunchDetailAndStatus() {
-
     try {
       Criteria criteria = session.createCriteria(LaunchDetails.class);
       criteria.add(Restrictions.eq("xRequestId", testCaseId));
@@ -187,17 +165,14 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       session.refresh(launchDetails);
 
     } catch (Exception e) {
-
-      fail(e.getMessage() + "Exception occured retreving launchdetail and status");
+      logger.error("Exception occurred retrieving launchDetail and status", e);
+      fail("Something went wrong with launch status, check the log");
     }
   }
 
   private Eicr getCreateEicrDocument() {
-
     try {
-
       do {
-
         // Minimum 2 sec is required as App will execute
         // createEicr workflow after 2 sec as per eRSD.
         Thread.sleep(2000);
@@ -208,7 +183,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       return (session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId())));
 
     } catch (Exception e) {
-      fail(e.getMessage() + "Error while retrieving EICR document");
+      logger.error("Exception retrieving EICR ", e);
+      fail("Something went wrong retrieving EICR, check the log");
     }
     return null;
   }
@@ -219,11 +195,8 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     final String baseXPath = testData.get("BaseXPath");
 
     if (fieldsToValidate != null) {
-
       for (Map<String, String> field : fieldsToValidate) {
-
         try {
-
           String xPathExp = baseXPath + field.get("xPath");
           if (field.containsKey("count")) {
             try {
@@ -231,12 +204,11 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
                   (NodeList) xPath.compile(xPathExp).evaluate(eicrXml, XPathConstants.NODESET);
               assertEquals(xPathExp, Integer.parseInt(field.get("count")), nodeList.getLength());
             } catch (XPathExpressionException e) {
-              fail(e.getMessage() + ": Failed evaluate field " + xPathExp);
+              logger.error("Exception validating field:", e);
+              fail(e.getMessage() + ": Failed to evaluate field " + xPathExp);
             }
           } else {
-
             for (Entry<String, String> set : field.entrySet()) {
-
               if (!set.getKey().equalsIgnoreCase("xPath")) {
                 String xPathFullExp = xPathExp + set.getKey();
                 try {
@@ -244,19 +216,20 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
                       (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);
                   assertEquals(xPathFullExp, set.getValue(), fieldValue);
                 } catch (XPathExpressionException e) {
-                  fail(e.getMessage() + ": Failed evaluate field " + xPathExp);
+                  logger.error("Exception validating field:", e);
+                  fail(e.getMessage() + ": Failed to evaluate field " + xPathExp);
                 }
               }
             }
           }
 
         } catch (Exception e) {
+          logger.error("Exception validating field:", e);
           fail(e.getMessage() + ": This exception is not expected fix the test");
         }
       }
 
     } else {
-
       fail("validate field is not configured in the test");
     }
   }

@@ -33,9 +33,9 @@ public class WireMockHelper {
       wireMockServer = new WireMockServer(this.wireMockPort);
       wireMockServer.start();
       configureFor("localhost", wireMockPort);
-      logger.info("Initialized wiremock on http server: " + wireMockPort);
+      logger.info("Initialized wiremock on http server: {}", wireMockPort);
     } catch (Exception e) {
-      logger.error("Error in initializing wiremock" + e);
+      logger.error("Error in initializing wiremock", e);
     }
   }
 
