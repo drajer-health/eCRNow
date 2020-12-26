@@ -289,7 +289,7 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
 
-    List<Practitioner> practs = new ArrayList<Practitioner>();
+    List<Practitioner> practs = new ArrayList<>();
     Boolean foundAuthor = false;
 
     if (practMap != null && !practMap.isEmpty()) {
@@ -314,8 +314,8 @@ public class CdaHeaderGenerator {
         foundAuthor = true;
       }
 
-      logger.info(" Practs size = " + practs.size());
-      if (practs != null && !practs.isEmpty()) {
+      logger.info(" Practs size = {}", practs.size());
+      if (!practs.isEmpty()) {
 
         logger.info(" Practs is not empty, adding XML for Practitioner ");
         Practitioner pr = practs.get(0);
@@ -487,36 +487,36 @@ public class CdaHeaderGenerator {
     List<Practitioner> practs =
         CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.AUT);
 
-    if (practs != null && !practs.isEmpty()) {
+    if (!practs.isEmpty()) {
 
-      logger.info(" Found Author Practitioner " + practs.size());
+      logger.info(" Found Author Practitioner {}", practs.size());
       practitionerMap.put(V3ParticipationType.AUT, practs);
     }
 
     // Add PPRF
     practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.PPRF);
 
-    if (practs != null && !practs.isEmpty()) {
+    if (!practs.isEmpty()) {
 
-      logger.info(" Found PPRF Practitioners " + practs.size());
+      logger.info(" Found PPRF Practitioners {}", practs.size());
       practitionerMap.put(V3ParticipationType.PPRF, practs);
     }
 
     // Add SPRF
     practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.SPRF);
 
-    if (practs != null && !practs.isEmpty()) {
+    if (!practs.isEmpty()) {
 
-      logger.info(" Found SPRF Practitioners " + practs.size());
+      logger.info(" Found SPRF Practitioners {}", practs.size());
       practitionerMap.put(V3ParticipationType.SPRF, practs);
     }
 
     // Add PPRF
     practs = CdaFhirUtilities.getPractitionersForType(data, V3ParticipationType.ATND);
 
-    if (practs != null && !practs.isEmpty()) {
+    if (!practs.isEmpty()) {
 
-      logger.info(" Found ATND Practitioners " + practs.size());
+      logger.info(" Found ATND Practitioners {}", practs.size());
       practitionerMap.put(V3ParticipationType.ATND, practs);
     }
 
@@ -528,7 +528,7 @@ public class CdaHeaderGenerator {
 
     StringBuilder practXml = new StringBuilder();
 
-    List<Practitioner> practs = new ArrayList<Practitioner>();
+    List<Practitioner> practs = new ArrayList<>();
     Boolean foundPrimaryPerformer = false;
 
     if (practMap != null && !practMap.isEmpty()) {
@@ -548,8 +548,8 @@ public class CdaHeaderGenerator {
         foundPrimaryPerformer = true;
       }
 
-      logger.info(" Practs size = " + practs.size());
-      if (practs != null && !practs.isEmpty()) {
+      logger.info(" Practs size = {}", practs.size());
+      if (!practs.isEmpty()) {
 
         logger.info(" Practs is not empty, adding XML for Practitioner ");
         Practitioner pr = practs.get(0);
@@ -645,8 +645,7 @@ public class CdaHeaderGenerator {
 
           if (addOnce) {
             patientDetails.append(
-                CdaGeneratorUtils.getXmlForII(
-                    details.getAssigningAuthorityId(), p.getId().toString()));
+                CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
             addOnce = false;
           }
         }
@@ -757,7 +756,7 @@ public class CdaHeaderGenerator {
         if (guardianContact.getAddress() != null) {
 
           logger.info(" Adding Address for Guardian");
-          List<Address> addrs = new ArrayList<Address>();
+          List<Address> addrs = new ArrayList<>();
           addrs.add(guardianContact.getAddress());
           patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
         }

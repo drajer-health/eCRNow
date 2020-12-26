@@ -36,7 +36,7 @@ public class AESEncryption {
 
       return Base64.encodeBase64String(encrypted);
     } catch (Exception ex) {
-      logger.error("Error while encrypting: {} ", ex);
+      logger.error("Error while encrypting:", ex);
     }
 
     return null;

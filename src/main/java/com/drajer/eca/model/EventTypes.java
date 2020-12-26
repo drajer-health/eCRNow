@@ -72,8 +72,8 @@ public final class EventTypes {
   }
 
   public enum RequestModeEnum {
-    Validation,
-    Production
+    VALIDATION,
+    PRODUCTION
   }
 
   public EcrActionTypes getEcrActionTypes(String s) {

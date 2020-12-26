@@ -37,7 +37,7 @@ public class Dstu2ResourcesData {
   private final Logger logger = LoggerFactory.getLogger(Dstu2ResourcesData.class);
 
   private List<CodeableConceptDt> findEncounterCodes(Encounter encounter) {
-    List<CodeableConceptDt> encounterCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> encounterCodes = new ArrayList<>();
     if (encounter.getType() != null) {
       encounterCodes = encounter.getType();
     }
@@ -45,7 +45,7 @@ public class Dstu2ResourcesData {
   }
 
   private List<CodeableConceptDt> findConditionCodes(Condition condition) {
-    List<CodeableConceptDt> conditionCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> conditionCodes = new ArrayList<>();
     if (!condition.getCode().isEmpty() && condition.getCode() != null) {
       conditionCodes.add(condition.getCode());
     }
@@ -53,7 +53,7 @@ public class Dstu2ResourcesData {
   }
 
   private List<CodeableConceptDt> findLaboratoryCodes(Observation observation) {
-    List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> observationCodes = new ArrayList<>();
 
     if (!observation.getCode().isEmpty() && observation.getCode() != null) {
       observationCodes.add(observation.getCode());
@@ -62,7 +62,7 @@ public class Dstu2ResourcesData {
   }
 
   private List<CodeableConceptDt> findMedicationCodes(MedicationAdministration medAdministration) {
-    List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> medicationCodes = new ArrayList<>();
 
     if (!medAdministration.getMedication().isEmpty() && medAdministration.getMedication() != null) {
       if (medAdministration.getMedication() instanceof CodeableConceptDt) {
@@ -77,7 +77,7 @@ public class Dstu2ResourcesData {
   }
 
   private List<CodeableConceptDt> findMedicationStatementCodes(MedicationStatement medStatement) {
-    List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> medicationCodes = new ArrayList<>();
 
     if (!medStatement.getMedication().isEmpty() && medStatement.getMedication() != null) {
       if (medStatement.getMedication() instanceof CodeableConceptDt) {
@@ -92,7 +92,7 @@ public class Dstu2ResourcesData {
   }
 
   private List<CodeableConceptDt> findDiagnosticOrderCodes(DiagnosticOrder diagnosticOrder) {
-    List<CodeableConceptDt> diagnosticOrderCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> diagnosticOrderCodes = new ArrayList<>();
     if (!diagnosticOrder.getReason().isEmpty() && diagnosticOrder.getReason() != null) {
       diagnosticOrderCodes.addAll(diagnosticOrder.getReason());
     }
@@ -100,7 +100,7 @@ public class Dstu2ResourcesData {
   }
 
   private List<CodeableConceptDt> findDiagnosticReportCodes(DiagnosticReport diagnosticReport) {
-    List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<>();
 
     if (!diagnosticReport.getCode().isEmpty() && diagnosticReport.getCode() != null) {
       diagnosticReportCodes.add(diagnosticReport.getCode());
@@ -110,7 +110,7 @@ public class Dstu2ResourcesData {
 
   private List<CodeableConceptDt> findImmunizationCodes(Immunization immunization) {
 
-    List<CodeableConceptDt> immunizationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> immunizationCodes = new ArrayList<>();
     if (!immunization.getVaccineCode().isEmpty() && immunization.getVaccineCode() != null) {
       immunizationCodes.add(immunization.getVaccineCode());
     }
@@ -125,7 +125,7 @@ public class Dstu2ResourcesData {
       Dstu2FhirData dstu2FhirData,
       Date start,
       Date end) {
-    Encounter encounter = new Encounter();
+    Encounter encounter;
     // If Encounter Id is present in Launch Details
     if (launchDetails.getEncounterId() != null) {
       encounter =
@@ -138,7 +138,7 @@ public class Dstu2ResourcesData {
       // and Find the latest Encounter
       Bundle bundle =
           (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Encounter");
-      Map<Encounter, Date> encounterMap = new HashMap<Encounter, Date>();
+      Map<Encounter, Date> encounterMap = new HashMap<>();
       for (Entry entry : bundle.getEntry()) {
         Encounter encounterEntry = (Encounter) entry.getResource();
         // Checking if Period element exists in Encounter. If Exists compare period is
@@ -174,9 +174,9 @@ public class Dstu2ResourcesData {
     Bundle bundle =
         (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Condition");
     List<Condition> conditions = new ArrayList<>();
-    List<CodeableConceptDt> conditionCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> conditionCodes = new ArrayList<>();
     // Filter Conditions based on Encounter Reference
-    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         Condition condition = (Condition) entry.getResource();
         if (!condition.getEncounter().isEmpty()) {
@@ -227,9 +227,9 @@ public class Dstu2ResourcesData {
             resourceData.getObservationByPatientId(
                 launchDetails, client, context, "Observation", "laboratory");
     List<Observation> observations = new ArrayList<>();
-    List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> observationCodes = new ArrayList<>();
     // Filter Observations based on Encounter Reference
-    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         if (!observation.getEncounter().isEmpty()) {
@@ -292,8 +292,7 @@ public class Dstu2ResourcesData {
                 "Observation",
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
-    List<Observation> observations = new ArrayList<>();
-    observations = filterObservation(bundle, encounter, start, end);
+    List<Observation> observations = filterObservation(bundle, encounter, start, end);
 
     return observations;
   }
@@ -315,8 +314,7 @@ public class Dstu2ResourcesData {
                 "Observation",
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
-    List<Observation> observations = new ArrayList<>();
-    observations = filterObservation(bundle, encounter, start, end);
+    List<Observation> observations = filterObservation(bundle, encounter, start, end);
 
     return observations;
   }
@@ -346,9 +344,9 @@ public class Dstu2ResourcesData {
             resourceData.getResourceByPatientId(
                 launchDetails, client, context, "MedicationAdministration");
     List<MedicationAdministration> medAdministrations = new ArrayList<>();
-    List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> medicationCodes = new ArrayList<>();
     // Filter MedicationAdministrations based on Encounter Reference
-    if (bundle != null && !encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (bundle != null && encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
         if (!medAdministration.getEncounter().isEmpty()) {
@@ -402,7 +400,7 @@ public class Dstu2ResourcesData {
             resourceData.getResourceByPatientId(
                 launchDetails, client, context, "MedicationStatement");
     List<MedicationStatement> medStatements = new ArrayList<>();
-    List<CodeableConceptDt> medicationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> medicationCodes = new ArrayList<>();
     if (bundle != null) {
       for (Entry entry : bundle.getEntry()) {
         MedicationStatement medStatement = (MedicationStatement) entry.getResource();
@@ -440,9 +438,9 @@ public class Dstu2ResourcesData {
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "DiagnosticOrder");
     List<DiagnosticOrder> diagnosticOrders = new ArrayList<>();
-    List<CodeableConceptDt> diagnosticOrderCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> diagnosticOrderCodes = new ArrayList<>();
     // Filter DiagnosticOrders based on Encounter Reference
-    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         DiagnosticOrder diagnosticOrder = (DiagnosticOrder) entry.getResource();
         if (!diagnosticOrder.getEncounter().isEmpty()) {
@@ -498,9 +496,9 @@ public class Dstu2ResourcesData {
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "Immunization");
     List<Immunization> immunizations = new ArrayList<>();
-    List<CodeableConceptDt> immunizationCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> immunizationCodes = new ArrayList<>();
     // Filter Immunizations based on Encounter Reference
-    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         if (!immunization.getEncounter().isEmpty()) {
@@ -553,9 +551,9 @@ public class Dstu2ResourcesData {
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "DiagnosticReport");
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
-    List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<CodeableConceptDt>();
+    List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<>();
     // Filter DiagnosticReports based on Encounter Reference
-    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
         if (!diagnosticReport.getEncounter().isEmpty()) {
@@ -605,10 +603,9 @@ public class Dstu2ResourcesData {
   public static List<Observation> filterObservation(
       Bundle bundle, Encounter encounter, Date start, Date end) {
 
-    List<CodeableConceptDt> observationCodes = new ArrayList<CodeableConceptDt>();
     List<Observation> observations = new ArrayList<>();
     // Filter Observations based on Encounter Reference
-    if (!encounter.getId().getValue().isEmpty() && encounter != null) {
+    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         if (!observation.getEncounter().isEmpty()) {

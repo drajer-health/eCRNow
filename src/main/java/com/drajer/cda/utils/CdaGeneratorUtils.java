@@ -500,26 +500,25 @@ public class CdaGeneratorUtils {
 
     return s;
   }
-  
+
   public static String getXmlForQuantityWithUnits(String elName, String value, String units) {
-	  
-	  if(!units.isEmpty())
-	    return CdaGeneratorConstants.START_XMLTAG
-	        + elName
-	        + CdaGeneratorConstants.SPACE
-	        + CdaGeneratorConstants.VALUE_WITH_EQUAL
-	        + CdaGeneratorConstants.DOUBLE_QUOTE
-	        + value
-	        + CdaGeneratorConstants.DOUBLE_QUOTE
-	        + CdaGeneratorConstants.SPACE
-	        + CdaGeneratorConstants.UNIT_WITH_EQUAL
-	        + CdaGeneratorConstants.DOUBLE_QUOTE
-	        + units
-	        + CdaGeneratorConstants.DOUBLE_QUOTE
-	        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-	  else 
-		  return getXmlForQuantity(elName, value);
-	  }
+
+    if (!units.isEmpty())
+      return CdaGeneratorConstants.START_XMLTAG
+          + elName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.VALUE_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + value
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.UNIT_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + units
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    else return getXmlForQuantity(elName, value);
+  }
 
   public static String getXmlForQuantity(String elName, String value) {
     return CdaGeneratorConstants.START_XMLTAG
@@ -1249,7 +1248,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1285,7 +1284,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1474,7 +1473,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1505,7 +1504,7 @@ public class CdaGeneratorUtils {
           + valueSet
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
-          + "sdtc:valueSetVersion="
+          + CdaGeneratorConstants.VALUESET_VERSION
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + valuesetVersion
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1639,14 +1638,14 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
-  
-  public static String getXmlForQuantityWithUnits(
-	      String elName, String value, String units, Boolean valFlag) {
-	    if (valFlag) {
-	      return getXmlForValuePQ(value, units);
-	    }
 
-	    return getXmlForQuantityWithUnits(elName, value, units);
+  public static String getXmlForQuantityWithUnits(
+      String elName, String value, String units, Boolean valFlag) {
+    if (valFlag) {
+      return getXmlForValuePQ(value, units);
+    }
+
+    return getXmlForQuantityWithUnits(elName, value, units);
   }
 
   public static String getXmlForQuantity(

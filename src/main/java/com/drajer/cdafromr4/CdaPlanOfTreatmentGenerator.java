@@ -29,8 +29,7 @@ public class CdaPlanOfTreatmentGenerator {
     List<ServiceRequest> sr = getValidServiceRequests(data);
 
     if (sr != null && !sr.isEmpty()) {
-      logger.info(
-          " Found a total of " + sr.size() + " service request objects to translate to CDA.");
+      logger.info(" Found a total of {} service request objects to translate to CDA.", sr.size());
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -177,7 +176,7 @@ public class CdaPlanOfTreatmentGenerator {
     sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
     if (codeXml.isEmpty()) {
-      List<CodeableConcept> ccs = new ArrayList<CodeableConcept>();
+      List<CodeableConcept> ccs = new ArrayList<>();
       ccs.add(sr.getCode());
       codeXml =
           CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
@@ -222,13 +221,13 @@ public class CdaPlanOfTreatmentGenerator {
 
   public static List<ServiceRequest> getValidServiceRequests(R4FhirData data) {
 
-    List<ServiceRequest> sr = new ArrayList<ServiceRequest>();
+    List<ServiceRequest> sr = new ArrayList<>();
 
     if (data.getServiceRequests() != null && !data.getServiceRequests().isEmpty()) {
 
       logger.info(
-          " Total num of Service Requests available for Patient "
-              + data.getServiceRequests().size());
+          " Total num of Service Requests available for Patient {}",
+          data.getServiceRequests().size());
 
       for (ServiceRequest s : data.getServiceRequests()) {
 

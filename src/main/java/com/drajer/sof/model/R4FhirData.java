@@ -87,7 +87,7 @@ public class R4FhirData extends FhirData {
 
   public Practitioner getPractitionerById(String id) {
 
-    logger.info(" Id for retrieving practitioner = " + id);
+    logger.info(" Id for retrieving practitioner = {}", id);
     for (Practitioner pr : practitionersList) {
 
       if (pr.getId().contains(id)) return pr;
@@ -98,21 +98,21 @@ public class R4FhirData extends FhirData {
 
   public R4FhirData() {
 
-    locationList = new ArrayList<Location>();
-    practitionersList = new ArrayList<Practitioner>();
-    conditions = new ArrayList<Condition>();
-    pregnancyConditions = new ArrayList<Condition>();
-    diagReports = new ArrayList<DiagnosticReport>();
-    labResults = new ArrayList<Observation>();
-    travelObs = new ArrayList<Observation>();
-    pregnancyObs = new ArrayList<Observation>();
-    occupationObs = new ArrayList<Observation>();
-    immunizations = new ArrayList<Immunization>();
-    medications = new ArrayList<MedicationStatement>();
-    medicationRequests = new ArrayList<MedicationRequest>();
-    medicationAdministrations = new ArrayList<MedicationAdministration>();
-    serviceRequests = new ArrayList<ServiceRequest>();
-    medicationList = new ArrayList<Medication>();
+    locationList = new ArrayList<>();
+    practitionersList = new ArrayList<>();
+    conditions = new ArrayList<>();
+    pregnancyConditions = new ArrayList<>();
+    diagReports = new ArrayList<>();
+    labResults = new ArrayList<>();
+    travelObs = new ArrayList<>();
+    pregnancyObs = new ArrayList<>();
+    occupationObs = new ArrayList<>();
+    immunizations = new ArrayList<>();
+    medications = new ArrayList<>();
+    medicationRequests = new ArrayList<>();
+    medicationAdministrations = new ArrayList<>();
+    serviceRequests = new ArrayList<>();
+    medicationList = new ArrayList<>();
   }
 
   public Bundle getData() {

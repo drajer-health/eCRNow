@@ -28,9 +28,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     logger.info("*******************************************************************");
-    logger.info("Security Configuration" + tokenFilterClassName);
+    logger.info("Security Configuration {}", tokenFilterClassName);
     logger.info("*******************************************************************");
-    if (!tokenFilterClassName.isEmpty() && tokenFilterClassName != null) {
+    if (tokenFilterClassName != null && !tokenFilterClassName.isEmpty()) {
       logger.info("Token Filter class Name is not empty");
       Class classInstance = Class.forName(tokenFilterClassName);
       logger.info(classInstance.getDeclaredMethods()[0].getName());

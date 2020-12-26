@@ -20,7 +20,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.mime.content.FileBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +39,6 @@ public class DirectResponseReceiver extends RRReceiver {
 
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
-      // PatientExecutionState state = null;
-
-      // state = ApplicationUtils.getDetailStatus(details);
-
       readMail(details);
     }
 
@@ -54,20 +49,14 @@ public class DirectResponseReceiver extends RRReceiver {
 
     try {
 
-      String mId = null;
-
-      /*Properties prop = new Properties();
-      String path = "./application.properties";
-      FileInputStream file = new FileInputStream(path);
-      prop.load(file);
-      file.close();*/
+      String mId;
 
       // Properties for Javamail
       Properties props = new Properties();
       Session session = Session.getInstance(props, null);
 
       Store store = session.getStore(IMAP);
-      int port = 993; // Integer.parseInt(prop.getProperty("port"));
+      int port = 993;
       logger.info("Connecting to IMAP Inbox");
       store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
 
@@ -87,6 +76,7 @@ public class DirectResponseReceiver extends RRReceiver {
           Header h = (Header) headers.nextElement();
           if (h.getName().contains("Message-ID")) {
             mId = h.getValue();
+            logger.info("Message-ID: {}", mId);
           }
         }
 
@@ -98,24 +88,19 @@ public class DirectResponseReceiver extends RRReceiver {
           for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = multipart.getBodyPart(i);
 
-            if (bodyPart.getFileName() != null) {
+            if (bodyPart.getFileName() != null
+                && (bodyPart.getFileName().contains(".xml")
+                    || bodyPart.getFileName().contains(".XML"))) {
+              String filename = UUID.randomUUID() + ".xml";
+              logger.info("Found XML Attachment");
 
-              if ((bodyPart.getFileName().contains(".xml")
-                  || bodyPart.getFileName().contains(".XML"))) {
-                String filename = UUID.randomUUID() + ".xml";
-                logger.info("Found XML Attachment");
-
-                try (InputStream stream = bodyPart.getInputStream()) {
-                  byte[] targetArray = IOUtils.toByteArray(stream);
-                  FileUtils.writeByteArrayToFile(new File(filename), targetArray);
-                }
-                File file1 = new File(filename);
-                FileBody fileBody = new FileBody(file1);
-
-                logger.info(
-                    " Need to determine what to do with the response received from :  {}",
-                    senderAddress);
+              try (InputStream stream = bodyPart.getInputStream()) {
+                byte[] targetArray = IOUtils.toByteArray(stream);
+                FileUtils.writeByteArrayToFile(new File(filename), targetArray);
               }
+              logger.info(
+                  " Need to determine what to do with the response received from :  {}",
+                  senderAddress);
             }
           }
         }
@@ -135,7 +120,6 @@ public class DirectResponseReceiver extends RRReceiver {
     Session session = Session.getInstance(props, null);
 
     Store store = session.getStore(IMAP);
-    int port = 993; // Integer.parseInt(prop.getProperty("port"));
     store.connect(host, username, password);
 
     Folder inbox = store.getFolder(INBOX);

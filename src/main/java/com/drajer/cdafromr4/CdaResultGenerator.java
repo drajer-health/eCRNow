@@ -313,9 +313,6 @@ public class CdaResultGenerator {
             CdaFhirUtilities.getXmlForType(
                 obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
-        //	lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(),
-        // CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
-
         Set<String> matchedCodes = mtc.getMatchedCodes();
 
         if (matchedCodes != null && !matchedCodes.isEmpty()) {

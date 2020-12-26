@@ -197,8 +197,6 @@ public class LoadingQueryR4Bundle {
       logger.info("Immunization Codes Size=====> {}", r4FhirData.getR4ImmunizationCodes().size());
       logger.info(
           "DiagnosticReport Codes Size=====> {}", r4FhirData.getR4DiagnosticReportCodes().size());
-      // logger.info("DiagnosticOrders Codes
-      // Size=====> {}", dstu2FhirData.getDiagnosticOrderCodes().size());
     }
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

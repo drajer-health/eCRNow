@@ -110,7 +110,6 @@ public class ValidateEicrAction extends AbstractAction {
         ValidateEicrStatus validate = new ValidateEicrStatus();
         validate.setActionId(getActionId());
         validate.seteICRId(id.toString());
-        // validate.setEicrValidated(validationResult);
         validate.setEicrValidated(true);
         validate.setJobStatus(JobStatus.COMPLETED);
         validate.setValidationTime(new Date());

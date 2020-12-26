@@ -34,13 +34,13 @@ public class TokenFilter extends OncePerRequestFilter {
           WebApplicationContextUtils.getWebApplicationContext(servletContext);
       clientDetailsService = webApplicationContext.getBean(ClientDetailsService.class);
     }
-    logger.info("Received Authorization Header========>" + request.getHeader("Authorization"));
+    logger.info("Received Authorization Header========> {}", request.getHeader("Authorization"));
 
     // Read the Request body from the Request
     String requestBody =
         request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
     requestBody = requestBody.replace("\n", "").replace("\r", "");
-    logger.info("RequestBody===========>" + requestBody);
+    logger.info("RequestBody===========> {}", requestBody);
 
     // Get the Client Details using fhirServerURL received in request body
     JSONObject requestBodyObj = new JSONObject(requestBody);
