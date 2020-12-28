@@ -53,7 +53,7 @@ public class RRReceiverController {
       @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
       @OptionalParam(name = "fhirServerURL") String fhirServerURL,
       @OptionalParam(name = "patientId") String patientId,
-      @OptionalParam(name = "encounter") String encounterId,
+      @OptionalParam(name = "encounterId") String encounterId,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
