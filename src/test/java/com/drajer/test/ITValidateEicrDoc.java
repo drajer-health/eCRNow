@@ -109,8 +109,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/medicationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/planOfTreatmentSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
 
@@ -147,7 +149,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.add("X-Request-ID", testCaseId);
 
-    HttpEntity<String> entity = new HttpEntity<String>(systemLaunchInputData, headers);
+    HttpEntity<String> entity = new HttpEntity<>(systemLaunchInputData, headers);
     logger.info("Invoking systemLaunch...");
     logger.info("Payload: \n" + systemLaunchInputData);
     ResponseEntity<String> response =
@@ -188,7 +190,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     } catch (Exception e) {
 
-      fail(e.getMessage() + "Exception occured retreving launchdetail and status");
+      fail(e.getMessage() + "Exception occurred retrieving launchdetail and status");
     }
   }
 
