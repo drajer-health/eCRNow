@@ -118,7 +118,7 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void loadingQueryServiceTest(){
+  public void loadingQueryServiceTest() {
     R4FhirData r4FhirData = null;
     try {
       r4FhirData =
