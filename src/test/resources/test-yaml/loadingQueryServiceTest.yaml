@@ -71,7 +71,7 @@ testCase:
       ServiceRequest:
       - params:
           patient: "12742571"
-        responseFilePath: "R4/ServiceRequest/ServiceRequest.json"
+        responseFilePath: "R4/ServiceRequest/ServiceRequestWithoutLOINC.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

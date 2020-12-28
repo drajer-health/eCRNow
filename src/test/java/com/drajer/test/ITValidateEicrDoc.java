@@ -102,8 +102,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/medicationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/planOfTreatmentSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
 
@@ -131,6 +133,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Test
   public void testEicrDocument() throws Exception {
+
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
