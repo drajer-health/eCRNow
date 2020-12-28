@@ -2,7 +2,9 @@
 Fully automated tests have been created to provide comprehensive testing coverage to eCRNow application. 
 
 # 2. Test Design and Architecture # 
-The tests in eCR Now can be broadly divided into two categories- Unit Tests and Integration Tests.  Unit tests utilize Surefire and Integration Tests utilize Failsafe maven plugin for reporting purpose. Jacoco provides test coverage information for both unit tests and integration tests.
+The tests in eCR Now can be broadly divided into two categories- Unit Tests and Integration Tests. Unit tests utilize 
+Surefire and Integration Tests utilize Failsafe maven plugin for reporting purpose. Jacoco provides test coverage 
+information for both unit tests and integration tests.
 
 Details on these plugins can be found below : 
 
@@ -14,7 +16,11 @@ Details on these plugins can be found below :
 
 ### 2.1 Integration Tests
 
-The Integration tests are created as SpringBootTest using the Spring Boot Module . In memory H2 db is used to persist and fetch data for and during test runs. The tests are parameterized and thus multiple test cases can be run using the same test class. These test cases have been defined in Test(name).yaml file. For external FHIR http calls, WireMock framework is used to mock http responses. The input and expected data and the expected responses for wiremock are defined in this yaml through filepaths. Any new tests can utilize this setup and add additional test cases as per requirement. 
+The Integration tests are created as SpringBootTest using the Spring Boot Module . In memory H2 db is used to persist 
+and fetch data for and during test runs. The tests are parameterized and thus multiple test cases can be run using the 
+same test class. These test cases have been defined in test/resources/test-yaml directory. For external FHIR http calls,
+WireMock framework is used to mock http responses. FHIR call mocking is configured in yaml file. Any new tests can 
+utilize this setup and add additional test cases as per requirements. 
 
 For more information on wiremock framework please refer to below links:
 * [ WireMock](http://wiremock.org/docs/)
@@ -22,58 +28,156 @@ For more information on wiremock framework please refer to below links:
 
 ### 2.2 Unit Tests
 
-Unit test Description to be added here...
+Junit4 tests using Mockito, Powermockito or Wiremock of mocking.
 
+# 3. Understanding Integration Tests 
+Integration Tests are used to test single or multiple modules within the eCRNOW app. All IT test name starts with 
+IT**.Java and are present in the src/test/java/com/drajer/test/util directory.Test yaml file provides input data to the 
+IT tests. Most of the IT tests are written in a way that adding or modifying test scenarios will require changes only 
+to the respective test yaml files.
 
-
-# 3. Steps to create new Test Case
-Steps to create new tests for Unit and Integration Tests are summarized as below:
-
-### 3.1 Steps to create Integration Test
-New test cases can be added to existing tests easily by adding entry into specific yaml files.
-For example for System Launch Tests we have TestSystemLaunch.yaml
-The yaml file contains list of all test cases. Each testcase contains the data required to run and validate the test.
-##### Testcase section in yaml consists of following section:
-##### 1. fileData: 
-Consists of all the file paths that are required to set up and launch test as well as for validation. The data is saved as key value pair for the file name and filepath. It also contains the names of all the sections of the EICR xml that needs to be validated a spart of this test case. THe key to be used for this is "ValidationSections" and should not be changed.
-```FileData example:```
+### 3.1 How to read Test Yaml file
+Test Yaml file mainly consist of 4 sections:
+#### 3.1.1 testData
+This section allows to configure the prerequisite data required for the test, this may vary from test to test. For 
+example ClientDetail and SystemLaunchPayload is a prerequisite for most of the tests and can be configured in this 
+section as below. These section contains tha data as Key/Value pair and retrieved based on the Key in test class. For new
+tests you can define your own Key name for existing test use the same Key values across all tests.
 ```
-    ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
-    SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest3.json"
-    ValidationSections: "ENCOUNTERS|VISITS"
-```      
-##### 2. resourceMappingData: 
-Consists of all the mappings for FHIR resources that are to be stubbed using the wiremock utility. Later, these resources would be called through the application when test is invoked. The data is saved as key value pair where key is the resource name and value is a list of mappings. This list in turn consists of a param and the response json file path. Param has value as resource id if the the FHIR call is to happen through path param. If the call happens through query param, then the param has a map of all query params and values as map. 
-```Path param example:```
-```
-Patient:
-      - params: "12742536"
-        responseFilePath: "R4/Patient/Patient_12742536.json"
-```
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+``` 
 
-```Query param example:```
+#### 3.1.2 resourceMapping
+This section allows configuring FHIR resources calls for mocking. Under resourceMappingData add resource details for 
+mocking. In the below example, Patient resource is configured with pathParam "12742571" and returned the response 
+specified under responseFilePath.
 ```
-Observation:
+    resourceMappingData:
+      Patient:
+      - params: "12742571"
+        responseFilePath: "R4/Patient/Patient_12742571.json"
+```
+In the below example, Observation resource is configured with two query parameters "patient" and "code" with their 
+respective value and return the response configured under responseFilePath.
+```
+    resourceMappingData:
+      Observation:
       - params:
-          patient: "12742536"
-          category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationBundle_4.json"
+          patient: "12742571"
+          code: "http%3A//snomed.info/sct%7C34831000175105"
+        responseFilePath: "R4/Observation/ObsTravel_SCT_34831000175105.json"
 ```
 
-##### 3. otherMappingData
-This section consists of other mappings which are not resources but are required for stubbing.
-```otherMappingData example:```
+In the below example, Observation resource is configured with two different query parameter values.
+```
+    resourceMappingData:
+      Observation:
+      - params:
+          patient: "12742571"
+          code: "http%3A//snomed.info/sct%7C34831000175105"
+        responseFilePath: "R4/Observation/ObsTravel_SCT_34831000175105.json"
+      - params:
+          patient: "12742571"
+          code: "http%3A//snomed.info/sct%7C224362002"
+        responseFilePath: "R4/Observation/ObsOccupation_SCT_224362002.json"
+```
+
+#### 3.1.3 OtherMapping
+This section is mainly used to configure Authorization and MetaData FHIR calls and default response for the FHIR 
+resources that are not configured under resourceMappingData section.
 ```
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json" 
-```     
-### 3.2 Steps to create Unit Test
-Add steps here...
+```  
 
+#### 3.1.4 validate
+This section is optional for some testsCases, it varies from tests to test based on what needs to be validated.
+Example of this section is provided in IT tests explained below.
 
+### 3.2 IT Test Classes
+Below listed are some IT test with their objective and usage.
 
+#### 3.2.1 ITValidateEicrDoc.java
+Objective of this test class is to validate the EICR XML document generated by eICRNOW app. This test uses 
+src/test/resources/AppData/ersd_withonlycreateeicraction.json file, which is modified to have only create-ecir action.
+This class uses below yaml files for test data and follows the same structure as described in section-3.1.
 
+* headerSection.yaml
+* problemSection.yaml
+* encounterSection.yaml
+* resultSection.yaml
+* immunizationSection.yaml
+* socialHistorySection.yaml
+* historyOfPresentIllnessSection.yaml
+* reasonForVisitSection.yaml
 
+This test validates each element in the XML document based on the xPath which needs to be configured in validate section
+of yaml file as below. 
+In example below for SocialHistory section, first set the BaseXPath of the section in testData.
+``` 
+testData:
+ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+BaseXPath: "/ClinicalDocument/component/structuredBody/component[6]/section/"
+``` 
+Then, in the validate section, for each element to be validated configure xPath of the element and it's respective 
+values as below.
 
+To validate the count of an element, configure as shown for templateId below. This will evaluate the xPath as
+/ClinicalDocument/component/structuredBody/component[6]/section/templateId, and will assert if the tempalteIs has two 
+items.
+To validate the value of an element, configure as show for other fields.
+```
+    validate:
+    - xPath: "templateId"
+      count: 2
+    - xPath: ""
+      'templateId[1]/@root': "2.16.840.1.113883.10.20.22.2.17"
+      'templateId[2]/@root': "2.16.840.1.113883.10.20.22.2.17"
+      'templateId[2]/@extension': "2015-08-01"
+      'code/@code': "29762-2"
+      'code/@codeSystem': "2.16.840.1.113883.6.1"
+      'code/@codeSystemName': "LOINC"
+      'code/@displayName': "Social History"
+    - xPath: "text/table/"
+      'thead/tr/th[1]': "Social History Observation"
+      'thead/tr/th[2]': "Social History Observation Result"
+```
+#### 3.2.2 ITLoadingQueryServiceTest.java and ITSystemLaunchAllActions.java
+Objective of this test is to validate that the FHIR resources are fetched and filtered based on the encounterID or 
+DateTime. This test uses src/test/resources/AppData/ersd_withonlycreateeicraction.json file, which is modified to have 
+only create-ecir action. This class uses below yaml files for test data and follows the same structure as described in 
+section-3.1.
+
+* loadingQueryServiceTest.yaml
+* triggerQueryServiceTest.yaml
+
+To validate the number of resources filtered configure the validate section as below.
+````
+    validate:
+    - Observation: 26
+      TravelObservation: 2
+      OccupationObservation: 3
+      Organization: 1
+      Condition: 2
+      PregnancyCondition: 1
+      Practitioner: 5
+      Immunization: 3
+      ServiceRequest: 2
+````
+Resource names should match below list.
+* Encounter
+* Practitioner
+* Organization
+* Condition
+* PregnancyCondition
+* PregnancyObservation
+* Observation
+* TravelObservation
+* OccupationObservation
+* Immunization
+* ServiceRequest
