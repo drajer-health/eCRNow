@@ -46,9 +46,6 @@ public class CdaReasonForVisitGenerator {
 
     // Add Narrative Text
     // Need to Discuss with vendors on how to best get this information.
-    // sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.TEXT_EL_NAME,
-    //     "Reason Not Known"));
-
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
     // Create Table Header.

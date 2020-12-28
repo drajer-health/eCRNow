@@ -16,14 +16,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
   private final Logger logger = LoggerFactory.getLogger(AuthorizationServiceImpl.class);
 
   public String getAuthorizationHeader(LaunchDetails launchDetails) {
-    String access_token = "";
+    String accessToken = "";
     RestTemplate restTemplate = new RestTemplate();
     JSONObject requestBody = new JSONObject();
     requestBody.put("client_id", launchDetails.getClientId());
     requestBody.put("client_secret", launchDetails.getClientSecret());
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-    HttpEntity<String> request = new HttpEntity<String>(requestBody.toString(), headers);
+    HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
 
     logger.info("Sending Authorization request to Endpoint::::: {}", launchDetails.getRestAPIURL());
     ResponseEntity<String> response =
@@ -31,8 +31,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             launchDetails.getRestAPIURL(), HttpMethod.POST, request, String.class);
 
     JSONObject responseObj = new JSONObject(response.getBody());
-    access_token = responseObj.getString("access_token");
-    logger.info("received Access_token====> {}", access_token);
-    return access_token;
+    accessToken = responseObj.getString("access_token");
+    logger.info("received Access_token====> {}", accessToken);
+    return accessToken;
   }
 }

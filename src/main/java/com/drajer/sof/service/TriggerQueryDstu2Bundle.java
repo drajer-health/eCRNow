@@ -46,7 +46,7 @@ public class TriggerQueryDstu2Bundle {
       LaunchDetails launchDetails, Dstu2FhirData dstu2FhirData, Date start, Date end) {
     Bundle bundle = new Bundle();
 
-    logger.info("Initializing FHIR Context for Version::::" + launchDetails.getFhirVersion());
+    logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
     IGenericClient client =
@@ -64,7 +64,7 @@ public class TriggerQueryDstu2Bundle {
       patientEntry.setResource(patient);
       bundle.addEntry(patientEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Patient Data");
+      logger.error("Error in getting Patient Data", e);
     }
     // Step 1: Get Encounters for Patient based on encId. (Create a method to get
     // encounters)
@@ -131,7 +131,7 @@ public class TriggerQueryDstu2Bundle {
       Entry encounterEntry = new Entry().setResource(encounter);
       bundle.addEntry(encounterEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Encounter Data");
+      logger.error("Error in getting Encounter Data", e);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)
@@ -147,14 +147,14 @@ public class TriggerQueryDstu2Bundle {
       List<Condition> conditionsList =
           dstu2ResourcesData.getConditionData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered ConditionsList---->" + conditionsList.size());
+      logger.info("Filtered ConditionsList----> {}", conditionsList.size());
       dstu2FhirData.setConditions(conditionsList);
       for (Condition condition : conditionsList) {
         Entry conditionsEntry = new Entry().setResource(condition);
         bundle.addEntry(conditionsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Condition Data");
+      logger.error("Error in getting Condition Data", e);
     }
 
     // Get Observations for Patients and laboratory category (Write a method).
@@ -169,14 +169,14 @@ public class TriggerQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations---->" + observationList.size());
+      logger.info("Filtered Observations----> {}", observationList.size());
       dstu2FhirData.setLabResults(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Observation Data");
+      logger.error("Error in getting Observation Data", e);
     }
 
     // Get MedicationAdministration for Patients and laboratory category (Write a
@@ -194,7 +194,8 @@ public class TriggerQueryDstu2Bundle {
       List<MedicationAdministration> medAdministrationsList =
           dstu2ResourcesData.getMedicationAdministrationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered MedicationAdministration----------->" + medAdministrationsList.size());
+      logger.info(
+          "Filtered MedicationAdministration-----------> {}", medAdministrationsList.size());
       dstu2FhirData.setMedicationAdministrations(medAdministrationsList);
       for (MedicationAdministration medAdministration : medAdministrationsList) {
         if (!medAdministration.getMedication().isEmpty()
@@ -221,7 +222,7 @@ public class TriggerQueryDstu2Bundle {
               Entry medicationEntry = new Entry().setResource(medication);
               bundle.addEntry(medicationEntry);
               if (medication != null) {
-                List<Medication> medicationList = new ArrayList<Medication>();
+                List<Medication> medicationList = new ArrayList<>();
                 medicationList.add(medication);
                 dstu2FhirData.setMedicationList(medicationList);
               }
@@ -232,7 +233,7 @@ public class TriggerQueryDstu2Bundle {
         bundle.addEntry(medAdministrationEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the MedicationAdministration Data");
+      logger.error("Error in getting the MedicationAdministration Data", e);
     }
 
     // Get DiagnosticOrders for Patients (Write a method).
@@ -249,41 +250,41 @@ public class TriggerQueryDstu2Bundle {
       List<DiagnosticOrder> diagnosticOrdersList =
           dstu2ResourcesData.getDiagnosticOrderData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered DiagnosticOrders----------->" + diagnosticOrdersList.size());
+      logger.info("Filtered DiagnosticOrders-----------> {}", diagnosticOrdersList.size());
       dstu2FhirData.setDiagOrders(diagnosticOrdersList);
       for (DiagnosticOrder diagnosticOrder : diagnosticOrdersList) {
         Entry diagnosticOrderEntry = new Entry().setResource(diagnosticOrder);
         bundle.addEntry(diagnosticOrderEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the DiagnosticOrder Data");
+      logger.error("Error in getting the DiagnosticOrder Data", e);
     }
 
     try {
       List<DiagnosticReport> diagnosticReportList =
           dstu2ResourcesData.getDiagnosticReportData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered DiagnosticReports----------->" + diagnosticReportList.size());
+      logger.info("Filtered DiagnosticReports-----------> {}", diagnosticReportList.size());
       dstu2FhirData.setDiagReports(diagnosticReportList);
       for (DiagnosticReport diagnosticReport : diagnosticReportList) {
         Entry diagnosticReportEntry = new Entry().setResource(diagnosticReport);
         bundle.addEntry(diagnosticReportEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the DiagnosticReport Data");
+      logger.error("Error in getting the DiagnosticReport Data", e);
     }
 
     // Setting bundle to FHIR Data
     logger.info(
         "------------------------------CodeableConcept Codes------------------------------");
-    logger.info("Encounter Codes Size=====>" + dstu2FhirData.getEncounterCodes().size());
-    logger.info("Conditions Codes Size=====>" + dstu2FhirData.getConditionCodes().size());
-    logger.info("Observation Codes Size=====>" + dstu2FhirData.getLabResultCodes().size());
-    logger.info("Medication Codes Size=====>" + dstu2FhirData.getMedicationCodes().size());
+    logger.info("Encounter Codes Size=====> {}", dstu2FhirData.getEncounterCodes().size());
+    logger.info("Conditions Codes Size=====> {}", dstu2FhirData.getConditionCodes().size());
+    logger.info("Observation Codes Size=====> {}", dstu2FhirData.getLabResultCodes().size());
+    logger.info("Medication Codes Size=====> {}", dstu2FhirData.getMedicationCodes().size());
     logger.info(
-        "DiagnosticReport Codes Size=====>" + dstu2FhirData.getDiagnosticReportCodes().size());
+        "DiagnosticReport Codes Size=====> {}", dstu2FhirData.getDiagnosticReportCodes().size());
     logger.info(
-        "DiagnosticOrders Codes Size=====>" + dstu2FhirData.getDiagnosticOrderCodes().size());
+        "DiagnosticOrders Codes Size=====> {}", dstu2FhirData.getDiagnosticOrderCodes().size());
 
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

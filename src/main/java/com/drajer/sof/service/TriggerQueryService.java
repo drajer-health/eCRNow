@@ -33,7 +33,7 @@ public class TriggerQueryService implements AbstractQueryService {
       try {
         bundle = generateDstu2Bundles.createDSTU2Bundle(launchDetails, dstu2FhirData, start, end);
       } catch (Exception e) {
-        logger.error("Error in Generating the DSTU2 Bundle");
+        logger.error("Error in Generating the DSTU2 Bundle", e);
       }
       dstu2FhirData.setData(bundle);
       if (logger.isInfoEnabled()) {
@@ -47,7 +47,7 @@ public class TriggerQueryService implements AbstractQueryService {
       try {
         bundle = generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
       } catch (Exception e) {
-        logger.error("Error in Generating the R4 Bundle");
+        logger.error("Error in Generating the R4 Bundle", e);
       }
       r4FhirData.setData(bundle);
       return r4FhirData;

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.5.RELEASE</version>
+		<version>2.3.7.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
@@ -52,7 +52,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -118,26 +118,26 @@
 		<dependency>
    			<groupId>com.fasterxml.jackson.core</groupId>
    			<artifactId>jackson-databind</artifactId>
-   			<version>2.10.3</version>
+   			<version>2.11.3</version>
 		</dependency>
 
 		<dependency>
-    		<groupId>org.javatuples</groupId>
-    		<artifactId>javatuples</artifactId>
-    		<version>1.2</version>
+			<groupId>org.javatuples</groupId>
+			<artifactId>javatuples</artifactId>
+			<version>1.2</version>
 		</dependency>
 
 		<dependency>
-  			<groupId>org.apache.commons</groupId>
-  			<artifactId>commons-collections4</artifactId>
-  			<version>4.4</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.4</version>
 		</dependency>
 
 		<!--  Schematron Validator -->
 		<dependency>
-  			<groupId>com.helger</groupId>
-  			<artifactId>ph-schematron-validator</artifactId>
-  			<version>5.6.0</version>
+			<groupId>com.helger</groupId>
+			<artifactId>ph-schematron-validator</artifactId>
+			<version>5.6.0</version>
 		</dependency>
 
 		<!--  Direct Dependencies -->
@@ -152,21 +152,21 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.2</version>
 		</dependency>
-	<!--  <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency> -->
+		<!--  <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.21</version>
+            </dependency> -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>dsn</artifactId>
 			<version>1.4.7</version>
 		</dependency>
-	<!--  <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.21</version>
-		</dependency> -->
+		<!--  <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+                <version>1.7.21</version>
+            </dependency> -->
 
 
 		<dependency>
@@ -178,7 +178,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
+			<version>4.5.13</version>
 		</dependency>
 
 		<dependency>
@@ -200,18 +200,18 @@
 		</dependency>
 
 		<dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito2</artifactId>
-                <version>2.0.7</version>
-                <scope>test</scope>
-        </dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito2</artifactId>
+			<version>2.0.7</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>2.0.7</version>
-                <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>2.0.7</version>
+			<scope>test</scope>
+		</dependency>
 
 
 
@@ -242,8 +242,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
-		    <artifactId>jackson-dataformat-yaml</artifactId>
- 		   <version>2.11.1</version>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>2.11.1</version>
 		</dependency>
 		<!-- Dependency for formatting logs in json format -->
 		<dependency>
@@ -256,7 +256,7 @@
 			<artifactId>logback-jackson</artifactId>
 			<version>${logback-contrib.version}</version>
 		</dependency>
-</dependencies>
+	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -266,18 +266,18 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -295,6 +295,8 @@
 							<executable>npm</executable>
 							<arguments>
 								<argument>install</argument>
+								<argument>--production</argument>
+								<argument>--no-optional</argument>
 							</arguments>
 						</configuration>
 						<goals>
@@ -397,203 +399,203 @@
 						</configuration>
 					</execution>
 					<!-- For Integration Test Coverage - jacoco-it.exec -->
-                    <execution>
-                        <id>pre-integration-test</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/jacoco-it.exec</destFile>
-                            <propertyName>failsafeArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                     <execution>
-                        <id>post-integration-test</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <!--  Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
-			        <execution>
-			            <id>jacoco-merge-report-verify</id>
-			            <phase>verify</phase>
-			            <goals>
-			              <goal>merge</goal>
-			              <goal>report</goal>
-						</goals>
-			            <configuration>
-			             <fileSets>
-			                <fileSet>
-			                  <directory>${project.build.directory}</directory>
-			                  <includes>
-			                    <include>*.exec</include>
-			                  </includes>
-			                </fileSet>
-			              </fileSets>
-			              <destFile>${project.build.directory}/jacoco.exec</destFile>
-			             <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-			              <outputDirectory>${project.reporting.outputDirectory}/report</outputDirectory>
-			              <skip>${skip-jacoco-check}</skip>
-			              </configuration>
-			          </execution>
-			</executions>
-			</plugin>
-            <!-- Used for unit tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.21.0</version>
-				<executions>
 					<execution>
-					<id>default-test</id>
-					<goals>
-						<goal>test</goal>
-					</goals>
-					<configuration>
-	                    <argLine>${surefireArgLine}</argLine>
- 	                    <skipTests>${skip.unit.tests}</skipTests>
-	                    <excludes>
-	                        <exclude>**/IT*.java</exclude>
-	                    </excludes>
-	                </configuration>
+						<id>pre-integration-test</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+						</configuration>
+					</execution>
+					<!--  Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
+					<execution>
+						<id>jacoco-merge-report-verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>merge</goal>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>*.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+							<destFile>${project.build.directory}/jacoco.exec</destFile>
+							<dataFile>${project.build.directory}/jacoco.exec</dataFile>
+							<outputDirectory>${project.reporting.outputDirectory}/report</outputDirectory>
+							<skip>${skip-jacoco-check}</skip>
+						</configuration>
 					</execution>
 				</executions>
-            </plugin>
-            <!-- Used for integration tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.21.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-				            <includes>
-				              <include>**/IT*.java</include>
-				            </includes>
-                            <argLine>${failsafeArgLine}</argLine>
-                            <skipTests>${skip.integration.tests}</skipTests>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			</plugin>
+			<!-- Used for unit tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.21.0</version>
+				<executions>
+					<execution>
+						<id>default-test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<argLine>${surefireArgLine}</argLine>
+							<skipTests>${skip.unit.tests}</skipTests>
+							<excludes>
+								<exclude>**/IT*.java</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Used for integration tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.21.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/IT*.java</include>
+							</includes>
+							<argLine>${failsafeArgLine}</argLine>
+							<skipTests>${skip.integration.tests}</skipTests>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
-                <groupId>com.coveo</groupId>
-                <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <id>fmt-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>validate</phase>
-                    </execution>
-                </executions>
+				<groupId>com.coveo</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>fmt-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>validate</phase>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>
 	</build>
 
 	<reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-          <reportsDirectories>
-            <reportsDirectory>${basedir}/target/failsafe-reports</reportsDirectory>
-          </reportsDirectories>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>index</report>
-              <report>summary</report>
-              <report>dependencies</report>
-              <report>plugin-management</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+					<reportsDirectories>
+						<reportsDirectory>${basedir}/target/failsafe-reports</reportsDirectory>
+					</reportsDirectories>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<report>summary</report>
+							<report>dependencies</report>
+							<report>plugin-management</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
-        <reportSets>
-          <reportSet>
-            <id>aggregate</id>
-            <inherited>false</inherited>
-            <reports>
-              <report>aggregate</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+				<reportSets>
+					<reportSet>
+						<id>aggregate</id>
+						<inherited>false</inherited>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
 
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
 
-  <profiles>
-    <profile>
-      <id>eCRNow</id>
-      <activation>
-        <file>
-          <exists>${basedir}</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-site-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-descriptor</id>
-                <goals>
-                  <goal>stage</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-    	<id>kubernetes-dependency</id>
-    	 <dependencies>
-    	     <dependency>
-      			<groupId>org.springframework.cloud</groupId>
-      			<artifactId>spring-cloud-starter-kubernetes-config</artifactId>
- 			    <version>1.0.0.RELEASE</version>
-      			<scope>runtime</scope>
-    		</dependency>
-    		<dependency>
-      			<groupId>io.fabric8</groupId>
-      			<artifactId>kubernetes-client</artifactId>
-      			<version>4.0.4</version>
-      			<scope>runtime</scope>
-    		</dependency>
-        </dependencies>
-    </profile>	
-  </profiles>
+	<profiles>
+		<profile>
+			<id>eCRNow</id>
+			<activation>
+				<file>
+					<exists>${basedir}</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-site-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-descriptor</id>
+								<goals>
+									<goal>stage</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>kubernetes-dependency</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+					<version>1.0.0.RELEASE</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>io.fabric8</groupId>
+					<artifactId>kubernetes-client</artifactId>
+					<version>4.0.4</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 </project>

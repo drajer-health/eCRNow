@@ -25,12 +25,10 @@ public class HibernateConfiguration {
     LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
     sessionFactory.setDataSource(dataSource());
     sessionFactory.setPackagesToScan(
-        new String[] {
-          "com.drajer.ersd.model",
-          "com.drajer.sof.model",
-          "com.drajer.eca.model",
-          "com.drajer.ecrapp.model"
-        });
+        "com.drajer.ersd.model",
+        "com.drajer.sof.model",
+        "com.drajer.eca.model",
+        "com.drajer.ecrapp.model");
     sessionFactory.setHibernateProperties(hibernateProperties());
     return sessionFactory;
   }

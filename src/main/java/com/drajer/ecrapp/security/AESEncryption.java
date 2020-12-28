@@ -28,6 +28,7 @@ public class AESEncryption {
 
   public static String encrypt(String value) {
     try {
+
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
       cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
@@ -35,13 +36,15 @@ public class AESEncryption {
 
       return Base64.encodeBase64String(encrypted);
     } catch (Exception ex) {
-      logger.error("Error while encrypting: {}", ex.toString(), ex);
+      logger.error("Error while encrypting:", ex);
     }
+
     return null;
   }
 
   public static String decrypt(String encrypted) {
     try {
+
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
       cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
@@ -49,8 +52,9 @@ public class AESEncryption {
 
       return new String(original);
     } catch (Exception ex) {
-      logger.error("Error while decrypting: {}", ex.toString(), ex);
+      logger.error("Error while decrypting:", ex);
     }
+
     return null;
   }
 
@@ -62,7 +66,7 @@ public class AESEncryption {
       iv = new IvParameterSpec(Arrays.copyOf(keyBytes, 16));
       skeySpec = new SecretKeySpec(Arrays.copyOf(keyBytes, 16), "AES");
     } catch (UnsupportedEncodingException e) {
-      logger.error("Error while converting String to Bytes: {}", e.toString(), e);
+      logger.error("Error while converting String to Bytes:", e);
     }
   }
 }

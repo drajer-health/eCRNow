@@ -214,8 +214,6 @@ public class PlanDefinitionProcessor {
 
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
-        // logger.info(" Process Bundle Entries for Creating Actions if found  ");
-
         if (Optional.ofNullable(bundleEntry).isPresent()) {
 
           if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {

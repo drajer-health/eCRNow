@@ -39,16 +39,16 @@ public class Dstu2FhirData extends FhirData {
 
   public Dstu2FhirData() {
 
-    conditions = new ArrayList<Condition>();
-    diagReports = new ArrayList<DiagnosticReport>();
-    diagOrders = new ArrayList<DiagnosticOrder>();
-    labResults = new ArrayList<Observation>();
-    travelObs = new ArrayList<Observation>();
-    pregnancyObs = new ArrayList<Observation>();
-    immunizations = new ArrayList<Immunization>();
-    medications = new ArrayList<MedicationStatement>();
-    medicationAdministrations = new ArrayList<MedicationAdministration>();
-    medicationList = new ArrayList<Medication>();
+    conditions = new ArrayList<>();
+    diagReports = new ArrayList<>();
+    diagOrders = new ArrayList<>();
+    labResults = new ArrayList<>();
+    travelObs = new ArrayList<>();
+    pregnancyObs = new ArrayList<>();
+    immunizations = new ArrayList<>();
+    medications = new ArrayList<>();
+    medicationAdministrations = new ArrayList<>();
+    medicationList = new ArrayList<>();
   }
 
   public List<Condition> getConditions() {

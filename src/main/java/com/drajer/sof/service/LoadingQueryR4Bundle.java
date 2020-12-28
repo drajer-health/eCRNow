@@ -63,7 +63,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Pregnancy Observation Data - {}, ", e, e);
+      logger.error("Error in getting Pregnancy Observation Data", e);
     }
 
     // Get Travel Observations
@@ -82,7 +82,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Travel Observation Data - {}, ", e, e);
+      logger.error("Error in getting Travel Observation Data", e);
     }
 
     // Get Social History Observations (Occupation)
@@ -101,7 +101,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(observationsEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Social History Observation(Occupation) Data");
+      logger.error("Error in getting Social History Observation(Occupation) Data", e);
     }
 
     // Get Pregnancy Conditions
@@ -119,7 +119,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(conditionEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Pregnancy Conditions");
+      logger.error("Error in getting Pregnancy Conditions", e);
     }
 
     try {
@@ -137,7 +137,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(medStatementEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the MedicationStatement Data - {}, ", e, e);
+      logger.error("Error in getting the MedicationStatement Data", e);
     }
 
     // Get Immunizations for Patients and laboratory category (Write a method).
@@ -160,7 +160,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(immunizationEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the Immunization Data - {}, ", e, e);
+      logger.error("Error in getting the Immunization Data", e);
     }
 
     // Get Diagnostic Reports for Patients (Write a method).
@@ -183,7 +183,7 @@ public class LoadingQueryR4Bundle {
         bundle.addEntry(diagnosticReportEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting the DiagnosticReport Data - {}, ", e, e);
+      logger.error("Error in getting the DiagnosticReport Data", e);
     }
 
     // Setting bundle to FHIR Data
@@ -197,8 +197,6 @@ public class LoadingQueryR4Bundle {
       logger.info("Immunization Codes Size=====> {}", r4FhirData.getR4ImmunizationCodes().size());
       logger.info(
           "DiagnosticReport Codes Size=====> {}", r4FhirData.getR4DiagnosticReportCodes().size());
-      // logger.info("DiagnosticOrders Codes
-      // Size=====> {}", dstu2FhirData.getDiagnosticOrderCodes().size());
     }
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

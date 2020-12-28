@@ -41,10 +41,9 @@ public class CdaValidatorUtil {
     } catch (SAXException e) {
       schema = null;
       logger.error(
-          " **** Error loading XSD file from the location : "
-              + ActionRepo.getInstance().getXsdSchemasLocation()
-              + " Message: "
-              + e.getMessage());
+          " **** Error loading XSD file from the location : {}",
+          ActionRepo.getInstance().getXsdSchemasLocation(),
+          e);
     }
     return schema;
   }
@@ -76,7 +75,7 @@ public class CdaValidatorUtil {
       if (errorHandler.getIsException()) return false;
 
     } catch (SAXException | IOException e) {
-      logger.error("Message: Error validating XML Data " + e.getMessage());
+      logger.error("Message: Error validating XML Data ", e);
       return false;
     }
     return true;
@@ -104,13 +103,13 @@ public class CdaValidatorUtil {
         output =
             aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrData)));
       } catch (Exception e) {
-        logger.error("Unable to read/write execution state: " + e.getMessage());
+        logger.error("Unable to read/write execution state: ", e);
       }
 
       if (output != null) {
         List<Object> objs = output.getActivePatternAndFiredRuleAndFailedAssert();
         boolean foundFailures = false;
-        logger.info(" Number of Failed Assertions " + objs.size());
+        logger.info(" Number of Failed Assertions {}", objs.size());
 
         for (Object obj : objs) {
           if (obj instanceof FailedAssert) {
