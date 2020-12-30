@@ -1,9 +1,6 @@
 package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.Assert.*;
 
 import com.drajer.eca.model.EventTypes.JobStatus;
@@ -25,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -129,37 +127,57 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   @Test
   public void testSubmitEicrFromRestApi() {
-
     URL restApiUrl = null;
-    // URL ehrAuthUrl = null;
     try {
       restApiUrl = new URL(clientDetails.getRestAPIURL());
-      // ehrAuthUrl = new URL(clientDetails.getEhrAuthorizationUrl());
-
     } catch (MalformedURLException e) {
       fail(e.getMessage() + " This exception is not expected fix the test.");
     }
-    // mock RESTAPI
+
+    // mock Authorization
+    String accesstoken =
+        "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
+    StringBuilder sb = new StringBuilder(200);
+    sb.append("{\"client_id\":\"");
+    sb.append(clientDetails.getClientId());
+    sb.append("\",\"client_secret\":\"");
+    sb.append(clientDetails.getClientSecret());
+    sb.append("\"}");
+
     stubFor(
         post(urlPathEqualTo(restApiUrl.getPath()))
+            .withRequestBody(equalToJson(sb.toString()))
             .atPriority(1)
             .willReturn(
                 aResponse()
                     .withStatus(200)
-                    .withBody("Reportability Response recieved from AIMS")
+                    .withBody(accesstoken)
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
-    /*  // mock EHR AuthURl
-        String accesstoken =
-            "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
-        stubFor(
-            post(urlEqualTo(ehrAuthUrl.getPath()))
-                .atPriority(1)
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withBody(accesstoken)
-                        .withHeader("Content-Type", "application/json; charset=utf-8")));
-    */
+
+    // mock RESTAPI
+    JSONObject jsonObject = new JSONObject(systemLaunchPayload);
+
+    StringBuilder sb1 = new StringBuilder(200);
+    sb1.append("{\"fhirServerURL\":\"");
+    sb1.append(clientDetails.getFhirServerBaseURL());
+    sb1.append("\",\"patientId\":\"");
+    sb1.append(jsonObject.get("patientId"));
+    sb1.append("\",\"encounterId\":\"");
+    sb1.append(jsonObject.get("encounterId"));
+    sb1.append("\",\"ecrRequestId\":\"");
+    sb1.append(testCaseId);
+    sb1.append("\"}");
+
+    String restResponse = "{\"status\":\"success\"}";
+    stubFor(
+        post(urlPathEqualTo(restApiUrl.getPath()))
+            .withRequestBody(equalToJson(sb1.toString()))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(restResponse)
+                    .withHeader("Content-Type", "application/json; charset=utf-8")));
 
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
@@ -169,8 +187,12 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     validateActionStatus();
 
-    // verify(postRequestedFor(urlEqualTo(ehrAuthUrl.getPath())));
-    verify(postRequestedFor(urlPathEqualTo(restApiUrl.getPath())));
+    verify(
+        postRequestedFor(urlEqualTo(restApiUrl.getPath()))
+            .withRequestBody(equalToJson(sb.toString())));
+    verify(
+        postRequestedFor(urlPathEqualTo(restApiUrl.getPath()))
+            .withRequestBody(equalToJson(sb.toString())));
   }
 
   private void getLaunchDetailAndStatus() {
