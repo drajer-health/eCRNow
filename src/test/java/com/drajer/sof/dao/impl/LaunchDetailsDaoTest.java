@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,86 +27,104 @@ public class LaunchDetailsDaoTest {
 
   @Autowired private LaunchDetailsDaoImpl launchDetailsDaoImpl;
 
-  private static LaunchDetails launchDetails = null;
+  private static LaunchDetails expectedLaunchDetails;
 
   @Before
   public void setUp() {
-    launchDetails =
+    expectedLaunchDetails =
         (LaunchDetails)
             TestUtils.getResourceAsObject(
                 "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
   }
 
   @Test
-  public void saveLaunchDetails() throws JsonParseException, JsonMappingException, IOException {
+  public void saveLaunchDetails() {
+    LaunchDetails actualLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(expectedLaunchDetails);
 
-    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
-
-    assertEquals(launchDetails.getClientId(), savedLaunchDetails.getClientId());
-    assertEquals(launchDetails.getUserId(), savedLaunchDetails.getUserId());
-    assertEquals(launchDetails.getEhrServerURL(), savedLaunchDetails.getEhrServerURL());
-    assertEquals(launchDetails.getScope(), savedLaunchDetails.getScope());
+    assertNotNull(actualLaunchDetails);
+    assertLaunchDetails(expectedLaunchDetails, actualLaunchDetails);
   }
 
   @Test
-  public void getAuthDetailsById() throws JsonParseException, JsonMappingException, IOException {
-
-    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
-    LaunchDetails retrievedLaunchDetails =
+  public void getAuthDetailsById() {
+    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(expectedLaunchDetails);
+    LaunchDetails actualLaunchDetails =
         launchDetailsDaoImpl.getAuthDetailsById(savedLaunchDetails.getId());
 
-    assertNotNull(retrievedLaunchDetails);
+    assertNotNull(actualLaunchDetails);
+    assertLaunchDetails(expectedLaunchDetails, actualLaunchDetails);
   }
 
   @Test
-  public void getLaunchDetailsByPatientAndEncounter()
-      throws JsonParseException, JsonMappingException, IOException {
-
-    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
-    String patientID = savedLaunchDetails.getLaunchPatientId();
-    String encounterID = savedLaunchDetails.getEncounterId();
-    String fhirServerUrl = savedLaunchDetails.getEhrServerURL();
-    LaunchDetails retrievedLaunchDetails =
+  public void getLaunchDetailsByPatientAndEncounter() {
+    launchDetailsDaoImpl.saveOrUpdate(expectedLaunchDetails);
+    String patientID = expectedLaunchDetails.getLaunchPatientId();
+    String encounterID = expectedLaunchDetails.getEncounterId();
+    String fhirServerUrl = expectedLaunchDetails.getEhrServerURL();
+    LaunchDetails actualLaunchDetails =
         launchDetailsDaoImpl.getLaunchDetailsByPatientAndEncounter(
             patientID, encounterID, fhirServerUrl);
 
-    assertNotNull(retrievedLaunchDetails);
+    assertNotNull(actualLaunchDetails);
+    assertLaunchDetails(expectedLaunchDetails, actualLaunchDetails);
   }
 
   @Test
-  public void deleteLaunchDetails() throws JsonParseException, JsonMappingException, IOException {
-
-    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
+  public void deleteLaunchDetails() {
+    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(expectedLaunchDetails);
 
     String patientID = savedLaunchDetails.getLaunchPatientId();
     String encounterID = savedLaunchDetails.getEncounterId();
     String fhirServerUrl = savedLaunchDetails.getEhrServerURL();
 
-    // Negative test
     launchDetailsDaoImpl.delete(savedLaunchDetails);
     LaunchDetails retrievedLaunchDetails =
         launchDetailsDaoImpl.getLaunchDetailsByPatientAndEncounter(
             patientID, encounterID, fhirServerUrl);
-
-    String errorMessage = "attempt to create delete event with null entity";
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              launchDetailsDaoImpl.delete(retrievedLaunchDetails);
-            });
-    assertTrue(errorMessage.contains(errorMessage));
+    assertNull(retrievedLaunchDetails);
   }
 
   @Test
-  public void getLaunchDetailsByState()
-      throws JsonParseException, JsonMappingException, IOException {
-
-    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(launchDetails);
-
-    LaunchDetails retrievedLaunchDetails =
+  public void getLaunchDetailsByState() {
+    LaunchDetails savedLaunchDetails = launchDetailsDaoImpl.saveOrUpdate(expectedLaunchDetails);
+    LaunchDetails actualLaunchDetails =
         launchDetailsDaoImpl.getLaunchDetailsByState(savedLaunchDetails.getLaunchState());
 
-    assertNotNull(retrievedLaunchDetails);
+    assertNotNull(actualLaunchDetails);
+    assertLaunchDetails(expectedLaunchDetails, actualLaunchDetails);
+  }
+
+  public void assertLaunchDetails(LaunchDetails expected, LaunchDetails actual) {
+    assertEquals(expected.getClientId(), actual.getClientId());
+    assertEquals(expected.getEhrServerURL(), actual.getEhrServerURL());
+    assertEquals(expected.getLaunchPatientId(), actual.getLaunchPatientId());
+    assertEquals(expected.getEncounterId(), actual.getEncounterId());
+    assertEquals(expected.getAccessToken(), actual.getAccessToken());
+    assertEquals(expected.getAssigningAuthorityId(), actual.getAssigningAuthorityId());
+    assertEquals(expected.getAuthorizationCode(), actual.getAuthorizationCode());
+    assertEquals(expected.getAuthUrl(), actual.getAuthUrl());
+    assertEquals(expected.getDirectHost(), actual.getDirectHost());
+    assertEquals(expected.getDirectRecipient(), actual.getDirectRecipient());
+    assertEquals(expected.getDirectUser(), actual.getDirectUser());
+    assertEquals(expected.getFhirVersion(), actual.getFhirVersion());
+    assertEquals(expected.getImapPort(), actual.getImapPort());
+    assertEquals(expected.getScope(), actual.getScope());
+    assertEquals(expected.getRedirectURI(), actual.getRedirectURI());
+    assertEquals(expected.getRefreshToken(), actual.getRefreshToken());
+    assertEquals(expected.getRequestMode(), actual.getRequestMode());
+    assertEquals(expected.getRestAPIURL(), actual.getRestAPIURL());
+    assertEquals(expected.getSmtpPort(), actual.getSmtpPort());
+    assertEquals(expected.getStatus(), actual.getStatus());
+    assertEquals(expected.getTokenUrl(), actual.getTokenUrl());
+    assertEquals(expected.getUserId(), actual.getUserId());
+    assertEquals(expected.getVersionNumber(), actual.getVersionNumber());
+    assertEquals(expected.getxRequestId(), actual.getxRequestId());
+    assertEquals(expected.getxRequestId(), actual.getxRequestId());
+    assertEquals(expected.getDebugFhirQueryAndEicr(), actual.getDebugFhirQueryAndEicr());
+    assertEquals(expected.getExpiry(), actual.getExpiry());
+    assertEquals(expected.getIsCovid(), actual.getIsCovid());
+    assertEquals(expected.getIsSystem(), actual.getIsSystem());
+    assertEquals(expected.getLaunchState(), actual.getLaunchState());
+    assertEquals(expected.getSetId(), actual.getSetId());
   }
 }

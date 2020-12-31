@@ -64,4 +64,38 @@ testCase:
       'code/@codeSystemName': "v3-ActCode"
       'code/@displayName': "inpatient encounter"
 #      'effectiveTime/low/@value': "20200512"
-      'effectiveTime/high/@nullFlavor': "NI" 
+      'effectiveTime/high/@nullFlavor': "NI"
+  eCR-encounter-withInvalidClass-UseType:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[2]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withInvalidClass.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: "text/table/"
+        'thead/tr/th[1]': "Encounter Reason"
+        'thead/tr/th[2]': "Date of Encounter"
+        'tbody/tr/td[1]/content': "inpatient encounter"
+      #      'tbody/tr/td[2]/content': "20200512191056"
+      - xPath: "entry/encounter/"
+        'code/@nullFlavor': "NI"
