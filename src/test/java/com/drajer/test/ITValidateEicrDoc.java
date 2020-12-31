@@ -98,17 +98,16 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public static Collection<Object[]> data() {
 
     List<TestDataGenerator> testDataGenerator = new ArrayList<>();
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/medicationSection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/planOfTreatmentSection.yaml"));
-    //    testDataGenerator.add(new
-    // TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
-    //    testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/medicationSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/planOfTreatmentSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
+    testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
 
     int totalTestcount = 0;
     for (TestDataGenerator testData : testDataGenerator) {
