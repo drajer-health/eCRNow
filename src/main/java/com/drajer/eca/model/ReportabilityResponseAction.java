@@ -29,7 +29,8 @@ public class ReportabilityResponseAction extends AbstractAction {
       state = ApplicationUtils.getDetailStatus(launchDetails);
 
       logger.info(
-          " Executing RR Check Eicr Action , Prior Execution State : = {}", launchDetails.getStatus());
+          " Executing RR Check Eicr Action , Prior Execution State : = {}",
+          launchDetails.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
