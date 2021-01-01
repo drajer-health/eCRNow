@@ -77,7 +77,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ub.addParameter("patientId", "12345");
       ub.addParameter("encounterId", "67890");
 
-      String rrResponse = TestUtils.getFileContentAsString("reportabilityResponse.json");
+      String rrResponse = TestUtils.getFileContentAsString("R4/Misc/reportabilityResponse.json");
 
       HttpEntity<String> entity = new HttpEntity<>(rrResponse, headers);
       ResponseEntity<String> response =

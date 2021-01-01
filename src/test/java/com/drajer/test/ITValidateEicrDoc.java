@@ -192,7 +192,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     return null;
   }
 
-  private void validateXml(Document eicrXml) throws XPathExpressionException {
+  private void validateXml(Document eicrXml) {
 
     final XPath xPath = XPathFactory.newInstance().newXPath();
     final String baseXPath = testData.get("BaseXPath");

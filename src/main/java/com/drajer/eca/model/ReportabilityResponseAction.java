@@ -23,26 +23,27 @@ public class ReportabilityResponseAction extends AbstractAction {
     if (obj instanceof LaunchDetails) {
 
       logger.info(" Obtained Launch Details ");
-      LaunchDetails details = (LaunchDetails) obj;
+      LaunchDetails launchDetails = (LaunchDetails) obj;
       PatientExecutionState state = null;
 
-      state = ApplicationUtils.getDetailStatus(details);
+      state = ApplicationUtils.getDetailStatus(launchDetails);
 
       logger.info(
-          " Executing RR Check Eicr Action , Prior Execution State : = {}", details.getStatus());
+          " Executing RR Check Eicr Action , Prior Execution State : = {}",
+          launchDetails.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
         logger.info(" Related Actions exist, so check dependencies ");
 
-        List<RelatedAction> racts = getRelatedActions();
+        List<RelatedAction> rrRelActs = getRelatedActions();
 
-        for (RelatedAction ract : racts) {
+        for (RelatedAction rrRelAct : rrRelActs) {
 
-          if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+          if (rrRelAct.getRelationship() == ActionRelationshipType.AFTER) {
 
             // check if the action is completed.
-            String actionId = ract.getRelatedAction().getActionId();
+            String actionId = rrRelAct.getRelatedAction().getActionId();
 
             if (!state.hasActionCompleted(actionId)) {
 
@@ -58,8 +59,8 @@ public class ReportabilityResponseAction extends AbstractAction {
           } else {
             logger.info(
                 " This action is not dependent on the action relationship : {}, Action Id = {}",
-                ract.getRelationship(),
-                ract.getRelatedAction().getActionId());
+                rrRelAct.getRelationship(),
+                rrRelAct.getRelatedAction().getActionId());
           }
         }
       } else {
@@ -71,7 +72,7 @@ public class ReportabilityResponseAction extends AbstractAction {
         checkRRForEicrs(state, ids);
       }
 
-      EcaUtils.updateDetailStatus(details, state);
+      EcaUtils.updateDetailStatus(launchDetails, state);
     }
   }
 

@@ -2,6 +2,7 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -10,30 +11,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
-import org.hl7.fhir.r4.model.Immunization;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Medication;
-import org.hl7.fhir.r4.model.MedicationAdministration;
-import org.hl7.fhir.r4.model.MedicationRequest;
-import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -440,9 +421,8 @@ public class R4ResourcesData {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
         // Checking If Effective Date is present in MedicationAdministration resource
-        if (medAdministration.getEffectiveDateTimeType() != null) {
-          Type effectiveDateTime = medAdministration.getEffectiveDateTimeType();
-          Date effDate = effectiveDateTime.dateTimeValue().getValue();
+        if (medAdministration.getEffective() != null) {
+          Date effDate = CdaFhirUtilities.getActualDate(medAdministration.getEffective());
           if (effDate.after(start) && effDate.before(end)) {
             medAdministrations.add(medAdministration);
             medicationCodes.addAll(findMedicationCodes(medAdministration));
@@ -562,7 +542,7 @@ public class R4ResourcesData {
                 launchDetails, client, context, "MedicationStatement");
     List<MedicationStatement> medStatements = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
-    // Filter MedicationAdministrations based on Encounter Reference
+    // Filter MedicationStatement based on Encounter Reference
     if (bundle != null && encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         MedicationStatement medStatement = (MedicationStatement) entry.getResource();
@@ -577,12 +557,12 @@ public class R4ResourcesData {
         }
       }
       // If Encounter Id is not present using start and end dates to filter
-      // MedicationAdministrations
+      // MedicationStatement
     } else if (bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         MedicationStatement medStatement = (MedicationStatement) entry.getResource();
-        // Checking If Effective Date is present in MedicationAdministration resource
-        if (medStatement.getEffectiveDateTimeType() != null) {
+        // Checking If Effective Date is present in MedicationStatement resource
+        if (medStatement.hasEffectiveDateTimeType()) {
           Type effectiveDateTime = medStatement.getEffectiveDateTimeType();
           Date effDate = effectiveDateTime.dateTimeValue().getValue();
           if (effDate.after(start) && effDate.before(end)) {
@@ -1028,8 +1008,8 @@ public class R4ResourcesData {
       }
       r4FhirData.setMedicationAdministrations(medAdministrationsList);
       for (MedicationAdministration medAdministration : medAdministrationsList) {
-        if (!medAdministration.getMedication().isEmpty()
-            && medAdministration.getMedication() != null
+        if (medAdministration.getMedication() != null
+            && !medAdministration.getMedication().isEmpty()
             && medAdministration.getMedication() instanceof Reference) {
           Reference medRef = (Reference) medAdministration.getMedication();
           String medReference = medRef.getReferenceElement().getValue();
@@ -1071,8 +1051,8 @@ public class R4ResourcesData {
       logger.info("Filtered MedicationRequests----------->" + medRequestsList.size());
       r4FhirData.setMedicationRequests(medRequestsList);
       for (MedicationRequest medRequest : medRequestsList) {
-        if (!medRequest.getMedication().isEmpty()
-            && medRequest.getMedication() != null
+        if (medRequest.getMedication() != null
+            && !medRequest.getMedication().isEmpty()
             && medRequest.getMedication() instanceof Reference) {
           Reference medRef = (Reference) medRequest.getMedication();
           String medReference = medRef.getReferenceElement().getValue();
