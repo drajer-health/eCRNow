@@ -75,30 +75,26 @@ public class FhirGeneratorUtils {
 
   public static String getText(CodeableConcept cc) {
 
-    StringBuilder retVal = new StringBuilder();
-    retVal.append(FhirGeneratorConstants.UNKNOWN_VALUE);
-
+    String retVal = FhirGeneratorConstants.UNKNOWN_VALUE;
     if (cc != null && !StringUtils.isEmpty(cc.getText())) {
-      retVal.delete(0, retVal.length());
-      retVal.append(cc.getText());
+      retVal = cc.getText();
     } else if (cc != null && cc.getCoding() != null && !cc.getCoding().isEmpty()) {
-
+      StringBuilder sb = new StringBuilder();
       for (Coding cd : cc.getCoding()) {
-
         if (cd.getDisplay() != null && !StringUtils.isEmpty(cd.getDisplay())) {
-
-          if (retVal.toString().equalsIgnoreCase(FhirGeneratorConstants.UNKNOWN_VALUE)) {
-            retVal.delete(0, retVal.length());
-            retVal.append(cd.getDisplay());
+          if (sb.toString().isEmpty()) {
+            sb.append(cd.getDisplay());
           } else {
-            retVal.delete(0, retVal.length());
-            retVal.append(",").append(cd.getDisplay());
+            sb.append(",")
+                    .append(cd.getDisplay());
           }
         }
       }
+      if(!sb.toString().isEmpty()) {
+        retVal = sb.toString();
+      }
     }
-
-    return retVal.toString();
+    return retVal;
   }
 
   public static String getReasonForVisitNarrativeText(Encounter en) {
