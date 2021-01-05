@@ -1203,18 +1203,18 @@ public class CdaFhirUtilities {
 
     if (dt != null) {
 
-      String val = "";
+      StringBuilder val = new StringBuilder();
       if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
 
-        val += getStringForCoding(cd);
+        val.append(getStringForCoding(cd));
 
       } else if (dt instanceof CodeableConcept) {
 
         CodeableConcept cd = (CodeableConcept) dt;
 
         if (!StringUtils.isEmpty(cd.getText())) {
-          val += cd.getText();
+          val.append(cd.getText());
         } else {
           List<Coding> cds = cd.getCoding();
           Boolean first = true;
@@ -1222,13 +1222,13 @@ public class CdaFhirUtilities {
           for (Coding c : cds) {
 
             if (!first) {
-              val +=
-                  CdaGeneratorConstants.SPACE
-                      + CdaGeneratorConstants.PIPE
-                      + CdaGeneratorConstants.SPACE;
+
+              val.append(CdaGeneratorConstants.SPACE)
+                  .append(CdaGeneratorConstants.PIPE)
+                  .append(CdaGeneratorConstants.SPACE);
             }
             first = false;
-            val += getStringForCoding(c);
+            val.append(getStringForCoding(c));
           }
         }
 
@@ -1236,38 +1236,40 @@ public class CdaFhirUtilities {
 
         Quantity qt = (Quantity) dt;
 
-        val += getStringForQuantity(qt);
+        val.append(getStringForQuantity(qt));
 
       } else if (dt instanceof DateTimeType) {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val += d.getValueAsString();
+        val.append(d.getValueAsString());
 
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;
 
         if (pt.getStart() != null && pt.getEnd() != null) {
-          val += pt.getStart().toString() + CdaGeneratorConstants.PIPE + pt.getEnd().toString();
+          val.append(pt.getStart().toString())
+              .append(CdaGeneratorConstants.PIPE)
+              .append(pt.getEnd().toString());
         } else if (pt.getStart() != null) {
-          val += pt.getStart().toString();
+          val.append(pt.getStart().toString());
         } else {
-          val += CdaGeneratorConstants.UNKNOWN_VALUE;
+          val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
         }
       } else if (dt instanceof CodeType) {
 
         CodeType cd = (CodeType) dt;
 
-        val += cd.getValue();
+        val.append(cd.getValue());
       } else if (dt instanceof StringType) {
 
         StringType st = (StringType) dt;
 
-        val += st.getValue();
+        val.append(st.getValue());
       }
 
       logger.info(" Printing the class name {}", dt.getClass());
-      return val;
+      return val.toString();
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
