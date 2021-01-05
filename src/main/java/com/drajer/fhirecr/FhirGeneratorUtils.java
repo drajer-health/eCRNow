@@ -85,12 +85,11 @@ public class FhirGeneratorUtils {
           if (sb.toString().isEmpty()) {
             sb.append(cd.getDisplay());
           } else {
-            sb.append(",")
-                    .append(cd.getDisplay());
+            sb.append(",").append(cd.getDisplay());
           }
         }
       }
-      if(!sb.toString().isEmpty()) {
+      if (!sb.toString().isEmpty()) {
         retVal = sb.toString();
       }
     }
