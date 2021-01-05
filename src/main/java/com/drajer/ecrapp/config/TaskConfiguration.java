@@ -20,7 +20,7 @@ public class TaskConfiguration {
   public Task<TaskTimer> sampleOneTimeTask() {
     log.info("Initializing the One time task");
     OneTimeTask<TaskTimer> myTask =
-        Tasks.oneTime("XYRAMSOFT Solution", TaskTimer.class)
+        Tasks.oneTime("eCRNow", TaskTimer.class)
             .onFailureRetryLater()
             .execute(
                 (inst, ctx) -> {
