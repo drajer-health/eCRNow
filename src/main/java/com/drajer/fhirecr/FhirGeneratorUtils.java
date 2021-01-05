@@ -90,7 +90,10 @@ public class FhirGeneratorUtils {
           if (retVal.toString().equalsIgnoreCase(FhirGeneratorConstants.UNKNOWN_VALUE)) {
             retVal.delete(0, retVal.length());
             retVal.append(cd.getDisplay());
-          } else retVal.append(",").append(cd.getDisplay());
+          } else {
+            retVal.delete(0, retVal.length());
+            retVal.append(",").append(cd.getDisplay());
+          }
         }
       }
     }
