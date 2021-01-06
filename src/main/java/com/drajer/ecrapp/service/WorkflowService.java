@@ -36,8 +36,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorkflowService {
 
-  private final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
-  private static final Logger logger2 = LoggerFactory.getLogger(WorkflowService.class);
+  private static final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
   private static WorkflowService workflowInstance = null;
 
   /*
@@ -93,6 +92,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setRestTransport(restApiTransport);
 
     workflowInstance = this;
+    ActionRepo.getInstance().setWorkflowService(workflowInstance);
     this.staticScheduler = scheduler;
     this.staticTaskConfiguration = taskConfiguration;
   }
@@ -256,7 +256,7 @@ public class WorkflowService {
     invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = (t != null) ? t.toString() : "";
-    logger2.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+    logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 
   public static void scheduleJob(
@@ -270,25 +270,25 @@ public class WorkflowService {
     invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = (t != null) ? t.toString() : "";
-    logger2.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+    logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
     CommandLineRunner task = null;
-    logger2.info("Scheduling one time task to now!");
+    logger.info("Scheduling one time task to now!");
 
-    task = ignored -> logger2.info("Scheduling one time task to after!");
+    task = ignored -> logger.info("Scheduling one time task to after!");
     staticScheduler.schedule(
         staticTaskConfiguration
             .sampleOneTimeTask()
             .instance(
-                String.valueOf(launchDetailsId),
+                actionType.toString() + "_" + String.valueOf(launchDetailsId),
                 new TaskTimer(100L, launchDetailsId, actionType, t)),
         t);
 
-    logger2.info(" task  ::: " + task);
+    logger.info(" task  ::: " + task);
     return task;
   }
 }

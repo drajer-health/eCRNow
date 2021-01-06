@@ -1,8 +1,8 @@
 package com.drajer.ecrapp.config;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.TaskTimer;
-import com.drajer.ecrapp.service.WorkflowService;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
@@ -20,20 +20,26 @@ public class TaskConfiguration {
   public Task<TaskTimer> sampleOneTimeTask() {
     log.info("Initializing the One time task");
     OneTimeTask<TaskTimer> myTask =
-        Tasks.oneTime("eCRNow", TaskTimer.class)
+        Tasks.oneTime("EICRTask", TaskTimer.class)
             .onFailureRetryLater()
             .execute(
                 (inst, ctx) -> {
-                  log.info(
-                      "Executing Task for "
-                          + inst.getTaskAndInstance()
-                          + " , Launch Id::: "
-                          + inst.getData().getLaunchDetailsId());
-                  new WorkflowService()
-                      .executeScheduledAction(
-                          inst.getData().getLaunchDetailsId(),
-                          inst.getData().getActionTypes(),
-                          WorkflowEvent.SCHEDULED_JOB);
+                  try {
+                    log.info(
+                        "Executing Task for "
+                            + inst.getTaskAndInstance()
+                            + " , Launch Id::: "
+                            + inst.getData().getLaunchDetailsId());
+
+                    ActionRepo.getInstance()
+                        .getWorkflowService()
+                        .executeScheduledAction(
+                            inst.getData().getLaunchDetailsId(),
+                            inst.getData().getActionTypes(),
+                            WorkflowEvent.SCHEDULED_JOB);
+                  } catch (Exception e) {
+                    log.error("Error in completing the Execution");
+                  }
                 });
     return myTask;
   }
