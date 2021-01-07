@@ -716,24 +716,7 @@ public class CdaFhirUtilities {
       Boolean csOptional) {
 
     StringBuilder sb = new StringBuilder(500);
-    List<Coding> codes = new ArrayList<>();
-
-    if (cds != null && !cds.isEmpty()) {
-
-      CodeableConcept cd = cds.get(0);
-
-      List<Coding> codings = cd.getCoding();
-
-      if (codings != null && !codings.isEmpty()) {
-
-        for (Coding code : codings) {
-
-          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
-
-          if (!StringUtils.isEmpty(csd.getValue0())) codes.add(code);
-        }
-      }
-    }
+    List<Coding> codes = getCodingForValidCodeSystems(cds);
 
     if (!valueTrue) sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
     else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
@@ -741,12 +724,8 @@ public class CdaFhirUtilities {
     return sb.toString();
   }
 
-  public static String getCodeableConceptXml(
-      List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
-
-    StringBuilder sb = new StringBuilder(500);
+  public static List<Coding> getCodingForValidCodeSystems(List<CodeableConcept> cds) {
     List<Coding> codes = new ArrayList<>();
-
     if (cds != null && !cds.isEmpty()) {
 
       CodeableConcept cd = cds.get(0);
@@ -763,6 +742,14 @@ public class CdaFhirUtilities {
         }
       }
     }
+    return codes;
+  }
+
+  public static String getCodeableConceptXml(
+      List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
+
+    StringBuilder sb = new StringBuilder(500);
+    List<Coding> codes = getCodingForValidCodeSystems(cds);
 
     if (!valueTrue) sb.append(getCodingXml(codes, cdName));
     else sb.append(getCodingXmlForValue(codes, cdName));
