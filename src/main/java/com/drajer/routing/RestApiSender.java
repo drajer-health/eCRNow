@@ -39,7 +39,7 @@ public class RestApiSender {
       headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 
       if (accessToken != null && !accessToken.isEmpty()) {
-        logger.info("Setting Access_token============>" + accessToken);
+        logger.info("Setting Access_token============> {} ", accessToken);
         headers.add("Authorization", accessToken);
       }
 

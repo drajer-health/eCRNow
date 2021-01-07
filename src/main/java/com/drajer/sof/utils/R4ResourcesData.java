@@ -1048,7 +1048,7 @@ public class R4ResourcesData {
       List<MedicationRequest> medRequestsList =
           getMedicationRequestData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      logger.info("Filtered MedicationRequests----------->" + medRequestsList.size());
+      logger.info("Filtered MedicationRequests-----------> {} ", medRequestsList.size());
       r4FhirData.setMedicationRequests(medRequestsList);
       for (MedicationRequest medRequest : medRequestsList) {
         if (medRequest.getMedication() != null

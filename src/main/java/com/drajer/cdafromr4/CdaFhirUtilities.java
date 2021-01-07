@@ -535,7 +535,7 @@ public class CdaFhirUtilities {
                         if (part.getIndividual().getReferenceElement() != null)
                           logger.info(
                               " part.getIndividual = {}",
-                              part.getIndividual().getReferenceElement().toString());
+                              part.getIndividual().getReferenceElement());
 
                         if (part.getIndividual().getReferenceElement() != null
                             && part.getIndividual().getReferenceElement().getIdPart() != null) {
@@ -546,7 +546,7 @@ public class CdaFhirUtilities {
 
                           if (pr != null) {
 
-                            logger.info(" Found Practitioner for Type {}", type.toString());
+                            logger.info(" Found Practitioner for Type {}", type);
                             practs.add(pr);
                           } // Found Practitioenr
                         } // Valid Reference
@@ -555,7 +555,7 @@ public class CdaFhirUtilities {
                         }
                       } // Found Type that we need
                       else {
-                        logger.info(" Did not find the code for type {}", type.toString());
+                        logger.info(" Did not find the code for type {}", type);
                       }
                     } // Found participants that use standard code systems
                     else {
@@ -818,7 +818,7 @@ public class CdaFhirUtilities {
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
 
-      logger.info(" Sb = {}", sb.toString());
+      logger.info(" Sb = {}", sb);
       sb.append(translations);
       sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 
