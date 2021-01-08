@@ -1,6 +1,7 @@
 package com.drajer.sof.service.impl;
 
 import ca.uhn.fhir.context.FhirContext;
+import com.drajer.sof.model.RRReceiver;
 import com.drajer.sof.service.RRReceiverService;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,8 +28,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
   private final Logger logger = LoggerFactory.getLogger(RRReceiverServiceImpl.class);
 
   @Override
-  public DocumentReference constructDocumentReference(
-      String obj, String type, String patientId, String encounterId) {
+  public DocumentReference constructDocumentReference(RRReceiver rrReceiver) {
     DocumentReference documentReference = new DocumentReference();
 
     // Set Doc Ref Status
@@ -65,7 +65,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
 
     // Set Subject
     Reference patientReference = new Reference();
-    patientReference.setReference("Patient/" + patientId);
+    patientReference.setReference("Patient/" + rrReceiver.getPatientId());
     documentReference.setSubject(patientReference);
 
     // Set Doc Ref Content
@@ -73,7 +73,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     DocumentReferenceContentComponent contentComp = new DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
     attachment.setContentType("application/xml;charset=utf-8");
-    attachment.setData(obj.getBytes());
+    attachment.setData(rrReceiver.getRrXml().getBytes());
     contentComp.setAttachment(attachment);
     contentList.add(contentComp);
     documentReference.setContent(contentList);
@@ -82,7 +82,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     DocumentReferenceContextComponent contextComp = new DocumentReferenceContextComponent();
     List<Reference> encounterRefList = new ArrayList<>();
     Reference encounterReference = new Reference();
-    encounterReference.setReference("Encounter/" + encounterId);
+    encounterReference.setReference("Encounter/" + rrReceiver.getEncounterId());
     encounterRefList.add(encounterReference);
     contextComp.setEncounter(encounterRefList);
     Period period = new Period();

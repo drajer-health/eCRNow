@@ -2,10 +2,10 @@ package com.drajer.sof.launch;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.sof.model.RRReceiver;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.RRReceiverService;
 import com.drajer.sof.utils.Authorization;
@@ -48,22 +48,23 @@ public class RRReceiverController {
   @CrossOrigin
   @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
   public ResponseEntity<String> rrReceiver(
-      @RequestBody String obj,
-      @OptionalParam(name = "type") String type,
-      @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
-      @OptionalParam(name = "fhirServerURL") String fhirServerURL,
-      @OptionalParam(name = "patientId") String patientId,
-      @OptionalParam(name = "encounterId") String encounterId,
+      //      @RequestBody String obj,
+      //      @OptionalParam(name = "type") String type,
+      //      @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
+      //      @OptionalParam(name = "fhirServerURL") String fhirServerURL,
+      //      @OptionalParam(name = "patientId") String patientId,
+      //      @OptionalParam(name = "encounterId") String encounterId,
+      @RequestBody RRReceiver rrReceiver,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.debug("Received Obj::::: {}", obj);
+      //      logger.debug("Received Obj::::: {}", obj);
       // Construct the DocumentReference Resource
-      DocumentReference docRef =
-          rrReceieverService.constructDocumentReference(obj, type, patientId, encounterId);
+      DocumentReference docRef = rrReceieverService.constructDocumentReference(rrReceiver);
 
       // Get ClientDetails using the FHIR Server URL
-      ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(fhirServerURL);
+      ClientDetails clientDetails =
+          clientDetailservice.getClientDetailsByUrl(rrReceiver.getFhirServerURL());
 
       // Get the AccessToken using the Client Details and read the Metadata Information to know
       // about the FHIR Server Version.
@@ -71,7 +72,7 @@ public class RRReceiverController {
         JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
         String accessToken = tokenResponse.getString(ACCESS_TOKEN);
         String fhirVersion = "";
-        JSONObject object = authorization.getMetadata(fhirServerURL + "/metadata");
+        JSONObject object = authorization.getMetadata(rrReceiver.getFhirServerURL() + "/metadata");
         if (object != null) {
           logger.info("Reading Metadata information");
           if (object.getString(FHIR_VERSION).equals("1.0.2")) {
@@ -87,10 +88,16 @@ public class RRReceiverController {
 
         // Initialize the Client
         IGenericClient client =
-            fhirContextInitializer.createClient(context, fhirServerURL, accessToken);
+            fhirContextInitializer.createClient(
+                context, rrReceiver.getFhirServerURL(), accessToken);
 
         MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
-        logger.info("DocumentReference Id::::: {}", outcome.getId().getIdPart());
+
+        logger.error("DocumentReference outcome::::: {}", outcome.getId());
+
+        logger.error("DocumentReference id::::: {}", outcome.getId());
+
+        logger.error("DocumentReference part::::: {}", outcome.getId().getIdPart());
       } else {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
