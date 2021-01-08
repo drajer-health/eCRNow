@@ -73,7 +73,9 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     DocumentReferenceContentComponent contentComp = new DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
     attachment.setContentType("application/xml;charset=utf-8");
-    attachment.setData(rrReceiver.getRrXml().getBytes());
+    if (rrReceiver.getRrXml() != null) {
+      attachment.setData(rrReceiver.getRrXml().getBytes());
+    }
     contentComp.setAttachment(attachment);
     contentList.add(contentComp);
     documentReference.setContent(contentList);
