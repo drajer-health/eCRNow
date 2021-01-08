@@ -64,11 +64,6 @@ public class FhirContextInitializer {
   public MethodOutcome submitResource(IGenericClient genericClient, Resource resource) {
     MethodOutcome outcome = new MethodOutcome();
     try {
-      logger.error("genericClient:   ", genericClient);
-      logger.error("resource:   ", resource);
-      logger.error(
-          "genericClient.create().resource(resource).prettyPrint().encodedJson():   ",
-          genericClient.create().resource(resource).prettyPrint().encodedJson());
       outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
     } catch (Exception e) {
       logger.error(
