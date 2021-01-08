@@ -19,7 +19,7 @@ public class ScheduledTasks implements Serializable {
   @Column(name = "task_name")
   private String task_name;
 
-  @Column(name = "task_data", columnDefinition = "bytea")
+  @Column(name = "task_data")
   private Byte[] task_data;
 
   @Column(name = "execution_time")
