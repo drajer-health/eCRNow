@@ -1,7 +1,5 @@
 package com.drajer.sof.service.impl;
 
-import static org.apache.commons.text.StringEscapeUtils.unescapeJson;
-
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.sof.model.RRReceiver;
 import com.drajer.sof.service.RRReceiverService;
@@ -67,7 +65,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
 
     // Set Subject
     Reference patientReference = new Reference();
-    patientReference.setReference("Patient/" + unescapeJson(rrReceiver.getPatientId()));
+    patientReference.setReference("Patient/" + rrReceiver.getPatientId());
     documentReference.setSubject(patientReference);
 
     // Set Doc Ref Content
@@ -75,7 +73,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     DocumentReferenceContentComponent contentComp = new DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
     attachment.setContentType("application/xml;charset=utf-8");
-    attachment.setData(unescapeJson(rrReceiver.getRrXml()).getBytes());
+    attachment.setData(rrReceiver.getRrXml().getBytes());
     contentComp.setAttachment(attachment);
     contentList.add(contentComp);
     documentReference.setContent(contentList);
@@ -84,7 +82,7 @@ public class RRReceiverServiceImpl implements RRReceiverService {
     DocumentReferenceContextComponent contextComp = new DocumentReferenceContextComponent();
     List<Reference> encounterRefList = new ArrayList<>();
     Reference encounterReference = new Reference();
-    encounterReference.setReference("Encounter/" + unescapeJson(rrReceiver.getEncounterId()));
+    encounterReference.setReference("Encounter/" + rrReceiver.getEncounterId());
     encounterRefList.add(encounterReference);
     contextComp.setEncounter(encounterRefList);
     Period period = new Period();

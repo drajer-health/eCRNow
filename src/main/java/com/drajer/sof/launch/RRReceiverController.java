@@ -1,10 +1,7 @@
 package com.drajer.sof.launch;
 
-import static org.apache.commons.text.StringEscapeUtils.unescapeJson;
-
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.sof.model.ClientDetails;
@@ -23,11 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -51,8 +44,8 @@ public class RRReceiverController {
   @CrossOrigin
   @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
   public ResponseEntity<String> rrReceiver(
-      @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
-      @OptionalParam(name = "xCorrelationIdHttpHeaderValue") String xCorrelationIdHttpHeaderValue,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID") String xCorrelationIdHttpHeaderValue,
       @RequestBody RRReceiver rrReceiver,
       HttpServletRequest request,
       HttpServletResponse response) {
@@ -64,7 +57,7 @@ public class RRReceiverController {
           "docRef===========> {}",
           FhirContext.forR4().newJsonParser().encodeResourceToString(docRef));
 
-      final String fhirServerURL = unescapeJson(rrReceiver.getFhirServerURL());
+      final String fhirServerURL = rrReceiver.getFhirServerURL();
 
       // Get ClientDetails using the FHIR Server URL
       ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(fhirServerURL);

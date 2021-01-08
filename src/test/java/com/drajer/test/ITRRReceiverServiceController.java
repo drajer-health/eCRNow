@@ -67,15 +67,12 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   public void testRRReceiver() {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", "testRRReceiver");
+    headers.add("X-Correlation-ID", "testRRReceiver");
 
     URIBuilder ub;
     try {
       ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
-      ub.addParameter("type", "RR");
-      ub.addParameter("xRequestIdHttpHeaderValue", "testRRReceiver");
-      ub.addParameter("fhirServerURL", clientDetails.getFhirServerBaseURL());
-      ub.addParameter("patientId", "12345");
-      ub.addParameter("encounterId", "67890");
 
       String rrResponse = TestUtils.getFileContentAsString("R4/Misc/reportabilityResponse.json");
 
