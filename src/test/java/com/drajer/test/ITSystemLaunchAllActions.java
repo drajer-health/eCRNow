@@ -258,6 +258,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertFalse(state.getCreateEicrStatus().geteICRId().isEmpty());
     createEicr = getEicrDocument(state.getCreateEicrStatus().geteICRId());
     assertNotNull(createEicr.getEicrData());
+    assertFalse(createEicr.getEicrData().isEmpty());
     assertTrue(state.getCreateEicrStatus().getEicrCreated());
   }
 
@@ -293,6 +294,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertFalse(state.getCloseOutEicrStatus().geteICRId().isEmpty());
     closeOutEicr = getEicrDocument(state.getCloseOutEicrStatus().geteICRId());
     assertNotNull(closeOutEicr.getEicrData());
+    assertFalse(closeOutEicr.getEicrData().isEmpty());
     assertTrue(state.getCloseOutEicrStatus().getEicrClosed());
   }
 
