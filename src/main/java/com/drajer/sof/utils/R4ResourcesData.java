@@ -383,8 +383,16 @@ public class R4ResourcesData {
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
       String medicationId) {
-    return (Medication)
-        resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
+    Medication medication =
+        (Medication)
+            resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
+
+    if (medication != null) {
+      List<Medication> medicationList = new ArrayList<>();
+      medicationList.add(medication);
+      r4FhirData.setMedicationList(medicationList);
+    }
+    return medication;
   }
 
   public List<MedicationAdministration> getMedicationAdministrationData(
@@ -1028,11 +1036,6 @@ public class R4ResourcesData {
             BundleEntryComponent medicationEntry =
                 new BundleEntryComponent().setResource(medication);
             bundle.addEntry(medicationEntry);
-            if (medication != null) {
-              List<Medication> medicationList = new ArrayList<>();
-              medicationList.add(medication);
-              r4FhirData.setMedicationList(medicationList);
-            }
           }
         }
         BundleEntryComponent medAdministrationEntry =
@@ -1071,11 +1074,6 @@ public class R4ResourcesData {
             BundleEntryComponent medicationEntry =
                 new BundleEntryComponent().setResource(medication);
             bundle.addEntry(medicationEntry);
-            if (medication != null) {
-              List<Medication> medicationList = new ArrayList<>();
-              medicationList.add(medication);
-              r4FhirData.setMedicationList(medicationList);
-            }
           }
         }
         BundleEntryComponent medRequestEntry = new BundleEntryComponent().setResource(medRequest);
