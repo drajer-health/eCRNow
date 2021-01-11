@@ -75,7 +75,7 @@ public class CdaMedicationGenerator {
 
       // add Body Rows
       int rowNum = 1;
-      String medEntries = "";
+      StringBuilder medEntries = new StringBuilder();
 
       for (MedicationStatement med : meds) {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -109,7 +109,7 @@ public class CdaMedicationGenerator {
         Dosage dosage = null;
         if (med.getDosageFirstRep() != null) dosage = med.getDosageFirstRep();
 
-        medEntries +=
+        medEntries.append(
             getEntryForMedication(
                 med.getId(),
                 med.getMedication(),
@@ -119,7 +119,7 @@ public class CdaMedicationGenerator {
                 details,
                 null,
                 null,
-                CdaGeneratorConstants.MOOD_CODE_DEF);
+                CdaGeneratorConstants.MOOD_CODE_DEF));
       }
 
       // Add Medication Administration
@@ -155,7 +155,7 @@ public class CdaMedicationGenerator {
         if (medAdm.getDosage() != null && medAdm.getDosage().getDose() != null)
           dose = medAdm.getDosage().getDose();
 
-        medEntries +=
+        medEntries.append(
             getEntryForMedication(
                 medAdm.getId(),
                 medAdm.getMedication(),
@@ -165,7 +165,7 @@ public class CdaMedicationGenerator {
                 details,
                 dose,
                 null,
-                CdaGeneratorConstants.MOOD_CODE_DEF);
+                CdaGeneratorConstants.MOOD_CODE_DEF));
       }
 
       // Add Medication Requests
@@ -210,7 +210,7 @@ public class CdaMedicationGenerator {
           medstatus = "active";
         }
 
-        medEntries +=
+        medEntries.append(
             getEntryForMedication(
                 medReq.getId(),
                 medReq.getMedication(),
@@ -220,7 +220,7 @@ public class CdaMedicationGenerator {
                 details,
                 null,
                 startDate,
-                CdaGeneratorConstants.MOOD_CODE_INT);
+                CdaGeneratorConstants.MOOD_CODE_INT));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
