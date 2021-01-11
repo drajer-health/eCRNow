@@ -15,6 +15,9 @@ testCase:
       Practitioner:
       - params: "11817978"
         responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+      - params: "675844"
+        responseFilePath: "R4/Organization/Organization.json"
       Condition:
       - params:
           patient: "12742571"
