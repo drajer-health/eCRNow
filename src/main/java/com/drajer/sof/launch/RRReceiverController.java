@@ -2,10 +2,10 @@ package com.drajer.sof.launch;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.sof.model.RRReceiver;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.RRReceiverService;
 import com.drajer.sof.utils.Authorization;
@@ -20,11 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -48,19 +44,20 @@ public class RRReceiverController {
   @CrossOrigin
   @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
   public ResponseEntity<String> rrReceiver(
-      @RequestBody String obj,
-      @OptionalParam(name = "type") String type,
-      @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
-      @OptionalParam(name = "fhirServerURL") String fhirServerURL,
-      @OptionalParam(name = "patientId") String patientId,
-      @OptionalParam(name = "encounterId") String encounterId,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID") String xCorrelationIdHttpHeaderValue,
+      @RequestBody RRReceiver rrReceiver,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.debug("Received Obj::::: {}", obj);
       // Construct the DocumentReference Resource
-      DocumentReference docRef =
-          rrReceieverService.constructDocumentReference(obj, type, patientId, encounterId);
+      DocumentReference docRef = rrReceieverService.constructDocumentReference(rrReceiver);
+
+      logger.debug(
+          "docRef===========> {}",
+          FhirContext.forR4().newJsonParser().encodeResourceToString(docRef));
+
+      final String fhirServerURL = rrReceiver.getFhirServerURL();
 
       // Get ClientDetails using the FHIR Server URL
       ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(fhirServerURL);
@@ -90,7 +87,7 @@ public class RRReceiverController {
             fhirContextInitializer.createClient(context, fhirServerURL, accessToken);
 
         MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
-        logger.info("DocumentReference Id::::: {}", outcome.getId().getIdPart());
+
       } else {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
