@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.client.utils.URIBuilder;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,7 +25,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   WireMockHelper stubHelper;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Throwable {
 
     try {
       super.setUp();
@@ -43,7 +42,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     map.put("token", "R4/Misc/AccessToken.json");
     map.put("metaData", "R4/Misc/MetaData_r4.json");
 
-    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     stubHelper.stubAuthAndMetadata(map);
 
     stubFor(
@@ -53,13 +52,6 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
   }
 
   @Test

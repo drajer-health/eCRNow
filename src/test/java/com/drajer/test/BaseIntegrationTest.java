@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestUtils;
+import com.drajer.test.util.WireMockHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -64,13 +66,15 @@ public abstract class BaseIntegrationTest {
   protected static final String URL = "http://localhost:";
   protected static final String fhirBaseUrl = "/FHIR";
 
-  protected int wireMockHttpPort;
+  protected static final int wireMockHttpPort = 9010;
+  protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
 
   @Before
-  public void setUp() throws IOException {
-    wireMockHttpPort = port + 1;
+  public void setUp() throws Throwable {
     session = sessionFactory.openSession();
+    wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
+    wireMockServer.resetMappings();
   }
 
   @After
