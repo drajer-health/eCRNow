@@ -27,7 +27,6 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
   @Before
   public void setUp() {
-
     try {
       super.setUp();
       tx = session.beginTransaction();
@@ -52,7 +51,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
             .willReturn(
                 aResponse()
                     .withStatus(200)
-                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
   }
 
   @After
@@ -67,14 +66,14 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   public void testRRReceiver() {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.add("X-Request-ID", "testRRReceiver");
-    headers.add("X-Correlation-ID", "testRRReceiver");
+    headers.add("X-Request-ID", "123456");
+    headers.add("X-Correlation-ID", "9876543");
 
     URIBuilder ub;
     try {
       ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
 
-      String rrResponse = TestUtils.getFileContentAsString("R4/Misc/reportabilityResponse.json");
+      String rrResponse = TestUtils.getFileContentAsString("R4/Misc/rrTest.json");
 
       HttpEntity<String> entity = new HttpEntity<>(rrResponse, headers);
       ResponseEntity<String> response =
