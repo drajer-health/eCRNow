@@ -1,9 +1,6 @@
 package com.drajer.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
@@ -17,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,17 +60,10 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     session.flush();
     tx.commit();
 
-    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
-    logger.info("Creating wiremockstubs..");
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
   }
 
   @Parameters(name = "{0}")
@@ -105,6 +94,7 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
     assertNotNull(createEicr.getEicrData());
+    assertFalse(createEicr.getEicrData().isEmpty());
   }
 
   private void getLaunchDetailAndStatus() {
@@ -124,16 +114,12 @@ public class ITSystemLaunch extends BaseIntegrationTest {
   }
 
   private Eicr getCreateEicrDocument() {
-
     try {
-
       do {
-
         // Minimum 2 sec is required as App will execute
         // createEicr workflow after 2 sec as per eRSD.
         Thread.sleep(2000);
         getLaunchDetailAndStatus();
-
       } while (!state.getCreateEicrStatus().getEicrCreated());
 
       return (session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId())));

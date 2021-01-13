@@ -2,10 +2,8 @@ package com.drajer.test.util;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
-import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import com.drajer.test.model.StubVO;
@@ -19,28 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WireMockHelper {
-  private String baseUrl;
+  private String baseUrl = "/FHIR";
   private int wireMockPort;
   WireMockServer wireMockServer;
 
   private static final Logger logger = LoggerFactory.getLogger(WireMockHelper.class);
 
-  public WireMockHelper(String baseUrl, int wireMockPort) {
-    super();
-    this.baseUrl = baseUrl;
-    this.wireMockPort = wireMockPort;
-    try {
-      wireMockServer = new WireMockServer(this.wireMockPort);
-      wireMockServer.start();
-      configureFor("localhost", wireMockPort);
-      logger.info("Initialized wiremock on http server: {}", wireMockPort);
-    } catch (Exception e) {
-      logger.error("Error in initializing wiremock", e);
-    }
-  }
-
-  public void stopMockServer() {
-    wireMockServer.stop();
+  public WireMockHelper(WireMockServer wireMockSvr, int port) {
+    this.wireMockServer = wireMockSvr;
+    this.wireMockPort = port;
   }
 
   public void stubResources(Map<String, ?> stubMapping) {
@@ -92,7 +77,7 @@ public class WireMockHelper {
 
     // Mapping for our resources
     logger.info("Creating wiremock stub for uri: " + url);
-    stubFor(
+    wireMockServer.stubFor(
         get(urlEqualTo(url))
             .atPriority(1)
             .willReturn(
@@ -110,7 +95,7 @@ public class WireMockHelper {
       if (key.equalsIgnoreCase("default")) {
         UrlMatchingStrategy urlMatchingStrategy = new UrlMatchingStrategy();
         urlMatchingStrategy.setUrlPattern(baseUrl + "/.*");
-        stubFor(
+        wireMockServer.stubFor(
             any(urlMatchingStrategy)
                 .atPriority(10)
                 .willReturn(
@@ -125,7 +110,7 @@ public class WireMockHelper {
         String tokenUrl = "http://localhost:" + wireMockPort + "/FHIR/token";
         String response = TestUtils.getFileContentAsString((String) otherMappings.get(key));
         response = response.replace("Replace this with mock URL for test", tokenUrl);
-        stubFor(
+        wireMockServer.stubFor(
             get(urlEqualTo(url))
                 .atPriority(1)
                 .willReturn(
@@ -136,7 +121,7 @@ public class WireMockHelper {
         logger.info("Stub Created for Metadata uri: " + url);
       } else if (key.equalsIgnoreCase("token")) {
         url = baseUrl + "/" + key;
-        stubFor(
+        wireMockServer.stubFor(
             post(urlEqualTo(url))
                 .atPriority(1)
                 .willReturn(
