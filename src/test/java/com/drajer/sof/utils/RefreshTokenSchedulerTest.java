@@ -10,11 +10,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.drajer.sof.model.ClientDetails;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.drajer.test.util.TestUtils;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import java.io.IOException;
 import org.apache.http.HttpHeaders;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
@@ -34,25 +33,17 @@ public class RefreshTokenSchedulerTest {
 
   private ClientDetails clientDetails;
   private RefreshTokenScheduler token = new RefreshTokenScheduler();
-  ObjectMapper mapper = new ObjectMapper();
 
   private int wireMockPort = wireMockRule.port();
 
   @Before
   public void setup() {
 
-    try {
-      clientDetails =
-          mapper.readValue(
-              this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
-              ClientDetails.class);
-      clientDetails.setTokenURL("http://localhost:" + wireMockPort + "/authorization");
-
-    } catch (IOException e) {
-
-      e.printStackTrace();
-      fail("This exception is not expected, fix the test");
-    }
+    clientDetails =
+        (ClientDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/ClientDetails/ClientDataEntry1.json", ClientDetails.class);
+    clientDetails.setTokenURL("http://localhost:" + wireMockPort + "/authorization");
   }
 
   @Test

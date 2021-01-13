@@ -33,7 +33,7 @@ public class LoadingQueryService implements AbstractQueryService {
       try {
         bundle = generateDSTU2Bundle.createDSTU2Bundle(launchDetails, dstu2FhirData, start, end);
       } catch (Exception e) {
-        logger.error("Error in Generating the DSTU2 Bundle");
+        logger.error("Error in Generating the DSTU2 Bundle", e);
       }
       dstu2FhirData.setData(bundle);
       logger.info("Bundle Entry Size====> {}", dstu2FhirData.getData().getEntry().size());
@@ -44,7 +44,7 @@ public class LoadingQueryService implements AbstractQueryService {
       try {
         bundle = generateR4Bundle.createR4Bundle(launchDetails, r4FhirData, start, end);
       } catch (Exception e) {
-        logger.error("Error in Generating the R4 Bundle");
+        logger.error("Error in Generating the R4 Bundle", e);
       }
       r4FhirData.setData(bundle);
       return r4FhirData;

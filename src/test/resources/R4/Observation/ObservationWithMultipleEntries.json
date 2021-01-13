@@ -1,0 +1,3085 @@
+{
+    "resourceType": "Bundle",
+    "id": "25d15bea-e176-475c-ae02-3b2c5eb2342e",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742571"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-1-73079797",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-1-73079797",
+                "meta": {
+                    "versionId": "73079797",
+                    "lastUpdated": "2020-04-28T19:42:29.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Alcohol</p><p><b>Issued Date</b>: Apr 28, 2020  7:42 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "363905002",
+                            "display": "Details of alcohol drinking behavior (observable entity)"
+                        }
+                    ],
+                    "text": "Alcohol"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:42:29.000Z",
+                "hasMember": [
+                    {
+                        "reference": "Observation/SH-73079797-q4625817"
+                    },
+                    {
+                        "reference": "Observation/SH-73079797-q4625813"
+                    },
+                    {
+                        "reference": "Observation/SH-73079797-q4625809"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-73079797-q4625817",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-73079797-q4625817",
+                "meta": {
+                    "versionId": "73079797",
+                    "lastUpdated": "2020-04-28T19:42:29.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Question</b>: SHX Alcohol use</p><p><b>Response</b>: Current</p><p><b>Issued Date</b>: Apr 28, 2020  7:42 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "363905002",
+                            "display": "Details of alcohol drinking behavior (observable entity)"
+                        }
+                    ],
+                    "text": "SHX Alcohol use"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:42:29.000Z",
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "15240007",
+                            "display": "Current (qualifier value)"
+                        }
+                    ],
+                    "text": "Current"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-73079797-q4625813",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-73079797-q4625813",
+                "meta": {
+                    "versionId": "73079797",
+                    "lastUpdated": "2020-04-28T19:42:29.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Question</b>: SHX Alcohol type</p><p><b>Response</b>: Wine</p><p><b>Issued Date</b>: Apr 28, 2020  7:42 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "363905002",
+                            "display": "Details of alcohol drinking behavior (observable entity)"
+                        }
+                    ],
+                    "text": "SHX Alcohol type"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:42:29.000Z",
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "35748005",
+                            "display": "Wine (substance)"
+                        }
+                    ],
+                    "text": "Wine"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-73079797-q4625809",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-73079797-q4625809",
+                "meta": {
+                    "versionId": "73079797",
+                    "lastUpdated": "2020-04-28T19:42:29.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Question</b>: SHX Alcohol frequency</p><p><b>Response</b>: 1-2 times per week</p><p><b>Issued Date</b>: Apr 28, 2020  7:42 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "68518-0"
+                        }
+                    ],
+                    "text": "SHX Alcohol frequency"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:42:29.000Z",
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "1371000175106",
+                            "display": "One to two times per week (qualifier value)"
+                        }
+                    ],
+                    "text": "1-2 times per week"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-93-73079787",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-93-73079787",
+                "meta": {
+                    "versionId": "73079787",
+                    "lastUpdated": "2020-04-28T19:41:32.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Tobacco</p><p><b>Issued Date</b>: Apr 28, 2020  7:41 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "72166-2"
+                        }
+                    ],
+                    "text": "Tobacco"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:41:32.000Z",
+                "hasMember": [
+                    {
+                        "reference": "Observation/SH-73079787-q4625825"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/SH-73079787-q4625825",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "SH-73079787-q4625825",
+                "meta": {
+                    "versionId": "73079787",
+                    "lastUpdated": "2020-04-28T19:41:32.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Question</b>: SHX Tobacco use</p><p><b>Response</b>: Never (less than 100 in lifetime)</p><p><b>Issued Date</b>: Apr 28, 2020  7:41 P.M. UTC</p></div>"
+                },
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "social-history",
+                                "display": "Social History"
+                            }
+                        ],
+                        "text": "Social History"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "72166-2"
+                        }
+                    ],
+                    "text": "SHX Tobacco use"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "issued": "2020-04-28T19:41:32.000Z",
+                "valueCodeableConcept": {
+                    "text": "Never (less than 100 in lifetime)"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287553",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287553",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-30T20:31:10.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Coronavirus COVID-19</p><p><b>Result</b>: Detected</p><p><b>Interpretation</b>: ABN</p><p><b>Effective Date</b>: Apr 30, 2020  8:25 A.M. UTC</p><p><b>Reference Range</b>: Not Detected</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287553-2020043020311100"
+                    }
+                ],
+                "basedOn": [
+                    {
+                        "reference": "ServiceRequest/311539757"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2572358253",
+                            "display": "Coronavirus COVID-19",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94500-6"
+                        }
+                    ],
+                    "text": "Coronavirus COVID-19"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-30T08:25:00.000Z",
+                "issued": "2020-04-30T20:31:10.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                                            "code": "OP",
+                                            "display": "ordering provider"
+                                        }
+                                    ],
+                                    "text": "ordering provider"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/11786044"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "260373001",
+                            "display": "Detected (qualifier value)"
+                        }
+                    ],
+                    "text": "Detected"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "201",
+                                "display": "ABN",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "A",
+                                "display": "Abnormal"
+                            }
+                        ],
+                        "text": "ABN"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        },
+                        "text": "Not Detected"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287440",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287440",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-29T14:01:59.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Gravida</p><p><b>Result</b>: 1</p><p><b>Effective Date</b>: Apr 29, 2020  2:01 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287440-2020042914020000"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "710919",
+                            "display": "Gravida",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "161732006",
+                            "display": "Gravida (observable entity)"
+                        }
+                    ],
+                    "text": "Gravida"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-29T14:01:59.000Z",
+                "issued": "2020-04-29T14:01:59.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122630"
+                    }
+                ],
+                "valueString": "1"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287271",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287271",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-29T13:33:48.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: Height/Length Measured</p><p><b>Result</b>: 162.56 cm</p><p><b>Effective Date</b>: Apr 29, 2020  1:32 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287271-2020042913334800"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "4154126",
+                            "display": "Height/Length Measured",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8302-2"
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "3137-7"
+                        }
+                    ],
+                    "text": "Height/Length Measured"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-29T13:32:00.000Z",
+                "issued": "2020-04-29T13:32:18.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 162.56,
+                    "unit": "cm",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "cm"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287269",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287269",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-29T13:33:48.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: Weight Dosing</p><p><b>Result</b>: 70.3 kg</p><p><b>Effective Date</b>: Apr 29, 2020  1:32 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287269-2020042913334800"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "4154123",
+                            "display": "Weight Dosing",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "79348-9"
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7"
+                        }
+                    ],
+                    "text": "Weight Dosing"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-29T13:32:00.000Z",
+                "issued": "2020-04-29T13:32:18.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 70.3,
+                    "unit": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287257",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287257",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T20:08:47.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Chief Complaint</p><p><b>Result</b>: Shortness of Breath, cough, fever, rule out COVID-19</p><p><b>Effective Date</b>: Apr 28, 2020  8:08 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287257-2020042820084700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "704668",
+                            "display": "Chief Complaint",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "33962009",
+                            "display": "Chief complaint (finding)"
+                        }
+                    ],
+                    "text": "Chief Complaint"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T20:08:47.000Z",
+                "issued": "2020-04-28T20:08:47.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/4122622"
+                    }
+                ],
+                "valueString": "Shortness of Breath, cough, fever, rule out COVID-19"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287247",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287247",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T19:43:24.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: D-VTE Risk Signs, Symptoms</p><p><b>Result</b>: Yes</p><p><b>Effective Date</b>: Apr 28, 2020  7:43 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287247-2020042819432300"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "21828067",
+                            "display": "D-VTE Risk Signs, Symptoms",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "D-VTE Risk Signs, Symptoms"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:43:23.000Z",
+                "issued": "2020-04-28T19:43:23.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/1"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373066001",
+                            "display": "Yes (qualifier value)"
+                        }
+                    ],
+                    "text": "Yes"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287237",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287237",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Inpatient Visitor Restrictions</p><p><b>Result</b>: Yes</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287237-2020042819431600"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2557697861",
+                            "display": "Inpatient Visitor Restrictions",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Inpatient Visitor Restrictions"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373066001",
+                            "display": "Yes (qualifier value)"
+                        }
+                    ],
+                    "text": "Yes"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287207",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287207",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Preferred Written Language</p><p><b>Result</b>: English</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287207-2020042819403000"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2554902345",
+                            "display": "Preferred Written Language",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Preferred Written Language"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "text": "English"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287205",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287205",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Preferred Spoken Language</p><p><b>Result</b>: English</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287205-2020042819403000"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2554900711",
+                            "display": "Preferred Spoken Language",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "370157003",
+                            "display": "Main spoken language (finding)"
+                        }
+                    ],
+                    "text": "Preferred Spoken Language"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "text": "English"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287221",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287221",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Family Member Travel History</p><p><b>Result</b>: No recent travel</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287221-2020042819411200"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "95393293",
+                            "display": "Family Member Travel History",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Family Member Travel History"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "text": "No recent travel"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287225",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287225",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Difficulty Breathing</p><p><b>Result</b>: Yes</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287225-2020042819411200"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "95392541",
+                            "display": "Difficulty Breathing",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Difficulty Breathing"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373066001",
+                            "display": "Yes (qualifier value)"
+                        }
+                    ],
+                    "text": "Yes"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287241",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287241",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Discharge To, Anticipated</p><p><b>Result</b>: Home with hospice</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287241-2020042819431600"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "83791571",
+                            "display": "Discharge To, Anticipated",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "35081000175103"
+                        }
+                    ],
+                    "text": "Discharge To, Anticipated"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "text": "Home with hospice"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287217",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287217",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Recent Travel History</p><p><b>Result</b>: Last travel within 7 days</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287217-2020042819411200"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "18751316",
+                            "display": "Recent Travel History",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "34831000175105"
+                        }
+                    ],
+                    "text": "Recent Travel History"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "text": "Last travel within 7 days"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287219",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287219",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Recent Travel Location</p><p><b>Result</b>: Italy</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287219-2020042819411200"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "4154424",
+                            "display": "Recent Travel Location",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "161086008",
+                            "display": "Recent countries visited (observable entity)"
+                        }
+                    ],
+                    "text": "Recent Travel Location"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "223668000",
+                            "display": "Italy (geographic location)"
+                        }
+                    ],
+                    "text": "Italy"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287229",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287229",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: New or Worsening Cough</p><p><b>Result</b>: Yes</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287229-2020042819411200"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "4154412",
+                            "display": "New or Worsening Cough",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "New or Worsening Cough"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373066001",
+                            "display": "Yes (qualifier value)"
+                        }
+                    ],
+                    "text": "Yes"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287239",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287239",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Visitor Restrictions</p><p><b>Result</b>: Patient in Isolation  - however if acuity continues to worsen, family may visit</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287239-2020042819431600"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "3619015",
+                            "display": "Visitor Restrictions",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Visitor Restrictions"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueString": "Patient in Isolation  - however if acuity continues to worsen, family may visit"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287233",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287233",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Home Diet</p><p><b>Result</b>: Regular</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287233-2020042819411600"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "705140",
+                            "display": "Home Diet",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Home Diet"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "17854005",
+                            "display": "Regular (qualifier value)"
+                        }
+                    ],
+                    "text": "Regular"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287227",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287227",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Fever</p><p><b>Result</b>: Yes</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287227-2020042819411200"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "704734",
+                            "display": "Fever",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Fever"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373066001",
+                            "display": "Yes (qualifier value)"
+                        }
+                    ],
+                    "text": "Yes"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287213",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287213",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Advance Directive Additional Information</p><p><b>Result</b>: No</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287213-2020042819403600"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "704656",
+                            "display": "Advance Directive Additional Information",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Advance Directive Additional Information"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373067005",
+                            "display": "No (qualifier value)"
+                        }
+                    ],
+                    "text": "No"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197287211",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197287211",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2020-04-28T19:43:22.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: Advance Directive</p><p><b>Result</b>: Yes</p><p><b>Effective Date</b>: Apr 28, 2020  7:40 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197287211-2020042819403600"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "704644",
+                            "display": "Advance Directive",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Advance Directive"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T19:40:00.000Z",
+                "issued": "2020-04-28T19:40:25.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "373066001",
+                            "display": "Yes (qualifier value)"
+                        }
+                    ],
+                    "text": "Yes"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197286933",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197286933",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T18:39:48.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Code</b>: D-Readmission Risk</p><p><b>Result</b>: Action completed</p><p><b>Effective Date</b>: Apr 28, 2020  6:39 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286933-2020042818394700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "extension": [
+                            {
+                                "valueCode": "unknown",
+                                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "23917087",
+                            "display": "D-Readmission Risk",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "3431000175101"
+                        }
+                    ],
+                    "text": "D-Readmission Risk"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T18:39:47.000Z",
+                "issued": "2020-04-28T18:39:47.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/1"
+                    }
+                ],
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "255594003",
+                            "display": "Complete (qualifier value)"
+                        }
+                    ],
+                    "text": "Action completed"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197286931",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197286931",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T18:39:47.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: SpO2</p><p><b>Result</b>: 92 %</p><p><b>Effective Date</b>: Apr 28, 2020  6:34 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286931-2020042818394700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "3623994",
+                            "display": "SpO2",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2708-6"
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "59408-5"
+                        }
+                    ],
+                    "text": "SpO2"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T18:34:00.000Z",
+                "issued": "2020-04-28T18:39:14.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 92,
+                    "unit": "%",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "%"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197286923",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197286923",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T18:39:47.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: Heart Rate Monitored</p><p><b>Result</b>: 110 bpm</p><p><b>Interpretation</b>: HI</p><p><b>Effective Date</b>: Apr 28, 2020  6:34 P.M. UTC</p><p><b>Reference Range</b>: 60-100 bpm</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286923-2020042818394700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "2700541",
+                            "display": "Heart Rate Monitored",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "76282-3"
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8867-4"
+                        }
+                    ],
+                    "text": "Heart Rate Monitored"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T18:34:00.000Z",
+                "issued": "2020-04-28T18:35:18.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 110,
+                    "unit": "bpm",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{beats}/min"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "207",
+                                "display": "HI",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ],
+                        "text": "HI"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "low": {
+                            "value": 60,
+                            "unit": "bpm",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "{beats}/min"
+                        },
+                        "high": {
+                            "value": 100,
+                            "unit": "bpm",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "{beats}/min"
+                        },
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197286921",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197286921",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T18:39:47.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: Temperature Oral</p><p><b>Result</b>: 40 degC</p><p><b>Interpretation</b>: HI</p><p><b>Effective Date</b>: Apr 28, 2020  6:34 P.M. UTC</p><p><b>Reference Range</b>: 35.8-37.3 degC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286921-2020042818394700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "703558",
+                            "display": "Temperature Oral",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8331-1"
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8310-5"
+                        }
+                    ],
+                    "text": "Temperature Oral"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T18:34:00.000Z",
+                "issued": "2020-04-28T18:34:40.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 40,
+                    "unit": "degC",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "Cel"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "207",
+                                "display": "HI",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ],
+                        "text": "HI"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "low": {
+                            "value": 35.8,
+                            "unit": "degC",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "Cel"
+                        },
+                        "high": {
+                            "value": 37.3,
+                            "unit": "degC",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "Cel"
+                        },
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197286925",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "M-197286925",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2020-04-28T18:39:47.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: Respiratory Rate</p><p><b>Result</b>: 22 br/min</p><p><b>Interpretation</b>: HI</p><p><b>Effective Date</b>: Apr 28, 2020  6:34 P.M. UTC</p><p><b>Reference Range</b>: 14-20 br/min</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286925-2020042818394700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                            "code": "703540",
+                            "display": "Respiratory Rate",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "9279-1"
+                        }
+                    ],
+                    "text": "Respiratory Rate"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T18:34:00.000Z",
+                "issued": "2020-04-28T18:38:51.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "valueQuantity": {
+                    "value": 22,
+                    "unit": "br/min",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "{Breaths}/min"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                "code": "207",
+                                "display": "HI",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ],
+                        "text": "HI"
+                    }
+                ],
+                "referenceRange": [
+                    {
+                        "low": {
+                            "value": 14,
+                            "unit": "br/min",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "{Breaths}/min"
+                        },
+                        "high": {
+                            "value": 20,
+                            "unit": "br/min",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "{Breaths}/min"
+                        },
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                    "code": "normal",
+                                    "display": "Normal Range"
+                                }
+                            ],
+                            "text": "Normal Range"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/BP-197286927-197286929",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "BP-197286927-197286929",
+                "meta": {
+                    "versionId": "1-1",
+                    "lastUpdated": "2020-04-28T18:39:47.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Vital Signs</p><p><b>Code</b>: Blood pressure</p><p><b>Components</b>:</p><dl><dt>Systolic Blood Pressure</dt><dd><b>Result</b>: 100 mmHg</dd><dd><b>Reference Range</b>: 90-140 mmHg</dd><dd><b>Interpretation</b>: Normal</dd><dt>Diastolic Blood Pressure</dt><dd><b>Result</b>: 52 mmHg</dd><dd><b>Reference Range</b>: 60-90 mmHg</dd><dd><b>Interpretation</b>: LOW</dd></dl><p><b>Effective Date</b>: Apr 28, 2020  6:34 P.M. UTC</p></div>"
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286927-2020042818394700"
+                    },
+                    {
+                        "system": "https://fhir.cerner.com/ceuuid",
+                        "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197286929-2020042818394700"
+                    }
+                ],
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ],
+                        "text": "Vital Signs"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "75367002",
+                            "display": "Blood pressure (observable entity)"
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "85354-9",
+                            "display": "Blood pressure panel with all children optional"
+                        }
+                    ],
+                    "text": "Blood pressure"
+                },
+                "subject": {
+                    "reference": "Patient/12742571"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "effectiveDateTime": "2020-04-28T18:34:00.000Z",
+                "issued": "2020-04-28T18:38:57.000Z",
+                "performer": [
+                    {
+                        "extension": [
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "LA",
+                                            "display": "legal authenticator"
+                                        }
+                                    ],
+                                    "text": "legal authenticator"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            },
+                            {
+                                "valueCodeableConcept": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                            "code": "PPRF",
+                                            "display": "primary performer"
+                                        }
+                                    ],
+                                    "text": "primary performer"
+                                },
+                                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+                            }
+                        ],
+                        "reference": "Practitioner/607928"
+                    }
+                ],
+                "component": [
+                    {
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                                    "code": "703501",
+                                    "display": "Systolic Blood Pressure",
+                                    "userSelected": true
+                                },
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "8480-6"
+                                }
+                            ],
+                            "text": "Systolic Blood Pressure"
+                        },
+                        "valueQuantity": {
+                            "value": 100,
+                            "unit": "mmHg",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "mm[Hg]"
+                        },
+                        "interpretation": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                        "code": "214",
+                                        "userSelected": true
+                                    },
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                        "code": "N",
+                                        "display": "Normal"
+                                    }
+                                ]
+                            }
+                        ],
+                        "referenceRange": [
+                            {
+                                "low": {
+                                    "value": 90,
+                                    "unit": "mmHg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mm[Hg]"
+                                },
+                                "high": {
+                                    "value": 140,
+                                    "unit": "mmHg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mm[Hg]"
+                                },
+                                "type": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                            "code": "normal",
+                                            "display": "Normal Range"
+                                        }
+                                    ],
+                                    "text": "Normal Range"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                                    "code": "703516",
+                                    "display": "Diastolic Blood Pressure",
+                                    "userSelected": true
+                                },
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "8462-4"
+                                }
+                            ],
+                            "text": "Diastolic Blood Pressure"
+                        },
+                        "valueQuantity": {
+                            "value": 52,
+                            "unit": "mmHg",
+                            "system": "http://unitsofmeasure.org",
+                            "code": "mm[Hg]"
+                        },
+                        "interpretation": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                                        "code": "211",
+                                        "display": "LOW",
+                                        "userSelected": true
+                                    },
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                        "code": "L",
+                                        "display": "Low"
+                                    }
+                                ],
+                                "text": "LOW"
+                            }
+                        ],
+                        "referenceRange": [
+                            {
+                                "low": {
+                                    "value": 60,
+                                    "unit": "mmHg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mm[Hg]"
+                                },
+                                "high": {
+                                    "value": 90,
+                                    "unit": "mmHg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mm[Hg]"
+                                },
+                                "type": {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                                            "code": "normal",
+                                            "display": "Normal Range"
+                                        }
+                                    ],
+                                    "text": "Normal Range"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

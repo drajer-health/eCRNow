@@ -129,7 +129,7 @@ public class WorkflowService {
     } catch (JsonProcessingException e1) {
 
       String msg = "Unable to read/write execution state";
-      logger.error(msg);
+      logger.error(msg, e1);
       throw new RuntimeException(msg);
     }
 
@@ -239,8 +239,8 @@ public class WorkflowService {
         .getTaskScheduler()
         .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 
-    logger2.info(
-        "Job Scheduled for Action to executate for : {} at time : {}", actionType, t.toString());
+    String timing = (t != null) ? t.toString() : "";
+    logger2.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 
   public static void scheduleJob(
@@ -252,7 +252,7 @@ public class WorkflowService {
         .getTaskScheduler()
         .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
 
-    logger2.info(
-        "Job Scheduled for Action to executate for : {} at time : {}", actionType, t.toString());
+    String timing = (t != null) ? t.toString() : "";
+    logger2.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 }

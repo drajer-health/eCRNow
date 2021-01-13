@@ -40,7 +40,7 @@ public class Authorization {
       metadata = new JSONObject(response.getBody());
       logger.info("Received Metadata Information from URL::::: {}", serverURL);
     } catch (Exception e) {
-      logger.error("Error in getting Metadata information for URL:::::" + serverURL);
+      logger.error("Error in getting Metadata information for URL::::: {}", serverURL, e);
     }
     return metadata;
   }
@@ -94,7 +94,7 @@ public class Authorization {
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: " + tokenDetails.getClientId());
+          "Error in Getting the AccessToken for the client: {}", tokenDetails.getClientId(), e);
     }
     return tokenResponse;
   }

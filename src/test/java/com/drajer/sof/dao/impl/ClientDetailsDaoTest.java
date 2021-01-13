@@ -5,11 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,23 @@ public class ClientDetailsDaoTest {
 
   @Autowired private ClientDetailsDaoImpl clientDetailsDao;
 
-  ObjectMapper mapper = new ObjectMapper();
+  private static ClientDetails clientDetails = null;
+  private static ClientDetails clientDetails2 = null;
+
+  @Before
+  public void setUp() {
+    clientDetails =
+        (ClientDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/ClientDetails/ClientDataEntry1.json", ClientDetails.class);
+    clientDetails2 =
+        (ClientDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/ClientDetails/ClientDataEntry2.json", ClientDetails.class);
+  }
 
   @Test
   public void saveClientDetails() throws JsonParseException, JsonMappingException, IOException {
-    ClientDetails clientDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
-            ClientDetails.class);
 
     ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(clientDetails);
 
@@ -50,10 +60,6 @@ public class ClientDetailsDaoTest {
 
   @Test
   public void getClientDetailsById() throws JsonParseException, JsonMappingException, IOException {
-    ClientDetails clientDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
-            ClientDetails.class);
 
     ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(clientDetails);
 
@@ -65,10 +71,6 @@ public class ClientDetailsDaoTest {
 
   @Test
   public void getClientDetailsByUrl() throws JsonParseException, JsonMappingException, IOException {
-    ClientDetails clientDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
-            ClientDetails.class);
 
     String fhirServerBaseURL = clientDetails.getFhirServerBaseURL();
 
@@ -81,14 +83,6 @@ public class ClientDetailsDaoTest {
 
   @Test
   public void getAllClientDetails() throws JsonParseException, JsonMappingException, IOException {
-    ClientDetails clientDetails =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
-            ClientDetails.class);
-    ClientDetails clientDetails2 =
-        mapper.readValue(
-            this.getClass().getClassLoader().getResourceAsStream("clientDetails2.json"),
-            ClientDetails.class);
 
     clientDetailsDao.saveOrUpdate(clientDetails);
     clientDetailsDao.saveOrUpdate(clientDetails2);

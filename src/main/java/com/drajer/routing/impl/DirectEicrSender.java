@@ -1,6 +1,5 @@
 package com.drajer.routing.impl;
 
-import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.EicrSender;
 import com.drajer.sof.model.LaunchDetails;
 import java.io.InputStream;
@@ -40,17 +39,12 @@ public class DirectEicrSender extends EicrSender {
       logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) context;
 
-      ApplicationUtils.getDetailStatus(details);
-
       InputStream is = IOUtils.toInputStream(data, StandardCharsets.UTF_8);
 
       try {
 
         logger.info(
-            " Sending Mail from "
-                + details.getDirectUser()
-                + " to : "
-                + details.getDirectRecipient());
+            " Sending Mail from {} to {}", details.getDirectUser(), details.getDirectRecipient());
         sendMail(
             details.getDirectHost(),
             details.getDirectUser(),
@@ -62,7 +56,7 @@ public class DirectEicrSender extends EicrSender {
       } catch (Exception e) {
 
         String msg = "Unable to send Direct Message";
-        logger.error(msg);
+        logger.error(msg, e);
 
         throw new RuntimeException(msg);
       }

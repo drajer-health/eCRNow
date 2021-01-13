@@ -120,7 +120,7 @@ public class RRReceiverController {
         }
       }
     } catch (Exception e) {
-      logger.error("Error in Processing the request");
+      logger.error("Error in Processing the request", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 

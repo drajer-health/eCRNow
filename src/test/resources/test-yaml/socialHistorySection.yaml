@@ -1,10 +1,11 @@
 ---
 testName: "SocialHistorySectionValidation"
 testCase:
-  eCR-socialHistory:
-    fileData:
+  eCR-socialHistory-birthsex-pergnancy-travel-occupation:
+    testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[6]/section/"
     resourceMappingData:
       Patient:
       - params: "12742571"
@@ -56,9 +57,9 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/templateId"
+    - xPath: "templateId"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section"
+    - xPath: ""
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.2.17"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.2.17"
       'templateId[2]/@extension': "2015-08-01"
@@ -67,13 +68,13 @@ testCase:
       'code/@codeSystemName': "LOINC"
       'code/@displayName': "Social History"      
       title: "SOCIAL HISTORY"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/text/table/thead/tr/th"
+    - xPath: "text/table/thead/tr/th"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/text/table/tbody/tr"
+    - xPath: "text/table/tbody/tr"
       count: 6
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/text/table/tbody/tr[1]/td"
+    - xPath: "text/table/tbody/tr[1]/td"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/text/table"
+    - xPath: "text/table/"
       'thead/tr/th[1]': "Social History Observation"
       'thead/tr/th[2]': "Social History Observation Result"
 #      'tbody/tr[1]/td[1]/content': "Birth Sex"
@@ -88,13 +89,13 @@ testCase:
 #      'tbody/tr[5]/td[2]/content': "Travel abroad within past thirty days (finding)-Last travel within 21 days"
 #      'tbody/tr[6]/td[1]/content': "Travel History"
 #      'tbody/tr[6]/td[2]/content': "Travel abroad within past thirty days (finding)-No recent travel"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry"
+    - xPath: "entry"
       count: 6
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[1]/observation/templateId"
+    - xPath: "entry[1]/observation/templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[1]/observation/id"
+    - xPath: "entry[1]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[1]/observation"
+    - xPath: "entry[1]/observation/"
       '@classCode': "OBS"
       '@moodCode': "EVN"
       'templateId/@root': "2.16.840.1.113883.10.20.22.4.200"
@@ -111,11 +112,11 @@ testCase:
       'value/@codeSystem': "2.16.840.1.113883.5.1"
       'value/@codeSystemName': "Administrative Gender"
 #      'value/@displayName': "Male"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[2]/observation/templateId"
+    - xPath: "entry[2]/observation/templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[2]/observation/id"
+    - xPath: "entry[2]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[2]/observation"
+    - xPath: "entry[2]/observation/"
       '@classCode': "OBS"
       '@moodCode': "EVN"
       'templateId/@root': "2.16.840.1.113883.10.20.15.3.8"
@@ -127,20 +128,20 @@ testCase:
       'code/@codeSystemName': "HL7ActCode"
       'code/@displayName': "Assertion"
       'statusCode/@code': "completed"
-      'effectiveTime/low/@value': "20200101"
+#      'effectiveTime/low/@value': "20200101"
 #      'effectiveTime/high/@value': "20200101"
       'value/@type': "CD"
       'value/@code': "77386006"
       'value/@codeSystem': "2.16.840.1.113883.6.96"
 #      'value/@codeSystemName': "SNOMED-CT"
       'value/@displayName': "Patient currently pregnant (finding)"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[3]/observation/templateId"
+    - xPath: "entry[3]/observation/templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[3]/observation/id"
+    - xPath: "entry[3]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[3]/observation/code/translation"
+    - xPath: "entry[3]/observation/code/translation"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[3]/observation"
+    - xPath: "entry[3]/observation/"
       '@classCode': "OBS"
       '@moodCode': "EVN"
       'templateId/@root': "2.16.840.1.113883.10.20.22.4.38"
@@ -166,13 +167,13 @@ testCase:
       'value/@codeSystem': "2.16.840.1.113883.6.96"
       'value/@codeSystemName': "sct"
       'value/@displayName': "Student (occupation)"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[4]/observation/templateId"
+    - xPath: "entry[4]/observation/templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[4]/observation/id"
+    - xPath: "entry[4]/observation/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[4]/observation/code/translation"
+    - xPath: "entry[4]/observation/code/translation"
       count: 2
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[4]/observation"
+    - xPath: "entry[4]/observation/"
       '@classCode': "OBS"
       '@moodCode': "EVN"
       'templateId/@root': "2.16.840.1.113883.10.20.22.4.38"
@@ -198,13 +199,13 @@ testCase:
       'value/@codeSystem': "2.16.840.1.113883.6.1"
       'value/@codeSystemName': "loinc.org"
 #      'value/@displayName': "Some college"
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[5]"
+#    - xPath: "entry[5]"
 #      '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[5]/act/templateId"
+    - xPath: "entry[5]/act/templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[5]/act/id"
+    - xPath: "entry[5]/act/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[5]/act"
+    - xPath: "entry[5]/act/"
       '@classCode': "ACT"
       '@moodCode': "EVN"
       'templateId/@root': "2.16.840.1.113883.10.20.15.2.3.1"
@@ -218,13 +219,13 @@ testCase:
       'text': "Travel abroad within past thirty days (finding)-Last travel within 21 days"
       'statusCode/@code': "completed"
 #      'effectiveTime/@value': "20200728"
-#    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[6]"
+#    - xPath: "entry[6]"
 #      '@typeCode': "DRIV"
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[6]/act/templateId"
+    - xPath: "entry[6]/act/templateId"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[6]/act/id"
+    - xPath: "entry[6]/act/id"
       count: 1
-    - xPath: "/ClinicalDocument/component/structuredBody/component[6]/section/entry[6]/act"
+    - xPath: "entry[6]/act/"
       '@classCode': "ACT"
       '@moodCode': "EVN"
       'templateId/@root': "2.16.840.1.113883.10.20.15.2.3.1"

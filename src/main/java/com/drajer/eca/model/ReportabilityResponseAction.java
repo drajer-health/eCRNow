@@ -31,8 +31,6 @@ public class ReportabilityResponseAction extends AbstractAction {
       logger.info(
           " Executing RR Check Eicr Action , Prior Execution State : = {}", details.getStatus());
 
-      // ActionRepo.getInstance().getDirectTransport().sendData(details, data);
-
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
         logger.info(" Related Actions exist, so check dependencies ");
@@ -90,8 +88,6 @@ public class ReportabilityResponseAction extends AbstractAction {
     for (Integer id : ids) {
 
       logger.info(" Found eICR with Id {} to check for RR ", id);
-
-      // String data = ActionRepo.getInstance().getEicrRRService().get(id).getData();
 
       // Add a submission object every time.
       RRStatus submitState = new RRStatus();

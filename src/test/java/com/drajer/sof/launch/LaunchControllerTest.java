@@ -10,9 +10,9 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.FhirContextInitializer;
+import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Date;
 import org.hl7.fhir.r4.model.Period;
@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 
 public class LaunchControllerTest {
 
-  ObjectMapper mapper = new ObjectMapper();
   private LaunchDetails currentStateDetails;
   private ClientDetails clientDetails;
 
@@ -36,21 +35,14 @@ public class LaunchControllerTest {
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
-
-    try {
-      currentStateDetails =
-          mapper.readValue(
-              this.getClass().getClassLoader().getResourceAsStream("launchDetails.json"),
-              LaunchDetails.class);
-
-      clientDetails =
-          mapper.readValue(
-              this.getClass().getClassLoader().getResourceAsStream("clientDetails.json"),
-              ClientDetails.class);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    currentStateDetails =
+        (LaunchDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
+    clientDetails =
+        (ClientDetails)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/ClientDetails/ClientDataEntry1.json", ClientDetails.class);
   }
 
   @Test
@@ -61,6 +53,8 @@ public class LaunchControllerTest {
 
     FhirContext context = Mockito.mock(FhirContext.class);
     IGenericClient client = Mockito.mock(IGenericClient.class);
+
+    currentStateDetails.setFhirVersion("DSTU2");
 
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
         .thenReturn(context);

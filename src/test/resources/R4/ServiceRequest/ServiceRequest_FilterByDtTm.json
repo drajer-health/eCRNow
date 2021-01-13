@@ -125,7 +125,6 @@
                 "encounter": {
                     "reference": "Encounter/97953900"
                 },
-                "occurrenceDateTime": "2020-10-28T14:33:32.000-05:00",
                 "authoredOn": "2020-04-28T14:33:32.000-05:00",
                 "requester": {
                     "reference": "Practitioner/1",

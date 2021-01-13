@@ -40,7 +40,8 @@ public class TestUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
 
-  static ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ClassLoader classLoader = TestUtils.class.getClassLoader();
 
   public static String toJson(Object object) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
@@ -101,14 +102,6 @@ public class TestUtils {
     return fileContent;
   }
 
-  public static Document getXmlDocument(String expectedXml)
-      throws ParserConfigurationException, SAXException, IOException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document document = builder.parse(TestUtils.class.getResourceAsStream("/" + expectedXml));
-    return document;
-  }
-
   public static Bundle getExpectedBundle(FhirContext context, String expectedBundle)
       throws IOException {
     final IParser jsonParser = context.newJsonParser();
@@ -161,18 +154,14 @@ public class TestUtils {
     return FhirContext.forR4().newJsonParser().parseResource(clazz, response);
   }
 
-  public static ObjectMapper getmapperObject() {
-    return mapper;
-  }
+  public static Object getResourceAsObject(String fileName, Class<?> clazz) {
 
-  public static Object getFileContentAsObject(String fileName, Class clazz) {
-    String content = getFileContentAsString(fileName);
     Object obj = null;
     try {
-      obj = mapper.readValue(content, clazz);
+      obj = mapper.readValue(classLoader.getResourceAsStream(fileName), clazz);
     } catch (Exception e) {
 
-      logger.info("Error in parsing json : " + fileName + " to Object");
+      logger.info("Error in parsing : " + fileName + " to Object");
     }
     return obj;
   }
@@ -226,7 +215,7 @@ public class TestUtils {
     return clinicalDoc;
   }
 
-  public static Document getXmlDocuments(String xmlContent)
+  public static Document getXmlDocument(String xmlContent)
       throws ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
