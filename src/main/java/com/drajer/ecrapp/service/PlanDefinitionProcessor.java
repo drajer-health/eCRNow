@@ -48,6 +48,7 @@ import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,8 @@ public class PlanDefinitionProcessor {
 
   @Value("${ersd.covid19}")
   Boolean covid;
+
+  @Autowired private LibraryProcessor libraryProcessor;
 
   private final Logger logger = LoggerFactory.getLogger(PlanDefinitionProcessor.class);
 
@@ -515,10 +518,27 @@ public class PlanDefinitionProcessor {
       for (PlanDefinitionActionConditionComponent cond : condlist) {
 
         if (cond.hasKind() && cond.hasExpression()) {
-
           CQLExpressionCondition cd = new CQLExpressionCondition();
           cd.setConditionType(cond.getKind());
           cd.setExpression(cond.getExpression().getExpression());
+
+          cd.setLibraryProcessor(this.libraryProcessor);
+
+          /*
+          cd.setUrl("http://libraryUrl.com/Library/whatever");
+          cd.setPatientId("1234");
+
+          // This could point at a directory where the eRSD bundle exists
+          // (Alternatively we could change things to just pass the Bundle directly)
+          Endpoint libraryAndTerminologyEndpoint = new Endpoint().setAddress("url-of-content-source-or-file-system").setConnectionType(new Coding().setCode("hl7-fhir-files"));
+          cd.setLibraryEndpoint(libraryAndTerminologyEndpoint);
+          cd.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+
+          // Endpoints support headers (such as auth headers) and the Library processor will respect them.
+          Endpoint dataEndpoint = new Endpoint().setAddress("url-of-data-source").setConnectionType(new Coding().setCode("hl7-fhir-rest"));
+          cd.setDataEndpoint(dataEndpoint);
+
+          */
 
           act.addCondition(cd);
         }
