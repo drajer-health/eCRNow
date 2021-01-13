@@ -144,6 +144,7 @@ public class CdaGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/v3-ParticipationType";
   public static final String FHIR_LOC_ROLE_CODE_TYPE_V3 =
       "http://terminology.hl7.org/CodeSystem/v3-RoleCode";
+  public static final String FHIR_CONTAINED_REFERENCE = "#";
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
@@ -843,12 +844,12 @@ public class CdaGeneratorConstants {
   public static final String VS_TABLE_COL_3_BODY_CONTENT = "vitalSignDate";
   public static final String DIAGNOSTICSTUDY_TABLE_COL_1_TITLE = "Diagnostic Study";
   public static final String DIAGNOSTICSTUDY_COL_1_BODY_CONTENT = "diagnosticStudy";
-  public static final String LABTEST_TABLE_COL_1_TITLE = "Lab Test";
-  public static final String LABTEST_TABLE_COL_1_BODY_CONTENT = "labTest";
+  public static final String LABTEST_TABLE_COL_1_TITLE = "Lab Test Name";
+  public static final String LABTEST_TABLE_COL_1_BODY_CONTENT = "labTestName";
   public static final String LABTEST_TABLE_COL_2_TITLE = "Lab Test Result Value";
   public static final String LABTEST_TABLE_COL_2_BODY_CONTENT = "labTestResultValue";
   public static final String LABTEST_TABLE_COL_3_TITLE = "Lab Test Result Date";
-  public static final String LABTEST_TABLE_COL_3_BODY_CONTENT = "labTestResultDate";
+  public static final String LABTEST_TABLE_COL_3_BODY_CONTENT = "labTestResultValueDate";
   public static final String MED_TABLE_COL_1_TITLE = "Medication Name";
   public static final String MED_TABLE_COL_1_BODY_CONTENT = "medication";
   public static final String MED_TABLE_COL_2_TITLE = "Medication Start Date";
@@ -883,12 +884,14 @@ public class CdaGeneratorConstants {
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
+
   // Static block to load OID to URI mapping from property file
   static {
     try (InputStream input =
         CdaGeneratorConstants.class
             .getClassLoader()
             .getResourceAsStream("oid-uri-mapping-r4.properties")) {
+
       Properties prop = new Properties();
       prop.load(input);
       prop.forEach(
@@ -928,7 +931,7 @@ public class CdaGeneratorConstants {
 
   public static Pair<String, String> getCodeSystemFromUrl(String url) {
 
-    logger.info(" Url passed = {}", url);
+    logger.debug(" Url passed = {}", url);
 
     if (StringUtils.isEmpty(url)) {
       return new Pair<>("", "");
