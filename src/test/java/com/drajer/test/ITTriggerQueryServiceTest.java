@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,8 +74,8 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       launchDetailJson = launchDetailJson.replace("port", "" + wireMockHttpPort);
       launchDetails = mapper.readValue(launchDetailJson, LaunchDetails.class);
 
-      stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
-      logger.info("Creating wiremockstubs..");
+      stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+      logger.info("Creating WireMock stubs..");
       stubHelper.stubResources(allResourceMapping);
       stubHelper.stubAuthAndMetadata(allOtherMapping);
 
@@ -87,13 +86,6 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
 
     session.flush();
     tx.commit();
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
   }
 
   @Parameters(name = "{0}")

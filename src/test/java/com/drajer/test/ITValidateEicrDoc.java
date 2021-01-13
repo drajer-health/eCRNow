@@ -10,11 +10,7 @@ import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.util.TestDataGenerator;
-import com.drajer.test.util.TestUtils;
-import com.drajer.test.util.ValidationUtils;
-import com.drajer.test.util.WireMockHelper;
-import java.io.IOException;
+import com.drajer.test.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +24,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +66,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   WireMockHelper stubHelper;
 
   @Before
-  public void launchTestSetUp() throws IOException {
+  public void launchTestSetUp() throws Throwable {
     logger.info("Executing Test: {}", testCaseId);
     tx = session.beginTransaction();
 
@@ -81,17 +76,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     session.flush();
     tx.commit();
 
-    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
-    logger.info("Creating wiremockstubs..");
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
   }
 
   @Parameters(name = "{0}")
@@ -109,12 +97,12 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/historyOfPresentIllnessSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/reasonForVisitSection.yaml"));
 
-    int totalTestcount = 0;
+    int totalTestCount = 0;
     for (TestDataGenerator testData : testDataGenerator) {
-      totalTestcount = totalTestcount + testData.getAllTestCases().size();
+      totalTestCount = totalTestCount + testData.getAllTestCases().size();
     }
 
-    Object[][] data = new Object[totalTestcount][5];
+    Object[][] data = new Object[totalTestCount][5];
 
     int count = 0;
     for (TestDataGenerator testData : testDataGenerator) {

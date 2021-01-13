@@ -23,7 +23,6 @@ import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,17 +78,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     tx.commit();
 
     // Setup wireMock and mock FHIR call as per yaml file.
-    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
-    logger.info("Creating wiremockstubs..");
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
   }
 
   @Parameters(name = "{0}")
@@ -144,7 +136,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     sb.append(clientDetails.getClientSecret());
     sb.append("\"}");
 
-    stubFor(
+    wireMockServer.stubFor(
         post(urlPathEqualTo(restApiUrl.getPath()))
             .withRequestBody(equalToJson(sb.toString()))
             .atPriority(1)
@@ -169,7 +161,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     sb1.append("\"}");
 
     String restResponse = "{\"status\":\"success\"}";
-    stubFor(
+    wireMockServer.stubFor(
         post(urlPathEqualTo(restApiUrl.getPath()))
             .withRequestBody(equalToJson(sb1.toString()))
             .atPriority(1)
@@ -187,10 +179,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     validateActionStatus();
 
-    verify(
+    wireMockServer.verify(
         postRequestedFor(urlEqualTo(restApiUrl.getPath()))
             .withRequestBody(equalToJson(sb.toString())));
-    verify(
+    wireMockServer.verify(
         postRequestedFor(urlPathEqualTo(restApiUrl.getPath()))
             .withRequestBody(equalToJson(sb.toString())));
   }

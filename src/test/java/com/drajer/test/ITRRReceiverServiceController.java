@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.client.utils.URIBuilder;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,8 +25,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   WireMockHelper stubHelper;
 
   @Before
-  public void setUp() {
-
+  public void setUp() throws Throwable {
     try {
       super.setUp();
       tx = session.beginTransaction();
@@ -43,7 +41,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     map.put("token", "R4/Misc/AccessToken.json");
     map.put("metaData", "R4/Misc/MetaData_r4.json");
 
-    stubHelper = new WireMockHelper(fhirBaseUrl, wireMockHttpPort);
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     stubHelper.stubAuthAndMetadata(map);
 
     stubFor(
@@ -52,14 +50,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
             .willReturn(
                 aResponse()
                     .withStatus(200)
-                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
   }
 
   @Test
@@ -67,17 +58,14 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   public void testRRReceiver() {
 
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", "123456");
+    headers.add("X-Correlation-ID", "9876543");
 
     URIBuilder ub;
     try {
       ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
-      ub.addParameter("type", "RR");
-      ub.addParameter("xRequestIdHttpHeaderValue", "testRRReceiver");
-      ub.addParameter("fhirServerURL", clientDetails.getFhirServerBaseURL());
-      ub.addParameter("patientId", "12345");
-      ub.addParameter("encounterId", "67890");
 
-      String rrResponse = TestUtils.getFileContentAsString("R4/Misc/reportabilityResponse.json");
+      String rrResponse = TestUtils.getFileContentAsString("R4/Misc/rrTest.json");
 
       HttpEntity<String> entity = new HttpEntity<>(rrResponse, headers);
       ResponseEntity<String> response =
