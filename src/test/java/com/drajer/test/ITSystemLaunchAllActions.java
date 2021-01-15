@@ -30,12 +30,12 @@ import org.springframework.test.context.TestPropertySource;
 
 /**
  * Description: This test class is created for testing all the actions. ersd.json for this test is
- * modified with actions as below. MatchTrigger - Will execute without any dependency. CreateEicr -
- * Will execute after 2 seconds of MatchTrigger action. PeriodicEicr - will execute after 2 seconds
- * of MatchTrigger action. with frequency 1 with interval of 2 seconds. CloseOutEicr - will execute
- * after 2 seconds of CreateEicr action. with frequency 1 with interval of 2 seconds. ValidateEicr -
- * will execute immediately after each EICR created with above action. SubmitEicr - will execute
- * immediately after ValidateEICR.
+ * modified with actions as below. MatchTrigger - Will execute without any dependency. Create_EICR -
+ * Will execute after 2 seconds of MatchTrigger action. Periodic_EICR - will execute after 10
+ * seconds of MatchTrigger action. with frequency 1 with interval of 2 seconds. CloseOut_EICR - will
+ * execute immediately after CreateEicr action is completed. with frequency 1 with interval of 2
+ * seconds. Validate_EICR - will execute immediately after each EICR created with above action.
+ * Submit_EICR - will execute immediately after ValidateEICR.
  */
 @RunWith(Parameterized.class)
 @TestPropertySource(properties = "ersd.file.location=src/test/resources/AppData/ersd.json")
@@ -117,7 +117,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
-    waitForEICR(30000);
+    waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus();
   }
@@ -182,7 +182,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
-    waitForEICR(30000);
+    waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus();
 
@@ -209,7 +209,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
-    waitForEICR(30000);
+    waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateMatchedTriggerStatus(JobStatus.COMPLETED);
     validateCreateEICR(JobStatus.SCHEDULED, false);
