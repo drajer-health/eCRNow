@@ -383,16 +383,9 @@ public class R4ResourcesData {
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
       String medicationId) {
-    Medication medication =
+    return medication =
         (Medication)
             resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
-
-    if (medication != null) {
-      List<Medication> medicationList = new ArrayList<>();
-      medicationList.add(medication);
-      r4FhirData.setMedicationList(medicationList);
-    }
-    return medication;
   }
 
   public List<MedicationAdministration> getMedicationAdministrationData(
