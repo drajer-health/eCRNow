@@ -168,7 +168,7 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getLocationXml(Location loc, Organization org) {
+  public static String getLocationXml(Location loc, Organization org, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -183,7 +183,7 @@ public class CdaHeaderGenerator {
         sb.append(
             CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, loc.getId()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), loc.getId()));
       }
 
       if (loc.getType() != null) {
@@ -222,13 +222,13 @@ public class CdaHeaderGenerator {
         sb.append(
             CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, org.getId()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), org.getId()));
       }
 
       if (org.getType() != null) {
 
         List<CodeableConcept> cds = org.getType();
-
+        logger.debug(" Getting organization Type to populate location code ");
         String typeXml =
             CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false);
 
@@ -255,7 +255,7 @@ public class CdaHeaderGenerator {
 
       sb.append(
           CdaGeneratorUtils.getXmlForII(
-              CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
+              details.getAssigningAuthorityId(), CdaGeneratorConstants.UNKNOWN_VALUE));
       sb.append(
           CdaGeneratorUtils.getXmlForNullCD(
               CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
@@ -346,7 +346,11 @@ public class CdaHeaderGenerator {
       Identifier id = org.getIdentifierFirstRep();
 
       if (id != null && !id.isEmpty()) {
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id.getValue()));
+
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()),
+                id.getValue()));
       } else {
         sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), org.getId()));
       }
@@ -456,7 +460,7 @@ public class CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
 
-    sb.append(getLocationXml(data.getLocation(), data.getOrganization()));
+    sb.append(getLocationXml(data.getLocation(), data.getOrganization(), details));
 
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(

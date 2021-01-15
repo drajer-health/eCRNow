@@ -1014,6 +1014,7 @@ public class R4ResourcesData {
         logger.info(
             "Filtered MedicationAdministration-----------> {}", medAdministrationsList.size());
       }
+      List<Medication> medicationList = r4FhirData.getMedicationList();
       r4FhirData.setMedicationAdministrations(medAdministrationsList);
       for (MedicationAdministration medAdministration : medAdministrationsList) {
         if (medAdministration.getMedication() != null
@@ -1036,12 +1037,16 @@ public class R4ResourcesData {
             BundleEntryComponent medicationEntry =
                 new BundleEntryComponent().setResource(medication);
             bundle.addEntry(medicationEntry);
+            if (medication != null) {
+              medicationList.add(medication);
+            }
           }
         }
         BundleEntryComponent medAdministrationEntry =
             new BundleEntryComponent().setResource(medAdministration);
         bundle.addEntry(medAdministrationEntry);
       }
+      r4FhirData.setMedicationList(medicationList);
     } catch (Exception e) {
       logger.error("Error in getting the MedicationAdministration Data", e);
     }
@@ -1052,6 +1057,7 @@ public class R4ResourcesData {
           getMedicationRequestData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
       logger.info("Filtered MedicationRequests-----------> {} ", medRequestsList.size());
+      List<Medication> medicationList = r4FhirData.getMedicationList();
       r4FhirData.setMedicationRequests(medRequestsList);
       for (MedicationRequest medRequest : medRequestsList) {
         if (medRequest.getMedication() != null
@@ -1074,11 +1080,15 @@ public class R4ResourcesData {
             BundleEntryComponent medicationEntry =
                 new BundleEntryComponent().setResource(medication);
             bundle.addEntry(medicationEntry);
+            if (medication != null) {
+              medicationList.add(medication);
+            }
           }
         }
         BundleEntryComponent medRequestEntry = new BundleEntryComponent().setResource(medRequest);
         bundle.addEntry(medRequestEntry);
       }
+      r4FhirData.setMedicationList(medicationList);
     } catch (Exception e) {
       logger.error("Error in getting the MedicationRequest Data", e);
     }

@@ -178,7 +178,7 @@ public class LaunchController {
         if (object.getString(FHIR_VERSION).equals("1.0.2")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
-        if (object.getString(FHIR_VERSION).equals("4.0.0")) {
+        if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
           fhirVersion = FhirVersionEnum.R4.toString();
         }
 

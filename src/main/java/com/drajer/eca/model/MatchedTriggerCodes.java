@@ -7,6 +7,7 @@ import org.apache.commons.collections4.SetUtils;
 public class MatchedTriggerCodes {
 
   private Set<String> matchedCodes;
+  private Set<String> matchedValues;
   private String valueSet;
   private String valueSetVersion;
   private String matchedPath;
@@ -47,10 +48,26 @@ public class MatchedTriggerCodes {
     this.matchedPath = matchedPath;
   }
 
+  public Set<String> getMatchedValues() {
+    return matchedValues;
+  }
+
+  public void setMatchedValues(Set<String> matchedValues) {
+    this.matchedValues = matchedValues;
+  }
+
   public Boolean hasMatchedTriggerCodes(String type) {
 
     return matchedCodes != null
         && !matchedCodes.isEmpty()
+        && matchedPath != null
+        && matchedPath.contains(type);
+  }
+
+  public Boolean hasMatchedTriggerValue(String type) {
+
+    return matchedValues != null
+        && !matchedValues.isEmpty()
         && matchedPath != null
         && matchedPath.contains(type);
   }
@@ -63,6 +80,17 @@ public class MatchedTriggerCodes {
       Set<String> union = SetUtils.union(matchedCodes, codes);
 
       matchedCodes = union;
+    }
+  }
+
+  public void addValues(Set<String> values) {
+
+    if (matchedValues == null) matchedValues = new HashSet<>();
+
+    if (values != null) {
+      Set<String> union = SetUtils.union(matchedValues, values);
+
+      matchedValues = union;
     }
   }
 }
