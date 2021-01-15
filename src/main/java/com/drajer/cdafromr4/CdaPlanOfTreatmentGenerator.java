@@ -71,7 +71,7 @@ public class CdaPlanOfTreatmentGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
       int rowNum = 1;
-      String potObsXml = "";
+      StringBuilder potObsXml = new StringBuilder();
       for (ServiceRequest s : sr) {
 
         Pair<String, Boolean> srDisplayName =
@@ -98,7 +98,7 @@ public class CdaPlanOfTreatmentGenerator {
 
         rowNum++;
 
-        potObsXml += getPlannedObservationXml(s, details);
+        potObsXml.append(getPlannedObservationXml(s, details));
       }
 
       // Close the Text Element

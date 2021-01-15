@@ -1,16 +1,18 @@
 package com.drajer.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestUtils;
+import com.drajer.test.util.WireMockHandle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -56,25 +58,23 @@ public abstract class BaseIntegrationTest {
   @Autowired protected SessionFactory sessionFactory;
   protected Session session = null;
   protected Transaction tx = null;
-
-  protected TestRestTemplate restTemplate = new TestRestTemplate();
   protected HttpHeaders headers = new HttpHeaders();
 
-  protected static ObjectMapper mapper = new ObjectMapper();
+  protected static final TestRestTemplate restTemplate = new TestRestTemplate();
+  protected static final ObjectMapper mapper = new ObjectMapper();
 
   protected static final String URL = "http://localhost:";
-  protected String baseUrl = "/FHIR";
+  protected static final String fhirBaseUrl = "/FHIR";
 
-  protected ClassLoader classLoader = this.getClass().getClassLoader();
-
-  protected int wireMockHttpPort;
-
+  protected static final int wireMockHttpPort = 9010;
+  protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
 
   @Before
-  public void setUp() throws IOException {
-    wireMockHttpPort = port + 1;
+  public void setUp() throws Throwable {
     session = sessionFactory.openSession();
+    wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
+    wireMockServer.resetMappings();
   }
 
   @After
@@ -84,26 +84,57 @@ public abstract class BaseIntegrationTest {
     }
   }
 
-  protected String getSystemLaunchInputData(String systemLaunchFile) throws IOException {
-    String systemLaunchInputData = TestUtils.getFileContentAsString(systemLaunchFile);
-    systemLaunchInputData = systemLaunchInputData.replace("port", "" + wireMockHttpPort);
-    return systemLaunchInputData;
+  protected String getSystemLaunchPayload(String systemLaunchFile) {
+
+    String systemLaunchPayload = TestUtils.getFileContentAsString(systemLaunchFile);
+
+    // Hardcode FHIR URL to match clientDetail to avoid mistakes in test data file.
+    String fhirUrl =
+        clientDetails != null
+            ? clientDetails.getFhirServerBaseURL()
+            : URL + wireMockHttpPort + fhirBaseUrl;
+    JSONObject jsonObject = new JSONObject(systemLaunchPayload);
+    jsonObject.put("fhirServerURL", fhirUrl);
+    systemLaunchPayload = jsonObject.toString();
+
+    return systemLaunchPayload;
   }
 
   protected void createClientDetails(String clientDetailsFile) throws IOException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
-    clientDetailString = clientDetailString.replace("port", "" + wireMockHttpPort);
 
+    // Hardcode FHIR & Token URL to avoid mistakes in test data file.
+    String fhirUrl = URL + wireMockHttpPort + fhirBaseUrl;
+    String authUrl = fhirBaseUrl + "/token";
+    String directUrl = URL + wireMockHttpPort + "/directurl";
+    JSONObject jsonObject = new JSONObject(clientDetailString);
+    jsonObject.put("fhirServerBaseURL", fhirUrl);
+    jsonObject.put("tokenURL", authUrl);
+    jsonObject.put("restAPIURL", directUrl);
+    clientDetailString = jsonObject.toString();
+
+    // Insert ClientDetails Row
     headers.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpEntity<String> entity = new HttpEntity<String>(clientDetailString, headers);
+    HttpEntity<String> entity = new HttpEntity<>(clientDetailString, headers);
     ResponseEntity<String> response =
         restTemplate.exchange(
             createURLWithPort("/api/clientDetails"), HttpMethod.POST, entity, String.class);
     clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
 
     assertEquals("Failed to save client details", HttpStatus.OK, response.getStatusCode());
+  }
+
+  protected ResponseEntity<String> invokeSystemLaunch(
+      String requestId, String systemLaunchPayload) {
+
+    logger.info("Invoking systemLaunch with payload: {}", systemLaunchPayload);
+
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", requestId);
+    HttpEntity<String> entity = new HttpEntity<>(systemLaunchPayload, headers);
+    return restTemplate.exchange(
+        createURLWithPort("/api/systemLaunch"), HttpMethod.POST, entity, String.class);
   }
 
   protected String createURLWithPort(String uri) {

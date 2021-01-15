@@ -84,7 +84,7 @@ public class CdaMedicationGenerator {
 
       // add Body Rows
       int rowNum = 1;
-      String medEntries = "";
+      StringBuilder medEntries = new StringBuilder();
 
       for (MedicationStatement med : meds) {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -118,7 +118,7 @@ public class CdaMedicationGenerator {
         Dosage dosage = null;
         if (med.getDosageFirstRep() != null) dosage = med.getDosageFirstRep();
 
-        medEntries +=
+        medEntries.append(
             getEntryForMedication(
                 med.getId(),
                 med.getMedication(),
@@ -129,7 +129,7 @@ public class CdaMedicationGenerator {
                 null,
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
-                med);
+                med));
       }
 
       // Add Medication Administration
@@ -165,7 +165,7 @@ public class CdaMedicationGenerator {
         if (medAdm.getDosage() != null && medAdm.getDosage().getDose() != null)
           dose = medAdm.getDosage().getDose();
 
-        medEntries +=
+        medEntries.append(
             getEntryForMedication(
                 medAdm.getId(),
                 medAdm.getMedication(),
@@ -176,7 +176,7 @@ public class CdaMedicationGenerator {
                 dose,
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
-                medAdm);
+                medAdm));
       }
 
       // Add Medication Requests
@@ -225,7 +225,7 @@ public class CdaMedicationGenerator {
           medstatus = "active";
         }
 
-        medEntries +=
+        medEntries.append(
             getEntryForMedication(
                 medReq.getId(),
                 medReq.getMedication(),
@@ -236,7 +236,7 @@ public class CdaMedicationGenerator {
                 null,
                 startDate,
                 moodCode,
-                medReq);
+                medReq));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));

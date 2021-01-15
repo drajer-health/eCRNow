@@ -544,7 +544,7 @@ public class CdaFhirUtilities {
                         if (part.getIndividual().getReferenceElement() != null)
                           logger.info(
                               " part.getIndividual = {}",
-                              part.getIndividual().getReferenceElement().toString());
+                              part.getIndividual().getReferenceElement());
 
                         if (part.getIndividual().getReferenceElement() != null
                             && part.getIndividual().getReferenceElement().getIdPart() != null) {
@@ -555,7 +555,7 @@ public class CdaFhirUtilities {
 
                           if (pr != null) {
 
-                            logger.info(" Found Practitioner for Type {}", type.toString());
+                            logger.info(" Found Practitioner for Type {}", type);
                             practs.add(pr);
                           } // Found Practitioenr
                         } // Valid Reference
@@ -564,7 +564,7 @@ public class CdaFhirUtilities {
                         }
                       } // Found Type that we need
                       else {
-                        logger.info(" Did not find the code for type {}", type.toString());
+                        logger.info(" Did not find the code for type {}", type);
                       }
                     } // Found participants that use standard code systems
                     else {
@@ -734,24 +734,7 @@ public class CdaFhirUtilities {
       Boolean csOptional) {
 
     StringBuilder sb = new StringBuilder(500);
-    List<Coding> codes = new ArrayList<>();
-
-    if (cds != null && !cds.isEmpty()) {
-
-      CodeableConcept cd = cds.get(0);
-
-      List<Coding> codings = cd.getCoding();
-
-      if (codings != null && !codings.isEmpty()) {
-
-        for (Coding code : codings) {
-
-          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
-
-          if (!StringUtils.isEmpty(csd.getValue0())) codes.add(code);
-        }
-      }
-    }
+    List<Coding> codes = getCodingForValidCodeSystems(cds);
 
     if (!valueTrue) sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
     else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
@@ -759,12 +742,8 @@ public class CdaFhirUtilities {
     return sb.toString();
   }
 
-  public static String getCodeableConceptXml(
-      List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
-
-    StringBuilder sb = new StringBuilder(500);
+  public static List<Coding> getCodingForValidCodeSystems(List<CodeableConcept> cds) {
     List<Coding> codes = new ArrayList<>();
-
     if (cds != null && !cds.isEmpty()) {
 
       Boolean found = false;
@@ -790,6 +769,14 @@ public class CdaFhirUtilities {
         } // codings not empy
       } // for all codeable concepts
     }
+    return codes;
+  }
+
+  public static String getCodeableConceptXml(
+      List<CodeableConcept> cds, String cdName, Boolean valueTrue) {
+
+    StringBuilder sb = new StringBuilder(500);
+    List<Coding> codes = getCodingForValidCodeSystems(cds);
 
     if (!valueTrue) sb.append(getCodingXml(codes, cdName));
     else sb.append(getCodingXmlForValue(codes, cdName));
@@ -846,7 +833,7 @@ public class CdaFhirUtilities {
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
 
-      logger.info(" Sb = {}", sb.toString());
+      logger.info(" Sb = {}", sb);
       sb.append(translations);
       sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 
@@ -1408,18 +1395,18 @@ public class CdaFhirUtilities {
 
     if (dt != null) {
 
-      String val = "";
+      StringBuilder val = new StringBuilder();
       if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
 
-        val += getStringForCoding(cd);
+        val.append(getStringForCoding(cd));
 
       } else if (dt instanceof CodeableConcept) {
 
         CodeableConcept cd = (CodeableConcept) dt;
 
         if (!StringUtils.isEmpty(cd.getText())) {
-          val += cd.getText();
+          val.append(cd.getText());
         } else {
           List<Coding> cds = cd.getCoding();
           Boolean first = true;
@@ -1427,13 +1414,13 @@ public class CdaFhirUtilities {
           for (Coding c : cds) {
 
             if (!first) {
-              val +=
-                  CdaGeneratorConstants.SPACE
-                      + CdaGeneratorConstants.PIPE
-                      + CdaGeneratorConstants.SPACE;
+
+              val.append(CdaGeneratorConstants.SPACE)
+                  .append(CdaGeneratorConstants.PIPE)
+                  .append(CdaGeneratorConstants.SPACE);
             }
             first = false;
-            val += getStringForCoding(c);
+            val.append(getStringForCoding(c));
           }
         }
 
@@ -1441,13 +1428,13 @@ public class CdaFhirUtilities {
 
         Quantity qt = (Quantity) dt;
 
-        val += getStringForQuantity(qt);
+        val.append(getStringForQuantity(qt));
 
       } else if (dt instanceof DateTimeType) {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val += d.getValueAsString();
+        val.append(d.getValueAsString());
 
       } else if (dt instanceof Timing) {
 
@@ -1466,22 +1453,24 @@ public class CdaFhirUtilities {
 
         logger.debug(" Found the Period element for creating string");
         if (pt.getStart() != null && pt.getEnd() != null) {
-          val += pt.getStart().toString() + CdaGeneratorConstants.PIPE + pt.getEnd().toString();
+          val.append(pt.getStart().toString())
+              .append(CdaGeneratorConstants.PIPE)
+              .append(pt.getEnd().toString());
         } else if (pt.getStart() != null) {
-          val += pt.getStart().toString();
+          val.append(pt.getStart().toString());
         } else {
-          val += CdaGeneratorConstants.UNKNOWN_VALUE;
+          val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
         }
       } else if (dt instanceof CodeType) {
 
         CodeType cd = (CodeType) dt;
 
-        val += cd.getValue();
+        val.append(cd.getValue());
       } else if (dt instanceof StringType) {
 
         StringType st = (StringType) dt;
 
-        val += st.getValue();
+        val.append(st.getValue());
       }
 
       logger.info(" Printing the class name {} and value {}", dt.getClass(), val);

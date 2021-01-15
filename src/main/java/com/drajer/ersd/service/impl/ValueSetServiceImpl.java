@@ -96,8 +96,8 @@ public class ValueSetServiceImpl implements ValueSetService {
           ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
 
       logger.info(
-          " Size of valueSetIdList = "
-              + ((valueSetIdList == null) ? "Null" : valueSetIdList.size()));
+          " Size of valueSetIdList = {}",
+          ((valueSetIdList == null) ? "Null" : valueSetIdList.size()));
 
       grouperToValueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
 
@@ -122,10 +122,9 @@ public class ValueSetServiceImpl implements ValueSetService {
 
     String path = dataRequirement.getType() + "." + codeFilter.getPath();
     logger.info(
-        " Trigger Path to Grouper Map "
-            + path
-            + ", Grouper "
-            + ((valuSetGrouper == null) ? "NULL" : valuSetGrouper.getId()));
+        " Trigger Path to Grouper Map {} , Grouper {}",
+        path,
+        valuSetGrouper == null ? "NULL" : valuSetGrouper.getId());
 
     ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
 

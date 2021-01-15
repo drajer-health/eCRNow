@@ -237,7 +237,7 @@ public class PlanDefinitionProcessor {
 
                   if (triggerDefinitionsList != null && !triggerDefinitionsList.isEmpty()) {
 
-                    logger.info(" Number of Trigger Definitions " + triggerDefinitionsList.size());
+                    logger.info(" Number of Trigger Definitions {}", triggerDefinitionsList.size());
 
                     for (TriggerDefinition triggerDefinition : triggerDefinitionsList) {
 
@@ -398,9 +398,7 @@ public class PlanDefinitionProcessor {
         acts.put(type, aa);
 
         logger.info(
-            " Map did not contain {}, so added to map resulting in size {}",
-            type.toString(),
-            acts.size());
+            " Map did not contain {}, so added to map resulting in size {}", type, acts.size());
       }
     }
   }

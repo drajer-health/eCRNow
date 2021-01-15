@@ -176,6 +176,57 @@ testCase:
       'name/given[1]': "Kristin"
       'name/given[2]': "Cerner"
       'name/family': "Carter"
+  eCR-header-author-NoValidPractitioner:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withInvalidClass.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: "author"
+        count: 1
+      # - xPath: "author/"
+      #   'time/@value': "20200512"
+      - xPath: "author/assignedAuthor/"
+        'id/@root': "2.16.840.1.113883.4.6"
+        'addr/streetAddressLine/@nullFlavor': "NI"
+        'addr/city/@nullFlavor': "NI"
+        'addr/state/@nullFlavor': "NI"
+        'addr/postalCode/@nullFlavor': "NI"
+        'addr/country/@nullFlavor': "NI"
+        'telecom/@nullFlavor': "NI"
+        'assignedPerson/name/given/@nullFlavor': "NI"
+        'assignedPerson/name/family/@nullFlavor': "NI"
+      - xPath: "componentOf/encompassingEncounter/responsibleParty/assignedEntity/"
+        'id/@root': "2.16.840.1.113883.4.6"
+        'addr/streetAddressLine/@nullFlavor': "NI"
+        'addr/city/@nullFlavor': "NI"
+        'addr/state/@nullFlavor': "NI"
+        'addr/postalCode/@nullFlavor': "NI"
+        'addr/country/@nullFlavor': "NI"
+        'telecom/@nullFlavor': "NI"
+        'assignedPerson/name/given/@nullFlavor': "NI"
+        'assignedPerson/name/family/@nullFlavor': "NI"
   eCR-header-custodian:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
