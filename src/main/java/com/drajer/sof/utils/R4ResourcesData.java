@@ -383,8 +383,7 @@ public class R4ResourcesData {
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
       String medicationId) {
-    return medication =
-        (Medication)
+    return (Medication)
             resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
   }
 
