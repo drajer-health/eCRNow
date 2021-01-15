@@ -159,7 +159,7 @@ public class EcaUtils {
         eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details);
       }
 
-      if (eICR != null && eICR.isEmpty()) {
+      if (eICR != null && !eICR.isEmpty()) {
         // Create the object for persistence.
         ecr = new Eicr();
         ecr.setEicrData(eICR);
