@@ -62,9 +62,9 @@ public class CdaSocialHistoryGenerator {
 
       String birthSexXml = "";
       String pregObsXml = "";
-      String pregCondXml = "";
-      String occHistoryXml = "";
-      String travelHistoryXml = "";
+      StringBuilder pregCondXml = new StringBuilder();
+      StringBuilder occHistoryXml = new StringBuilder();
+      StringBuilder travelHistoryXml = new StringBuilder();
       int index = 0;
       Map<String, String> bodyvals = new HashMap<>();
 
@@ -102,7 +102,7 @@ public class CdaSocialHistoryGenerator {
           sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
           index++;
 
-          pregCondXml += generatePregnancyEntry(c);
+          pregCondXml.append(generatePregnancyEntry(c));
         }
       }
 
@@ -136,7 +136,7 @@ public class CdaSocialHistoryGenerator {
             sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
             index++;
 
-            occHistoryXml += generateOccHistoryEntry(obs);
+            occHistoryXml.append(generateOccHistoryEntry(obs));
           }
         }
       }
@@ -160,7 +160,7 @@ public class CdaSocialHistoryGenerator {
           sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));
           index++;
 
-          travelHistoryXml += generateTravelHistoryEntry(obs, display);
+          travelHistoryXml.append(generateTravelHistoryEntry(obs, display));
         }
       }
 

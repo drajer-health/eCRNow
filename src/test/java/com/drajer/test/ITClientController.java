@@ -3,225 +3,208 @@ package com.drajer.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.sof.model.ClientDetails;
-import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@RunWith(Parameterized.class)
 public class ITClientController extends BaseIntegrationTest {
 
-  private String testCaseId;
+  private static String clientDetailPayload;
+  private static final String clientURI = "/api/clientDetails";
 
-  public ITClientController(String testCaseId) {
-    this.testCaseId = testCaseId;
+  private static ClientDetails expectedClientDetails;
+  private String clientUrl;
+
+  @BeforeClass
+  public static void clientSetUp() throws IOException {
+    clientDetailPayload =
+        TestUtils.getFileContentAsString("R4/Misc/ClientDetails/ClientDataEntry1.json");
+    expectedClientDetails = mapper.readValue(clientDetailPayload, ClientDetails.class);
   }
-
-  static int savedId;
-  static String clientDetailString;
-  static String testSaveClientData;
-
-  static int testClientDetailsId;
-
-  ClientDetails clientDetails;
-
-  static TestDataGenerator testDataGenerator;
-  String clientURI = "/api/clientDetails";
-
-  String clientDetailsFile2;
-  String clientDetailsFile1;
-
-  private static final Logger logger = LoggerFactory.getLogger(ITClientController.class);
 
   @Before
-  public void clientTestSetUp() throws IOException {
-    logger.info("Executing Tests with TestCase: " + testCaseId);
-    clientDetailsFile2 = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved");
-    clientDetailsFile1 = testDataGenerator.getTestData(testCaseId, "ClientDataToBeSaved2");
-  }
-
-  @After
-  public void cleanUp() {
-    session.close();
-  }
-
-  @Parameters(name = "{index}: {0}")
-  public static Collection<Object[]> data() {
-    testDataGenerator = new TestDataGenerator("test-yaml/clientControllerTest.yaml");
-    Set<String> testCaseSet = testDataGenerator.getAllTestCases();
-    Object[][] data = new Object[testCaseSet.size()][1];
-    int count = 0;
-    for (String testCase : testCaseSet) {
-      data[count][0] = testCase;
-      count++;
-    }
-
-    return Arrays.asList(data);
+  public void initTestData() {
+    clientUrl = createURLWithPort(clientURI);
   }
 
   @Test
   public void testSaveClient() throws IOException {
-    createSaveClientInputData();
-
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpEntity<String> entity = new HttpEntity<String>(testSaveClientData, headers);
     ResponseEntity<String> response =
-        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
-    savedId = mapper.readValue(response.getBody(), ClientDetails.class).getId();
-    ClientDetails expectedDetails = (ClientDetails) session.get(ClientDetails.class, savedId);
-
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
+    ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    // assertEquals(TestUtils.toJson(expectedDetails), response.getBody());
+    assertClientDetails(expectedClientDetails, actualClientDetails);
   }
 
   @Test
-  public void testSaveClient_dup() throws IOException {
-    createSaveClientInputData();
-
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpEntity<String> entity = new HttpEntity<String>(testSaveClientData, headers);
+  public void testSaveClient_duplicate() {
     ResponseEntity<String> response =
-        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    // resend the same client details
-    ResponseEntity<String> dupResponse =
-        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, dupResponse.getStatusCode());
+
+    // Resend the same client details
+    response = invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
   public void testUpdateClient_new() throws IOException {
-    createSaveClientInputData();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    StringBuilder str = new StringBuilder(testSaveClientData);
-    str.replace(
-        str.indexOf("test@ett.healthit.gov"),
-        str.indexOf("test@ett.healthit.gov") + "test@ett.healthit.gov".length(),
-        "updated-test@ett.healthit.gov");
-    str.replace(
-        str.indexOf("fhircreate"),
-        str.indexOf("fhircreate") + "fhircreate".length(),
-        "fhircreateUpd");
-
-    // send the updated client details
-    HttpEntity<String> updatedEntity = new HttpEntity<String>(str.toString(), headers);
-    ResponseEntity<String> updateResponse =
-        restTemplate.exchange(
-            createURLWithPort(clientURI), HttpMethod.PUT, updatedEntity, String.class);
-    assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
-    assertEquals(
-        "updated-test@ett.healthit.gov",
-        mapper.readValue(updateResponse.getBody(), ClientDetails.class).getDirectUser());
+    ResponseEntity<String> response =
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.PUT);
+    ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertClientDetails(expectedClientDetails, actualClientDetails);
   }
 
   @Test
-  public void testUpdateClient_existing() throws IOException {
-    createSaveClientInputData();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpEntity<String> entity = new HttpEntity<String>(testSaveClientData, headers);
+  public void testUpdateClient_existing_withSameID() throws IOException {
+    // Insert ClientDetail row
     ResponseEntity<String> response =
-        restTemplate.exchange(createURLWithPort(clientURI), HttpMethod.POST, entity, String.class);
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
+    ClientDetails clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    StringBuilder str = new StringBuilder(testSaveClientData);
-    str.replace(
-        str.indexOf("test@ett.healthit.gov"),
-        str.indexOf("test@ett.healthit.gov") + "test@ett.healthit.gov".length(),
-        "updated-test@ett.healthit.gov");
+    // Update the same clientDetails inserted above
+    clientDetails.setDirectUser("updatedUser@test.com");
+    String updateClientDetails = mapper.writeValueAsString(clientDetails);
 
-    // send the updated client details
-    HttpEntity<String> updatedEntity = new HttpEntity<String>(str.toString(), headers);
-    ResponseEntity<String> updateResponse =
-        restTemplate.exchange(
-            createURLWithPort(clientURI), HttpMethod.PUT, updatedEntity, String.class);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateResponse.getStatusCode());
+    // Send the updated client details
+    response = invokeClientDetailAPI(updateClientDetails, clientUrl, HttpMethod.PUT);
+    ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(clientDetails.getId(), actualClientDetails.getId());
+    assertEquals("updatedUser@test.com", actualClientDetails.getDirectUser());
+    assertClientDetails(clientDetails, actualClientDetails);
+  }
+
+  @Test
+  public void testUpdateClient_existing_withDifferentID() {
+    // Insert ClientDetail row
+    ResponseEntity<String> response =
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Update same client details above - this will act as duplicate due to different ID
+    response = invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.PUT);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
   public void testGetClientDetailsById() throws IOException {
-    createTestClientDetailsInDB();
+    // Insert ClientDetail Row
     ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort(clientURI + "/" + testClientDetailsId),
-            HttpMethod.GET,
-            null,
-            String.class);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
     ClientDetails clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
 
-    assertEquals(
-        mapper.readValue(clientDetailString, ClientDetails.class).getClientId(),
-        clientDetails.getClientId());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Fetch the row
+    String getUrl = clientUrl + "/" + clientDetails.getId();
+    response = invokeClientDetailAPI(clientDetailPayload, getUrl, HttpMethod.GET);
+    ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertClientDetails(clientDetails, actualClientDetails);
   }
 
   @Test
   public void testGetClientDetailsByURL() throws IOException {
-    createTestClientDetailsInDB();
+    // Insert ClientDetail Row
     ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort(clientURI + "?url=" + clientDetails.getFhirServerBaseURL()),
-            HttpMethod.GET,
-            null,
-            String.class);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
     ClientDetails clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
 
-    assertEquals(
-        mapper.readValue(clientDetailString, ClientDetails.class).getClientId(),
-        clientDetails.getClientId());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Fetch the row
+    String getUrl = clientUrl + "?url=" + clientDetails.getFhirServerBaseURL();
+    response = invokeClientDetailAPI(clientDetailPayload, getUrl, HttpMethod.GET);
+    ClientDetails actualClientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertClientDetails(clientDetails, actualClientDetails);
   }
 
   @Test
   public void testGetAllClientDetails() throws IOException {
-    createTestClientDetailsInDB();
+    // Insert first ClientDetail Row
     ResponseEntity<String> response =
-        restTemplate.exchange(
-            createURLWithPort(clientURI + "/"), HttpMethod.GET, null, String.class);
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
+    ClientDetails clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
     assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Insert second ClientDetail Row
+    clientDetails.setId(null);
+    clientDetails.setFhirServerBaseURL("https://modified/second/fhir/url");
+    clientDetails.setClientId("modifiedclientidfortest");
+    String secondClientDetails = mapper.writeValueAsString(clientDetails);
+    response = invokeClientDetailAPI(secondClientDetails, clientUrl, HttpMethod.POST);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Fetch the row
+    String getUrl = clientUrl + "/";
+    response = invokeClientDetailAPI(clientDetailPayload, getUrl, HttpMethod.GET);
 
     List<ClientDetails> clientList =
         (List<ClientDetails>) mapper.readValue(response.getBody(), List.class);
 
-    assertEquals(1, clientList.size());
+    assertEquals(2, clientList.size());
   }
 
-  private void createSaveClientInputData() throws IOException {
-
-    testSaveClientData = TestUtils.getFileContentAsString(clientDetailsFile1);
+  private ResponseEntity<String> invokeClientDetailAPI(
+      String testSaveClientData, String url, HttpMethod post) {
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    HttpEntity<String> entity = new HttpEntity<>(testSaveClientData, headers);
+    return restTemplate.exchange(url, post, entity, String.class);
   }
 
-  private void createTestClientDetailsInDB() throws IOException {
-    session = sessionFactory.openSession();
-    tx = session.beginTransaction();
-    clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile2);
+  private void assertClientDetails(
+      ClientDetails expectedClientDetails, ClientDetails actualClientDetails) {
 
-    clientDetails = mapper.readValue(clientDetailString, ClientDetails.class);
-
-    testClientDetailsId = (int) session.save(clientDetails);
-    session.flush();
-    tx.commit();
+    assertEquals(expectedClientDetails.getClientId(), actualClientDetails.getClientId());
+    assertEquals(
+        expectedClientDetails.getFhirServerBaseURL(), actualClientDetails.getFhirServerBaseURL());
+    assertEquals(expectedClientDetails.getTokenURL(), actualClientDetails.getTokenURL());
+    assertEquals(expectedClientDetails.getScopes(), actualClientDetails.getScopes());
+    assertEquals(
+        expectedClientDetails.getDirectRecipientAddress(),
+        actualClientDetails.getDirectRecipientAddress());
+    assertEquals(expectedClientDetails.getDirectUser(), actualClientDetails.getDirectUser());
+    assertEquals(expectedClientDetails.getRestAPIURL(), actualClientDetails.getRestAPIURL());
+    assertEquals(expectedClientDetails.getDirectHost(), actualClientDetails.getDirectHost());
+    assertEquals(
+        expectedClientDetails.getAssigningAuthorityId(),
+        actualClientDetails.getAssigningAuthorityId());
+    assertEquals(
+        expectedClientDetails.getEncounterEndThreshold(),
+        actualClientDetails.getEncounterEndThreshold());
+    assertEquals(
+        expectedClientDetails.getEncounterStartThreshold(),
+        actualClientDetails.getEncounterStartThreshold());
+    assertEquals(expectedClientDetails.getImapPort(), actualClientDetails.getImapPort());
+    assertEquals(expectedClientDetails.getSmtpPort(), actualClientDetails.getSmtpPort());
+    assertEquals(
+        expectedClientDetails.getXdrRecipientAddress(),
+        actualClientDetails.getXdrRecipientAddress());
+    assertEquals(
+        expectedClientDetails.getDebugFhirQueryAndEicr(),
+        actualClientDetails.getDebugFhirQueryAndEicr());
+    assertEquals(expectedClientDetails.getIsCovid(), actualClientDetails.getIsCovid());
+    assertEquals(expectedClientDetails.getIsSystem(), actualClientDetails.getIsSystem());
+    assertEquals(expectedClientDetails.getIsDirect(), actualClientDetails.getIsDirect());
+    assertEquals(expectedClientDetails.getIsFullEcr(), actualClientDetails.getIsFullEcr());
+    assertEquals(expectedClientDetails.getIsProvider(), actualClientDetails.getIsProvider());
+    assertEquals(expectedClientDetails.getIsRestAPI(), actualClientDetails.getIsRestAPI());
+    assertEquals(expectedClientDetails.getIsXdr(), actualClientDetails.getIsXdr());
   }
 }

@@ -71,7 +71,19 @@ testCase:
       ServiceRequest:
       - params:
           patient: "12742571"
-        responseFilePath: "R4/ServiceRequest/ServiceRequest.json"
+        responseFilePath: "R4/ServiceRequest/ServiceRequestWithoutLOINC.json"
+      MedicationRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Medication/MedicationRequest.json"
+      MedicationAdministration:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Medication/MedicationAdministration.json"
+      MedicationStatement:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Medication/MedicationStatement.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -82,10 +94,13 @@ testCase:
       OccupationObservation: 3
       Organization: 1
       Condition: 2
-      PergnancyCondition: 1
+      PregnancyCondition: 1
       Practitioner: 5
       Immunization: 3
       ServiceRequest: 2
+      MedicationRequest: 6
+      MedicationAdministration: 1
+      MedicationStatement: 2
   eCR-R4-LoadQuery-FilterByDtTm:
     testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
@@ -120,6 +135,18 @@ testCase:
       - params:
           patient: "12742571"
         responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
+      MedicationRequest:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Medication/MedicationRequest.json"
+      MedicationAdministration:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Medication/MedicationAdministration.json"
+      MedicationStatement:
+      - params:
+          patient: "12742571"
+        responseFilePath: "R4/Medication/MedicationStatement.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -131,3 +158,6 @@ testCase:
       PregnancyObservation: 3
       Immunization: 2
       ServiceRequest: 2
+      MedicationRequest: 0
+      MedicationAdministration: 1
+      MedicationStatement: 2

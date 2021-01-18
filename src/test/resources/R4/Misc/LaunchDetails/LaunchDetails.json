@@ -21,10 +21,17 @@
   "directHost": "ett.healthit.gov",
   "directUser": "test@ett.healthit.gov",
   "directPwd": "12345",
+  "smtpPort": "8081",
+  "imapPort": "8082",
   "directRecipient": "connectathon@aimsplatform.sandbox.dmhisp.com",
+  "restAPIURL": "https://unittest/luanchdetial/dao/restapi",
   "isCovid": true,
   "launchId": null,
   "launchState": 0,
-  "redirectURI": null,
-  "authorizationCode": null
+  "redirectURI": "https://unittest/luanchdetial/dao/redirect",
+  "authorizationCode": "234567",
+  "isSystem": false,
+  "debugFhirQueryAndEicr": false,
+  "xRequestId": "launchdetialunittestdao",
+  "requestMode": "VALIDATION"
 }

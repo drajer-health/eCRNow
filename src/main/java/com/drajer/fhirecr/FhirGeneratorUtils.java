@@ -76,23 +76,23 @@ public class FhirGeneratorUtils {
   public static String getText(CodeableConcept cc) {
 
     String retVal = FhirGeneratorConstants.UNKNOWN_VALUE;
-
     if (cc != null && !StringUtils.isEmpty(cc.getText())) {
-
       retVal = cc.getText();
     } else if (cc != null && cc.getCoding() != null && !cc.getCoding().isEmpty()) {
-
+      StringBuilder sb = new StringBuilder();
       for (Coding cd : cc.getCoding()) {
-
         if (cd.getDisplay() != null && !StringUtils.isEmpty(cd.getDisplay())) {
-
-          if (retVal.equalsIgnoreCase(FhirGeneratorConstants.UNKNOWN_VALUE))
-            retVal = cd.getDisplay();
-          else retVal += "," + cd.getDisplay();
+          if (sb.toString().isEmpty()) {
+            sb.append(cd.getDisplay());
+          } else {
+            sb.append(",").append(cd.getDisplay());
+          }
         }
       }
+      if (!sb.toString().isEmpty()) {
+        retVal = sb.toString();
+      }
     }
-
     return retVal;
   }
 

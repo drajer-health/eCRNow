@@ -21,7 +21,7 @@ public class ValueSetSingleton {
   private Set<ValueSet> grouperValueSets;
 
   private Map<String, Set<ValueSet>> triggerPathToValueSetsMap;
-  private Map<String, ValueSet> triggerPathToGrouperMap;
+  private Map<String, Set<ValueSet>> triggerPathToGrouperMap;
   private Map<String, Set<ValueSet>> grouperToValueSetMap;
   private Map<String, Set<ValueSet>> grouperToCovidValueSetMap;
 
@@ -153,14 +153,14 @@ public class ValueSetSingleton {
     this.triggerPathToValueSetsMap = triggerPathToValueSetsMap;
   }
 
-  public Map<String, ValueSet> getTriggerPathToGrouperMap() {
+  public Map<String, Set<ValueSet>> getTriggerPathToGrouperMap() {
     if (triggerPathToGrouperMap == null) {
       triggerPathToGrouperMap = new HashMap<>();
     }
     return triggerPathToGrouperMap;
   }
 
-  public void setTriggerPathToGrouperMap(Map<String, ValueSet> triggerPathToGrouperMap) {
+  public void setTriggerPathToGrouperMap(Map<String, Set<ValueSet>> triggerPathToGrouperMap) {
     this.triggerPathToGrouperMap = triggerPathToGrouperMap;
   }
 
@@ -234,13 +234,30 @@ public class ValueSetSingleton {
 
     String grouperId = null;
     Set<String> retVal = new HashSet<>();
-    ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
+    Set<ValueSet> grouperValueSet = getTriggerPathToGrouperMap().get(path);
     if (grouperValueSet != null) {
-      grouperId = grouperValueSet.getId();
-    }
-    if (grouperId != null && getGrouperToValueSetMap() != null) {
-      Set<ValueSet> valuesets = getGrouperToValueSetMap().get(grouperId);
-      retVal = ApplicationUtils.convertValueSetsToString(valuesets);
+
+      for (ValueSet g : grouperValueSet) {
+
+        grouperId = g.getId();
+        logger.info(" Found the grouper value set for {} : Grouper Id = {}", path, grouperId);
+
+        if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
+
+          logger.info("Found the value sets for the grouper ");
+          Set<ValueSet> valueSets = getGrouperToCovidValueSetMap().get(grouperId);
+
+          if (valueSets != null && !valueSets.isEmpty()) {
+            logger.info("Value Sets found = {}", valueSets.size());
+            retVal = ApplicationUtils.convertValueSetsToString(valueSets);
+          } else {
+            logger.info("No value sets in the map");
+          }
+
+        } else {
+          logger.info("Did not find the value sets for the grouper for path {}", path);
+        }
+      }
     }
     return retVal;
   }
@@ -250,31 +267,34 @@ public class ValueSetSingleton {
     String grouperId = null;
     Set<String> retVal = new HashSet<>();
 
-    ValueSet grouperValueSet = getTriggerPathToGrouperMap().get(path);
+    Set<ValueSet> grouperValueSet = getTriggerPathToGrouperMap().get(path);
 
     if (grouperValueSet != null) {
 
-      grouperId = grouperValueSet.getId();
-      logger.info(" Found the grouper value set for {} : Grouper Id = {}", path, grouperId);
+      for (ValueSet g : grouperValueSet) {
+
+        grouperId = g.getId();
+        logger.info(" Found the grouper value set for {} : Grouper Id = {}", path, grouperId);
+
+        if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
+
+          logger.info("Found the value sets for the grouper ");
+          Set<ValueSet> valueSets = getGrouperToCovidValueSetMap().get(grouperId);
+
+          if (valueSets != null && !valueSets.isEmpty()) {
+            logger.info("Value Sets found = {}", valueSets.size());
+            retVal.addAll(ApplicationUtils.convertValueSetsToString(valueSets));
+          } else {
+            logger.info("No value sets in the map");
+          }
+
+        } else {
+          logger.info("Did not find the value sets for the grouper for path {}", path);
+        }
+      }
     } else {
 
       logger.info(" Grouper not found for path {}", path);
-    }
-
-    if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
-
-      logger.info("Found the value sets for the grouper ");
-      Set<ValueSet> valueSets = getGrouperToCovidValueSetMap().get(grouperId);
-
-      if (valueSets != null && !valueSets.isEmpty()) {
-        logger.info("Value Sets found = {}", valueSets.size());
-        retVal = ApplicationUtils.convertValueSetsToString(valueSets);
-      } else {
-        logger.info("No value sets in the map");
-      }
-
-    } else {
-      logger.info("Did not find the value sets for the grouper for path {}", path);
     }
 
     return retVal;

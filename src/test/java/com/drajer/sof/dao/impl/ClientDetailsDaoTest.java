@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.test.util.TestUtils;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import java.io.IOException;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,64 +28,95 @@ public class ClientDetailsDaoTest {
 
   @Autowired private ClientDetailsDaoImpl clientDetailsDao;
 
-  private static ClientDetails clientDetails = null;
-  private static ClientDetails clientDetails2 = null;
+  private ClientDetails expectedClientDetails;
+  private static ClientDetails secondClientDetails = null;
 
   @Before
   public void setUp() {
-    clientDetails =
+    expectedClientDetails =
         (ClientDetails)
             TestUtils.getResourceAsObject(
                 "R4/Misc/ClientDetails/ClientDataEntry1.json", ClientDetails.class);
-    clientDetails2 =
+    secondClientDetails =
         (ClientDetails)
             TestUtils.getResourceAsObject(
                 "R4/Misc/ClientDetails/ClientDataEntry2.json", ClientDetails.class);
   }
 
   @Test
-  public void saveClientDetails() throws JsonParseException, JsonMappingException, IOException {
+  public void saveClientDetails() {
+    ClientDetails actualClientDetails = clientDetailsDao.saveOrUpdate(expectedClientDetails);
 
-    ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(clientDetails);
-
-    assertEquals(clientDetails.getClientId(), savedClientDetails.getClientId());
-    assertEquals(
-        clientDetails.getDirectRecipientAddress(), savedClientDetails.getDirectRecipientAddress());
-    assertEquals(clientDetails.getFhirServerBaseURL(), savedClientDetails.getFhirServerBaseURL());
-    assertEquals(clientDetails.getScopes(), savedClientDetails.getScopes());
+    assertNotNull(actualClientDetails);
+    assertClientDetails(expectedClientDetails, actualClientDetails);
   }
 
   @Test
-  public void getClientDetailsById() throws JsonParseException, JsonMappingException, IOException {
-
-    ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(clientDetails);
-
-    ClientDetails retrievedClientDetails =
+  public void getClientDetailsById() {
+    ClientDetails savedClientDetails = clientDetailsDao.saveOrUpdate(expectedClientDetails);
+    ClientDetails actualClientDetails =
         clientDetailsDao.getClientDetailsById(savedClientDetails.getId());
 
-    assertNotNull(retrievedClientDetails);
+    assertNotNull(actualClientDetails);
+    assertClientDetails(expectedClientDetails, actualClientDetails);
   }
 
   @Test
-  public void getClientDetailsByUrl() throws JsonParseException, JsonMappingException, IOException {
+  public void getClientDetailsByUrl() {
+    clientDetailsDao.saveOrUpdate(expectedClientDetails);
+    ClientDetails actualClientDetails =
+        clientDetailsDao.getClientDetailsByUrl(expectedClientDetails.getFhirServerBaseURL());
 
-    String fhirServerBaseURL = clientDetails.getFhirServerBaseURL();
-
-    clientDetailsDao.saveOrUpdate(clientDetails);
-
-    ClientDetails savedClientDetails = clientDetailsDao.getClientDetailsByUrl(fhirServerBaseURL);
-
-    assertNotNull(savedClientDetails);
+    assertNotNull(actualClientDetails);
+    assertClientDetails(expectedClientDetails, actualClientDetails);
   }
 
   @Test
-  public void getAllClientDetails() throws JsonParseException, JsonMappingException, IOException {
-
-    clientDetailsDao.saveOrUpdate(clientDetails);
-    clientDetailsDao.saveOrUpdate(clientDetails2);
-
+  public void getAllClientDetails() {
+    clientDetailsDao.saveOrUpdate(expectedClientDetails);
+    clientDetailsDao.saveOrUpdate(secondClientDetails);
     List<ClientDetails> savedClientDetailsList = clientDetailsDao.getAllClientDetails();
 
-    assertEquals(savedClientDetailsList.size(), 2);
+    assertEquals(2, savedClientDetailsList.size());
+  }
+
+  private void assertClientDetails(
+      ClientDetails expectedClientDetails, ClientDetails actualClientDetails) {
+
+    assertEquals(expectedClientDetails.getClientId(), actualClientDetails.getClientId());
+    assertEquals(
+        expectedClientDetails.getFhirServerBaseURL(), actualClientDetails.getFhirServerBaseURL());
+    assertEquals(expectedClientDetails.getTokenURL(), actualClientDetails.getTokenURL());
+    assertEquals(expectedClientDetails.getScopes(), actualClientDetails.getScopes());
+    assertEquals(
+        expectedClientDetails.getDirectRecipientAddress(),
+        actualClientDetails.getDirectRecipientAddress());
+    assertEquals(expectedClientDetails.getDirectUser(), actualClientDetails.getDirectUser());
+    assertEquals(expectedClientDetails.getRestAPIURL(), actualClientDetails.getRestAPIURL());
+    assertEquals(expectedClientDetails.getDirectHost(), actualClientDetails.getDirectHost());
+    assertEquals(
+        expectedClientDetails.getAssigningAuthorityId(),
+        actualClientDetails.getAssigningAuthorityId());
+    assertEquals(
+        expectedClientDetails.getEncounterEndThreshold(),
+        actualClientDetails.getEncounterEndThreshold());
+    assertEquals(
+        expectedClientDetails.getEncounterStartThreshold(),
+        actualClientDetails.getEncounterStartThreshold());
+    assertEquals(expectedClientDetails.getImapPort(), actualClientDetails.getImapPort());
+    assertEquals(expectedClientDetails.getSmtpPort(), actualClientDetails.getSmtpPort());
+    assertEquals(
+        expectedClientDetails.getXdrRecipientAddress(),
+        actualClientDetails.getXdrRecipientAddress());
+    assertEquals(
+        expectedClientDetails.getDebugFhirQueryAndEicr(),
+        actualClientDetails.getDebugFhirQueryAndEicr());
+    assertEquals(expectedClientDetails.getIsCovid(), actualClientDetails.getIsCovid());
+    assertEquals(expectedClientDetails.getIsSystem(), actualClientDetails.getIsSystem());
+    assertEquals(expectedClientDetails.getIsDirect(), actualClientDetails.getIsDirect());
+    assertEquals(expectedClientDetails.getIsFullEcr(), actualClientDetails.getIsFullEcr());
+    assertEquals(expectedClientDetails.getIsProvider(), actualClientDetails.getIsProvider());
+    assertEquals(expectedClientDetails.getIsRestAPI(), actualClientDetails.getIsRestAPI());
+    assertEquals(expectedClientDetails.getIsXdr(), actualClientDetails.getIsXdr());
   }
 }
