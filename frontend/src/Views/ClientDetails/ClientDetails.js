@@ -13,7 +13,8 @@ class ClientDetails extends Component {
         super(props);
         this.state = {
             validated: false,
-            isChecked: false
+            isChecked: false,
+            isAudReqChecked: false
         };
         this.selectedClientDetails = this.props.selectedClientDetails;
         this.addNew = this.props.addNew ? this.props.addNew.addNew : false;
@@ -55,6 +56,7 @@ class ClientDetails extends Component {
             if (this.selectedClientDetails.isFullEcr) {
                 this.state.reportType = "fullecr";
             }
+            this.state.requireAud = this.selectedClientDetails.requireAud;
         } else {
             this.state.launchType = 'providerLaunch';
             this.state.directType = 'direct';
@@ -101,12 +103,22 @@ class ClientDetails extends Component {
 
     handleToggleButton(e) {
         console.log(e);
+        console.log(e.target.name);
         console.log(e.target.value);
-        if (this.state.isChecked) {
-            this.setState({ isChecked: false, isLoggingEnabled: false });
-        } else {
-            this.setState({ isChecked: true, isLoggingEnabled: true });
+        if(e.target.name === "debugFhirQueryAndEicr"){
+            if (this.state.isChecked) {
+                this.setState({ isChecked: false, isLoggingEnabled: false });
+            } else {
+                this.setState({ isChecked: true, isLoggingEnabled: true });
+            }
+        } else if(e.target.name === "requireAud"){
+            if (this.state.isAudReqChecked) {
+                this.setState({ isAudReqChecked: false, requireAud: false });
+            } else {
+                this.setState({ isAudReqChecked: true, requireAud: true });
+            }
         }
+        
         console.log(this.state);
     }
 
@@ -153,6 +165,7 @@ class ClientDetails extends Component {
             isCovid: this.state.reportType === "covid19" ? true : false,
             isFullEcr: this.state.reportType === "fullecr" ? true : false,
             debugFhirQueryAndEicr: this.state.isLoggingEnabled ? this.state.isLoggingEnabled : false,
+            requireAud: this.state.requireAud? this.state.requireAud:false,
             lastUpdated:new Date()
             // tokenIntrospectionURL: this.state.tokenIntrospectionURL ? this.state.tokenIntrospectionURL : null,
             // ehrClientId: this.state.ehrClientId ? this.state.ehrClientId : null,
@@ -635,6 +648,22 @@ class ClientDetails extends Component {
                                                         className="switchBtn"
                                                         name="debugFhirQueryAndEicr"
                                                         checked={this.state.isChecked}
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+                                            <Form.Group as={Row} controlId="requireAud">
+                                                <Form.Label column sm={2}>
+                                                Require Audience Parameter
+                                                </Form.Label>
+                                                <Col sm={9}>
+                                                    <Form.Check
+                                                        type="switch"
+                                                        id="requireAud-switch"
+                                                        onChange={e => this.handleToggleButton(e)}
+                                                        label=""
+                                                        className="switchBtn"
+                                                        name="requireAud"
+                                                        checked={this.state.isAudReqChecked}
                                                     />
                                                 </Col>
                                             </Form.Group>
