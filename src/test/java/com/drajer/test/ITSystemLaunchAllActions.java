@@ -62,10 +62,6 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
 
-  private Eicr createEicr;
-  private Eicr closeOutEicr;
-  private List<Eicr> periodicEicr;
-
   WireMockHelper stubHelper;
 
   @Before
@@ -120,6 +116,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus();
+    assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
   }
 
   @Test
@@ -185,6 +182,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus();
+    assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
 
     wireMockServer.verify(
         postRequestedFor(urlEqualTo(restApiUrl.getPath()))
@@ -195,7 +193,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   @Test
-  public void testNoEicrWhenMissingJurisdiction() throws InterruptedException {
+  public void testNoEicrWhenMissingJurisdiction() {
 
     wireMockServer.resetMappings();
     Map<String, ?> modifiedMapping = new HashMap<>(allResourceMapping);
@@ -241,16 +239,16 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       validateCreateEICR(JobStatus.COMPLETED, true);
 
       // Periodic EICR Action
-      validatePeriodicEICR(JobStatus.COMPLETED, 1, true);
+      validatePeriodicEICR(JobStatus.NOT_STARTED, 1, false);
 
       // CloseOut EICR Action
       validateCloseOut(JobStatus.COMPLETED, true);
 
       // Validate EICR Action
-      validateValidateStatus(JobStatus.COMPLETED, 3);
+      validateValidateStatus(JobStatus.COMPLETED, 2);
 
       // Submit EICR Action
-      validateSubmitStatus(JobStatus.COMPLETED, 3);
+      validateSubmitStatus(JobStatus.COMPLETED, 2);
 
     } catch (Exception e) {
       fail(e.getMessage() + "Error while retrieving action status");
