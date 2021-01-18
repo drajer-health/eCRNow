@@ -1283,54 +1283,54 @@ public class CdaFhirUtilities {
       }
     } else if (r instanceof MedicationAdministration) {
 
-      MedicationAdministration mr = (MedicationAdministration) r;
+      MedicationAdministration medAdminRef = (MedicationAdministration) r;
 
-      if (mr.getMedication() != null && mr.getMedication() instanceof Reference) {
+      if (medAdminRef.getMedication() != null && medAdminRef.getMedication() instanceof Reference) {
 
-        Reference med = (Reference) mr.getMedication();
+        Reference med = (Reference) medAdminRef.getMedication();
 
         if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
-          if (mr.getContained() != null) {
+          if (medAdminRef.getContained() != null) {
 
-            retVal = getStringForMedicationFromContainedResources(mr.getContained(), refId);
+            retVal = getStringForMedicationFromContainedResources(medAdminRef.getContained(), refId);
           } // contained present
         } // Contained reference
 
         return retVal;
 
-      } else if (mr.getMedication() != null && mr.getMedication() instanceof CodeableConcept) {
+      } else if (medAdminRef.getMedication() != null && medAdminRef.getMedication() instanceof CodeableConcept) {
 
-        CodeableConcept cc = (CodeableConcept) mr.getMedication();
+        CodeableConcept cc = (CodeableConcept) medAdminRef.getMedication();
 
         return getStringForType(cc);
       }
 
     } else if (r instanceof MedicationStatement) {
 
-      MedicationStatement mr = (MedicationStatement) r;
+      MedicationStatement medStmtRef = (MedicationStatement) r;
 
-      if (mr.getMedication() != null && mr.getMedication() instanceof Reference) {
+      if (medStmtRef.getMedication() != null && medStmtRef.getMedication() instanceof Reference) {
 
-        Reference med = (Reference) mr.getMedication();
+        Reference med = (Reference) medStmtRef.getMedication();
 
         if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
-          if (mr.getContained() != null) {
+          if (medStmtRef.getContained() != null) {
 
-            retVal = getStringForMedicationFromContainedResources(mr.getContained(), refId);
+            retVal = getStringForMedicationFromContainedResources(medStmtRef.getContained(), refId);
           } // contained present
         } // Contained reference
 
         return retVal;
 
-      } else if (mr.getMedication() != null && mr.getMedication() instanceof CodeableConcept) {
+      } else if (medStmtRef.getMedication() != null && medStmtRef.getMedication() instanceof CodeableConcept) {
 
-        CodeableConcept cc = (CodeableConcept) mr.getMedication();
+        CodeableConcept cc = (CodeableConcept) medStmtRef.getMedication();
 
         return getStringForType(cc);
       }
@@ -1445,7 +1445,7 @@ public class CdaFhirUtilities {
           logger.debug(" Found the bounds element for creating string ");
 
           String v = getStringForType(t.getRepeat().getBounds());
-          val += v;
+          val.append(v);
         }
 
       } else if (dt instanceof Period) {
@@ -1474,7 +1474,7 @@ public class CdaFhirUtilities {
       }
 
       logger.info(" Printing the class name {} and value {}", dt.getClass(), val);
-      return val;
+      return val.toString();
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
@@ -1790,7 +1790,7 @@ public class CdaFhirUtilities {
       CodeableConcept cc = (CodeableConcept) dt;
       return getMatchingCodeFromCodeableConceptForCodeSystem(matchedCodes, cc, csUrl);
     } else if (dt != null && dt instanceof Coding) {
-      List<Coding> cds = new ArrayList<Coding>();
+      List<Coding> cds = new ArrayList<>();
       cds.add((Coding) dt);
       return getMatchingCodeFromCodingForCodeSystem(matchedCodes, cds, csUrl);
     } else return "";
