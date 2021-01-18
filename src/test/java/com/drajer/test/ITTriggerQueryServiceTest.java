@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,35 +66,26 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
   private static final Logger logger = LoggerFactory.getLogger(ITTriggerQueryServiceTest.class);
 
   @Before
-  public void triggerQuerySetUp() throws IOException {
-
+  public void triggerQuerySetUp() {
     try {
-
       tx = session.beginTransaction();
 
       String launchDetailJson = TestUtils.getFileContentAsString(launchDetailsFile);
       launchDetailJson = launchDetailJson.replace("port", "" + wireMockHttpPort);
       launchDetails = mapper.readValue(launchDetailJson, LaunchDetails.class);
 
-      stubHelper = new WireMockHelper(baseUrl, wireMockHttpPort);
-      logger.info("Creating wiremockstubs..");
+      stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+      logger.info("Creating WireMock stubs..");
       stubHelper.stubResources(allResourceMapping);
       stubHelper.stubAuthAndMetadata(allOtherMapping);
 
     } catch (IOException e) {
-
+      logger.error("Exception setting up triggerQuery", e);
       fail(e.getMessage() + "This exception is not expected fix test");
     }
 
     session.flush();
     tx.commit();
-  }
-
-  @After
-  public void cleanUp() {
-    if (stubHelper != null) {
-      stubHelper.stopMockServer();
-    }
   }
 
   @Parameters(name = "{0}")
@@ -117,15 +107,13 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       data[count][6] = testDataGenerator.getOtherMappings(testCase);
       count++;
     }
-
     return Arrays.asList(data);
   }
 
   @Test
-  public void triggerQueryServiceTest() throws IOException {
+  public void triggerQueryServiceTest() {
 
     R4FhirData r4FhirData = null;
-
     try {
       r4FhirData =
           (R4FhirData)
@@ -134,9 +122,9 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
                   DateUtils.parseDate(startDate, "yyyyMMdd"),
                   DateUtils.parseDate(endDate, "yyyyMMdd"));
     } catch (ParseException e) {
+      logger.error("Exception parsing date:", e);
       fail(e.getMessage() + " Fix the test data to pass correct datetime");
     }
-
     assertNotNull("Failed to generate r4Data", r4FhirData);
     validateBundle(r4FhirData);
   }
@@ -166,11 +154,11 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
               assertNotNull(r4FhirData.getConditions());
               assertEquals(resourceName, resourceCount, r4FhirData.getConditions().size());
               break;
-            case "PergnancyCondition":
+            case "PregnancyCondition":
               assertNotNull(r4FhirData.getPregnancyConditions());
               assertEquals(resourceName, resourceCount, r4FhirData.getPregnancyConditions().size());
               break;
-            case "PergnancyObservation":
+            case "PregnancyObservation":
               assertNotNull(r4FhirData.getPregnancyObs());
               assertEquals(resourceName, resourceCount, r4FhirData.getPregnancyObs().size());
               break;

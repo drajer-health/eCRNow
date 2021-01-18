@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class CdaPlanOfTreatmentGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
       int rowNum = 1;
-      String potObsXml = "";
+      StringBuilder potObsXml = new StringBuilder();
       for (ServiceRequest s : sr) {
 
         Pair<String, Boolean> srDisplayName =
@@ -82,11 +83,10 @@ public class CdaPlanOfTreatmentGenerator {
         }
 
         String serviceDate = CdaFhirUtilities.getStringForType(s.getOccurrence());
+        logger.info(" Service Date for display {} ", serviceDate);
 
         if (serviceDate.isEmpty() && s.getAuthoredOn() != null) {
           serviceDate = CdaGeneratorUtils.getStringForDate(s.getAuthoredOn());
-        } else {
-          serviceDate = CdaGeneratorConstants.UNKNOWN_VALUE;
         }
 
         Map<String, String> bodyvals = new HashMap<>();
@@ -98,7 +98,7 @@ public class CdaPlanOfTreatmentGenerator {
 
         rowNum++;
 
-        potObsXml += getPlannedObservationXml(s, details);
+        potObsXml.append(getPlannedObservationXml(s, details));
       }
 
       // Close the Text Element
@@ -147,16 +147,18 @@ public class CdaPlanOfTreatmentGenerator {
     // Add Trigger code template if the code matched the Url in the Service Request.
     if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
       logger.info(" Found a Matched Code that is for Service Request ");
-      sb.append(
-          CdaGeneratorUtils.getXmlForTemplateId(
-              CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-              CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
 
       String mCd =
           CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
               matchedTriggerCodes, sr.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL);
 
       if (!mCd.isEmpty()) {
+
+        sb.append(
+            CdaGeneratorUtils.getXmlForTemplateId(
+                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
+                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
+
         codeXml =
             CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
                 CdaGeneratorConstants.CODE_EL_NAME,
@@ -235,7 +237,9 @@ public class CdaPlanOfTreatmentGenerator {
             && s.getCode().getCoding() != null
             && !s.getCode().getCoding().isEmpty()
             && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+                s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)
+            && s.getStatus() != null
+            && s.getStatus() == ServiceRequestStatus.ACTIVE) {
 
           logger.info(" Found a Service Request with a LOINC code ");
           sr.add(s);

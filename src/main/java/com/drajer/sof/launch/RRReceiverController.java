@@ -2,11 +2,11 @@ package com.drajer.sof.launch;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.RRReceiver;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.RRReceiverService;
@@ -22,11 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -52,72 +48,52 @@ public class RRReceiverController {
   @CrossOrigin
   @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
   public ResponseEntity<String> rrReceiver(
-      @RequestBody String obj,
-      @OptionalParam(name = "type") String type,
-      @OptionalParam(name = "xRequestIdHttpHeaderValue") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID") String xCorrelationIdHttpHeaderValue,
+      @RequestBody RRReceiver rrReceiver,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      logger.debug("Received Obj:::::" + obj);
-      String xRequestId = null;
-      String requestIdHeadervalue = request.getHeader("X-Request-ID");
-      if (requestIdHeadervalue == null && xRequestIdHttpHeaderValue == null) {
-        logger.error("Request Id is not present");
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request Id is not present");
-      } else {
-        if ((requestIdHeadervalue != null && xRequestIdHttpHeaderValue != null)
-            && !requestIdHeadervalue.equals(xRequestIdHttpHeaderValue)) {
-          logger.error("Provided Request Id's are not matching");
-          throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, "Provided Request Id's are not matching");
-        } else {
-          if (requestIdHeadervalue != null) {
-            xRequestId = requestIdHeadervalue;
-          } else if (xRequestIdHttpHeaderValue != null) {
-            xRequestId = xRequestIdHttpHeaderValue;
+      // Construct the DocumentReference Resource
+      DocumentReference docRef = rrReceieverService.constructDocumentReference(rrReceiver);
+
+      logger.debug(
+          "docRef===========> {}",
+          FhirContext.forR4().newJsonParser().encodeResourceToString(docRef));
+
+      final String fhirServerURL = rrReceiver.getFhirServerURL();
+
+      // Get ClientDetails using the FHIR Server URL
+      ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(fhirServerURL);
+
+      // Get the AccessToken using the Client Details and read the Metadata Information to know
+      // about the FHIR Server Version.
+      if (clientDetails != null) {
+        JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+        String accessToken = tokenResponse.getString(ACCESS_TOKEN);
+        String fhirVersion = "";
+        JSONObject object = authorization.getMetadata(fhirServerURL + "/metadata");
+        if (object != null) {
+          logger.info("Reading Metadata information");
+          if (object.getString(FHIR_VERSION).equals("1.0.2")) {
+            fhirVersion = FhirVersionEnum.DSTU2.toString();
           }
-          LaunchDetails launchDetails = launchService.getLaunchDetailsByXRequestId(xRequestId);
-          // Construct the DocumentReference Resource
-          DocumentReference docRef =
-              rrReceieverService.constructDocumentReference(
-                  obj, type, launchDetails.getLaunchPatientId(), launchDetails.getEncounterId());
-
-          // Get ClientDetails using the FHIR Server URL
-          ClientDetails clientDetails =
-              clientDetailservice.getClientDetailsByUrl(launchDetails.getEhrServerURL());
-
-          // Get the AccessToken using the Client Details and read the Metadata Information to know
-          // about the FHIR Server Version.
-          if (clientDetails != null) {
-            JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
-            String access_token = tokenResponse.getString(ACCESS_TOKEN);
-            String fhirVersion = "";
-            JSONObject object =
-                authorization.getMetadata(launchDetails.getEhrServerURL() + "/metadata");
-            if (object != null) {
-              logger.info("Reading Metadata information");
-              if (object.getString(FHIR_VERSION).equals("1.0.2")) {
-                fhirVersion = FhirVersionEnum.DSTU2.toString();
-              }
-              if (object.getString(FHIR_VERSION).equals("4.0.0")) {
-                fhirVersion = FhirVersionEnum.R4.toString();
-              }
+          if (object.getString(FHIR_VERSION).equals("4.(.*).(.*)")) {
+              fhirVersion = FhirVersionEnum.R4.toString();
             }
-
-            // Initialize the FHIR Context based on FHIR Version
-            FhirContext context = fhirContextInitializer.getFhirContext(fhirVersion);
-
-            // Initialize the Client
-            IGenericClient client =
-                fhirContextInitializer.createClient(
-                    context, launchDetails.getEhrServerURL(), access_token);
-
-            MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
-            logger.info("DocumentReference Id::::: " + outcome.getId().getIdPart());
-          } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
-          }
         }
+
+        // Initialize the FHIR Context based on FHIR Version
+        FhirContext context = fhirContextInitializer.getFhirContext(fhirVersion);
+
+        // Initialize the Client
+        IGenericClient client =
+            fhirContextInitializer.createClient(context, fhirServerURL, accessToken);
+
+        MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
+
+      } else {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
     } catch (Exception e) {
       logger.error("Error in Processing the request", e);

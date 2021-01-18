@@ -96,8 +96,8 @@ public class ValueSetServiceImpl implements ValueSetService {
           ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
 
       logger.info(
-          " Size of valueSetIdList = "
-              + ((valueSetIdList == null) ? "Null" : valueSetIdList.size()));
+          " Size of valueSetIdList = {}",
+          ((valueSetIdList == null) ? "Null" : valueSetIdList.size()));
 
       grouperToValueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
 
@@ -122,13 +122,21 @@ public class ValueSetServiceImpl implements ValueSetService {
 
     String path = dataRequirement.getType() + "." + codeFilter.getPath();
     logger.info(
-        " Trigger Path to Grouper Map "
-            + path
-            + ", Grouper "
-            + ((valuSetGrouper == null) ? "NULL" : valuSetGrouper.getId()));
+        " Trigger Path to Grouper Map {} , Grouper {}",
+        path,
+        valuSetGrouper == null ? "NULL" : valuSetGrouper.getId());
 
     ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
-    ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, valuSetGrouper);
+
+    if (ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().containsKey(path)) {
+      logger.info(" Found Path in Grouper Map for " + path);
+      ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().get(path).add(valuSetGrouper);
+    } else {
+      logger.info(" Did not Find Path in Grouper Map for " + path);
+      Set<ValueSet> vs = new HashSet<ValueSet>();
+      vs.add(valuSetGrouper);
+      ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, vs);
+    }
 
     if (valuSetGrouper != null) {
 
