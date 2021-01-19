@@ -2,6 +2,8 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class CdaHeaderGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  public static String createCdaHeader(R4FhirData data, LaunchDetails details) {
+  public static String createCdaHeader(R4FhirData data, LaunchDetails details, Eicr ecr) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
@@ -44,7 +46,19 @@ public class CdaHeaderGenerator {
 
       eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+      // Set the clinical document id.
+      String docId = CdaGeneratorUtils.getGuid();
+      eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));
+      ecr.setEicrDocId(docId);
+      ecr.setxCoorrelationId(docId);
+
+      // Set the other eICR details.
+      ecr.setFhirServerUrl(details.getEhrServerURL());
+      ecr.setLaunchPatientId(details.getLaunchPatientId());
+      ecr.setEncounterId(details.getEncounterId());
+      ecr.setSetId(details.getSetId());
+      ecr.setDocVersion(details.getVersionNumber());
+      ecr.setxRequestId(details.getxRequestId());
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForCD(
@@ -78,9 +92,19 @@ public class CdaHeaderGenerator {
               details.getAssigningAuthorityId(),
               String.valueOf(details.getSetId())));
 
-      eICRHeader.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.VERSION_EL_NAME, details.getVersionNumber()));
+      Integer vernum = ActionRepo.getInstance().getEicrRRService().getMaxVersionId(ecr);
+
+      if (vernum == 0) {
+        eICRHeader.append(
+            CdaGeneratorUtils.getXmlForValue(
+                CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(ecr.getDocVersion())));
+      } else {
+        // Setup version number for ecr.
+        ecr.setDocVersion(vernum + 1);
+        eICRHeader.append(
+            CdaGeneratorUtils.getXmlForValue(
+                CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(ecr.getDocVersion())));
+      }
 
       Bundle bundle = data.getData();
       if (bundle != null) {
@@ -106,7 +130,17 @@ public class CdaHeaderGenerator {
         eICRHeader.append(getCustodianXml(details, data));
 
         eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
+      } else {
+        String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
+        logger.error(msg);
+
+        throw new RuntimeException(msg);
       }
+    } else {
+      String msg = "No existing Fhir Data for Creating EICR.";
+      logger.error(msg);
+
+      throw new RuntimeException(msg);
     }
 
     return eICRHeader.toString();

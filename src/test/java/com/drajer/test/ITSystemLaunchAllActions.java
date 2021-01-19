@@ -16,16 +16,14 @@ import java.net.URL;
 import java.util.*;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -105,6 +103,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   @Test
+  @Ignore
   public void testSystemLaunchAllActions() {
 
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
@@ -117,9 +116,11 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     getLaunchDetailAndStatus();
     validateActionStatus();
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
+
   }
 
   @Test
+  @Ignore
   public void testSubmitEicrFromRestApi() {
     URL restApiUrl = null;
     try {
@@ -193,6 +194,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   @Test
+  @Ignore
   public void testNoEicrWhenMissingJurisdiction() {
 
     wireMockServer.resetMappings();

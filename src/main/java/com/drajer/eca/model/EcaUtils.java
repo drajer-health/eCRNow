@@ -134,7 +134,7 @@ public class EcaUtils {
 
   public static Eicr createEicr(LaunchDetails details) {
 
-    Eicr ecr = null;
+    Eicr ecr = new Eicr();
 
     if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
@@ -150,18 +150,23 @@ public class EcaUtils {
 
         logger.info("Creating eICR based on FHIR DSTU2 ");
         Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-        eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details);
+        eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
 
       } else if (data instanceof R4FhirData) {
 
         logger.info("Creating eICR based on FHIR R4 ");
         R4FhirData r4Data = (R4FhirData) data;
-        eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details);
+        eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
+
+      } else {
+
+        String msg = "No Fhir Data retrieved to CREATE EICR.";
+        logger.error(msg);
+        throw new RuntimeException(msg);
       }
 
       if (eICR != null && !eICR.isEmpty()) {
         // Create the object for persistence.
-        ecr = new Eicr();
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
       } else {
