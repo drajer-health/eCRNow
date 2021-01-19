@@ -15,6 +15,7 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.List;
@@ -25,7 +26,8 @@ public class Dstu2CdaEicrGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaEicrGenerator.class);
 
-  public static String convertDstu2FhirBundletoCdaEicr(Dstu2FhirData data, LaunchDetails details) {
+  public static String convertDstu2FhirBundletoCdaEicr(
+      Dstu2FhirData data, LaunchDetails details, Eicr ecr) {
 
     StringBuilder eICR = new StringBuilder();
 

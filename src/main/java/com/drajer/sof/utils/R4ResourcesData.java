@@ -384,7 +384,7 @@ public class R4ResourcesData {
       R4FhirData r4FhirData,
       String medicationId) {
     return (Medication)
-            resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
+        resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
   }
 
   public List<MedicationAdministration> getMedicationAdministrationData(

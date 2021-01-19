@@ -24,10 +24,7 @@ public class EicrReceiverService {
 		JSONObject data = new JSONObject();
 		DataOutputStream outStream = null;
 		try {
-			data.put("fhirServerUrl", params.get("fhirServerURL"));
-			data.put("patientId", params.get("patientId"));
-			data.put("encounterId", params.get("encounterId"));
-			data.put("setId", params.get("setId"));
+			
 			data.put("eicrXml", eicrXml);
 			
 			logger.info("Writing data to file: " + receivedEicrXmlPath);
