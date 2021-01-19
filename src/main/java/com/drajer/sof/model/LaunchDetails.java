@@ -91,22 +91,22 @@ public class LaunchDetails {
       columnDefinition = "TEXT") // Status can be active or completed.
   private String status;
 
-  @Column(name = "aa_id", nullable = true) // Status can be active or completed.
+  @Column(name = "aa_id", nullable = true) // AA ID for creating CDA.
   private String assigningAuthorityId;
 
-  @Column(name = "set_id", nullable = true) // Status can be active or completed.
-  private Integer setId;
+  @Column(name = "set_id", nullable = true)
+  private String setId;
 
-  @Column(name = "ver_number", nullable = true) // Status can be active or completed.
-  private String versionNumber;
+  @Column(name = "ver_number", nullable = true)
+  private int versionNumber;
 
-  @Column(name = "direct_host", nullable = true) // Status can be active or completed.
+  @Column(name = "direct_host", nullable = true) // Direct Host for sending SMTP messages
   private String directHost;
 
-  @Column(name = "direct_user", nullable = true) // Status can be active or completed.
+  @Column(name = "direct_user", nullable = true) // SMTP User NAme
   private String directUser;
 
-  @Column(name = "direct_pwd", nullable = true) // Status can be active or completed.
+  @Column(name = "direct_pwd", nullable = true) // SMTP Pwd
   private String directPwd;
 
   @Column(name = "smtp_port", nullable = true)
@@ -115,10 +115,10 @@ public class LaunchDetails {
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
 
-  @Column(name = "direct_recipient", nullable = true) // Status can be active or completed.
+  @Column(name = "direct_recipient", nullable = true) // AIMS receiver address.
   private String directRecipient;
 
-  @Column(name = "rest_api_url", nullable = true)
+  @Column(name = "rest_api_url", nullable = true) // RESTful API for integration
   private String restAPIURL;
 
   @Column(name = "is_covid19", nullable = false)
@@ -183,19 +183,19 @@ public class LaunchDetails {
     this.assigningAuthorityId = assigningAuthorityId;
   }
 
-  public Integer getSetId() {
+  public String getSetId() {
     return setId;
   }
 
-  public void setSetId(Integer setId) {
+  public void setSetId(String setId) {
     this.setId = setId;
   }
 
-  public String getVersionNumber() {
+  public int getVersionNumber() {
     return versionNumber;
   }
 
-  public void setVersionNumber(String versionNumber) {
+  public void setVersionNumber(int versionNumber) {
     this.versionNumber = versionNumber;
   }
 
