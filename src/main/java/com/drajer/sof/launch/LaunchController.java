@@ -219,7 +219,9 @@ public class LaunchController {
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
             launchDetails.setTokenUrl(clientDetails.getTokenURL());
-            launchDetails.setVersionNumber("1");
+            launchDetails.setSetId(
+                systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
+            launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
@@ -414,7 +416,9 @@ public class LaunchController {
     currentStateDetails.setLaunchPatientId(accessTokenObject.getString(PATIENT));
     currentStateDetails.setEncounterId(accessTokenObject.getString(ENCOUNTER));
     currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
-    currentStateDetails.setVersionNumber("1");
+    currentStateDetails.setSetId(
+        accessTokenObject.getString("PATIENT") + "|" + accessTokenObject.getString("ENCOUNTER"));
+    currentStateDetails.setVersionNumber(1);
     currentStateDetails.setDirectUser(clientDetails.getDirectUser());
     currentStateDetails.setDirectHost(clientDetails.getDirectHost());
     currentStateDetails.setDirectPwd(clientDetails.getDirectPwd());
