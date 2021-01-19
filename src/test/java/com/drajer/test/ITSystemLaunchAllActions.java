@@ -2,12 +2,10 @@ package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
+import com.drajer.eca.model.*;
 import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.eca.model.PeriodicUpdateEicrStatus;
-import com.drajer.eca.model.SubmitEicrStatus;
-import com.drajer.eca.model.ValidateEicrStatus;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
@@ -15,11 +13,7 @@ import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;
@@ -34,6 +28,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+/**
+ * Description: This test class is created for testing all the actions. ersd.json for this test is
+ * modified with actions as below. MatchTrigger - Will execute without any dependency. Create_EICR -
+ * Will execute after 2 seconds of MatchTrigger action. Periodic_EICR - will execute after 10
+ * seconds of MatchTrigger action. with frequency 1 with interval of 2 seconds. CloseOut_EICR - will
+ * execute immediately after CreateEicr action is completed. with frequency 1 with interval of 2
+ * seconds. Validate_EICR - will execute immediately after each EICR created with above action.
+ * Submit_EICR - will execute immediately after ValidateEICR.
+ */
 @RunWith(Parameterized.class)
 @TestPropertySource(properties = "ersd.file.location=src/test/resources/AppData/ersd.json")
 public class ITSystemLaunchAllActions extends BaseIntegrationTest {
@@ -58,10 +61,6 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   private String systemLaunchPayload;
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
-
-  private Eicr createEicr;
-  private Eicr closeOutEicr;
-  private List<Eicr> periodicEicr;
 
   WireMockHelper stubHelper;
 
@@ -106,7 +105,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   }
 
   @Test
-  public void testSystemLaunch() {
+  public void testSystemLaunchAllActions() {
 
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
@@ -114,7 +113,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
+    waitForEICR(50000);
+    getLaunchDetailAndStatus();
     validateActionStatus();
+    assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
   }
 
   @Test
@@ -177,7 +179,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
+    waitForEICR(50000);
+    getLaunchDetailAndStatus();
     validateActionStatus();
+    assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
 
     wireMockServer.verify(
         postRequestedFor(urlEqualTo(restApiUrl.getPath()))
@@ -185,6 +190,29 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     wireMockServer.verify(
         postRequestedFor(urlPathEqualTo(restApiUrl.getPath()))
             .withRequestBody(equalToJson(sb.toString())));
+  }
+
+  @Test
+  public void testNoEicrWhenMissingJurisdiction() {
+
+    wireMockServer.resetMappings();
+    Map<String, ?> modifiedMapping = new HashMap<>(allResourceMapping);
+    modifiedMapping.remove("Organization");
+    stubHelper.stubResources(modifiedMapping);
+    stubHelper.stubAuthAndMetadata(allOtherMapping);
+
+    ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
+
+    assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+    assertTrue(response.getBody().contains("App is launched successfully"));
+
+    logger.info("Received success response, waiting for EICR generation.....");
+    waitForEICR(50000);
+    getLaunchDetailAndStatus();
+    validateMatchedTriggerStatus(JobStatus.COMPLETED);
+    validateCreateEICR(JobStatus.SCHEDULED, false);
+    List<Eicr> allEICRDocuments = getAllEICRDocuments();
+    assertEquals(0, allEICRDocuments.size());
   }
 
   private void getLaunchDetailAndStatus() {
@@ -204,112 +232,99 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   private void validateActionStatus() {
     try {
-
       // MatchTrigger Action
-      validateMatchedTriggerStatus();
+      validateMatchedTriggerStatus(JobStatus.COMPLETED);
 
-      // CreateEicr Action
-      validateCreateEicrStatus();
+      // CreateEICR Action
+      validateCreateEICR(JobStatus.COMPLETED, true);
 
-      // Periodic Eicr Action
-      // validatePeriodicEicrStatus();
+      // Periodic EICR Action
+      validatePeriodicEICR(JobStatus.NOT_STARTED, 1, false);
 
-      // CloseOut Eicr Action
-      validateCloseOutStatus();
+      // CloseOut EICR Action
+      validateCloseOut(JobStatus.COMPLETED, true);
 
-      // Validate Eicr Action
-      validateValidateStatus();
+      // Validate EICR Action
+      validateValidateStatus(JobStatus.COMPLETED, 2);
 
-      // Submit Eicr Action
-      validateSubmitStatus();
+      // Submit EICR Action
+      validateSubmitStatus(JobStatus.COMPLETED, 2);
 
     } catch (Exception e) {
       fail(e.getMessage() + "Error while retrieving action status");
     }
   }
 
-  private void validateMatchedTriggerStatus() {
-    do {
-
-      getLaunchDetailAndStatus();
-
-    } while (state.getMatchTriggerStatus().getJobStatus() != JobStatus.COMPLETED);
-
-    assertNotNull(state.getMatchTriggerStatus().getMatchedCodes());
-    assertTrue(state.getMatchTriggerStatus().getMatchedCodes().size() > 0);
+  private void validateMatchedTriggerStatus(JobStatus status) {
+    MatchTriggerStatus matchTriggerStatus = state.getMatchTriggerStatus();
+    assertEquals(status, matchTriggerStatus.getJobStatus());
+    assertNotNull(matchTriggerStatus.getMatchedCodes());
+    assertTrue(matchTriggerStatus.getMatchedCodes().size() > 0);
   }
 
-  private void validateCreateEicrStatus() throws InterruptedException {
-    do {
-
-      Thread.sleep(2000);
-      getLaunchDetailAndStatus();
-
-    } while (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED);
-    assertNotNull(state.getCreateEicrStatus().geteICRId());
-    assertFalse(state.getCreateEicrStatus().geteICRId().isEmpty());
-    createEicr = getEicrDocument(state.getCreateEicrStatus().geteICRId());
-    assertNotNull(createEicr.getEicrData());
-    assertTrue(state.getCreateEicrStatus().getEicrCreated());
+  private void validateCreateEICR(JobStatus status, Boolean validateEICR) {
+    CreateEicrStatus createEicrStatus = state.getCreateEicrStatus();
+    assertEquals(status, createEicrStatus.getJobStatus());
+    if (validateEICR) {
+      assertTrue(createEicrStatus.getEicrCreated());
+      validateEICR(createEicrStatus.geteICRId());
+    } else {
+      assertFalse(createEicrStatus.getEicrCreated());
+    }
   }
 
-  private void validatePeriodicEicrStatus() throws InterruptedException {
-    do {
-
-      Thread.sleep(2000);
-      getLaunchDetailAndStatus();
-
-    } while (state.getPeriodicUpdateJobStatus() != JobStatus.COMPLETED);
-
-    if (state.getPeriodicUpdateStatus() != null) {
-      for (PeriodicUpdateEicrStatus periodicStatus : state.getPeriodicUpdateStatus()) {
-        assertEquals(JobStatus.COMPLETED, periodicStatus.getJobStatus());
+  private void validatePeriodicEICR(JobStatus status, int periodicEICRCount, Boolean validateEICR) {
+    assertNotNull(state.getPeriodicUpdateStatus());
+    assertEquals(periodicEICRCount, state.getPeriodicUpdateStatus().size());
+    for (PeriodicUpdateEicrStatus periodicStatus : state.getPeriodicUpdateStatus()) {
+      assertEquals(status, periodicStatus.getJobStatus());
+      if (validateEICR) {
         assertTrue(periodicStatus.getEicrUpdated());
-        assertNotNull(periodicStatus.geteICRId());
-        assertFalse(periodicStatus.geteICRId().isEmpty());
-        Eicr eicr = getEicrDocument(periodicStatus.geteICRId());
-        assertNotNull(eicr.getEicrData());
-        periodicEicr.add(eicr);
+        validateEICR(periodicStatus.geteICRId());
+      } else {
+        assertFalse(periodicStatus.getEicrUpdated());
       }
     }
   }
 
-  private void validateCloseOutStatus() throws InterruptedException {
-    do {
-
-      Thread.sleep(2000);
-      getLaunchDetailAndStatus();
-
-    } while (state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED);
-    assertNotNull(state.getCloseOutEicrStatus().geteICRId());
-    assertFalse(state.getCloseOutEicrStatus().geteICRId().isEmpty());
-    closeOutEicr = getEicrDocument(state.getCloseOutEicrStatus().geteICRId());
-    assertNotNull(closeOutEicr.getEicrData());
-    assertTrue(state.getCloseOutEicrStatus().getEicrClosed());
-  }
-
-  private void validateValidateStatus() throws InterruptedException {
-    Thread.sleep(4000);
-    getLaunchDetailAndStatus();
-    if (state.getValidateEicrStatus() != null) {
-      for (ValidateEicrStatus valStatus : state.getValidateEicrStatus()) {
-        assertEquals(valStatus.getJobStatus(), JobStatus.COMPLETED);
-        assertTrue(valStatus.getEicrValidated());
-      }
+  private void validateCloseOut(JobStatus status, Boolean validateEICR) {
+    CloseOutEicrStatus closeEICRStatus = state.getCloseOutEicrStatus();
+    assertEquals(status, closeEICRStatus.getJobStatus());
+    if (validateEICR) {
+      assertTrue(closeEICRStatus.getEicrClosed());
+      validateEICR(closeEICRStatus.geteICRId());
+    } else {
+      assertFalse(closeEICRStatus.getEicrClosed());
     }
   }
 
-  private void validateSubmitStatus() throws InterruptedException {
-    Thread.sleep(4000);
-    getLaunchDetailAndStatus();
-    if (state.getSubmitEicrStatus() != null) {
-      for (SubmitEicrStatus submitStatus : state.getSubmitEicrStatus()) {
-        assertEquals(submitStatus.getJobStatus(), JobStatus.COMPLETED);
-      }
+  private void validateValidateStatus(JobStatus status, int validateEICRCount) {
+    assertNotNull(state.getValidateEicrStatus());
+    assertEquals(validateEICRCount, state.getValidateEicrStatus().size());
+    for (ValidateEicrStatus valStatus : state.getValidateEicrStatus()) {
+      assertEquals(status, valStatus.getJobStatus());
+      assertTrue(valStatus.getEicrValidated());
     }
   }
 
-  private Eicr getEicrDocument(String eicrId) {
+  private void validateSubmitStatus(JobStatus status, int submitEICRCount) {
+    assertNotNull(state.getSubmitEicrStatus());
+    assertEquals(submitEICRCount, state.getSubmitEicrStatus().size());
+    for (SubmitEicrStatus submitStatus : state.getSubmitEicrStatus()) {
+      assertEquals(status, submitStatus.getJobStatus());
+    }
+  }
+
+  private void validateEICR(String eICRId) {
+    assertNotNull(eICRId);
+    assertFalse(eICRId.isEmpty());
+    Eicr eicr = getEICRDocument(eICRId);
+    assertNotNull(eicr);
+    assertNotNull(eicr.getEicrData());
+    assertFalse(eicr.getEicrData().isEmpty());
+  }
+
+  private Eicr getEICRDocument(String eicrId) {
     try {
       return session.get(Eicr.class, Integer.parseInt(eicrId));
     } catch (Exception e) {
@@ -317,5 +332,25 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       fail("Something went wrong retrieving EICR, check the log");
     }
     return null;
+  }
+
+  private List<Eicr> getAllEICRDocuments() {
+    try {
+
+      Criteria criteria = session.createCriteria(Eicr.class);
+      return criteria.list();
+    } catch (Exception e) {
+      logger.error("Exception retrieving EICR ", e);
+      fail("Something went wrong retrieving EICR, check the log");
+    }
+    return null;
+  }
+
+  private void waitForEICR(int interval) {
+    try {
+      Thread.sleep(interval);
+    } catch (InterruptedException e) {
+      logger.warn("Issue with thread sleep", e);
+    }
   }
 }

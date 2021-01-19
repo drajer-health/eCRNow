@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -189,20 +188,14 @@ public class PeriodicUpdateEicrActionTest {
       when(mockTriggerStatus.getMatchedCodes()).thenReturn(matchedCodes);
       when(EcaUtils.createEicr(mockDetails)).thenReturn(mockEicr);
       when(mockEicr.getId()).thenReturn(10);
-      when(mockEicr.getEicrData())
-          .thenReturn("**** Printing Eicr from Periodic Update EICR ACTION ****");
+      when(mockEicr.getEicrData()).thenReturn("This is periodic EICR");
 
       // Test
       periodicUpdateEicrAction.execute(mockDetails, launchType);
 
       // Validate
       PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
-      ApplicationUtils.saveDataToFile(
-          eq("**** Printing Eicr from Periodic Update EICR ACTION ****"), anyString());
-
-      assertEquals(JobStatus.COMPLETED, createEicrStatus.getJobStatus());
-      assertEquals("10", createEicrStatus.geteICRId());
-      assertEquals(true, createEicrStatus.getEicrCreated());
+      ApplicationUtils.saveDataToFile(eq("This is periodic EICR"), anyString());
 
     } catch (Exception e) {
 
