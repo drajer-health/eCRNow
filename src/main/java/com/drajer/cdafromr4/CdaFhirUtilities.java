@@ -1781,7 +1781,7 @@ public class CdaFhirUtilities {
   }
 
   public static String getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-      String codeElName,
+      String elementName,
       String code,
       String codeSystem,
       String codeSystemName,
@@ -1814,16 +1814,29 @@ public class CdaFhirUtilities {
                 " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
             if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
 
-            retval.append(
-                CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
-                    codeElName,
-                    code,
-                    codeSystem,
-                    codeSystemName,
-                    valueSet,
-                    valuesetVersion,
-                    dispName));
+            if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+              retval.append(
+                  CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
+                      elementName,
+                      code,
+                      codeSystem,
+                      codeSystemName,
+                      valueSet,
+                      valuesetVersion,
+                      dispName));
 
+            } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+
+              retval.append(
+                  CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
+                      elementName,
+                      code,
+                      codeSystem,
+                      codeSystemName,
+                      valueSet,
+                      valuesetVersion,
+                      dispName));
+            }
             foundCodings = true;
           } else {
 
@@ -1849,109 +1862,32 @@ public class CdaFhirUtilities {
 
     if (foundCodings) {
       retval.append(translations.toString());
-      retval.append(CdaGeneratorUtils.getXmlForEndElement(codeElName));
+      retval.append(CdaGeneratorUtils.getXmlForEndElement(elementName));
     } else {
 
       String dispName = "";
       if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
 
-      retval.append(
-          CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
-              CdaGeneratorConstants.CODE_EL_NAME,
-              code,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-              CdaGeneratorConstants.RCTC_OID,
-              ActionRepo.getInstance().getRctcVersion(),
-              dispName));
-    }
-
-    return retval.toString();
-  }
-
-  public static String getXmlForValueCodeableConceptWithCDAndValueSetAndVersion(
-      String codeElName,
-      String code,
-      String codeSystem,
-      String codeSystemName,
-      String valueSet,
-      String valuesetVersion,
-      CodeableConcept cc,
-      String csUrl) {
-
-    StringBuilder retval = new StringBuilder();
-    StringBuilder translations = new StringBuilder();
-
-    Boolean foundCodings = false;
-    if (cc != null) {
-
-      String dispName = cc.getText();
-
-      List<Coding> cds = cc.getCoding();
-
-      if (cds != null && !cds.isEmpty()) {
-
-        for (Coding cd : cds) {
-
-          if (cd.getCode() != null
-              && !cd.getCode().isEmpty()
-              && code.contentEquals(cd.getCode())
-              && csUrl.contentEquals(cd.getSystem())
-              && !foundCodings) {
-
-            logger.info(
-                " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
-            if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
-
-            retval.append(
-                CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
-                    codeElName,
-                    code,
-                    codeSystem,
-                    codeSystemName,
-                    valueSet,
-                    valuesetVersion,
-                    dispName));
-
-            foundCodings = true;
-          } else {
-
-            Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(cd.getSystem());
-
-            if (csd.getValue0() != null) {
-
-              if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
-
-              // Create Translations.
-              translations.append(
-                  CdaGeneratorUtils.getXmlForCD(
-                      CdaGeneratorConstants.TRANSLATION_EL_NAME,
-                      cd.getCode(),
-                      csd.getValue0(),
-                      csd.getValue1(),
-                      dispName));
-            }
-          }
-        }
+      if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+        retval.append(
+            CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+                CdaGeneratorConstants.CODE_EL_NAME,
+                code,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                dispName));
+      } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+        retval.append(
+            CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
+                code,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                dispName));
       }
-    }
-
-    if (foundCodings) {
-      retval.append(translations.toString());
-      retval.append(CdaGeneratorUtils.getXmlForEndElement(codeElName));
-    } else {
-
-      String dispName = "";
-      if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
-
-      retval.append(
-          CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-              code,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-              CdaGeneratorConstants.RCTC_OID,
-              ActionRepo.getInstance().getRctcVersion(),
-              dispName));
     }
 
     return retval.toString();

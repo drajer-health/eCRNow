@@ -338,7 +338,7 @@ public class CdaResultGenerator {
         CodeableConcept cc = (CodeableConcept) val;
 
         obsValueXml =
-            CdaFhirUtilities.getXmlForValueCodeableConceptWithCDAndValueSetAndVersion(
+            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
                 CdaGeneratorConstants.VAL_EL_NAME,
                 mCd,
                 CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
