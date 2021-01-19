@@ -417,7 +417,7 @@
                     "status": "generated",
                     "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Coronavirus Panel</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Sputum, AM Draw (Inpatient Only) Collect, 05/01/20 3:30:00 CDT, Once, Nurse collect</p></div>"
                 },
-                "status": "completed",
+                "status": "active",
                 "intent": "order",
                 "category": [
                     {

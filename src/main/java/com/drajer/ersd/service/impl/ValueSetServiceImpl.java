@@ -127,7 +127,16 @@ public class ValueSetServiceImpl implements ValueSetService {
         valuSetGrouper == null ? "NULL" : valuSetGrouper.getId());
 
     ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
-    ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, valuSetGrouper);
+
+    if (ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().containsKey(path)) {
+      logger.info(" Found Path in Grouper Map for {}", path);
+      ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().get(path).add(valuSetGrouper);
+    } else {
+      logger.info(" Did not Find Path in Grouper Map for {}", path);
+      Set<ValueSet> vs = new HashSet<>();
+      vs.add(valuSetGrouper);
+      ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, vs);
+    }
 
     if (valuSetGrouper != null) {
 

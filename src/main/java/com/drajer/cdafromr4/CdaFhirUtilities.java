@@ -2,6 +2,7 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
@@ -30,6 +32,11 @@ import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Medication;
+import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
+import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
@@ -37,6 +44,8 @@ import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Type;
@@ -658,21 +667,28 @@ public class CdaFhirUtilities {
 
   public static Date getActualDate(Type dt) {
 
-    if (dt != null && dt instanceof DateTimeType) {
+    if (dt instanceof DateTimeType) {
 
       DateTimeType d1 = (DateTimeType) dt;
       return d1.getValue();
-    } else if (dt != null && dt instanceof Period) {
+    } else if (dt instanceof Period) {
 
+      logger.debug(" Found an instance of period ");
       Period d1 = (Period) dt;
       return d1.getStart();
-    } else if (dt != null && dt instanceof InstantType) {
+    } else if (dt instanceof InstantType) {
 
       InstantType d1 = (InstantType) dt;
       return d1.getValue();
-    } else if (dt != null && dt instanceof Timing) {
+    } else if (dt instanceof Timing) {
 
-      return null;
+      logger.debug(" Found an instance of timing ");
+      Timing t = (Timing) (dt);
+      if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+
+        logger.debug(" Found the bounds element ");
+        return getActualDate(t.getRepeat().getBounds());
+      }
     }
 
     return null;
@@ -728,19 +744,27 @@ public class CdaFhirUtilities {
     List<Coding> codes = new ArrayList<>();
     if (cds != null && !cds.isEmpty()) {
 
-      CodeableConcept cd = cds.get(0);
+      for (CodeableConcept cd : cds) {
 
-      List<Coding> codings = cd.getCoding();
+        List<Coding> codings = cd.getCoding();
 
-      if (codings != null && !codings.isEmpty()) {
+        if (codings != null && !codings.isEmpty()) {
 
-        for (Coding code : codings) {
+          logger.debug(" Coding .size = {} ", codings.size());
 
-          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
+          for (Coding code : codings) {
 
-          if (!StringUtils.isEmpty(csd.getValue0())) codes.add(code);
-        }
-      }
+            logger.debug(" Getting CodeSystem for Url {} ", code.getSystem());
+            Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
+
+            logger.debug(" Received CodeSystem {} and {}", csd.getValue0(), csd.getValue1());
+
+            if (!StringUtils.isEmpty(csd.getValue0())) {
+              codes.add(code);
+            }
+          } // for all codings
+        } // codings not empy
+      } // for all codeable concepts
     }
     return codes;
   }
@@ -781,9 +805,10 @@ public class CdaFhirUtilities {
                   cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
 
           foundCodeForCodeSystem = true;
-        } else if (!csd.getValue0().isEmpty()) {
+        } else if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
 
-          logger.info("Found the Coding for a different Codesystem {}", csd.getValue0());
+          logger.info(
+              "Found the Coding for a different Codesystem {} for Translation ", csd.getValue0());
           translations.append(
               CdaGeneratorUtils.getXmlForCD(
                   CdaGeneratorConstants.TRANSLATION_EL_NAME,
@@ -833,19 +858,23 @@ public class CdaFhirUtilities {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
-          sb.append(
-              CdaGeneratorUtils.getXmlForCDWithoutEndTag(
-                  cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+            sb.append(
+                CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+                    cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
-          sb.append(
-              CdaGeneratorUtils.getXmlForCD(
-                  CdaGeneratorConstants.TRANSLATION_EL_NAME,
-                  c.getCode(),
-                  csd.getValue0(),
-                  csd.getValue1(),
-                  c.getDisplay()));
+
+          if (!csd.getValue1().isEmpty() && !csd.getValue0().isEmpty())
+            sb.append(
+                CdaGeneratorUtils.getXmlForCD(
+                    CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                    c.getCode(),
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    c.getDisplay()));
         }
       }
 
@@ -873,6 +902,7 @@ public class CdaFhirUtilities {
         Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
         if (!csd.getValue0().isEmpty()
+            && !csd.getValue1().isEmpty()
             && c.getSystem().contentEquals(codeSystemUrl)
             && !foundCodeForCodeSystem) {
 
@@ -882,7 +912,7 @@ public class CdaFhirUtilities {
                   c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
 
           foundCodeForCodeSystem = true;
-        } else if (!csd.getValue0().isEmpty()) {
+        } else if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
 
           logger.debug("Found the Coding for a different Codesystem {}", csd.getValue0());
           translations.append(
@@ -931,19 +961,23 @@ public class CdaFhirUtilities {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
-          sb.append(
-              CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
-                  c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+            sb.append(
+                CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
+                    c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
-          sb.append(
-              CdaGeneratorUtils.getXmlForCD(
-                  CdaGeneratorConstants.TRANSLATION_EL_NAME,
-                  c.getCode(),
-                  csd.getValue0(),
-                  csd.getValue1(),
-                  c.getDisplay()));
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+            sb.append(
+                CdaGeneratorUtils.getXmlForCD(
+                    CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                    c.getCode(),
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    c.getDisplay()));
         }
       }
 
@@ -1034,14 +1068,14 @@ public class CdaFhirUtilities {
 
     String s = "";
 
-    if (gender != null && (gender == AdministrativeGender.MALE)) {
+    if (gender == AdministrativeGender.MALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_MALE_CODE,
               CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
-    } else if (gender != null && (gender == AdministrativeGender.FEMALE)) {
+    } else if (gender == AdministrativeGender.FEMALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
@@ -1186,6 +1220,155 @@ public class CdaFhirUtilities {
     return val;
   }
 
+  public static String getStringForMedicationType(Resource r) {
+
+    String retVal = CdaGeneratorConstants.UNKNOWN_VALUE;
+
+    if (r instanceof MedicationRequest) {
+      logger.info(" Found Med Request ");
+      MedicationRequest mr = (MedicationRequest) r;
+
+      if (mr.getMedication() instanceof Reference) {
+
+        logger.info(" Found Med Request.Medication Reference ");
+
+        Reference med = (Reference) mr.getMedication();
+
+        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+
+          logger.info(" Found Med Request.Medication which is a contained reference");
+          // Check contained.
+          String refId = med.getReference().substring(1);
+
+          logger.info("Ref Id {} ", refId);
+
+          if (mr.getContained() != null) {
+
+            retVal = getStringForMedicationFromContainedResources(mr.getContained(), refId);
+
+            logger.info(" Return Val = {}", retVal);
+          } // contained present
+        } // Contained reference
+
+        return retVal;
+
+      } else if (mr.getMedication() instanceof CodeableConcept) {
+
+        CodeableConcept cc = (CodeableConcept) mr.getMedication();
+
+        return getStringForType(cc);
+      }
+    } else if (r instanceof MedicationAdministration) {
+
+      MedicationAdministration medAdminRef = (MedicationAdministration) r;
+
+      if (medAdminRef.getMedication() instanceof Reference) {
+
+        Reference med = (Reference) medAdminRef.getMedication();
+
+        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+          // Check contained.
+          String refId = med.getReference().substring(1);
+
+          if (medAdminRef.getContained() != null) {
+
+            retVal =
+                getStringForMedicationFromContainedResources(medAdminRef.getContained(), refId);
+          } // contained present
+        } // Contained reference
+
+        return retVal;
+
+      } else if (medAdminRef.getMedication() instanceof CodeableConcept) {
+
+        CodeableConcept cc = (CodeableConcept) medAdminRef.getMedication();
+
+        return getStringForType(cc);
+      }
+
+    } else if (r instanceof MedicationStatement) {
+
+      MedicationStatement medStmtRef = (MedicationStatement) r;
+
+      if (medStmtRef.getMedication() instanceof Reference) {
+
+        Reference med = (Reference) medStmtRef.getMedication();
+
+        if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+          // Check contained.
+          String refId = med.getReference().substring(1);
+
+          if (medStmtRef.getContained() != null) {
+
+            retVal = getStringForMedicationFromContainedResources(medStmtRef.getContained(), refId);
+          } // contained present
+        } // Contained reference
+
+        return retVal;
+
+      } else if (medStmtRef.getMedication() instanceof CodeableConcept) {
+
+        CodeableConcept cc = (CodeableConcept) medStmtRef.getMedication();
+
+        return getStringForType(cc);
+      }
+    }
+
+    return retVal;
+  }
+
+  public static String getStringForMedicationFromContainedResources(
+      List<Resource> resources, String refId) {
+
+    Pair<String, Boolean> retVal = null;
+    for (Resource res : resources) {
+
+      logger.info(" res.getId {} ", res.getId());
+
+      if (res.getId().contains(refId) && res instanceof Medication) {
+
+        logger.info(" Found a Contained Resource with Id {} ", refId);
+        Medication cmed = (Medication) res;
+        // Found the reference, check the code and ingredients.
+
+        if (cmed.getCode() != null) {
+          logger.info(" Found Contained Med  Code ");
+          retVal =
+              getCodeableConceptDisplayForCodeSystem(
+                  cmed.getCode(), CdaGeneratorConstants.FHIR_RXNORM_URL, false);
+        } // if code present
+
+        if (retVal.getValue0().isEmpty()) {
+
+          logger.info(" Return Val is empty");
+
+          if (cmed.getIngredient() != null) {
+
+            logger.info(" Found ingredient ");
+            List<MedicationIngredientComponent> ings = cmed.getIngredient();
+
+            for (MedicationIngredientComponent ing : ings) {
+
+              if (ing.getItem() instanceof CodeableConcept) {
+
+                logger.info(" Found a CC for Ingredient ");
+                CodeableConcept cc = (CodeableConcept) ing.getItem();
+                retVal =
+                    getCodeableConceptDisplayForCodeSystem(
+                        cc, CdaGeneratorConstants.FHIR_RXNORM_URL, false);
+                break;
+              }
+            }
+          }
+        }
+
+        if (!retVal.getValue0().isEmpty()) return retVal.getValue0();
+      } // Found id
+    } // For all resources
+
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
   public static String getStringForType(Type dt) {
 
     if (dt != null) {
@@ -1231,9 +1414,22 @@ public class CdaFhirUtilities {
 
         val.append(d.getValueAsString());
 
+      } else if (dt instanceof Timing) {
+
+        logger.debug(" Found an instance of timing for creating string ");
+        Timing t = (Timing) (dt);
+        if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+
+          logger.debug(" Found the bounds element for creating string ");
+
+          String v = getStringForType(t.getRepeat().getBounds());
+          val.append(v);
+        }
+
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;
 
+        logger.debug(" Found the Period element for creating string");
         if (pt.getStart() != null && pt.getEnd() != null) {
           val.append(pt.getStart().toString())
               .append(CdaGeneratorConstants.PIPE)
@@ -1255,7 +1451,7 @@ public class CdaFhirUtilities {
         val.append(st.getValue());
       }
 
-      logger.info(" Printing the class name {}", dt.getClass());
+      logger.info(" Printing the class name {} and value {}", dt.getClass(), val);
       return val.toString();
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -1299,6 +1495,16 @@ public class CdaFhirUtilities {
         Period pt = (Period) dt;
 
         val += getPeriodXml(pt, elName);
+      } else if (dt instanceof Timing) {
+
+        Timing t = (Timing) (dt);
+        if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+
+          logger.debug(" Found the bounds element for creating xml ");
+
+          String v = getXmlForType(t.getRepeat().getBounds(), elName, valFlag);
+          val += v;
+        }
       } else if (dt instanceof CodeType) {
 
         CodeType cd = (CodeType) dt;
@@ -1319,6 +1525,97 @@ public class CdaFhirUtilities {
     else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
 
     return val;
+  }
+
+  public static String getXmlForMedicationTypeForCodeSystem(
+      Type dt,
+      String elName,
+      Boolean valFlag,
+      String codeSystemUrl,
+      Boolean csOptional,
+      DomainResource res) {
+
+    if (dt instanceof Reference) {
+
+      logger.info(" Found Medication of Type Reference within Domain Resource ");
+      Reference med = (Reference) dt;
+      String codeXml = "";
+      if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+        // Check contained.
+        String refId = med.getReference().substring(1);
+
+        logger.info(" Found Medication of Type Reference with Id {} ", refId);
+
+        if (res.getContained() != null) {
+
+          logger.info(" Contained Elements Not null");
+          List<Resource> meds = res.getContained();
+
+          for (Resource r : meds) {
+
+            if (r.getId().contains(refId) && r instanceof Medication) {
+
+              logger.info(" Found Medication in contained resource ");
+
+              Medication cmed = (Medication) r;
+
+              // Found the reference, check the code and ingredients.
+
+              if (cmed.getCode() != null
+                  && cmed.getCode().getCoding() != null
+                  && !cmed.getCode().getCoding().isEmpty()
+                  && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                      cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+
+                logger.info(" Found Medication for code system in code element ");
+                // Found the Medication that matters.
+                codeXml =
+                    getXmlForTypeForCodeSystem(
+                        cmed.getCode(), elName, valFlag, codeSystemUrl, csOptional);
+
+              } // if code present
+              else {
+                // Check the ingredients
+
+                if (cmed.getIngredient() != null) {
+
+                  logger.info(" Found Ingredients ");
+                  List<MedicationIngredientComponent> ings = cmed.getIngredient();
+
+                  for (MedicationIngredientComponent ing : ings) {
+
+                    if (ing.getItem() instanceof CodeableConcept) {
+
+                      logger.info(" Found Ingredient which is coded ");
+                      CodeableConcept cc = (CodeableConcept) ing.getItem();
+
+                      if (cc.getCoding() != null
+                          && !cc.getCoding().isEmpty()
+                          && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                              cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+                        codeXml =
+                            getXmlForTypeForCodeSystem(
+                                cc, elName, valFlag, codeSystemUrl, csOptional);
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            } // contained med
+          } // for all contained resources
+        } // contained present
+
+      } // Contained reference
+      else {
+
+        // Check the actual medication
+
+      }
+
+      return codeXml;
+
+    } else return getXmlForTypeForCodeSystem(dt, elName, valFlag, codeSystemUrl, csOptional);
   }
 
   public static String getXmlForTypeForCodeSystem(
@@ -1363,9 +1660,7 @@ public class CdaFhirUtilities {
   public static List<String> getMatchedCodesForResourceAndUrl(
       LaunchDetails details, String matchResourceType, String csUrl) {
 
-    PatientExecutionState state = null;
-
-    state = ApplicationUtils.getDetailStatus(details);
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
     List<String> matchedCodesForUrl = new ArrayList<>();
@@ -1393,6 +1688,39 @@ public class CdaFhirUtilities {
     }
 
     return matchedCodesForUrl;
+  }
+
+  public static List<String> getMatchedValuesForResourceAndUrl(
+      LaunchDetails details, String matchResourceType, String csUrl) {
+
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
+
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+    List<String> matchedValuesForUrl = new ArrayList<>();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+
+      // Add each code as an entry relationship observation
+      if (mtc.hasMatchedTriggerValue(matchResourceType)) {
+
+        logger.info(" Found Matched Codes for Resource Type {}", matchResourceType);
+
+        Set<String> matchedValues = mtc.getMatchedValues();
+
+        if (matchedValues != null && !matchedValues.isEmpty()) {
+
+          // Split the system and code.
+          for (String s : matchedValues) {
+            String[] parts = s.split("\\|");
+            if (parts[0].contentEquals(csUrl)) {
+              matchedValuesForUrl.add(parts[1]);
+            }
+          }
+        }
+      }
+    }
+
+    return matchedValuesForUrl;
   }
 
   public static Boolean isCodePresent(List<String> codes, String code) {
@@ -1429,6 +1757,19 @@ public class CdaFhirUtilities {
     return "";
   }
 
+  public static String getMatchingCodeFromTypeForCodeSystem(
+      List<String> matchedCodes, Type dt, String csUrl) {
+
+    if (dt instanceof CodeableConcept) {
+      CodeableConcept cc = (CodeableConcept) dt;
+      return getMatchingCodeFromCodeableConceptForCodeSystem(matchedCodes, cc, csUrl);
+    } else if (dt instanceof Coding) {
+      List<Coding> cds = new ArrayList<>();
+      cds.add((Coding) dt);
+      return getMatchingCodeFromCodingForCodeSystem(matchedCodes, cds, csUrl);
+    } else return "";
+  }
+
   public static String getMatchingCodeFromCodeableConceptForCodeSystem(
       List<String> matchedCodes, CodeableConcept cd, String csUrl) {
 
@@ -1437,6 +1778,119 @@ public class CdaFhirUtilities {
     }
 
     return "";
+  }
+
+  public static String getXmlForCodeableConceptWithCDAndValueSetAndVersion(
+      String elementName,
+      String code,
+      String codeSystem,
+      String codeSystemName,
+      String valueSet,
+      String valuesetVersion,
+      CodeableConcept cc,
+      String csUrl) {
+
+    StringBuilder retval = new StringBuilder();
+    StringBuilder translations = new StringBuilder();
+
+    Boolean foundCodings = false;
+    if (cc != null) {
+
+      String dispName = cc.getText();
+
+      List<Coding> cds = cc.getCoding();
+
+      if (cds != null && !cds.isEmpty()) {
+
+        for (Coding cd : cds) {
+
+          if (cd.getCode() != null
+              && !cd.getCode().isEmpty()
+              && code.contentEquals(cd.getCode())
+              && csUrl.contentEquals(cd.getSystem())
+              && !foundCodings) {
+
+            logger.info(
+                " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
+            if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
+
+            if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+              retval.append(
+                  CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
+                      elementName,
+                      code,
+                      codeSystem,
+                      codeSystemName,
+                      valueSet,
+                      valuesetVersion,
+                      dispName));
+
+            } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+
+              retval.append(
+                  CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
+                      elementName,
+                      code,
+                      codeSystem,
+                      codeSystemName,
+                      valueSet,
+                      valuesetVersion,
+                      dispName));
+            }
+            foundCodings = true;
+          } else {
+
+            Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(cd.getSystem());
+
+            if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
+
+              if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
+
+              // Create Translations.
+              translations.append(
+                  CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                      cd.getCode(),
+                      csd.getValue0(),
+                      csd.getValue1(),
+                      dispName));
+            }
+          }
+        }
+      }
+    }
+
+    if (foundCodings) {
+      retval.append(translations.toString());
+      retval.append(CdaGeneratorUtils.getXmlForEndElement(elementName));
+    } else {
+
+      String dispName = "";
+      if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
+
+      if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+        retval.append(
+            CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+                CdaGeneratorConstants.CODE_EL_NAME,
+                code,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                dispName));
+      } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+        retval.append(
+            CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
+                code,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                dispName));
+      }
+    }
+
+    return retval.toString();
   }
 
   public static String getStatusCodeForFhirMedStatusCodes(String val) {
