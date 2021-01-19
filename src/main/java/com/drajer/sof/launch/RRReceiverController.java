@@ -53,9 +53,8 @@ public class RRReceiverController {
       // Construct the DocumentReference Resource
       DocumentReference docRef = rrReceieverService.constructDocumentReference(rrReceiver);
 
-      logger.debug(
-          "docRef===========> {}",
-          FhirContext.forR4().newJsonParser().encodeResourceToString(docRef));
+      String docRefStr = FhirContext.forR4().newJsonParser().encodeResourceToString(docRef);
+      logger.debug("docRef===========> {}", docRefStr);
 
       final String fhirServerURL = rrReceiver.getFhirServerURL();
 

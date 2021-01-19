@@ -667,29 +667,27 @@ public class CdaFhirUtilities {
 
   public static Date getActualDate(Type dt) {
 
-    if (dt != null && dt instanceof DateTimeType) {
+    if (dt instanceof DateTimeType) {
 
       DateTimeType d1 = (DateTimeType) dt;
       return d1.getValue();
-    } else if (dt != null && dt instanceof Period) {
+    } else if (dt instanceof Period) {
 
       logger.debug(" Found an instance of period ");
       Period d1 = (Period) dt;
       return d1.getStart();
-    } else if (dt != null && dt instanceof InstantType) {
+    } else if (dt instanceof InstantType) {
 
       InstantType d1 = (InstantType) dt;
       return d1.getValue();
-    } else if (dt != null && dt instanceof Timing) {
+    } else if (dt instanceof Timing) {
 
       logger.debug(" Found an instance of timing ");
       Timing t = (Timing) (dt);
       if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
 
         logger.debug(" Found the bounds element ");
-
-        Date d = getActualDate(t.getRepeat().getBounds());
-        return d;
+        return getActualDate(t.getRepeat().getBounds());
       }
     }
 
@@ -746,7 +744,6 @@ public class CdaFhirUtilities {
     List<Coding> codes = new ArrayList<>();
     if (cds != null && !cds.isEmpty()) {
 
-      Boolean found = false;
       for (CodeableConcept cd : cds) {
 
         List<Coding> codings = cd.getCoding();
@@ -1071,14 +1068,14 @@ public class CdaFhirUtilities {
 
     String s = "";
 
-    if (gender != null && (gender == AdministrativeGender.MALE)) {
+    if (gender == AdministrativeGender.MALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_MALE_CODE,
               CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
-    } else if (gender != null && (gender == AdministrativeGender.FEMALE)) {
+    } else if (gender == AdministrativeGender.FEMALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
@@ -1223,26 +1220,6 @@ public class CdaFhirUtilities {
     return val;
   }
 
-  public static String getStringForType(Type dt, Resource res, R4FhirData bundle) {
-
-    String val = "";
-
-    if (dt != null) {
-
-      if (dt instanceof Reference) {
-
-        // Find Reference in resource.contained or bundle if present
-        Reference rt = (Reference) (dt);
-        // rt.getI
-      } else {
-        logger.info(" Type is not a reference ");
-        return getStringForType(dt);
-      }
-    }
-
-    return CdaGeneratorConstants.UNKNOWN_VALUE;
-  }
-
   public static String getStringForMedicationType(Resource r) {
 
     String retVal = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -1251,7 +1228,7 @@ public class CdaFhirUtilities {
       logger.info(" Found Med Request ");
       MedicationRequest mr = (MedicationRequest) r;
 
-      if (mr.getMedication() != null && mr.getMedication() instanceof Reference) {
+      if (mr.getMedication() instanceof Reference) {
 
         logger.info(" Found Med Request.Medication Reference ");
 
@@ -1275,7 +1252,7 @@ public class CdaFhirUtilities {
 
         return retVal;
 
-      } else if (mr.getMedication() != null && mr.getMedication() instanceof CodeableConcept) {
+      } else if (mr.getMedication() instanceof CodeableConcept) {
 
         CodeableConcept cc = (CodeableConcept) mr.getMedication();
 
@@ -1285,7 +1262,7 @@ public class CdaFhirUtilities {
 
       MedicationAdministration medAdminRef = (MedicationAdministration) r;
 
-      if (medAdminRef.getMedication() != null && medAdminRef.getMedication() instanceof Reference) {
+      if (medAdminRef.getMedication() instanceof Reference) {
 
         Reference med = (Reference) medAdminRef.getMedication();
 
@@ -1302,8 +1279,7 @@ public class CdaFhirUtilities {
 
         return retVal;
 
-      } else if (medAdminRef.getMedication() != null
-          && medAdminRef.getMedication() instanceof CodeableConcept) {
+      } else if (medAdminRef.getMedication() instanceof CodeableConcept) {
 
         CodeableConcept cc = (CodeableConcept) medAdminRef.getMedication();
 
@@ -1314,7 +1290,7 @@ public class CdaFhirUtilities {
 
       MedicationStatement medStmtRef = (MedicationStatement) r;
 
-      if (medStmtRef.getMedication() != null && medStmtRef.getMedication() instanceof Reference) {
+      if (medStmtRef.getMedication() instanceof Reference) {
 
         Reference med = (Reference) medStmtRef.getMedication();
 
@@ -1330,8 +1306,7 @@ public class CdaFhirUtilities {
 
         return retVal;
 
-      } else if (medStmtRef.getMedication() != null
-          && medStmtRef.getMedication() instanceof CodeableConcept) {
+      } else if (medStmtRef.getMedication() instanceof CodeableConcept) {
 
         CodeableConcept cc = (CodeableConcept) medStmtRef.getMedication();
 
@@ -1374,7 +1349,7 @@ public class CdaFhirUtilities {
 
             for (MedicationIngredientComponent ing : ings) {
 
-              if (ing.getItem() != null && ing.getItem() instanceof CodeableConcept) {
+              if (ing.getItem() instanceof CodeableConcept) {
 
                 logger.info(" Found a CC for Ingredient ");
                 CodeableConcept cc = (CodeableConcept) ing.getItem();
@@ -1560,7 +1535,7 @@ public class CdaFhirUtilities {
       Boolean csOptional,
       DomainResource res) {
 
-    if (dt != null && dt instanceof Reference) {
+    if (dt instanceof Reference) {
 
       logger.info(" Found Medication of Type Reference within Domain Resource ");
       Reference med = (Reference) dt;
@@ -1609,7 +1584,7 @@ public class CdaFhirUtilities {
 
                   for (MedicationIngredientComponent ing : ings) {
 
-                    if (ing.getItem() != null && ing.getItem() instanceof CodeableConcept) {
+                    if (ing.getItem() instanceof CodeableConcept) {
 
                       logger.info(" Found Ingredient which is coded ");
                       CodeableConcept cc = (CodeableConcept) ing.getItem();
@@ -1685,9 +1660,7 @@ public class CdaFhirUtilities {
   public static List<String> getMatchedCodesForResourceAndUrl(
       LaunchDetails details, String matchResourceType, String csUrl) {
 
-    PatientExecutionState state = null;
-
-    state = ApplicationUtils.getDetailStatus(details);
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
     List<String> matchedCodesForUrl = new ArrayList<>();
@@ -1720,9 +1693,7 @@ public class CdaFhirUtilities {
   public static List<String> getMatchedValuesForResourceAndUrl(
       LaunchDetails details, String matchResourceType, String csUrl) {
 
-    PatientExecutionState state = null;
-
-    state = ApplicationUtils.getDetailStatus(details);
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
     List<String> matchedValuesForUrl = new ArrayList<>();
@@ -1789,10 +1760,10 @@ public class CdaFhirUtilities {
   public static String getMatchingCodeFromTypeForCodeSystem(
       List<String> matchedCodes, Type dt, String csUrl) {
 
-    if (dt != null && dt instanceof CodeableConcept) {
+    if (dt instanceof CodeableConcept) {
       CodeableConcept cc = (CodeableConcept) dt;
       return getMatchingCodeFromCodeableConceptForCodeSystem(matchedCodes, cc, csUrl);
-    } else if (dt != null && dt instanceof Coding) {
+    } else if (dt instanceof Coding) {
       List<Coding> cds = new ArrayList<>();
       cds.add((Coding) dt);
       return getMatchingCodeFromCodingForCodeSystem(matchedCodes, cds, csUrl);
@@ -1840,10 +1811,7 @@ public class CdaFhirUtilities {
               && !foundCodings) {
 
             logger.info(
-                " Found a Coding that matches the CodeSystem and Code "
-                    + codeSystem
-                    + " : "
-                    + code);
+                " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
             if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
 
             retval.append(
@@ -1932,10 +1900,7 @@ public class CdaFhirUtilities {
               && !foundCodings) {
 
             logger.info(
-                " Found a Coding that matches the CodeSystem and Code "
-                    + codeSystem
-                    + " : "
-                    + code);
+                " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
             if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
 
             retval.append(
