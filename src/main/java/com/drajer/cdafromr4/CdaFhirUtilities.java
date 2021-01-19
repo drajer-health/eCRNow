@@ -1295,13 +1295,15 @@ public class CdaFhirUtilities {
 
           if (medAdminRef.getContained() != null) {
 
-            retVal = getStringForMedicationFromContainedResources(medAdminRef.getContained(), refId);
+            retVal =
+                getStringForMedicationFromContainedResources(medAdminRef.getContained(), refId);
           } // contained present
         } // Contained reference
 
         return retVal;
 
-      } else if (medAdminRef.getMedication() != null && medAdminRef.getMedication() instanceof CodeableConcept) {
+      } else if (medAdminRef.getMedication() != null
+          && medAdminRef.getMedication() instanceof CodeableConcept) {
 
         CodeableConcept cc = (CodeableConcept) medAdminRef.getMedication();
 
@@ -1328,7 +1330,8 @@ public class CdaFhirUtilities {
 
         return retVal;
 
-      } else if (medStmtRef.getMedication() != null && medStmtRef.getMedication() instanceof CodeableConcept) {
+      } else if (medStmtRef.getMedication() != null
+          && medStmtRef.getMedication() instanceof CodeableConcept) {
 
         CodeableConcept cc = (CodeableConcept) medStmtRef.getMedication();
 
