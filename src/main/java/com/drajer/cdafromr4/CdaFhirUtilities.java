@@ -1445,7 +1445,7 @@ public class CdaFhirUtilities {
           logger.debug(" Found the bounds element for creating string ");
 
           String v = getStringForType(t.getRepeat().getBounds());
-          val += v;
+          val.append(v);
         }
 
       } else if (dt instanceof Period) {
@@ -1474,7 +1474,7 @@ public class CdaFhirUtilities {
       }
 
       logger.info(" Printing the class name {} and value {}", dt.getClass(), val);
-      return val;
+      return val.toString();
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
   }

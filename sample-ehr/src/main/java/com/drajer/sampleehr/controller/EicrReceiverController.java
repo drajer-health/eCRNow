@@ -34,17 +34,11 @@ public class EicrReceiverController {
 		      HttpServletResponse response) {
 		JSONObject responseObj =null;
 		logger.info("Received Eicr XML with Parameters");
-		try {
-			if(!params.containsKey("fhirServerURL") || !params.containsKey("patientId") || !params.containsKey("encounterId") || !params.containsKey("setId")) {
-				return new ResponseEntity<String>("Please provide all the Requried Parameters FhirServerUrl,PatientId,EncounterId,SetId", HttpStatus.BAD_REQUEST);
-			}
+		
 			eicrReceiverService.saveEicrDetails(params, eicrXml);
 			responseObj = new JSONObject();
 			responseObj.put("message", "Received Eicr Details.");
-		}catch(Exception e) {
-			logger.error("Error in Processing Eicr XML");
-		}
-
+		
 		return new ResponseEntity<String>(responseObj.toString(), HttpStatus.OK);
 	}
 }
