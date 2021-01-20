@@ -678,7 +678,7 @@ public class R4ResourcesData {
     List<Immunization> immunizations = new ArrayList<>();
     List<CodeableConcept> immunizationCodes = new ArrayList<>();
     // Filter Immunizations based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         if (!immunization.getEncounter().isEmpty()

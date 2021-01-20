@@ -7,7 +7,6 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
-import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.ClientDetails;
@@ -21,9 +20,6 @@ import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,7 +27,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.time.DateUtils;
@@ -138,32 +133,32 @@ public class LaunchController {
    *
    * @throws IOException
    */
-	/*
-	 * @CrossOrigin
-	 * 
-	 * @RequestMapping(value = "/api/submitBundle") public JSONObject submitBundle()
-	 * throws IOException {
-	 * 
-	 * StringBuilder contentBuilder = new StringBuilder();
-	 * 
-	 * try (Stream<String> stream =
-	 * Files.lines(Paths.get("D:\\CreateEicrAction.xml"), StandardCharsets.UTF_8)) {
-	 * stream.forEach(s -> contentBuilder.append(s).append("\n")); } catch
-	 * (IOException e) { e.printStackTrace(); }
-	 * 
-	 * String content = contentBuilder.toString(); Eicr ecr = new Eicr();
-	 * ecr.setxRequestId("123"); ecr.setxCoorrelationId("456");
-	 * ecr.setFhirServerUrl(
-	 * "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d");
-	 * ecr.setLaunchPatientId("12742571"); ecr.setEncounterId("97953900");
-	 * ecr.setSetId("12742571|97953900");
-	 * 
-	 * LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(202);
-	 * JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content,
-	 * ecr);
-	 * 
-	 * return response; }
-	 */
+  /*
+   * @CrossOrigin
+   *
+   * @RequestMapping(value = "/api/submitBundle") public JSONObject submitBundle()
+   * throws IOException {
+   *
+   * StringBuilder contentBuilder = new StringBuilder();
+   *
+   * try (Stream<String> stream =
+   * Files.lines(Paths.get("D:\\CreateEicrAction.xml"), StandardCharsets.UTF_8)) {
+   * stream.forEach(s -> contentBuilder.append(s).append("\n")); } catch
+   * (IOException e) { e.printStackTrace(); }
+   *
+   * String content = contentBuilder.toString(); Eicr ecr = new Eicr();
+   * ecr.setxRequestId("123"); ecr.setxCoorrelationId("456");
+   * ecr.setFhirServerUrl(
+   * "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d");
+   * ecr.setLaunchPatientId("12742571"); ecr.setEncounterId("97953900");
+   * ecr.setSetId("12742571|97953900");
+   *
+   * LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(202);
+   * JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content,
+   * ecr);
+   *
+   * return response; }
+   */
 
   @CrossOrigin
   @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
