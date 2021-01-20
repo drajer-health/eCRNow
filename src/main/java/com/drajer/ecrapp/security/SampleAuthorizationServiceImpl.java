@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
-public class SampleAuthorizationServiceImpl implements SampleAuthorizationService {
+public class SampleAuthorizationServiceImpl implements AuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(SampleAuthorizationServiceImpl.class);
 
