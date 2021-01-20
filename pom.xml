@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<fhir.version>4.0.3</fhir.version>
+		<fhir.version>4.2.0</fhir.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 	<dependencyManagement>

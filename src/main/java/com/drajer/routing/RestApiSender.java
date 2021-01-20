@@ -3,7 +3,7 @@ package com.drajer.routing;
 import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 
 import com.drajer.ecrapp.model.Eicr;
-import com.drajer.ecrapp.security.AuthorizationService;
+import com.drajer.ecrapp.security.SampleAuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
@@ -23,7 +23,7 @@ public class RestApiSender {
 
   private final Logger logger = LoggerFactory.getLogger(RestApiSender.class);
 
-  @Autowired private AuthorizationService authorizationService;
+  @Autowired private SampleAuthorizationService authorizationService;
 
   @Autowired private RestTemplate restTemplate;
 

@@ -143,11 +143,15 @@ public class ClientDetails {
   }
 
   public String getClientSecret() {
-    return AESEncryption.decrypt(clientSecret);
+    if (clientSecret != null) {
+      return AESEncryption.decrypt(clientSecret);
+    } else {
+      return null;
+    }
   }
 
   public void setClientSecret(String clientSecret) {
-    this.clientSecret = AESEncryption.encrypt(clientSecret);
+    if (clientSecret != null) this.clientSecret = AESEncryption.encrypt(clientSecret);
   }
 
   public String getFhirServerBaseURL() {
@@ -223,11 +227,15 @@ public class ClientDetails {
   }
 
   public String getDirectPwd() {
-    return AESEncryption.decrypt(directPwd);
+    if (directPwd != null) {
+      return AESEncryption.decrypt(directPwd);
+    } else {
+      return null;
+    }
   }
 
   public void setDirectPwd(String directPwd) {
-    this.directPwd = AESEncryption.encrypt(directPwd);
+    if (directPwd != null) this.directPwd = AESEncryption.encrypt(directPwd);
   }
 
   public String getSmtpPort() {
