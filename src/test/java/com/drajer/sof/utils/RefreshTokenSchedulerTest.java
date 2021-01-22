@@ -15,7 +15,7 @@ import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.apache.http.HttpHeaders;
-import org.eclipse.jetty.http.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -57,7 +57,7 @@ public class RefreshTokenSchedulerTest {
       MappingBuilder mappingBuilder = post(urlEqualTo("/authorization"));
       ResponseDefinitionBuilder response =
           aResponse()
-              .withStatus(HttpStatus.OK_200)
+              .withStatus(HttpStatus.SC_OK)
               .withBody(accesstoken)
               .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
@@ -82,7 +82,7 @@ public class RefreshTokenSchedulerTest {
     try {
 
       MappingBuilder mappingBuilder = post(urlEqualTo("/authorization"));
-      ResponseDefinitionBuilder response = aResponse().withStatus(HttpStatus.UNAUTHORIZED_401);
+      ResponseDefinitionBuilder response = aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED);
       stubFor(mappingBuilder.willReturn(response));
 
       // Test

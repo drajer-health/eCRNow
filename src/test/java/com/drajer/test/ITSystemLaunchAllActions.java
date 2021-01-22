@@ -16,12 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;

@@ -77,7 +77,7 @@ public class Dstu2CdaHeaderGenerator {
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.VERSION_EL_NAME, details.getVersionNumber()));
+              CdaGeneratorConstants.VERSION_EL_NAME, Integer.toString(details.getVersionNumber())));
 
       Bundle bundle = data.getData();
       if (bundle != null) {
