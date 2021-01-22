@@ -11,11 +11,9 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;
@@ -109,7 +107,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   @Test
   public void testSystemLaunchAllActions() {
 
-	ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
+    ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     assertTrue(response.getBody().contains("App is launched successfully"));
@@ -121,12 +119,11 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     validateActionStatus();
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
     validateActionStatus();
-
   }
 
   @Test
   public void testSubmitEicrFromRestApi() {
-	URL restApiUrl = null;
+    URL restApiUrl = null;
     try {
       restApiUrl = new URL(clientDetails.getRestAPIURL());
     } catch (MalformedURLException e) {

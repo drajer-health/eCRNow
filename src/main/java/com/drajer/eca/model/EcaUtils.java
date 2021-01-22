@@ -165,7 +165,6 @@ public class EcaUtils {
         logger.error(msg);
 
         throw new RuntimeException(msg);
-
       }
 
       if (eICR != null && !eICR.isEmpty()) {

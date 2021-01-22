@@ -29,7 +29,6 @@ public class RRReceiverController {
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
-		
 
       logger.info(
           " X-Correlation-ID of {} and X-Request-ID of {} received on RR API ",
