@@ -14,7 +14,7 @@ public class CdaParserConstants {
   private static final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
   // private static final CdaParserConstants constants = new CdaParserConstants();
 
-  private static final XPath CCDAXPATH = XPathFactory.newInstance().newXPath();
+  private static XPath CCDAXPATH;
   private static XPathExpression DOC_ID_EXP;
 
   public static final String DEFAULT_XPATH = "/ClinicalDocument";
@@ -26,10 +26,14 @@ public class CdaParserConstants {
       "Reportability response report Document Public health";
   public static final String RR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
 
+  public static XPath getXPath() {
+    return XPathFactory.newInstance().newXPath();
+  }
+
   public static XPathExpression getDocIdExp() {
     try {
-
-      DOC_ID_EXP = CdaParserConstants.CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
+      if (DOC_ID_EXP == null)
+        DOC_ID_EXP = CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
 
     } catch (XPathExpressionException e) {
       logger.error("Failed to resolve CDA xPath", e);
