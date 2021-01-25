@@ -9,13 +9,13 @@ public class CdaRrModel {
 
   private final Logger logger = LoggerFactory.getLogger(EicrServiceImpl.class);
 
-  public String eicrDocId;
+  private String eicrDocId;
 
-  public CdaIi rrDocId;
+  private CdaIi rrDocId;
 
-  public String reportableType;
+  private String reportableType;
 
-  public String errors;
+  private String errors;
 
   public CdaRrModel() {}
 

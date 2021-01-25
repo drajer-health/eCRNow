@@ -38,7 +38,7 @@ public class RrParser {
     try {
 
       initDoc(cdaFile);
-      CdaParserConstants.getInstance();
+      // CdaParserConstants.getInstance();
 
       logger.debug("Creating Model");
       CdaRrModel model = new CdaRrModel();
@@ -49,7 +49,7 @@ public class RrParser {
         logger.info(" Setting the clinical document ids ");
         model.setRrDocId(
             CdaParserUtilities.readTemplateIdList(
-                (NodeList) CdaParserConstants.DOC_ID_EXP.evaluate(doc, XPathConstants.NODESET)));
+                (NodeList) CdaParserConstants.getDocIdExp().evaluate(doc, XPathConstants.NODESET)));
 
         logger.info(
             " RrDocId root = {} , extension = {} ",

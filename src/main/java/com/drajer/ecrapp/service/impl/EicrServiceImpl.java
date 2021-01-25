@@ -224,18 +224,18 @@ public class EicrServiceImpl implements EicrRRService {
     documentReference.setContent(contentList);
 
     // Set Doc Ref Context
-    DocumentReferenceContextComponent contextComp = new DocumentReferenceContextComponent();
+    DocumentReferenceContextComponent docContextComp = new DocumentReferenceContextComponent();
     List<Reference> encounterRefList = new ArrayList<>();
-    Reference encounterReference = new Reference();
-    encounterReference.setReference("Encounter/" + ecr.getEncounterId());
-    encounterRefList.add(encounterReference);
-    contextComp.setEncounter(encounterRefList);
+    Reference ecrEncounterReference = new Reference();
+    ecrEncounterReference.setReference("Encounter/" + ecr.getEncounterId());
+    encounterRefList.add(ecrEncounterReference);
+    docContextComp.setEncounter(encounterRefList);
 
     Period period = new Period();
     period.setStart(new Date());
     period.setEnd(new Date());
-    contextComp.setPeriod(period);
-    documentReference.setContext(contextComp);
+    docContextComp.setPeriod(period);
+    documentReference.setContext(docContextComp);
 
     String docReference =
         FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);

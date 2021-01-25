@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 public class CdaParserConstants {
 
-  private final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
-  private static final CdaParserConstants constants = new CdaParserConstants();
+  private static final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
+  // private static final CdaParserConstants constants = new CdaParserConstants();
 
-  public static XPath CCDAXPATH;
-  public static XPathExpression DOC_ID_EXP;
+  private static final XPath CCDAXPATH = XPathFactory.newInstance().newXPath();
+  private static XPathExpression DOC_ID_EXP;
 
   public static final String DEFAULT_XPATH = "/ClinicalDocument";
 
@@ -26,18 +26,7 @@ public class CdaParserConstants {
       "Reportability response report Document Public health";
   public static final String RR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
 
-  private CdaParserConstants() {
-    initialize();
-  }
-
-  public static CdaParserConstants getInstance() {
-    return constants;
-  }
-
-  private void initialize() {
-
-    CCDAXPATH = XPathFactory.newInstance().newXPath();
-
+  public static XPathExpression getDocIdExp() {
     try {
 
       DOC_ID_EXP = CdaParserConstants.CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
@@ -45,6 +34,7 @@ public class CdaParserConstants {
     } catch (XPathExpressionException e) {
       logger.error("Failed to resolve CDA xPath", e);
     }
+    return DOC_ID_EXP;
   }
 
   NamespaceContext ctx =
