@@ -27,7 +27,8 @@ public class CdaParserConstants {
   public static final String RR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
 
   public static XPath getXPath() {
-    return XPathFactory.newInstance().newXPath();
+    CCDAXPATH = XPathFactory.newInstance().newXPath();
+    return CCDAXPATH;
   }
 
   public static XPathExpression getDocIdExp() {
