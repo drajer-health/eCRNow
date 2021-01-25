@@ -1,13 +1,12 @@
 package com.drajer.cda.parser;
 
-import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CdaRrModel {
 
-  private final Logger logger = LoggerFactory.getLogger(EicrServiceImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
 
   private String eicrDocId;
 

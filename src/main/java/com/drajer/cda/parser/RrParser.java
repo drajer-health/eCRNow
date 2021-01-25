@@ -1,6 +1,5 @@
 package com.drajer.cda.parser;
 
-import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.DocumentBuilder;
@@ -18,7 +17,7 @@ import org.xml.sax.SAXException;
 
 public class RrParser {
 
-  private final Logger logger = LoggerFactory.getLogger(EicrServiceImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(RrParser.class);
 
   private DocumentBuilderFactory factory;
   private DocumentBuilder builder;
