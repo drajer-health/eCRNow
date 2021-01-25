@@ -43,7 +43,7 @@ public class CdaParserConstants {
       DOC_ID_EXP = CdaParserConstants.CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
 
     } catch (XPathExpressionException e) {
-      logger.info("Failed to resolve CDA xPath", e);
+      logger.error("Failed to resolve CDA xPath", e);
     }
   }
 

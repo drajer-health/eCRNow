@@ -52,7 +52,7 @@ public class CdaRrModel {
   }
 
   public void setRrDocId(ArrayList<CdaIi> rrdocids) {
-    if (rrdocids != null && rrdocids.size() > 0) {
+    if (rrdocids != null && !rrdocids.isEmpty()) {
       this.rrDocId = rrdocids.get(0);
     }
   }
