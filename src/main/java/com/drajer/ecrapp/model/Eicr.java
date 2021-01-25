@@ -22,21 +22,43 @@ public class Eicr {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
+  // Request , Response Data
   @Column(name = "x_req_id", nullable = true, columnDefinition = "TEXT")
   private String xRequestId;
+
+  @Column(name = "x_coorrelation_id", nullable = true, columnDefinition = "TEXT")
+  private String xCorrelationId;
+
+  // Eicr Data
+  @Column(name = "eicr_doc_id", nullable = true, columnDefinition = "TEXT")
+  private String eicrDocId;
+
+  @Column(name = "set_id", nullable = true, columnDefinition = "TEXT")
+  private String setId;
+
+  @Column(name = "doc_version", nullable = true, columnDefinition = "INTEGER")
+  private Integer docVersion;
 
   @Column(name = "eicr_data", nullable = true, columnDefinition = "TEXT")
   private String eicrData;
 
+  @Column(name = "initiating_action", nullable = true, columnDefinition = "TEXT")
+  private String initiatingAction;
+
+  // Response Data.
   @Column(name = "response_type", nullable = true, columnDefinition = "TEXT")
   private String responseType;
 
-  @Column(name = "response_id", nullable = true, columnDefinition = "TEXT")
-  private String responseId;
+  @Column(name = "response_x_request_id", nullable = true, columnDefinition = "TEXT")
+  private String responseXRequestId;
+
+  @Column(name = "response_doc_id", nullable = true, columnDefinition = "TEXT")
+  private String responseDocId;
 
   @Column(name = "rr_data", nullable = true, columnDefinition = "TEXT")
   private String responseData;
 
+  // EHR Details for persisting the data to EHR
   @Column(name = "fhir_server_url", nullable = true, columnDefinition = "TEXT")
   private String fhirServerUrl;
 
@@ -46,12 +68,18 @@ public class Eicr {
   @Column(name = "encounter_id", nullable = true, columnDefinition = "TEXT")
   private String encounterId;
 
-  @Column(name = "set_id", nullable = true, columnDefinition = "INTEGER")
-  private Integer setId;
-
+  // Timestamps
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
   private Date lastUpdated;
+
+  public String getInitiatingAction() {
+    return initiatingAction;
+  }
+
+  public void setInitiatingAction(String initiatingAction) {
+    this.initiatingAction = initiatingAction;
+  }
 
   public Integer getId() {
     return id;
@@ -85,12 +113,44 @@ public class Eicr {
     this.responseType = responseType;
   }
 
-  public String getResponseId() {
-    return responseId;
+  public String getxCoorrelationId() {
+    return xCorrelationId;
   }
 
-  public void setResponseId(String responseId) {
-    this.responseId = responseId;
+  public void setxCoorrelationId(String xCoorrelationId) {
+    this.xCorrelationId = xCoorrelationId;
+  }
+
+  public String getEicrDocId() {
+    return eicrDocId;
+  }
+
+  public void setEicrDocId(String eicrDocId) {
+    this.eicrDocId = eicrDocId;
+  }
+
+  public Integer getDocVersion() {
+    return docVersion;
+  }
+
+  public void setDocVersion(Integer docVersion) {
+    this.docVersion = docVersion;
+  }
+
+  public String getResponseXRequestId() {
+    return responseXRequestId;
+  }
+
+  public void setResponseXRequestId(String responseXRequestId) {
+    this.responseXRequestId = responseXRequestId;
+  }
+
+  public String getResponseDocId() {
+    return responseDocId;
+  }
+
+  public void setResponseDocId(String responseDocId) {
+    this.responseDocId = responseDocId;
   }
 
   public String getResponseData() {
@@ -133,11 +193,11 @@ public class Eicr {
     this.encounterId = encounterId;
   }
 
-  public Integer getSetId() {
+  public String getSetId() {
     return setId;
   }
 
-  public void setSetId(Integer setId) {
+  public void setSetId(String setId) {
     this.setId = setId;
   }
 }

@@ -1,7 +1,7 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
@@ -169,7 +169,7 @@ public class EcaUtilsTest {
 
     PowerMockito.mockStatic(Dstu2CdaEicrGenerator.class);
     when(Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(
-            any(Dstu2FhirData.class), eq(mockDetails)))
+            any(Dstu2FhirData.class), eq(mockDetails), any(Eicr.class)))
         .thenReturn("This is DSTU2 EICR data");
 
     // Test
@@ -190,7 +190,7 @@ public class EcaUtilsTest {
 
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
     when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            any(R4FhirData.class), eq(mockDetails)))
+            any(R4FhirData.class), eq(mockDetails), any(Eicr.class)))
         .thenReturn("This is R4 EICR data");
 
     // Test

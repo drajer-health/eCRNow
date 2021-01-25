@@ -12,4 +12,11 @@ public interface EicrRRService {
   ReportabilityResponse saveOrUpdate(ReportabilityResponse rr);
 
   ReportabilityResponse getRRById(Integer id);
+
+  Integer getMaxVersionId(Eicr eicr);
+
+  void handleFailureMdn(ReportabilityResponse data, String xCorrelationId, String xRequestId);
+
+  void handleReportabilityResponse(
+      ReportabilityResponse data, String xCorrelationId, String xRequestId);
 }

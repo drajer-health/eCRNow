@@ -30,7 +30,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return getSession().get(ReportabilityResponse.class, id);
   }
 
-  public Integer getMaxSetId(Eicr eicr) {
+  public Integer getMaxVersionId(Eicr eicr) {
     String query =
         "SELECT * from eicr where fhir_server_url='"
             + eicr.getFhirServerUrl()
@@ -38,8 +38,20 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
             + eicr.getLaunchPatientId()
             + "' AND encounter_id='"
             + eicr.getEncounterId()
-            + "' ORDER BY set_id DESC LIMIT 1;";
+            + "' ORDER BY doc_version DESC LIMIT 1;";
     List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
-    return eicrList.get(0).getSetId();
+
+    if (!eicrList.isEmpty()) {
+      return eicrList.get(0).getDocVersion();
+    } else return 0;
+  }
+
+  public Eicr getEicrByCoorrelationId(String xcoorrId) {
+    String query = "SELECT * from eicr where x_coorrelation_id ='" + xcoorrId + "'";
+    List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
+
+    if (!eicrList.isEmpty()) {
+      return eicrList.get(0);
+    } else return null;
   }
 }
