@@ -6,9 +6,12 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdaParserConstants {
 
+  private final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
   private static final CdaParserConstants constants = new CdaParserConstants();
 
   public static XPath CCDAXPATH;
@@ -40,8 +43,7 @@ public class CdaParserConstants {
       DOC_ID_EXP = CdaParserConstants.CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
 
     } catch (XPathExpressionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.info("Failed to resolve CDA xPath", e);
     }
   }
 

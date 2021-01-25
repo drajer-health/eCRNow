@@ -56,8 +56,7 @@ public class RrParser {
             model.getRrDocId().getRootValue(),
             model.getRrDocId().getExtValue());
       } catch (XPathExpressionException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.error("Failed to resolve xPath", e);
       }
 
       logger.info("Returning Parsed Model");
@@ -65,19 +64,15 @@ public class RrParser {
       return model;
     } catch (ParserConfigurationException e1) {
 
-      System.out.println("Caught Parser config Excep");
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error("Caught Parser config Exception", e1);
+
     } catch (SAXException e1) {
 
-      System.out.println("Caught SAX Excep");
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error("Caught SAX Exception", e1);
+
     } catch (IOException e1) {
 
-      System.out.println("Caught IO  Excep");
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error("Caught IO  Exception", e1);
     }
 
     return null;
