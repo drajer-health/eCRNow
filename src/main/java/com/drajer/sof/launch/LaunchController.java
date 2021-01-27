@@ -128,32 +128,6 @@ public class LaunchController {
     return "Success";
   }
 
-  /**
-   * This Method is created to test Submit Bundle to FHIR endpoint *
-   *
-   * @throws IOException
-   */
-  /*
-   * @CrossOrigin
-   *
-   * @RequestMapping(value = "/api/submitBundle") public JSONObject submitBundle()
-   * throws IOException {
-   *
-   * StringBuilder contentBuilder = new StringBuilder();
-   *
-   * try (Stream<String> stream =
-   * Files.lines(Paths.get("D:\\CreateEicrAction.xml"), StandardCharsets.UTF_8)) {
-   * stream.forEach(s -> contentBuilder.append(s).append("\n")); } catch
-   * (IOException e) { e.printStackTrace(); }
-   *
-   * String content = contentBuilder.toString();
-   *
-   * LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(415);
-   * JSONObject response = xmlSender.sendEicrXmlDocument(launchDetails, content);
-   *
-   * return response; }
-   */
-
   @CrossOrigin
   @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
   public String invokeSystemLaunch(
@@ -175,7 +149,7 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).equals("1.0.2")) {
+        if (object.getString(FHIR_VERSION).equals("1.(.*).(.*)")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
         if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
@@ -293,10 +267,10 @@ public class LaunchController {
           JSONObject sec = security.getJSONObject("security");
           JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
           JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-          if (object.getString(FHIR_VERSION).equals("1.0.2")) {
+          if (object.getString(FHIR_VERSION).equals("1.(.*).(.*)")) {
             launchDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
           }
-          if (object.getString(FHIR_VERSION).equals("4.0.0")) {
+          if (object.getString(FHIR_VERSION).equals("4.(.*).(.*)")) {
             launchDetails.setFhirVersion(FhirVersionEnum.R4.toString());
           }
           for (int i = 0; i < innerExtension.length(); i++) {

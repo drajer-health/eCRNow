@@ -56,6 +56,9 @@ class ClientDetails extends Component {
             if (this.selectedClientDetails.isFullEcr) {
                 this.state.reportType = "fullecr";
             }
+            if(this.selectedClientDetails.debugFhirQueryAndEicr){
+                this.state.isChecked =true;
+            }
             this.state.requireAud = this.selectedClientDetails.requireAud;
         } else {
             this.state.launchType = 'providerLaunch';
@@ -91,6 +94,7 @@ class ClientDetails extends Component {
     }
 
     handleDirectChange(e) {
+        console.log(e.target.value);
         this.setState({
             directType: e.target.value
         });
@@ -144,21 +148,21 @@ class ClientDetails extends Component {
             isProvider: this.state.launchType === "providerLaunch" ? true : false,
             isSystem: this.state.launchType === 'systemLaunch' ? true : false,
             clientId: this.state.clientId,
-            clientSecret: this.state.clientSecret ? this.state.clientSecret : null,
+            clientSecret: this.state.clientSecret && this.state.launchType === 'systemLaunch' ? this.state.clientSecret : null,
             fhirServerBaseURL: this.state.fhirServerBaseURL,
             // tokenURL: this.state.tokenEndpoint ? this.state.tokenEndpoint : null,
             scopes: this.state.scopes,
             isDirect: this.state.directType === "direct" ? true : false,
             isXdr: this.state.directType === "xdr" ? true : false,
             isRestAPI: this.state.directType === "restApi" ? true : false,
-            directHost: this.state.directHost ? this.state.directHost : null,
-            directUser: this.state.directUserName ? this.state.directUserName : null,
-            directPwd: this.state.directPwd ? this.state.directPwd : null,
-            smtpPort: this.state.smtpPort ? this.state.smtpPort : null,
-            imapPort: this.state.imapPort ? this.state.imapPort : null,
-            directRecipientAddress: this.state.directRecipientAddress ? this.state.directRecipientAddress : null,
-            xdrRecipientAddress: this.state.xdrRecipientAddress ? this.state.xdrRecipientAddress : null,
-            restAPIURL: this.state.restAPIURL ? this.state.restAPIURL : null,
+            directHost: this.state.directHost && this.state.directType === "direct" ? this.state.directHost : null,
+            directUser: this.state.directUserName && this.state.directType === "direct" ? this.state.directUserName : null,
+            directPwd: this.state.directPwd && this.state.directType === "direct" ? this.state.directPwd : null,
+            smtpPort: this.state.smtpPort && this.state.directType === "direct" ? this.state.smtpPort : null,
+            imapPort: this.state.imapPort && this.state.directType === "direct" ? this.state.imapPort : null,
+            directRecipientAddress: this.state.directRecipientAddress && this.state.directType === "direct" ? this.state.directRecipientAddress : null,
+            xdrRecipientAddress: this.state.xdrRecipientAddress && this.state.directType === "xdr" ? this.state.xdrRecipientAddress : null,
+            restAPIURL: this.state.restAPIURL && this.state.directType === "restApi" ? this.state.restAPIURL : null,
             assigningAuthorityId: this.state.assigningAuthorityId,
             encounterStartThreshold: this.state.startThreshold,
             encounterEndThreshold: this.state.endThreshold,
