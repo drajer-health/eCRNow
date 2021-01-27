@@ -18,5 +18,5 @@ public interface EicrRRService {
   void handleFailureMdn(ReportabilityResponse data, String xCorrelationId, String xRequestId);
 
   void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId);
+      ReportabilityResponse data, String xCorrelationId, String xRequestId) throws Exception;
 }

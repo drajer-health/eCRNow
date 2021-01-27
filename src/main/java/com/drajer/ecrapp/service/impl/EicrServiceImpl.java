@@ -98,7 +98,7 @@ public class EicrServiceImpl implements EicrRRService {
   }
 
   public void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
+      ReportabilityResponse data, String xCorrelationId, String xRequestId) throws Exception {
 
     logger.debug(" Start processing RR");
 
@@ -128,6 +128,7 @@ public class EicrServiceImpl implements EicrRRService {
       }
     } else {
       logger.error("Unable to find Eicr for Coorrelation Id {} ", xCorrelationId);
+      throw new Exception();
     }
   }
 
@@ -169,6 +170,12 @@ public class EicrServiceImpl implements EicrRRService {
           fhirContextInitializer.createClient(context, fhirServerURL, accessToken);
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
+
+      if (outcome.getCreated()) {
+        logger.info("Successfully sent RR to fhir");
+      } else {
+        throw new RuntimeException("Unrecognized Fhir Server Url : " + ecr.getFhirServerUrl());
+      }
 
     } else {
       throw new RuntimeException("Unrecognized Fhir Server Url : " + ecr.getFhirServerUrl());
