@@ -87,6 +87,12 @@ public class RRReceiverController {
 
         MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 
+        if (outcome.getCreated()) {
+          logger.info("Successfully processed the request");
+          return new ResponseEntity<>("Success", HttpStatus.OK);
+        } else {
+          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
       } else {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognized client");
       }
@@ -94,7 +100,5 @@ public class RRReceiverController {
       logger.error("Error in Processing the request", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
-
-    return new ResponseEntity<>("Success", HttpStatus.OK);
   }
 }
