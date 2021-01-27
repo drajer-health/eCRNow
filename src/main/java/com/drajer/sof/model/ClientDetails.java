@@ -106,6 +106,10 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr;
 
+  @Column(name = "require_aud", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean requireAud = false;
+
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
   private Date lastUpdated;
@@ -310,6 +314,14 @@ public class ClientDetails {
     this.debugFhirQueryAndEicr = debugFhirQueryAndEicr;
   }
 
+  public Boolean getRequireAud() {
+    return requireAud;
+  }
+
+  public void setRequireAud(Boolean requireAud) {
+    this.requireAud = requireAud;
+  }
+
   public Date getLastUpdated() {
     return lastUpdated;
   }
@@ -341,6 +353,7 @@ public class ClientDetails {
     logger.info(" Encounter End Threshold = {}", encounterEndThreshold);
     logger.info(" Is Covid = {}", isCovid);
     logger.info(" Is Full ECR = {}", isFullEcr);
+    logger.info(" Is Aud required = {}", requireAud);
     logger.info(" Debug Fhir Query And Eicr {}", debugFhirQueryAndEicr);
 
     logger.info(" **** End Printing Client Details **** ");

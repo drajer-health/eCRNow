@@ -224,6 +224,7 @@ public class LaunchController {
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
+            launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
             launchDetails.setxRequestId(requestIdHeadervalue);
             if (systemLaunch.getRequestMode() != null) {
@@ -315,6 +316,7 @@ public class LaunchController {
           launchDetails.setScope(clientDetails.getScopes());
           launchDetails.setLaunchState(state);
           launchDetails.setxRequestId(requestIdHeadervalue);
+          launchDetails.setRequireAud(clientDetails.getRequireAud());
           String constructedAuthUrl =
               authorization.createAuthUrl(launchDetails, clientDetails, state);
           logger.info("Constructed Authorization URL::::: {}", constructedAuthUrl);
