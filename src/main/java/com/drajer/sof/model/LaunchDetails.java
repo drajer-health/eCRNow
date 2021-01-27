@@ -145,6 +145,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
+  @Column(name = "require_aud", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean requireAud = false;
+
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
 
@@ -437,6 +441,14 @@ public class LaunchDetails {
 
   public void setDebugFhirQueryAndEicr(Boolean debugFhirQueryAndEicr) {
     this.debugFhirQueryAndEicr = debugFhirQueryAndEicr;
+  }
+
+  public Boolean getRequireAud() {
+    return requireAud;
+  }
+
+  public void setRequireAud(Boolean requireAud) {
+    this.requireAud = requireAud;
   }
 
   public String getxRequestId() {
