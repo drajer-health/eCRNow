@@ -14,12 +14,11 @@ public class CdaParserUtilities {
     ArrayList<CdaIi> templateList = null;
     if (!isNodeListEmpty(templateIDNodeList)) {
       templateList = new ArrayList<>();
-    }
-
-    Element templateElement;
-    for (int i = 0; i < templateIDNodeList.getLength(); i++) {
-      templateElement = (Element) templateIDNodeList.item(i);
-      templateList.add(readTemplateId(templateElement));
+      Element templateElement;
+      for (int i = 0; i < templateIDNodeList.getLength(); i++) {
+        templateElement = (Element) templateIDNodeList.item(i);
+        templateList.add(readTemplateId(templateElement));
+      }
     }
     return templateList;
   }

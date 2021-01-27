@@ -69,7 +69,7 @@ public class RestApiSender {
       ub = new URIBuilder(launchDetails.getRestAPIURL());
 
       if (logger.isInfoEnabled()) {
-        logger.info("Sending Eicr Trigger to Endpoint::::: {}", ub.toString());
+        logger.info("Sending Eicr Trigger to Endpoint::::: {}", ub);
       }
 
       final ResponseEntity<String> response =
@@ -85,7 +85,7 @@ public class RestApiSender {
     } catch (Exception e) {
       if (logger.isErrorEnabled()) {
         if (ub != null) {
-          logger.error("RestApi Error in sending Eicr XML to Endpoint {}:", ub.toString(), e);
+          logger.error("RestApi Error in sending Eicr XML to Endpoint {}:", ub, e);
         } else {
           logger.error("RestApi Error in preparing to send Eicr XML:", e);
         }

@@ -667,29 +667,27 @@ public class CdaFhirUtilities {
 
   public static Date getActualDate(Type dt) {
 
-    if (dt != null && dt instanceof DateTimeType) {
+    if (dt instanceof DateTimeType) {
 
       DateTimeType d1 = (DateTimeType) dt;
       return d1.getValue();
-    } else if (dt != null && dt instanceof Period) {
+    } else if (dt instanceof Period) {
 
       logger.debug(" Found an instance of period ");
       Period d1 = (Period) dt;
       return d1.getStart();
-    } else if (dt != null && dt instanceof InstantType) {
+    } else if (dt instanceof InstantType) {
 
       InstantType d1 = (InstantType) dt;
       return d1.getValue();
-    } else if (dt != null && dt instanceof Timing) {
+    } else if (dt instanceof Timing) {
 
       logger.debug(" Found an instance of timing ");
       Timing t = (Timing) (dt);
       if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
 
         logger.debug(" Found the bounds element ");
-
-        Date d = getActualDate(t.getRepeat().getBounds());
-        return d;
+        return getActualDate(t.getRepeat().getBounds());
       }
     }
 
@@ -746,7 +744,6 @@ public class CdaFhirUtilities {
     List<Coding> codes = new ArrayList<>();
     if (cds != null && !cds.isEmpty()) {
 
-      Boolean found = false;
       for (CodeableConcept cd : cds) {
 
         List<Coding> codings = cd.getCoding();
@@ -1071,14 +1068,14 @@ public class CdaFhirUtilities {
 
     String s = "";
 
-    if (gender != null && (gender == AdministrativeGender.MALE)) {
+    if (gender == AdministrativeGender.MALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_MALE_CODE,
               CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
-    } else if (gender != null && (gender == AdministrativeGender.FEMALE)) {
+    } else if (gender == AdministrativeGender.FEMALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
@@ -1223,26 +1220,6 @@ public class CdaFhirUtilities {
     return val;
   }
 
-  public static String getStringForType(Type dt, Resource res, R4FhirData bundle) {
-
-    String val = "";
-
-    if (dt != null) {
-
-      if (dt instanceof Reference) {
-
-        // Find Reference in resource.contained or bundle if present
-        Reference rt = (Reference) (dt);
-        // rt.getI
-      } else {
-        logger.info(" Type is not a reference ");
-        return getStringForType(dt);
-      }
-    }
-
-    return CdaGeneratorConstants.UNKNOWN_VALUE;
-  }
-
   public static String getStringForMedicationType(Resource r) {
 
     String retVal = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -1251,7 +1228,7 @@ public class CdaFhirUtilities {
       logger.info(" Found Med Request ");
       MedicationRequest mr = (MedicationRequest) r;
 
-      if (mr.getMedication() != null && mr.getMedication() instanceof Reference) {
+      if (mr.getMedication() instanceof Reference) {
 
         logger.info(" Found Med Request.Medication Reference ");
 
@@ -1275,7 +1252,7 @@ public class CdaFhirUtilities {
 
         return retVal;
 
-      } else if (mr.getMedication() != null && mr.getMedication() instanceof CodeableConcept) {
+      } else if (mr.getMedication() instanceof CodeableConcept) {
 
         CodeableConcept cc = (CodeableConcept) mr.getMedication();
 
@@ -1283,54 +1260,55 @@ public class CdaFhirUtilities {
       }
     } else if (r instanceof MedicationAdministration) {
 
-      MedicationAdministration mr = (MedicationAdministration) r;
+      MedicationAdministration medAdminRef = (MedicationAdministration) r;
 
-      if (mr.getMedication() != null && mr.getMedication() instanceof Reference) {
+      if (medAdminRef.getMedication() instanceof Reference) {
 
-        Reference med = (Reference) mr.getMedication();
+        Reference med = (Reference) medAdminRef.getMedication();
 
         if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
-          if (mr.getContained() != null) {
+          if (medAdminRef.getContained() != null) {
 
-            retVal = getStringForMedicationFromContainedResources(mr.getContained(), refId);
+            retVal =
+                getStringForMedicationFromContainedResources(medAdminRef.getContained(), refId);
           } // contained present
         } // Contained reference
 
         return retVal;
 
-      } else if (mr.getMedication() != null && mr.getMedication() instanceof CodeableConcept) {
+      } else if (medAdminRef.getMedication() instanceof CodeableConcept) {
 
-        CodeableConcept cc = (CodeableConcept) mr.getMedication();
+        CodeableConcept cc = (CodeableConcept) medAdminRef.getMedication();
 
         return getStringForType(cc);
       }
 
     } else if (r instanceof MedicationStatement) {
 
-      MedicationStatement mr = (MedicationStatement) r;
+      MedicationStatement medStmtRef = (MedicationStatement) r;
 
-      if (mr.getMedication() != null && mr.getMedication() instanceof Reference) {
+      if (medStmtRef.getMedication() instanceof Reference) {
 
-        Reference med = (Reference) mr.getMedication();
+        Reference med = (Reference) medStmtRef.getMedication();
 
         if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
           // Check contained.
           String refId = med.getReference().substring(1);
 
-          if (mr.getContained() != null) {
+          if (medStmtRef.getContained() != null) {
 
-            retVal = getStringForMedicationFromContainedResources(mr.getContained(), refId);
+            retVal = getStringForMedicationFromContainedResources(medStmtRef.getContained(), refId);
           } // contained present
         } // Contained reference
 
         return retVal;
 
-      } else if (mr.getMedication() != null && mr.getMedication() instanceof CodeableConcept) {
+      } else if (medStmtRef.getMedication() instanceof CodeableConcept) {
 
-        CodeableConcept cc = (CodeableConcept) mr.getMedication();
+        CodeableConcept cc = (CodeableConcept) medStmtRef.getMedication();
 
         return getStringForType(cc);
       }
@@ -1371,7 +1349,7 @@ public class CdaFhirUtilities {
 
             for (MedicationIngredientComponent ing : ings) {
 
-              if (ing.getItem() != null && ing.getItem() instanceof CodeableConcept) {
+              if (ing.getItem() instanceof CodeableConcept) {
 
                 logger.info(" Found a CC for Ingredient ");
                 CodeableConcept cc = (CodeableConcept) ing.getItem();
@@ -1557,7 +1535,7 @@ public class CdaFhirUtilities {
       Boolean csOptional,
       DomainResource res) {
 
-    if (dt != null && dt instanceof Reference) {
+    if (dt instanceof Reference) {
 
       logger.info(" Found Medication of Type Reference within Domain Resource ");
       Reference med = (Reference) dt;
@@ -1606,7 +1584,7 @@ public class CdaFhirUtilities {
 
                   for (MedicationIngredientComponent ing : ings) {
 
-                    if (ing.getItem() != null && ing.getItem() instanceof CodeableConcept) {
+                    if (ing.getItem() instanceof CodeableConcept) {
 
                       logger.info(" Found Ingredient which is coded ");
                       CodeableConcept cc = (CodeableConcept) ing.getItem();
@@ -1682,9 +1660,7 @@ public class CdaFhirUtilities {
   public static List<String> getMatchedCodesForResourceAndUrl(
       LaunchDetails details, String matchResourceType, String csUrl) {
 
-    PatientExecutionState state = null;
-
-    state = ApplicationUtils.getDetailStatus(details);
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
     List<String> matchedCodesForUrl = new ArrayList<>();
@@ -1717,9 +1693,7 @@ public class CdaFhirUtilities {
   public static List<String> getMatchedValuesForResourceAndUrl(
       LaunchDetails details, String matchResourceType, String csUrl) {
 
-    PatientExecutionState state = null;
-
-    state = ApplicationUtils.getDetailStatus(details);
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
 
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
     List<String> matchedValuesForUrl = new ArrayList<>();
@@ -1786,11 +1760,11 @@ public class CdaFhirUtilities {
   public static String getMatchingCodeFromTypeForCodeSystem(
       List<String> matchedCodes, Type dt, String csUrl) {
 
-    if (dt != null && dt instanceof CodeableConcept) {
+    if (dt instanceof CodeableConcept) {
       CodeableConcept cc = (CodeableConcept) dt;
       return getMatchingCodeFromCodeableConceptForCodeSystem(matchedCodes, cc, csUrl);
-    } else if (dt != null && dt instanceof Coding) {
-      List<Coding> cds = new ArrayList<Coding>();
+    } else if (dt instanceof Coding) {
+      List<Coding> cds = new ArrayList<>();
       cds.add((Coding) dt);
       return getMatchingCodeFromCodingForCodeSystem(matchedCodes, cds, csUrl);
     } else return "";
@@ -1807,7 +1781,7 @@ public class CdaFhirUtilities {
   }
 
   public static String getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-      String codeElName,
+      String elementName,
       String code,
       String codeSystem,
       String codeSystemName,
@@ -1837,22 +1811,32 @@ public class CdaFhirUtilities {
               && !foundCodings) {
 
             logger.info(
-                " Found a Coding that matches the CodeSystem and Code "
-                    + codeSystem
-                    + " : "
-                    + code);
+                " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
             if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
 
-            retval.append(
-                CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
-                    codeElName,
-                    code,
-                    codeSystem,
-                    codeSystemName,
-                    valueSet,
-                    valuesetVersion,
-                    dispName));
+            if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+              retval.append(
+                  CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
+                      elementName,
+                      code,
+                      codeSystem,
+                      codeSystemName,
+                      valueSet,
+                      valuesetVersion,
+                      dispName));
 
+            } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+
+              retval.append(
+                  CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
+                      elementName,
+                      code,
+                      codeSystem,
+                      codeSystemName,
+                      valueSet,
+                      valuesetVersion,
+                      dispName));
+            }
             foundCodings = true;
           } else {
 
@@ -1878,112 +1862,32 @@ public class CdaFhirUtilities {
 
     if (foundCodings) {
       retval.append(translations.toString());
-      retval.append(CdaGeneratorUtils.getXmlForEndElement(codeElName));
+      retval.append(CdaGeneratorUtils.getXmlForEndElement(elementName));
     } else {
 
       String dispName = "";
       if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
 
-      retval.append(
-          CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
-              CdaGeneratorConstants.CODE_EL_NAME,
-              code,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-              CdaGeneratorConstants.RCTC_OID,
-              ActionRepo.getInstance().getRctcVersion(),
-              dispName));
-    }
-
-    return retval.toString();
-  }
-
-  public static String getXmlForValueCodeableConceptWithCDAndValueSetAndVersion(
-      String codeElName,
-      String code,
-      String codeSystem,
-      String codeSystemName,
-      String valueSet,
-      String valuesetVersion,
-      CodeableConcept cc,
-      String csUrl) {
-
-    StringBuilder retval = new StringBuilder();
-    StringBuilder translations = new StringBuilder();
-
-    Boolean foundCodings = false;
-    if (cc != null) {
-
-      String dispName = cc.getText();
-
-      List<Coding> cds = cc.getCoding();
-
-      if (cds != null && !cds.isEmpty()) {
-
-        for (Coding cd : cds) {
-
-          if (cd.getCode() != null
-              && !cd.getCode().isEmpty()
-              && code.contentEquals(cd.getCode())
-              && csUrl.contentEquals(cd.getSystem())
-              && !foundCodings) {
-
-            logger.info(
-                " Found a Coding that matches the CodeSystem and Code "
-                    + codeSystem
-                    + " : "
-                    + code);
-            if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
-
-            retval.append(
-                CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
-                    codeElName,
-                    code,
-                    codeSystem,
-                    codeSystemName,
-                    valueSet,
-                    valuesetVersion,
-                    dispName));
-
-            foundCodings = true;
-          } else {
-
-            Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(cd.getSystem());
-
-            if (csd.getValue0() != null) {
-
-              if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
-
-              // Create Translations.
-              translations.append(
-                  CdaGeneratorUtils.getXmlForCD(
-                      CdaGeneratorConstants.TRANSLATION_EL_NAME,
-                      cd.getCode(),
-                      csd.getValue0(),
-                      csd.getValue1(),
-                      dispName));
-            }
-          }
-        }
+      if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+        retval.append(
+            CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+                CdaGeneratorConstants.CODE_EL_NAME,
+                code,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                dispName));
+      } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+        retval.append(
+            CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
+                code,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                dispName));
       }
-    }
-
-    if (foundCodings) {
-      retval.append(translations.toString());
-      retval.append(CdaGeneratorUtils.getXmlForEndElement(codeElName));
-    } else {
-
-      String dispName = "";
-      if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
-
-      retval.append(
-          CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-              code,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-              CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-              CdaGeneratorConstants.RCTC_OID,
-              ActionRepo.getInstance().getRctcVersion(),
-              dispName));
     }
 
     return retval.toString();

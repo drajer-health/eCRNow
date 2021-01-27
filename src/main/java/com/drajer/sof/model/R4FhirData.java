@@ -68,17 +68,17 @@ public class R4FhirData extends FhirData {
 
     // Check Patient and Encounter.
     if (patient == null) {
-      logger.info(" Patient is null, cannot generate eICR ");
+      logger.warn(" Patient is null, cannot generate eICR ");
       requiredDataPresent = false;
     }
 
     if (encounter == null) {
-      logger.info(" Encounter is null, cannot generate eICR ");
+      logger.warn(" Encounter is null, cannot generate eICR ");
       requiredDataPresent = false;
     }
 
     if (jurisdiction == null) {
-      logger.info(" Jurisdiction is null, cannot generate eICR ");
+      logger.warn(" Jurisdiction is null, cannot generate eICR ");
       requiredDataPresent = false;
     }
 

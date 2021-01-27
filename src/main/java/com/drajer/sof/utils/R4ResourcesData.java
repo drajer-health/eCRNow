@@ -2,6 +2,7 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
@@ -1124,5 +1125,66 @@ public class R4ResourcesData {
       logger.error("Error in getting the Resource from Bundle", e);
     }
     return null;
+  }
+
+  public DocumentReference constructR4DocumentReference(
+      String rrXml, String patientId, String encounterID) {
+    DocumentReference documentReference = new DocumentReference();
+
+    // Set Doc Ref Status
+    documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
+    documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
+
+    // Set Doc Ref Type
+    CodeableConcept typeCode = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding typeCoding = new Coding();
+    typeCoding.setSystem(CdaParserConstants.RR_DOC_CODE_SYSTEM);
+    typeCoding.setCode(CdaParserConstants.RR_DOC_CODE);
+    typeCoding.setDisplay(CdaParserConstants.RR_DOC_DISPLAY_NAME);
+    codingList.add(typeCoding);
+    typeCode.setCoding(codingList);
+    typeCode.setText(CdaParserConstants.RR_DOC_DISPLAY_NAME);
+    documentReference.setType(typeCode);
+
+    // Set Subject
+    Reference patientReference = new Reference();
+    patientReference.setReference("Patient/" + patientId);
+    documentReference.setSubject(patientReference);
+
+    // Set Doc Ref Content
+    List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
+    DocumentReference.DocumentReferenceContentComponent contentComp =
+        new DocumentReference.DocumentReferenceContentComponent();
+    Attachment attachment = new Attachment();
+    attachment.setContentType(CdaParserConstants.RR_DOC_CONTENT_TYPE);
+
+    if (rrXml != null && !rrXml.isEmpty()) {
+      attachment.setData(rrXml.getBytes());
+    }
+    contentComp.setAttachment(attachment);
+    contentList.add(contentComp);
+    documentReference.setContent(contentList);
+
+    // Set Doc Ref Context
+    DocumentReference.DocumentReferenceContextComponent docContextComp =
+        new DocumentReference.DocumentReferenceContextComponent();
+    List<Reference> encounterRefList = new ArrayList<>();
+    Reference encounterReference = new Reference();
+    encounterReference.setReference("Encounter/" + encounterID);
+    encounterRefList.add(encounterReference);
+    docContextComp.setEncounter(encounterRefList);
+
+    Period period = new Period();
+    period.setStart(new Date());
+    period.setEnd(new Date());
+    docContextComp.setPeriod(period);
+    documentReference.setContext(docContextComp);
+
+    String docReference =
+        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+    logger.debug("DocumentReference Object===========> {}", docReference);
+
+    return documentReference;
   }
 }

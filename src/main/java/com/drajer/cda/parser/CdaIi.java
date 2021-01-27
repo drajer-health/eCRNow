@@ -25,8 +25,8 @@ public class CdaIi extends CdaDataElement {
 
     logger.info(" *** Intance Identifier *** ");
 
-    logger.info(" Root : " + rootValue);
-    logger.info(" Extension : " + extValue);
+    logger.info(" Root : {}", rootValue);
+    logger.info(" Extension {}: ", extValue);
   }
 
   public String getRootValue() {

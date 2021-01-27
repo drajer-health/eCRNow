@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
@@ -166,17 +167,16 @@ public class EcaUtilsTest {
     when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
     when(mockQuerySrvc.getData(eq(mockDetails), eq(null), eq(null))).thenReturn(mockDstu2Data);
 
-    Eicr neweicr = new Eicr();
     PowerMockito.mockStatic(Dstu2CdaEicrGenerator.class);
-    /* when(Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(
-            any(Dstu2FhirData.class), eq(mockDetails), neweicr))
+    when(Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(
+            any(Dstu2FhirData.class), eq(mockDetails), any(Eicr.class)))
         .thenReturn("This is DSTU2 EICR data");
 
     // Test
     Eicr eicr = EcaUtils.createEicr(mockDetails);
 
     // Validate
-    assertEquals("This is DSTU2 EICR data", eicr.getEicrData()); */
+    assertEquals("This is DSTU2 EICR data", eicr.getEicrData());
   }
 
   @Test
@@ -188,17 +188,16 @@ public class EcaUtilsTest {
     when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
     when(mockQuerySrvc.getData(eq(mockDetails), eq(null), eq(null))).thenReturn(mockR4Data);
 
-    Eicr neweicr = new Eicr();
     PowerMockito.mockStatic(CdaEicrGeneratorFromR4.class);
-    /*  when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
-            any(R4FhirData.class), eq(mockDetails), neweicr))
+    when(CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            any(R4FhirData.class), eq(mockDetails), any(Eicr.class)))
         .thenReturn("This is R4 EICR data");
 
     // Test
     Eicr eicr = EcaUtils.createEicr(mockDetails);
 
     // Validate
-    assertEquals("This is R4 EICR data", eicr.getEicrData()); */
+    assertEquals("This is R4 EICR data", eicr.getEicrData());
   }
 
   public void setupMockForMatchTrigger() {

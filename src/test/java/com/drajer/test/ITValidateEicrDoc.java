@@ -1,8 +1,8 @@
 package com.drajer.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
@@ -27,6 +27,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -116,7 +118,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   @Test
   public void testEicrDocument() throws Exception {
 
-    /*   ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
+    ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     assertTrue(response.getBody().contains("App is launched successfully"));
@@ -137,7 +139,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
         CdaValidatorUtil.validateEicrToSchematron(eICRXml));
 
     Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
-    // validateXml(eicrXmlDoc); */
+    validateXml(eicrXmlDoc);
   }
 
   private void getLaunchDetailAndStatus() {

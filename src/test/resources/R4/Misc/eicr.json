@@ -1,12 +1,16 @@
 {
   "xRequestId": "ecrunittest_id",
+  "xCoorrelationId": "ecrUnitTestCorrelationID",
+  "eicrDocId": "123",
+  "setId": "12345|67890",
+  "docVersion": 1.0,
   "eicrData": "During eICR creation, if the encounter context is not provided the App will use the window of time",
+  "initiatingAction": "EICR",
   "responseType": "RR",
   "responseDocId": "RR_ID",
   "responseData": "Reportability Response Received from AIMS",
   "fhirServerUrl": "http://ecrunitest/ecr/dao",
   "launchPatientId": "12345",
   "encounterId": "67890",
-  "setId": "123",
   "lastUpdated": "2020-07-21T04:30:00.167+0000"
 }
