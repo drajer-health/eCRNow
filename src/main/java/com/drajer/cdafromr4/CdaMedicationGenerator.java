@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 public class CdaMedicationGenerator {
 
+  public static final String COMPLETED = "completed";
+
   private CdaMedicationGenerator() {}
 
   private static final Logger logger = LoggerFactory.getLogger(CdaMedicationGenerator.class);
@@ -112,7 +114,7 @@ public class CdaMedicationGenerator {
           medstatus =
               CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(med.getStatus().toString());
         } else {
-          medstatus = "completed";
+          medstatus = COMPLETED;
         }
 
         Dosage dosage = null;
@@ -158,7 +160,7 @@ public class CdaMedicationGenerator {
         if (medAdm.getStatus() != null) {
           medstatus = CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(medAdm.getStatus());
         } else {
-          medstatus = "completed";
+          medstatus = COMPLETED;
         }
 
         Quantity dose = null;
@@ -218,7 +220,7 @@ public class CdaMedicationGenerator {
         if (medReq.getStatus() != null) {
           medstatus =
               CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(medReq.getStatus().toString());
-          if (medstatus.equalsIgnoreCase("completed")) {
+          if (medstatus.equalsIgnoreCase(COMPLETED)) {
             moodCode = CdaGeneratorConstants.MOOD_CODE_DEF;
           }
         } else {
@@ -443,7 +445,7 @@ public class CdaMedicationGenerator {
 
       for (MedicationRequest m : data.getMedicationRequests()) {
 
-        if (m.getMedication() != null && m.getMedication() instanceof Reference) {
+        if (m.getMedication() instanceof Reference) {
 
           Reference med = (Reference) m.getMedication();
 
@@ -484,7 +486,7 @@ public class CdaMedicationGenerator {
                     for (MedicationIngredientComponent ing : ings) {
 
                       logger.info("starting to examine contained ingredients ");
-                      if (ing.getItem() != null && ing.getItem() instanceof CodeableConcept) {
+                      if (ing.getItem() instanceof CodeableConcept) {
 
                         CodeableConcept cc = (CodeableConcept) ing.getItem();
 
@@ -515,7 +517,7 @@ public class CdaMedicationGenerator {
 
           }
 
-        } else if (m.getMedication() != null && m.getMedication() instanceof CodeableConcept) {
+        } else if (m.getMedication() instanceof CodeableConcept) {
 
           CodeableConcept cc = (CodeableConcept) m.getMedication();
 

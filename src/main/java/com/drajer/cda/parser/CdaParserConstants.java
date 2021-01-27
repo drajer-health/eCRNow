@@ -6,13 +6,16 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdaParserConstants {
 
-  private static final CdaParserConstants constants = new CdaParserConstants();
+  private static final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
+  // private static final CdaParserConstants constants = new CdaParserConstants();
 
-  public static XPath CCDAXPATH;
-  public static XPathExpression DOC_ID_EXP;
+  private XPath CCDAXPATH = XPathFactory.newInstance().newXPath();
+  private static XPathExpression DOC_ID_EXP;
 
   public static final String DEFAULT_XPATH = "/ClinicalDocument";
 
@@ -23,26 +26,16 @@ public class CdaParserConstants {
       "Reportability response report Document Public health";
   public static final String RR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
 
-  private CdaParserConstants() {
-    initialize();
-  }
-
-  public static CdaParserConstants getInstance() {
-    return constants;
-  }
-
-  private void initialize() {
-
-    CCDAXPATH = XPathFactory.newInstance().newXPath();
-
+  public static XPathExpression getDocIdExp() {
     try {
-
-      DOC_ID_EXP = CdaParserConstants.CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
+      if (DOC_ID_EXP == null)
+        DOC_ID_EXP =
+            new CdaParserConstants().CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
 
     } catch (XPathExpressionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error("Failed to resolve CDA xPath", e);
     }
+    return DOC_ID_EXP;
   }
 
   NamespaceContext ctx =

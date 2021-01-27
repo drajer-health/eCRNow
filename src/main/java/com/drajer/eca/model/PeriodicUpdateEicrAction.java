@@ -141,9 +141,9 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
               if (ecr != null) {
 
-                newState.getCreateEicrStatus().setEicrCreated(true);
-                newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-                newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+                status.setEicrUpdated(true);
+                status.seteICRId(ecr.getId().toString());
+                status.setJobStatus(JobStatus.COMPLETED);
 
                 newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
                 newState.getPeriodicUpdateStatus().add(status);

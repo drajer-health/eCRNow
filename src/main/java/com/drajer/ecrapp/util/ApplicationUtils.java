@@ -216,7 +216,7 @@ public class ApplicationUtils {
 
       for (ValueSet vs : valuesets) {
 
-        logger.info(" Value Set Id = " + vs.getId());
+        logger.info(" Value Set Id = {}", vs.getId());
         valueSetExpansionComponent = vs.getExpansion();
         valueSetExpansionContainsComponentList = valueSetExpansionComponent.getContains();
 

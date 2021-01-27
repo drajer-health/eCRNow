@@ -129,11 +129,11 @@ public class ValueSetServiceImpl implements ValueSetService {
     ValueSetSingleton.getInstance().getTriggerPathToValueSetsMap().put(path, valueSets);
 
     if (ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().containsKey(path)) {
-      logger.info(" Found Path in Grouper Map for " + path);
+      logger.info(" Found Path in Grouper Map for {}", path);
       ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().get(path).add(valuSetGrouper);
     } else {
-      logger.info(" Did not Find Path in Grouper Map for " + path);
-      Set<ValueSet> vs = new HashSet<ValueSet>();
+      logger.info(" Did not Find Path in Grouper Map for {}", path);
+      Set<ValueSet> vs = new HashSet<>();
       vs.add(valuSetGrouper);
       ValueSetSingleton.getInstance().getTriggerPathToGrouperMap().put(path, vs);
     }
