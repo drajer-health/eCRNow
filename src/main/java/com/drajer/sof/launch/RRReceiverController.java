@@ -42,12 +42,6 @@ public class RRReceiverController {
         rrReceieverService.handleFailureMdn(
             data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
 
-        if (outcome.getCreated()) {
-          logger.info("Successfully processed the request");
-          return new ResponseEntity<>("Success", HttpStatus.OK);
-        } else {
-          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
       } else {
         logger.info(" Received RR as expected on the RR API ");
 
@@ -60,5 +54,7 @@ public class RRReceiverController {
       logger.error("Error in Processing the request", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
+
+    return new ResponseEntity<>("Success", HttpStatus.OK);
   }
 }
