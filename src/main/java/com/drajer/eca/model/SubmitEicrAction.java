@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
@@ -91,22 +92,37 @@ public class SubmitEicrAction extends AbstractAction {
 
       logger.info(" Found eICR with Id {} to submit ", id);
 
-      String data = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getEicrData();
+      Eicr ecr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
 
-      if (!StringUtils.isBlank(details.getRestAPIURL())) {
-        ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data);
+      if (ecr != null) {
+
+        String data = ecr.getEicrData();
+
+        if (!StringUtils.isBlank(details.getRestAPIURL())) {
+          ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
+        } else if (!StringUtils.isBlank(details.getDirectHost())) {
+          ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+        } else {
+          String msg = "No Transport method specified to submit EICR.";
+          logger.error(msg);
+
+          throw new RuntimeException(msg);
+        }
+
+        // Add a submission object every time.
+        SubmitEicrStatus submitState = new SubmitEicrStatus();
+        submitState.setActionId(getActionId());
+        submitState.seteICRId(id.toString());
+        submitState.setEicrSubmitted(true);
+        submitState.setJobStatus(JobStatus.COMPLETED);
+        submitState.setSubmittedTime(new Date());
+        state.getSubmitEicrStatus().add(submitState);
       } else {
-        ActionRepo.getInstance().getDirectTransport().sendData(details, data);
-      }
+        String msg = "No Eicr found for submission, Id = " + Integer.toString(id);
+        logger.error(msg);
 
-      // Add a submission object every time.
-      SubmitEicrStatus submitState = new SubmitEicrStatus();
-      submitState.setActionId(getActionId());
-      submitState.seteICRId(id.toString());
-      submitState.setEicrSubmitted(true);
-      submitState.setJobStatus(JobStatus.COMPLETED);
-      submitState.setSubmittedTime(new Date());
-      state.getSubmitEicrStatus().add(submitState);
+        throw new RuntimeException(msg);
+      }
     }
   }
 }

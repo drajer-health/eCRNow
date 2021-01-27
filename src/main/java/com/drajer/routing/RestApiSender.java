@@ -2,6 +2,7 @@ package com.drajer.routing;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.sof.model.LaunchDetails;
 import org.apache.http.client.utils.URIBuilder;
@@ -26,7 +27,8 @@ public class RestApiSender {
 
   @Autowired private RestTemplate restTemplate;
 
-  public JSONObject sendEicrXmlDocument(final LaunchDetails launchDetails, final String eicrXml) {
+  public JSONObject sendEicrXmlDocument(
+      final LaunchDetails launchDetails, final String eicrXml, Eicr ecr) {
     JSONObject bundleResponse = null;
     URIBuilder ub = null;
     try {
@@ -45,7 +47,21 @@ public class RestApiSender {
         headers.add("Authorization", accessToken);
       }
 
-      final String json = constructJson(launchDetails, eicrXml);
+      // Add X-Request-ID and X-Correlation-ID
+      String newXReqId = java.util.UUID.randomUUID().toString();
+      logger.info(
+          " Launch Req Id: {}, X-Request-ID for Eicr Submission: {}",
+          ecr.getxRequestId(),
+          newXReqId);
+      headers.add("X-Request-ID", newXReqId);
+
+      headers.add("X-Correlation-ID", ecr.getxCoorrelationId());
+      logger.info(
+          " Launch Req Id: {}, X-Correlation-ID for Eicr Submission: {}",
+          ecr.getxRequestId(),
+          ecr.getxCoorrelationId());
+
+      final String json = constructJson(eicrXml, ecr);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Eicr Trigger request: {}", json);
@@ -79,6 +95,8 @@ public class RestApiSender {
           logger.error("RestApi Error in preparing to send Eicr XML:", e);
         }
       }
+
+      throw new RuntimeException(e.getMessage());
     }
     return bundleResponse;
   }
@@ -90,15 +108,15 @@ public class RestApiSender {
    * @param eicrXml EICR XML document
    * @return EICR Trigger JSON
    */
-  private static String constructJson(final LaunchDetails launchDetails, final String eicrXml) {
+  private static String constructJson(final String eicrXml, final Eicr ecr) {
     return "{\"fhirServerURL\":\""
-        + escapeJson(launchDetails.getEhrServerURL())
+        + escapeJson(ecr.getFhirServerUrl())
         + "\",\"patientId\":\""
-        + escapeJson(launchDetails.getLaunchPatientId())
+        + escapeJson(ecr.getLaunchPatientId())
         + "\",\"encounterId\":\""
-        + escapeJson(launchDetails.getEncounterId())
-        + "\",\"ecrRequestId\":\""
-        + escapeJson(launchDetails.getxRequestId())
+        + escapeJson(ecr.getEncounterId())
+        + "\",\"eicrSetId\":\""
+        + escapeJson(ecr.getSetId())
         + "\",\"eicrXml\":\""
         + escapeJson(eicrXml)
         + "\"}";

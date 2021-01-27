@@ -4,7 +4,9 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
-import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,16 +32,26 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return getSession().get(ReportabilityResponse.class, id);
   }
 
-  public Integer getMaxSetId(Eicr eicr) {
-    String query =
-        "SELECT * from eicr where fhir_server_url='"
-            + eicr.getFhirServerUrl()
-            + "' AND launch_patient_id='"
-            + eicr.getLaunchPatientId()
-            + "' AND encounter_id='"
-            + eicr.getEncounterId()
-            + "' ORDER BY set_id DESC LIMIT 1;";
-    List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
-    return eicrList.get(0).getSetId();
+  public Integer getMaxVersionId(Eicr eicr) {
+    Criteria criteria = getSession().createCriteria(Eicr.class);
+    criteria.add(Restrictions.eq("fhirServerUrl", eicr.getFhirServerUrl()));
+    criteria.add(Restrictions.eq("launchPatientId", eicr.getLaunchPatientId()));
+    criteria.add(Restrictions.eq("encounterId", eicr.getEncounterId()));
+    criteria.addOrder(Order.desc("docVersion"));
+    criteria.setMaxResults(1);
+
+    Eicr resultEicr = (Eicr) criteria.uniqueResult();
+
+    if (resultEicr != null) {
+      return resultEicr.getDocVersion();
+    }
+    return 0;
+  }
+
+  public Eicr getEicrByCoorrelationId(String xcoorrId) {
+    Criteria criteria = getSession().createCriteria(Eicr.class);
+    criteria.add(Restrictions.eq("xCorrelationId", xcoorrId));
+
+    return (Eicr) criteria.uniqueResult();
   }
 }

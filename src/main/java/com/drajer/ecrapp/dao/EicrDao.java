@@ -13,5 +13,7 @@ public interface EicrDao {
 
   ReportabilityResponse getRRById(Integer id);
 
-  Integer getMaxSetId(Eicr eicr);
+  Integer getMaxVersionId(Eicr eicr);
+
+  Eicr getEicrByCoorrelationId(String coorelId);
 }

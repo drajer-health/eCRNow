@@ -1,6 +1,7 @@
 package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import org.slf4j.Logger;
@@ -12,7 +13,8 @@ public class CdaEicrGeneratorFromR4 {
 
   private CdaEicrGeneratorFromR4() {}
 
-  public static String convertR4FhirBundletoCdaEicr(R4FhirData data, LaunchDetails details) {
+  public static String convertR4FhirBundletoCdaEicr(
+      R4FhirData data, LaunchDetails details, Eicr ecr) {
 
     StringBuilder eICR = new StringBuilder();
 
@@ -23,7 +25,7 @@ public class CdaEicrGeneratorFromR4 {
 
       if (data.hasRequiredDataForEicr()) {
         logger.info(" Bundle has required data for Eicr ");
-        eICR.append(CdaHeaderGenerator.createCdaHeader(data, details));
+        eICR.append(CdaHeaderGenerator.createCdaHeader(data, details, ecr));
         eICR.append(CdaBodyGenerator.generateCdaBody(data, details));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
 
