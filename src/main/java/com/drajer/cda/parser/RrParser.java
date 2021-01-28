@@ -1,5 +1,6 @@
 package com.drajer.cda.parser;
 
+
 import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +39,6 @@ public class RrParser {
     try {
 
       initDoc(cdaFile);
-      CdaParserConstants.getInstance();
 
       logger.debug("Creating Model");
       CdaRrModel model = new CdaRrModel();
@@ -49,15 +49,14 @@ public class RrParser {
         logger.info(" Setting the clinical document ids ");
         model.setRrDocId(
             CdaParserUtilities.readTemplateIdList(
-                (NodeList) CdaParserConstants.DOC_ID_EXP.evaluate(doc, XPathConstants.NODESET)));
+                (NodeList) CdaParserConstants.getDocIdExp().evaluate(doc, XPathConstants.NODESET)));
 
         logger.info(
             " RrDocId root = {} , extension = {} ",
             model.getRrDocId().getRootValue(),
             model.getRrDocId().getExtValue());
       } catch (XPathExpressionException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.error("Failed to resolve xPath", e);
       }
 
       logger.info("Returning Parsed Model");
@@ -65,19 +64,16 @@ public class RrParser {
       return model;
     } catch (ParserConfigurationException e1) {
 
-      System.out.println("Caught Parser config Excep");
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error("Caught Parser config Exception", e1);
+
     } catch (SAXException e1) {
 
-      System.out.println("Caught SAX Excep");
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error("Caught SAX Exception", e1);
+
     } catch (IOException e1) {
 
-      System.out.println("Caught IO  Excep");
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error("Caught IO  Exception", e1);
+
     }
 
     return null;

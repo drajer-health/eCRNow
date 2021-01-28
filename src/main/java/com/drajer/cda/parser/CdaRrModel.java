@@ -9,13 +9,14 @@ public class CdaRrModel {
 
   private final Logger logger = LoggerFactory.getLogger(EicrServiceImpl.class);
 
-  public String eicrDocId;
+  private String eicrDocId;
 
-  public CdaIi rrDocId;
+  private CdaIi rrDocId;
 
-  public String reportableType;
+  private String reportableType;
 
-  public String errors;
+  private String errors;
+
 
   public CdaRrModel() {}
 
@@ -52,7 +53,8 @@ public class CdaRrModel {
   }
 
   public void setRrDocId(ArrayList<CdaIi> rrdocids) {
-    if (rrdocids != null && rrdocids.size() > 0) {
+
+    if (rrdocids != null && !rrdocids.isEmpty()) {
       this.rrDocId = rrdocids.get(0);
     }
   }

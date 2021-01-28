@@ -79,6 +79,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
+    mockRestApiUrl();
+    mockRestApiAuthUrl();
   }
 
   @Parameters(name = "{0}")
@@ -112,67 +114,22 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
+
     waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus();
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
-
   }
 
   @Test
   @Ignore
   public void testSubmitEicrFromRestApi() {
-    URL restApiUrl = null;
-    try {
-      restApiUrl = new URL(clientDetails.getRestAPIURL());
-    } catch (MalformedURLException e) {
-      fail(e.getMessage() + " This exception is not expected fix the test.");
-    }
-
-    // mock Authorization
-    String accesstoken =
-        "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
     StringBuilder sb = new StringBuilder(200);
     sb.append("{\"client_id\":\"");
     sb.append(clientDetails.getClientId());
     sb.append("\",\"client_secret\":\"");
     sb.append(clientDetails.getClientSecret());
     sb.append("\"}");
-
-    wireMockServer.stubFor(
-        post(urlPathEqualTo(restApiUrl.getPath()))
-            .withRequestBody(equalToJson(sb.toString()))
-            .atPriority(1)
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withBody(accesstoken)
-                    .withHeader("Content-Type", "application/json; charset=utf-8")));
-
-    // mock RESTAPI
-    JSONObject jsonObject = new JSONObject(systemLaunchPayload);
-
-    StringBuilder sb1 = new StringBuilder(200);
-    sb1.append("{\"fhirServerURL\":\"");
-    sb1.append(clientDetails.getFhirServerBaseURL());
-    sb1.append("\",\"patientId\":\"");
-    sb1.append(jsonObject.get("patientId"));
-    sb1.append("\",\"encounterId\":\"");
-    sb1.append(jsonObject.get("encounterId"));
-    sb1.append("\",\"ecrRequestId\":\"");
-    sb1.append(testCaseId);
-    sb1.append("\"}");
-
-    String restResponse = "{\"status\":\"success\"}";
-    wireMockServer.stubFor(
-        post(urlPathEqualTo(restApiUrl.getPath()))
-            .withRequestBody(equalToJson(sb1.toString()))
-            .atPriority(1)
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withBody(restResponse)
-                    .withHeader("Content-Type", "application/json; charset=utf-8")));
 
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
@@ -186,10 +143,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
 
     wireMockServer.verify(
-        postRequestedFor(urlEqualTo(restApiUrl.getPath()))
+        postRequestedFor(urlEqualTo(getRestApiURLPath()))
             .withRequestBody(equalToJson(sb.toString())));
     wireMockServer.verify(
-        postRequestedFor(urlPathEqualTo(restApiUrl.getPath()))
+        postRequestedFor(urlPathEqualTo(getRestApiURLPath()))
             .withRequestBody(equalToJson(sb.toString())));
   }
 
@@ -354,5 +311,66 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     } catch (InterruptedException e) {
       logger.warn("Issue with thread sleep", e);
     }
+  }
+
+  private void mockRestApiUrl() {
+    JSONObject jsonObject = new JSONObject(systemLaunchPayload);
+
+    StringBuilder sb1 = new StringBuilder(200);
+    sb1.append("{\"fhirServerURL\":\"");
+    sb1.append(clientDetails.getFhirServerBaseURL());
+    sb1.append("\",\"patientId\":\"");
+    sb1.append(jsonObject.get("patientId"));
+    sb1.append("\",\"encounterId\":\"");
+    sb1.append(jsonObject.get("encounterId"));
+    sb1.append("\",\"eicrSetId\":\"");
+    sb1.append(testCaseId);
+    sb1.append("\",\"eicrXml\":\"");
+    sb1.append("This is Eicr Document");
+    sb1.append("\"}");
+
+    String restResponse = "{\"status\":\"success\"}";
+
+    wireMockServer.stubFor(
+        post(urlPathEqualTo(getRestApiURLPath()))
+            // .withRequestBody(equalToJson(sb1.toString()))
+            .atPriority(10)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(restResponse)
+                    .withHeader("Content-Type", "application/json; charset=utf-8")));
+  }
+
+  private void mockRestApiAuthUrl() {
+
+    String accesstoken =
+        "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
+    StringBuilder sb = new StringBuilder(200);
+    sb.append("{\"client_id\":\"");
+    sb.append(clientDetails.getClientId());
+    sb.append("\",\"client_secret\":\"");
+    sb.append(clientDetails.getClientSecret());
+    sb.append("\"}");
+
+    wireMockServer.stubFor(
+        post(urlPathEqualTo(getRestApiURLPath()))
+            // .withRequestBody(equalToJson(sb.toString()))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(accesstoken)
+                    .withHeader("Content-Type", "application/json; charset=utf-8")));
+  }
+
+  private String getRestApiURLPath() {
+    URL restApiUrl = null;
+    try {
+      restApiUrl = new URL(clientDetails.getRestAPIURL());
+    } catch (MalformedURLException e) {
+      fail(e.getMessage() + " This exception is not expected fix the test.");
+    }
+    return restApiUrl.getPath();
   }
 }

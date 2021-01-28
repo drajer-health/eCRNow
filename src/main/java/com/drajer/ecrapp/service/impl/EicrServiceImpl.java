@@ -16,6 +16,7 @@ import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
+import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,6 +56,8 @@ public class EicrServiceImpl implements EicrRRService {
   @Autowired Authorization authorization;
 
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Autowired R4ResourcesData r4ResourcesData;
 
   RrParser rrParser;
 
@@ -187,60 +190,8 @@ public class EicrServiceImpl implements EicrRRService {
 
   public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
 
-    DocumentReference documentReference = new DocumentReference();
+    return r4ResourcesData.constructR4DocumentReference(
+        data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
 
-    // Set Doc Ref Status
-    documentReference.setStatus(DocumentReferenceStatus.CURRENT);
-    documentReference.setDocStatus(ReferredDocumentStatus.FINAL);
-
-    // Set Doc Ref Type
-    CodeableConcept typeCode = new CodeableConcept();
-    List<Coding> codingList = new ArrayList<>();
-    Coding typeCoding = new Coding();
-    typeCoding.setSystem(CdaParserConstants.RR_DOC_CODE_SYSTEM);
-    typeCoding.setCode(CdaParserConstants.RR_DOC_CODE);
-    typeCoding.setDisplay(CdaParserConstants.RR_DOC_DISPLAY_NAME);
-    codingList.add(typeCoding);
-    typeCode.setCoding(codingList);
-    typeCode.setText(CdaParserConstants.RR_DOC_DISPLAY_NAME);
-    documentReference.setType(typeCode);
-
-    // Set Subject
-    Reference patientReference = new Reference();
-    patientReference.setReference("Patient/" + ecr.getLaunchPatientId());
-    documentReference.setSubject(patientReference);
-
-    // Set Doc Ref Content
-    List<DocumentReferenceContentComponent> contentList = new ArrayList<>();
-    DocumentReferenceContentComponent contentComp = new DocumentReferenceContentComponent();
-    Attachment attachment = new Attachment();
-    attachment.setContentType(CdaParserConstants.RR_DOC_CONTENT_TYPE);
-
-    if (data.getRrXml() != null) {
-      attachment.setData(data.getRrXml().getBytes());
-    }
-    contentComp.setAttachment(attachment);
-    contentList.add(contentComp);
-    documentReference.setContent(contentList);
-
-    // Set Doc Ref Context
-    DocumentReferenceContextComponent contextComp = new DocumentReferenceContextComponent();
-    List<Reference> encounterRefList = new ArrayList<>();
-    Reference encounterReference = new Reference();
-    encounterReference.setReference("Encounter/" + ecr.getEncounterId());
-    encounterRefList.add(encounterReference);
-    contextComp.setEncounter(encounterRefList);
-
-    Period period = new Period();
-    period.setStart(new Date());
-    period.setEnd(new Date());
-    contextComp.setPeriod(period);
-    documentReference.setContext(contextComp);
-
-    String docReference =
-        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
-    logger.debug("DocumentReference Object===========> {}", docReference);
-
-    return documentReference;
   }
 }

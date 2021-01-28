@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.ecrapp.service.EicrRRService;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.service.LaunchService;
@@ -41,6 +42,8 @@ public class ActionRepo {
   LoadingQueryService loadingQueryService;
 
   LaunchService launchService;
+
+  WorkflowService workflowService;
 
   ThreadPoolTaskScheduler taskScheduler;
 
@@ -152,6 +155,14 @@ public class ActionRepo {
 
   public void setLaunchService(LaunchService launchService) {
     this.launchService = launchService;
+  }
+
+  public WorkflowService getWorkflowService() {
+    return workflowService;
+  }
+
+  public void setWorkflowService(WorkflowService workflowService) {
+    this.workflowService = workflowService;
   }
 
   public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {

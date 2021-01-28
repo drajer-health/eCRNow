@@ -41,7 +41,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
             + "' ORDER BY doc_version DESC LIMIT 1;";
     List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
 
-    if (eicrList.size() > 0) {
+    if (!eicrList.isEmpty()) {
       return eicrList.get(0).getDocVersion();
     } else return 0;
   }
@@ -50,7 +50,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     String query = "SELECT * from eicr where x_coorrelation_id ='" + xcoorrId + "'";
     List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
 
-    if (eicrList.size() > 0) {
+    if (!eicrList.isEmpty()) {
       return eicrList.get(0);
     } else return null;
   }

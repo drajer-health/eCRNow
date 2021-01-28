@@ -1,7 +1,7 @@
 package com.drajer.ecrapp;
 
 import com.drajer.ecrapp.security.AuthorizationService;
-import com.drajer.ecrapp.security.AuthorizationServiceImpl;
+import com.drajer.ecrapp.security.SampleAuthorizationServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -32,6 +32,6 @@ public class EcrApp extends SpringBootServletInitializer {
 
   @Bean
   public AuthorizationService authorizationService() {
-    return new AuthorizationServiceImpl();
+    return new SampleAuthorizationServiceImpl();
   }
 }
