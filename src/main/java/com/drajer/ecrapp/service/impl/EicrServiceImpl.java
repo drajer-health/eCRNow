@@ -83,7 +83,7 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (ecr != null) {
 
-      logger.info(" Found the ecr for coorrelation Id = {}", xCorrelationId);
+      logger.info(" Found the ecr for correlation Id = {}", xCorrelationId);
       ecr.setResponseType(EicrTypes.RrType.FAILURE_MDN.toString());
       ecr.setResponseXRequestId(xRequestId);
       ecr.setResponseData(data.getRrXml());
@@ -91,7 +91,7 @@ public class EicrServiceImpl implements EicrRRService {
       saveOrUpdate(ecr);
 
     } else {
-      logger.error("Unable to find Eicr for Coorrelation Id {} ", xCorrelationId);
+      logger.error("Unable to find Eicr for Correlation Id {} ", xCorrelationId);
 
       // Create an Error Table and add it to error table for future administration.
     }
@@ -106,16 +106,17 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (ecr != null) {
 
-      logger.info(" Found the ecr for coorrelation Id = {}", xCorrelationId);
+      logger.info(" Found the ecr for correlation Id = {}", xCorrelationId);
 
-      CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
-      ecr.setResponseDocId(rrModel.getRrDocId().getRootValue());
-
-      ecr.setResponseXRequestId(xRequestId);
       if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
 
         logger.info(" RR Xml is present hence create a document reference ");
+        logger.debug("Reportability Response: {}", data.getRrXml());
+
+        CdaRrModel rrModel = rrParser.parse(data.getRrXml());
+        ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
+        ecr.setResponseDocId(rrModel.getRrDocId().getRootValue());
+        ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
         saveOrUpdate(ecr);
 
@@ -127,8 +128,9 @@ public class EicrServiceImpl implements EicrRRService {
         }
       }
     } else {
-      logger.error("Unable to find Eicr for Coorrelation Id {} ", xCorrelationId);
-      throw new Exception();
+      String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
+      logger.error(errorMsg);
+      throw new RuntimeException(errorMsg);
     }
   }
 
@@ -174,11 +176,15 @@ public class EicrServiceImpl implements EicrRRService {
       if (outcome.getCreated()) {
         logger.info("Successfully sent RR to fhir");
       } else {
-        throw new RuntimeException("Unrecognized Fhir Server Url : " + ecr.getFhirServerUrl());
+        String errorMsg = "Unable to post RR response to FHIR server: " + ecr.getFhirServerUrl();
+        logger.error(errorMsg);
+        throw new RuntimeException(errorMsg);
       }
 
     } else {
-      throw new RuntimeException("Unrecognized Fhir Server Url : " + ecr.getFhirServerUrl());
+      String errorMsg = "Unrecognized Fhir Server Url: " + ecr.getFhirServerUrl();
+      logger.error(errorMsg);
+      throw new RuntimeException(errorMsg);
     }
   }
 
