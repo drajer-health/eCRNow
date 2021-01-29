@@ -61,9 +61,11 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
-  public void testRRReceiver_Success() {
+  public void testRRReceiver_WithRR_Success() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
-    postReportabilityResponse(rr, eicr);
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("REPORTABLE", eicr.getResponseType());
@@ -72,11 +74,49 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
+  public void testRRReceiver_WithRR_FailToPost() {
+    // Mock FHIR Document Reference to return failure.
+    wireMockServer.stubFor(
+        post(urlPathEqualTo(
+                getURLPath(clientDetails.getFhirServerBaseURL()) + "/DocumentReference"))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(HttpStatus.BAD_REQUEST.value())
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
+
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  public void testRRReceiver_WithRR_WrongCorrelationID() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    // Setting different CorrelationID then DB
+    eicr.setxCoorrelationId("WrongXCorrelationID");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  public void testRRReceiver_WithEmptyRR() {
+    ReportabilityResponse rr = new ReportabilityResponse();
+    rr.setResponseType("RR");
+    rr.setRrXml("");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
   public void testRRReceiver_WithMDN() {
     ReportabilityResponse rr = new ReportabilityResponse();
     rr.setResponseType("MDN");
     rr.setRrXml("");
-    postReportabilityResponse(rr, eicr);
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("FAILURE_MDN", eicr.getResponseType());
@@ -85,9 +125,14 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
-  public void testRRReceiver_Failure() {
-    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
-    postReportabilityResponse_failure_scenario(rr, eicr);
+  public void testRRReceiver_WithMDN_WrongCorrelationID() {
+    ReportabilityResponse rr = new ReportabilityResponse();
+    rr.setResponseType("MDN");
+    rr.setRrXml("");
+    // Setting different CorrelationID then DB
+    eicr.setxCoorrelationId("WrongXCorrelationID");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   private String getURLPath(String url) {
@@ -140,7 +185,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     return null;
   }
 
-  private void postReportabilityResponse(ReportabilityResponse rr, Eicr eicr) {
+  private ResponseEntity<String> postReportabilityResponse(ReportabilityResponse rr, Eicr eicr) {
 
     headers.clear();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -152,35 +197,13 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
 
       HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
-      ResponseEntity<String> response =
-          restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
-      assertEquals(HttpStatus.OK, response.getStatusCode());
+      return restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
 
     } catch (URISyntaxException e) {
       logger.error("Error building the URL", e);
       fail("Fix the exception: " + e.getMessage());
     }
-  }
 
-  private void postReportabilityResponse_failure_scenario(ReportabilityResponse rr, Eicr eicr) {
-
-    headers.clear();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.add("X-Request-ID", "123456");
-    // headers.add("X-Correlation-ID", null);
-
-    URIBuilder ub;
-    try {
-      ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
-
-      HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
-      ResponseEntity<String> response =
-          restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
-      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-    } catch (URISyntaxException e) {
-      logger.error("Error building the URL", e);
-      fail("Fix the exception: " + e.getMessage());
-    }
+    return null;
   }
 }

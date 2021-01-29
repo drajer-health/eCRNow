@@ -127,6 +127,10 @@ public class EicrServiceImpl implements EicrRRService {
           logger.info(" Document Reference created successfully, submitting to Ehr ");
           submitDocRefToEhr(docRef, ecr);
         }
+      } else {
+        String errorMsg = "Received empty RR for Correlation Id: " + xCorrelationId;
+        logger.error(errorMsg);
+        throw new RuntimeException(errorMsg);
       }
     } else {
       String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
