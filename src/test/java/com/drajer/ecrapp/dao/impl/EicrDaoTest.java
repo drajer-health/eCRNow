@@ -9,6 +9,8 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +35,20 @@ public class EicrDaoTest {
   @Autowired private EicrDaoImpl eicrDaoImpl;
 
   private static final ObjectMapper mapper = new ObjectMapper();
-  private static Eicr expectedEicr;
+  private static String inputEicr;
   private static final Logger logger = LoggerFactory.getLogger(EicrDaoTest.class);
+
+  private Eicr expectedEicr;
 
   @BeforeClass
   public static void setUp() {
+    inputEicr = TestUtils.getFileContentAsString("R4/Misc/eicr.json");
+  }
+
+  @Before
+  public void initializeData() {
     try {
-      expectedEicr =
-          mapper.readValue(TestUtils.getFileContentAsString("R4/Misc/eicr.json"), Eicr.class);
+      expectedEicr = mapper.readValue(inputEicr, Eicr.class);
     } catch (JsonProcessingException e) {
       logger.error("Exception in parsing input data: ", e);
       fail("This exception is not expected, fix the test");
@@ -61,6 +69,31 @@ public class EicrDaoTest {
 
     Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
     Eicr actualEicr = eicrDaoImpl.getEicrById(savedEicr.getId());
+
+    assertNotNull(actualEicr);
+    assertEicr(expectedEicr, actualEicr);
+  }
+
+  @Test
+  public void getMaxVersionId() throws JsonProcessingException {
+
+    // First Row with docverison 1.0
+    eicrDaoImpl.saveOrUpdate(expectedEicr);
+
+    // second Row with docverison 2.0
+    JSONObject inputJson = new JSONObject(inputEicr);
+    inputJson.put("docVersion", 2.0);
+    Eicr secondEicr = mapper.readValue(inputJson.toString(), Eicr.class);
+    eicrDaoImpl.saveOrUpdate(secondEicr);
+
+    Integer actualDocVersion = eicrDaoImpl.getMaxVersionId(expectedEicr);
+    assertEquals(secondEicr.getDocVersion(), actualDocVersion);
+  }
+
+  @Test
+  public void getEicrByCoorrelationId() {
+    eicrDaoImpl.saveOrUpdate(expectedEicr);
+    Eicr actualEicr = eicrDaoImpl.getEicrByCoorrelationId(expectedEicr.getxCoorrelationId());
 
     assertNotNull(actualEicr);
     assertEicr(expectedEicr, actualEicr);
