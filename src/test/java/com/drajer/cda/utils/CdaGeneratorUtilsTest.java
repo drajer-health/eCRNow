@@ -137,4 +137,39 @@ public class CdaGeneratorUtilsTest {
     String result = CdaGeneratorUtils.getXmlForTemplateId("TemplId", "Extension");
     assertEquals(expectedResult, result);
   }
+  
+  @Test
+  public void getNFXMLForIITest() {
+    String expectedResult = "<id nullFlavor=\"NullFlavourText\"/>\n";
+    String result = CdaGeneratorUtils.getNFXMLForII("NullFlavourText");
+    assertEquals(expectedResult, result);
+  }
+  
+  @Test
+  public void getNFXMLForElementTest() {
+    String expectedResult = "<ElementName nullFlavor=\"NullFlavourText\"/>\n";
+    String result = CdaGeneratorUtils.getNFXMLForElement("ElementName","NullFlavourText");
+    assertEquals(expectedResult, result);
+  }
+  
+  @Test
+  public void getXmlForCDTest_NoDisplayName() {
+    String expectedResult = "<CodeName code=\"Code\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForCD("CodeName","Code", "CodeSystem","CodeSystemName", "");
+    assertEquals(expectedResult, result);
+  }
+  
+ @Test
+  public void getXmlForNullValueCDTest() {
+    String expectedResult = "<CodeName xsi:type=\"CD\" nullFlavor=\"Code\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForNullValueCD("CodeName","Code");
+    assertEquals(expectedResult, result);
+  }
+  
+  @Test
+  public void getXmlForNullValueCDWithoutEndTagTest() {
+    String expectedResult = "<CodeName xsi:type=\"CD\" nullFlavor=\"Code\">";
+    String result = CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag("CodeName","Code");
+    assertEquals(expectedResult, result);
+  }
 }
