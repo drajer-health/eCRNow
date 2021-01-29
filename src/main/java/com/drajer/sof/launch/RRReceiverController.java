@@ -5,6 +5,7 @@ import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.ecrapp.service.EicrRRService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ public class RRReceiverController {
   @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
   public ResponseEntity<String> rrReceiver(
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
-      @RequestHeader(name = "X-Correlation-ID") String xCorrelationIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID", required = false)
+          String xCorrelationIdHttpHeaderValue,
       @RequestBody ReportabilityResponse data,
       HttpServletRequest request,
       HttpServletResponse response) {
@@ -38,6 +40,12 @@ public class RRReceiverController {
       if (data.getResponseType().contentEquals(Eicr.MDN_RESPONSE_TYPE)) {
         logger.info(" Received MDN instead of RR on the RR API ");
 
+        if (StringUtils.isBlank(xCorrelationIdHttpHeaderValue)) {
+          logger.error("X-Correlation-ID header is not present in MDN request.");
+          throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, "X-Correlation-ID header is not present in MDN request.");
+        }
+
         // For MDN, no other data will be present.
         rrReceieverService.handleFailureMdn(
             data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
@@ -46,10 +54,12 @@ public class RRReceiverController {
         logger.info(" Received RR as expected on the RR API ");
 
         // For MDN, no other data will be present.
-        rrReceieverService.handleReportabilityResponse(
-            data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
+        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
       }
 
+    } catch (IllegalArgumentException e) {
+      logger.error("Error in Processing the request", e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
       logger.error("Error in Processing the request", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

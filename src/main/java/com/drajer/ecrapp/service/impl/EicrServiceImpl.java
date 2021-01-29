@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.cda.parser.CdaIi;
 import com.drajer.cda.parser.CdaRrModel;
 import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.dao.EicrDao;
@@ -18,6 +19,7 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import javax.transaction.Transactional;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -97,18 +99,22 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  public void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
+  public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
 
     logger.debug(" Start processing RR");
 
-    Eicr ecr = eicrDao.getEicrByCoorrelationId(xCorrelationId);
+    final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
+    final CdaIi docId = rrModel.getRrDocId();
+    if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
+      throw new IllegalArgumentException("Reportability response is missing Doc Id");
+    }
+
+    final Eicr ecr = eicrDao.getEicrByDocId(docId.getRootValue());
 
     if (ecr != null) {
 
-      logger.info(" Found the ecr for coorrelation Id = {}", xCorrelationId);
+      logger.info(" Found the ecr for doc Id = {}", docId.getRootValue());
 
-      CdaRrModel rrModel = rrParser.parse(data.getRrXml());
       ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
       ecr.setResponseDocId(rrModel.getRrDocId().getRootValue());
 
@@ -127,7 +133,7 @@ public class EicrServiceImpl implements EicrRRService {
         }
       }
     } else {
-      logger.error("Unable to find Eicr for Coorrelation Id {} ", xCorrelationId);
+      logger.error("Unable to find Eicr for Doc Id {} ", docId.getRootValue());
     }
   }
 
