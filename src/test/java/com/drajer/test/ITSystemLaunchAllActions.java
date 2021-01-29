@@ -7,13 +7,18 @@ import static org.junit.Assert.assertTrue;
 import com.drajer.eca.model.*;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
+import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import org.apache.http.client.utils.URIBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;
@@ -24,8 +29,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -120,7 +124,6 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     getLaunchDetailAndStatus();
     validateActionStatus();
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
-    validateActionStatus();
   }
 
   @Test
@@ -144,10 +147,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
 
     wireMockServer.verify(
-        postRequestedFor(urlEqualTo(getRestApiURLPath()))
+        postRequestedFor(urlEqualTo(getURLPath(clientDetails.getRestAPIURL())))
             .withRequestBody(equalToJson(sb.toString())));
     wireMockServer.verify(
-        postRequestedFor(urlPathEqualTo(getRestApiURLPath()))
+        postRequestedFor(urlPathEqualTo(getURLPath(clientDetails.getRestAPIURL())))
             .withRequestBody(equalToJson(sb.toString())));
   }
 
@@ -172,6 +175,39 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     validateCreateEICR(JobStatus.SCHEDULED, false);
     List<Eicr> allEICRDocuments = getAllEICRDocuments();
     assertEquals(0, allEICRDocuments.size());
+  }
+
+  @Test
+  public void testReportabilityResponse_Success() {
+    ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
+
+    assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+    assertTrue(response.getBody().contains("App is launched successfully"));
+
+    logger.info("Received success response, waiting for EICR generation.....");
+
+    waitForEICR(50000);
+    getLaunchDetailAndStatus();
+    validateActionStatus();
+
+    // mock DocumentReference FHIR call.
+    wireMockServer.stubFor(
+        post(urlPathEqualTo(
+                getURLPath(clientDetails.getFhirServerBaseURL()) + "/DocumentReference"))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(201)
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
+
+    Eicr eicr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    postReportabilityResponse(rr, eicr);
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("REPORTABLE", eicr.getResponseType());
+    assertEquals(rr.getRrXml(), eicr.getResponseData());
+    assertEquals("123456", eicr.getResponseXRequestId());
   }
 
   private void getLaunchDetailAndStatus() {
@@ -285,7 +321,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   private Eicr getEICRDocument(String eicrId) {
     try {
-      return session.get(Eicr.class, Integer.parseInt(eicrId));
+
+      Eicr eicr = session.get(Eicr.class, Integer.parseInt(eicrId));
+      session.refresh(eicr);
+      return eicr;
     } catch (Exception e) {
       logger.error("Exception retrieving EICR ", e);
       fail("Something went wrong retrieving EICR, check the log");
@@ -332,7 +371,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     String restResponse = "{\"status\":\"success\"}";
 
     wireMockServer.stubFor(
-        post(urlPathEqualTo(getRestApiURLPath()))
+        post(urlPathEqualTo(getURLPath(clientDetails.getRestAPIURL())))
             // .withRequestBody(equalToJson(sb1.toString()))
             .atPriority(10)
             .willReturn(
@@ -354,7 +393,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     sb.append("\"}");
 
     wireMockServer.stubFor(
-        post(urlPathEqualTo(getRestApiURLPath()))
+        post(urlPathEqualTo(getURLPath(clientDetails.getRestAPIURL())))
             // .withRequestBody(equalToJson(sb.toString()))
             .atPriority(1)
             .willReturn(
@@ -364,13 +403,46 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
                     .withHeader("Content-Type", "application/json; charset=utf-8")));
   }
 
-  private String getRestApiURLPath() {
-    URL restApiUrl = null;
+  private String getURLPath(String url) {
+    URL fullUrl = null;
+
     try {
-      restApiUrl = new URL(clientDetails.getRestAPIURL());
+      fullUrl = new URL(url);
     } catch (MalformedURLException e) {
       fail(e.getMessage() + " This exception is not expected fix the test.");
     }
-    return restApiUrl.getPath();
+    return fullUrl.getPath();
+  }
+
+  private ReportabilityResponse getReportabilityResponse(String filename) {
+    String rrResponse = TestUtils.getFileContentAsString(filename);
+    try {
+      return mapper.readValue(rrResponse, ReportabilityResponse.class);
+    } catch (JsonProcessingException e) {
+      fail("This exception is not expected, fix the test");
+    }
+    return null;
+  }
+
+  private void postReportabilityResponse(ReportabilityResponse rr, Eicr eicr) {
+
+    headers.clear();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", "123456");
+    headers.add("X-Correlation-ID", eicr.getxCoorrelationId());
+
+    URIBuilder ub;
+    try {
+      ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
+
+      HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
+      ResponseEntity<String> response =
+          restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    } catch (URISyntaxException e) {
+      logger.error("Error building the URL", e);
+      fail("Fix the exception: " + e.getMessage());
+    }
   }
 }

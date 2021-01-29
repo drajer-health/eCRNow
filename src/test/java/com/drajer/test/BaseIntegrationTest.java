@@ -75,6 +75,7 @@ public abstract class BaseIntegrationTest {
     session = sessionFactory.openSession();
     wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
     wireMockServer.resetMappings();
+    headers.clear();
   }
 
   @After

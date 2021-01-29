@@ -83,7 +83,7 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (ecr != null) {
 
-      logger.info(" Found the ecr for correlation Id = {}", xCorrelationId);
+      logger.info(" Found the Eicr for correlation Id: {}", xCorrelationId);
       ecr.setResponseType(EicrTypes.RrType.FAILURE_MDN.toString());
       ecr.setResponseXRequestId(xRequestId);
       ecr.setResponseData(data.getRrXml());
@@ -91,8 +91,9 @@ public class EicrServiceImpl implements EicrRRService {
       saveOrUpdate(ecr);
 
     } else {
-      logger.error("Unable to find Eicr for Correlation Id {} ", xCorrelationId);
-
+      String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
+      logger.error(errorMsg);
+      throw new RuntimeException(errorMsg);
       // Create an Error Table and add it to error table for future administration.
     }
   }
