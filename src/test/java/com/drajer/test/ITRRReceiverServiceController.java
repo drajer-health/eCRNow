@@ -84,6 +84,12 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals("123456", eicr.getResponseXRequestId());
   }
 
+  @Test
+  public void testRRReceiver_Failure() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    postReportabilityResponse_failure_scenario(rr, eicr);
+  }
+
   private String getURLPath(String url) {
     java.net.URL fullUrl = null;
 
@@ -149,6 +155,28 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ResponseEntity<String> response =
           restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
       assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    } catch (URISyntaxException e) {
+      logger.error("Error building the URL", e);
+      fail("Fix the exception: " + e.getMessage());
+    }
+  }
+
+  private void postReportabilityResponse_failure_scenario(ReportabilityResponse rr, Eicr eicr) {
+
+    headers.clear();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.add("X-Request-ID", "123456");
+    // headers.add("X-Correlation-ID", null);
+
+    URIBuilder ub;
+    try {
+      ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
+
+      HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
+      ResponseEntity<String> response =
+          restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
+      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     } catch (URISyntaxException e) {
       logger.error("Error building the URL", e);
