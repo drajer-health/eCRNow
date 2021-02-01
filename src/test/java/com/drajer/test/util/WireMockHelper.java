@@ -1,10 +1,6 @@
 package com.drajer.test.util;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.any;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import com.drajer.test.model.StubVO;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -76,7 +72,7 @@ public class WireMockHelper {
     String responseStr = TestUtils.getFileContentAsString(responseFilePath);
 
     // Mapping for our resources
-    logger.info("Creating wiremock stub for uri: " + url);
+    logger.info("Creating wiremock stub for uri: {}", url);
     wireMockServer.stubFor(
         get(urlEqualTo(url))
             .atPriority(1)
@@ -103,7 +99,7 @@ public class WireMockHelper {
                         .withStatus(404)
                         .withBody(TestUtils.getFileContentAsString((String) otherMappings.get(key)))
                         .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
-        logger.info("Stub Created for default: " + "/FHIR/.*");
+        logger.info("Stub Created for default: /FHIR/.*");
       } else if (key.equalsIgnoreCase("metadata")) {
         url = baseUrl + "/" + key;
         // TODO - Change to pull token url from client detail instead of hard coding.
@@ -118,7 +114,7 @@ public class WireMockHelper {
                         .withStatus(200)
                         .withBody(response)
                         .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
-        logger.info("Stub Created for Metadata uri: " + url);
+        logger.info("Stub Created for Metadata uri: {}", url);
       } else if (key.equalsIgnoreCase("token")) {
         url = baseUrl + "/" + key;
         wireMockServer.stubFor(
@@ -129,7 +125,7 @@ public class WireMockHelper {
                         .withStatus(200)
                         .withBody(TestUtils.getFileContentAsString((String) otherMappings.get(key)))
                         .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
-        logger.info("Stub Created for AsscessToken uri: " + url);
+        logger.info("Stub Created for AccessToken uri: {}", url);
       }
     }
   }
