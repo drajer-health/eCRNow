@@ -16,4 +16,6 @@ public interface EicrDao {
   Integer getMaxVersionId(Eicr eicr);
 
   Eicr getEicrByCoorrelationId(String coorelId);
+
+  Eicr getEicrByDocId(String docId);
 }

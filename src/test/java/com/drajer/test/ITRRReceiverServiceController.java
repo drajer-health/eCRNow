@@ -92,13 +92,14 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
-  public void testRRReceiver_WithRR_WrongCorrelationID() {
+  public void testRRReceiver_WithRR_WrongDocID() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
-    // Setting different CorrelationID then DB
-    eicr.setxCoorrelationId("WrongXCorrelationID");
+    // Setting different DocID then in DB
+    String rrXml = rr.getRrXml().replace("RR-TEST-XCORRELATIONID", "WrongXCorrelationID");
+    rr.setRrXml(rrXml);
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
   @Test
@@ -107,7 +108,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     rr.setResponseType("RR");
     rr.setRrXml("");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
   @Test
@@ -132,7 +133,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     // Setting different CorrelationID then DB
     eicr.setxCoorrelationId("WrongXCorrelationID");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
   private String getURLPath(String url) {
@@ -154,7 +155,8 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     eicr.setDocVersion(1);
     eicr.setxRequestId("RRTESTXREQUESTID");
     eicr.setSetId("12345|67890");
-    eicr.setxCoorrelationId("RRTESTXCORRELATIONID");
+    eicr.setxCoorrelationId("RR-TEST-XCORRELATIONID");
+    eicr.setEicrDocId("RR-TEST-XCORRELATIONID");
     eicr.setEicrData("This is a dummy EICR for test");
 
     session.saveOrUpdate(eicr);

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.cda.parser.CdaIi;
 import com.drajer.cda.parser.CdaRrModel;
 import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.dao.EicrDao;
@@ -18,6 +19,7 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import javax.transaction.Transactional;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -93,49 +95,52 @@ public class EicrServiceImpl implements EicrRRService {
     } else {
       String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
       logger.error(errorMsg);
-      throw new RuntimeException(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
       // Create an Error Table and add it to error table for future administration.
     }
   }
 
-  public void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId) throws Exception {
+  public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
 
     logger.debug(" Start processing RR");
 
-    Eicr ecr = eicrDao.getEicrByCoorrelationId(xCorrelationId);
+    if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
 
-    if (ecr != null) {
+      logger.debug("Reportability Response: {}", data.getRrXml());
+      final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
+      final CdaIi docId = rrModel.getRrDocId();
+      if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
+        throw new IllegalArgumentException("Reportability response is missing Doc Id");
+      }
 
-      logger.info(" Found the ecr for correlation Id = {}", xCorrelationId);
+      final Eicr ecr = eicrDao.getEicrByDocId(docId.getRootValue());
 
-      if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
+      if (ecr != null) {
 
-        logger.info(" RR Xml is present hence create a document reference ");
-        logger.debug("Reportability Response: {}", data.getRrXml());
-
-        CdaRrModel rrModel = rrParser.parse(data.getRrXml());
+        logger.info(" Found the ecr for doc Id = {}", docId.getRootValue());
         ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
-        ecr.setResponseDocId(rrModel.getRrDocId().getRootValue());
+        ecr.setResponseDocId(docId.getRootValue());
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
         saveOrUpdate(ecr);
 
+        logger.info(" RR Xml and eCR is present hence create a document reference ");
         DocumentReference docRef = constructDocumentReference(data, ecr);
 
         if (docRef != null) {
           logger.info(" Document Reference created successfully, submitting to Ehr ");
           submitDocRefToEhr(docRef, ecr);
         }
+
       } else {
-        String errorMsg = "Received empty RR for Correlation Id: " + xCorrelationId;
+        String errorMsg = "Unable to find Eicr for Doc Id: {} " + docId.getRootValue();
         logger.error(errorMsg);
-        throw new RuntimeException(errorMsg);
+        throw new IllegalArgumentException(errorMsg);
       }
     } else {
-      String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
+      String errorMsg = "Received empty RR in request: " + xRequestId;
       logger.error(errorMsg);
-      throw new RuntimeException(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
     }
   }
 
@@ -189,7 +194,7 @@ public class EicrServiceImpl implements EicrRRService {
     } else {
       String errorMsg = "Unrecognized Fhir Server Url: " + ecr.getFhirServerUrl();
       logger.error(errorMsg);
-      throw new RuntimeException(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
     }
   }
 

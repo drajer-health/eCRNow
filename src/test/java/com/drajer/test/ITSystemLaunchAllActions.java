@@ -202,6 +202,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     Eicr eicr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    String rrXml = rr.getRrXml().replace("RR-TEST-XCORRELATIONID", eicr.getEicrDocId());
+    rr.setRrXml(rrXml);
     postReportabilityResponse(rr, eicr);
 
     eicr = getEICRDocument(eicr.getId().toString());
