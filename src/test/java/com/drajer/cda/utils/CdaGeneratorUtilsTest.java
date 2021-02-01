@@ -174,83 +174,95 @@ public class CdaGeneratorUtilsTest {
     String result = CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag("CodeName", "Code");
     assertEquals(expectedResult, result);
   }
-  
-@Test
- public void getCDADocHeaderTemplateXMLTest() {
-   String expectedResult = "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n";
-   String result = CdaGeneratorUtils.getCDADocHeaderTemplateXML();
-   assertEquals(expectedResult, result);
- }
- 
-@Test
- public void getHeaderTemplatesXMLTest() {
-   String expectedResult = "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n" + 
-   		"<templateId root=\"2.16.840.1.113883.10.20.22.1.1\"/>\n" + 
-   		"<templateId root=\"2.16.840.1.113883.10.20.22.1.2\"/>\n";
-   String result = CdaGeneratorUtils.getHeaderTemplatesXML("TestVersion");
-   assertEquals(expectedResult, result);
- }
- 
- @Test
- public void getHeaderTemplatesXMLTest_versionR51() {
-	    String expectedResult = "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n" + 
-	    		"<templateId root=\"2.16.840.1.113883.10.20.22.1.1\" extension=\"2015-08-01\"/>\n" + 
-	    		"<templateId root=\"2.16.840.1.113883.10.20.22.1.2\" extension=\"2015-08-01\"/>\n";
-	    String result = CdaGeneratorUtils.getHeaderTemplatesXML("R51");
-	    assertEquals(expectedResult, result);
-	  }
-@Test
- public void getXmlForEntryTemplateTest() {
-	    String expectedResult = "<TemplateName typeCode=\"TypeCodeName\">\n";
-	    String result = CdaGeneratorUtils.getXmlForEntryTemplate("TemplateName", "TypeCodeName");
-	    assertEquals(expectedResult, result);
-	  }
- 
-@Test
- public void getXmlForPartialValueIVLWithTSTest_low() {
-	    String expectedResult = "<elName xsi:type=\"IVL_TS\"><low value=\"valueText\"/>\n" + 
-	    		"</elName>\n";
-	    String result = CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "low");
-	    assertEquals(expectedResult, result);
-	  }
- @Test
- public void getXmlForPartialValueIVLWithTSTest_high() {
-	    String expectedResult = "<elName xsi:type=\"IVL_TS\"><high value=\"valueText\"/>\n" + 
-	    		"</elName>\n";
-	    String result = CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "high");
-	    assertEquals(expectedResult, result);
-	  }
- 
- @Test
- public void getXmlForPIVLWithTSTest() {
-	    String expectedResult = "<elName xsi:type=\"PIVL_TS\" institutionSpecified=\"true\" operator=\"A\">\n" + 
-	    		"<period value=\"0\" unit=\"h\"/>\n" + 
-	    		"</elName>\n";
-	    String result = CdaGeneratorUtils.getXmlForPIVLWithTS("elName", 1000);
-	    assertEquals(expectedResult, result);
-	  }
- @Test
- public void getXmlForValueCDWithValueSet_EmptyDisplay_EmptyValue() {
-	    String expectedResult = "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
-	    String result = CdaGeneratorUtils.getXmlForValueCDWithValueSet("codeName","CodeSystem","CodeSystemName","", "");
-	    assertEquals(expectedResult, result);
-	  }
- 
-@Test
- public void getXmlForValueCDWithValueSet_EmptyValue() {
-	    String expectedResult = "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
-	    String result = CdaGeneratorUtils.getXmlForValueCDWithValueSet("codeName","CodeSystem","CodeSystemName","DisplayName", "");
-	    assertEquals(expectedResult, result);
-	  }
- 
- @Test
- public void getXmlForValueCDWithValueSet() {
-	    String expectedResult = "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\"/>\n";
-	    String result = CdaGeneratorUtils.getXmlForValueCDWithValueSet("codeName","CodeSystem","CodeSystemName","DisplayName", "ValueName");
-	    assertEquals(expectedResult, result);
-	  }
- 
- 
-  
 
+  @Test
+  public void getCDADocHeaderTemplateXMLTest() {
+    String expectedResult =
+        "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n";
+    String result = CdaGeneratorUtils.getCDADocHeaderTemplateXML();
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getHeaderTemplatesXMLTest() {
+    String expectedResult =
+        "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.22.1.1\"/>\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.22.1.2\"/>\n";
+    String result = CdaGeneratorUtils.getHeaderTemplatesXML("TestVersion");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getHeaderTemplatesXMLTest_versionR51() {
+    String expectedResult =
+        "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.22.1.1\" extension=\"2015-08-01\"/>\n"
+            + "<templateId root=\"2.16.840.1.113883.10.20.22.1.2\" extension=\"2015-08-01\"/>\n";
+    String result = CdaGeneratorUtils.getHeaderTemplatesXML("R51");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForEntryTemplateTest() {
+    String expectedResult = "<TemplateName typeCode=\"TypeCodeName\">\n";
+    String result = CdaGeneratorUtils.getXmlForEntryTemplate("TemplateName", "TypeCodeName");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForPartialValueIVLWithTSTest_low() {
+    String expectedResult =
+        "<elName xsi:type=\"IVL_TS\"><low value=\"valueText\"/>\n" + "</elName>\n";
+    String result = CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "low");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForPartialValueIVLWithTSTest_high() {
+    String expectedResult =
+        "<elName xsi:type=\"IVL_TS\"><high value=\"valueText\"/>\n" + "</elName>\n";
+    String result = CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "high");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForPIVLWithTSTest() {
+    String expectedResult =
+        "<elName xsi:type=\"PIVL_TS\" institutionSpecified=\"true\" operator=\"A\">\n"
+            + "<period value=\"0\" unit=\"h\"/>\n"
+            + "</elName>\n";
+    String result = CdaGeneratorUtils.getXmlForPIVLWithTS("elName", 1000);
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueCDWithValueSet_EmptyDisplay_EmptyValue() {
+    String expectedResult =
+        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForValueCDWithValueSet(
+            "codeName", "CodeSystem", "CodeSystemName", "", "");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueCDWithValueSet_EmptyValue() {
+    String expectedResult =
+        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForValueCDWithValueSet(
+            "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueCDWithValueSet() {
+    String expectedResult =
+        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForValueCDWithValueSet(
+            "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "ValueName");
+    assertEquals(expectedResult, result);
+  }
 }
