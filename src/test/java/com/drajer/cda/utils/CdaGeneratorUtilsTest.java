@@ -265,4 +265,60 @@ public class CdaGeneratorUtilsTest {
             "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "ValueName");
     assertEquals(expectedResult, result);
   }
+
+  @Test
+  public void getXmlForCDWithValueSetTest_EmptyDisplay_EmptyValue() {
+    String expectedResult =
+        "<elName  code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForCDWithValueSet(
+            "elName", "codeName", "CodeSystem", "CodeSystemName", "", "");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForCDWithValueSetTest_EmptyValue() {
+    String expectedResult =
+        "<elName  code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForCDWithValueSet(
+            "elName", "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForCDWithValueSetTest() {
+    String expectedResult =
+        "<elName  code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForCDWithValueSet(
+            "elName", "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "ValueName");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueCDWithValueSetAndVersionWihoutEndTagTest() {
+    String expectedResult =
+        "<elName xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">\n";
+    String result =
+        CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
+            "elName",
+            "codeName",
+            "CodeSystem",
+            "CodeSystemName",
+            "ValueName",
+            "ValueSetVersion",
+            "DisplayName");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueCOTest() {
+    String expectedResult =
+        "<value xsi:type=\"CO\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
+    String result =
+        CdaGeneratorUtils.getXmlForValueCO(
+            "codeName", "CodeSystem", "CodeSystemName", "DisplayName");
+    assertEquals(expectedResult, result);
+  }
 }
