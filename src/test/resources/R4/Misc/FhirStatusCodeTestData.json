@@ -1,0 +1,8 @@
+{
+  "active": "active|in-progress|intended|not-taken",
+  "completed": "completed|random-text",
+  "nullified": "entered-in-error",
+  "aborted": "stopped",
+  "suspended": "on-hold",
+  "held": "unknown|draft|cancelled"
+}
