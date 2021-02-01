@@ -136,6 +136,17 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
+  @Test
+  public void testRRReceiver_With_EmptyDocId() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    // Setting different DocID then in DB
+    String rrXml = rr.getRrXml().replace("RR-TEST-XCORRELATIONID", "");
+    rr.setRrXml(rrXml);
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
   private String getURLPath(String url) {
     java.net.URL fullUrl = null;
 
