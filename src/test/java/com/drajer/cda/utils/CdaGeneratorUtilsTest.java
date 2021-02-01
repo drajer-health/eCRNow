@@ -299,7 +299,7 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForValueCDWithValueSetAndVersionWihoutEndTagTest() {
     String expectedResult =
-        "<elName xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">\n";
+        "<elName xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">";
     String result =
         CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
             "elName",
