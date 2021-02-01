@@ -139,7 +139,6 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   @Test
   public void testRRReceiver_With_EmptyDocId() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
-    
     String rrXml = rr.getRrXml().replace("RR-TEST-XCORRELATIONID", "");
     rr.setRrXml(rrXml);
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
