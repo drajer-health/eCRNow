@@ -1,6 +1,9 @@
 package com.drajer.eca.model;
 
+import com.drajer.sof.model.LaunchDetails;
+import java.util.HashSet;
 import java.util.Set;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Parameters;
@@ -21,28 +24,43 @@ public class CQLExpressionCondition extends AbstractCondition {
   private String patientId;
   private String url;
 
+  private IBaseBundle bundle;
+
   private final Logger logger = LoggerFactory.getLogger(CQLExpressionCondition.class);
 
   @Override
   public Boolean evaluate(Object obj) {
 
-    // TODO: Are we passing in data instead? That would be the "additionalData" bundle
-    // TODO: The libraryProcessor is only applicable if the type of the condition is cql.identifer
+    if (obj instanceof LaunchDetails) {
+      LaunchDetails launchDetails = (LaunchDetails) obj;
+      this.setPatientId(launchDetails.getLaunchPatientId());
+    }
+
+    Set<String> expressions = new HashSet<>();
+    expressions.add(expression);
     Parameters result =
         (Parameters)
             this.libraryProcessor.evaluate(
-                url,
-                patientId,
+                this.url,
+                this.patientId,
                 null,
-                libraryEndpoint,
-                terminologyEndpoint,
-                dataEndpoint,
-                null,
-                Set.of(expression));
+                this.libraryEndpoint,
+                this.terminologyEndpoint,
+                this.dataEndpoint,
+                this.bundle,
+                expressions);
 
     BooleanType value = (BooleanType) result.getParameter(expression);
 
     return value.getValue();
+  }
+
+  public IBaseBundle getBundle() {
+    return this.bundle;
+  }
+
+  public void setBundle(IBaseBundle bundle) {
+    this.bundle = bundle;
   }
 
   public String getExpression() {

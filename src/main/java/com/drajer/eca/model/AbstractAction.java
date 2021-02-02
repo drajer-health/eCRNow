@@ -1,9 +1,14 @@
 package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.sof.model.Dstu2FhirData;
+import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
+import com.drajer.sof.model.Stu3FhirData;
 import java.util.ArrayList;
 import java.util.List;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,12 +138,30 @@ public abstract class AbstractAction {
 
   public boolean matchCondition(LaunchDetails details) {
     boolean conditionsMet = true;
+
+    FhirData data =
+        ActionRepo.getInstance()
+            .getLoadingQueryService()
+            .getData(details, details.getStartDate(), details.getEndDate());
+
+    IBaseBundle dataBundle = null;
+    if (data instanceof R4FhirData) {
+      dataBundle = ((R4FhirData) data).getData();
+    } else if (data instanceof Stu3FhirData) {
+      // TODO: Stu3 doesn't have a data bundle?
+    } else if (data instanceof Dstu2FhirData) {
+      dataBundle = ((Dstu2FhirData) data).getData();
+    }
     if (getPreConditions() != null && !getPreConditions().isEmpty()) {
 
       logger.info(" Evaluating PreConditions ");
       List<AbstractCondition> conds = getPreConditions();
 
       for (AbstractCondition cond : conds) {
+
+        if (cond instanceof CQLExpressionCondition) {
+          ((CQLExpressionCondition) cond).setBundle(dataBundle);
+        }
 
         if (!cond.evaluate(details)) {
           if (logger.isInfoEnabled()) {

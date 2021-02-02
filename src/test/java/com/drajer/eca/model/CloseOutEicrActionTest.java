@@ -19,6 +19,8 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
+import com.drajer.sof.service.LoadingQueryService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
+@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class, ActionRepo.class})
 public class CloseOutEicrActionTest {
 
   private static final Logger logger = LoggerFactory.getLogger(CloseOutEicrActionTest.class);
@@ -45,6 +47,9 @@ public class CloseOutEicrActionTest {
   private MatchTriggerStatus mockTriggerStatus;
   private Eicr mockEicr;
   private boolean mockEncounterClose;
+  private ActionRepo mockActionRepo;
+  private LoadingQueryService mockQuerySrvc;
+  private R4FhirData mockR4Data;
 
   private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
 
@@ -59,10 +64,19 @@ public class CloseOutEicrActionTest {
     mockTriggerStatus = PowerMockito.mock(MatchTriggerStatus.class);
     mockEicr = PowerMockito.mock(Eicr.class);
     mockEncounterClose = true;
+    mockActionRepo = PowerMockito.mock(ActionRepo.class);
+    mockQuerySrvc = PowerMockito.mock(LoadingQueryService.class);
+    mockR4Data = PowerMockito.mock(R4FhirData.class);
 
+    when(mockActionRepo.getLoadingQueryService()).thenReturn(mockQuerySrvc);
+    when(mockQuerySrvc.getData(eq(mockDetails), eq(null), eq(null))).thenReturn(mockR4Data);
+
+    PowerMockito.mockStatic(ActionRepo.class);
     PowerMockito.mockStatic(EcaUtils.class);
     PowerMockito.mockStatic(ApplicationUtils.class);
     PowerMockito.mockStatic(WorkflowService.class);
+
+    when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
   }
 
   @Test

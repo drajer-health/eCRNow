@@ -33,10 +33,14 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Duration;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Enumerations.FHIRAllTypes;
+import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -225,7 +229,8 @@ public class PlanDefinitionProcessor {
 
             logger.info(" Found Plan Definition ");
             if (actions != null && !actions.isEmpty()) {
-
+              CanonicalType libraryCanonical =
+                  planDefinition.hasLibrary() ? planDefinition.getLibrary().get(0) : null;
               for (PlanDefinitionActionComponent action : actions) {
 
                 if (action.getId().equals("match-trigger")) {
@@ -234,7 +239,8 @@ public class PlanDefinitionProcessor {
 
                   MatchTriggerAction mta = new MatchTriggerAction();
 
-                  populateActionData(mta, acts, action, EcrActionTypes.MATCH_TRIGGER);
+                  populateActionData(
+                      mta, acts, action, EcrActionTypes.MATCH_TRIGGER, libraryCanonical);
 
                   triggerDefinitionsList = action.getTrigger();
 
@@ -254,7 +260,8 @@ public class PlanDefinitionProcessor {
 
                   CreateEicrAction mta = new CreateEicrAction();
 
-                  populateActionData(mta, acts, action, EcrActionTypes.CREATE_EICR);
+                  populateActionData(
+                      mta, acts, action, EcrActionTypes.CREATE_EICR, libraryCanonical);
 
                 } else if (action.getId().equals("periodic-update-eicr")) {
 
@@ -262,7 +269,8 @@ public class PlanDefinitionProcessor {
 
                   PeriodicUpdateEicrAction mta = new PeriodicUpdateEicrAction();
 
-                  populateActionData(mta, acts, action, EcrActionTypes.PERIODIC_UPDATE_EICR);
+                  populateActionData(
+                      mta, acts, action, EcrActionTypes.PERIODIC_UPDATE_EICR, libraryCanonical);
 
                 } else if (action.getId().equals("create-eicr-after-recheck")) {
 
@@ -270,7 +278,12 @@ public class PlanDefinitionProcessor {
 
                   CreateEicrAfterRecheckAction cra = new CreateEicrAfterRecheckAction();
 
-                  populateActionData(cra, acts, action, EcrActionTypes.CREATE_EICR_AFTER_RECHECK);
+                  populateActionData(
+                      cra,
+                      acts,
+                      action,
+                      EcrActionTypes.CREATE_EICR_AFTER_RECHECK,
+                      libraryCanonical);
 
                 } else if (action.getId().equals("close-out-eicr")) {
 
@@ -278,7 +291,8 @@ public class PlanDefinitionProcessor {
 
                   CloseOutEicrAction mta = new CloseOutEicrAction();
 
-                  populateActionData(mta, acts, action, EcrActionTypes.CLOSE_OUT_EICR);
+                  populateActionData(
+                      mta, acts, action, EcrActionTypes.CLOSE_OUT_EICR, libraryCanonical);
 
                 } else if (action.getId().equals("validate-eicr")) {
 
@@ -286,7 +300,8 @@ public class PlanDefinitionProcessor {
 
                   ValidateEicrAction mta = new ValidateEicrAction();
 
-                  populateActionData(mta, acts, action, EcrActionTypes.VALIDATE_EICR);
+                  populateActionData(
+                      mta, acts, action, EcrActionTypes.VALIDATE_EICR, libraryCanonical);
 
                 } else if (action.getId().equals("route-and-send-eicr")) {
 
@@ -294,7 +309,8 @@ public class PlanDefinitionProcessor {
 
                   SubmitEicrAction mta = new SubmitEicrAction();
 
-                  populateActionData(mta, acts, action, EcrActionTypes.SUBMIT_EICR);
+                  populateActionData(
+                      mta, acts, action, EcrActionTypes.SUBMIT_EICR, libraryCanonical);
 
                   populateRRCheckAction(acts, mta);
                 }
@@ -364,13 +380,14 @@ public class PlanDefinitionProcessor {
       AbstractAction act,
       Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts,
       PlanDefinitionActionComponent action,
-      EventTypes.EcrActionTypes type) {
+      EventTypes.EcrActionTypes type,
+      CanonicalType libraryCanonical) {
 
     act.setActionId(action.getId());
 
     if (action.hasTrigger()) processTriggerDefinitions(action.getTrigger(), act);
 
-    if (action.hasCondition()) processConditions(action.getCondition(), act);
+    if (action.hasCondition()) processConditions(action.getCondition(), act, libraryCanonical);
 
     if (action.hasRelatedAction()) processRelatedActions(action.getRelatedAction(), act, acts);
 
@@ -511,36 +528,49 @@ public class PlanDefinitionProcessor {
   }
 
   private void processConditions(
-      List<PlanDefinitionActionConditionComponent> condlist, AbstractAction act) {
+      List<PlanDefinitionActionConditionComponent> condlist,
+      AbstractAction act,
+      CanonicalType libraryCanonical) {
 
     if (condlist != null && !condlist.isEmpty()) {
 
       for (PlanDefinitionActionConditionComponent cond : condlist) {
 
         if (cond.hasKind() && cond.hasExpression()) {
-          CQLExpressionCondition cd = new CQLExpressionCondition();
-          cd.setConditionType(cond.getKind());
-          cd.setExpression(cond.getExpression().getExpression());
 
-          cd.setLibraryProcessor(this.libraryProcessor);
+          Expression expression = cond.getExpression();
+          switch (expression.getLanguage()) {
+              // Inline CQL
+            case "text/cql":
+              // TODO
+              continue;
+              // CQL referencing a library
+            case "text/cql.identifier":
+              CQLExpressionCondition cd = new CQLExpressionCondition();
+              cd.setConditionType(cond.getKind());
+              cd.setExpression(cond.getExpression().getExpression());
+              cd.setLibraryProcessor(this.libraryProcessor);
+              cd.setUrl(libraryCanonical.getValue());
 
-          /*
-          cd.setUrl("http://libraryUrl.com/Library/whatever");
-          cd.setPatientId("1234");
+              // Set location of eRSD bundle for loading terminology and library logic
+              Endpoint libraryAndTerminologyEndpoint =
+                  new Endpoint()
+                      .setAddress(ersdFileLocation)
+                      .setConnectionType(new Coding().setCode("hl7-fhir-files"));
+              cd.setLibraryEndpoint(libraryAndTerminologyEndpoint);
+              cd.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
 
-          // This could point at a directory where the eRSD bundle exists
-          // (Alternatively we could change things to just pass the Bundle directly)
-          Endpoint libraryAndTerminologyEndpoint = new Endpoint().setAddress("url-of-content-source-or-file-system").setConnectionType(new Coding().setCode("hl7-fhir-files"));
-          cd.setLibraryEndpoint(libraryAndTerminologyEndpoint);
-          cd.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+              // Set from launch details at time of evaluation
+              // cd.setPatientId("1234");
 
-          // Endpoints support headers (such as auth headers) and the Library processor will respect them.
-          Endpoint dataEndpoint = new Endpoint().setAddress("url-of-data-source").setConnectionType(new Coding().setCode("hl7-fhir-rest"));
-          cd.setDataEndpoint(dataEndpoint);
+              act.addCondition(cd);
+              break;
 
-          */
-
-          act.addCondition(cd);
+            default:
+              throw new UnsupportedOperationException(
+                  String.format(
+                      "Unable to process conditions of type %s", expression.getLanguage()));
+          }
         }
       }
     }
