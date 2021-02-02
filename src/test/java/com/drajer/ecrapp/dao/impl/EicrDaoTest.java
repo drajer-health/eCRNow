@@ -1,11 +1,16 @@
 package com.drajer.ecrapp.dao.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.model.Eicr;
-import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,76 +35,84 @@ public class EicrDaoTest {
   @Autowired private EicrDaoImpl eicrDaoImpl;
 
   private static final ObjectMapper mapper = new ObjectMapper();
-  private static Eicr expectedEicr;
-  private static ReportabilityResponse expectedRR;
+  private static String inputEicr;
   private static final Logger logger = LoggerFactory.getLogger(EicrDaoTest.class);
+
+  private Eicr expectedEicr;
 
   @BeforeClass
   public static void setUp() {
+    inputEicr = TestUtils.getFileContentAsString("R4/Misc/eicr.json");
+  }
+
+  @Before
+  public void initializeData() {
     try {
-      expectedEicr =
-          mapper.readValue(TestUtils.getFileContentAsString("R4/Misc/eicr.json"), Eicr.class);
-      expectedRR =
-          mapper.readValue(
-              TestUtils.getFileContentAsString("R4/Misc/reportabilityResponse.json"),
-              ReportabilityResponse.class);
+      expectedEicr = mapper.readValue(inputEicr, Eicr.class);
     } catch (JsonProcessingException e) {
       logger.error("Exception in parsing input data: ", e);
-      // fail("This exception is not expected, fix the test");
+      fail("This exception is not expected, fix the test");
     }
   }
 
   @Test
   public void saveOrUpdateEicr() {
-    /*
+
     Eicr actualEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
 
     assertNotNull(actualEicr);
-    assertEicr(expectedEicr, actualEicr);*/
+    assertEicr(expectedEicr, actualEicr);
   }
 
   @Test
   public void getEicrById() {
-    /*
+
     Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
     Eicr actualEicr = eicrDaoImpl.getEicrById(savedEicr.getId());
 
     assertNotNull(actualEicr);
-    assertEicr(expectedEicr, actualEicr);*/
+    assertEicr(expectedEicr, actualEicr);
   }
 
   @Test
-  public void saveOrUpdateReportabilityResponse() {
-    /* ReportabilityResponse actualRR = eicrDaoImpl.saveOrUpdate(expectedRR);
+  public void getMaxVersionId() throws JsonProcessingException {
 
-    assertNotNull(actualRR);
-    assertRR(expectedRR, actualRR);*/
+    // First Row with docverison 1.0
+    eicrDaoImpl.saveOrUpdate(expectedEicr);
+
+    // second Row with docverison 2.0
+    JSONObject inputJson = new JSONObject(inputEicr);
+    inputJson.put("docVersion", 2.0);
+    Eicr secondEicr = mapper.readValue(inputJson.toString(), Eicr.class);
+    eicrDaoImpl.saveOrUpdate(secondEicr);
+
+    Integer actualDocVersion = eicrDaoImpl.getMaxVersionId(expectedEicr);
+    assertEquals(secondEicr.getDocVersion(), actualDocVersion);
   }
 
   @Test
-  public void getReportabilityResponseById() {
-    /*  ReportabilityResponse savedRR = eicrDaoImpl.saveOrUpdate(expectedRR);
-    ReportabilityResponse actualRR = eicrDaoImpl.getRRById(savedRR.getId());
+  public void getEicrByCoorrelationId() {
+    eicrDaoImpl.saveOrUpdate(expectedEicr);
+    Eicr actualEicr = eicrDaoImpl.getEicrByCoorrelationId(expectedEicr.getxCoorrelationId());
 
-    assertNotNull(actualRR);
-    assertRR(expectedRR, actualRR);*/
+    assertNotNull(actualEicr);
+    assertEicr(expectedEicr, actualEicr);
   }
 
   public void assertEicr(Eicr expectedEicr, Eicr actualEicr) {
-    /*   assertEquals(expectedEicr.getxRequestId(), actualEicr.getxRequestId());
+    assertEquals(expectedEicr.getxRequestId(), actualEicr.getxRequestId());
+    assertEquals(expectedEicr.getxCoorrelationId(), actualEicr.getxCoorrelationId());
+    assertEquals(expectedEicr.getEicrDocId(), actualEicr.getEicrDocId());
+    assertEquals(expectedEicr.getSetId(), actualEicr.getSetId());
+    assertEquals(expectedEicr.getDocVersion(), actualEicr.getDocVersion());
     assertEquals(expectedEicr.getEicrData(), actualEicr.getEicrData());
-    assertEquals(expectedEicr.getEncounterId(), actualEicr.getEncounterId());
+    assertEquals(expectedEicr.getInitiatingAction(), actualEicr.getInitiatingAction());
+    assertEquals(expectedEicr.getResponseType(), actualEicr.getResponseType());
+    assertEquals(expectedEicr.getResponseXRequestId(), actualEicr.getResponseXRequestId());
+    assertEquals(expectedEicr.getResponseDocId(), actualEicr.getResponseDocId());
+    assertEquals(expectedEicr.getResponseData(), actualEicr.getResponseData());
     assertEquals(expectedEicr.getFhirServerUrl(), actualEicr.getFhirServerUrl());
     assertEquals(expectedEicr.getLaunchPatientId(), actualEicr.getLaunchPatientId());
-    assertEquals(expectedEicr.getResponseData(), actualEicr.getResponseData());
-    assertEquals(expectedEicr.getResponseType(), actualEicr.getResponseType());
-    assertEquals(expectedEicr.getSetId(), actualEicr.getSetId());
-    assertEquals(expectedEicr.getResponseDocId(), actualEicr.getResponseDocId()); */
-  }
-
-  public void assertRR(ReportabilityResponse expectedRR, ReportabilityResponse actualRR) {
-    /*  assertEquals(expectedRR.getxRequestId(), actualRR.getxRequestId());
-    assertEquals(expectedRR.getRrData(), actualRR.getRrData());
-    assertEquals(expectedRR.getRrType(), actualRR.getRrType()); */
+    assertEquals(expectedEicr.getEncounterId(), actualEicr.getEncounterId());
   }
 }

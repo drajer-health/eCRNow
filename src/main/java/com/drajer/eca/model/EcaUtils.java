@@ -156,6 +156,7 @@ public class EcaUtils {
 
         logger.info("Creating eICR based on FHIR R4 ");
         R4FhirData r4Data = (R4FhirData) data;
+
         eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
 
       } else {
@@ -170,7 +171,12 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+      } else {
+        String msg = "No Fhir Data retrieved to CREATE EICR.";
+        logger.error(msg);
+        throw new RuntimeException(msg);
       }
+
     } else {
 
       String msg =

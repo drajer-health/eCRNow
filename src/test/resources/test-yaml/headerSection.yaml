@@ -261,7 +261,7 @@ testCase:
     - xPath: "representedCustodianOrganization/telecom"
       count: 1
     - xPath: "representedCustodianOrganization/"
-#      'id/@root': "2.16.840.1.113883.4.6"
+      'id/@root': "2.16.840.1.113883.4.4"
       'id/@extension': "123456785"
       'name': "Model Hospital"
       'addr/streetAddressLine': "6276 Rockriver Drive"
@@ -342,7 +342,7 @@ testCase:
     - xPath: "responsibleParty/assignedEntity/representedOrganization/telecom"
       count: 1
     - xPath: "responsibleParty/assignedEntity/representedOrganization/"
-#      'id/@root': "2.16.840.1.113883.4.6"
+      'id/@root': "2.16.840.1.113883.4.4"
       'id/@extension': "123456785"
       'name': "Model Hospital"
       'addr/streetAddressLine': "6276 Rockriver Drive"
@@ -355,12 +355,12 @@ testCase:
     - xPath: "location/healthCareFacility/id"
       count: 1
     - xPath: "location/healthCareFacility/"
-      'id/@root': "2.16.840.1.113883.4.6"
+      'id/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id/@extension': "675844"
-#      'code/@code': "prov"
-#      'code/@codeSystem': "2.16.840.1.113883.5.4"
-#      'code/@codeSystemName': "organization-type"
-#      'code/@displayName': "Healthcare Provider"
+      'code/@code': "prov"
+      'code/@codeSystem': "2.16.840.1.113883.4.642.3.414"
+      'code/@codeSystemName': "organization-type"
+      'code/@displayName': "Healthcare Provider"
     - xPath: "location/healthCareFacility/location/addr"
       count: 1
     - xPath: "location/healthCareFacility/location/"
@@ -374,7 +374,7 @@ testCase:
     - xPath: "location/healthCareFacility/serviceProviderOrganization/addr"
       count: 1
     - xPath: "location/healthCareFacility/serviceProviderOrganization/"
-#      'id/@root': "2.16.840.1.113883.4.6"
+      'id/@root': "2.16.840.1.113883.4.4"
       'id/@extension': "123456785"
       'name': "Model Hospital"
       'addr/streetAddressLine': "6276 Rockriver Drive"

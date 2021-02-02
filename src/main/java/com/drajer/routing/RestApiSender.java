@@ -35,17 +35,12 @@ public class RestApiSender {
       HttpHeaders headers = new HttpHeaders();
       logger.info("In Initialization");
 
-      String accessToken = null;
       if (authorizationService != null) {
-        accessToken = authorizationService.getAuthorizationHeader(launchDetails);
+        headers = authorizationService.getAuthorizationHeader(launchDetails);
       }
 
+      // Set Content-Type Header
       headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-
-      if (accessToken != null && !accessToken.isEmpty()) {
-        logger.info("Setting Access_token============> {} ", accessToken);
-        headers.add("Authorization", accessToken);
-      }
 
       // Add X-Request-ID and X-Correlation-ID
       String newXReqId = java.util.UUID.randomUUID().toString();
@@ -74,7 +69,7 @@ public class RestApiSender {
       ub = new URIBuilder(launchDetails.getRestAPIURL());
 
       if (logger.isInfoEnabled()) {
-        logger.info("Sending Eicr Trigger to Endpoint::::: {}", ub.toString());
+        logger.info("Sending Eicr Trigger to Endpoint::::: {}", ub);
       }
 
       final ResponseEntity<String> response =
@@ -90,7 +85,7 @@ public class RestApiSender {
     } catch (Exception e) {
       if (logger.isErrorEnabled()) {
         if (ub != null) {
-          logger.error("RestApi Error in sending Eicr XML to Endpoint {}:", ub.toString(), e);
+          logger.error("RestApi Error in sending Eicr XML to Endpoint {}:", ub, e);
         } else {
           logger.error("RestApi Error in preparing to send Eicr XML:", e);
         }

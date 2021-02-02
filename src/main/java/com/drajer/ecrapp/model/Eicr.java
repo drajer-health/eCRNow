@@ -27,7 +27,7 @@ public class Eicr {
   private String xRequestId;
 
   @Column(name = "x_coorrelation_id", nullable = true, columnDefinition = "TEXT")
-  private String xCoorrelationId;
+  private String xCorrelationId;
 
   // Eicr Data
   @Column(name = "eicr_doc_id", nullable = true, columnDefinition = "TEXT")
@@ -114,11 +114,11 @@ public class Eicr {
   }
 
   public String getxCoorrelationId() {
-    return xCoorrelationId;
+    return xCorrelationId;
   }
 
   public void setxCoorrelationId(String xCoorrelationId) {
-    this.xCoorrelationId = xCoorrelationId;
+    this.xCorrelationId = xCoorrelationId;
   }
 
   public String getEicrDocId() {

@@ -34,7 +34,9 @@ public class CdaEicrGeneratorFromR4 {
         }
 
       } else {
-        logger.error(" Fhir Data not ready to be used for creating a CDA Document ");
+        String msg = "Fhir Data not ready/missing to be used for creating a CDA Document";
+        logger.error(msg);
+        throw new RuntimeException(msg);
       }
 
     } else {

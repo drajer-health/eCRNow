@@ -4,7 +4,9 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
-import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,27 +33,25 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public Integer getMaxVersionId(Eicr eicr) {
-    String query =
-        "SELECT * from eicr where fhir_server_url='"
-            + eicr.getFhirServerUrl()
-            + "' AND launch_patient_id='"
-            + eicr.getLaunchPatientId()
-            + "' AND encounter_id='"
-            + eicr.getEncounterId()
-            + "' ORDER BY doc_version DESC LIMIT 1;";
-    List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
+    Criteria criteria = getSession().createCriteria(Eicr.class);
+    criteria.add(Restrictions.eq("fhirServerUrl", eicr.getFhirServerUrl()));
+    criteria.add(Restrictions.eq("launchPatientId", eicr.getLaunchPatientId()));
+    criteria.add(Restrictions.eq("encounterId", eicr.getEncounterId()));
+    criteria.addOrder(Order.desc("docVersion"));
+    criteria.setMaxResults(1);
 
-    if (eicrList.size() > 0) {
-      return eicrList.get(0).getDocVersion();
-    } else return 0;
+    Eicr resultEicr = (Eicr) criteria.uniqueResult();
+
+    if (resultEicr != null) {
+      return resultEicr.getDocVersion();
+    }
+    return 0;
   }
 
   public Eicr getEicrByCoorrelationId(String xcoorrId) {
-    String query = "SELECT * from eicr where x_coorrelation_id ='" + xcoorrId + "'";
-    List<Eicr> eicrList = getSession().createNativeQuery(query, Eicr.class).getResultList();
+    Criteria criteria = getSession().createCriteria(Eicr.class);
+    criteria.add(Restrictions.eq("xCorrelationId", xcoorrId));
 
-    if (eicrList.size() > 0) {
-      return eicrList.get(0);
-    } else return null;
+    return (Eicr) criteria.uniqueResult();
   }
 }
