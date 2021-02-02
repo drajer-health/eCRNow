@@ -2,9 +2,9 @@
 The purpose of the eCR Now FHIR App is to enable EHR companies that have not had electronic case reporting (eCR) capabilites to support  public health reporting for COVID-19. The App will be able to also support full eCR, but implementation will be dependent on public health agency readiness.
 For more information on electronic case reporting please refer to the following links.
 
-* [More information on electronic case reporting (eCR)](http://ecr.aimsplatform.org)
+* [More information on electronic case reporting (eCR)](https://ecr.aimsplatform.org)
 
-* [More background information on ecrNow FHIR App](http:://ecr.aimsplatform.org/ecr-now-fhir-app)
+* [More background information on ecrNow FHIR App](https://ecr.aimsplatform.org/ecr-now-fhir-app)
 
 # 2. App Architecture # 
 The app is architected as a Java Spring Boot app using Java Spring framework for the application layer, Hibernate and PostgreSQL for the backend technologies and ReactJS for the front end. The app can be instantiated as a micro service and containerized using Docker or other technologies for deployments.
@@ -13,10 +13,10 @@ The app components are as described below:
 
 ## 2.1 SMART on FHIR Module: ##
 This module has the ability to collect patient and encounter context for the eCR reporting via SMART on FHIR Launch currently. Other launch mechanisms to collect the necessary context are being explored with EHR companies. The module authenticates using SMART on FHIR OAuth protocols. Once authenticated and authorized the module interacts with the EHR and queries for data that are needed to determine if a patient report for COVID reporting should be triggered. This is done by a set of queries called “Trigger Queries”. Once a patient qualifies and an eICR has to be created, the module queries the EHR for the necessary data to create the eICR. The queries used to collect data for creating an eICR are called “Loading Queries”. Currently the app supports FHIR DSTU2 and the queries used are based on the [Argonaut Data Query Implementation Guide Version 1.0.0](https://www.fhir.org/guides/argonaut/r2/). The app also supports FHIR Release 4 and the queries are based on [US Core STU3 Release 3.1.1 based on FHIR R4](
-This module has the ability to collect patient and encounter context for the eCR reporting via SMART on FHIR Launch currently. Other launch mechanisms to collect the necessary context are being explored with EHR companies. The module authenticates using SMART on FHIR OAuth protocols. Once authenticated and authorized the module interacts with the EHR and queries for data that are needed to determine if a patient report for COVID reporting should be triggered. This is done by a set of queries called “Trigger Queries”. Once a patient qualifies and an eICR has to be created, the module queries the EHR for the necessary data to create the eICR. The queries used to collect data for creating an eICR are called “Loading Queries”. Currently the app supports FHIR DSTU2 and FHIR R4. The FHIR DSTU2 queries are based on the [Argonaut Data Query Implementation Guide Version 1.0.0](https://www.fhir.org/guides/argonaut/r2/). The FHIR Release 4 queries are based on [US Core STU3 Release 3.1.1 based on FHIR R4](http://www.hl7.org/fhir/us/core/).
+This module has the ability to collect patient and encounter context for the eCR reporting via SMART on FHIR Launch currently. Other launch mechanisms to collect the necessary context are being explored with EHR companies. The module authenticates using SMART on FHIR OAuth protocols. Once authenticated and authorized the module interacts with the EHR and queries for data that are needed to determine if a patient report for COVID reporting should be triggered. This is done by a set of queries called “Trigger Queries”. Once a patient qualifies and an eICR has to be created, the module queries the EHR for the necessary data to create the eICR. The queries used to collect data for creating an eICR are called “Loading Queries”. Currently the app supports FHIR DSTU2 and FHIR R4. The FHIR DSTU2 queries are based on the [Argonaut Data Query Implementation Guide Version 1.0.0](https://www.fhir.org/guides/argonaut/r2/). The FHIR Release 4 queries are based on [US Core STU3 Release 3.1.1 based on FHIR R4](https://www.hl7.org/fhir/us/core/).
 
 ## 2.2 ERSD Module: ##
-TThis module ingests the trigger code definitions and timing parameter definitions for eCR reporting. These definitions are published using the Electronic Reporting and Surveillance Distribution (eRSD) transactions and profiles which are outlined and described in the [eCR FHIR IG version 1.0.0](http://hl7.org/fhir/us/ecr/). The ERSD module uses FHIR Release 4.
+This module ingests the trigger code definitions and timing parameter definitions for eCR reporting. These definitions are published using the Electronic Reporting and Surveillance Distribution (eRSD) transactions and profiles which are outlined and described in the [eCR FHIR IG version 1.0.0](https://hl7.org/fhir/us/ecr/). The ERSD module uses FHIR Release 4.
 
 ## 2.3 ECA Module: ##
 The ECA module implements a very primitive light weight Event, Condition, Action model to handle the different events in the eCR reporting workflows. The current workflows handle the following events and actions. 
@@ -65,7 +65,7 @@ Change the database user name, password to reflect the database that was created
 *ERSD FILE LOCATION*
 
 Change the ERSD File location to reflect where to find the eRSD file that contains the trigger code definitions.
-The ERSD file can be downloaded by registering for an account at : http://ersd.aimsplatform.org 
+The ERSD file can be downloaded by registering for an account at : https://ersd.aimsplatform.org 
 Currently this link only works state-side and if you are out of country, please contact us to figure out how we can get you a copy of it through the right means.
 
 *SCHEMATRON FILE LOCATION*
