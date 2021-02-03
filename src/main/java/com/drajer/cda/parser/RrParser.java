@@ -12,6 +12,7 @@ import org.apache.commons.io.input.BOMInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -48,12 +49,55 @@ public class RrParser {
         logger.info(" Setting the clinical document ids ");
         model.setRrDocId(
             CdaParserUtilities.readTemplateIdList(
-                (NodeList) CdaParserConstants.getDocIdExp().evaluate(doc, XPathConstants.NODESET)));
+                (NodeList) CdaParserConstants.DOC_ID_EXP.evaluate(doc, XPathConstants.NODESET)));
 
         logger.info(
             " RrDocId root = {} , extension = {} ",
-            model.getRrDocId().getRootValue(),
-            model.getRrDocId().getExtValue());
+            ((model.getRrDocId() != null) ? model.getRrDocId().getRootValue() : null),
+            ((model.getRrDocId() != null) ? model.getRrDocId().getExtValue() : null));
+
+        // Extract the Eicr Doc Id
+        Element nd =
+            (Element) CdaParserConstants.EICR_DOC_ID_EXP.evaluate(doc, XPathConstants.NODE);
+
+        if (nd != null) {
+          logger.info(" Eicr Document Reference Found ");
+
+          model.setEicrDocId(
+              CdaParserUtilities.readTemplateIdList(
+                  (NodeList) CdaParserConstants.REL_ID_EXP.evaluate(nd, XPathConstants.NODESET)));
+
+          logger.info(
+              " EicrDocId root = {} , extension = {} ",
+              ((model.getEicrDocId() != null) ? model.getEicrDocId().getRootValue() : null),
+              ((model.getEicrDocId() != null) ? model.getEicrDocId().getExtValue() : null));
+
+          // Determine status
+          Element rrstatusElem =
+              (Element) CdaParserConstants.RR_STATUS_OBS_EXP.evaluate(doc, XPathConstants.NODE);
+
+          if (rrstatusElem != null) {
+
+            logger.debug(" Found the Reportability Status Node ");
+            Element resultValue =
+                (Element)
+                    CdaParserConstants.REL_VAL_EXP.evaluate(rrstatusElem, XPathConstants.NODE);
+
+            if (resultValue != null) {
+
+              logger.debug(" Found the Reportability Status Value Node ");
+              CdaCode val = CdaParserUtilities.readCode(resultValue);
+
+              if (val != null) {
+
+                logger.debug(" Setting the Reportability Status ");
+                model.setReportableType(val.getCode());
+                model.setReportableStatus(val);
+              }
+            }
+          }
+        }
+
       } catch (XPathExpressionException e) {
         logger.error("Failed to resolve xPath", e);
       }

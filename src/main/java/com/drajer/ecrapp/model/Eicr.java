@@ -26,7 +26,7 @@ public class Eicr {
   @Column(name = "x_req_id", nullable = true, columnDefinition = "TEXT")
   private String xRequestId;
 
-  @Column(name = "x_coorrelation_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "x_correlation_id", nullable = true, columnDefinition = "TEXT")
   private String xCorrelationId;
 
   // Eicr Data
@@ -48,6 +48,9 @@ public class Eicr {
   // Response Data.
   @Column(name = "response_type", nullable = true, columnDefinition = "TEXT")
   private String responseType;
+
+  @Column(name = "response_type_display", nullable = true, columnDefinition = "TEXT")
+  private String responseTypeDisplay;
 
   @Column(name = "response_x_request_id", nullable = true, columnDefinition = "TEXT")
   private String responseXRequestId;
@@ -199,5 +202,21 @@ public class Eicr {
 
   public void setSetId(String setId) {
     this.setId = setId;
+  }
+
+  public String getxCorrelationId() {
+    return xCorrelationId;
+  }
+
+  public void setxCorrelationId(String xCorrelationId) {
+    this.xCorrelationId = xCorrelationId;
+  }
+
+  public String getResponseTypeDisplay() {
+    return responseTypeDisplay;
+  }
+
+  public void setResponseTypeDisplay(String responseTypeDisplay) {
+    this.responseTypeDisplay = responseTypeDisplay;
   }
 }

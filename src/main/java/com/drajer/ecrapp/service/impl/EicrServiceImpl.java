@@ -109,11 +109,12 @@ public class EicrServiceImpl implements EicrRRService {
       logger.debug("Reportability Response: {}", data.getRrXml());
       final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
       final CdaIi docId = rrModel.getRrDocId();
+
       if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
         throw new IllegalArgumentException("Reportability response is missing Doc Id");
       }
 
-      final Eicr ecr = eicrDao.getEicrByDocId(docId.getRootValue());
+      final Eicr ecr = eicrDao.getEicrByDocId(rrModel.getEicrDocId().getRootValue());
 
       if (ecr != null) {
 
@@ -122,6 +123,19 @@ public class EicrServiceImpl implements EicrRRService {
         ecr.setResponseDocId(docId.getRootValue());
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
+
+        if (rrModel.getReportableType() != null) ecr.setResponseType(rrModel.getReportableType());
+        else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
+
+        if (rrModel.getReportableType() != null && rrModel.getReportableStatus() != null)
+          ecr.setResponseTypeDisplay(
+              rrModel.getReportableType() + "-" + rrModel.getReportableStatus().getDisplayName());
+        else if (rrModel.getReportableType() != null)
+          ecr.setResponseTypeDisplay(rrModel.getReportableType());
+        else if (rrModel.getReportableStatus() != null)
+          ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
+        else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
+
         saveOrUpdate(ecr);
 
         logger.info(" RR Xml and eCR is present hence create a document reference ");
@@ -200,7 +214,10 @@ public class EicrServiceImpl implements EicrRRService {
 
   public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
 
-    return r4ResourcesData.constructR4DocumentReference(
-        data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
+    if (ecr.getResponseType() != null
+        && ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())) {
+      return r4ResourcesData.constructR4DocumentReference(
+          data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
+    } else return null;
   }
 }
