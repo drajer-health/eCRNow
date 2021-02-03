@@ -39,6 +39,10 @@ public class TestUtils {
   private static final ObjectMapper mapper = new ObjectMapper();
   private static final ClassLoader classLoader = TestUtils.class.getClassLoader();
 
+  public static ObjectMapper getJsonMapper() {
+    return mapper;
+  }
+
   public static String getFileContentAsString(String fileName) {
     String fileContent = "";
     InputStream stream = TestUtils.class.getResourceAsStream("/" + fileName);

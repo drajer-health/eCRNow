@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.cda.parser.CdaIi;
 import com.drajer.cda.parser.CdaRrModel;
 import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.dao.EicrDao;
@@ -18,6 +19,7 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import javax.transaction.Transactional;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -83,7 +85,7 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (ecr != null) {
 
-      logger.info(" Found the ecr for coorrelation Id = {}", xCorrelationId);
+      logger.info(" Found the Eicr for correlation Id: {}", xCorrelationId);
       ecr.setResponseType(EicrTypes.RrType.FAILURE_MDN.toString());
       ecr.setResponseXRequestId(xRequestId);
       ecr.setResponseData(data.getRrXml());
@@ -91,43 +93,54 @@ public class EicrServiceImpl implements EicrRRService {
       saveOrUpdate(ecr);
 
     } else {
-      logger.error("Unable to find Eicr for Coorrelation Id {} ", xCorrelationId);
-
+      String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
+      logger.error(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
       // Create an Error Table and add it to error table for future administration.
     }
   }
 
-  public void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
+  public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
 
     logger.debug(" Start processing RR");
 
-    Eicr ecr = eicrDao.getEicrByCoorrelationId(xCorrelationId);
+    if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
 
-    if (ecr != null) {
+      logger.debug("Reportability Response: {}", data.getRrXml());
+      final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
+      final CdaIi docId = rrModel.getRrDocId();
+      if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
+        throw new IllegalArgumentException("Reportability response is missing Doc Id");
+      }
 
-      logger.info(" Found the ecr for coorrelation Id = {}", xCorrelationId);
+      final Eicr ecr = eicrDao.getEicrByDocId(docId.getRootValue());
 
-      CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
-      ecr.setResponseDocId(rrModel.getRrDocId().getRootValue());
+      if (ecr != null) {
 
-      ecr.setResponseXRequestId(xRequestId);
-      if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
-
-        logger.info(" RR Xml is present hence create a document reference ");
+        logger.info(" Found the ecr for doc Id = {}", docId.getRootValue());
+        ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
+        ecr.setResponseDocId(docId.getRootValue());
+        ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
         saveOrUpdate(ecr);
 
+        logger.info(" RR Xml and eCR is present hence create a document reference ");
         DocumentReference docRef = constructDocumentReference(data, ecr);
 
         if (docRef != null) {
           logger.info(" Document Reference created successfully, submitting to Ehr ");
           submitDocRefToEhr(docRef, ecr);
         }
+
+      } else {
+        String errorMsg = "Unable to find Eicr for Doc Id: {} " + docId.getRootValue();
+        logger.error(errorMsg);
+        throw new IllegalArgumentException(errorMsg);
       }
     } else {
-      logger.error("Unable to find Eicr for Coorrelation Id {} ", xCorrelationId);
+      String errorMsg = "Received empty RR in request: " + xRequestId;
+      logger.error(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
     }
   }
 
@@ -170,8 +183,18 @@ public class EicrServiceImpl implements EicrRRService {
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 
+      if (outcome.getCreated()) {
+        logger.info("Successfully sent RR to fhir");
+      } else {
+        String errorMsg = "Unable to post RR response to FHIR server: " + ecr.getFhirServerUrl();
+        logger.error(errorMsg);
+        throw new RuntimeException(errorMsg);
+      }
+
     } else {
-      throw new RuntimeException("Unrecognized Fhir Server Url : " + ecr.getFhirServerUrl());
+      String errorMsg = "Unrecognized Fhir Server Url: " + ecr.getFhirServerUrl();
+      logger.error(errorMsg);
+      throw new IllegalArgumentException(errorMsg);
     }
   }
 
