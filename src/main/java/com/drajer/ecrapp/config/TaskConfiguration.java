@@ -46,7 +46,7 @@ public class TaskConfiguration {
                     workflowTask.setWorkflowEvent(WorkflowEvent.SCHEDULED_JOB);
                     restTemplate.postForObject(workflowEndpoint, workflowTask, String.class);
                   } catch (Exception e) {
-                    log.error("Error in completing the Execution:::::"+e.getMessage());
+                    log.error("Error in completing the Execution:::::" + e.getMessage());
                   }
                 });
     return myTask;
