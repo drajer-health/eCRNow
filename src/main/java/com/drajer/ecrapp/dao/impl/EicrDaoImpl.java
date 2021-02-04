@@ -77,6 +77,9 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("version") != null) {
       criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
     }
+    if (searchParams.get("fhirServerUrl") != null) {
+      criteria.add(Restrictions.eq("fhirServerUrl", searchParams.get("fhirServerUrl")));
+    }
     return criteria.addOrder(Order.desc("id")).list();
   }
 
