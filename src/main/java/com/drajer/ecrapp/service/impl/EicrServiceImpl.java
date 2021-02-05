@@ -18,6 +18,9 @@ import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
@@ -219,5 +222,34 @@ public class EicrServiceImpl implements EicrRRService {
       return r4ResourcesData.constructR4DocumentReference(
           data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
     } else return null;
+  }
+
+  public List<JSONObject> getEicrData(Map<String, String> searchParams) {
+    List<Eicr> eicrData = eicrDao.getEicrData(searchParams);
+    List<JSONObject> eicrDataList = new ArrayList<JSONObject>();
+    for (Eicr eicr : eicrData) {
+      JSONObject eicrObject = new JSONObject();
+      eicrObject.put("eicrData", eicr.getEicrData());
+      eicrDataList.add(eicrObject);
+    }
+    return eicrDataList;
+  }
+
+  public List<JSONObject> getRRData(Map<String, String> searchParams) {
+    List<Eicr> rrData = eicrDao.getRRData(searchParams);
+    List<JSONObject> rrDataList = new ArrayList<JSONObject>();
+    for (Eicr eicr : rrData) {
+      JSONObject eicrObject = new JSONObject();
+      eicrObject.put("responseData", eicr.getResponseData());
+      rrDataList.add(eicrObject);
+    }
+    return rrDataList;
+  }
+
+  @Override
+  public void handleReportabilityResponse(
+      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
+    // TODO Auto-generated method stub
+
   }
 }
