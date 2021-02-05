@@ -131,7 +131,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     rr.setResponseType("MDN");
     rr.setRrXml("");
     // Setting different CorrelationID then DB
-    eicr.setxCoorrelationId("WrongXCorrelationID");
+    eicr.setxCorrelationId("WrongXCorrelationID");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -165,7 +165,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     eicr.setDocVersion(1);
     eicr.setxRequestId("RRTESTXREQUESTID");
     eicr.setSetId("12345|67890");
-    eicr.setxCoorrelationId("RR-TEST-XCORRELATIONID");
+    eicr.setxCorrelationId("RR-TEST-XCORRELATIONID");
     eicr.setEicrDocId("RR-TEST-XCORRELATIONID");
     eicr.setEicrData("This is a dummy EICR for test");
 
@@ -202,7 +202,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     headers.clear();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.add("X-Request-ID", "123456");
-    headers.add("X-Correlation-ID", eicr.getxCoorrelationId());
+    headers.add("X-Correlation-ID", eicr.getxCorrelationId());
 
     URIBuilder ub;
     try {

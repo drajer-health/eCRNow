@@ -1,6 +1,6 @@
 {
   "xRequestId": "ecrunittest_id",
-  "xCoorrelationId": "ecrUnitTestCorrelationID",
+  "xCorrelationId": "ecrUnitTestCorrelationID",
   "eicrDocId": "123",
   "setId": "12345|67890",
   "docVersion": 1.0,
