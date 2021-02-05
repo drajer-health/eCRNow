@@ -26,4 +26,6 @@ public interface EicrRRService {
   List<JSONObject> getEicrData(Map<String, String> searchParams);
 
   List<JSONObject> getRRData(Map<String, String> searchParams);
+
+  void handleReportabilityResponse(ReportabilityResponse data, String xRequestId);
 }

@@ -22,4 +22,6 @@ public interface EicrDao {
   List<Eicr> getEicrData(Map<String, String> searchParams);
 
   List<Eicr> getRRData(Map<String, String> searchParams);
+  
+  Eicr getEicrByDocId(String docId);
 }

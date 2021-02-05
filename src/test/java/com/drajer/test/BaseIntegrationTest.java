@@ -75,6 +75,7 @@ public abstract class BaseIntegrationTest {
     session = sessionFactory.openSession();
     wireMockServer = WireMockHandle.getInstance().getWireMockServer(wireMockHttpPort);
     wireMockServer.resetMappings();
+    headers.clear();
   }
 
   @After
@@ -106,7 +107,7 @@ public abstract class BaseIntegrationTest {
 
     // Hardcode FHIR & Token URL to avoid mistakes in test data file.
     String fhirUrl = URL + wireMockHttpPort + fhirBaseUrl;
-    String authUrl = fhirBaseUrl + "/token";
+    String authUrl = fhirUrl + "/token";
     String directUrl = URL + wireMockHttpPort + "/directurl";
     JSONObject jsonObject = new JSONObject(clientDetailString);
     jsonObject.put("fhirServerBaseURL", fhirUrl);

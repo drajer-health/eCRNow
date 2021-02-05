@@ -7,10 +7,13 @@ import org.slf4j.LoggerFactory;
 public class CdaRrModel {
 
   private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
+  public static final String UNKONWN_RESPONSE_TYPE = "Unknown";
 
-  private String eicrDocId;
+  private CdaIi eicrDocId;
 
   private CdaIi rrDocId;
+
+  private CdaCode reportableStatus;
 
   private String reportableType;
 
@@ -18,11 +21,11 @@ public class CdaRrModel {
 
   public CdaRrModel() {}
 
-  public String getEicrDocId() {
+  public CdaIi getEicrDocId() {
     return eicrDocId;
   }
 
-  public void setEicrDocId(String eicrDocId) {
+  public void setEicrDocId(CdaIi eicrDocId) {
     this.eicrDocId = eicrDocId;
   }
 
@@ -54,5 +57,19 @@ public class CdaRrModel {
     if (rrdocids != null && !rrdocids.isEmpty()) {
       this.rrDocId = rrdocids.get(0);
     }
+  }
+
+  public void setEicrDocId(ArrayList<CdaIi> eicrdocids) {
+    if (eicrdocids != null && !eicrdocids.isEmpty()) {
+      this.eicrDocId = eicrdocids.get(0);
+    }
+  }
+
+  public CdaCode getReportableStatus() {
+    return reportableStatus;
+  }
+
+  public void setReportableStatus(CdaCode reportableStatus) {
+    this.reportableStatus = reportableStatus;
   }
 }
