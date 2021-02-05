@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -19,6 +20,7 @@ public class ScheduledTasks implements Serializable {
   @Column(name = "task_name")
   private String task_name;
 
+  @Lob
   @Column(name = "task_data")
   private Byte[] task_data;
 

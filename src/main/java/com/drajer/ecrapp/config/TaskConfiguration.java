@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.config;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.ecrapp.model.WorkflowTask;
@@ -44,7 +45,13 @@ public class TaskConfiguration {
                     workflowTask.setLaunchId(inst.getData().getLaunchDetailsId());
                     workflowTask.setActionType(inst.getData().getActionTypes());
                     workflowTask.setWorkflowEvent(WorkflowEvent.SCHEDULED_JOB);
-                    restTemplate.postForObject(workflowEndpoint, workflowTask, String.class);
+                    ActionRepo.getInstance()
+                        .getWorkflowService()
+                        .executeScheduledAction(
+                            workflowTask.getLaunchId(),
+                            workflowTask.getActionType(),
+                            workflowTask.getWorkflowEvent());
+                    // restTemplate.postForObject(workflowEndpoint, workflowTask, String.class);
                   } catch (Exception e) {
                     log.error("Error in completing the Execution:::::" + e.getMessage());
                   }

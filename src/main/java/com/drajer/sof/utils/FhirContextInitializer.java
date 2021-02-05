@@ -85,11 +85,14 @@ public class FhirContextInitializer {
       logger.info("Getting {} data", resourceName);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (Exception e) {
+      logger.info(e.getMessage());
       if (e instanceof BaseServerResponseException) {
-        logger.info(
-            context
-                .newJsonParser()
-                .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
+        if (((BaseServerResponseException) e).getOperationOutcome() != null) {
+          logger.info(
+              context
+                  .newJsonParser()
+                  .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
+        }
       }
       logger.error(
           "Error in getting {} resource by Id: {}", resourceName, resourceId, e.getMessage());
@@ -193,10 +196,12 @@ public class FhirContextInitializer {
       }
     } catch (Exception e) {
       if (e instanceof BaseServerResponseException) {
-        logger.info(
-            context
-                .newJsonParser()
-                .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
+        if (((BaseServerResponseException) e).getOperationOutcome() != null) {
+          logger.info(
+              context
+                  .newJsonParser()
+                  .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
+        }
       }
       logger.info(
           "Error in getting {} resource by Patient Id: {}",
