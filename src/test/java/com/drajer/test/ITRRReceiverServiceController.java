@@ -68,7 +68,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     eicr = getEICRDocument(eicr.getId().toString());
-    assertEquals("REPORTABLE", eicr.getResponseType());
+    assertEquals("RRVS1", eicr.getResponseType());
     assertEquals(rr.getRrXml(), eicr.getResponseData());
     assertEquals("123456", eicr.getResponseXRequestId());
   }
@@ -95,7 +95,8 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   public void testRRReceiver_WithRR_WrongDocID() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     // Setting different DocID then in DB
-    String rrXml = rr.getRrXml().replace("RR-TEST-XCORRELATIONID", "WrongXCorrelationID");
+    String rrXml =
+        rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
     rr.setRrXml(rrXml);
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
@@ -166,7 +167,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     eicr.setxRequestId("RRTESTXREQUESTID");
     eicr.setSetId("12345|67890");
     eicr.setxCoorrelationId("RR-TEST-XCORRELATIONID");
-    eicr.setEicrDocId("RR-TEST-XCORRELATIONID");
+    eicr.setEicrDocId("69550923-8b72-475c-b64b-5f7c44a78e4f");
     eicr.setEicrData("This is a dummy EICR for test");
 
     session.saveOrUpdate(eicr);
