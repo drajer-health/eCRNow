@@ -68,7 +68,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     eicr = getEICRDocument(eicr.getId().toString());
-    assertEquals("REPORTABLE", eicr.getResponseType());
+    assertEquals("RRVS1", eicr.getResponseType());
     assertEquals(rr.getRrXml(), eicr.getResponseData());
     assertEquals("123456", eicr.getResponseXRequestId());
   }

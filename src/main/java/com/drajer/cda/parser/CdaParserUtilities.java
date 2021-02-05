@@ -40,6 +40,32 @@ public class CdaParserUtilities {
     return templateID;
   }
 
+  public static CdaCode readCode(Element codeElement) {
+    CdaCode code = null;
+    if (codeElement != null) {
+      code = new CdaCode();
+      if (!isEmpty(codeElement.getAttribute("code"))) {
+        code.setCode(codeElement.getAttribute("code"));
+      }
+      if (!isEmpty(codeElement.getAttribute("codeSystem"))) {
+        code.setCodeSystem(codeElement.getAttribute("codeSystem"));
+      }
+      if (!isEmpty(codeElement.getAttribute("codeSystemName"))) {
+        code.setCodeSystemName(codeElement.getAttribute("codeSystemName"));
+      }
+      if (!isEmpty(codeElement.getAttribute("displayName"))) {
+        code.setDisplayName(codeElement.getAttribute("displayName"));
+      }
+      if (!isEmpty(codeElement.getAttribute("xsi:type"))) {
+        code.setXpath(codeElement.getAttribute("xsi:type"));
+      }
+      if (!isEmpty(codeElement.getAttribute("nullFlavor"))) {
+        code.setNullFlavor(codeElement.getAttribute("nullFlavor"));
+      }
+    }
+    return code;
+  }
+
   public static boolean isEmpty(final String str) {
     return str == null || str.trim().length() == 0;
   }
