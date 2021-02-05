@@ -245,4 +245,11 @@ public class EicrServiceImpl implements EicrRRService {
     }
     return rrDataList;
   }
+
+  @Override
+  public void handleReportabilityResponse(
+      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
+    // TODO Auto-generated method stub
+
+  }
 }
