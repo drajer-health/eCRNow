@@ -1,6 +1,7 @@
 package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -128,13 +129,6 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   @Test
   public void testSubmitEicrFromRestApi() {
-    StringBuilder sb = new StringBuilder(200);
-    sb.append("{\"client_id\":\"");
-    sb.append(clientDetails.getClientId());
-    sb.append("\",\"client_secret\":\"");
-    sb.append(clientDetails.getClientSecret());
-    sb.append("\"}");
-
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
@@ -145,6 +139,21 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     getLaunchDetailAndStatus();
     validateActionStatus();
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
+
+    Eicr ecr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
+
+    StringBuilder sb = new StringBuilder(200);
+    sb.append("{\"fhirServerURL\":\"");
+    sb.append(escapeJson(ecr.getFhirServerUrl()));
+    sb.append("\",\"patientId\":\"");
+    sb.append(escapeJson(ecr.getLaunchPatientId()));
+    sb.append("\",\"encounterId\":\"");
+    sb.append(escapeJson(ecr.getEncounterId()));
+    sb.append("\",\"eicrSetId\":\"");
+    sb.append(escapeJson(ecr.getSetId()));
+    sb.append("\",\"eicrXml\":\"");
+    sb.append(escapeJson(ecr.getEicrData()));
+    sb.append("\"}");
 
     wireMockServer.verify(
         postRequestedFor(urlEqualTo(getURLPath(clientDetails.getRestAPIURL())))
@@ -202,7 +211,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     Eicr eicr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
-    String rrXml = rr.getRrXml().replace("RR-TEST-XCORRELATIONID", eicr.getEicrDocId());
+    String rrXml =
+        rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", eicr.getEicrDocId());
     rr.setRrXml(rrXml);
     postReportabilityResponse(rr, eicr);
 

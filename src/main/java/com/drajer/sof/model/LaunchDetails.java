@@ -145,6 +145,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
+  @Column(name = "require_aud", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean requireAud = false;
+
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
 
@@ -216,11 +220,15 @@ public class LaunchDetails {
   }
 
   public String getClientSecret() {
-    return AESEncryption.decrypt(clientSecret);
+    if (clientSecret != null) {
+      return AESEncryption.decrypt(clientSecret);
+    } else {
+      return null;
+    }
   }
 
   public void setClientSecret(String clientSecret) {
-    this.clientSecret = AESEncryption.encrypt(clientSecret);
+    if (clientSecret != null) this.clientSecret = AESEncryption.encrypt(clientSecret);
   }
 
   public String getEhrServerURL() {
@@ -352,11 +360,15 @@ public class LaunchDetails {
   }
 
   public String getDirectPwd() {
-    return AESEncryption.decrypt(directPwd);
+    if (directPwd != null) {
+      return AESEncryption.decrypt(directPwd);
+    } else {
+      return null;
+    }
   }
 
   public void setDirectPwd(String directPwd) {
-    this.directPwd = AESEncryption.encrypt(directPwd);
+    if (directPwd != null) this.directPwd = AESEncryption.encrypt(directPwd);
   }
 
   public String getRestAPIURL() {
@@ -429,6 +441,14 @@ public class LaunchDetails {
 
   public void setDebugFhirQueryAndEicr(Boolean debugFhirQueryAndEicr) {
     this.debugFhirQueryAndEicr = debugFhirQueryAndEicr;
+  }
+
+  public Boolean getRequireAud() {
+    return requireAud;
+  }
+
+  public void setRequireAud(Boolean requireAud) {
+    this.requireAud = requireAud;
   }
 
   public String getxRequestId() {
