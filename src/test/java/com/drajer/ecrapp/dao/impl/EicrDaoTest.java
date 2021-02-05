@@ -93,7 +93,8 @@ public class EicrDaoTest {
   @Test
   public void getEicrByCoorrelationId() {
     eicrDaoImpl.saveOrUpdate(expectedEicr);
-    Eicr actualEicr = eicrDaoImpl.getEicrByCoorrelationId(expectedEicr.getxCorrelationId());
+
+    Eicr actualEicr = eicrDaoImpl.getEicrByCorrelationId(expectedEicr.getxCorrelationId());
 
     assertNotNull(actualEicr);
     assertEicr(expectedEicr, actualEicr);
