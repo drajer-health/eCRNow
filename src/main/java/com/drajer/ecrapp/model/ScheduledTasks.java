@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "scheduled_tasks")
@@ -21,8 +22,9 @@ public class ScheduledTasks implements Serializable {
   private String task_name;
 
   @Lob
-  @Column(name = "task_data")
-  private Byte[] task_data;
+  @Column(name = "task_data", length = 1000000)
+  @Type(type = "org.hibernate.type.BinaryType")
+  private byte[] task_data;
 
   @Column(name = "execution_time")
   private Date execution_time;
@@ -48,11 +50,11 @@ public class ScheduledTasks implements Serializable {
   @Column(name = "version")
   private int version;
 
-  public Byte[] getTask_data() {
+  public byte[] getTask_data() {
     return task_data;
   }
 
-  public void setTask_data(Byte[] task_data) {
+  public void setTask_data(byte[] task_data) {
     this.task_data = task_data;
   }
 

@@ -46,7 +46,13 @@ public class AuthorizationEndpoint {
 			logger.error("Error in Authorization");
 		}
 
-		return new ResponseEntity<String>(responseObj.toString(), HttpStatus.OK);
+		if(responseObj != null) {
+			return new ResponseEntity<String>(responseObj.toString(), HttpStatus.OK);	
+		} else {
+			responseObj = new JSONObject();
+			responseObj.put("message", "Error in Processing the Request");
+			return new ResponseEntity<String>(responseObj.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 }

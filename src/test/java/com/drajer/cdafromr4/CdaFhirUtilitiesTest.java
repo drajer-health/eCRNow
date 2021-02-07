@@ -150,15 +150,17 @@ public class CdaFhirUtilitiesTest {
     } catch (JsonProcessingException e) {
       System.out.println("Fix this");
     }
-    Set<String> dataKeySet = testMap.keySet();
+    if (testMap != null) {
+      Set<String> dataKeySet = testMap.keySet();
 
-    for (String key : dataKeySet) {
+      for (String key : dataKeySet) {
 
-      String value = testMap.get(key);
+        String value = testMap.get(key);
 
-      List<String> valueList = Arrays.stream(value.split("\\|")).collect(Collectors.toList());
+        List<String> valueList = Arrays.stream(value.split("\\|")).collect(Collectors.toList());
 
-      testData.put(key, valueList);
+        testData.put(key, valueList);
+      }
     }
   }
 }
