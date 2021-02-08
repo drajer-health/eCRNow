@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -175,6 +176,8 @@ public class TestUtils {
   public static Document getXmlDocument(String xmlContent)
       throws ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document document = builder.parse(IOUtils.toInputStream(xmlContent.replace("\n", "")));
     return document;

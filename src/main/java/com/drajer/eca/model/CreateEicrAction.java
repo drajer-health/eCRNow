@@ -127,7 +127,7 @@ public class CreateEicrAction extends AbstractAction {
                 EcaUtils.updateDetailStatus(details, state);
                 // No need to continue as the job will take over execution.
                 logger.info(" **** End Executing Create Eicr Action **** ");
-                return;
+                // return;
               }
             }
 
