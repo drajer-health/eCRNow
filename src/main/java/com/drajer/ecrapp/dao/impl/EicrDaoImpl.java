@@ -50,7 +50,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return 0;
   }
 
-  public Eicr getEicrByCoorrelationId(String xcoorrId) {
+  public Eicr getEicrByCorrelationId(String xcoorrId) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
     criteria.add(Restrictions.eq("xCorrelationId", xcoorrId));
 

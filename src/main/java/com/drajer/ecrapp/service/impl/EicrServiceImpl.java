@@ -84,7 +84,7 @@ public class EicrServiceImpl implements EicrRRService {
 
     logger.debug(" Start processing MDN");
 
-    Eicr ecr = eicrDao.getEicrByCoorrelationId(xCorrelationId);
+    Eicr ecr = eicrDao.getEicrByCorrelationId(xCorrelationId);
 
     if (ecr != null) {
 
