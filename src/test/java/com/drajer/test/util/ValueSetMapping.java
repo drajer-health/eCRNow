@@ -16,7 +16,7 @@ public class ValueSetMapping {
     telecomUseCodes.put("MOBILE", "MC");
   }
 
-  public static final Map<String, String> sectionConversion;
+  protected static final Map<String, String> sectionConversion;
 
   static {
     sectionConversion = new HashMap<>();
@@ -31,7 +31,7 @@ public class ValueSetMapping {
     sectionConversion.put("TREATMENTS", "18776-5");
   }
 
-  public static final List<String> IndentifierTypeURL;
+  protected static final List<String> IndentifierTypeURL;
 
   static {
     IndentifierTypeURL = new ArrayList<>();
@@ -39,7 +39,7 @@ public class ValueSetMapping {
     IndentifierTypeURL.add("http://hl7.org/fhir/ValueSet/identifier-type");
   }
 
-  public static final Map<String, String> gender;
+  protected static final Map<String, String> gender;
 
   static {
     gender = new HashMap<>();
