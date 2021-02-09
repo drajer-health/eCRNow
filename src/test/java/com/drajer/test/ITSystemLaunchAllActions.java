@@ -217,8 +217,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
               .replace(
                   "69550923-8b72-475c-b64b-5f7c44a78e4f", eicr != null ? eicr.getEicrDocId() : "");
       rr.setRrXml(rrXml);
-      if(eicr!=null) {
-    	  postReportabilityResponse(rr, eicr);  
+      if (eicr != null) {
+        postReportabilityResponse(rr, eicr);
       }
 
       eicr = getEICRDocument(eicr.getId().toString());
