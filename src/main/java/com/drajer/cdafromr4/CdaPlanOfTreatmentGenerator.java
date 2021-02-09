@@ -7,7 +7,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -89,7 +89,7 @@ public class CdaPlanOfTreatmentGenerator {
           serviceDate = CdaGeneratorUtils.getStringForDate(s.getAuthoredOn());
         }
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(
             CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, srDisplayName.getValue0());
         bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, serviceDate);
