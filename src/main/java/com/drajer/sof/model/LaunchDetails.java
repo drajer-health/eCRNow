@@ -155,6 +155,13 @@ public class LaunchDetails {
   @Column(name = "request_mode", nullable = true)
   private String requestMode = EventTypes.RequestModeEnum.PRODUCTION.toString();
 
+  @Column(name = "validation_mode", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean validationMode = false;
+  
+  @Column(name = "launch_type", nullable = true)
+  private String launchType;
+
   public Boolean getIsCovid() {
     return isCovid;
   }
@@ -466,4 +473,20 @@ public class LaunchDetails {
   public void setRequestMode(String requestMode) {
     this.requestMode = requestMode;
   }
+
+  public Boolean getValidationMode() {
+    return validationMode;
+  }
+
+  public void setValidationMode(Boolean validationMode) {
+    this.validationMode = validationMode;
+  }
+
+public String getLaunchType() {
+	return launchType;
+}
+
+public void setLaunchType(String launchType) {
+	this.launchType = launchType;
+}
 }

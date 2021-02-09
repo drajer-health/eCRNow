@@ -204,6 +204,10 @@ public class LaunchController {
             if (systemLaunch.getRequestMode() != null) {
               launchDetails.setRequestMode(systemLaunch.getRequestMode());
             }
+            if (systemLaunch.getValidationMode() != null) {
+              launchDetails.setValidationMode(systemLaunch.getValidationMode());
+            }
+            launchDetails.setLaunchType("SystemLaunch");
 
             setStartAndEndDates(clientDetails, launchDetails);
 
@@ -291,6 +295,7 @@ public class LaunchController {
           launchDetails.setLaunchState(state);
           launchDetails.setxRequestId(requestIdHeadervalue);
           launchDetails.setRequireAud(clientDetails.getRequireAud());
+          launchDetails.setLaunchType("SoF");
           String constructedAuthUrl =
               authorization.createAuthUrl(launchDetails, clientDetails, state);
           logger.info("Constructed Authorization URL::::: {}", constructedAuthUrl);

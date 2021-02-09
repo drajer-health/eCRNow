@@ -6,6 +6,7 @@ public class SystemLaunch {
   private String patientId;
   private String encounterId;
   private String requestMode;
+  private Boolean validationMode;
 
   public String getFhirServerURL() {
     return fhirServerURL;
@@ -37,5 +38,13 @@ public class SystemLaunch {
 
   public void setRequestMode(String requestMode) {
     this.requestMode = requestMode;
+  }
+
+  public Boolean getValidationMode() {
+    return validationMode;
+  }
+
+  public void setValidationMode(Boolean validationMode) {
+    this.validationMode = validationMode;
   }
 }
