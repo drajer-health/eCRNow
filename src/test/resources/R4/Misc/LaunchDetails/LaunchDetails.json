@@ -33,5 +33,5 @@
   "isSystem": false,
   "debugFhirQueryAndEicr": false,
   "xRequestId": "launchdetialunittestdao",
-  "requestMode": "VALIDATION"
+  "validationMode": true
 }
