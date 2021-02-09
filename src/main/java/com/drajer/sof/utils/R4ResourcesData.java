@@ -694,7 +694,7 @@ public class R4ResourcesData {
       }
       // If Encounter Id is not present using start and end dates to filter
       // Immunizations
-    } else {
+    } else if (bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         // Checking If Immunization DateTime is present in Immunization
