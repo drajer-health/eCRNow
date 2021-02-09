@@ -201,9 +201,6 @@ public class LaunchController {
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
             launchDetails.setxRequestId(requestIdHeadervalue);
-            if (systemLaunch.getRequestMode() != null) {
-              launchDetails.setRequestMode(systemLaunch.getRequestMode());
-            }
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
