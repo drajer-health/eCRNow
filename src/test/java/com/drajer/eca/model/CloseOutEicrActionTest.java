@@ -19,8 +19,6 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.test.ITValidateEicrDoc;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,8 +37,8 @@ import org.slf4j.LoggerFactory;
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class CloseOutEicrActionTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(CloseOutEicrActionTest.class);
-	
+  private static final Logger logger = LoggerFactory.getLogger(CloseOutEicrActionTest.class);
+
   private LaunchDetails mockDetails;
   private PatientExecutionState mockState;
   private RelatedAction mockRelActn;
@@ -85,7 +83,7 @@ public class CloseOutEicrActionTest {
       verify(mockRelActn, times(0)).getDuration();
 
     } catch (Exception e) {
-    logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -120,7 +118,7 @@ public class CloseOutEicrActionTest {
       assertEquals(JobStatus.SCHEDULED, closeOutEicrStatus.getJobStatus());
 
     } catch (Exception e) {
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -165,7 +163,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -201,7 +199,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }

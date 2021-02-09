@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class PeriodicUpdateEicrActionTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrActionTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrActionTest.class);
   private LaunchDetails mockDetails;
   private PatientExecutionState mockState;
   private RelatedAction mockRelActn;
@@ -83,7 +83,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -114,7 +114,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -148,7 +148,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -202,7 +202,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -253,7 +253,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }

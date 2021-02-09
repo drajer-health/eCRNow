@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class CreateEicrActionTest {
-	
-	private static final Logger logger = LoggerFactory.getLogger(CreateEicrActionTest.class);
+
+  private static final Logger logger = LoggerFactory.getLogger(CreateEicrActionTest.class);
 
   private LaunchDetails mockDetails;
   private PatientExecutionState mockState;
@@ -81,7 +81,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -116,7 +116,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -151,7 +151,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -195,7 +195,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -231,7 +231,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e);
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
