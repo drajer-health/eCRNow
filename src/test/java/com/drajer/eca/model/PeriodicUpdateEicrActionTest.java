@@ -31,11 +31,14 @@ import org.mockito.InjectMocks;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class PeriodicUpdateEicrActionTest {
 
+  private static final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrActionTest.class);
   private LaunchDetails mockDetails;
   private PatientExecutionState mockState;
   private RelatedAction mockRelActn;
@@ -80,7 +83,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -111,7 +114,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -145,7 +148,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -199,7 +202,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -250,7 +253,7 @@ public class PeriodicUpdateEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
