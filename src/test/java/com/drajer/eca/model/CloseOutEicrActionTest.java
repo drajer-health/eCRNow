@@ -85,8 +85,7 @@ public class CloseOutEicrActionTest {
       verify(mockRelActn, times(0)).getDuration();
 
     } catch (Exception e) {
-
-    logger.error("Exception occured during the test:::::{}",e.getMessage());
+    logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -121,8 +120,7 @@ public class CloseOutEicrActionTest {
       assertEquals(JobStatus.SCHEDULED, closeOutEicrStatus.getJobStatus());
 
     } catch (Exception e) {
-
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -167,7 +165,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -203,7 +201,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }

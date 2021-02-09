@@ -81,7 +81,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -116,7 +116,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -151,7 +151,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -195,7 +195,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -231,7 +231,7 @@ public class CreateEicrActionTest {
 
     } catch (Exception e) {
 
-    	logger.error("Exception occured during the test:::::{}",e.getMessage());
+    	logger.error("Exception occured during the test:::::{}",e);
       fail("This exception is not expected, fix the test method");
     }
   }
