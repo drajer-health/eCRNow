@@ -19,6 +19,8 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.ITValidateEicrDoc;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,11 +32,15 @@ import org.mockito.InjectMocks;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class CloseOutEicrActionTest {
 
+	private static final Logger logger = LoggerFactory.getLogger(CloseOutEicrActionTest.class);
+	
   private LaunchDetails mockDetails;
   private PatientExecutionState mockState;
   private RelatedAction mockRelActn;
@@ -80,7 +86,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+    logger.error("Exception occured during the test:::::{}",e.getMessage());
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -116,7 +122,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+    	logger.error("Exception occured during the test:::::{}",e.getMessage());
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -161,7 +167,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+    	logger.error("Exception occured during the test:::::{}",e.getMessage());
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -197,7 +203,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+    	logger.error("Exception occured during the test:::::{}",e.getMessage());
       fail("This exception is not expected, fix the test method");
     }
   }

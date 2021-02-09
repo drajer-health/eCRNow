@@ -217,11 +217,13 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
               .replace(
                   "69550923-8b72-475c-b64b-5f7c44a78e4f", eicr != null ? eicr.getEicrDocId() : "");
       rr.setRrXml(rrXml);
-      postReportabilityResponse(rr, eicr);
+      if(eicr!=null) {
+    	  postReportabilityResponse(rr, eicr);  
+      }
 
-      eicr = getEICRDocument(eicr != null ? eicr.getId().toString() : null);
+      eicr = getEICRDocument(eicr.getId().toString());
       assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
-      assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+      assertEquals(rr.getRrXml(), eicr != null ? eicr.getResponseData() : null);
       assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : "");
     }
   }
