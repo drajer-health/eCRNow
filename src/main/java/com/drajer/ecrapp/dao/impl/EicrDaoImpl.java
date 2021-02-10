@@ -62,7 +62,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("eicrId") != null) {
       criteria.add(Restrictions.eq("id", Integer.parseInt(searchParams.get("eicrId"))));
     }
-    criteria = prepareCriteria(criteria, searchParams);
+    prepareCriteria(criteria, searchParams);
     return criteria.addOrder(Order.desc("id")).list();
   }
 
@@ -71,7 +71,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("responseDocId") != null) {
       criteria.add(Restrictions.eq("responseDocId", searchParams.get("responseDocId")));
     }
-    criteria = prepareCriteria(criteria, searchParams);
+    prepareCriteria(criteria, searchParams);
     return criteria.addOrder(Order.desc("id")).list();
   }
 
@@ -83,7 +83,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return (Eicr) criteria.uniqueResult();
   }
 
-  public static Criteria prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
+  public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
 
     if (searchParams.get("eicrDocId") != null) {
       criteria.add(Restrictions.eq("eicrDocId", searchParams.get("eicrDocId")));
@@ -103,6 +103,5 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("version") != null) {
       criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
     }
-    return criteria;
   }
 }
