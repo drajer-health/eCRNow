@@ -30,10 +30,14 @@ import org.mockito.InjectMocks;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
 public class CloseOutEicrActionTest {
+
+  private static final Logger logger = LoggerFactory.getLogger(CloseOutEicrActionTest.class);
 
   private LaunchDetails mockDetails;
   private PatientExecutionState mockState;
@@ -79,8 +83,7 @@ public class CloseOutEicrActionTest {
       verify(mockRelActn, times(0)).getDuration();
 
     } catch (Exception e) {
-
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -115,8 +118,7 @@ public class CloseOutEicrActionTest {
       assertEquals(JobStatus.SCHEDULED, closeOutEicrStatus.getJobStatus());
 
     } catch (Exception e) {
-
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -161,7 +163,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
@@ -197,7 +199,7 @@ public class CloseOutEicrActionTest {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      logger.error("Exception occured during the test:::::{}", e);
       fail("This exception is not expected, fix the test method");
     }
   }
