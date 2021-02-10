@@ -10,7 +10,7 @@ public class TaskTimer implements Serializable {
   Long id;
   Integer launchDetailsId;
   EcrActionTypes actionTypes;
-  Instant t;
+  transient Instant t;
 
   public TaskTimer(Long id1, Integer launchDetailsId, EcrActionTypes actionTypes1, Instant t) {
     this.id = id1;
