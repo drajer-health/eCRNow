@@ -1,6 +1,5 @@
 package com.drajer.sof.model;
 
-import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
 import javax.persistence.Column;
@@ -152,8 +151,12 @@ public class LaunchDetails {
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
 
-  @Column(name = "request_mode", nullable = true)
-  private String requestMode = EventTypes.RequestModeEnum.PRODUCTION.toString();
+  @Column(name = "validation_mode", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean validationMode = false;
+
+  @Column(name = "launch_type", nullable = true)
+  private String launchType;
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -459,11 +462,19 @@ public class LaunchDetails {
     this.xRequestId = xRequestId;
   }
 
-  public String getRequestMode() {
-    return requestMode;
+  public Boolean getValidationMode() {
+    return validationMode;
   }
 
-  public void setRequestMode(String requestMode) {
-    this.requestMode = requestMode;
+  public void setValidationMode(Boolean validationMode) {
+    this.validationMode = validationMode;
+  }
+
+  public String getLaunchType() {
+    return launchType;
+  }
+
+  public void setLaunchType(String launchType) {
+    this.launchType = launchType;
   }
 }

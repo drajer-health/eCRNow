@@ -123,7 +123,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("FAILURE_MDN", eicr != null ? eicr.getResponseType() : null);
-    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : "");
+    assertEquals(rr.getRrXml(), eicr != null ? eicr.getResponseData() : "");
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : "");
   }
 

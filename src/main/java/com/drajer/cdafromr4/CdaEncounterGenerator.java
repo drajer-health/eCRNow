@@ -5,7 +5,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -89,7 +89,7 @@ public class CdaEncounterGenerator {
         dt = CdaGeneratorUtils.getStringForDate(encounter.getPeriod().getStart());
       }
 
-      Map<String, String> bodyvals = new HashMap<>();
+      Map<String, String> bodyvals = new LinkedHashMap<>();
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 

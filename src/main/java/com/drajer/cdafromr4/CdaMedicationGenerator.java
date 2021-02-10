@@ -7,6 +7,7 @@ import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -100,7 +101,7 @@ public class CdaMedicationGenerator {
           dt = CdaFhirUtilities.getStringForType(med.getEffective());
         }
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
 

@@ -9,7 +9,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -96,7 +96,7 @@ public class CdaResultGenerator {
           }
         }
 
-        Map<String, String> bodyvals = new HashMap<>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
         String val = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -332,8 +332,8 @@ public class CdaResultGenerator {
         logger.info(" Found exact Value Codeable concept that matches the trigger codes ");
         lrEntry.append(
             CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
+                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
 
         CodeableConcept cc = (CodeableConcept) val;
 
