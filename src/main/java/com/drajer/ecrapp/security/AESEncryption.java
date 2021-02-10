@@ -4,11 +4,12 @@ import com.drajer.ecrapp.util.CryptoUtils;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +39,13 @@ public class AESEncryption {
 
       byte[] iv = CryptoUtils.getRandomNonce(IV_LENGTH_BYTE);
 
-      SecretKey aesKeyFromPassword =
-          CryptoUtils.getAESKeyFromPassword(secretKey.toCharArray(), salt);
+      byte[] keyBytes = secretKey.getBytes("UTF-16");
+
+      SecretKeySpec skeySpec = new SecretKeySpec(Arrays.copyOf(keyBytes, 16), "AES");
 
       Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
 
-      cipher.init(
-          Cipher.ENCRYPT_MODE, aesKeyFromPassword, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
+      cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
 
       byte[] cipherText = cipher.doFinal(pText.getBytes());
 
@@ -78,13 +79,13 @@ public class AESEncryption {
       byte[] cipherText = new byte[bb.remaining()];
       bb.get(cipherText);
 
-      SecretKey aesKeyFromPassword =
-          CryptoUtils.getAESKeyFromPassword(secretKey.toCharArray(), salt);
+      byte[] keyBytes = secretKey.getBytes("UTF-16");
+
+      SecretKeySpec skeySpec = new SecretKeySpec(Arrays.copyOf(keyBytes, 16), "AES");
 
       Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
 
-      cipher.init(
-          Cipher.DECRYPT_MODE, aesKeyFromPassword, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
+      cipher.init(Cipher.DECRYPT_MODE, skeySpec, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
 
       byte[] plainText = cipher.doFinal(cipherText);
 

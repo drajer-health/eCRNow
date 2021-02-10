@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ValueSetMapping {
 
-  public static HashMap<String, String> telecomUseCodes;
+  protected static HashMap<String, String> telecomUseCodes;
 
   static {
     telecomUseCodes = new HashMap<>();

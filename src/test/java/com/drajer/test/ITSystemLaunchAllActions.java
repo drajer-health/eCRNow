@@ -221,7 +221,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
         postReportabilityResponse(rr, eicr);
       }
 
-      eicr = getEICRDocument(eicr.getId().toString());
+      eicr = getEICRDocument(eicr != null ? eicr.getId().toString() : null);
       assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
       assertEquals(rr.getRrXml(), eicr != null ? eicr.getResponseData() : null);
       assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : "");

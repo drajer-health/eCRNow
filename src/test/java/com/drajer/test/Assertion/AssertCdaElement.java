@@ -21,7 +21,7 @@ import org.hl7.v3.StrucDocThead;
 import org.hl7.v3.TEL;
 import org.hl7.v3.TS;
 
-public class AssertCdaElement {
+public class AssertCdaElement extends ValueSetMapping {
 
   public static void assertTelecomPhone(ContactPoint r4Telecom, TEL cdaTelecom) {
 
