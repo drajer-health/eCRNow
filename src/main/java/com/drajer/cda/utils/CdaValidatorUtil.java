@@ -35,9 +35,11 @@ public class CdaValidatorUtil {
     try {
       logger.info("*** Inside getSchema Method ***");
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all");
-      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      System.setProperty("javax.xml.accessExternalSchema", "file");
+      // schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all");
+      // schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       schema = schemaFactory.newSchema(new File(ActionRepo.getInstance().getXsdSchemasLocation()));
+      System.clearProperty("javax.xml.accessExternalSchema");
     } catch (SAXException e) {
       schema = null;
       logger.error(

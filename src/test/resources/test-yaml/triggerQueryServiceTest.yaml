@@ -49,7 +49,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
     - Observation: 26
-      Condition: 2
+      Condition: 5
       Organization: 1
       Practitioner: 5
       ServiceRequest: 2
