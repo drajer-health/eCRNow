@@ -85,13 +85,13 @@ testCase:
     - xPath: "text/table/thead/tr/th"
       count: 1
     - xPath: "text/table/tbody/tr"
-      count: 2
+      count: 5
     - xPath: "text/table/tbody/tr[1]/td"
       count: 1
     - xPath: "text/table/"
       'thead/tr/th[1]': "Narrative Text"
-      'tbody/tr[1]/td[1]/content': "Suspected disease caused by 2019 novel coronavirus"
-      'tbody/tr[2]/td[1]/content': "Disease caused by 2019 novel coronavirus"
+      'tbody/tr[2]/td[1]/content': "Suspected disease caused by 2019 novel coronavirus"
+      'tbody/tr[5]/td[1]/content': "Disease caused by 2019 novel coronavirus"
   eCR-historyOfPresentIllness-withAndWithoutTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -136,10 +136,10 @@ testCase:
     - xPath: "text/table/thead/tr/th"
       count: 1
     - xPath: "text/table/tbody/tr"
-      count: 2
+      count: 8
     - xPath: "text/table/tbody/tr[1]/td"
       count: 1
     - xPath: "text/table/"
       'thead/tr/th[1]': "Narrative Text"
-      'tbody/tr[1]/td[1]/content': "Coronavirus infection (disorder)"
-      'tbody/tr[2]/td[1]/content': "Suspected coronavirus infection"
+      'tbody/tr[6]/td[1]/content': "Coronavirus infection (disorder)"
+      'tbody/tr[8]/td[1]/content': "Suspected coronavirus infection"
