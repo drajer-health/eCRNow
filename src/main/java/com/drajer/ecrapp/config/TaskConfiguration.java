@@ -35,12 +35,11 @@ public class TaskConfiguration {
                 (inst, ctx) -> {
                   try {
                     log.info(
-                        "Executing Task for "
-                            + inst.getTaskAndInstance()
-                            + " , Launch Id::: "
-                            + inst.getData().getLaunchDetailsId());
+                        "Executing Task for {}, Launch Id::: {}",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId());
 
-                    log.info("Workflow Endpoint URL::::" + workflowEndpoint);
+                    log.info("Workflow Endpoint URL:::: {}", workflowEndpoint);
                     WorkflowTask workflowTask = new WorkflowTask();
                     workflowTask.setLaunchId(inst.getData().getLaunchDetailsId());
                     workflowTask.setActionType(inst.getData().getActionTypes());
@@ -53,7 +52,7 @@ public class TaskConfiguration {
                             workflowTask.getWorkflowEvent());
                     // restTemplate.postForObject(workflowEndpoint, workflowTask, String.class);
                   } catch (Exception e) {
-                    log.error("Error in completing the Execution:::::" + e.getMessage());
+                    log.error("Error in completing the Execution:::::", e);
                   }
                 });
     return myTask;

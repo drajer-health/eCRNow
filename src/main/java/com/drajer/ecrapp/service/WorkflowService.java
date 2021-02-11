@@ -288,7 +288,7 @@ public class WorkflowService {
                 new TaskTimer(100L, launchDetailsId, actionType, t)),
         t);
 
-    logger.info(" task  ::: " + task);
+    logger.info(" task  ::: {}", task);
     return task;
   }
 }
