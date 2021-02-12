@@ -47,12 +47,6 @@ public class TestDataGenerator {
         getTestDataVO().getTestCase().get(testCaseId).getTestData().get(testDataElement);
   }
 
-  public String getValidationSections(String testCaseId) {
-
-    return (String)
-        getTestDataVO().getTestCase().get(testCaseId).getTestData().get("ValidationSections");
-  }
-
   public Map<String, ?> getResourceMappings(String testCaseId) {
 
     return getTestDataVO().getTestCase().get(testCaseId).getResourceMappingData();

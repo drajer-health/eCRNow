@@ -125,12 +125,12 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
+
     if (createEicr != null) {
       String eICRXml = createEicr.getEicrData();
       assertNotNull(eICRXml);
       assertFalse(eICRXml.isEmpty());
       getLaunchDetailAndStatus();
-      ValidationUtils.setLaunchDetails(launchDetails);
 
       assertTrue(
           "Schema Validation Failed, check the logs",
