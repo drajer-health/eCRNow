@@ -18,6 +18,9 @@ import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
@@ -109,11 +112,12 @@ public class EicrServiceImpl implements EicrRRService {
       logger.debug("Reportability Response: {}", data.getRrXml());
       final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
       final CdaIi docId = rrModel.getRrDocId();
+
       if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
         throw new IllegalArgumentException("Reportability response is missing Doc Id");
       }
 
-      final Eicr ecr = eicrDao.getEicrByDocId(docId.getRootValue());
+      final Eicr ecr = eicrDao.getEicrByDocId(rrModel.getEicrDocId().getRootValue());
 
       if (ecr != null) {
 
@@ -122,6 +126,19 @@ public class EicrServiceImpl implements EicrRRService {
         ecr.setResponseDocId(docId.getRootValue());
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
+
+        if (rrModel.getReportableType() != null) ecr.setResponseType(rrModel.getReportableType());
+        else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
+
+        if (rrModel.getReportableType() != null && rrModel.getReportableStatus() != null)
+          ecr.setResponseTypeDisplay(
+              rrModel.getReportableType() + "-" + rrModel.getReportableStatus().getDisplayName());
+        else if (rrModel.getReportableType() != null)
+          ecr.setResponseTypeDisplay(rrModel.getReportableType());
+        else if (rrModel.getReportableStatus() != null)
+          ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
+        else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
+
         saveOrUpdate(ecr);
 
         logger.info(" RR Xml and eCR is present hence create a document reference ");
@@ -200,7 +217,39 @@ public class EicrServiceImpl implements EicrRRService {
 
   public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
 
-    return r4ResourcesData.constructR4DocumentReference(
-        data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
+    if (ecr.getResponseType() != null
+        && ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())) {
+      return r4ResourcesData.constructR4DocumentReference(
+          data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
+    } else return null;
+  }
+
+  public List<JSONObject> getEicrData(Map<String, String> searchParams) {
+    List<Eicr> eicrData = eicrDao.getEicrData(searchParams);
+    List<JSONObject> eicrDataList = new ArrayList<JSONObject>();
+    for (Eicr eicr : eicrData) {
+      JSONObject eicrObject = new JSONObject();
+      eicrObject.put("eicrData", eicr.getEicrData());
+      eicrDataList.add(eicrObject);
+    }
+    return eicrDataList;
+  }
+
+  public List<JSONObject> getRRData(Map<String, String> searchParams) {
+    List<Eicr> rrData = eicrDao.getRRData(searchParams);
+    List<JSONObject> rrDataList = new ArrayList<JSONObject>();
+    for (Eicr eicr : rrData) {
+      JSONObject eicrObject = new JSONObject();
+      eicrObject.put("responseData", eicr.getResponseData());
+      rrDataList.add(eicrObject);
+    }
+    return rrDataList;
+  }
+
+  @Override
+  public void handleReportabilityResponse(
+      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
+    // TODO Auto-generated method stub
+
   }
 }

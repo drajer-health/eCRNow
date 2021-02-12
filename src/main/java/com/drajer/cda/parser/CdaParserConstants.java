@@ -12,10 +12,15 @@ import org.slf4j.LoggerFactory;
 public class CdaParserConstants {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
-  // private static final CdaParserConstants constants = new CdaParserConstants();
+  private static final CdaParserConstants constants = new CdaParserConstants();
 
-  private XPath CCDAXPATH = XPathFactory.newInstance().newXPath();
-  private static XPathExpression DOC_ID_EXP;
+  private XPath CdaXPath = XPathFactory.newInstance().newXPath();
+
+  public static XPathExpression DOC_ID_EXP;
+  public static XPathExpression EICR_DOC_ID_EXP;
+  public static XPathExpression REL_ID_EXP;
+  public static XPathExpression RR_STATUS_OBS_EXP;
+  public static XPathExpression REL_VAL_EXP;
 
   public static final String DEFAULT_XPATH = "/ClinicalDocument";
 
@@ -26,16 +31,31 @@ public class CdaParserConstants {
       "Reportability response report Document Public health";
   public static final String RR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
 
-  public static XPathExpression getDocIdExp() {
+  private CdaParserConstants() {
+    initialize();
+  }
+
+  public CdaParserConstants getInstance() {
+    return constants;
+  }
+
+  private void initialize() {
+
     try {
-      if (DOC_ID_EXP == null)
-        DOC_ID_EXP =
-            new CdaParserConstants().CCDAXPATH.compile("/ClinicalDocument/id[not(@nullFlavor)]");
+
+      DOC_ID_EXP = CdaXPath.compile("/ClinicalDocument/id[not(@nullFlavor)]");
+      EICR_DOC_ID_EXP =
+          CdaXPath.compile(
+              "//externalDocument[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.10']]");
+      REL_ID_EXP = CdaXPath.compile("./id[not(@nullFlavor)]");
+      RR_STATUS_OBS_EXP =
+          CdaXPath.compile(
+              "//observation[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.19']]");
+      REL_VAL_EXP = CdaXPath.compile("./value[not(@nullFlavor)]");
 
     } catch (XPathExpressionException e) {
       logger.error("Failed to resolve CDA xPath", e);
     }
-    return DOC_ID_EXP;
   }
 
   NamespaceContext ctx =

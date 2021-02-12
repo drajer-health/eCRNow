@@ -96,6 +96,10 @@ public class RefreshTokenScheduler {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
+        if (authDetails.getRequireAud()) {
+          logger.info("Adding Aud Parameter while getting Accesstoken");
+          map.add("aud", authDetails.getEhrServerURL());
+        }
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
             resTemplate.exchange(
@@ -142,6 +146,10 @@ public class RefreshTokenScheduler {
       MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
       map.add(GRANT_TYPE, "client_credentials");
       map.add("scope", clientDetails.getScopes());
+      if (clientDetails.getRequireAud()) {
+        logger.info("Adding Aud Parameter while getting Accesstoken");
+        map.add("aud", clientDetails.getFhirServerBaseURL());
+      }
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
       ResponseEntity<?> response =

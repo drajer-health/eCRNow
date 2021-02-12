@@ -107,40 +107,17 @@ public class R4ResourcesData {
         (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, CONDITION);
     List<Condition> conditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<>();
-    // Filter Conditions based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Condition condition = (Condition) entry.getResource();
-        if (!condition.getEncounter().isEmpty()
-            && condition
-                .getEncounter()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          conditions.add(condition);
-          conditionCodes.addAll(findConditionCodes(condition));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter conditions
-    } else {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Condition condition = (Condition) entry.getResource();
-        // Checking If Date Recorded present in Condition resource
-        if (condition.getRecordedDate() != null) {
-          if (condition.getRecordedDate().after(start) && condition.getRecordedDate().before(end)) {
-            conditions.add(condition);
-            conditionCodes.addAll(findConditionCodes(condition));
-          }
-          // If Date Recorded is not present using LastUpdatedDate
-        } else {
-          Date lastUpdatedDateTime = condition.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            conditions.add(condition);
-            conditionCodes.addAll(findConditionCodes(condition));
-          }
-        }
+
+    for (BundleEntryComponent entry : bundle.getEntry()) {
+      Condition condition = (Condition) entry.getResource();
+      if (condition.getAbatement() == null) {
+        conditions.add(condition);
+        conditionCodes.addAll(findConditionCodes(condition));
+      } else {
+        logger.info("Condition Abatement is not present. So condition is not added to Bundle");
       }
     }
+
     r4FhirData.setR4ConditionCodes(conditionCodes);
     return conditions;
   }
@@ -679,7 +656,7 @@ public class R4ResourcesData {
     List<Immunization> immunizations = new ArrayList<>();
     List<CodeableConcept> immunizationCodes = new ArrayList<>();
     // Filter Immunizations based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         if (!immunization.getEncounter().isEmpty()
@@ -694,7 +671,7 @@ public class R4ResourcesData {
       }
       // If Encounter Id is not present using start and end dates to filter
       // Immunizations
-    } else {
+    } else if (bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         // Checking If Immunization DateTime is present in Immunization

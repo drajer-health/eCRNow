@@ -6,7 +6,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +66,7 @@ public class CdaSocialHistoryGenerator {
       StringBuilder occHistoryXml = new StringBuilder();
       StringBuilder travelHistoryXml = new StringBuilder();
       int index = 0;
-      Map<String, String> bodyvals = new HashMap<>();
+      Map<String, String> bodyvals = new LinkedHashMap<>();
 
       if (birthSex != null) {
 

@@ -151,7 +151,7 @@ public class CloseOutEicrAction extends AbstractAction {
                 EcaUtils.updateDetailStatus(details, state);
 
                 logger.info(" **** END Executing Close Out Eicr Action **** ");
-                return;
+                // return;
               }
             }
 

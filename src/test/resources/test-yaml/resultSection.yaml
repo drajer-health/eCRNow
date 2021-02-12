@@ -92,7 +92,7 @@ testCase:
       'templateId[1]/@root': "2.16.840.1.113883.10.20.22.4.2"
       'templateId[2]/@root': "2.16.840.1.113883.10.20.22.4.2"
       'templateId[2]/@extension': "2015-08-01"
-      'templateId[3]/@root': "2.16.840.1.113883.10.20.15.2.3.4"
+      'templateId[3]/@root': "2.16.840.1.113883.10.20.15.2.3.2"
       'templateId[3]/@extension': "2016-12-01"
       'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
 #      'id[1]/@extension': "M-197287553"

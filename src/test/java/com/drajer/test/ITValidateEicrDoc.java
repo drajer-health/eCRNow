@@ -125,19 +125,25 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
     logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
-    String eICRXml = createEicr.getEicrData();
-    assertNotNull(eICRXml);
-    assertFalse(eICRXml.isEmpty());
 
-    getLaunchDetailAndStatus();
-    assertTrue(
-        "Schema Validation Failed, check the logs", CdaValidatorUtil.validateEicrXMLData(eICRXml));
-    assertTrue(
-        "Schematron Validation Failed, check the logs",
-        CdaValidatorUtil.validateEicrToSchematron(eICRXml));
+    if (createEicr != null) {
+      String eICRXml = createEicr.getEicrData();
+      assertNotNull(eICRXml);
+      assertFalse(eICRXml.isEmpty());
+      getLaunchDetailAndStatus();
 
-    Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
-    validateXml(eicrXmlDoc);
+      assertTrue(
+          "Schema Validation Failed, check the logs",
+          CdaValidatorUtil.validateEicrXMLData(eICRXml));
+      assertTrue(
+          "Schematron Validation Failed, check the logs",
+          CdaValidatorUtil.validateEicrToSchematron(eICRXml));
+
+      Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
+      validateXml(eicrXmlDoc);
+    } else {
+      fail("Eicr Not found");
+    }
   }
 
   private void getLaunchDetailAndStatus() {
@@ -165,7 +171,10 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
       } while (!state.getCreateEicrStatus().getEicrCreated());
 
-      return (session.get(Eicr.class, Integer.parseInt(state.getCreateEicrStatus().geteICRId())));
+      return (session.get(
+          Eicr.class,
+          Integer.parseInt(
+              state.getCreateEicrStatus() != null ? state.getCreateEicrStatus().geteICRId() : "")));
 
     } catch (Exception e) {
       logger.error("Exception retrieving EICR ", e);

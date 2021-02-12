@@ -519,6 +519,9 @@ public class CdaGeneratorConstants {
   public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE =
       "2.16.840.1.113883.10.20.15.2.3.4";
   public static final String LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT = "2016-12-01";
+  public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE =
+      "2.16.840.1.113883.10.20.15.2.3.2";
+  public static final String LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT = "2016-12-01";
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID_EXT = "2016-12-01";
   public static final String TRAVEL_HISTORY_SNOMED_CODE = "420008001";
   public static final String TRAVEL_HISTORY_SNOMED_CODE_DISPLAY = "Travel";

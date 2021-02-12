@@ -222,7 +222,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       EcaUtils.updateDetailStatus(details, state);
       // No need to continue as the job will take over execution.
       logger.info(" **** End Executing Periodic Update Eicr Action **** ");
-      return;
+      // return;
     }
   }
 
