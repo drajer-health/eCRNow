@@ -54,8 +54,8 @@ testCase:
       'thead/tr/th[1]': "Lab Test Name"
       'thead/tr/th[2]': "Lab Test Result Value"
       'thead/tr/th[3]': "Lab Test Result Date"
-#      'tbody/tr[1]/td[1]/content': "Coronavirus COVID-19"
-#      'tbody/tr[1]/td[2]/content': "http://snomed.info/sct|260373001"
+      'tbody/tr[1]/td[1]/content': "Coronavirus COVID-19"
+      'tbody/tr[1]/td[2]/content': "Detected"
 #      'tbody/tr[1]/td[3]/content': "2020-04-30T08:25:00.000Z"
     - xPath: "entry"
       count: 1
@@ -78,7 +78,7 @@ testCase:
       'code/@codeSystem': "2.16.840.1.113883.6.1"
       'code/@codeSystemName': "loinc.org"
 #      'code/@displayName': "Coronavirus COVID-19"
-#      'statusCode/@code': "active"
+      'statusCode/@code': "completed"
     - xPath: "entry[1]/organizer/component"
       count: 1
     - xPath: "entry[1]/organizer/component[1]/"
@@ -100,7 +100,7 @@ testCase:
       'code/@codeSystem': "2.16.840.1.113883.6.1"
       'code/@codeSystemName': "LOINC"
       'code/@displayName': "Coronavirus COVID-19"
-#      'statusCode/@code': "completed"
+      'statusCode/@code': "completed"
 #      'effectiveTime/@value': "20200430"
       'value/@type': "CD"
       'value/@code': "260373001"

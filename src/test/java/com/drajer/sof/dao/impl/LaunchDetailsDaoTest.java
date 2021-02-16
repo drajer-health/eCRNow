@@ -111,7 +111,7 @@ public class LaunchDetailsDaoTest {
     assertEquals(expected.getScope(), actual.getScope());
     assertEquals(expected.getRedirectURI(), actual.getRedirectURI());
     assertEquals(expected.getRefreshToken(), actual.getRefreshToken());
-    assertEquals(expected.getRequestMode(), actual.getRequestMode());
+    assertEquals(expected.getValidationMode(), actual.getValidationMode());
     assertEquals(expected.getRestAPIURL(), actual.getRestAPIURL());
     assertEquals(expected.getSmtpPort(), actual.getSmtpPort());
     assertEquals(expected.getStatus(), actual.getStatus());

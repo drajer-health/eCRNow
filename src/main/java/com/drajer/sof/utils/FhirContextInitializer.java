@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.sof.model.LaunchDetails;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -84,6 +85,15 @@ public class FhirContextInitializer {
       logger.info("Getting {} data", resourceName);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (Exception e) {
+      logger.info("Error in getting the resource::::: ", e);
+      if (e instanceof BaseServerResponseException) {
+        if (((BaseServerResponseException) e).getOperationOutcome() != null) {
+          logger.debug(
+              context
+                  .newJsonParser()
+                  .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
+        }
+      }
       logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }
     return resource;
@@ -184,6 +194,14 @@ public class FhirContextInitializer {
         }
       }
     } catch (Exception e) {
+      if (e instanceof BaseServerResponseException) {
+        if (((BaseServerResponseException) e).getOperationOutcome() != null) {
+          logger.debug(
+              context
+                  .newJsonParser()
+                  .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
+        }
+      }
       logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,

@@ -100,7 +100,7 @@ class ClientDetailsList extends Component {
                                     <th>Id</th>
                                     <th>Client Id</th>
                                     <th>FHIR Server Url</th>
-                                    <th>Direct Host</th>
+                                    <th>Transport Type</th>
                                     <th>Action</th>
                                 </tr>
                                 {
@@ -109,7 +109,7 @@ class ClientDetailsList extends Component {
                                             <td>{get.id}</td>
                                             <td>{get.clientId}</td>
                                             <td>{get.fhirServerBaseURL}</td>
-                                            <td>{get.directHost}</td>
+                                            <td>{get.isDirect?'Direct':''}{get.isRestAPI?'Rest API':''}{get.isXdr?'XDR':''}</td>
                                             <td className="actionColumn">
                                                 <OverlayTrigger placement="top" overlay={tooltip}>
                                                     <Button className="editButton" onClick={e => this.editClient(get)}><Icon>edit</Icon></Button></OverlayTrigger></td>

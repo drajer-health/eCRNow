@@ -35,17 +35,12 @@ public class RestApiSender {
       HttpHeaders headers = new HttpHeaders();
       logger.info("In Initialization");
 
-      String accessToken = null;
       if (authorizationService != null) {
-        accessToken = authorizationService.getAuthorizationHeader(launchDetails);
+        headers = authorizationService.getAuthorizationHeader(launchDetails);
       }
 
+      // Set Content-Type Header
       headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-
-      if (accessToken != null && !accessToken.isEmpty()) {
-        logger.info("Setting Access_token============> {} ", accessToken);
-        headers.add("Authorization", accessToken);
-      }
 
       // Add X-Request-ID and X-Correlation-ID
       String newXReqId = java.util.UUID.randomUUID().toString();

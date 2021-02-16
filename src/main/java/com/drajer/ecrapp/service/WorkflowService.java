@@ -7,7 +7,9 @@ import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
+import com.drajer.eca.model.TaskTimer;
 import com.drajer.eca.model.TimingSchedule;
+import com.drajer.ecrapp.config.TaskConfiguration;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
@@ -17,6 +19,7 @@ import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
@@ -26,14 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WorkflowService {
 
-  private final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
-  private static final Logger logger2 = LoggerFactory.getLogger(WorkflowService.class);
+  private static final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
   private static WorkflowService workflowInstance = null;
 
   /*
@@ -58,6 +61,14 @@ public class WorkflowService {
 
   @Autowired ObjectMapper mapper;
 
+  @Autowired Scheduler scheduler;
+
+  private static Scheduler staticScheduler;
+
+  @Autowired TaskConfiguration taskConfiguration;
+
+  private static TaskConfiguration staticTaskConfiguration;
+
   @Value("${schematron.file.location}")
   String schematronFileLocation;
 
@@ -81,6 +92,9 @@ public class WorkflowService {
     ActionRepo.getInstance().setRestTransport(restApiTransport);
 
     workflowInstance = this;
+    ActionRepo.getInstance().setWorkflowService(workflowInstance);
+    this.staticScheduler = scheduler;
+    this.staticTaskConfiguration = taskConfiguration;
   }
 
   public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -206,7 +220,7 @@ public class WorkflowService {
     executeEicrWorkflow(launchDetails, WorkflowEvent.DEPENDENT_EVENT_COMPLETION);
   }
 
-  class EicrActionExecuteJob implements Runnable {
+  public class EicrActionExecuteJob implements Runnable {
 
     private Integer launchDetailsId;
 
@@ -235,24 +249,46 @@ public class WorkflowService {
 
     Instant t = ApplicationUtils.convertTimingScheduleToInstant(ts, timeRef);
 
-    ActionRepo.getInstance()
-        .getTaskScheduler()
-        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
+    //    ActionRepo.getInstance()
+    //        .getTaskScheduler()
+    //        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
+
+    invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = (t != null) ? t.toString() : "";
-    logger2.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+    logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 
   public static void scheduleJob(
       Integer launchDetailsId, Duration d, EcrActionTypes actionType, Date timeRef) {
-
     Instant t = ApplicationUtils.convertDurationToInstant(d);
 
-    ActionRepo.getInstance()
-        .getTaskScheduler()
-        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
+    //    ActionRepo.getInstance()
+    //        .getTaskScheduler()
+    //        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
+
+    invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = (t != null) ? t.toString() : "";
-    logger2.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+    logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+  }
+
+  public static CommandLineRunner invokeScheduler(
+      Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
+
+    CommandLineRunner task = null;
+    logger.info("Scheduling one time task to now!");
+
+    task = ignored -> logger.info("Scheduling one time task to after!");
+    staticScheduler.schedule(
+        staticTaskConfiguration
+            .sampleOneTimeTask()
+            .instance(
+                actionType.toString() + "_" + String.valueOf(launchDetailsId),
+                new TaskTimer(100L, launchDetailsId, actionType, t)),
+        t);
+
+    logger.info(" task  ::: {}", task);
+    return task;
   }
 }
