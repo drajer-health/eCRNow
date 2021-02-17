@@ -303,8 +303,8 @@ public class CdaResultGenerator {
         logger.info(" Found exact code that matches the trigger codes ");
         lrEntry.append(
             CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
+                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
 
         obsCodeXml =
             CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
