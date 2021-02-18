@@ -2,7 +2,6 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
-
 import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
@@ -263,22 +262,22 @@ public class LaunchDetails {
   }
 
   public String getAccessToken() {
-	    if (this.getLastUpdated() != null && this.getExpiry() != 0) {
-	      Instant currentDate = new Date().toInstant();
-	      Instant lastUpdatedTime = this.getLastUpdated().toInstant().plusSeconds(this.getExpiry());
-	      int value = currentDate.compareTo(lastUpdatedTime);
-	      if (value > 0) {
-	        logger.info("AccessToken is Expired. Getting new AccessToken");
-	        JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
-	        return accessTokenObj.getString("access_token");
-	      } else {
-	        logger.info("AccessToken is Valid. No need to get new AccessToken");
-	        return accessToken;
-	      }
-	    } else {
-	      return accessToken;
-	    }
-	  }
+    if (this.getLastUpdated() != null && this.getExpiry() != 0) {
+      Instant currentDate = new Date().toInstant();
+      Instant lastUpdatedTime = this.getLastUpdated().toInstant().plusSeconds(this.getExpiry());
+      int value = currentDate.compareTo(lastUpdatedTime);
+      if (value > 0) {
+        logger.info("AccessToken is Expired. Getting new AccessToken");
+        JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
+        return accessTokenObj.getString("access_token");
+      } else {
+        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        return accessToken;
+      }
+    } else {
+      return accessToken;
+    }
+  }
 
   public void setAccessToken(String accessToken) {
     this.accessToken = accessToken;

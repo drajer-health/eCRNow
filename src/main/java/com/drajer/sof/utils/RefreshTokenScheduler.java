@@ -122,7 +122,8 @@ public class RefreshTokenScheduler {
     LaunchDetails existingAuthDetails = new LaunchDetails();
     try {
       logger.info("Updating the AccessToken value in database");
-      existingAuthDetails = ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
+      existingAuthDetails =
+          ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
       existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
       existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
       existingAuthDetails.setLastUpdated(new Date());
