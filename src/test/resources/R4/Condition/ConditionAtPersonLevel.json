@@ -1,0 +1,89 @@
+{
+    "resourceType": "Bundle",
+    "id": "b9c41ab7-f6b5-4f76-9307-2acd14033997",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr.sandboxcerner.com/r4/078f84e0-b792-4966-8ad6-bf5a0b6a33d2/Condition?patient=12742571&category=problem-list-item"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr.sandboxcerner.com/r4/078f84e0-b792-4966-8ad6-bf5a0b6a33d2/Condition/p49409303",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "p49409303",
+                "meta": {
+                    "versionId": "49417295",
+                    "lastUpdated": "2021-02-08T19:46:10.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: QQTEST, ECASEFOUR</p><p><b>Problem</b>: COVID-19 virus infection, Disease caused by 2019-nCoV</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Feb  3, 2021</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "problem-list-item",
+                                "display": "Problem List Item"
+                            }
+                        ],
+                        "text": "Problem List Item"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "840539006",
+                            "display": "Disease caused by 2019-nCoV",
+                            "userSelected": false
+                        },
+                        {
+                            "system": "http://e-imo.com/products/problem-it",
+                            "code": "1494811646",
+                            "display": "COVID-19 virus infection",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "COVID-19 virus infection"
+                },
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "QQTEST, ECASEFOUR"
+                },
+                "onsetDateTime": "2021-02-03",
+                "recordedDate": "2021-01-26T18:00:00.000Z",
+                "recorder": {
+                    "reference": "Practitioner/5474978",
+                    "display": "BIRKEL, MATT"
+                }
+            }
+        }
+    ]
+}
