@@ -179,8 +179,11 @@ public class WorkflowService {
 
     logger.info(" Execute Validate Eicr Action ");
     executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType);
-    logger.info(" Execute Submit Eicr Action ");
-    executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType);
+
+    if (!details.getValidationMode()) {
+      logger.info(" Execute Submit Eicr Action ");
+      executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType);
+    }
     logger.info(" Execute RR Check Action ");
     executeActionsForType(details, EcrActionTypes.RR_CHECK, launchType);
 
@@ -271,7 +274,7 @@ public class WorkflowService {
 
     invokeScheduler(launchDetailsId, actionType, t);
 
-    String timing = (t != null) ? t.toString() : "";
+    String timing = t.toString();
     logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 

@@ -178,11 +178,13 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
             } // Check if Trigger Code Match found
             else {
 
-              logger.info(" **** Trigger Codes Detected: {}", dataChanged);
+              logger.info(" **** New Trigger Codes Detected: {}", dataChanged);
               logger.info(" Scheduling the timer job for a later time ");
 
               // Schedule job again.
-              if (getTimingData() != null && !getTimingData().isEmpty()) {
+              if (state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED
+                  && getTimingData() != null
+                  && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
                 scheduleJob(details, state, status);
