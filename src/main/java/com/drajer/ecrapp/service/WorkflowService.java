@@ -2,7 +2,6 @@ package com.drajer.ecrapp.service;
 
 import com.drajer.eca.model.AbstractAction;
 import com.drajer.eca.model.ActionRepo;
-import com.drajer.eca.model.EcaUtils;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
@@ -160,9 +159,8 @@ public class WorkflowService {
       logger.info(" Execute Create Eicr Action ");
       executeActionsForType(details, EcrActionTypes.CREATE_EICR, launchType);
     } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
-      logger.info(" Stopping Periodic Update Action ");
+      logger.info(" Stopping Create Action ");
       state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
-      EcaUtils.updateDetailStatus(details, state);
     }
 
     if (state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED
@@ -172,10 +170,9 @@ public class WorkflowService {
     } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
       logger.info(" Stopping Periodic Update Action ");
       state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
-      EcaUtils.updateDetailStatus(details, state);
     }
 
-    if (state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
+    if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
       logger.info(" Execute Close Out Action ");
       executeActionsForType(details, EcrActionTypes.CLOSE_OUT_EICR, launchType);
     }
@@ -240,7 +237,10 @@ public class WorkflowService {
 
     private Map<String, String> loggingDiagnosticContext;
 
-    public EicrActionExecuteJob(Integer launchDetailsId, EcrActionTypes actionType, Map<String, String> loggingDiagnosticContext) {
+    public EicrActionExecuteJob(
+        Integer launchDetailsId,
+        EcrActionTypes actionType,
+        Map<String, String> loggingDiagnosticContext) {
       this.launchDetailsId = launchDetailsId;
       this.actionType = actionType;
       this.loggingDiagnosticContext = loggingDiagnosticContext;
@@ -285,7 +285,7 @@ public class WorkflowService {
 
     invokeScheduler(launchDetailsId, actionType, t);
 
-    String timing = (t != null) ? t.toString() : "";
+    String timing = t.toString();
     logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 
