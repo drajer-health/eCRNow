@@ -35,6 +35,7 @@ public class R4FhirData extends FhirData {
   private List<Location> locationList;
   private Organization organization;
   private List<Condition> conditions;
+  private List<Condition> encounterDiagnosisConditions;
   private List<Condition> pregnancyConditions;
   private List<DiagnosticReport> diagReports;
   private List<Observation> labResults;
@@ -101,6 +102,7 @@ public class R4FhirData extends FhirData {
     locationList = new ArrayList<>();
     practitionersList = new ArrayList<>();
     conditions = new ArrayList<>();
+    encounterDiagnosisConditions = new ArrayList<>();
     pregnancyConditions = new ArrayList<>();
     diagReports = new ArrayList<>();
     labResults = new ArrayList<>();
@@ -185,6 +187,14 @@ public class R4FhirData extends FhirData {
 
   public void setConditions(List<Condition> conditions) {
     this.conditions = conditions;
+  }
+
+  public List<Condition> getEncounterDiagnosisConditions() {
+    return encounterDiagnosisConditions;
+  }
+
+  public void setEncounterDiagnosisConditions(List<Condition> encounterDiagnosisConditions) {
+    this.encounterDiagnosisConditions = encounterDiagnosisConditions;
   }
 
   public List<Condition> getPregnancyConditions() {

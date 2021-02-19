@@ -32,6 +32,10 @@ public class R4ResourcesData {
 
   private static final String OBSERVATION = "Observation";
   private static final String CONDITION = "Condition";
+  
+  private static final String ENCOUNTER_DIAGNOSIS_CONDITION="encounter-diagnosis";
+  private static final String PROBLEM_LIST_CONDITION="problem-list-item";
+  
 
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<>();
@@ -105,21 +109,41 @@ public class R4ResourcesData {
       Date end) {
     Bundle bundle =
         (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, CONDITION);
-    List<Condition> conditions = new ArrayList<>();
+    List<Condition> allConditions = new ArrayList<Condition>();
+    List<Condition> problemConditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<>();
 
+    List<Condition> encounterDiagnosisConditions = new ArrayList<Condition>();
     for (BundleEntryComponent entry : bundle.getEntry()) {
       Condition condition = (Condition) entry.getResource();
-      if (condition.getAbatement() == null) {
-        conditions.add(condition);
-        conditionCodes.addAll(findConditionCodes(condition));
+
+      if (condition.getAbatement() == null && condition.hasCategory()) {
+        List<CodeableConcept> conditionCategory = condition.getCategory();
+        for (CodeableConcept categoryCodeableConcept : conditionCategory) {
+          List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
+          for (Coding categoryCoding : categoryCodingList) {
+            if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)) {
+              problemConditions.add(condition);
+              conditionCodes.addAll(findConditionCodes(condition));
+            } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)) {
+              encounterDiagnosisConditions.add(condition);
+            }
+          }
+        }
       } else {
         logger.info("Condition Abatement is not present. So condition is not added to Bundle");
       }
     }
-
+    allConditions.addAll(problemConditions);
+    allConditions.addAll(encounterDiagnosisConditions);
+    r4FhirData.setConditions(problemConditions);
+    logger.info("Filtered Problem List Condition=====> {}" + problemConditions.size());
+    r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
+    logger.info(
+        "Filtered Encounter Diagnosis Condition List=====> {}"
+            + encounterDiagnosisConditions.size());
     r4FhirData.setR4ConditionCodes(conditionCodes);
-    return conditions;
+    return allConditions;
   }
 
   private List<CodeableConcept> findLaboratoryCodes(Observation observation) {
