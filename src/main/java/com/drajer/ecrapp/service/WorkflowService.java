@@ -22,11 +22,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.hl7.fhir.r4.model.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -226,20 +228,27 @@ public class WorkflowService {
 
     private EcrActionTypes actionType;
 
-    public EicrActionExecuteJob(Integer launchDetailsId, EcrActionTypes actionType) {
+    private Map<String, String> loggingDiagnosticContext;
+
+    public EicrActionExecuteJob(
+        Integer launchDetailsId,
+        EcrActionTypes actionType,
+        Map<String, String> loggingDiagnosticContext) {
       this.launchDetailsId = launchDetailsId;
       this.actionType = actionType;
+      this.loggingDiagnosticContext = loggingDiagnosticContext;
     }
 
     @Override
     public void run() {
       try {
-
-        executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);
+        MDC.setContextMap(loggingDiagnosticContext);
         logger.info("Starting the Thread");
-        Thread.currentThread().interrupt();
+        executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);
       } catch (Exception e) {
         logger.info("Error in Getting Data=====>", e);
+      } finally {
+        MDC.clear();
       }
     }
   }
@@ -261,11 +270,8 @@ public class WorkflowService {
 
   public static void scheduleJob(
       Integer launchDetailsId, Duration d, EcrActionTypes actionType, Date timeRef) {
-    Instant t = ApplicationUtils.convertDurationToInstant(d);
 
-    //    ActionRepo.getInstance()
-    //        .getTaskScheduler()
-    //        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
+    Instant t = ApplicationUtils.convertDurationToInstant(d);
 
     invokeScheduler(launchDetailsId, actionType, t);
 
