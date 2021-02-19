@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
@@ -28,7 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -205,6 +205,8 @@ public class EcaUtilsTest {
 
   @Test
   public void testHasNewTriggerCodeMatches() {
+
+    // Compare Old codes with New codes and Expects True
     PatientExecutionState oldState =
         (PatientExecutionState)
             TestUtils.getResourceAsObject(
@@ -215,6 +217,17 @@ public class EcaUtilsTest {
                 "R4/Misc/EcaUtils/NewState.json", PatientExecutionState.class);
     boolean hasNewMatchCodes = EcaUtils.hasNewTriggerCodeMatches(oldState, newState);
     assertTrue(hasNewMatchCodes);
+
+    // No Old codes available
+    oldState.getMatchTriggerStatus().setTriggerMatchStatus(false);
+    boolean noOldCodes = EcaUtils.hasNewTriggerCodeMatches(oldState, newState);
+    assertTrue(noOldCodes);
+
+    // Both Old and New codes are not available
+    oldState.getMatchTriggerStatus().setTriggerMatchStatus(false);
+    newState.getMatchTriggerStatus().setTriggerMatchStatus(false);
+    boolean noOldAndNewCodes = EcaUtils.hasNewTriggerCodeMatches(oldState, newState);
+    assertFalse(noOldAndNewCodes);
   }
 
   public void setupMockForMatchTrigger() {
