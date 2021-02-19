@@ -71,6 +71,9 @@ public class Eicr {
   @Column(name = "encounter_id", nullable = true, columnDefinition = "TEXT")
   private String encounterId;
 
+  @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
+  private String ehrDocRefId;
+
   // Timestamps
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -218,5 +221,13 @@ public class Eicr {
 
   public void setResponseTypeDisplay(String responseTypeDisplay) {
     this.responseTypeDisplay = responseTypeDisplay;
+  }
+
+  public String getEhrDocRefId() {
+    return ehrDocRefId;
+  }
+
+  public void setEhrDocRefId(String ehrDocRefId) {
+    this.ehrDocRefId = ehrDocRefId;
   }
 }

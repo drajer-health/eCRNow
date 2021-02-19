@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,12 +106,24 @@ public class CdaImmunizationGenerator {
         // add the Entries.
         sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
 
-        // add the medication Act
-        sb.append(
-            CdaGeneratorUtils.getXmlForAct(
-                CdaGeneratorConstants.MED_ACT_EL_NAME,
-                CdaGeneratorConstants.MED_CLASS_CODE,
-                CdaGeneratorConstants.MOOD_CODE_DEF));
+        // add the immunization Act
+        if (imm.getStatus() != ImmunizationStatus.COMPLETED) {
+          sb.append(
+              CdaGeneratorUtils.getXmlForActWithNegationInd(
+                  CdaGeneratorConstants.MED_ACT_EL_NAME,
+                  CdaGeneratorConstants.MED_CLASS_CODE,
+                  CdaGeneratorConstants.MOOD_CODE_DEF,
+                  "true",
+                  true));
+        } else {
+          sb.append(
+              CdaGeneratorUtils.getXmlForActWithNegationInd(
+                  CdaGeneratorConstants.MED_ACT_EL_NAME,
+                  CdaGeneratorConstants.MED_CLASS_CODE,
+                  CdaGeneratorConstants.MOOD_CODE_DEF,
+                  "false",
+                  true));
+        }
 
         sb.append(
             CdaGeneratorUtils.getXmlForTemplateId(

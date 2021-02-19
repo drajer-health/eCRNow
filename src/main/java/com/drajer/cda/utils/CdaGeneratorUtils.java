@@ -759,7 +759,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForActWithNegationInd(
       String actName, String classCode, String moodCode, String negInd, Boolean includeNeg) {
-    if (negInd != null && negInd.equals("T")) {
+    if (negInd != null && (negInd.equalsIgnoreCase("T") || negInd.equalsIgnoreCase("true"))) {
       return CdaGeneratorConstants.START_XMLTAG
           + actName
           + CdaGeneratorConstants.SPACE

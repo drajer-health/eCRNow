@@ -202,6 +202,11 @@ public class EicrServiceImpl implements EicrRRService {
 
       if (outcome.getCreated()) {
         logger.info("Successfully sent RR to fhir");
+
+        // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
+        ecr.setEhrDocRefId(docRef.getId());
+        saveOrUpdate(ecr);
+
       } else {
         String errorMsg = "Unable to post RR response to FHIR server: " + ecr.getFhirServerUrl();
         logger.error(errorMsg);

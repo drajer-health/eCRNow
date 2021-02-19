@@ -39,10 +39,12 @@ public class CloseOutEicrAction extends AbstractAction {
       // Handle Conditions
       Boolean conditionsMet = true;
       conditionsMet = matchCondition(details);
+      boolean encounterClosed = EcaUtils.checkEncounterClose(details);
+      logger.info(" Encounter is closed : {} : ", encounterClosed);
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet) {
+      if (conditionsMet && encounterClosed) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -74,42 +76,12 @@ public class CloseOutEicrAction extends AbstractAction {
                   // duration.
                   logger.info(" Schedule the job for Close Out EICR Action based on the duration.");
 
-                  try {
+                  scheduleJob(details, state, ract, mapper);
+                  // No need to continue as the job will take over execution.
 
-                    List<TimingSchedule> tsjobs = getTimingData();
+                  logger.info(" **** END Executing Close Out Eicr Action **** ");
+                  return;
 
-                    if (tsjobs != null) {
-                      for (TimingSchedule ts : tsjobs) {
-
-                        // TBD : Setup job using TS Timing after testing so that we can test faster.
-                        // For now setup a default job with 10 seconds.
-
-                        WorkflowService.scheduleJob(
-                            details.getId(),
-                            ts,
-                            EcrActionTypes.CLOSE_OUT_EICR,
-                            details.getStartDate());
-                      }
-                    } else {
-                      WorkflowService.scheduleJob(
-                          details.getId(),
-                          ract.getDuration(),
-                          EcrActionTypes.CLOSE_OUT_EICR,
-                          details.getStartDate());
-                    }
-
-                    state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
-                    details.setStatus(mapper.writeValueAsString(state));
-
-                    // No need to continue as the job will take over execution.
-
-                    logger.info(" **** END Executing Close Out Eicr Action **** ");
-                    return;
-                  } catch (JsonProcessingException e) {
-                    String msg = "Unable to read/write execution state";
-                    logger.error(msg, e);
-                    throw new RuntimeException(msg);
-                  }
                 } else {
 
                   logger.info(
@@ -142,16 +114,12 @@ public class CloseOutEicrAction extends AbstractAction {
 
               for (TimingSchedule ts : tsjobs) {
 
-                // TBD : Setup job using TS Timing after testing so that we can test faster.
-                // For now setup a default job with 10 seconds.
-
                 WorkflowService.scheduleJob(
                     details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
                 state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
                 EcaUtils.updateDetailStatus(details, state);
 
                 logger.info(" **** END Executing Close Out Eicr Action **** ");
-                // return;
               }
             }
 
@@ -219,7 +187,16 @@ public class CloseOutEicrAction extends AbstractAction {
 
       } else {
 
-        logger.info(" Conditions not met, hence Close Out Action : Eicr will not be created. ");
+        logger.info(" Conditions not met, hence Close Out Action will have to be rescheduled . ");
+        List<RelatedAction> racts = getRelatedActions();
+
+        for (RelatedAction ract : racts) {
+
+          if (ract.getRelationship() == ActionRelationshipType.AFTER) {
+            logger.info(" Scheduling the job using related actions ");
+            scheduleJob(details, state, ract, mapper);
+          }
+        }
       }
     } else {
 
@@ -228,6 +205,43 @@ public class CloseOutEicrAction extends AbstractAction {
               + obj.getClass().getName();
       logger.error(msg);
 
+      throw new RuntimeException(msg);
+    }
+  }
+
+  public void scheduleJob(
+      LaunchDetails details, PatientExecutionState state, RelatedAction ract, ObjectMapper mapper) {
+
+    try {
+      logger.info(" **** Start Scheduling Close Out Eicr Action Job **** ");
+      List<TimingSchedule> tsjobs = getTimingData();
+
+      if (tsjobs != null) {
+        for (TimingSchedule ts : tsjobs) {
+
+          // TBD : Setup job using TS Timing after testing so that we can test faster.
+          // For now setup a default job with 10 seconds.
+
+          WorkflowService.scheduleJob(
+              details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
+        }
+      } else {
+        WorkflowService.scheduleJob(
+            details.getId(),
+            ract.getDuration(),
+            EcrActionTypes.CLOSE_OUT_EICR,
+            details.getStartDate());
+      }
+
+      state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
+      details.setStatus(mapper.writeValueAsString(state));
+
+      // No need to continue as the job will take over execution.
+
+      logger.info(" **** Finished Scheduling Close Out Eicr Action Job **** ");
+    } catch (JsonProcessingException e) {
+      String msg = "Unable to read/write execution state";
+      logger.error(msg, e);
       throw new RuntimeException(msg);
     }
   }

@@ -2,6 +2,7 @@ package com.drajer.ecrapp.service;
 
 import com.drajer.eca.model.AbstractAction;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.eca.model.EcaUtils;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
@@ -152,15 +153,24 @@ public class WorkflowService {
       executeActionsForType(details, EcrActionTypes.MATCH_TRIGGER, launchType);
     }
 
-    if (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
+    if (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED
+        && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
       logger.info(" Execute Create Eicr Action ");
       executeActionsForType(details, EcrActionTypes.CREATE_EICR, launchType);
+    } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
+      logger.info(" Stopping Periodic Update Action ");
+      state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+      EcaUtils.updateDetailStatus(details, state);
     }
 
     if (state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED
         && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
       logger.info(" Execute Periodic Update Action ");
       executeActionsForType(details, EcrActionTypes.PERIODIC_UPDATE_EICR, launchType);
+    } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
+      logger.info(" Stopping Periodic Update Action ");
+      state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
+      EcaUtils.updateDetailStatus(details, state);
     }
 
     if (state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
@@ -277,14 +287,18 @@ public class WorkflowService {
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
     CommandLineRunner task = null;
-    logger.info("Scheduling one time task to now!");
+    logger.info("Scheduling one time task to {}", t.toString());
 
     task = ignored -> logger.info("Scheduling one time task to after!");
     staticScheduler.schedule(
         staticTaskConfiguration
             .sampleOneTimeTask()
             .instance(
-                actionType.toString() + "_" + String.valueOf(launchDetailsId),
+                actionType.toString()
+                    + "_"
+                    + String.valueOf(launchDetailsId)
+                    + "_"
+                    + java.util.UUID.randomUUID().toString(),
                 new TaskTimer(100L, launchDetailsId, actionType, t)),
         t);
 
