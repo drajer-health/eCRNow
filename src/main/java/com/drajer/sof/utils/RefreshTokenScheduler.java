@@ -1,5 +1,6 @@
 package com.drajer.sof.utils;
 
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
@@ -70,7 +71,7 @@ public class RefreshTokenScheduler {
     }
   }
 
-  private JSONObject getAccessToken(LaunchDetails authDetails) {
+  public JSONObject getAccessToken(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
     logger.info("Getting AccessToken for Client: " + authDetails.getClientId());
     try {
@@ -121,11 +122,12 @@ public class RefreshTokenScheduler {
     LaunchDetails existingAuthDetails = new LaunchDetails();
     try {
       logger.info("Updating the AccessToken value in database");
-      existingAuthDetails = authDetailsService.getAuthDetailsById(authDetails.getId());
+      existingAuthDetails =
+          ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
       existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
       existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
       existingAuthDetails.setLastUpdated(new Date());
-      authDetailsService.saveOrUpdate(existingAuthDetails);
+      ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
       logger.info("Successfully updated AccessToken value in database");
     } catch (Exception e) {
       logger.error("Error in Updating the AccessToken value into database: ", e);

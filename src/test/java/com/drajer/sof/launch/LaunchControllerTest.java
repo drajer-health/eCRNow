@@ -39,6 +39,7 @@ public class LaunchControllerTest {
         (LaunchDetails)
             TestUtils.getResourceAsObject(
                 "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
+    currentStateDetails.setLastUpdated(new Date());
     clientDetails =
         (ClientDetails)
             TestUtils.getResourceAsObject(
