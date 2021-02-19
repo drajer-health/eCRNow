@@ -1,0 +1,58 @@
+{
+	"patientId": "12742571",
+	"encounterId": "97953900",
+	"matchTriggerStatus": {
+		"actionId": "match-trigger",
+		"jobStatus": "COMPLETED",
+		"triggerMatchStatus": true,
+		"matchedCodes": [
+			{
+				"matchedCodes": [
+					"http://hl7.org/fhir/sid/icd-10-cm|U07.1",
+					"http://snomed.info/sct|840539006"
+				],
+				"matchedValues": null,
+				"valueSet": "2.16.840.1.113762.1.4.1146.1123",
+				"valueSetVersion": "1",
+				"matchedPath": "Condition.code"
+			}
+		]
+	},
+	"createEicrStatus": {
+		"actionId": "create-eicr",
+		"jobStatus": "COMPLETED",
+		"eicrCreated": true,
+		"eICRId": "305"
+	},
+	"periodicUpdateStatus": [
+		{
+			"actionId": "periodic-update-eicr",
+			"jobStatus": "COMPLETED",
+			"eicrUpdated": true,
+			"eICRId": "305"
+		}
+	],
+	"periodicUpdateJobStatus": "COMPLETED",
+	"closeOutEicrStatus": {
+		"actionId": "close-out-eicr",
+		"jobStatus": "COMPLETED",
+		"eicrClosed": true,
+		"eICRId": "305"
+	},
+	"validateEicrStatus": [
+		{
+			"actionId": "validate-eicr",
+			"jobStatus": "COMPLETED",
+			"eicrValidated": true,
+			"eICRId": "305",
+			"validationTime": 1613719790407
+		}
+	],
+	"submitEicrStatus": [],
+	"rrStatus": [],
+	"eicrsReadyForSubmission": [
+		305
+	],
+	"eicrsForRRCheck": [],
+	"eicrsReadyForValidation": []
+}

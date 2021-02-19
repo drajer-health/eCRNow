@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
@@ -17,6 +18,7 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.service.LoadingQueryService;
+import com.drajer.test.util.TestUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -198,6 +201,20 @@ public class EcaUtilsTest {
 
     // Validate
     assertEquals("This is R4 EICR data", eicr.getEicrData());
+  }
+
+  @Test
+  public void testHasNewTriggerCodeMatches() {
+    PatientExecutionState oldState =
+        (PatientExecutionState)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/EcaUtils/OldState.json", PatientExecutionState.class);
+    PatientExecutionState newState =
+        (PatientExecutionState)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/EcaUtils/NewState.json", PatientExecutionState.class);
+    boolean hasNewMatchCodes = EcaUtils.hasNewTriggerCodeMatches(oldState, newState);
+    assertTrue(hasNewMatchCodes);
   }
 
   public void setupMockForMatchTrigger() {
