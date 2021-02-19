@@ -44,6 +44,7 @@ public class CloseOutEicrActionTest {
   private RelatedAction mockRelActn;
   private MatchTriggerStatus mockTriggerStatus;
   private Eicr mockEicr;
+  private boolean mockEncounterClose;
 
   private WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
 
@@ -57,6 +58,7 @@ public class CloseOutEicrActionTest {
     mockRelActn = PowerMockito.mock(RelatedAction.class);
     mockTriggerStatus = PowerMockito.mock(MatchTriggerStatus.class);
     mockEicr = PowerMockito.mock(Eicr.class);
+    mockEncounterClose = true;
 
     PowerMockito.mockStatic(EcaUtils.class);
     PowerMockito.mockStatic(ApplicationUtils.class);
@@ -214,6 +216,7 @@ public class CloseOutEicrActionTest {
 
     // Mock EcaUtils
     when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
+    when(EcaUtils.checkEncounterClose(mockDetails)).thenReturn(mockEncounterClose);
 
     // Mock RelatedActions
     when(mockRelActn.getRelationship()).thenReturn(ActionRelationshipType.AFTER);
