@@ -135,8 +135,14 @@ public class R4ResourcesData {
                 && !foundPregnancyCondition) {
               problemConditions.add(condition);
               conditionCodes.addAll(findConditionCodes(condition));
-            } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)) {
-              encounterDiagnosisConditions.add(condition);
+            } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
+                && condition.hasEncounter()) {
+              if (condition
+                  .getEncounter()
+                  .getReference()
+                  .equals("Encounter/" + launchDetails.getEncounterId())) {
+                encounterDiagnosisConditions.add(condition);
+              }
             }
           }
         }
