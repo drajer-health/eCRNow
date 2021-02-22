@@ -153,11 +153,11 @@ public class R4ResourcesData {
     allConditions.addAll(problemConditions);
     allConditions.addAll(encounterDiagnosisConditions);
     r4FhirData.setConditions(problemConditions);
-    logger.info("Filtered Problem List Condition=====> {}" + problemConditions.size());
+    logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
     r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
     logger.info(
         "Filtered Encounter Diagnosis Condition List=====> {}"
-            + encounterDiagnosisConditions.size());
+            , encounterDiagnosisConditions.size());
     r4FhirData.setR4ConditionCodes(conditionCodes);
     return allConditions;
   }

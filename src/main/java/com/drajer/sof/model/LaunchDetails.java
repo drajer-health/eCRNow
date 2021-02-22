@@ -2,7 +2,6 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
-import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -74,6 +73,10 @@ public class LaunchDetails {
   @Column(name = "end_date", nullable = true)
   @Temporal(TemporalType.TIMESTAMP)
   private Date endDate;
+
+  @Column(name = "token_expiry_date", nullable = true)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date tokenExpiryDateTime;
 
   @Column(name = "refresh_token", nullable = true, columnDefinition = "TEXT")
   private String refreshToken;
@@ -262,10 +265,10 @@ public class LaunchDetails {
   }
 
   public String getAccessToken() {
-    if (this.getLastUpdated() != null && this.getExpiry() != 0) {
-      Instant currentDate = new Date().toInstant();
-      Instant lastUpdatedTime = this.getLastUpdated().toInstant().plusSeconds(this.getExpiry());
-      int value = currentDate.compareTo(lastUpdatedTime);
+    if (this.getTokenExpiryDateTime() != null) {
+      Date currentDate = new Date();
+      Date tokenExpirtyDate = this.getTokenExpiryDateTime();
+      int value = currentDate.compareTo(tokenExpirtyDate);
       if (value > 0) {
         logger.info("AccessToken is Expired. Getting new AccessToken");
         JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
@@ -333,6 +336,14 @@ public class LaunchDetails {
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+  public Date getTokenExpiryDateTime() {
+    return tokenExpiryDateTime;
+  }
+
+  public void setTokenExpiryDateTime(Date tokenExpiryDateTime) {
+    this.tokenExpiryDateTime = tokenExpiryDateTime;
   }
 
   public String getRefreshToken() {
