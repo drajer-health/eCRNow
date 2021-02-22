@@ -5,6 +5,7 @@ import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
 import com.drajer.sof.service.LaunchService;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -127,6 +128,9 @@ public class RefreshTokenScheduler {
       existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
       existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
       existingAuthDetails.setLastUpdated(new Date());
+      Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
+      Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
+      existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
       ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
       logger.info("Successfully updated AccessToken value in database");
     } catch (Exception e) {

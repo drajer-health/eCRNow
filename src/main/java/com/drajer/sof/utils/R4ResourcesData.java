@@ -7,6 +7,7 @@ import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,10 +33,9 @@ public class R4ResourcesData {
 
   private static final String OBSERVATION = "Observation";
   private static final String CONDITION = "Condition";
-  
-  private static final String ENCOUNTER_DIAGNOSIS_CONDITION="encounter-diagnosis";
-  private static final String PROBLEM_LIST_CONDITION="problem-list-item";
-  
+
+  private static final String ENCOUNTER_DIAGNOSIS_CONDITION = "encounter-diagnosis";
+  private static final String PROBLEM_LIST_CONDITION = "problem-list-item";
 
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<>();
@@ -122,11 +122,27 @@ public class R4ResourcesData {
         for (CodeableConcept categoryCodeableConcept : conditionCategory) {
           List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
           for (Coding categoryCoding : categoryCodingList) {
-            if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)) {
+            boolean foundPregnancyCondition =
+                condition
+                    .getCode()
+                    .getCoding()
+                    .stream()
+                    .anyMatch(
+                        coding ->
+                            Arrays.stream(QueryConstants.getPregnancySmtCodes())
+                                .anyMatch(coding.getCode()::equals));
+            if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
+                && !foundPregnancyCondition) {
               problemConditions.add(condition);
               conditionCodes.addAll(findConditionCodes(condition));
-            } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)) {
-              encounterDiagnosisConditions.add(condition);
+            } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
+                && condition.hasEncounter()) {
+              if (condition
+                  .getEncounter()
+                  .getReference()
+                  .equals("Encounter/" + launchDetails.getEncounterId())) {
+                encounterDiagnosisConditions.add(condition);
+              }
             }
           }
         }
@@ -137,11 +153,11 @@ public class R4ResourcesData {
     allConditions.addAll(problemConditions);
     allConditions.addAll(encounterDiagnosisConditions);
     r4FhirData.setConditions(problemConditions);
-    logger.info("Filtered Problem List Condition=====> {}" + problemConditions.size());
+    logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
     r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
     logger.info(
-        "Filtered Encounter Diagnosis Condition List=====> {}"
-            + encounterDiagnosisConditions.size());
+        "Filtered Encounter Diagnosis Condition List=====> {}",
+        encounterDiagnosisConditions.size());
     r4FhirData.setR4ConditionCodes(conditionCodes);
     return allConditions;
   }

@@ -123,7 +123,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     waitForEICR(50000);
     getLaunchDetailAndStatus();
-    validateActionStatus();
+    validateActionStatus(state.getPeriodicUpdateStatus().size());
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
   }
 
@@ -137,7 +137,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     waitForEICR(50000);
     getLaunchDetailAndStatus();
-    validateActionStatus();
+    validateActionStatus(state.getPeriodicUpdateStatus().size());
     assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
 
     Eicr ecr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
@@ -197,7 +197,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     waitForEICR(50000);
     getLaunchDetailAndStatus();
-    validateActionStatus();
+    validateActionStatus(state.getPeriodicUpdateStatus().size());
 
     // mock DocumentReference FHIR call.
     wireMockServer.stubFor(
@@ -243,7 +243,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     }
   }
 
-  private void validateActionStatus() {
+  private void validateActionStatus(Integer periodicUpdateStatus) {
     try {
       // MatchTrigger Action
       validateMatchedTriggerStatus(JobStatus.COMPLETED);
@@ -252,7 +252,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       validateCreateEICR(JobStatus.COMPLETED, true);
 
       // Periodic EICR Action
-      validatePeriodicEICR(JobStatus.NOT_STARTED, 1, false);
+      validatePeriodicEICR(JobStatus.NOT_STARTED, periodicUpdateStatus, false);
 
       // CloseOut EICR Action
       validateCloseOut(JobStatus.COMPLETED, true);
