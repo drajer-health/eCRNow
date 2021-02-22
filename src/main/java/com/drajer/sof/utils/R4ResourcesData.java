@@ -116,7 +116,7 @@ public class R4ResourcesData {
     List<Condition> encounterDiagnosisConditions = new ArrayList<Condition>();
     for (BundleEntryComponent entry : bundle.getEntry()) {
       Condition condition = (Condition) entry.getResource();
-
+      allConditions.add(condition);
       if (condition.getAbatement() == null && condition.hasCategory()) {
         List<CodeableConcept> conditionCategory = condition.getCategory();
         for (CodeableConcept categoryCodeableConcept : conditionCategory) {
@@ -150,9 +150,9 @@ public class R4ResourcesData {
         logger.info("Condition Abatement is not present. So condition is not added to Bundle");
       }
     }
-    allConditions.addAll(problemConditions);
-    allConditions.addAll(encounterDiagnosisConditions);
-    r4FhirData.setConditions(problemConditions);
+    // allConditions.addAll(problemConditions);
+    // allConditions.addAll(encounterDiagnosisConditions);
+    r4FhirData.setProblemListConditions(problemConditions);
     logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
     r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
     logger.info(

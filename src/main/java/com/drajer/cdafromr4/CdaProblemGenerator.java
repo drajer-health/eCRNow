@@ -33,7 +33,7 @@ public class CdaProblemGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    List<Condition> conds = data.getConditions();
+    List<Condition> conds = data.getProblemListConditions();
 
     if (conds != null && !conds.isEmpty()) {
 

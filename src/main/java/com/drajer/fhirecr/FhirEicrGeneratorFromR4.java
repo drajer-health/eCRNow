@@ -54,7 +54,7 @@ public class FhirEicrGeneratorFromR4 {
             data.setOrganization((Organization) ent.getResource());
           } else if (ent.getResource() instanceof Condition) {
             logger.info(" Bundle contains Condition ");
-            data.getConditions().add((Condition) ent.getResource());
+            data.getProblemListConditions().add((Condition) ent.getResource());
           } else if (ent.getResource() instanceof Observation) {
             logger.info(" Bundle constains Observation ");
             Observation obs = (Observation) ent.getResource();

@@ -85,7 +85,7 @@ testCase:
     - xPath: "text/table/thead/tr/th"
       count: 1
     - xPath: "text/table/tbody/tr"
-      count: 4
+      count: 2
     - xPath: "text/table/tbody/tr[1]/td"
       count: 1
     - xPath: "text/table/"
@@ -136,10 +136,10 @@ testCase:
     - xPath: "text/table/thead/tr/th"
       count: 1
     - xPath: "text/table/tbody/tr"
-      count: 8
+      count: 6
     - xPath: "text/table/tbody/tr[1]/td"
       count: 1
     - xPath: "text/table/"
       'thead/tr/th[1]': "Narrative Text"
       'tbody/tr[6]/td[1]/content': "Hyperlipidemia (disorder)"
-      'tbody/tr[8]/td[1]/content': "Suspected coronavirus infection"
+      #'tbody/tr[8]/td[1]/content': "Suspected coronavirus infection"
