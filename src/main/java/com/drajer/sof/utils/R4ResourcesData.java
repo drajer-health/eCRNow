@@ -156,8 +156,8 @@ public class R4ResourcesData {
     logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
     r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
     logger.info(
-        "Filtered Encounter Diagnosis Condition List=====> {}"
-            , encounterDiagnosisConditions.size());
+        "Filtered Encounter Diagnosis Condition List=====> {}",
+        encounterDiagnosisConditions.size());
     r4FhirData.setR4ConditionCodes(conditionCodes);
     return allConditions;
   }

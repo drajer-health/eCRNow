@@ -488,7 +488,7 @@
                             "userSelected": true
                         }
                     ],
-                    "text": "Hyperlipidemia"
+                    "text": "Hyperlipidemia (disorder)"
                 },
                 "subject": {
                     "reference": "Patient/12742571",

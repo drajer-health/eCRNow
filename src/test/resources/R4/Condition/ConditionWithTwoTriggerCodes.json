@@ -59,13 +59,19 @@
                 "code": {
                     "coding": [
                         {
-                            "system": "http://snomed.info/sct",
-                            "code": "231504006",
-                            "display": "Mixed anxiety and depressive disorder (disorder)",
-                            "userSelected": true
-                        }
+              "system": "http://snomed.info/sct",
+              "code": "840539006",
+              "display": "Disease caused by 2019-nCoV",
+              "userSelected": true
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "U07.1",
+              "display": "2019-nCoV acute respiratory disease",
+              "userSelected": false
+            }
                     ],
-                    "text": "Anxiety depression"
+                    "text": "Disease caused by 2019 novel coronavirus"
                 },
                 "subject": {
                     "reference": "Patient/12742571",
@@ -212,7 +218,7 @@
                             "userSelected": true
                         }
                     ],
-                    "text": "Seasonal allergy"
+                    "text": "Seasonal allergy (disorder)"
                 },
                 "subject": {
                     "reference": "Patient/12742571",
