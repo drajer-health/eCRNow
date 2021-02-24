@@ -75,17 +75,17 @@ public final class EventTypes {
     VALIDATION,
     PRODUCTION
   }
-  
+
   public enum EicrProcStatusEnum {
-	  SUCCESSFULLY_PROCESSED,
-	  FAILED_VALIDATION,
-	  FAILED_SUBMISSION
+    SUCCESSFULLY_PROCESSED,
+    FAILED_VALIDATION,
+    FAILED_SUBMISSION
   }
-  
+
   public enum RrProcStatusEnum {
-	  SUCCESSFULLY_PROCESSED,
-	  FAILED_CORRELATION,
-	  FAILED_EHR_SUBMISSION
+    SUCCESSFULLY_PROCESSED,
+    FAILED_CORRELATION,
+    FAILED_EHR_SUBMISSION
   }
 
   public EcrActionTypes getEcrActionTypes(String s) {

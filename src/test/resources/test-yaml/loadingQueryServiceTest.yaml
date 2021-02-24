@@ -93,7 +93,7 @@ testCase:
       TravelObservation: 2
       OccupationObservation: 3
       Organization: 1
-      Condition: 4
+      Condition: 2
       PregnancyCondition: 1
       Practitioner: 5
       Immunization: 3

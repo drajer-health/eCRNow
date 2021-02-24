@@ -140,27 +140,25 @@ public class EicrServiceImpl implements EicrRRService {
           ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        
-
         try {
-        logger.info(" RR Xml and eCR is present hence create a document reference ");
-        DocumentReference docRef = constructDocumentReference(data, ecr);
+          logger.info(" RR Xml and eCR is present hence create a document reference ");
+          DocumentReference docRef = constructDocumentReference(data, ecr);
 
-        if (docRef != null) {
-       
+          if (docRef != null) {
+
             logger.info(" Document Reference created successfully, submitting to Ehr ");
             submitDocRefToEhr(docRef, ecr);
-        }
-        
+          }
+
         } catch (Exception e) {
-            logger.error(
-                " Error in the the submission of the Doc Reference to the EHR due to {}",
-                e.getMessage());
-            
-            // Save the fact that we could not submit the message to the EHR.
-            ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
+          logger.error(
+              " Error in the the submission of the Doc Reference to the EHR due to {}",
+              e.getMessage());
+
+          // Save the fact that we could not submit the message to the EHR.
+          ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
         }
-        
+
         saveOrUpdate(ecr);
 
       } else {

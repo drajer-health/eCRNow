@@ -73,12 +73,12 @@ public class Eicr {
 
   @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
   private String ehrDocRefId;
-  
-  //Status of the eicr processing to handle exceptions in the future
+
+  // Status of the eicr processing to handle exceptions in the future
   @Column(name = "eicr_proc_status", nullable = true, columnDefinition = "TEXT")
   private String eicrProcStatus;
-  
-  //Status of the rr processing to handle exceptions in the future
+
+  // Status of the rr processing to handle exceptions in the future
   @Column(name = "rr_proc_status", nullable = true, columnDefinition = "TEXT")
   private String rrProcStatus;
 
@@ -239,21 +239,19 @@ public class Eicr {
     this.ehrDocRefId = ehrDocRefId;
   }
 
-public String getEicrProcStatus() {
-	return eicrProcStatus;
-}
+  public String getEicrProcStatus() {
+    return eicrProcStatus;
+  }
 
-public void setEicrProcStatus(String eicrProcStatus) {
-	this.eicrProcStatus = eicrProcStatus;
-}
+  public void setEicrProcStatus(String eicrProcStatus) {
+    this.eicrProcStatus = eicrProcStatus;
+  }
 
-public String getRrProcStatus() {
-	return rrProcStatus;
-}
+  public String getRrProcStatus() {
+    return rrProcStatus;
+  }
 
-public void setRrProcStatus(String rrProcStatus) {
-	this.rrProcStatus = rrProcStatus;
-}
-  
-  
+  public void setRrProcStatus(String rrProcStatus) {
+    this.rrProcStatus = rrProcStatus;
+  }
 }

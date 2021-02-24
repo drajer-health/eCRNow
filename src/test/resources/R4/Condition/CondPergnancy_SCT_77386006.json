@@ -150,7 +150,6 @@
                     "display": "FHIRTest, COVIDONE"
                 },
                 "onsetDateTime": "2020-01-01",
-                "abatementDateTime": "2020-11-07T18:00:00.000Z",
                 "recordedDate": "2020-04-29T14:01:58.000Z",
                 "recorder": {
                     "reference": "Practitioner/4122630",

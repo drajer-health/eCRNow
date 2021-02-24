@@ -393,11 +393,11 @@
                         "coding": [
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
+                                "code": "problem-list-item",
+                                "display": "problem-list-item"
                             }
                         ],
-                        "text": "Encounter Diagnosis"
+                        "text": "problem-list-item"
                     }
                 ],
                 "code": {
@@ -540,11 +540,11 @@
                         "coding": [
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
+                                "code": "problem-list-item",
+                                "display": "problem-list-item"
                             }
                         ],
-                        "text": "Encounter Diagnosis"
+                        "text": "problem-list-item"
                     }
                 ],
                 "code": {
