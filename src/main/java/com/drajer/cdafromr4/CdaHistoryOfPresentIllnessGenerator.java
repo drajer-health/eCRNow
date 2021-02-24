@@ -47,7 +47,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
     // Add Narrative Text
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-    List<Condition> conds = data.getConditions();
+    List<Condition> conds = data.getEncounterDiagnosisConditions();
 
     // Create Table Header.
     List<String> list = new ArrayList<>();

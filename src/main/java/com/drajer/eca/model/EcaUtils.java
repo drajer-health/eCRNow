@@ -123,7 +123,6 @@ public class EcaUtils {
       state.getMatchTriggerStatus().setTriggerMatchStatus(true);
       matchfound = true;
 
-      // Hardcoded value set and value set version for CONNECTATHON
       String valueSet = "2.16.840.1.113762.1.4.1146.1123";
       String valuesetVersion = "1";
 

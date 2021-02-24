@@ -1,10 +1,17 @@
 package com.drajer.eca.model;
 
+import com.drajer.ecrapp.util.ApplicationUtils;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MatchedTriggerCodes {
+
+  private static final Logger logger = LoggerFactory.getLogger(MatchedTriggerCodes.class);
 
   private Set<String> matchedCodes;
   private Set<String> matchedValues;
@@ -54,6 +61,41 @@ public class MatchedTriggerCodes {
 
   public void setMatchedValues(Set<String> matchedValues) {
     this.matchedValues = matchedValues;
+  }
+
+  public Set<String> hasMatchedTriggerCodesFromCodeableConcept(
+      String type, List<CodeableConcept> cds) {
+
+    Set<String> retval = null;
+
+    if (cds != null
+        && matchedCodes != null
+        && !matchedCodes.isEmpty()
+        && matchedPath != null
+        && matchedPath.contains(type)) {
+
+      Set<String> codes = ApplicationUtils.convertR4CodeableConceptsToString(cds);
+
+      logger.info(
+          " Size of Matched Codes is {}, and size of passed in codes is {}",
+          matchedCodes.size(),
+          codes.size());
+
+      Set<String> intersection = SetUtils.intersection(codes, matchedCodes);
+
+      if (intersection != null && !intersection.isEmpty()) {
+
+        logger.info(" Number of Matched Codes = {}", intersection.size());
+
+        retval = intersection;
+
+      } else {
+
+        logger.info(" No Matched codes found for Codeable Concepts passed ");
+      }
+    }
+
+    return retval;
   }
 
   public Boolean hasMatchedTriggerCodes(String type) {

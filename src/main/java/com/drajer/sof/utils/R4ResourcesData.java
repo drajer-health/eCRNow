@@ -133,15 +133,20 @@ public class R4ResourcesData {
                                 .anyMatch(coding.getCode()::equals));
             if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
                 && !foundPregnancyCondition) {
+              logger.info("Added condition to problem list {}", condition.getId());
               problemConditions.add(condition);
               conditionCodes.addAll(findConditionCodes(condition));
             } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
-                && condition.hasEncounter()) {
+                && condition.hasEncounter()
+                && !foundPregnancyCondition) {
+
               if (condition
                   .getEncounter()
                   .getReference()
                   .equals("Encounter/" + launchDetails.getEncounterId())) {
+                logger.info("Added condition to Encounter Diagnosis list {}", condition.getId());
                 encounterDiagnosisConditions.add(condition);
+                conditionCodes.addAll(findConditionCodes(condition));
               }
             }
           }
@@ -370,7 +375,8 @@ public class R4ResourcesData {
           Condition condition = (Condition) entryComp.getResource();
           List<Coding> conditionCodes = condition.getCode().getCoding();
           for (Coding conditionCoding : conditionCodes) {
-            if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)) {
+            if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)
+                && (condition.getAbatement() == null)) {
               conditions.add(condition);
             }
           }
@@ -972,7 +978,9 @@ public class R4ResourcesData {
       if (logger.isInfoEnabled()) {
         logger.info("Filtered ConditionsList----> {}", conditionsList.size());
       }
-      r4FhirData.setConditions(conditionsList);
+
+      // Already sorted and set in the getConditionData method
+      // r4FhirData.setConditions(conditionsList);
       for (Condition condition : conditionsList) {
         BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
         bundle.addEntry(conditionsEntry);

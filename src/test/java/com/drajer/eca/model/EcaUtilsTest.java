@@ -248,6 +248,9 @@ public class EcaUtilsTest {
 
     when(ValueSetSingleton.getInstance()).thenReturn(mockValueSet);
     when(mockState.getMatchTriggerStatus()).thenReturn(matchTriggerStatus);
+    when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
+    when(ActionRepo.getInstance().getRctcOid()).thenReturn("2.16.840.1.113762.1.4.1146.1123");
+    when(ActionRepo.getInstance().getRctcVersion()).thenReturn("1");
 
     // Dstu2  Setup
     ptCodes = new ArrayList<>();
