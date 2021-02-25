@@ -122,7 +122,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
             logger.info(" No job to schedule since there is no timing data ");
           } else if (state.getPeriodicUpdateJobStatus() == JobStatus.SCHEDULED
-              && !state.getCreateEicrStatus().getEicrCreated()
+              // && !state.getCreateEicrStatus().getEicrCreated()
               && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
 
             // Do this only if the job is scheduled.
@@ -130,10 +130,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
             // Check Trigger Codes again in case the data has changed.
             PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
+            boolean dataChanged = EcaUtils.hasNewTriggerCodeMatches(state, newState);
 
             if (newState.getMatchTriggerStatus().getTriggerMatchStatus()
                 && newState.getMatchTriggerStatus().getMatchedCodes() != null
-                && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
+                && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()
+                && (dataChanged || !state.hasEicrBeenCreated())) {
 
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
@@ -145,7 +147,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 status.seteICRId(ecr.getId().toString());
                 status.setJobStatus(JobStatus.COMPLETED);
 
-                newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
+                // newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
                 newState.getPeriodicUpdateStatus().add(status);
 
                 EcaUtils.updateDetailStatus(details, newState);
@@ -166,13 +168,23 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 logger.info(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
               }
 
+              // Schedule job again.
+              if (getTimingData() != null && !getTimingData().isEmpty()) {
+
+                logger.info(" Timing Data is present , so create a job based on timing data.");
+                scheduleJob(details, state, status);
+              }
+
             } // Check if Trigger Code Match found
             else {
 
-              logger.info(" **** Trigger Code did not match, hence not creating EICR **** ");
+              logger.info(" **** New Trigger Codes Detected: {}", dataChanged);
+              logger.info(" Scheduling the timer job for a later time ");
 
               // Schedule job again.
-              if (getTimingData() != null && !getTimingData().isEmpty()) {
+              if (state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED
+                  && getTimingData() != null
+                  && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
                 scheduleJob(details, state, status);

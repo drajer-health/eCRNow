@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ public class LaunchController {
 
   private static final String FHIR_VERSION = "fhirVersion";
   private static final String ACCESS_TOKEN = "access_token";
+  private static final String EXPIRES_IN = "expires_in";
   private static final String VALUE_URI = "valueUri";
   private static final String PATIENT = "patient";
   private static final String ENCOUNTER = "encounter";
@@ -203,6 +205,12 @@ public class LaunchController {
             launchDetails.setxRequestId(requestIdHeadervalue);
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
+            }
+            if (tokenResponse.get(EXPIRES_IN) != null) {
+              Integer expiresInSec = (Integer) tokenResponse.get(EXPIRES_IN);
+              Instant expireInstantTime =
+                  new Date().toInstant().plusSeconds(new Long(expiresInSec));
+              launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
             }
             launchDetails.setLaunchType("SystemLaunch");
 

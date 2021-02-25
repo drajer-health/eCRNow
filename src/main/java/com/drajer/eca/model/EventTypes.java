@@ -76,6 +76,18 @@ public final class EventTypes {
     PRODUCTION
   }
 
+  public enum EicrProcStatusEnum {
+    SUCCESSFULLY_PROCESSED,
+    FAILED_VALIDATION,
+    FAILED_SUBMISSION
+  }
+
+  public enum RrProcStatusEnum {
+    SUCCESSFULLY_PROCESSED,
+    FAILED_CORRELATION,
+    FAILED_EHR_SUBMISSION
+  }
+
   public EcrActionTypes getEcrActionTypes(String s) {
 
     if (s.equalsIgnoreCase("match-trigger")) return EcrActionTypes.MATCH_TRIGGER;

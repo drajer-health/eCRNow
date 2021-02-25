@@ -64,7 +64,7 @@ testCase:
       'code/@codeSystemName': "v3-ActCode"
       'code/@displayName': "inpatient encounter"
 #      'effectiveTime/low/@value': "20200512"
-      'effectiveTime/high/@nullFlavor': "NI"
+      'effectiveTime/high/@nullFlavor': ""
   eCR-encounter-withInvalidClass-UseType:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"

@@ -470,6 +470,17 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getHl7StringForDate(Date value) {
+
+    String s = "";
+    if (value != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+      s = formatter.format(value);
+    }
+
+    return s;
+  }
+
   public static String getXmlForEffectiveTime(String elName, Date value) {
     String s = "";
     if (value != null) {
@@ -759,7 +770,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForActWithNegationInd(
       String actName, String classCode, String moodCode, String negInd, Boolean includeNeg) {
-    if (negInd != null && negInd.equals("T")) {
+    if (negInd != null && (negInd.equalsIgnoreCase("T") || negInd.equalsIgnoreCase("true"))) {
       return CdaGeneratorConstants.START_XMLTAG
           + actName
           + CdaGeneratorConstants.SPACE

@@ -373,7 +373,7 @@ public class PlanDefinitionProcessor {
 
     if (action.hasTimingTiming()) {
 
-      logger.info(" Found Timing Element for Action " + act.getActionId());
+      logger.info(" Found Timing Element for Action {} ", act.getActionId());
       TimingSchedule ts = getTimingSchedule(action.getTimingTiming(), TriggerType.DATACHANGED);
       if (ts != null) {
         act.addTimingData(ts);
@@ -413,7 +413,7 @@ public class PlanDefinitionProcessor {
             && triggerDefinition.getType() != TriggerType.PERIODIC
             && triggerDefinition.hasData()) {
 
-          logger.info(" Identified Data Trigger for Act " + act.getActionId());
+          logger.info(" Identified Data Trigger for Act {}", act.getActionId());
 
           List<DataRequirement> dr = triggerDefinition.getData();
 

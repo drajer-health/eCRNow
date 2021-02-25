@@ -88,7 +88,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 
   @Test

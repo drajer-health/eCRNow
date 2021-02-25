@@ -3,8 +3,12 @@ package com.drajer.eca.model;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import java.util.HashSet;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PatientExecutionState {
+
+  private static final Logger logger = LoggerFactory.getLogger(PatientExecutionState.class);
 
   String patientId;
   String encounterId;
@@ -143,6 +147,29 @@ public class PatientExecutionState {
     this.rrStatus = rrStatus;
   }
 
+  public Boolean hasEicrBeenCreated() {
+
+    Boolean retVal = false;
+    if (createEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
+      logger.info(" Eicr has been creatd via Create Eicr Timer ");
+      retVal = true;
+    } else if (closeOutEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
+      logger.info(" Eicr has been creatd via Close Out Eicr Timer ");
+      retVal = true;
+    } else {
+
+      for (PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
+
+        if (pd.getJobStatus() == JobStatus.COMPLETED) {
+          logger.info(" Found a Eicr created via Periodic timer");
+          retVal = true;
+        }
+      }
+    }
+
+    return retVal;
+  }
+
   public Boolean hasActionCompleted(String actionId) {
 
     JobStatus status = null;
@@ -151,10 +178,24 @@ public class PatientExecutionState {
       // omitted.
       status = matchTriggerStatus.getJobStatus();
     } else if (actionId.contentEquals(createEicrStatus.getActionId())) {
+
       status = createEicrStatus.getJobStatus();
+
+      // When eicr has not been created, check to see if it was created through the periodic timer.
+      if (status != JobStatus.COMPLETED) {
+        for (PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
+
+          if (pd.getJobStatus() == JobStatus.COMPLETED) {
+            logger.info(
+                " Create Eicr Job Status of Completed is also interpreted from Periodic Update");
+            status = JobStatus.COMPLETED;
+          }
+        }
+      }
     } else if (actionId.contentEquals(closeOutEicrStatus.getActionId())) {
       status = closeOutEicrStatus.getJobStatus();
     }
+
     if (status != null && status == JobStatus.COMPLETED) {
       return true;
     }
@@ -162,6 +203,7 @@ public class PatientExecutionState {
     for (PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
 
       if (actionId.contentEquals(pd.getActionId()) && pd.getJobStatus() == JobStatus.COMPLETED) {
+        logger.info(" Found a Periodic Update that has been completed, hence returning true ");
         return true;
       }
     }

@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
@@ -17,6 +18,7 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.test.util.TestUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -241,6 +243,18 @@ public class CreateEicrActionTest {
 
     // Test
     createtEicrAction.execute(null, launchType);
+  }
+
+  @Test()
+  public void testHasEicrCreated() throws Exception {
+    PatientExecutionState patientExecutionState = new PatientExecutionState();
+    patientExecutionState =
+        (PatientExecutionState)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/EcaUtils/NewState.json", PatientExecutionState.class);
+    boolean hasEicrCreated = patientExecutionState.hasEicrBeenCreated();
+
+    assertTrue(hasEicrCreated);
   }
 
   private void setupMockData() {

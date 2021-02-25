@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.cda.parser.CdaIi;
 import com.drajer.cda.parser.CdaRrModel;
 import com.drajer.cda.parser.RrParser;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.dao.EicrDao;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.EicrTypes;
@@ -139,15 +140,24 @@ public class EicrServiceImpl implements EicrRRService {
           ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        saveOrUpdate(ecr);
+        try {
+          logger.info(" RR Xml and eCR is present hence create a document reference ");
+          DocumentReference docRef = constructDocumentReference(data, ecr);
 
-        logger.info(" RR Xml and eCR is present hence create a document reference ");
-        DocumentReference docRef = constructDocumentReference(data, ecr);
+          if (docRef != null) {
 
-        if (docRef != null) {
-          logger.info(" Document Reference created successfully, submitting to Ehr ");
-          submitDocRefToEhr(docRef, ecr);
+            logger.info(" Document Reference created successfully, submitting to Ehr ");
+            submitDocRefToEhr(docRef, ecr);
+          }
+
+        } catch (Exception e) {
+          logger.error(" Error in the the submission of the Doc Reference to the EHR due to ", e);
+
+          // Save the fact that we could not submit the message to the EHR.
+          ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
         }
+
+        saveOrUpdate(ecr);
 
       } else {
         String errorMsg = "Unable to find Eicr for Doc Id: {} " + docId.getRootValue();
@@ -202,6 +212,11 @@ public class EicrServiceImpl implements EicrRRService {
 
       if (outcome.getCreated()) {
         logger.info("Successfully sent RR to fhir");
+
+        // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
+        ecr.setEhrDocRefId(docRef.getId());
+        saveOrUpdate(ecr);
+
       } else {
         String errorMsg = "Unable to post RR response to FHIR server: " + ecr.getFhirServerUrl();
         logger.error(errorMsg);

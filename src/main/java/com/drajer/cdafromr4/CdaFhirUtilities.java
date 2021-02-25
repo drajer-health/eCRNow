@@ -268,7 +268,7 @@ public class CdaFhirUtilities {
         if (addr.getUseElement().getValue() == AddressUse.HOME
             || addr.getUseElement().getValue() == AddressUse.WORK) {
 
-          logger.info(" Found Home or Work Address ");
+          logger.debug(" Found Home or Work Address ");
           addrString.append(
               CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
 
@@ -379,7 +379,7 @@ public class CdaFhirUtilities {
             && tel.getSystem() == ContactPoint.ContactPointSystem.PHONE
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Telcom Number for " + tel.getSystem().getDisplay());
+          logger.debug(" Found Telcom Number for " + tel.getSystem().getDisplay());
 
           String use = "";
           if (tel.getUse() != null) {
@@ -511,17 +511,17 @@ public class CdaFhirUtilities {
 
           if (part.getIndividual() != null && part.getIndividual().getReference() != null) {
 
-            logger.info(" Individual is present ");
+            logger.debug(" Individual is present ");
 
             List<CodeableConcept> types = part.getType();
 
             if (types != null && !types.isEmpty()) {
 
-              logger.info(" Codeable Concepts present for individuals ");
+              logger.debug(" Codeable Concepts present for individuals ");
 
               for (CodeableConcept conc : types) {
 
-                logger.info(" Get Coding information for codeable concept ");
+                logger.debug(" Get Coding information for codeable concept ");
                 List<Coding> typeCodes = conc.getCoding();
 
                 if (typeCodes != null && !typeCodes.isEmpty()) {
@@ -534,15 +534,15 @@ public class CdaFhirUtilities {
                             || cd.getSystem()
                                 .contentEquals(CdaGeneratorConstants.FHIR_PARTICIPANT_TYPE_V3))) {
 
-                      logger.info(" Found Practitioner for Participation code system ");
+                      logger.debug(" Found Practitioner for Participation code system ");
 
                       if (cd.getCode() != null && cd.getCode().contentEquals(type.toString())) {
 
-                        logger.info(" Found Practitioner for Code and CodeSystem ");
+                        logger.debug(" Found Practitioner for Code and CodeSystem ");
 
-                        logger.info(" part.getIndividual = {}", part.getIndividual().getDisplay());
+                        logger.debug(" part.getIndividual = {}", part.getIndividual().getDisplay());
                         if (part.getIndividual().getReferenceElement() != null)
-                          logger.info(
+                          logger.debug(
                               " part.getIndividual = {}",
                               part.getIndividual().getReferenceElement());
 
@@ -564,11 +564,11 @@ public class CdaFhirUtilities {
                         }
                       } // Found Type that we need
                       else {
-                        logger.info(" Did not find the code for type {}", type);
+                        logger.debug(" Did not find the code for type {}", type);
                       }
                     } // Found participants that use standard code systems
                     else {
-                      logger.info(" Did not find participants using standard code system ");
+                      logger.debug(" Did not find participants using standard code system ");
                     }
                   } // For all Codings
                 } // Codings present
@@ -1523,6 +1523,39 @@ public class CdaFhirUtilities {
 
     if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
+
+    return val;
+  }
+
+  public static String getXmlForTypeForValueIvlTsEffectiveTime(String elName, Type dt) {
+
+    String val = "";
+    if (dt != null) {
+
+      if (dt instanceof DateTimeType) {
+
+        DateTimeType d = (DateTimeType) dt;
+
+        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
+
+      } else if (dt instanceof Period) {
+        Period pt = (Period) dt;
+
+        val += getPeriodXml(pt, elName);
+      } else if (dt instanceof Timing) {
+
+        Timing t = (Timing) (dt);
+        if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+
+          logger.debug(" Found the bounds element for creating xml ");
+        }
+      }
+
+      logger.debug(" Printing the class name " + dt.getClass());
+      return val;
+    }
+
+    // val += CdaGeneratorUtils.getXmlForV(CdaGeneratorConstants.NF_NI);
 
     return val;
   }

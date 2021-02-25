@@ -1,6 +1,8 @@
 package com.drajer.eca.model;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
@@ -12,12 +14,16 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import com.drajer.sof.utils.FhirContextInitializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +123,6 @@ public class EcaUtils {
       state.getMatchTriggerStatus().setTriggerMatchStatus(true);
       matchfound = true;
 
-      // Hardcoded value set and value set version for CONNECTATHON
       String valueSet = "2.16.840.1.113762.1.4.1146.1123";
       String valuesetVersion = "1";
 
@@ -219,5 +224,88 @@ public class EcaUtils {
     newState = ApplicationUtils.getDetailStatus(details);
 
     return newState;
+  }
+
+  public static boolean hasNewTriggerCodeMatches(
+      PatientExecutionState oldState, PatientExecutionState newState) {
+
+    boolean retVal = false;
+
+    if (!oldState.getMatchTriggerStatus().getTriggerMatchStatus()
+        && newState.getMatchTriggerStatus().getTriggerMatchStatus()) {
+
+      logger.info(
+          " No Previously Matched trigger codes, since there is a match now returning true ");
+      retVal = true;
+    } else if (oldState.getMatchTriggerStatus().getTriggerMatchStatus()
+        && newState.getMatchTriggerStatus().getTriggerMatchStatus()) {
+
+      logger.info(" Comparing old Trigger Code Matches with New Trigger Code Matches ");
+      List<MatchedTriggerCodes> mtc = oldState.getMatchTriggerStatus().getMatchedCodes();
+
+      Set<String> oldCodes = new HashSet<String>();
+      for (MatchedTriggerCodes m : mtc) {
+
+        Optional.ofNullable(m.getMatchedCodes()).ifPresent(oldCodes::addAll);
+        Optional.ofNullable(m.getMatchedValues()).ifPresent(oldCodes::addAll);
+      }
+
+      List<MatchedTriggerCodes> mtcNew = newState.getMatchTriggerStatus().getMatchedCodes();
+
+      Set<String> newCodes = new HashSet<String>();
+      for (MatchedTriggerCodes mn : mtcNew) {
+
+        Optional.ofNullable(mn.getMatchedCodes()).ifPresent(newCodes::addAll);
+        Optional.ofNullable(mn.getMatchedValues()).ifPresent(newCodes::addAll);
+      }
+
+      if (!oldCodes.containsAll(newCodes)) {
+
+        logger.info(" Found new trigger codes and hence have to account for creating EICR ");
+        retVal = true;
+      } else {
+        logger.info(
+            " Trigger Codes are exactly the same as previous, so no need to perform further processing ");
+      }
+
+    } else {
+
+      logger.info(" No matches found in the new check , so return false ");
+    }
+
+    return retVal;
+  }
+
+  public static boolean checkEncounterClose(LaunchDetails details) {
+
+    boolean retVal = false;
+
+    if (details != null
+        && details.getEncounterId() != null
+        && !details.getEncounterId().isEmpty()) {
+
+      // Valid Encounter Id
+      FhirContextInitializer ci = new FhirContextInitializer();
+      FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
+
+      IGenericClient client =
+          ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
+
+      Encounter enc =
+          (Encounter)
+              ci.getResouceById(details, client, ctx, "Encounter", details.getEncounterId());
+
+      if (enc != null) {
+        logger.info(" Found Encounter for checking encounter closure ");
+
+        if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
+          logger.info(
+              " Encounter has an end date so it is considered closed {}", enc.getPeriod().getEnd());
+          retVal = true;
+        }
+      }
+    }
+
+    return retVal;
   }
 }

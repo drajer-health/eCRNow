@@ -41,7 +41,8 @@ public class CreateEicrAction extends AbstractAction {
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet) {
+      Boolean validationMode = details.getValidationMode();
+      if (conditionsMet || validationMode) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -57,7 +58,7 @@ public class CreateEicrAction extends AbstractAction {
               // check if the action is completed.
               String actionId = act.getRelatedAction().getActionId();
 
-              if (!state.hasActionCompleted(actionId)) {
+              if (!state.hasActionCompleted(actionId) && !validationMode) {
 
                 logger.info(
                     " Action {} is not completed , hence this action has to wait ", actionId);
@@ -68,7 +69,8 @@ public class CreateEicrAction extends AbstractAction {
 
                 // Check if there is any timing constraint that needs to be handled.
                 if (act.getDuration() != null
-                    && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
+                    && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
+                    && !validationMode) {
 
                   // Duration is not null, meaning that the create action has to be delayed by the
                   // duration.
@@ -102,13 +104,14 @@ public class CreateEicrAction extends AbstractAction {
 
         // Check Timing Data , No need to check if the state is already scheduled meaning the
         // job was scheduled already.
-        if (relatedActsDone) {
+        if (relatedActsDone || validationMode) {
 
           logger.info(" All Related Actions are completed ");
 
           // Timing constraints are applicable if this job has not started, once it is started
           // the State Machine has to manage the execution.
-          if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
+          if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
+              && !validationMode) {
 
             logger.info(" Related Actions Done and this action has not started ");
 
@@ -132,8 +135,9 @@ public class CreateEicrAction extends AbstractAction {
             }
 
             logger.info(" No job to schedule since there is no timing data ");
-          } else if (state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
-              && launchType == WorkflowEvent.SCHEDULED_JOB) {
+          } else if ((state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
+                  && launchType == WorkflowEvent.SCHEDULED_JOB)
+              || validationMode) {
 
             // Do this only if the job is scheduled.
             logger.info(" Creating the EICR since the job has been scheduled ");

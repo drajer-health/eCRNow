@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
+import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ public class LaunchDetailsDaoTest {
         (LaunchDetails)
             TestUtils.getResourceAsObject(
                 "R4/Misc/LaunchDetails/LaunchDetails.json", LaunchDetails.class);
+    expectedLaunchDetails.setLastUpdated(new Date());
   }
 
   @Test

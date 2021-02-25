@@ -1,6 +1,7 @@
 package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
+import com.drajer.sof.utils.RefreshTokenScheduler;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +73,10 @@ public class LaunchDetails {
   @Column(name = "end_date", nullable = true)
   @Temporal(TemporalType.TIMESTAMP)
   private Date endDate;
+
+  @Column(name = "token_expiry_date", nullable = true)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date tokenExpiryDateTime;
 
   @Column(name = "refresh_token", nullable = true, columnDefinition = "TEXT")
   private String refreshToken;
@@ -259,7 +265,21 @@ public class LaunchDetails {
   }
 
   public String getAccessToken() {
-    return accessToken;
+    if (this.getTokenExpiryDateTime() != null) {
+      Date currentDate = new Date();
+      Date tokenExpirtyDate = this.getTokenExpiryDateTime();
+      int value = currentDate.compareTo(tokenExpirtyDate);
+      if (value > 0) {
+        logger.info("AccessToken is Expired. Getting new AccessToken");
+        JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
+        return accessTokenObj.getString("access_token");
+      } else {
+        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        return accessToken;
+      }
+    } else {
+      return accessToken;
+    }
   }
 
   public void setAccessToken(String accessToken) {
@@ -316,6 +336,14 @@ public class LaunchDetails {
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+  public Date getTokenExpiryDateTime() {
+    return tokenExpiryDateTime;
+  }
+
+  public void setTokenExpiryDateTime(Date tokenExpiryDateTime) {
+    this.tokenExpiryDateTime = tokenExpiryDateTime;
   }
 
   public String getRefreshToken() {
