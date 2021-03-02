@@ -314,24 +314,24 @@ public class ApplicationUtils {
 
     if (d != null) {
 
-      if (d.getUnit().contentEquals("a")) {
+      if (d.getUnit().equalsIgnoreCase("a")) {
 
         t = Instant.from(LocalDate.now().plusYears(d.getValue().longValue()));
 
-      } else if (d.getUnit().contentEquals("mo")) {
+      } else if (d.getUnit().equalsIgnoreCase("mo")) {
 
         t = Instant.from(LocalDate.now().plusMonths(d.getValue().longValue()));
-      } else if (d.getUnit().contentEquals("wk")) {
+      } else if (d.getUnit().equalsIgnoreCase("wk")) {
         t = Instant.from(LocalDate.now().plusWeeks(d.getValue().longValue()));
-      } else if (d.getUnit().contentEquals("d")) {
+      } else if (d.getUnit().equalsIgnoreCase("d")) {
         t = Instant.from(LocalDate.now().plusDays(d.getValue().longValue()));
-      } else if (d.getUnit().contentEquals("h")) {
+      } else if (d.getUnit().equalsIgnoreCase("h")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60 * 60);
-      } else if (d.getUnit().contentEquals("min")) {
+      } else if (d.getUnit().equalsIgnoreCase("min")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60);
-      } else if (d.getUnit().contentEquals("s")) {
+      } else if (d.getUnit().equalsIgnoreCase("s")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
       } else {
