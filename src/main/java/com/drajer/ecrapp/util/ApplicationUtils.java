@@ -287,16 +287,19 @@ public class ApplicationUtils {
 
     if (ts.getDurationUnit() != null) {
 
-      logger.info("Found Duration for Timing Schedule");
-      logger.info(" Duration = " + ts.getDuration());
-      logger.info(" Duration = " + ts.getDurationUnit());
+      logger.debug("Found Duration for Timing Schedule");
+      logger.debug(" Duration before conversion = " + ts.getDuration());
+      logger.debug(" Duration Unit = " + ts.getDurationUnit());
       d.setValue(ts.getDuration());
-      d.setUnit(ts.getDurationUnit().toString());
+      d.setUnit(ts.getDurationUnit().toCode());
+      logger.debug(" Duration during conversion = " + d.getValue());
+      logger.debug(" Duration Unit = " + d.getUnit());
+
     } else if (ts.getFrequencyPeriodUnit() != null) {
 
-      logger.info("Found Frequency for Timing Schedule ");
+      logger.debug("Found Frequency for Timing Schedule ");
       d.setValue(ts.getFrequencyPeriod());
-      d.setUnit(ts.getFrequencyPeriodUnit().toString());
+      d.setUnit(ts.getFrequencyPeriodUnit().toCode());
     } else {
 
       d.setValue(0);
