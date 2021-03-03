@@ -85,7 +85,7 @@ public class EicrServiceImpl implements EicrRRService {
 
     logger.debug(" Start processing MDN");
 
-    Eicr ecr = eicrDao.getEicrByCoorrelationId(xCorrelationId);
+    Eicr ecr = eicrDao.getEicrByCorrelationId(xCorrelationId);
 
     if (ecr != null) {
 
@@ -151,10 +151,8 @@ public class EicrServiceImpl implements EicrRRService {
           }
 
         } catch (Exception e) {
-          logger.error(
-              " Error in the the submission of the Doc Reference to the EHR due to {}",
-              e.getMessage());
 
+          logger.error(" Error in the the submission of the Doc Reference to the EHR due to ", e);
           // Save the fact that we could not submit the message to the EHR.
           ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
         }

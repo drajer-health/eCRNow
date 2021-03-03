@@ -50,11 +50,11 @@ public class RestApiSender {
           newXReqId);
       headers.add("X-Request-ID", newXReqId);
 
-      headers.add("X-Correlation-ID", ecr.getxCoorrelationId());
+      headers.add("X-Correlation-ID", ecr.getxCorrelationId());
       logger.info(
           " Launch Req Id: {}, X-Correlation-ID for Eicr Submission: {}",
           ecr.getxRequestId(),
-          ecr.getxCoorrelationId());
+          ecr.getxCorrelationId());
 
       final String json = constructJson(eicrXml, ecr);
 
@@ -99,8 +99,8 @@ public class RestApiSender {
   /**
    * Construct EICR Trigger JSON.
    *
-   * @param launchDetails {@link LaunchDetails}
    * @param eicrXml EICR XML document
+   * @param ecr EICR object
    * @return EICR Trigger JSON
    */
   private static String constructJson(final String eicrXml, final Eicr ecr) {

@@ -93,7 +93,8 @@ public class EicrDaoTest {
   @Test
   public void getEicrByCoorrelationId() {
     eicrDaoImpl.saveOrUpdate(expectedEicr);
-    Eicr actualEicr = eicrDaoImpl.getEicrByCoorrelationId(expectedEicr.getxCoorrelationId());
+
+    Eicr actualEicr = eicrDaoImpl.getEicrByCorrelationId(expectedEicr.getxCorrelationId());
 
     assertNotNull(actualEicr);
     assertEicr(expectedEicr, actualEicr);
@@ -101,7 +102,7 @@ public class EicrDaoTest {
 
   public void assertEicr(Eicr expectedEicr, Eicr actualEicr) {
     assertEquals(expectedEicr.getxRequestId(), actualEicr.getxRequestId());
-    assertEquals(expectedEicr.getxCoorrelationId(), actualEicr.getxCoorrelationId());
+    assertEquals(expectedEicr.getxCorrelationId(), actualEicr.getxCorrelationId());
     assertEquals(expectedEicr.getEicrDocId(), actualEicr.getEicrDocId());
     assertEquals(expectedEicr.getSetId(), actualEicr.getSetId());
     assertEquals(expectedEicr.getDocVersion(), actualEicr.getDocVersion());

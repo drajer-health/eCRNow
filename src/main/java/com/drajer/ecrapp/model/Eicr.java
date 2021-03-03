@@ -127,14 +127,6 @@ public class Eicr {
     this.responseType = responseType;
   }
 
-  public String getxCoorrelationId() {
-    return xCorrelationId;
-  }
-
-  public void setxCoorrelationId(String xCoorrelationId) {
-    this.xCorrelationId = xCoorrelationId;
-  }
-
   public String getEicrDocId() {
     return eicrDocId;
   }

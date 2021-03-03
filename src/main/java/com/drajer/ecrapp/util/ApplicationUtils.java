@@ -321,37 +321,37 @@ public class ApplicationUtils {
 
     if (d != null) {
 
-      if (d.getUnit().contentEquals("a")) {
+      if (d.getUnit().equalsIgnoreCase("a")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.YEAR, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().contentEquals("mo")) {
+      } else if (d.getUnit().equalsIgnoreCase("mo")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().contentEquals("wk")) {
+      } else if (d.getUnit().equalsIgnoreCase("wk")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, (d.getValue().intValue() * 7));
         t = c.toInstant();
 
-      } else if (d.getUnit().contentEquals("d")) {
+      } else if (d.getUnit().equalsIgnoreCase("d")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().contentEquals("h")) {
+      } else if (d.getUnit().equalsIgnoreCase("h")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60 * 60);
-      } else if (d.getUnit().contentEquals("min")) {
+      } else if (d.getUnit().equalsIgnoreCase("min")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60);
-      } else if (d.getUnit().contentEquals("s")) {
+      } else if (d.getUnit().equalsIgnoreCase("s")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
       } else {

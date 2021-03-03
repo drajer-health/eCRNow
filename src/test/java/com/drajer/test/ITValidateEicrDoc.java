@@ -131,7 +131,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       assertNotNull(eICRXml);
       assertFalse(eICRXml.isEmpty());
       getLaunchDetailAndStatus();
-
       assertTrue(
           "Schema Validation Failed, check the logs",
           CdaValidatorUtil.validateEicrXMLData(eICRXml));

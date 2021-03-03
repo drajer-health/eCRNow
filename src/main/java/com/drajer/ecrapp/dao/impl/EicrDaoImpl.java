@@ -50,7 +50,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return 0;
   }
 
-  public Eicr getEicrByCoorrelationId(String xcoorrId) {
+  public Eicr getEicrByCorrelationId(String xcoorrId) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
     criteria.add(Restrictions.eq("xCorrelationId", xcoorrId));
 
@@ -62,24 +62,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("eicrId") != null) {
       criteria.add(Restrictions.eq("id", Integer.parseInt(searchParams.get("eicrId"))));
     }
-    if (searchParams.get("eicrDocId") != null) {
-      criteria.add(Restrictions.eq("eicrDocId", searchParams.get("eicrDocId")));
-    }
-    if (searchParams.get("setId") != null) {
-      criteria.add(Restrictions.eq("setId", searchParams.get("setId")));
-    }
-    if (searchParams.get("patientId") != null) {
-      criteria.add(Restrictions.eq("launchPatientId", searchParams.get("patientId")));
-    }
-    if (searchParams.get("encounterId") != null) {
-      criteria.add(Restrictions.eq("encounterId", searchParams.get("encounterId")));
-    }
-    if (searchParams.get("version") != null) {
-      criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
-    }
-    if (searchParams.get("fhirServerUrl") != null) {
-      criteria.add(Restrictions.eq("fhirServerUrl", searchParams.get("fhirServerUrl")));
-    }
+    prepareCriteria(criteria, searchParams);
     return criteria.addOrder(Order.desc("id")).list();
   }
 
@@ -88,24 +71,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("responseDocId") != null) {
       criteria.add(Restrictions.eq("responseDocId", searchParams.get("responseDocId")));
     }
-    if (searchParams.get("eicrDocId") != null) {
-      criteria.add(Restrictions.eq("eicrDocId", searchParams.get("eicrDocId")));
-    }
-    if (searchParams.get("fhirServerUrl") != null) {
-      criteria.add(Restrictions.eq("fhirServerUrl", searchParams.get("fhirServerUrl")));
-    }
-    if (searchParams.get("setId") != null) {
-      criteria.add(Restrictions.eq("setId", searchParams.get("setId")));
-    }
-    if (searchParams.get("patientId") != null) {
-      criteria.add(Restrictions.eq("launchPatientId", searchParams.get("patientId")));
-    }
-    if (searchParams.get("encounterId") != null) {
-      criteria.add(Restrictions.eq("encounterId", searchParams.get("encounterId")));
-    }
-    if (searchParams.get("version") != null) {
-      criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
-    }
+    prepareCriteria(criteria, searchParams);
     return criteria.addOrder(Order.desc("id")).list();
   }
 
@@ -115,5 +81,27 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     criteria.add(Restrictions.eq("eicrDocId", docId));
 
     return (Eicr) criteria.uniqueResult();
+  }
+
+  public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
+
+    if (searchParams.get("eicrDocId") != null) {
+      criteria.add(Restrictions.eq("eicrDocId", searchParams.get("eicrDocId")));
+    }
+    if (searchParams.get("fhirServerUrl") != null) {
+      criteria.add(Restrictions.eq("fhirServerUrl", searchParams.get("fhirServerUrl")));
+    }
+    if (searchParams.get("setId") != null) {
+      criteria.add(Restrictions.eq("setId", searchParams.get("setId")));
+    }
+    if (searchParams.get("patientId") != null) {
+      criteria.add(Restrictions.eq("launchPatientId", searchParams.get("patientId")));
+    }
+    if (searchParams.get("encounterId") != null) {
+      criteria.add(Restrictions.eq("encounterId", searchParams.get("encounterId")));
+    }
+    if (searchParams.get("version") != null) {
+      criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
+    }
   }
 }

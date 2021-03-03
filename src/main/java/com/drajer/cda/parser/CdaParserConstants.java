@@ -14,13 +14,29 @@ public class CdaParserConstants {
   private static final Logger logger = LoggerFactory.getLogger(CdaParserConstants.class);
   private static final CdaParserConstants constants = new CdaParserConstants();
 
-  private XPath CdaXPath = XPathFactory.newInstance().newXPath();
+  public static final XPathExpression DOC_ID_EXP;
+  public static final XPathExpression EICR_DOC_ID_EXP;
+  public static final XPathExpression REL_ID_EXP;
+  public static final XPathExpression RR_STATUS_OBS_EXP;
+  public static final XPathExpression REL_VAL_EXP;
 
-  public static XPathExpression DOC_ID_EXP;
-  public static XPathExpression EICR_DOC_ID_EXP;
-  public static XPathExpression REL_ID_EXP;
-  public static XPathExpression RR_STATUS_OBS_EXP;
-  public static XPathExpression REL_VAL_EXP;
+  static {
+    try {
+      final XPath cdaXPath = XPathFactory.newInstance().newXPath();
+      DOC_ID_EXP = cdaXPath.compile("/ClinicalDocument/id[not(@nullFlavor)]");
+      EICR_DOC_ID_EXP =
+          cdaXPath.compile(
+              "//externalDocument[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.10']]");
+      REL_ID_EXP = cdaXPath.compile("./id[not(@nullFlavor)]");
+      RR_STATUS_OBS_EXP =
+          cdaXPath.compile(
+              "//observation[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.19']]");
+      REL_VAL_EXP = cdaXPath.compile("./value[not(@nullFlavor)]");
+    } catch (XPathExpressionException e) {
+      logger.error("Failed to resolve CDA xPath", e);
+      throw new IllegalStateException(e);
+    }
+  }
 
   public static final String DEFAULT_XPATH = "/ClinicalDocument";
 
@@ -31,31 +47,10 @@ public class CdaParserConstants {
       "Reportability response report Document Public health";
   public static final String RR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
 
-  private CdaParserConstants() {
-    initialize();
-  }
+  private CdaParserConstants() {}
 
   public CdaParserConstants getInstance() {
     return constants;
-  }
-
-  private void initialize() {
-
-    try {
-
-      DOC_ID_EXP = CdaXPath.compile("/ClinicalDocument/id[not(@nullFlavor)]");
-      EICR_DOC_ID_EXP =
-          CdaXPath.compile(
-              "//externalDocument[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.10']]");
-      REL_ID_EXP = CdaXPath.compile("./id[not(@nullFlavor)]");
-      RR_STATUS_OBS_EXP =
-          CdaXPath.compile(
-              "//observation[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.19']]");
-      REL_VAL_EXP = CdaXPath.compile("./value[not(@nullFlavor)]");
-
-    } catch (XPathExpressionException e) {
-      logger.error("Failed to resolve CDA xPath", e);
-    }
   }
 
   NamespaceContext ctx =

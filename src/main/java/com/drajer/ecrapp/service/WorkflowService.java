@@ -280,11 +280,8 @@ public class WorkflowService {
 
   public static void scheduleJob(
       Integer launchDetailsId, Duration d, EcrActionTypes actionType, Date timeRef) {
-    Instant t = ApplicationUtils.convertDurationToInstant(d);
 
-    //    ActionRepo.getInstance()
-    //        .getTaskScheduler()
-    //        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
+    Instant t = ApplicationUtils.convertDurationToInstant(d);
 
     invokeScheduler(launchDetailsId, actionType, t);
 
@@ -311,7 +308,7 @@ public class WorkflowService {
                 new TaskTimer(100L, launchDetailsId, actionType, t)),
         t);
 
-    logger.info(" task  ::: " + task);
+    logger.info(" task  ::: {}", task);
     return task;
   }
 }

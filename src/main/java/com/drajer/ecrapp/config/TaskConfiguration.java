@@ -7,8 +7,10 @@ import com.drajer.ecrapp.model.WorkflowTask;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,26 +23,27 @@ public class TaskConfiguration {
 
   @Autowired RestTemplate restTemplate;
 
-  @Value("${workflow.endpoint}")
+  @Value("${workflow.endpoint:}")
   private String workflowEndpoint;
 
   /** Define a one-time task which have to be manually scheduled. */
   @Bean
   public Task<TaskTimer> sampleOneTimeTask() {
     log.info("Initializing the One time task");
+    final Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
     OneTimeTask<TaskTimer> myTask =
         Tasks.oneTime("EICRTask", TaskTimer.class)
             .onFailureRetryLater()
             .execute(
                 (inst, ctx) -> {
                   try {
+                    MDC.setContextMap(loggingDiagnosticContext);
                     log.info(
-                        "Executing Task for "
-                            + inst.getTaskAndInstance()
-                            + " , Launch Id::: "
-                            + inst.getData().getLaunchDetailsId());
+                        "Executing Task for {}, Launch Id::: {}",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId());
 
-                    log.info("Workflow Endpoint URL::::" + workflowEndpoint);
+                    // log.info("Workflow Endpoint URL:::: {}", workflowEndpoint);
                     WorkflowTask workflowTask = new WorkflowTask();
                     workflowTask.setLaunchId(inst.getData().getLaunchDetailsId());
                     workflowTask.setActionType(inst.getData().getActionTypes());
@@ -53,7 +56,9 @@ public class TaskConfiguration {
                             workflowTask.getWorkflowEvent());
                     // restTemplate.postForObject(workflowEndpoint, workflowTask, String.class);
                   } catch (Exception e) {
-                    log.error("Error in completing the Execution:::::" + e.getMessage());
+                    log.error("Error in completing the Execution:::::", e);
+                  } finally {
+                    MDC.clear();
                   }
                 });
     return myTask;

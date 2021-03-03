@@ -24,10 +24,13 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdaFhirUtilitiesTest {
 
   Map<String, List<String>> testData = new HashMap<String, List<String>>();
+  private static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilitiesTest.class);
 
   @Before
   public void setUp() {
@@ -148,7 +151,7 @@ public class CdaFhirUtilitiesTest {
     try {
       testMap = mapper.readValue(testDataJson, Map.class);
     } catch (JsonProcessingException e) {
-      System.out.println("Fix this");
+      logger.error("Error in reading the test data:::", e);
     }
     if (testMap != null) {
       Set<String> dataKeySet = testMap.keySet();

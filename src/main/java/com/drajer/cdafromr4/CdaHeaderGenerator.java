@@ -50,7 +50,7 @@ public class CdaHeaderGenerator {
       String docId = CdaGeneratorUtils.getGuid();
       eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));
       ecr.setEicrDocId(docId);
-      ecr.setxCoorrelationId(docId);
+      ecr.setxCorrelationId(docId);
 
       // Set the other eICR details.
       ecr.setFhirServerUrl(details.getEhrServerURL());
