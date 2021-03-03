@@ -206,7 +206,7 @@ public class R4ResourcesData {
     List<Observation> observations = new ArrayList<>();
     List<CodeableConcept> observationCodes = new ArrayList<>();
     // Filter Observations based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         if (!observation.getEncounter().isEmpty()
@@ -221,7 +221,7 @@ public class R4ResourcesData {
       }
       // If Encounter Id is not present using start and end dates to filter
       // Observations
-    } else {
+    } else if (bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         // Checking If Issued Date is present in Observation resource
@@ -784,7 +784,7 @@ public class R4ResourcesData {
     if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
-        
+
         if (!serviceRequest.getEncounter().isEmpty()
             && serviceRequest
                 .getEncounter()
