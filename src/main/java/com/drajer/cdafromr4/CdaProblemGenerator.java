@@ -365,11 +365,12 @@ public class CdaProblemGenerator {
 
                   logger.info(" Retrieved CSD Values ");
                   logger.info("Retrived CSD Values {}, {}", csd.getValue0(), csd.getValue1());
+
                   // Add Value SEt and ValueSEt Version
-                  String vs = ActionRepo.getInstance().getRctcOid();
+                  String vs = CdaGeneratorConstants.RCTC_OID;
                   String vsVersion = ActionRepo.getInstance().getRctcVersion();
 
-                  logger.info("Retrived RCTC Values");
+                  logger.info("Retrived RCTC Values: Vs {}, vsVersion {}", vs, vsVersion);
                   sb.append(
                       CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                           parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
