@@ -18,7 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -314,20 +316,35 @@ public class ApplicationUtils {
   public static Instant convertDurationToInstant(Duration d) {
 
     Instant t = null;
+    final DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
     if (d != null) {
 
       if (d.getUnit().contentEquals("a")) {
 
-        t = Instant.from(LocalDate.now().plusYears(d.getValue().longValue()));
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.YEAR, d.getValue().intValue());
+        t = c.toInstant();
 
       } else if (d.getUnit().contentEquals("mo")) {
 
-        t = Instant.from(LocalDate.now().plusMonths(d.getValue().longValue()));
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, d.getValue().intValue());
+        t = c.toInstant();
+
       } else if (d.getUnit().contentEquals("wk")) {
-        t = Instant.from(LocalDate.now().plusWeeks(d.getValue().longValue()));
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, (d.getValue().intValue() * 7));
+        t = c.toInstant();
+
       } else if (d.getUnit().contentEquals("d")) {
-        t = Instant.from(LocalDate.now().plusDays(d.getValue().longValue()));
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, d.getValue().intValue());
+        t = c.toInstant();
+
       } else if (d.getUnit().contentEquals("h")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60 * 60);
