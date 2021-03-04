@@ -118,9 +118,12 @@ public class TimingSchedule {
       logger.info(" Frequency = {}", frequency);
       logger.info(" Max Frequency = {}", frequencyMax);
       logger.info(" Frequency Period = {}", frequencyPeriod);
+      logger.info(" Duration = {}", duration);
 
       if (frequencyPeriodUnit != null)
         logger.info(" Frequency Period Unit {}", frequencyPeriodUnit);
+
+      if (durationUnit != null) logger.info(" Duration Unit {}", durationUnit);
 
       logger.info(" *** End Printing Timing Schedule *** ");
     }

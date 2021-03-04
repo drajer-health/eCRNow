@@ -18,7 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -287,16 +289,19 @@ public class ApplicationUtils {
 
     if (ts.getDurationUnit() != null) {
 
-      logger.info("Found Duration for Timing Schedule");
-      logger.info(" Duration = " + ts.getDuration());
-      logger.info(" Duration = " + ts.getDurationUnit());
+      logger.debug("Found Duration for Timing Schedule");
+      logger.debug(" Duration before conversion = " + ts.getDuration());
+      logger.debug(" Duration Unit = " + ts.getDurationUnit());
       d.setValue(ts.getDuration());
-      d.setUnit(ts.getDurationUnit().toString());
+      d.setUnit(ts.getDurationUnit().toCode());
+      logger.debug(" Duration during conversion = " + d.getValue());
+      logger.debug(" Duration Unit = " + d.getUnit());
+
     } else if (ts.getFrequencyPeriodUnit() != null) {
 
-      logger.info("Found Frequency for Timing Schedule ");
+      logger.debug("Found Frequency for Timing Schedule ");
       d.setValue(ts.getFrequencyPeriod());
-      d.setUnit(ts.getFrequencyPeriodUnit().toString());
+      d.setUnit(ts.getFrequencyPeriodUnit().toCode());
     } else {
 
       d.setValue(0);
@@ -311,20 +316,35 @@ public class ApplicationUtils {
   public static Instant convertDurationToInstant(Duration d) {
 
     Instant t = null;
+    final DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
     if (d != null) {
 
       if (d.getUnit().equalsIgnoreCase("a")) {
 
-        t = Instant.from(LocalDate.now().plusYears(d.getValue().longValue()));
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.YEAR, d.getValue().intValue());
+        t = c.toInstant();
 
       } else if (d.getUnit().equalsIgnoreCase("mo")) {
 
-        t = Instant.from(LocalDate.now().plusMonths(d.getValue().longValue()));
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, d.getValue().intValue());
+        t = c.toInstant();
+
       } else if (d.getUnit().equalsIgnoreCase("wk")) {
-        t = Instant.from(LocalDate.now().plusWeeks(d.getValue().longValue()));
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, (d.getValue().intValue() * 7));
+        t = c.toInstant();
+
       } else if (d.getUnit().equalsIgnoreCase("d")) {
-        t = Instant.from(LocalDate.now().plusDays(d.getValue().longValue()));
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, d.getValue().intValue());
+        t = c.toInstant();
+
       } else if (d.getUnit().equalsIgnoreCase("h")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60 * 60);

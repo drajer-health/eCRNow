@@ -414,11 +414,8 @@ public class CdaFhirUtilities {
             && tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL
             && !StringUtils.isEmpty(tel.getValue())) {
 
-          logger.info(" Found Email ");
+          logger.debug(" Found Email address ");
           String use = "";
-          if (tel.getUse() != null) {
-            use = CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode());
-          }
 
           telString.append(
               CdaGeneratorUtils.getXmlForEmail(
