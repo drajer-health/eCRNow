@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.sof.model.LaunchDetails;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -58,6 +59,9 @@ public class FhirContextInitializer {
     IGenericClient client = context.newRestfulGenericClient(url);
     context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
+    if (logger.isDebugEnabled()) {
+      client.registerInterceptor(new LoggingInterceptor(true));
+    }
     logger.info("Initialized the Client");
     return client;
   }
