@@ -34,6 +34,8 @@ public class R4ResourcesData {
   private static final String OBSERVATION = "Observation";
   private static final String CONDITION = "Condition";
 
+  private static final String OBSERVATION_SOCIAL_HISTORY = "social-history";
+
   private static final String ENCOUNTER_DIAGNOSIS_CONDITION = "encounter-diagnosis";
   private static final String PROBLEM_LIST_CONDITION = "problem-list-item";
 
@@ -295,6 +297,7 @@ public class R4ResourcesData {
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
     if (bundle != null) {
+      bundle = filterObservationsBundleByCategory(bundle, OBSERVATION_SOCIAL_HISTORY);
       observations = filterObservation(bundle, encounter, start, end);
     }
 
@@ -310,6 +313,9 @@ public class R4ResourcesData {
                   QueryConstants.SNOMED_CODE_SYSTEM);
       List<Observation> travelobs = new ArrayList<>();
       if (travelHisWithSNOMEDCodesbundle != null) {
+        travelHisWithSNOMEDCodesbundle =
+            filterObservationsBundleByCategory(
+                travelHisWithSNOMEDCodesbundle, OBSERVATION_SOCIAL_HISTORY);
         travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
       }
       if (!travelobs.isEmpty()) {
@@ -318,6 +324,31 @@ public class R4ResourcesData {
     }
 
     return observations;
+  }
+
+  private Bundle filterObservationsBundleByCategory(
+      Bundle bundle, String observationSocialHistory) {
+    Bundle filteredBundle = new Bundle();
+    List<BundleEntryComponent> filteredEntryComponents =
+        new ArrayList<Bundle.BundleEntryComponent>();
+    for (BundleEntryComponent entryComp : bundle.getEntry()) {
+      Observation observation = (Observation) entryComp.getResource();
+      List<CodeableConcept> observationCategories = observation.getCategory();
+      boolean isSocialHistory =
+          observationCategories
+              .stream()
+              .anyMatch(
+                  category ->
+                      category
+                          .getCoding()
+                          .stream()
+                          .anyMatch(coding -> coding.getCode().equals(observationSocialHistory)));
+      if (isSocialHistory) {
+        filteredEntryComponents.add(new BundleEntryComponent().setResource(observation));
+      }
+    }
+    filteredBundle.setEntry(filteredEntryComponents);
+    return filteredBundle;
   }
 
   public List<Observation> getSocialHistoryObservationDataOccupation(

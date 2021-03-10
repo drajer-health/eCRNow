@@ -90,7 +90,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
     - Observation: 26
-      TravelObservation: 2
+      TravelObservation: 0
       OccupationObservation: 3
       Organization: 1
       Condition: 2
@@ -154,7 +154,7 @@ testCase:
     validate:
     - Observation: 3
       Condition: 1
-      TravelObservation: 3
+      TravelObservation: 0
       PregnancyObservation: 3
       Immunization: 2
       ServiceRequest: 2
