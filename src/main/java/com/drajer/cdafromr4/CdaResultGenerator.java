@@ -560,8 +560,7 @@ public class CdaResultGenerator {
     if (data.getLabResults() != null && !data.getLabResults().isEmpty()) {
 
       logger.info(
-          " Total num of Service Requests available for Patient {}",
-          data.getServiceRequests().size());
+          " Total num of Lab Results available for Patient {}", data.getLabResults().size());
 
       for (Observation s : data.getLabResults()) {
 
@@ -571,7 +570,7 @@ public class CdaResultGenerator {
             && CdaFhirUtilities.isCodingPresentForCodeSystem(
                 s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
 
-          logger.info(" Found a Service Request with a LOINC code ");
+          logger.info(" Found a Lab Results with a LOINC code ");
           sr.add(s);
         }
       }

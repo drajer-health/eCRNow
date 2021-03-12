@@ -50,7 +50,6 @@ testCase:
       'telecom[1]/@value': "tel:(212)555-5554"
       'telecom[1]/@use': "MC"
       'telecom[2]/@value': "mailto:coviddonefhir@gmail.com"
-      #'telecom[2]/@use': "HP"
     - xPath: "patient/name"
       count: 1
     - xPath: "patient/languageCommunication"
@@ -88,7 +87,6 @@ testCase:
       'telecom[1]/@value': "tel:(212)555-5553"
       #'telecom[1]/@use': "HP"
       'telecom[2]/@value': "mailto:dharris@gmail.com"
-      #'telecom[2]/@use': "HP"
       'guardianPerson/name/given': "DANA"
       'guardianPerson/name/family': "HARRIS"
   eCR-patient-deceased:
