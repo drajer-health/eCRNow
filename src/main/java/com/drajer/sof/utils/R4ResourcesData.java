@@ -342,7 +342,6 @@ public class R4ResourcesData {
       Observation observation = (Observation) entryComp.getResource();
       if (observation.hasStatus()) {
         if (!observation.getStatus().toCode().equals(observationStatus)) {
-          logger.info("Received Observation is not entered-in-error");
           filteredEntryComponents.add(new BundleEntryComponent().setResource(observation));
         } else {
           logger.info(
