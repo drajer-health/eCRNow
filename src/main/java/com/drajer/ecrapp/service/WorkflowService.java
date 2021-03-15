@@ -256,7 +256,7 @@ public class WorkflowService {
         logger.info("Starting the Thread");
         executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);
       } catch (Exception e) {
-        logger.info("Error in Getting Data=====>", e);
+        logger.error("Error in Getting Data=====>", e);
       } finally {
         MDC.clear();
       }
