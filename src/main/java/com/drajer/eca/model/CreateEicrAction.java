@@ -211,7 +211,7 @@ public class CreateEicrAction extends AbstractAction {
 
         if (state != null) {
 
-          logger.error(" Unable to create Eicr due to exceptions during processing ");
+          logger.error(" Unable to create Eicr due to exceptions during processing ", e);
           // Update
           state.getCreateEicrStatus().setEicrCreated(false);
           state.getCreateEicrStatus().seteICRId("0");
