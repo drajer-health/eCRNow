@@ -303,7 +303,7 @@ public class R4ResourcesData {
     if (bundle != null) {
       bundle = filterObservationsBundleByCategory(bundle, OBSERVATION_SOCIAL_HISTORY);
       bundle = filterObservationByStatus(bundle, OBSERVATION_STATUS_ENTERED_IN_ERROR);
-      
+
       observations = filterObservation(bundle, encounter, start, end);
     }
 
@@ -319,14 +319,14 @@ public class R4ResourcesData {
                   QueryConstants.SNOMED_CODE_SYSTEM);
       List<Observation> travelobs = new ArrayList<>();
       if (travelHisWithSNOMEDCodesbundle != null) {
-    	  
-    	  travelHisWithSNOMEDCodesbundle =
-    	            filterObservationsBundleByCategory(
-    	                travelHisWithSNOMEDCodesbundle, OBSERVATION_SOCIAL_HISTORY);
+
+        travelHisWithSNOMEDCodesbundle =
+            filterObservationsBundleByCategory(
+                travelHisWithSNOMEDCodesbundle, OBSERVATION_SOCIAL_HISTORY);
         travelHisWithSNOMEDCodesbundle =
             filterObservationByStatus(
                 travelHisWithSNOMEDCodesbundle, OBSERVATION_STATUS_ENTERED_IN_ERROR);
-        
+
         travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
       }
       if (!travelobs.isEmpty()) {
