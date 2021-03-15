@@ -9,7 +9,7 @@ public class QueryConstants {
   public static final String TRAVEL_CODE = "29762-2";
 
   private static final String[] TRAVEL_HISTORY_SNOMED_CODES = {
-    "161085007", "443846001", "34831000175105", "161086008"
+    "161085007", "443846001", "420008001", "46521000175102", "34831000175105", "161086008"
   };
 
   public static final String SNOMED_CODE_SYSTEM = "http://snomed.info/sct";
