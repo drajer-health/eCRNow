@@ -218,6 +218,10 @@ public class CreateEicrAction extends AbstractAction {
           state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
           EcaUtils.updateDetailStatus(details, state);
+        } else {
+          logger.error(
+              "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it ",
+              e);
         }
       }
 
