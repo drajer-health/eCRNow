@@ -181,7 +181,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateMatchedTriggerStatus(JobStatus.COMPLETED);
-    validateCreateEICR(JobStatus.SCHEDULED, false);
+    validateCreateEICR(JobStatus.COMPLETED, false);
     List<Eicr> allEICRDocuments = getAllEICRDocuments();
     assertEquals(0, allEICRDocuments != null ? allEICRDocuments.size() : "");
   }

@@ -85,7 +85,7 @@ testCase:
       'addr/postalCode': "64117"
       'addr/country': "US"
       'telecom[1]/@value': "tel:(212)555-5553"
-      'telecom[1]/@use': "HP"
+      #'telecom[1]/@use': "HP"
       'telecom[2]/@value': "mailto:dharris@gmail.com"
       'guardianPerson/name/given': "DANA"
       'guardianPerson/name/family': "HARRIS"
