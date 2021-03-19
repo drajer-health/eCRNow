@@ -216,8 +216,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
     logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
   }
 
-  private void scheduleJob(
-      LaunchDetails details, PatientExecutionState state) {
+  private void scheduleJob(LaunchDetails details, PatientExecutionState state) {
 
     List<TimingSchedule> tsjobs = getTimingData();
 
