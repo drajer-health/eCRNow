@@ -232,7 +232,8 @@ public class EicrServiceImpl implements EicrRRService {
   public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
 
     if (ecr.getResponseType() != null
-        && ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())) {
+        && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
+            || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
           data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
     } else return null;
