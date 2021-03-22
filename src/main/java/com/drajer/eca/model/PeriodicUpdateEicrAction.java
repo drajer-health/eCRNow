@@ -80,7 +80,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                       EcrActionTypes.PERIODIC_UPDATE_EICR,
                       details.getStartDate());
                   state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
-                  state.getPeriodicUpdateStatus().add(status);
 
                   EcaUtils.updateDetailStatus(details, state);
                   // No need to continue as the job will take over execution.
@@ -116,7 +115,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
             if (getTimingData() != null && !getTimingData().isEmpty()) {
 
               logger.info(" Timing Data is present , so create a job based on timing data.");
-              scheduleJob(details, state, status);
+              scheduleJob(details, state);
               return;
             }
 
@@ -148,9 +147,10 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 status.setJobStatus(JobStatus.COMPLETED);
 
                 // newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
-                newState.getPeriodicUpdateStatus().add(status);
+                state.getPeriodicUpdateStatus().add(status);
+                state.setMatchTriggerStatus(newState.getMatchTriggerStatus());
 
-                EcaUtils.updateDetailStatus(details, newState);
+                EcaUtils.updateDetailStatus(details, state);
 
                 logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
@@ -172,7 +172,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               if (getTimingData() != null && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state, status);
+                scheduleJob(details, state);
               }
 
             } // Check if Trigger Code Match found
@@ -187,7 +187,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                   && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state, status);
+                scheduleJob(details, state);
                 return;
               }
             }
@@ -216,8 +216,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
     logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
   }
 
-  private void scheduleJob(
-      LaunchDetails details, PatientExecutionState state, PeriodicUpdateEicrStatus status) {
+  private void scheduleJob(LaunchDetails details, PatientExecutionState state) {
 
     List<TimingSchedule> tsjobs = getTimingData();
 
@@ -229,7 +228,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
           details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());
 
       state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
-      state.getPeriodicUpdateStatus().add(status);
 
       EcaUtils.updateDetailStatus(details, state);
       // No need to continue as the job will take over execution.
