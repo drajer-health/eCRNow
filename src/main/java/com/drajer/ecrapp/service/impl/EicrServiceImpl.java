@@ -212,9 +212,8 @@ public class EicrServiceImpl implements EicrRRService {
 
       if (outcome.getCreated()) {
         logger.info("Successfully sent RR to fhir");
-
         // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
-        ecr.setEhrDocRefId(docRef.getId());
+        ecr.setEhrDocRefId(outcome.getId().getIdPart());
         saveOrUpdate(ecr);
 
       } else {
@@ -233,7 +232,8 @@ public class EicrServiceImpl implements EicrRRService {
   public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
 
     if (ecr.getResponseType() != null
-        && ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())) {
+        && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
+            || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
           data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
     } else return null;
