@@ -912,7 +912,7 @@ public class CdaGeneratorConstants {
    * @param oid
    * @return URI|Name
    */
-  private static Pair<String, String> getURI(String oid) {
+  public static Pair<String, String> getURI(String oid) {
     if (oidMap.containsKey(oid)) {
       return oidMap.get(oid);
     } else {
