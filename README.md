@@ -92,9 +92,7 @@ The security.key is something that you can configure in the environment or your 
 
 6. **App configuration for EHR server:** 
 
-Once the App is up and running, you can access the App configuration screen by launching the URL:
-
-http://<localhost:8081>/clientDetails
+Once the App is up and running, you can access the App configuration screen by building the eCRNowUI project and then following the instructions in that project for bringing up the UI.
 
 Follow the App Configuration Guide present in documents folder to configure the app before using it for testing.
 Only after the app is configured, you will be able to use it for reporting.
