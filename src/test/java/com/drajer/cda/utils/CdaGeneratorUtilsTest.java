@@ -6,13 +6,13 @@ import java.util.Date;
 import org.junit.Test;
 
 public class CdaGeneratorUtilsTest {
-	
-	@Test
-	  public void getXmlForTableBodyContentTest() {
-	    String expectedResult = "<content ID=\"testEl\">Display &amp; Display</content>\n";
-	    String result = CdaGeneratorUtils.getXmlForTableBodyContent("testEl", "Display & Display");
-	    assertEquals(expectedResult, result);
-	  }
+
+  @Test
+  public void getXmlForTableBodyContentTest() {
+    String expectedResult = "<content ID=\"testEl\">Display &amp; Display</content>\n";
+    String result = CdaGeneratorUtils.getXmlForTableBodyContent("testEl", "Display & Display");
+    assertEquals(expectedResult, result);
+  }
 
   @Test
   public void getXmlForValueEdTest() {
@@ -30,7 +30,8 @@ public class CdaGeneratorUtilsTest {
 
   @Test
   public void getNFXmlForValueStringTest() {
-    String expectedResult = "<value xsi:type=\"ST\" nullFlavor=\"TestString &quot; TestString\"/>\n";
+    String expectedResult =
+        "<value xsi:type=\"ST\" nullFlavor=\"TestString &quot; TestString\"/>\n";
     String result = CdaGeneratorUtils.getNFXmlForValueString("TestString \" TestString");
     assertEquals(expectedResult, result);
   }
