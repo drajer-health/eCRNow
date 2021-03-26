@@ -228,6 +228,26 @@ public class EcaUtilsTest {
     newState.getMatchTriggerStatus().setTriggerMatchStatus(false);
     boolean noOldAndNewCodes = EcaUtils.hasNewTriggerCodeMatches(oldState, newState);
     assertFalse(noOldAndNewCodes);
+
+    PatientExecutionState oState =
+        (PatientExecutionState)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/EcaUtils/OldState.json", PatientExecutionState.class);
+
+    PatientExecutionState nState =
+        (PatientExecutionState)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/EcaUtils/NewStateWithDifferentPath.json", PatientExecutionState.class);
+    boolean matchedCodes = EcaUtils.hasNewTriggerCodeMatches(oState, nState);
+    assertTrue(matchedCodes);
+
+    PatientExecutionState olState =
+        (PatientExecutionState)
+            TestUtils.getResourceAsObject(
+                "R4/Misc/EcaUtils/OldStateWithDifferentPath.json", PatientExecutionState.class);
+
+    boolean matchCodes = EcaUtils.hasNewTriggerCodeMatches(olState, nState);
+    assertFalse(matchCodes);
   }
 
   public void setupMockForMatchTrigger() {
