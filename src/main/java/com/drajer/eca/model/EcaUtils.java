@@ -19,8 +19,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
@@ -246,8 +246,20 @@ public class EcaUtils {
       Set<String> oldCodes = new HashSet<String>();
       for (MatchedTriggerCodes m : mtc) {
 
-        Optional.ofNullable(m.getMatchedCodes()).ifPresent(oldCodes::addAll);
-        Optional.ofNullable(m.getMatchedValues()).ifPresent(oldCodes::addAll);
+        Set<String> mcs = m.getMatchedCodes();
+
+        for (String mc : CollectionUtils.emptyIfNull(mcs)) {
+          oldCodes.add(mc + "|" + m.getMatchedPath());
+        }
+
+        Set<String> mcvs = m.getMatchedValues();
+
+        for (String mv : CollectionUtils.emptyIfNull(mcvs)) {
+          oldCodes.add(mv + "|" + m.getMatchedPath());
+        }
+
+        // Optional.ofNullable(m.getMatchedCodes()).ifPresent(oldCodes::addAll);
+        // Optional.ofNullable(m.getMatchedValues()).ifPresent(oldCodes::addAll);
       }
 
       List<MatchedTriggerCodes> mtcNew = newState.getMatchTriggerStatus().getMatchedCodes();
@@ -255,8 +267,19 @@ public class EcaUtils {
       Set<String> newCodes = new HashSet<String>();
       for (MatchedTriggerCodes mn : mtcNew) {
 
-        Optional.ofNullable(mn.getMatchedCodes()).ifPresent(newCodes::addAll);
-        Optional.ofNullable(mn.getMatchedValues()).ifPresent(newCodes::addAll);
+        Set<String> mcs = mn.getMatchedCodes();
+
+        for (String mc : CollectionUtils.emptyIfNull(mcs)) {
+          newCodes.add(mc + "|" + mn.getMatchedPath());
+        }
+
+        Set<String> mcvs = mn.getMatchedValues();
+
+        for (String mv : CollectionUtils.emptyIfNull(mcvs)) {
+          newCodes.add(mv + "|" + mn.getMatchedPath());
+        }
+        // Optional.ofNullable(mn.getMatchedCodes()).ifPresent(newCodes::addAll);
+        // Optional.ofNullable(mn.getMatchedValues()).ifPresent(newCodes::addAll);
       }
 
       if (!oldCodes.containsAll(newCodes)) {
