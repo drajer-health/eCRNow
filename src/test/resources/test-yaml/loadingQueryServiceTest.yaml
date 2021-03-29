@@ -161,3 +161,33 @@ testCase:
       MedicationRequest: 0
       MedicationAdministration: 1
       MedicationStatement: 2
+  eCR-R4-Observation-MultiplePagingQuery:
+    testData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+      Observation:
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+          responseFilePath: "R4/Observation/ObservationStart.json"
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+            -pageContext: "T3BlblBsYXRmb3JtRmhpckNvbnRleHQ9dHJ1ZSZwYWdlQ29udGV4dD0wNTQ1ZTkyOC05NmFhLTRkNDktODUwNC0xNGMwM2FkZmIxNzYmY29uY2VwdD1jaGFydGVkX29ic2VydmF0aW9u"
+            -pageDirection: "NEXT"
+          responseFilePath: "R4/Observation/ObservationEnd.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - Observation: 1
