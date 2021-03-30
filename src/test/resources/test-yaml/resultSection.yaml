@@ -203,7 +203,7 @@ testCase:
       - xPath: "text/table/thead/tr/th"
         count: 3
       - xPath: "text/table/tbody/tr"
-        count: 3
+        count: 8
       - xPath: "text/table/tbody/tr[1]/td"
         count: 3
       - xPath: "text/table/"
@@ -214,7 +214,7 @@ testCase:
         'tbody/tr[1]/td[2]/content': "Detected"
         'tbody/tr[1]/td[3]/content': "2020-04-30T08:25:00.000Z"
       - xPath: "entry"
-        count: 3
+        count: 8
       - xPath: "entry[1]/"
         '@typeCode': "DRIV"
       - xPath: "entry[1]/organizer/templateId"

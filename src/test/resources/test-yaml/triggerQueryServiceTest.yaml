@@ -130,4 +130,4 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-      - Observation: 14
+      - Observation: 26

@@ -5,7 +5,7 @@
     "link": [
         {
             "relation": "self",
-            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest?patient=12747967&-pageContext=10065315_11316911_12742571_1_1&-pageDirection=NEXT"
+            "url": "http://localhost:9010/FHIR/Observation?patient=12742571&category=laboratory&-pageContext=10065315_11316911_12742571_1_1&-pageDirection=NEXT"
         }
     ],
     "entry": [
