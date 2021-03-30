@@ -231,7 +231,7 @@ public class FhirContextInitializer {
         if (bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT) != null) {
           logger.info(
               "Found Next Page in Bundle:::::{}",
-                   bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT).getUrl());
+              bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT).getUrl());
           org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
               genericClient.loadPage().next(bundle).execute();
           entriesList.addAll(nextPageBundleResults.getEntry());
