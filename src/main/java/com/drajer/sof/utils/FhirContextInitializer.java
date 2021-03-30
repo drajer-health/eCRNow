@@ -183,7 +183,7 @@ public class FhirContextInitializer {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
-              bundle.getEntry().size());
+              bundleResults.getEntry().size());
         }
         bundleResponse = bundleResults;
       } else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
@@ -230,8 +230,8 @@ public class FhirContextInitializer {
       if (bundle.hasLink()) {
         if (bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT) != null) {
           logger.info(
-              "Found Next Page in Bundle:::::"
-                  + bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT).getUrl());
+              "Found Next Page in Bundle:::::{}",
+                   bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT).getUrl());
           org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
               genericClient.loadPage().next(bundle).execute();
           entriesList.addAll(nextPageBundleResults.getEntry());
@@ -248,7 +248,7 @@ public class FhirContextInitializer {
     if (bundle.getEntry() != null) {
       List<Entry> entriesList = bundle.getEntry();
       if (bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT) != null) {
-        logger.info("Found Next Page in Bundle:::::" + bundle.getLink(Bundle.LINK_NEXT).getUrl());
+        logger.info("Found Next Page in Bundle:::::{}", bundle.getLink(Bundle.LINK_NEXT).getUrl());
         Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
         entriesList.addAll(nextPageBundleResults.getEntry());
         nextPageBundleResults.setEntry(entriesList);
