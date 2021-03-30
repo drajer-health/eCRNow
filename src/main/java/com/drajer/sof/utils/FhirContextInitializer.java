@@ -2,14 +2,17 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.sof.model.LaunchDetails;
+import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,13 +177,15 @@ public class FhirContextInitializer {
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         bundleResponse = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         Bundle bundle = (Bundle) bundleResponse;
-
+        Bundle bundleResults =
+            getAllDSTU2RecordsUsingPagination(genericClient, resourceName, bundle);
         if (logger.isInfoEnabled()) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
-              bundle.getEntry().size());
+              bundleResults.getEntry().size());
         }
+        bundleResponse = bundleResults;
       } else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
         bundleResponse =
             genericClient
@@ -189,13 +194,15 @@ public class FhirContextInitializer {
                 .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
                 .execute();
         org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) bundleResponse;
-
+        org.hl7.fhir.r4.model.Bundle bundleResults =
+            getAllR4RecordsUsingPagination(genericClient, resourceName, bundle);
         if (logger.isInfoEnabled()) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
-              bundle.getEntry().size());
+              bundleResults.getEntry().size());
         }
+        bundleResponse = bundleResults;
       }
     } catch (Exception e) {
       if (e instanceof BaseServerResponseException) {
@@ -214,5 +221,40 @@ public class FhirContextInitializer {
     }
 
     return bundleResponse;
+  }
+
+  private static org.hl7.fhir.r4.model.Bundle getAllR4RecordsUsingPagination(
+      IGenericClient genericClient, String resourceName, org.hl7.fhir.r4.model.Bundle bundle) {
+    if (bundle.hasEntry()) {
+      List<BundleEntryComponent> entriesList = bundle.getEntry();
+      if (bundle.hasLink()) {
+        if (bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT) != null) {
+          logger.info(
+              "Found Next Page in Bundle:::::{}",
+              bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT).getUrl());
+          org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
+              genericClient.loadPage().next(bundle).execute();
+          entriesList.addAll(nextPageBundleResults.getEntry());
+          nextPageBundleResults.setEntry(entriesList);
+          getAllR4RecordsUsingPagination(genericClient, resourceName, nextPageBundleResults);
+        }
+      }
+    }
+    return bundle;
+  }
+
+  private static Bundle getAllDSTU2RecordsUsingPagination(
+      IGenericClient genericClient, String resourceName, Bundle bundle) {
+    if (bundle.getEntry() != null) {
+      List<Entry> entriesList = bundle.getEntry();
+      if (bundle.getLink(org.hl7.fhir.r4.model.Bundle.LINK_NEXT) != null) {
+        logger.info("Found Next Page in Bundle:::::{}", bundle.getLink(Bundle.LINK_NEXT).getUrl());
+        Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
+        entriesList.addAll(nextPageBundleResults.getEntry());
+        nextPageBundleResults.setEntry(entriesList);
+        getAllDSTU2RecordsUsingPagination(genericClient, resourceName, nextPageBundleResults);
+      }
+    }
+    return bundle;
   }
 }
