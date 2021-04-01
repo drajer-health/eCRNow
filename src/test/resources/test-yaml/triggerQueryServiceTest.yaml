@@ -102,7 +102,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
     - Encounter: 1
-  eCR-R4-Observation-MultiplePagingQuery:
+  eCR-R4-Observation-MultiplePagingQuery-2Pages:
     testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
       StartDate: "20201001"
@@ -131,3 +131,38 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - Observation: 26
+  eCR-R4-Observation-MultiplePagingQuery-3pages:
+    testData:
+      LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
+      StartDate: "20201001"
+      EndDate: "20201030"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_97953900.json"
+      Observation:
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+          responseFilePath: "R4/Observation/ObservationStart.json"
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+            -pageContext: "10065315_11316911_12742571_1_1"
+            -pageDirection: "NEXT"
+          responseFilePath: "R4/Observation/ObservationNext.json"
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+            -pageContext: "10065315_11316911_12742571_1_2"
+            -pageDirection: "NEXT"
+          responseFilePath: "R4/Observation/ObservationEnd.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - Observation: 76
