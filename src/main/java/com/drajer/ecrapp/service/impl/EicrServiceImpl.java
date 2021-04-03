@@ -261,6 +261,18 @@ public class EicrServiceImpl implements EicrRRService {
     return rrDataList;
   }
 
+  public List<JSONObject> getEicrAndRRByXRequestId(String xRequestId) {
+    List<Eicr> eicrList = eicrDao.getEicrAndRRByXRequestId(xRequestId);
+    List<JSONObject> eicrDataList = new ArrayList<JSONObject>();
+    for (Eicr eicr : eicrList) {
+      JSONObject eicrObject = new JSONObject();
+      eicrObject.put("eicrData", eicr.getEicrData());
+      eicrObject.put("responseData", eicr.getResponseData());
+      eicrDataList.add(eicrObject);
+    }
+    return eicrDataList;
+  }
+
   @Override
   public void handleReportabilityResponse(
       ReportabilityResponse data, String xCorrelationId, String xRequestId) {

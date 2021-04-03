@@ -75,6 +75,12 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return criteria.addOrder(Order.desc("id")).list();
   }
 
+  public List<Eicr> getEicrAndRRByXRequestId(String xRequestId) {
+    Criteria criteria = getSession().createCriteria(Eicr.class);
+    criteria.add(Restrictions.eq("xRequestId", xRequestId));
+    return criteria.addOrder(Order.desc("id")).list();
+  }
+
   @Override
   public Eicr getEicrByDocId(String docId) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
