@@ -192,8 +192,9 @@ public class CdaProblemGenerator {
             CdaGeneratorUtils.getXmlForTemplateId(
                 CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
-
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), pr.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -317,8 +318,9 @@ public class CdaProblemGenerator {
             CdaGeneratorUtils.getXmlForTemplateId(
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
-
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(

@@ -186,7 +186,7 @@ public class Dstu2CdaHeaderGenerator {
       } else {
         sb.append(
             CdaGeneratorUtils.getXmlForII(
-                CdaGeneratorConstants.AUTHOR_NPI_AA, loc.getId().getValue()));
+                CdaGeneratorConstants.AUTHOR_NPI_AA, loc.getId().getIdPart()));
       }
 
       if (loc.getType() != null && loc.getType().getCoding() != null) {
@@ -292,7 +292,7 @@ public class Dstu2CdaHeaderGenerator {
       } else {
         sb.append(
             CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), org.getId().getValue()));
+                details.getAssigningAuthorityId(), org.getId().getIdPart()));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
@@ -476,14 +476,15 @@ public class Dstu2CdaHeaderGenerator {
         logger.info(" Using Resource Identifier as id ");
         ;
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), p.getId().getIdPart()));
       }
 
     } else {
       logger.info(" Using Resource Identifier as id ");
       ;
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
+          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().getIdPart()));
     }
 
     // Add Address.

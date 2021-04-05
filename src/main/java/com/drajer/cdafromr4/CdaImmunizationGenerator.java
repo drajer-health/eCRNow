@@ -132,8 +132,9 @@ public class CdaImmunizationGenerator {
             CdaGeneratorUtils.getXmlForTemplateId(
                 CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID,
                 CdaGeneratorConstants.IMMUNIZATION_ACTIVITY_TEMPLATE_ID_EXT));
-
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), imm.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), imm.getIdElement().getIdPart()));
 
         // set status code
         sb.append(
