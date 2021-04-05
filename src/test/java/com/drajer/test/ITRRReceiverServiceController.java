@@ -204,12 +204,12 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     eicrReSubmit = new Eicr();
     eicrReSubmit.setFhirServerUrl(clientDetails.getFhirServerBaseURL());
-    eicrReSubmit.setLaunchPatientId("12345");
-    eicrReSubmit.setEncounterId("67890");
-    eicrReSubmit.setDocVersion(1);
-    eicrReSubmit.setxRequestId("RRTESTXREQUESTID");
-    eicrReSubmit.setSetId("12345|67890");
-    eicrReSubmit.setxCorrelationId("RR-TEST-XCORRELATIONID");
+    eicrReSubmit.setLaunchPatientId("123456");
+    eicrReSubmit.setEncounterId("567890");
+    eicrReSubmit.setDocVersion(2);
+    eicrReSubmit.setxRequestId("RRRESUBMITTESTXREQUESTID");
+    eicrReSubmit.setSetId("123456|567890");
+    eicrReSubmit.setxCorrelationId("RR-RESUBMIT-TEST-XCORRELATIONID");
     eicrReSubmit.setEicrDocId("69550923-8b72-475c-b64b-5f7c44a78e4");
     eicrReSubmit.setEicrData("This is a dummy EICR for test");
     eicrReSubmit.setResponseData(rr.getRrXml());
