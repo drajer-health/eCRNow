@@ -67,6 +67,10 @@ public class EicrServiceImpl implements EicrRRService {
     return eicrDao.getEicrById(id);
   }
 
+  public Eicr getEicrByDocId(String docId) {
+    return eicrDao.getEicrByDocId(docId);
+  }
+
   public ReportabilityResponse saveOrUpdate(ReportabilityResponse rr) {
     eicrDao.saveOrUpdate(rr);
     return rr;
