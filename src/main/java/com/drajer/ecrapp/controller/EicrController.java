@@ -99,7 +99,7 @@ public class EicrController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/eicrAndRRData")
+  @RequestMapping(value = "/api/eicrAndRRData", method = RequestMethod.GET)
   public ResponseEntity<Object> redirectEndPoint(@RequestParam String xRequestId) {
     List<JSONObject> eicrList = new ArrayList<JSONObject>();
     try {
