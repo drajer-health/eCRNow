@@ -422,7 +422,7 @@ public class CdaResultGenerator {
               false,
               false);
 
-      if (!interpretXml.isEmpty()) lrEntry.append(interpretXml);
+      if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
     }
 
     // End Tag for Entry Relationship

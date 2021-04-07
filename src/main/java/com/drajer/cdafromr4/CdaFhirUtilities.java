@@ -935,7 +935,7 @@ public class CdaFhirUtilities {
           String mappedCode =
               CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
 
-          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && !mappedCode.isEmpty()) {
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && mappedCode != null && !mappedCode.isEmpty()) {
             cdStarted = true;
             sb.append(
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -947,7 +947,7 @@ public class CdaFhirUtilities {
           String mappedCode =
               CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
 
-          if (!csd.getValue1().isEmpty() && !csd.getValue0().isEmpty() && !mappedCode.isEmpty())
+          if (!csd.getValue1().isEmpty() && !csd.getValue0().isEmpty() && mappedCode != null && !mappedCode.isEmpty())
             sb.append(
                 CdaGeneratorUtils.getXmlForCD(
                     CdaGeneratorConstants.TRANSLATION_EL_NAME,
@@ -1091,7 +1091,7 @@ public class CdaFhirUtilities {
           String mappedCode =
               CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
 
-          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && !mappedCode.isEmpty()) {
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && mappedCode != null && !mappedCode.isEmpty()) {
             cdStarted = true;
             sb.append(
                 CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
@@ -1103,7 +1103,7 @@ public class CdaFhirUtilities {
           String mappedCode =
               CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
 
-          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && mappedCode != null && !mappedCode.isEmpty())
             sb.append(
                 CdaGeneratorUtils.getXmlForCD(
                     CdaGeneratorConstants.TRANSLATION_EL_NAME,
