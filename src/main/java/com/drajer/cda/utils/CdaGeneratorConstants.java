@@ -900,7 +900,7 @@ public class CdaGeneratorConstants {
       prop.load(input);
       prop.forEach(
           (key, value) -> {
-            String name = StringUtils.substringAfterLast((String) value, "/");
+            String name = getSplitValueURL(value);
             oidMap.put((String) key, new Pair<>((String) value, name));
             uriMap.put((String) value, new Pair<>((String) key, name));
           });
@@ -998,5 +998,20 @@ public class CdaGeneratorConstants {
     } else {
       return "WP";
     }
+  }
+
+  private static String getSplitValueURL(Object theValue) {
+    String name = "";
+    try {
+      String[] values = ((String) theValue).trim().split("\\s*\\|\\s*");
+      if (values.length > 1) {
+        name = values[1];
+      } else {
+        name = StringUtils.substringAfterLast((String) theValue, "/");
+      }
+    } catch (Exception e) {
+      logger.error("Error while processing the OID/URI map value", e);
+    }
+    return name;
   }
 }
