@@ -28,6 +28,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   private static final Logger logger = LoggerFactory.getLogger(ITRRReceiverServiceController.class);
   WireMockHelper stubHelper;
   private Eicr eicr;
+  private Eicr eicrReSubmit;
 
   @Before
   public void setUp() throws Throwable {
@@ -36,6 +37,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       tx = session.beginTransaction();
       createClientDetails("R4/Misc/ClientDetails/ClientDataEntry1.json");
       eicr = createEicr();
+      eicrReSubmit = createEicrForReSubmit();
       session.flush();
       tx.commit();
     } catch (IOException e) {
@@ -87,6 +89,23 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  public void testReSubmitRR() {
+    // Mock FHIR Document Reference to return failure.
+    wireMockServer.stubFor(
+        post(urlPathEqualTo(
+                getURLPath(clientDetails.getFhirServerBaseURL()) + "/DocumentReference"))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(HttpStatus.BAD_REQUEST.value())
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
+
+    ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
@@ -181,6 +200,25 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     return eicr;
   }
 
+  private Eicr createEicrForReSubmit() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    eicrReSubmit = new Eicr();
+    eicrReSubmit.setFhirServerUrl(clientDetails.getFhirServerBaseURL());
+    eicrReSubmit.setLaunchPatientId("123456");
+    eicrReSubmit.setEncounterId("567890");
+    eicrReSubmit.setDocVersion(2);
+    eicrReSubmit.setxRequestId("RRRESUBMITTESTXREQUESTID");
+    eicrReSubmit.setSetId("123456|567890");
+    eicrReSubmit.setxCorrelationId("RR-RESUBMIT-TEST-XCORRELATIONID");
+    eicrReSubmit.setEicrDocId("69550923-8b72-475c-b64b-5f7c44a78e4");
+    eicrReSubmit.setEicrData("This is a dummy EICR for test");
+    eicrReSubmit.setResponseData(rr.getRrXml());
+    eicrReSubmit.setResponseType(rr.getResponseType());
+
+    session.saveOrUpdate(eicrReSubmit);
+    return eicrReSubmit;
+  }
+
   private Eicr getEICRDocument(String eicrId) {
     try {
       Eicr eicr = session.get(Eicr.class, Integer.parseInt(eicrId));
@@ -220,6 +258,25 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
       HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
       return restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
+
+    } catch (URISyntaxException e) {
+      logger.error("Error building the URL", e);
+      fail("Fix the exception: " + e.getMessage());
+    }
+
+    return null;
+  }
+
+  private ResponseEntity<String> reSubmitRR(Eicr eicr) {
+    headers.clear();
+
+    URIBuilder ub;
+    try {
+      ub = new URIBuilder(createURLWithPort("/api/reSubmitRR"));
+      ub.addParameter("eicrId", String.valueOf(eicr.getId()));
+      ub.addParameter("eicrDocId", eicr.getEicrDocId());
+      logger.info("Constructed URL:::::" + ub.toString());
+      return restTemplate.getForEntity(ub.toString(), String.class);
 
     } catch (URISyntaxException e) {
       logger.error("Error building the URL", e);

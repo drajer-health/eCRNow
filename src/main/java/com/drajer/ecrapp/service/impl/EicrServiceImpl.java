@@ -67,6 +67,10 @@ public class EicrServiceImpl implements EicrRRService {
     return eicrDao.getEicrById(id);
   }
 
+  public Eicr getEicrByDocId(String docId) {
+    return eicrDao.getEicrByDocId(docId);
+  }
+
   public ReportabilityResponse saveOrUpdate(ReportabilityResponse rr) {
     eicrDao.saveOrUpdate(rr);
     return rr;
@@ -259,6 +263,18 @@ public class EicrServiceImpl implements EicrRRService {
       rrDataList.add(eicrObject);
     }
     return rrDataList;
+  }
+
+  public List<JSONObject> getEicrAndRRByXRequestId(String xRequestId) {
+    List<Eicr> eicrList = eicrDao.getEicrAndRRByXRequestId(xRequestId);
+    List<JSONObject> eicrDataList = new ArrayList<JSONObject>();
+    for (Eicr eicr : eicrList) {
+      JSONObject eicrObject = new JSONObject();
+      eicrObject.put("eicrData", eicr.getEicrData());
+      eicrObject.put("responseData", eicr.getResponseData());
+      eicrDataList.add(eicrObject);
+    }
+    return eicrDataList;
   }
 
   @Override

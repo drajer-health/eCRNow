@@ -97,4 +97,18 @@ public class EicrController {
 
     return new ResponseEntity<Object>(rrData.toString(), HttpStatus.OK);
   }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/eicrAndRRData", method = RequestMethod.GET)
+  public ResponseEntity<Object> redirectEndPoint(@RequestParam String xRequestId) {
+    List<JSONObject> eicrList = new ArrayList<JSONObject>();
+    try {
+      eicrList = eicrRRService.getEicrAndRRByXRequestId(xRequestId);
+    } catch (Exception e) {
+      logger.error("Error in Processing the request", e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in Processing the Request");
+    }
+
+    return new ResponseEntity<Object>(eicrList.toString(), HttpStatus.OK);
+  }
 }

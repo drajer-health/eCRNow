@@ -67,4 +67,40 @@ public class RRReceiverController {
 
     return new ResponseEntity<>("Success", HttpStatus.OK);
   }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/reSubmitRR", method = RequestMethod.GET)
+  public ResponseEntity<String> reSubmitRR(
+      @RequestParam(name = "eicrId", required = false) String eicrId,
+      @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
+    try {
+      logger.info("Received EicrId:: {}, EicrDocId:: {} in the request", eicrId, eicrDocId);
+      Eicr eicr = null;
+      if (eicrId == null && eicrDocId == null) {
+        logger.error("EicrId and EicrDocId is not present in the request");
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "EicrId or EicrDocId is not present in the request");
+      } else {
+        if (eicrId != null) {
+          eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));
+        } else if (eicrDocId != null) {
+          eicr = rrReceieverService.getEicrByDocId(eicrDocId);
+        }
+        if (eicr != null) {
+          ReportabilityResponse rr = new ReportabilityResponse();
+          rr.setRrXml(eicr.getResponseData());
+          rr.setResponseType(eicr.getResponseType());
+          rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
+        }
+      }
+    } catch (IllegalArgumentException e) {
+      logger.error("Error in Processing the request", e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    } catch (Exception e) {
+      logger.error("Error in Processing the request", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    return new ResponseEntity<>("Success", HttpStatus.OK);
+  }
 }

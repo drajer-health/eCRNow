@@ -12,6 +12,10 @@ public interface EicrRRService {
 
   Eicr getEicrById(Integer id);
 
+  Eicr getEicrByDocId(String docId);
+
+  List<JSONObject> getEicrAndRRByXRequestId(String xRequestId);
+
   ReportabilityResponse saveOrUpdate(ReportabilityResponse rr);
 
   ReportabilityResponse getRRById(Integer id);
