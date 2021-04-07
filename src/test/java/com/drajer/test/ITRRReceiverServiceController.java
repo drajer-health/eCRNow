@@ -212,8 +212,8 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     eicrReSubmit.setxCorrelationId("RR-RESUBMIT-TEST-XCORRELATIONID");
     eicrReSubmit.setEicrDocId("69550923-8b72-475c-b64b-5f7c44a78e4");
     eicrReSubmit.setEicrData("This is a dummy EICR for test");
-    eicrReSubmit.setResponseData(rr.getRrXml());
-    eicrReSubmit.setResponseType(rr.getResponseType());
+    eicrReSubmit.setResponseData(rr != null ? rr.getRrXml() : "");
+    eicrReSubmit.setResponseType(rr != null ? rr.getResponseType() : "");
 
     session.saveOrUpdate(eicrReSubmit);
     return eicrReSubmit;
