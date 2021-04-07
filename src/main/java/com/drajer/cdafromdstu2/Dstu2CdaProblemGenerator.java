@@ -194,7 +194,7 @@ public class Dstu2CdaProblemGenerator {
 
         sb.append(
             CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), pr.getId().getValue()));
+                details.getAssigningAuthorityId(), pr.getId().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(
