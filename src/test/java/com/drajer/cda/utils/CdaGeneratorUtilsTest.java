@@ -351,7 +351,7 @@ public class CdaGeneratorUtilsTest {
   public void getXmlForCDWithValueSetAndVersionTest() {
     String expectedResult =
         "<elName code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">";
-    expectedResult += System.lineSeparator() + "</elName>" + System.lineSeparator(); 
+    expectedResult += System.lineSeparator() + "</elName>" + System.lineSeparator();
     String result =
         CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
             "elName",

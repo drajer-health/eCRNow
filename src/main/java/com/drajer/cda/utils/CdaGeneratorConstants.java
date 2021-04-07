@@ -900,7 +900,7 @@ public class CdaGeneratorConstants {
       prop.load(input);
       prop.forEach(
           (key, value) -> {
-            String name = getSplitValueURL(value);
+            String name = StringUtils.substringAfterLast((String) value, "/");
             oidMap.put((String) key, new Pair<>((String) value, name));
             uriMap.put((String) value, new Pair<>((String) key, name));
           });
