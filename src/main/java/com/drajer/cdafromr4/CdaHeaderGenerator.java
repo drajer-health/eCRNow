@@ -235,7 +235,7 @@ public class CdaHeaderGenerator {
         sb.append(typeXml);
       } else {
         List<Coding> codes = null;
-        sb.append(CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME));
+        sb.append(CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME, ""));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
@@ -269,7 +269,7 @@ public class CdaHeaderGenerator {
         sb.append(typeXml);
       } else {
         List<Coding> codes = null;
-        sb.append(CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME));
+        sb.append(CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME, ""));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
@@ -459,7 +459,7 @@ public class CdaHeaderGenerator {
         }
       }
 
-      sb.append(CdaEncounterGenerator.getEncounterCodeXml(en));
+      sb.append(CdaEncounterGenerator.getEncounterCodeXml(en, ""));
       sb.append(
           CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else {

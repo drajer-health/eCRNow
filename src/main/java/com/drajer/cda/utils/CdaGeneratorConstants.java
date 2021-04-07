@@ -887,6 +887,7 @@ public class CdaGeneratorConstants {
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
+  private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
 
   // Static block to load OID to URI mapping from property file
   static {
@@ -903,9 +904,44 @@ public class CdaGeneratorConstants {
             oidMap.put((String) key, new Pair<>((String) value, name));
             uriMap.put((String) value, new Pair<>((String) key, name));
           });
+
+      InputStream intCode =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("interpretationcode-mapping.properties");
+      prop.load(intCode);
+      fhirToCdaTerminologyMap.put(
+          CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, new HashMap<String, String>());
+      HashMap interpretmap =
+          fhirToCdaTerminologyMap.get(CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME);
+      prop.forEach(
+          (key, value) -> {
+            interpretmap.put(key, value);
+          });
+
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
     }
+  }
+
+  /**
+   * @param ConceptDomain
+   * @param concept
+   * @return conceptValue
+   */
+  public static String getMappedCodeFromFhirToCda(String conceptDomain, String concept) {
+
+    if (fhirToCdaTerminologyMap.containsKey(conceptDomain)) {
+
+      HashMap<String, String> conceptMap = fhirToCdaTerminologyMap.get(conceptDomain);
+
+      if (conceptMap.containsKey(concept)) {
+
+        return conceptMap.get(concept);
+      }
+    }
+
+    return null;
   }
 
   /**

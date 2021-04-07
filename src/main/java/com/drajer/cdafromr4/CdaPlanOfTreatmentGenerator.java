@@ -96,9 +96,12 @@ public class CdaPlanOfTreatmentGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
+        String contentRef =
+            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+
         rowNum++;
 
-        potObsXml.append(getPlannedObservationXml(s, details));
+        potObsXml.append(getPlannedObservationXml(s, details, contentRef));
       }
 
       // Close the Text Element
@@ -121,7 +124,8 @@ public class CdaPlanOfTreatmentGenerator {
     return sb.toString();
   }
 
-  public static String getPlannedObservationXml(ServiceRequest sr, LaunchDetails details) {
+  public static String getPlannedObservationXml(
+      ServiceRequest sr, LaunchDetails details, String contentRef) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -167,7 +171,8 @@ public class CdaPlanOfTreatmentGenerator {
                 CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
-                "");
+                "",
+                contentRef);
       } else {
         logger.info(
             " Did not find the code value in the matched codes, make it a regular Planned Observation ");

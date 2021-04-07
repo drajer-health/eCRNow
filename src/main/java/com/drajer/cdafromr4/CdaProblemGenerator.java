@@ -171,10 +171,11 @@ public class CdaProblemGenerator {
 
         Date onset = CdaFhirUtilities.getActualDate(pr.getOnset());
         Date abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
+        Date recordedDate = pr.getRecordedDate();
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, recordedDate, abatement, true));
 
         // Add the Problem Observation
         sb.append(
@@ -217,7 +218,7 @@ public class CdaProblemGenerator {
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
         List<CodeableConcept> cds = new ArrayList<>();
         cds.add(pr.getCode());
@@ -342,7 +343,7 @@ public class CdaProblemGenerator {
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
         // Set<String> matchedCodes = mtc.getMatchedCodes();
 

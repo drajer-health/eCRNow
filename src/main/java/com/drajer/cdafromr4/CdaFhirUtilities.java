@@ -731,7 +731,8 @@ public class CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (!valueTrue) sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
+    if (!valueTrue)
+      sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional, ""));
     else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
 
     return sb.toString();
@@ -772,14 +773,39 @@ public class CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (!valueTrue) sb.append(getCodingXml(codes, cdName));
+    if (!valueTrue) sb.append(getCodingXml(codes, cdName, ""));
     else sb.append(getCodingXmlForValue(codes, cdName));
 
     return sb.toString();
   }
 
+  public static String getCodeableConceptXmlForMappedConceptDomain(
+      String conceptDomain,
+      List<CodeableConcept> cds,
+      String cdName,
+      Boolean valueTrue,
+      Boolean includeNullFlavor) {
+
+    StringBuilder sb = new StringBuilder(500);
+    List<Coding> codes = getCodingForValidCodeSystems(cds);
+
+    if (!valueTrue)
+      sb.append(
+          getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));
+    else
+      sb.append(
+          getCodingXmlForValueForMappedConceptDomain(
+              conceptDomain, codes, cdName, includeNullFlavor));
+
+    return sb.toString();
+  }
+
   public static String getCodingXmlForCodeSystem(
-      List<Coding> codes, String cdName, String codeSystemUrl, Boolean csOptional) {
+      List<Coding> codes,
+      String cdName,
+      String codeSystemUrl,
+      Boolean csOptional,
+      String contentRef) {
 
     StringBuilder sb = new StringBuilder(200);
     StringBuilder translations = new StringBuilder(200);
@@ -800,6 +826,9 @@ public class CdaFhirUtilities {
           sb.append(
               CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                   cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          if (!contentRef.isEmpty())
+            sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
 
           foundCodeForCodeSystem = true;
         } else if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
@@ -842,7 +871,7 @@ public class CdaFhirUtilities {
     }
   }
 
-  public static String getCodingXml(List<Coding> codes, String cdName) {
+  public static String getCodingXml(List<Coding> codes, String cdName, String contentRef) {
 
     StringBuilder sb = new StringBuilder(200);
 
@@ -856,10 +885,14 @@ public class CdaFhirUtilities {
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
-          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
             sb.append(
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                     cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+            if (!contentRef.isEmpty())
+              sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
+          }
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -880,6 +913,59 @@ public class CdaFhirUtilities {
     } else {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
+
+    return sb.toString();
+  }
+
+  public static String getCodingXmlForMappedConceptDomain(
+      String conceptDomain, List<Coding> codes, String cdName, Boolean includeNullFlavor) {
+
+    StringBuilder sb = new StringBuilder();
+
+    if (codes != null && !codes.isEmpty()) {
+
+      Boolean first = true;
+      Boolean cdStarted = false;
+      for (Coding c : codes) {
+
+        if (first || !cdStarted) {
+
+          first = false;
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+          String mappedCode =
+              CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && !mappedCode.isEmpty()) {
+            cdStarted = true;
+            sb.append(
+                CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+                    cdName, mappedCode, csd.getValue0(), csd.getValue1(), c.getDisplay()));
+          }
+        } else if (cdStarted) {
+
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+          String mappedCode =
+              CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
+
+          if (!csd.getValue1().isEmpty() && !csd.getValue0().isEmpty() && !mappedCode.isEmpty())
+            sb.append(
+                CdaGeneratorUtils.getXmlForCD(
+                    CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                    mappedCode,
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    c.getDisplay()));
+        }
+      }
+
+      // At cd started...close the tag
+      if (cdStarted) sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+
+    } else if (includeNullFlavor) {
+      sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
+    }
+
+    // else it will be an empty string
 
     return sb.toString();
   }
@@ -981,6 +1067,57 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
     } else {
+      sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
+    }
+
+    return sb.toString();
+  }
+
+  public static String getCodingXmlForValueForMappedConceptDomain(
+      String conceptDomain, List<Coding> codes, String cdName, Boolean includeNullFlavor) {
+
+    StringBuilder sb = new StringBuilder();
+
+    if (codes != null && !codes.isEmpty()) {
+
+      Boolean first = true;
+      Boolean cdStarted = false;
+      for (Coding c : codes) {
+
+        if (first || !cdStarted) {
+
+          first = false;
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+          String mappedCode =
+              CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty() && !mappedCode.isEmpty()) {
+            cdStarted = true;
+            sb.append(
+                CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
+                    mappedCode, csd.getValue0(), csd.getValue1(), c.getDisplay()));
+          }
+        } else if (cdStarted) {
+
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+          String mappedCode =
+              CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
+
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+            sb.append(
+                CdaGeneratorUtils.getXmlForCD(
+                    CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                    mappedCode,
+                    csd.getValue0(),
+                    csd.getValue1(),
+                    c.getDisplay()));
+        }
+      }
+
+      // At least one code is there so...close the tag
+      if (cdStarted)
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
+    } else if (includeNullFlavor) {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
@@ -1464,7 +1601,7 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXml(cds, elName);
+        if (!valFlag) val += getCodingXml(cds, elName, "");
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof CodeableConcept) {
@@ -1473,7 +1610,7 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXml(cds, elName);
+        if (!valFlag) val += getCodingXml(cds, elName, "");
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof Quantity) {
@@ -1659,7 +1796,7 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
         else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else if (dt instanceof CodeableConcept) {
@@ -1668,7 +1805,7 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
         else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else {
@@ -1818,7 +1955,8 @@ public class CdaFhirUtilities {
       String valueSet,
       String valuesetVersion,
       CodeableConcept cc,
-      String csUrl) {
+      String csUrl,
+      String contentRef) {
 
     StringBuilder retval = new StringBuilder();
     StringBuilder translations = new StringBuilder();
@@ -1854,6 +1992,9 @@ public class CdaFhirUtilities {
                       valueSet,
                       valuesetVersion,
                       dispName));
+
+              if (!contentRef.isEmpty())
+                retval.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
 
             } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
 
@@ -1907,7 +2048,8 @@ public class CdaFhirUtilities {
                 CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
-                dispName));
+                dispName,
+                contentRef));
       } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
         retval.append(
             CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
