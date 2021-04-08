@@ -222,8 +222,7 @@ public class CdaFhirUtilitiesTest {
   }
 
   private void createTestDataForCodingXML() {
-    ObjectMapper mapper = TestUtils.getJsonMapper();
-    String testDataJson = TestUtils.getFileContentAsString("R4/Misc/MappedCodes.json");
+    String testDataJson = TestUtils.getFileContentAsString("R4/Misc/FhirToCDAMappedCodes.json");
     JSONArray array = new JSONArray(testDataJson);
     for (Object obj : array) {
       JSONObject jsonObj = (JSONObject) obj;
