@@ -1,0 +1,17 @@
+[
+	{
+		"code":"A",
+		"display":"Abnormal",
+		"system":"http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
+	},
+	{
+		"code":"N",
+		"display":"Normal",
+		"system":"http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
+	},
+	{
+		"code":"L",
+		"display":"Low",
+		"system":"http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
+	}
+]	
