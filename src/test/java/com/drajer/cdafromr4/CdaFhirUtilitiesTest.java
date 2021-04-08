@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Location;
@@ -22,6 +23,8 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,11 +33,14 @@ import org.slf4j.LoggerFactory;
 public class CdaFhirUtilitiesTest {
 
   Map<String, List<String>> testData = new HashMap<String, List<String>>();
+  List<Coding> codes = new ArrayList<Coding>();
+  public static final String INTERPRETATION_CODE = "interpretationCode";
   private static final Logger logger = LoggerFactory.getLogger(CdaFhirUtilitiesTest.class);
 
   @Before
   public void setUp() {
     createTestDataForStatusCodeTest();
+    createTestDataForCodingXML();
   }
 
   @Test
@@ -144,6 +150,54 @@ public class CdaFhirUtilitiesTest {
     assertNull(testLocation);
   }
 
+  @Test
+  public void testGetCodingXmlForMappedConceptDomain() {
+    String expectedResult =
+        "<interpretationCode code=\"A\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Abnormal\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Normal\"/>";
+    expectedResult +=
+        "\n"
+            + "<translation code=\"L\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Low\"/>";
+    expectedResult += "\n" + "</interpretationCode>" + "\n";
+    String actualResult =
+        CdaFhirUtilities.getCodingXmlForMappedConceptDomain(
+            INTERPRETATION_CODE, codes, INTERPRETATION_CODE, false);
+    assertEquals(expectedResult, actualResult);
+  }
+
+  @Test
+  public void testGetCodingXmlForMappedConceptDomainWithNullFalvor() {
+    String expectedResult = "<interpretationCode nullFlavor=\"NI\"/>" + "\n";
+    codes = new ArrayList<Coding>();
+    String actualResult =
+        CdaFhirUtilities.getCodingXmlForMappedConceptDomain(
+            INTERPRETATION_CODE, codes, INTERPRETATION_CODE, true);
+    assertEquals(expectedResult, actualResult);
+  }
+
+  @Test
+  public void testGetCodingXmlForValueForMappedConceptDomain() {
+    String expectedResult =
+        "<value xsi:type=\"CD\" code=\"A\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Abnormal\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Normal\"/>";
+    expectedResult +=
+        "\n"
+            + "<translation code=\"L\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"Low\"/>";
+    expectedResult += "\n" + "</value>" + "\n";
+    String actualResult =
+        CdaFhirUtilities.getCodingXmlForValueForMappedConceptDomain(
+            INTERPRETATION_CODE, codes, INTERPRETATION_CODE, false);
+    assertEquals(expectedResult, actualResult);
+  }
+
+  @Test
+  public void testGetCodingXmlForValueForMappedConceptDomainWithNullFalvor() {
+    String expectedResult = "<interpretationCode xsi:type=\"CD\" nullFlavor=\"NI\"/>" + "\n";
+    codes = new ArrayList<Coding>();
+    String actualResult =
+        CdaFhirUtilities.getCodingXmlForValueForMappedConceptDomain(
+            INTERPRETATION_CODE, codes, INTERPRETATION_CODE, true);
+    assertEquals(expectedResult, actualResult);
+  }
+
   private void createTestDataForStatusCodeTest() {
     ObjectMapper mapper = TestUtils.getJsonMapper();
     String testDataJson = TestUtils.getFileContentAsString("R4/Misc/FhirStatusCodeTestData.json");
@@ -164,6 +218,20 @@ public class CdaFhirUtilitiesTest {
 
         testData.put(key, valueList);
       }
+    }
+  }
+
+  private void createTestDataForCodingXML() {
+    ObjectMapper mapper = TestUtils.getJsonMapper();
+    String testDataJson = TestUtils.getFileContentAsString("R4/Misc/MappedCodes.json");
+    JSONArray array = new JSONArray(testDataJson);
+    for (Object obj : array) {
+      JSONObject jsonObj = (JSONObject) obj;
+      Coding coding = new Coding();
+      coding.setCode(jsonObj.getString("code"));
+      coding.setDisplay(jsonObj.getString("display"));
+      coding.setSystem(jsonObj.getString("system"));
+      codes.add(coding);
     }
   }
 }
