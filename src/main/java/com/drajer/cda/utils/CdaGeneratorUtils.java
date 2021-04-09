@@ -824,7 +824,7 @@ public class CdaGeneratorUtils {
       s += CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high);
       s += CdaGeneratorUtils.getXmlForEndElement(elName);
 
-    } else if (requireNullFlavor) {
+    } else if (Boolean.TRUE.equals(requireNullFlavor)) {
       s += CdaGeneratorUtils.getXmlForStartElement(elName);
       s +=
           CdaGeneratorUtils.getXmlForNullEffectiveTime(
@@ -2076,22 +2076,19 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForOriginalTextWithReference(String refText) {
 
-    String s =
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
-            + CdaGeneratorConstants.START_XMLTAG
-            + CdaGeneratorConstants.REFR_EL_NAME
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.VALUE_WITH_EQUAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + "#"
-            + refText
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.FORWARD_SLASH
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-            + "\n"
-            + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME);
-
-    return s;
+    return CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.REFR_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + "#"
+        + refText
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.FORWARD_SLASH
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + "\n"
+        + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME);
   }
 
   public static String getXmlForPerformer(String perfType) {

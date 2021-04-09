@@ -911,13 +911,10 @@ public class CdaGeneratorConstants {
               .getResourceAsStream("interpretationcode-mapping.properties");
       prop.load(intCode);
       fhirToCdaTerminologyMap.put(
-          CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, new HashMap<String, String>());
-      HashMap interpretmap =
+          CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, new HashMap<>());
+      HashMap<String, String> interpretmap =
           fhirToCdaTerminologyMap.get(CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME);
-      prop.forEach(
-          (key, value) -> {
-            interpretmap.put(key, value);
-          });
+      prop.forEach((key, value) -> interpretmap.put((String) key, (String) value));
 
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
@@ -925,7 +922,7 @@ public class CdaGeneratorConstants {
   }
 
   /**
-   * @param ConceptDomain
+   * @param conceptDomain
    * @param concept
    * @return conceptValue
    */

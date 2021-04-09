@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class EicrController {
 
+  public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
   private final Logger logger = LoggerFactory.getLogger(EicrController.class);
 
   @Autowired EicrRRService eicrRRService;
@@ -39,13 +40,13 @@ public class EicrController {
       @RequestParam(name = "encounterId", required = false) String encounterId,
       @RequestParam(name = "version", required = false) String version,
       @RequestParam(name = "fhirServerUrl", required = false) String fhirServerUrl) {
-    List<JSONObject> eicrData = new ArrayList<JSONObject>();
+    List<JSONObject> eicrData = new ArrayList<>();
     try {
       logger.info("Received EicrId::::: {}", eicrId);
       logger.info("Received EicrDocId::::: {}", eicrDocId);
       logger.info("Received SetId::::: {}", setId);
 
-      Map<String, String> searchParams = new HashMap<String, String>();
+      Map<String, String> searchParams = new HashMap<>();
       searchParams.put("eicrId", eicrId);
       searchParams.put("eicrDocId", eicrDocId);
       searchParams.put("setId", setId);
@@ -55,11 +56,11 @@ public class EicrController {
       searchParams.put("fhirServerUrl", fhirServerUrl);
       eicrData = eicrRRService.getEicrData(searchParams);
     } catch (Exception e) {
-      logger.error("Error in Processing the request", e);
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in Processing the Request");
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
     }
 
-    return new ResponseEntity<Object>(eicrData.toString(), HttpStatus.OK);
+    return new ResponseEntity<>(eicrData.toString(), HttpStatus.OK);
   }
 
   @CrossOrigin
@@ -75,13 +76,13 @@ public class EicrController {
       @RequestParam(name = "patientId", required = false) String patientId,
       @RequestParam(name = "encounterId", required = false) String encounterId,
       @RequestParam(name = "version", required = false) String version) {
-    List<JSONObject> rrData = new ArrayList<JSONObject>();
+    List<JSONObject> rrData = new ArrayList<>();
     try {
       logger.info("Received ResponseDocId::::: {}", responseDocId);
       logger.info("Received SetId::::: {}", setId);
       logger.info("Received FHIRServerURL::::: {}", fhirServerUrl);
 
-      Map<String, String> searchParams = new HashMap<String, String>();
+      Map<String, String> searchParams = new HashMap<>();
       searchParams.put("responseDocId", responseDocId);
       searchParams.put("eicrDocId", eicrDocId);
       searchParams.put("fhirServerUrl", fhirServerUrl);
@@ -91,24 +92,24 @@ public class EicrController {
       searchParams.put("version", version);
       rrData = eicrRRService.getRRData(searchParams);
     } catch (Exception e) {
-      logger.error("Error in Processing the request", e);
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in Processing the Request");
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
     }
 
-    return new ResponseEntity<Object>(rrData.toString(), HttpStatus.OK);
+    return new ResponseEntity<>(rrData.toString(), HttpStatus.OK);
   }
 
   @CrossOrigin
   @RequestMapping(value = "/api/eicrAndRRData", method = RequestMethod.GET)
   public ResponseEntity<Object> redirectEndPoint(@RequestParam String xRequestId) {
-    List<JSONObject> eicrList = new ArrayList<JSONObject>();
+    List<JSONObject> eicrList = new ArrayList<>();
     try {
       eicrList = eicrRRService.getEicrAndRRByXRequestId(xRequestId);
     } catch (Exception e) {
-      logger.error("Error in Processing the request", e);
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in Processing the Request");
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
     }
 
-    return new ResponseEntity<Object>(eicrList.toString(), HttpStatus.OK);
+    return new ResponseEntity<>(eicrList.toString(), HttpStatus.OK);
   }
 }
