@@ -900,9 +900,15 @@ public class CdaGeneratorConstants {
       prop.load(input);
       prop.forEach(
           (key, value) -> {
-            String name = StringUtils.substringAfterLast((String) value, "/");
-            oidMap.put((String) key, new Pair<>((String) value, name));
-            uriMap.put((String) value, new Pair<>((String) key, name));
+            HashMap<String, String> urlNamePair = CdaGeneratorConstants.getSplitValueURL(value);
+            String url = urlNamePair.get("URL");
+            String name = urlNamePair.get("NAME");
+
+            oidMap.put((String) key, new Pair<>(url, name));
+            uriMap.put(url, new Pair<>((String) key, name));
+
+            //            oidMap.put((String) key, new Pair<>((String) value, name));
+            //            uriMap.put((String) value, new Pair<>((String) key, name));
           });
 
       InputStream intCode =
@@ -1000,18 +1006,21 @@ public class CdaGeneratorConstants {
     }
   }
 
-  private static String getSplitValueURL(Object theValue) {
-    String name = "";
+  private static HashMap<String, String> getSplitValueURL(Object theValue) {
+    HashMap<String, String> urlNamePair = new HashMap<>();
     try {
       String[] values = ((String) theValue).trim().split("\\s*\\|\\s*");
       if (values.length > 1) {
-        name = values[1];
+        urlNamePair.put("URL", values[0]);
+        urlNamePair.put("NAME", values[1]);
       } else {
-        name = StringUtils.substringAfterLast((String) theValue, "/");
+        urlNamePair.put("URL", values[0]);
+        urlNamePair.put("NAME", StringUtils.substringAfterLast((String) theValue, "/"));
       }
     } catch (Exception e) {
       logger.error("Error while processing the OID/URI map value", e);
     }
-    return name;
+    logger.info("RETURNED Hashmap:" + urlNamePair);
+    return urlNamePair;
   }
 }

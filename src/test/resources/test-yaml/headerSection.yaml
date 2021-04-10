@@ -357,7 +357,7 @@ testCase:
 #      'id/@extension': "675844"
       'code/@code': "prov"
       'code/@codeSystem': "2.16.840.1.113883.4.642.3.414"
-      'code/@codeSystemName': "organization-type"
+      'code/@codeSystemName': "OrganizationType"
       'code/@displayName': "Healthcare Provider"
     - xPath: "location/healthCareFacility/location/addr"
       count: 1
