@@ -1663,7 +1663,7 @@ public class CdaFhirUtilities {
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
       }
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name {}", dt.getClass());
       return val;
     }
 
@@ -1697,11 +1697,9 @@ public class CdaFhirUtilities {
         }
       }
 
-      logger.debug(" Printing the class name " + dt.getClass());
+      logger.debug(" Printing the class name {}", dt.getClass());
       return val;
     }
-
-    // val += CdaGeneratorUtils.getXmlForV(CdaGeneratorConstants.NF_NI);
 
     return val;
   }
@@ -1826,7 +1824,7 @@ public class CdaFhirUtilities {
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
       }
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name {}", dt.getClass());
       return val;
     }
 

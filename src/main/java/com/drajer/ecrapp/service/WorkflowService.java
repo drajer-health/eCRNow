@@ -268,10 +268,6 @@ public class WorkflowService {
 
     Instant t = ApplicationUtils.convertTimingScheduleToInstant(ts, timeRef);
 
-    //    ActionRepo.getInstance()
-    //        .getTaskScheduler()
-    //        .schedule(workflowInstance.new EicrActionExecuteJob(launchDetailsId, actionType), t);
-
     invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = t.toString();
@@ -293,7 +289,7 @@ public class WorkflowService {
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
     CommandLineRunner task = null;
-    logger.info("Scheduling one time task to {}", t.toString());
+    logger.info("Scheduling one time task to {}", t);
 
     task = ignored -> logger.info("Scheduling one time task to after!");
     staticScheduler.schedule(

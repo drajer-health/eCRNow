@@ -1,6 +1,7 @@
 package com.drajer.cda.parser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CdaCode extends CdaDataElement {
 
@@ -9,11 +10,11 @@ public class CdaCode extends CdaDataElement {
   private String codeSystemName;
   private String displayName;
   private String valueSetOid;
-  private ArrayList<CdaCode> translations;
+  private List<CdaCode> translations;
   private String nullFlavor;
 
   public CdaCode() {
-    translations = new ArrayList<CdaCode>();
+    translations = new ArrayList<>();
   }
 
   public String getCode() {
@@ -56,11 +57,11 @@ public class CdaCode extends CdaDataElement {
     this.valueSetOid = valueSetOid;
   }
 
-  public ArrayList<CdaCode> getTranslations() {
+  public List<CdaCode> getTranslations() {
     return translations;
   }
 
-  public void setTranslations(ArrayList<CdaCode> translations) {
+  public void setTranslations(List<CdaCode> translations) {
     this.translations = translations;
   }
 
