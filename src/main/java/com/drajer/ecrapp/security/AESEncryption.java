@@ -39,7 +39,7 @@ public class AESEncryption {
 
       byte[] iv = CryptoUtils.getRandomNonce(IV_LENGTH_BYTE);
 
-      byte[] keyBytes = secretKey.getBytes("UTF-16");
+      byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_16);
 
       SecretKeySpec skeySpec = new SecretKeySpec(Arrays.copyOf(keyBytes, 16), "AES");
 

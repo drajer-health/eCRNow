@@ -35,7 +35,7 @@ public class R4ResourcesData {
   private static final String CONDITION = "Condition";
 
   private static final String OBSERVATION_SOCIAL_HISTORY = "social-history";
-  private static final String OBSERVATION_STATUS_ENTERED_IN_HISTORY = "entered-in-error";
+  private static final String ENTERED_IN_ERROR = "entered-in-error";
 
   private static final String ENCOUNTER_DIAGNOSIS_CONDITION = "encounter-diagnosis";
   private static final String PROBLEM_LIST_CONDITION = "problem-list-item";
@@ -112,11 +112,11 @@ public class R4ResourcesData {
       Date end) {
     Bundle bundle =
         (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, CONDITION);
-    List<Condition> allConditions = new ArrayList<Condition>();
+    List<Condition> allConditions = new ArrayList<>();
     List<Condition> problemConditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<>();
 
-    List<Condition> encounterDiagnosisConditions = new ArrayList<Condition>();
+    List<Condition> encounterDiagnosisConditions = new ArrayList<>();
     for (BundleEntryComponent entry : bundle.getEntry()) {
       Condition condition = (Condition) entry.getResource();
 
@@ -128,7 +128,7 @@ public class R4ResourcesData {
                   .getVerificationStatus()
                   .getCodingFirstRep()
                   .getCode()
-                  .equals("entered-in-error"))) {
+                  .equals(ENTERED_IN_ERROR))) {
 
         logger.info(" Condition Verification Status is not entered in error ");
 
@@ -210,7 +210,7 @@ public class R4ResourcesData {
     List<CodeableConcept> observationCodes = new ArrayList<>();
     // Filter Observations based on Encounter Reference
     if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
-      bundle = filterObservationByStatus(bundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         if (!observation.getEncounter().isEmpty()
@@ -226,7 +226,7 @@ public class R4ResourcesData {
       // If Encounter Id is not present using start and end dates to filter
       // Observations
     } else if (bundle != null) {
-      bundle = filterObservationByStatus(bundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Observation observation = (Observation) entry.getResource();
         // Checking If Issued Date is present in Observation resource
@@ -276,7 +276,7 @@ public class R4ResourcesData {
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
     if (bundle != null) {
-      bundle = filterObservationByStatus(bundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
       observations = filterObservation(bundle, encounter, start, end);
     }
     return observations;
@@ -301,7 +301,7 @@ public class R4ResourcesData {
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = new ArrayList<>();
     if (bundle != null) {
-      bundle = filterObservationByStatus(bundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
       bundle = filterObservationsBundleByCategory(bundle, OBSERVATION_SOCIAL_HISTORY);
       observations = filterObservation(bundle, encounter, start, end);
     }
@@ -319,8 +319,7 @@ public class R4ResourcesData {
       List<Observation> travelobs = new ArrayList<>();
       if (travelHisWithSNOMEDCodesbundle != null) {
         travelHisWithSNOMEDCodesbundle =
-            filterObservationByStatus(
-                travelHisWithSNOMEDCodesbundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+            filterObservationByStatus(travelHisWithSNOMEDCodesbundle, ENTERED_IN_ERROR);
         travelHisWithSNOMEDCodesbundle =
             filterObservationsBundleByCategory(
                 travelHisWithSNOMEDCodesbundle, OBSERVATION_SOCIAL_HISTORY);
@@ -336,8 +335,7 @@ public class R4ResourcesData {
 
   private Bundle filterObservationByStatus(Bundle bundle, String observationStatus) {
     Bundle filteredBundle = new Bundle();
-    List<BundleEntryComponent> filteredEntryComponents =
-        new ArrayList<Bundle.BundleEntryComponent>();
+    List<BundleEntryComponent> filteredEntryComponents = new ArrayList<>();
     for (BundleEntryComponent entryComp : bundle.getEntry()) {
       Observation observation = (Observation) entryComp.getResource();
       if (observation.hasStatus()) {
@@ -356,8 +354,7 @@ public class R4ResourcesData {
   private Bundle filterObservationsBundleByCategory(
       Bundle bundle, String observationSocialHistory) {
     Bundle filteredBundle = new Bundle();
-    List<BundleEntryComponent> filteredEntryComponents =
-        new ArrayList<Bundle.BundleEntryComponent>();
+    List<BundleEntryComponent> filteredEntryComponents = new ArrayList<>();
     for (BundleEntryComponent entryComp : bundle.getEntry()) {
       Observation observation = (Observation) entryComp.getResource();
       List<CodeableConcept> observationCategories = observation.getCategory();
@@ -398,8 +395,7 @@ public class R4ResourcesData {
                   occupationCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
       if (occupationCodesbundle != null) {
-        occupationCodesbundle =
-            filterObservationByStatus(occupationCodesbundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+        occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
         for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
           observations.add((Observation) entryComp.getResource());
         }
@@ -418,8 +414,7 @@ public class R4ResourcesData {
                   QueryConstants.LOINC_CODE_SYSTEM);
 
       if (occupationCodesbundle != null) {
-        occupationCodesbundle =
-            filterObservationByStatus(occupationCodesbundle, OBSERVATION_STATUS_ENTERED_IN_HISTORY);
+        occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
         for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
           observations.add((Observation) entryComp.getResource());
         }
@@ -1059,7 +1054,6 @@ public class R4ResourcesData {
       }
 
       // Already sorted and set in the getConditionData method
-      // r4FhirData.setConditions(conditionsList);
       for (Condition condition : conditionsList) {
         BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
         bundle.addEntry(conditionsEntry);
