@@ -339,7 +339,7 @@ public class CdaSocialHistoryGenerator {
 
     sb.append(
         CdaGeneratorUtils.getXmlForIVLWithTS(
-            CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, false));
 
     List<CodeableConcept> cds = new ArrayList<>();
     cds.add(cond.getCode());

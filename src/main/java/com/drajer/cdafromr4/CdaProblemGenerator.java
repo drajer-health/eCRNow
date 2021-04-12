@@ -119,7 +119,6 @@ public class CdaProblemGenerator {
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-      Boolean triggerCodesAdded = false;
       for (Condition pr : conds) {
         // Add the Entries.
         sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
@@ -171,10 +170,11 @@ public class CdaProblemGenerator {
 
         Date onset = CdaFhirUtilities.getActualDate(pr.getOnset());
         Date abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
+        Date recordedDate = pr.getRecordedDate();
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, recordedDate, abatement, true));
 
         // Add the Problem Observation
         sb.append(
@@ -217,7 +217,7 @@ public class CdaProblemGenerator {
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
         List<CodeableConcept> cds = new ArrayList<>();
         cds.add(pr.getCode());
@@ -242,10 +242,7 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
         logger.info(" Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
-        //  if (!triggerCodesAdded) {
         sb.append(addTriggerCodes(details, pr, onset, abatement));
-        //   triggerCodesAdded = true;
-        //  }
 
         logger.info(" Completed adding Trigger Codes ");
 
@@ -283,7 +280,7 @@ public class CdaProblemGenerator {
 
       // Add each code as an entry relationship observation
       CodeableConcept cd = cond.getCode();
-      List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
+      List<CodeableConcept> cds = new ArrayList<>();
       if (cd != null) cds.add(cd);
 
       Set<String> matchedCodesFromCc =
@@ -342,11 +339,7 @@ public class CdaProblemGenerator {
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
-
-        // Set<String> matchedCodes = mtc.getMatchedCodes();
-
-        // if (matchedCodesFromCc) {
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
         // Split the system and code.
         matchedCodesFromCc
@@ -376,7 +369,6 @@ public class CdaProblemGenerator {
                           parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
                   logger.info(" Constructed Value CD ");
                 });
-        // }
 
         // End Tag for Entry Relationship
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));

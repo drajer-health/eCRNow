@@ -146,20 +146,24 @@ public class CdaResultGenerator {
                 cds,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_LOINC_URL,
-                false);
+                false,
+                "");
 
         logger.debug(" Code Xml = {}", codeXml);
         if (!codeXml.isEmpty()) {
           lrEntry.append(codeXml);
         } else {
-          lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+          lrEntry.append(
+              CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME, ""));
         }
 
         lrEntry.append(
             CdaGeneratorUtils.getXmlForCD(
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-        lrEntry.append(getXmlForObservation(details, obs));
+        lrEntry.append(
+            getXmlForObservation(
+                details, obs, CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, rowNum));
 
         // End Tags for Entries
         lrEntry.append(
@@ -193,9 +197,12 @@ public class CdaResultGenerator {
     return hsb.toString();
   }
 
-  public static String getXmlForObservation(LaunchDetails details, Observation obs) {
+  public static String getXmlForObservation(
+      LaunchDetails details, Observation obs, String contentId, int row) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
+    String contentRef = contentId + Integer.toString(row);
+
     Boolean foundComponent = false;
 
     if (obs.getComponent() != null && !obs.getComponent().isEmpty()) {
@@ -227,7 +234,7 @@ public class CdaResultGenerator {
 
         String compString =
             getXmlForObservationComponent(
-                details, cc, val, id.toString(), obs.getEffective(), interpretation);
+                details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
 
         if (!compString.isEmpty() && !foundComponent) foundComponent = true;
 
@@ -247,7 +254,8 @@ public class CdaResultGenerator {
               obs.getValue(),
               obs.getId(),
               obs.getEffective(),
-              obs.getInterpretation()));
+              obs.getInterpretation(),
+              contentRef));
     }
 
     logger.debug(" Lr Entry = {}", lrEntry);
@@ -261,7 +269,8 @@ public class CdaResultGenerator {
       Type val,
       String id,
       Type effective,
-      List<CodeableConcept> interpretation) {
+      List<CodeableConcept> interpretation,
+      String contentRef) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -315,7 +324,8 @@ public class CdaResultGenerator {
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
                 cd,
-                CdaGeneratorConstants.FHIR_LOINC_URL);
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                contentRef);
       } else {
         logger.error(
             " Did not find the code value in the matched codes, make it a regular Observation ");
@@ -346,7 +356,8 @@ public class CdaResultGenerator {
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
                 cc,
-                CdaGeneratorConstants.FHIR_LOINC_URL);
+                CdaGeneratorConstants.FHIR_LOINC_URL,
+                contentRef);
       } else {
         logger.error(
             " Did not find the code value in the matched values, make it a regular Observation ");
@@ -366,14 +377,19 @@ public class CdaResultGenerator {
       logger.info(" Did not find the trigger code matches, adding XML based on code system");
       obsCodeXml =
           CdaFhirUtilities.getCodingXmlForCodeSystem(
-              cds, CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.FHIR_LOINC_URL, false);
+              cds,
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.FHIR_LOINC_URL,
+              false,
+              contentRef);
 
       if (!obsCodeXml.isEmpty()) {
         logger.info(" Did not find the trigger code matches, adding XML based on code system ");
         lrEntry.append(obsCodeXml);
       } else {
         logger.info(" Did not find the trigger code matches, creating default xml ");
-        lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+        lrEntry.append(
+            CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME, contentRef));
       }
 
     } else {
@@ -398,9 +414,15 @@ public class CdaResultGenerator {
 
       logger.info(" Adding Interpretaion Code ");
 
-      lrEntry.append(
-          CdaFhirUtilities.getCodeableConceptXml(
-              interpretation, CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, false));
+      String interpretXml =
+          CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
+              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+              interpretation,
+              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+              false,
+              false);
+
+      if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
     }
 
     // End Tag for Entry Relationship
@@ -456,12 +478,14 @@ public class CdaResultGenerator {
                 cds,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_LOINC_URL,
-                true);
+                true,
+                "");
 
         if (!codeXml.isEmpty()) {
           lrEntry.append(codeXml);
         } else {
-          lrEntry.append(CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
+          lrEntry.append(
+              CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME, ""));
         }
 
         lrEntry.append(

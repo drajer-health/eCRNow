@@ -887,6 +887,7 @@ public class CdaGeneratorConstants {
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
+  private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
 
   // Static block to load OID to URI mapping from property file
   static {
@@ -903,9 +904,41 @@ public class CdaGeneratorConstants {
             oidMap.put((String) key, new Pair<>((String) value, name));
             uriMap.put((String) value, new Pair<>((String) key, name));
           });
+
+      InputStream intCode =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("interpretationcode-mapping.properties");
+      prop.load(intCode);
+      fhirToCdaTerminologyMap.put(
+          CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, new HashMap<>());
+      HashMap<String, String> interpretmap =
+          fhirToCdaTerminologyMap.get(CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME);
+      prop.forEach((key, value) -> interpretmap.put((String) key, (String) value));
+
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
     }
+  }
+
+  /**
+   * @param conceptDomain
+   * @param concept
+   * @return conceptValue
+   */
+  public static String getMappedCodeFromFhirToCda(String conceptDomain, String concept) {
+
+    if (fhirToCdaTerminologyMap.containsKey(conceptDomain)) {
+
+      HashMap<String, String> conceptMap = fhirToCdaTerminologyMap.get(conceptDomain);
+
+      if (conceptMap.containsKey(concept)) {
+
+        return conceptMap.get(concept);
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -962,5 +995,20 @@ public class CdaGeneratorConstants {
     } else {
       return "WP";
     }
+  }
+
+  private static String getSplitValueURL(Object theValue) {
+    String name = "";
+    try {
+      String[] values = ((String) theValue).trim().split("\\s*\\|\\s*");
+      if (values.length > 1) {
+        name = values[1];
+      } else {
+        name = StringUtils.substringAfterLast((String) theValue, "/");
+      }
+    } catch (Exception e) {
+      logger.error("Error while processing the OID/URI map value", e);
+    }
+    return name;
   }
 }

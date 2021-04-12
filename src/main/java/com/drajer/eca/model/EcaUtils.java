@@ -243,7 +243,7 @@ public class EcaUtils {
       logger.info(" Comparing old Trigger Code Matches with New Trigger Code Matches ");
       List<MatchedTriggerCodes> mtc = oldState.getMatchTriggerStatus().getMatchedCodes();
 
-      Set<String> oldCodes = new HashSet<String>();
+      Set<String> oldCodes = new HashSet<>();
       for (MatchedTriggerCodes m : mtc) {
 
         Set<String> mcs = m.getMatchedCodes();
@@ -257,14 +257,11 @@ public class EcaUtils {
         for (String mv : CollectionUtils.emptyIfNull(mcvs)) {
           oldCodes.add(mv + "|" + m.getMatchedPath());
         }
-
-        // Optional.ofNullable(m.getMatchedCodes()).ifPresent(oldCodes::addAll);
-        // Optional.ofNullable(m.getMatchedValues()).ifPresent(oldCodes::addAll);
       }
 
       List<MatchedTriggerCodes> mtcNew = newState.getMatchTriggerStatus().getMatchedCodes();
 
-      Set<String> newCodes = new HashSet<String>();
+      Set<String> newCodes = new HashSet<>();
       for (MatchedTriggerCodes mn : mtcNew) {
 
         Set<String> mcs = mn.getMatchedCodes();
@@ -278,8 +275,6 @@ public class EcaUtils {
         for (String mv : CollectionUtils.emptyIfNull(mcvs)) {
           newCodes.add(mv + "|" + mn.getMatchedPath());
         }
-        // Optional.ofNullable(mn.getMatchedCodes()).ifPresent(newCodes::addAll);
-        // Optional.ofNullable(mn.getMatchedValues()).ifPresent(newCodes::addAll);
       }
 
       if (!oldCodes.containsAll(newCodes)) {

@@ -9,6 +9,7 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -72,6 +73,17 @@ public class EicrDaoTest {
 
     assertNotNull(actualEicr);
     assertEicr(expectedEicr, actualEicr);
+  }
+
+  @Test
+  public void getEicrAndRRDataByXRequestId() {
+
+    Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
+    List<Eicr> actualEicr = eicrDaoImpl.getEicrAndRRByXRequestId(savedEicr.getxRequestId());
+
+    assertEquals(1, actualEicr.size());
+    assertEquals(expectedEicr.getEicrData(), actualEicr.get(0).getEicrData());
+    assertEquals(expectedEicr.getResponseData(), actualEicr.get(0).getResponseData());
   }
 
   @Test

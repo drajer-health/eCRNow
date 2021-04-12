@@ -146,7 +146,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 status.seteICRId(ecr.getId().toString());
                 status.setJobStatus(JobStatus.COMPLETED);
 
-                // newState.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
                 state.getPeriodicUpdateStatus().add(status);
                 state.setMatchTriggerStatus(newState.getMatchTriggerStatus());
 
@@ -232,7 +231,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       EcaUtils.updateDetailStatus(details, state);
       // No need to continue as the job will take over execution.
       logger.info(" **** End Executing Periodic Update Eicr Action **** ");
-      // return;
     }
   }
 

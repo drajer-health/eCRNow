@@ -798,7 +798,8 @@ public class CdaGeneratorUtils {
         + CdaGeneratorUtils.getXmlForEndElement(elName);
   }
 
-  public static String getXmlForIVLWithTS(String elName, Date low, Date high) {
+  public static String getXmlForIVLWithTS(
+      String elName, Date low, Date high, Boolean requireNullFlavor) {
     String s = "";
     if (low != null && high != null) {
       s +=
@@ -814,6 +815,25 @@ public class CdaGeneratorUtils {
               + CdaGeneratorUtils.getXmlForEffectiveTime(
                   CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
               + CdaGeneratorUtils.getXmlForEndElement(elName);
+    } else if (high != null) {
+
+      s += CdaGeneratorUtils.getXmlForStartElement(elName);
+      s +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
+      s += CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high);
+      s += CdaGeneratorUtils.getXmlForEndElement(elName);
+
+    } else if (Boolean.TRUE.equals(requireNullFlavor)) {
+      s += CdaGeneratorUtils.getXmlForStartElement(elName);
+      s +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
+      s +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NF_NI);
+      s += CdaGeneratorUtils.getXmlForEndElement(elName);
+
     } else {
       s += CdaGeneratorUtils.getXmlForNullEffectiveTime(elName, CdaGeneratorConstants.NF_NI);
     }
@@ -1684,119 +1704,152 @@ public class CdaGeneratorUtils {
       String codeSystemName,
       String valueSet,
       String valuesetVersion,
-      String displayName) {
+      String displayName,
+      String contentRef) {
     if (!StringUtils.isEmpty(displayName)
         && !StringUtils.isEmpty(valueSet)
         && (!StringUtils.isEmpty(valuesetVersion))) {
-      return CdaGeneratorConstants.START_XMLTAG
-          + codeElName
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + StringEscapeUtils.escapeXml10(displayName)
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.VALUESET
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + valueSet
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.VALUESET_VERSION
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + valuesetVersion
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+      String retval =
+          CdaGeneratorConstants.START_XMLTAG
+              + codeElName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystem
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystemName
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + StringEscapeUtils.escapeXml10(displayName)
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUESET
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + valueSet
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUESET_VERSION
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + valuesetVersion
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + "\n";
+
+      if (!contentRef.isEmpty()) retval += getXmlForOriginalTextWithReference(contentRef);
+
+      retval += getXmlForEndElement(codeElName);
+
+      return retval;
 
     } else if (!StringUtils.isEmpty(valueSet) && (!StringUtils.isEmpty(valuesetVersion))) {
 
-      return CdaGeneratorConstants.START_XMLTAG
-          + codeElName
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.VALUESET
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + valueSet
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.VALUESET_VERSION
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + valuesetVersion
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+      String retval =
+          CdaGeneratorConstants.START_XMLTAG
+              + codeElName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystem
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystemName
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUESET
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + valueSet
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUESET_VERSION
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + valuesetVersion
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + "\n";
+
+      if (!contentRef.isEmpty()) retval += getXmlForOriginalTextWithReference(contentRef);
+
+      retval += getXmlForEndElement(codeElName);
+
+      return retval;
 
     } else if (!StringUtils.isEmpty(displayName)) {
-      return CdaGeneratorConstants.START_XMLTAG
-          + codeElName
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + StringEscapeUtils.escapeXml10(displayName)
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+      String retval =
+          CdaGeneratorConstants.START_XMLTAG
+              + codeElName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystem
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystemName
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + StringEscapeUtils.escapeXml10(displayName)
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + "\n";
+
+      if (!contentRef.isEmpty()) retval += getXmlForOriginalTextWithReference(contentRef);
+
+      retval += getXmlForEndElement(codeElName);
+
+      return retval;
 
     } else {
-      return CdaGeneratorConstants.START_XMLTAG
-          + codeElName
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+      String retval =
+          CdaGeneratorConstants.START_XMLTAG
+              + codeElName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystem
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + codeSystemName
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + "\n";
+
+      if (!contentRef.isEmpty()) retval += getXmlForOriginalTextWithReference(contentRef);
+
+      retval += getXmlForEndElement(codeElName);
+
+      return retval;
     }
   }
 
@@ -2019,6 +2072,23 @@ public class CdaGeneratorUtils {
     s += getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME);
 
     return s;
+  }
+
+  public static String getXmlForOriginalTextWithReference(String refText) {
+
+    return CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.REFR_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + "#"
+        + refText
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.FORWARD_SLASH
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + "\n"
+        + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME);
   }
 
   public static String getXmlForPerformer(String perfType) {

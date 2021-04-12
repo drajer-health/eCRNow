@@ -95,6 +95,8 @@ public class CdaEncounterGenerator {
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 
+      String contentRef = CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT + Integer.toString(1);
+
       sb.append(CdaGeneratorUtils.addTableRow(bodyvals, 1));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -136,7 +138,7 @@ public class CdaEncounterGenerator {
         }
       }
 
-      sb.append(getEncounterCodeXml(encounter));
+      sb.append(getEncounterCodeXml(encounter, contentRef));
 
       sb.append(
           CdaFhirUtilities.getPeriodXml(
@@ -175,7 +177,6 @@ public class CdaEncounterGenerator {
 
       List<Condition> encDiagnosis = data.getEncounterDiagnosisConditions();
 
-      Boolean triggerCodesAdded = false;
       for (Condition c : encDiagnosis) {
 
         sb.append(
@@ -252,7 +253,7 @@ public class CdaEncounterGenerator {
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement));
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
         List<CodeableConcept> cds = new ArrayList<>();
         cds.add(c.getCode());
@@ -326,7 +327,7 @@ public class CdaEncounterGenerator {
     return sb.toString();
   }
 
-  public static String getEncounterCodeXml(Encounter encounter) {
+  public static String getEncounterCodeXml(Encounter encounter, String contentRef) {
     String codeXml = "";
 
     if (encounter != null) {
@@ -339,7 +340,8 @@ public class CdaEncounterGenerator {
                 codes,
                 CdaGeneratorConstants.CODE_EL_NAME,
                 CdaGeneratorConstants.FHIR_ENCOUNTER_CLASS_URL,
-                true);
+                true,
+                contentRef);
       }
 
       if (!codeXml.isEmpty()) {
