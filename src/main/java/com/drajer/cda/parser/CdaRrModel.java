@@ -1,12 +1,9 @@
 package com.drajer.cda.parser;
 
-import java.util.ArrayList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 public class CdaRrModel {
 
-  private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
   public static final String UNKONWN_RESPONSE_TYPE = "Unknown";
 
   private CdaIi eicrDocId;
@@ -53,13 +50,13 @@ public class CdaRrModel {
     this.rrDocId = rrDocId;
   }
 
-  public void setRrDocId(ArrayList<CdaIi> rrdocids) {
+  public void setRrDocId(List<CdaIi> rrdocids) {
     if (rrdocids != null && !rrdocids.isEmpty()) {
       this.rrDocId = rrdocids.get(0);
     }
   }
 
-  public void setEicrDocId(ArrayList<CdaIi> eicrdocids) {
+  public void setEicrDocId(List<CdaIi> eicrdocids) {
     if (eicrdocids != null && !eicrdocids.isEmpty()) {
       this.eicrDocId = eicrdocids.get(0);
     }

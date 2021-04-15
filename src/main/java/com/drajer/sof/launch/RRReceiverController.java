@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class RRReceiverController {
 
+  public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the request";
   private final Logger logger = LoggerFactory.getLogger(RRReceiverController.class);
 
   @Autowired EicrRRService rrReceieverService;
@@ -58,10 +59,10 @@ public class RRReceiverController {
       }
 
     } catch (IllegalArgumentException e) {
-      logger.error("Error in Processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      logger.error("Error in Processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
@@ -94,10 +95,10 @@ public class RRReceiverController {
         }
       }
     } catch (IllegalArgumentException e) {
-      logger.error("Error in Processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      logger.error("Error in Processing the request", e);
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 

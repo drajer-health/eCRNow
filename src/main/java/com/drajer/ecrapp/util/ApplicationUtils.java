@@ -18,8 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -53,24 +51,6 @@ public class ApplicationUtils {
   public ApplicationUtils() {}
 
   private static final Logger logger = LoggerFactory.getLogger(ApplicationUtils.class);
-
-  /*public static Boolean isCodePresent(Set<ValueSet> valuesets, String code) {
-    Boolean isCodePresent = false;
-    ValueSetExpansionComponent valueSetExpansionComponent;
-    List<ValueSetExpansionContainsComponent> valueSetExpansionContainsComponentList;
-    for (ValueSet valueset : valuesets) {
-      valueSetExpansionComponent = valueset.getExpansion();
-      valueSetExpansionContainsComponentList = valueSetExpansionComponent.getContains();
-      for (ValueSetExpansionContainsComponent valueSetExpansionContainsComponent :
-          valueSetExpansionContainsComponentList) {
-        if (valueSetExpansionContainsComponent.getCode().equals(code)) {
-          isCodePresent = true;
-          return isCodePresent;
-        }
-      }
-    }
-    return isCodePresent;
-  }*/
 
   public static List<CanonicalType> getValueSetListFromGrouper(String grouperId) {
 
@@ -290,12 +270,12 @@ public class ApplicationUtils {
     if (ts.getDurationUnit() != null) {
 
       logger.debug("Found Duration for Timing Schedule");
-      logger.debug(" Duration before conversion = " + ts.getDuration());
-      logger.debug(" Duration Unit = " + ts.getDurationUnit());
+      logger.debug(" Duration before conversion = {}", ts.getDuration());
+      logger.debug(" Duration Unit = {}", ts.getDurationUnit());
       d.setValue(ts.getDuration());
       d.setUnit(ts.getDurationUnit().toCode());
-      logger.debug(" Duration during conversion = " + d.getValue());
-      logger.debug(" Duration Unit = " + d.getUnit());
+      logger.debug(" Duration during conversion = {}", d.getValue());
+      logger.debug(" Duration Unit = {}", d.getUnit());
 
     } else if (ts.getFrequencyPeriodUnit() != null) {
 
@@ -316,8 +296,6 @@ public class ApplicationUtils {
   public static Instant convertDurationToInstant(Duration d) {
 
     Instant t = null;
-    final DateTimeFormatter formatter =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
     if (d != null) {
 

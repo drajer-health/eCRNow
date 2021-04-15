@@ -177,7 +177,6 @@ public class CdaEncounterGenerator {
 
       List<Condition> encDiagnosis = data.getEncounterDiagnosisConditions();
 
-      Boolean triggerCodesAdded = false;
       for (Condition c : encDiagnosis) {
 
         sb.append(

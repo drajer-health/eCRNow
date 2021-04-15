@@ -190,7 +190,7 @@ public class LaunchController {
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
-            launchDetails.setExpiry(tokenResponse.getInt("expires_in"));
+            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
@@ -396,7 +396,7 @@ public class LaunchController {
     currentStateDetails.setAccessToken(accessTokenObject.getString(ACCESS_TOKEN));
     currentStateDetails.setRefreshToken(accessTokenObject.getString("refresh_token"));
     currentStateDetails.setUserId(accessTokenObject.getString("user"));
-    currentStateDetails.setExpiry(accessTokenObject.getInt("expires_in"));
+    currentStateDetails.setExpiry(accessTokenObject.getInt(EXPIRES_IN));
     currentStateDetails.setLaunchPatientId(accessTokenObject.getString(PATIENT));
     currentStateDetails.setEncounterId(accessTokenObject.getString(ENCOUNTER));
     currentStateDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());

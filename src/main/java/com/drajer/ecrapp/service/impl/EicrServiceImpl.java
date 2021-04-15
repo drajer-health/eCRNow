@@ -245,7 +245,7 @@ public class EicrServiceImpl implements EicrRRService {
 
   public List<JSONObject> getEicrData(Map<String, String> searchParams) {
     List<Eicr> eicrData = eicrDao.getEicrData(searchParams);
-    List<JSONObject> eicrDataList = new ArrayList<JSONObject>();
+    List<JSONObject> eicrDataList = new ArrayList<>();
     for (Eicr eicr : eicrData) {
       JSONObject eicrObject = new JSONObject();
       eicrObject.put("eicrData", eicr.getEicrData());
@@ -256,7 +256,7 @@ public class EicrServiceImpl implements EicrRRService {
 
   public List<JSONObject> getRRData(Map<String, String> searchParams) {
     List<Eicr> rrData = eicrDao.getRRData(searchParams);
-    List<JSONObject> rrDataList = new ArrayList<JSONObject>();
+    List<JSONObject> rrDataList = new ArrayList<>();
     for (Eicr eicr : rrData) {
       JSONObject eicrObject = new JSONObject();
       eicrObject.put("responseData", eicr.getResponseData());
@@ -267,7 +267,7 @@ public class EicrServiceImpl implements EicrRRService {
 
   public List<JSONObject> getEicrAndRRByXRequestId(String xRequestId) {
     List<Eicr> eicrList = eicrDao.getEicrAndRRByXRequestId(xRequestId);
-    List<JSONObject> eicrDataList = new ArrayList<JSONObject>();
+    List<JSONObject> eicrDataList = new ArrayList<>();
     for (Eicr eicr : eicrList) {
       JSONObject eicrObject = new JSONObject();
       eicrObject.put("eicrData", eicr.getEicrData());

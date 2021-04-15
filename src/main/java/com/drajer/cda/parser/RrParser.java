@@ -38,7 +38,6 @@ public class RrParser {
     try {
 
       initDoc(cdaFile);
-      // CdaParserConstants.getInstance();
 
       logger.debug("Creating Model");
       CdaRrModel model = new CdaRrModel();

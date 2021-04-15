@@ -932,17 +932,17 @@ public class CdaFhirUtilities {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
-          String mappedCode =
+          String mappedCd =
               CdaGeneratorConstants.getMappedCodeFromFhirToCda(conceptDomain, c.getCode());
 
           if (!csd.getValue0().isEmpty()
               && !csd.getValue1().isEmpty()
-              && mappedCode != null
-              && !mappedCode.isEmpty()) {
+              && mappedCd != null
+              && !mappedCd.isEmpty()) {
             cdStarted = true;
             sb.append(
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
-                    cdName, mappedCode, csd.getValue0(), csd.getValue1(), c.getDisplay()));
+                    cdName, mappedCd, csd.getValue0(), csd.getValue1(), c.getDisplay()));
           }
         } else if (cdStarted) {
 
@@ -1663,7 +1663,7 @@ public class CdaFhirUtilities {
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
       }
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name {}", dt.getClass());
       return val;
     }
 
@@ -1697,11 +1697,9 @@ public class CdaFhirUtilities {
         }
       }
 
-      logger.debug(" Printing the class name " + dt.getClass());
+      logger.debug(" Printing the class name {}", dt.getClass());
       return val;
     }
-
-    // val += CdaGeneratorUtils.getXmlForV(CdaGeneratorConstants.NF_NI);
 
     return val;
   }
@@ -1826,7 +1824,7 @@ public class CdaFhirUtilities {
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
       }
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name {}", dt.getClass());
       return val;
     }
 
