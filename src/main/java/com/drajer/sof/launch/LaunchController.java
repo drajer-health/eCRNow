@@ -6,7 +6,9 @@ import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.ClientDetails;
@@ -19,6 +21,8 @@ import com.drajer.sof.service.TriggerQueryService;
 import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -74,6 +78,8 @@ public class LaunchController {
 
   @Autowired RestApiSender xmlSender;
 
+  @Autowired ObjectMapper mapper;
+
   private final SecureRandom random = new SecureRandom();
 
   @CrossOrigin
@@ -94,10 +100,32 @@ public class LaunchController {
     tokenScheduler.scheduleJob(launchDetails);
 
     // Kick off the Launch Event Processing
-    logger.info("Invoking SOF Launch workflow event handler ");
-    workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
+    scheduleJob(launchDetails);
 
     return launchDetails;
+  }
+
+  private void scheduleJob(LaunchDetails launchDetails) {
+    // TODO Auto-generated method stub
+    try {
+      if (launchDetails.getEncounterId() != null && launchDetails.getStartDate() != null) {
+        logger.info("Scheduling the job based on Encounter period.start time:::::");
+        // Setup Execution State.
+        PatientExecutionState state =
+            new PatientExecutionState(
+                launchDetails.getLaunchPatientId(), launchDetails.getEncounterId());
+
+        launchDetails.setStatus(mapper.writeValueAsString(state));
+        authDetailsService.saveOrUpdate(launchDetails);
+        Instant t = launchDetails.getStartDate().toInstant();
+        workflowService.invokeScheduler(launchDetails.getId(), EcrActionTypes.MATCH_TRIGGER, t);
+      } else {
+        logger.info("Invoking SOF Launch workflow event handler ");
+        workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
+      }
+    } catch (JsonProcessingException e) {
+      logger.error("Error in Scheduling the Job");
+    }
   }
 
   @CrossOrigin
@@ -203,6 +231,7 @@ public class LaunchController {
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
             launchDetails.setxRequestId(requestIdHeadervalue);
+            launchDetails.setStatus(new JSONObject().toString());
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
