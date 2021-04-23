@@ -115,6 +115,8 @@ public class R4ResourcesData {
     List<Condition> allConditions = new ArrayList<>();
     List<Condition> problemConditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<>();
+    int conditionInError = 0;
+    int conditionMissingAbatement = 0;
 
     List<Condition> encounterDiagnosisConditions = new ArrayList<>();
     for (BundleEntryComponent entry : bundle.getEntry()) {
@@ -129,8 +131,6 @@ public class R4ResourcesData {
                   .getCodingFirstRep()
                   .getCode()
                   .equals(ENTERED_IN_ERROR))) {
-
-        logger.info(" Condition Verification Status is not entered in error ");
 
         if (condition.getAbatement() == null && condition.hasCategory()) {
           List<CodeableConcept> conditionCategory = condition.getCategory();
@@ -167,21 +167,25 @@ public class R4ResourcesData {
             }
           }
         } else {
-          logger.info("Condition Abatement is not present. So condition is not added to Bundle");
+          conditionMissingAbatement++;
         }
       } else {
-        logger.info("Condition Verification status prevents condition from adding to the Bundle ");
+        conditionInError++;
       }
     }
     allConditions.addAll(problemConditions);
     allConditions.addAll(encounterDiagnosisConditions);
     r4FhirData.setConditions(problemConditions);
-    logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
     r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
-    logger.info(
-        "Filtered Encounter Diagnosis Condition List=====> {}",
-        encounterDiagnosisConditions.size());
     r4FhirData.setR4ConditionCodes(conditionCodes);
+    logger.info(
+        "Total Conditions:{} Filtered Problem:{} Filtered Encounter Diagnosis:{} Entered InError:{} Missing Abatement:{}",
+        bundle.getEntry().size(),
+        problemConditions.size(),
+        encounterDiagnosisConditions.size(),
+        conditionInError,
+        conditionMissingAbatement);
+
     return allConditions;
   }
 
@@ -335,6 +339,7 @@ public class R4ResourcesData {
 
   private Bundle filterObservationByStatus(Bundle bundle, String observationStatus) {
     Bundle filteredBundle = new Bundle();
+    int observationInError = 0;
     List<BundleEntryComponent> filteredEntryComponents = new ArrayList<>();
     for (BundleEntryComponent entryComp : bundle.getEntry()) {
       Observation observation = (Observation) entryComp.getResource();
@@ -342,11 +347,11 @@ public class R4ResourcesData {
         if (!observation.getStatus().toCode().equals(observationStatus)) {
           filteredEntryComponents.add(new BundleEntryComponent().setResource(observation));
         } else {
-          logger.info(
-              "Received Observation with Status entered-in-error::: So Skipping the Observation");
+          observationInError++;
         }
       }
     }
+    logger.info("Skipped {} Observation with status entered-in-error", observationInError);
     filteredBundle.setEntry(filteredEntryComponents);
     return filteredBundle;
   }
