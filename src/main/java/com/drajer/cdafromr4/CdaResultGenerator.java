@@ -234,7 +234,7 @@ public class CdaResultGenerator {
 
         String compString =
             getXmlForObservationComponent(
-                details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
+                details, cc, val, obs.getIdElement().getVersionIdPart(), obs.getEffective(), interpretation, contentRef);
 
         if (!compString.isEmpty() && !foundComponent) foundComponent = true;
 
@@ -252,7 +252,7 @@ public class CdaResultGenerator {
               details,
               obs.getCode(),
               obs.getValue(),
-              obs.getId(),
+              obs.getIdElement().getVersionIdPart(),
               obs.getEffective(),
               obs.getInterpretation(),
               contentRef));
@@ -471,7 +471,7 @@ public class CdaResultGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT));
 
         lrEntry.append(
-            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId()));
+            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
 
         String codeXml =
             CdaFhirUtilities.getCodingXmlForCodeSystem(
