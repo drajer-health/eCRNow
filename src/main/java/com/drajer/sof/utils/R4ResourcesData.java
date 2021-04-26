@@ -115,73 +115,80 @@ public class R4ResourcesData {
     List<Condition> allConditions = new ArrayList<>();
     List<Condition> problemConditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<>();
+    int conditionInError = 0;
+    int conditionMissingAbatement = 0;
 
     List<Condition> encounterDiagnosisConditions = new ArrayList<>();
-    for (BundleEntryComponent entry : bundle.getEntry()) {
-      Condition condition = (Condition) entry.getResource();
+    if (bundle != null && bundle.getEntry() != null) {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        Condition condition = (Condition) entry.getResource();
 
-      if ((condition.getVerificationStatus() == null)
-          || (condition.getVerificationStatus() != null
-              && condition.getVerificationStatus().getCodingFirstRep() != null
-              && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
-              && !condition
-                  .getVerificationStatus()
-                  .getCodingFirstRep()
-                  .getCode()
-                  .equals(ENTERED_IN_ERROR))) {
+        if ((condition.getVerificationStatus() == null)
+            || (condition.getVerificationStatus() != null
+                && condition.getVerificationStatus().getCodingFirstRep() != null
+                && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
+                && !condition
+                    .getVerificationStatus()
+                    .getCodingFirstRep()
+                    .getCode()
+                    .equals(ENTERED_IN_ERROR))) {
 
-        logger.info(" Condition Verification Status is not entered in error ");
-
-        if (condition.getAbatement() == null && condition.hasCategory()) {
-          List<CodeableConcept> conditionCategory = condition.getCategory();
-          for (CodeableConcept categoryCodeableConcept : conditionCategory) {
-            List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
-            for (Coding categoryCoding : categoryCodingList) {
-              boolean foundPregnancyCondition =
-                  condition
-                      .getCode()
-                      .getCoding()
-                      .stream()
-                      .anyMatch(
-                          coding ->
-                              Arrays.stream(QueryConstants.getPregnancySmtCodes())
-                                  .anyMatch(coding.getCode()::equals));
-              if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
-                  && !foundPregnancyCondition) {
-                logger.info("Added condition to problem list {}", condition.getId());
-                problemConditions.add(condition);
-                conditionCodes.addAll(findConditionCodes(condition));
-              } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
-                  && condition.hasEncounter()
-                  && !foundPregnancyCondition) {
-
-                if (condition
-                    .getEncounter()
-                    .getReference()
-                    .equals("Encounter/" + launchDetails.getEncounterId())) {
-                  logger.info("Added condition to Encounter Diagnosis list {}", condition.getId());
-                  encounterDiagnosisConditions.add(condition);
+          if (condition.getAbatement() == null && condition.hasCategory()) {
+            List<CodeableConcept> conditionCategory = condition.getCategory();
+            for (CodeableConcept categoryCodeableConcept : conditionCategory) {
+              List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
+              for (Coding categoryCoding : categoryCodingList) {
+                boolean foundPregnancyCondition =
+                    condition
+                        .getCode()
+                        .getCoding()
+                        .stream()
+                        .anyMatch(
+                            coding ->
+                                Arrays.stream(QueryConstants.getPregnancySmtCodes())
+                                    .anyMatch(coding.getCode()::equals));
+                if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
+                    && !foundPregnancyCondition) {
+                  logger.info("Added condition to problem list {}", condition.getId());
+                  problemConditions.add(condition);
                   conditionCodes.addAll(findConditionCodes(condition));
+                } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
+                    && condition.hasEncounter()
+                    && !foundPregnancyCondition) {
+
+                  if (condition
+                      .getEncounter()
+                      .getReference()
+                      .equals("Encounter/" + launchDetails.getEncounterId())) {
+                    logger.info(
+                        "Added condition to Encounter Diagnosis list {}", condition.getId());
+                    encounterDiagnosisConditions.add(condition);
+                    conditionCodes.addAll(findConditionCodes(condition));
+                  }
                 }
               }
             }
+          } else {
+            conditionMissingAbatement++;
           }
         } else {
-          logger.info("Condition Abatement is not present. So condition is not added to Bundle");
+          conditionInError++;
         }
-      } else {
-        logger.info("Condition Verification status prevents condition from adding to the Bundle ");
       }
+      allConditions.addAll(problemConditions);
+      allConditions.addAll(encounterDiagnosisConditions);
+      r4FhirData.setConditions(problemConditions);
+      r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
+      r4FhirData.setR4ConditionCodes(conditionCodes);
+      logger.info(
+          "Total Conditions:{} Filtered Problem:{} Filtered Encounter Diagnosis:{} Entered InError:{} Missing Abatement:{}",
+          bundle.getEntry().size(),
+          problemConditions.size(),
+          encounterDiagnosisConditions.size(),
+          conditionInError,
+          conditionMissingAbatement);
     }
-    allConditions.addAll(problemConditions);
-    allConditions.addAll(encounterDiagnosisConditions);
-    r4FhirData.setConditions(problemConditions);
-    logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
-    r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
-    logger.info(
-        "Filtered Encounter Diagnosis Condition List=====> {}",
-        encounterDiagnosisConditions.size());
-    r4FhirData.setR4ConditionCodes(conditionCodes);
+
     return allConditions;
   }
 
@@ -335,6 +342,7 @@ public class R4ResourcesData {
 
   private Bundle filterObservationByStatus(Bundle bundle, String observationStatus) {
     Bundle filteredBundle = new Bundle();
+    int observationInError = 0;
     List<BundleEntryComponent> filteredEntryComponents = new ArrayList<>();
     for (BundleEntryComponent entryComp : bundle.getEntry()) {
       Observation observation = (Observation) entryComp.getResource();
@@ -342,11 +350,11 @@ public class R4ResourcesData {
         if (!observation.getStatus().toCode().equals(observationStatus)) {
           filteredEntryComponents.add(new BundleEntryComponent().setResource(observation));
         } else {
-          logger.info(
-              "Received Observation with Status entered-in-error::: So Skipping the Observation");
+          observationInError++;
         }
       }
     }
+    logger.info("Skipped {} Observation with status entered-in-error", observationInError);
     filteredBundle.setEntry(filteredEntryComponents);
     return filteredBundle;
   }
