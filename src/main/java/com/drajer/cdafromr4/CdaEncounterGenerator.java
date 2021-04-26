@@ -120,7 +120,7 @@ public class CdaEncounterGenerator {
               CdaGeneratorConstants.ENC_ENTRY_TEMPLATE_ID_EXT));
 
       sb.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), encounter.getId()));
+          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), encounter.getIdElement().getIdPart()));
 
       // Add Identifiers
       List<Identifier> ids = encounter.getIdentifier();
