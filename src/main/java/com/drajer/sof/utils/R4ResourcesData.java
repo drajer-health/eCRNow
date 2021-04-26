@@ -119,72 +119,75 @@ public class R4ResourcesData {
     int conditionMissingAbatement = 0;
 
     List<Condition> encounterDiagnosisConditions = new ArrayList<>();
-    for (BundleEntryComponent entry : bundle.getEntry()) {
-      Condition condition = (Condition) entry.getResource();
+    if (bundle != null && bundle.getEntry() != null) {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        Condition condition = (Condition) entry.getResource();
 
-      if ((condition.getVerificationStatus() == null)
-          || (condition.getVerificationStatus() != null
-              && condition.getVerificationStatus().getCodingFirstRep() != null
-              && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
-              && !condition
-                  .getVerificationStatus()
-                  .getCodingFirstRep()
-                  .getCode()
-                  .equals(ENTERED_IN_ERROR))) {
+        if ((condition.getVerificationStatus() == null)
+            || (condition.getVerificationStatus() != null
+                && condition.getVerificationStatus().getCodingFirstRep() != null
+                && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
+                && !condition
+                    .getVerificationStatus()
+                    .getCodingFirstRep()
+                    .getCode()
+                    .equals(ENTERED_IN_ERROR))) {
 
-        if (condition.getAbatement() == null && condition.hasCategory()) {
-          List<CodeableConcept> conditionCategory = condition.getCategory();
-          for (CodeableConcept categoryCodeableConcept : conditionCategory) {
-            List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
-            for (Coding categoryCoding : categoryCodingList) {
-              boolean foundPregnancyCondition =
-                  condition
-                      .getCode()
-                      .getCoding()
-                      .stream()
-                      .anyMatch(
-                          coding ->
-                              Arrays.stream(QueryConstants.getPregnancySmtCodes())
-                                  .anyMatch(coding.getCode()::equals));
-              if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
-                  && !foundPregnancyCondition) {
-                logger.info("Added condition to problem list {}", condition.getId());
-                problemConditions.add(condition);
-                conditionCodes.addAll(findConditionCodes(condition));
-              } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
-                  && condition.hasEncounter()
-                  && !foundPregnancyCondition) {
-
-                if (condition
-                    .getEncounter()
-                    .getReference()
-                    .equals("Encounter/" + launchDetails.getEncounterId())) {
-                  logger.info("Added condition to Encounter Diagnosis list {}", condition.getId());
-                  encounterDiagnosisConditions.add(condition);
+          if (condition.getAbatement() == null && condition.hasCategory()) {
+            List<CodeableConcept> conditionCategory = condition.getCategory();
+            for (CodeableConcept categoryCodeableConcept : conditionCategory) {
+              List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
+              for (Coding categoryCoding : categoryCodingList) {
+                boolean foundPregnancyCondition =
+                    condition
+                        .getCode()
+                        .getCoding()
+                        .stream()
+                        .anyMatch(
+                            coding ->
+                                Arrays.stream(QueryConstants.getPregnancySmtCodes())
+                                    .anyMatch(coding.getCode()::equals));
+                if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
+                    && !foundPregnancyCondition) {
+                  logger.info("Added condition to problem list {}", condition.getId());
+                  problemConditions.add(condition);
                   conditionCodes.addAll(findConditionCodes(condition));
+                } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
+                    && condition.hasEncounter()
+                    && !foundPregnancyCondition) {
+
+                  if (condition
+                      .getEncounter()
+                      .getReference()
+                      .equals("Encounter/" + launchDetails.getEncounterId())) {
+                    logger.info(
+                        "Added condition to Encounter Diagnosis list {}", condition.getId());
+                    encounterDiagnosisConditions.add(condition);
+                    conditionCodes.addAll(findConditionCodes(condition));
+                  }
                 }
               }
             }
+          } else {
+            conditionMissingAbatement++;
           }
         } else {
-          conditionMissingAbatement++;
+          conditionInError++;
         }
-      } else {
-        conditionInError++;
       }
+      allConditions.addAll(problemConditions);
+      allConditions.addAll(encounterDiagnosisConditions);
+      r4FhirData.setConditions(problemConditions);
+      r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
+      r4FhirData.setR4ConditionCodes(conditionCodes);
+      logger.info(
+          "Total Conditions:{} Filtered Problem:{} Filtered Encounter Diagnosis:{} Entered InError:{} Missing Abatement:{}",
+          bundle.getEntry().size(),
+          problemConditions.size(),
+          encounterDiagnosisConditions.size(),
+          conditionInError,
+          conditionMissingAbatement);
     }
-    allConditions.addAll(problemConditions);
-    allConditions.addAll(encounterDiagnosisConditions);
-    r4FhirData.setConditions(problemConditions);
-    r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
-    r4FhirData.setR4ConditionCodes(conditionCodes);
-    logger.info(
-        "Total Conditions:{} Filtered Problem:{} Filtered Encounter Diagnosis:{} Entered InError:{} Missing Abatement:{}",
-        bundle.getEntry().size(),
-        problemConditions.size(),
-        encounterDiagnosisConditions.size(),
-        conditionInError,
-        conditionMissingAbatement);
 
     return allConditions;
   }
