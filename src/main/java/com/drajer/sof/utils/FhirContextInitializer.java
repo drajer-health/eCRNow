@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -91,6 +92,13 @@ public class FhirContextInitializer {
     try {
       logger.info("Getting {} data", resourceName);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
+    } catch (ForbiddenOperationException scopeException) {
+      logger.warn(
+          "Failed getting {} resource by Id: {}\n{}\nCurrent scope: {}",
+          resourceName,
+          resourceId,
+          scopeException.getMessage(),
+          authDetails.getScope());
     } catch (BaseServerResponseException responseException) {
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
@@ -200,6 +208,13 @@ public class FhirContextInitializer {
         }
         bundleResponse = bundle;
       }
+    } catch (ForbiddenOperationException scopeException) {
+      logger.warn(
+          "Failed getting {} resource by Patient Id: {}\n{}\nCurrent scope: {}",
+          resourceName,
+          authDetails.getLaunchPatientId(),
+          scopeException.getMessage(),
+          authDetails.getScope());
     } catch (BaseServerResponseException responseException) {
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
@@ -207,13 +222,13 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.info(
+      logger.error(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
           responseException);
     } catch (Exception e) {
-      logger.info(
+      logger.error(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
