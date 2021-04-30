@@ -124,7 +124,7 @@ public class LaunchController {
         workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
       }
     } catch (JsonProcessingException e) {
-      logger.error("Error in Scheduling the Job");
+      logger.error("Error in Scheduling the Job", e);
     }
   }
 
