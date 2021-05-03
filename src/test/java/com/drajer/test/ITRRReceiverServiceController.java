@@ -66,7 +66,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
                     .withHeader("Content-Type", "application/json+fhir; charset=utf-8")
                     .withHeader(
                         "location",
-                        "http://localhost:9010/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
+                        "http://localhost:"
+                            + wireMockHttpPort
+                            + "/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
                     .withHeader("x-request-id", "32034a8e-07ff-4bfb-a686-de8a956fbda9")
                     .withHeader("Cache-Control", "no-cache")));
   }
