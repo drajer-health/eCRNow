@@ -93,7 +93,7 @@ public class FhirContextInitializer {
       logger.info("Getting {} data", resourceName);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (ForbiddenOperationException scopeException) {
-      logger.warn(
+      logger.info(
           "Failed getting {} resource by Id: {}\n{}\nCurrent scope: {}",
           resourceName,
           resourceId,
@@ -209,7 +209,7 @@ public class FhirContextInitializer {
         bundleResponse = bundle;
       }
     } catch (ForbiddenOperationException scopeException) {
-      logger.warn(
+      logger.info(
           "Failed getting {} resource by Patient Id: {}\n{}\nCurrent scope: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
