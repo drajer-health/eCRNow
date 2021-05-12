@@ -445,95 +445,101 @@ public class LaunchController {
   }
 
   public void setStartAndEndDates(ClientDetails clientDetails, LaunchDetails currentStateDetails) {
-    FhirContext context =
-        fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion());
-
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken());
     PeriodDt dstu2Period = null;
     Period r4Period = null;
+    try {
+      FhirContext context =
+          fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion());
 
-    if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())
-        && currentStateDetails.getEncounterId() != null) {
-      logger.info("DSTU2");
-      Encounter encounter =
-          (Encounter)
-              fhirContextInitializer.getResouceById(
-                  currentStateDetails,
-                  client,
-                  context,
-                  "Encounter",
-                  currentStateDetails.getEncounterId());
-      if (encounter.getPeriod() != null) {
-        dstu2Period = encounter.getPeriod();
-      }
-    } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
-      Encounter encounter = new Encounter();
-      // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
-      // and Find the latest Encounter
-      ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
-          (ca.uhn.fhir.model.dstu2.resource.Bundle)
-              fhirContextInitializer.getResourceByPatientId(
-                  currentStateDetails, client, context, "Encounter");
-      if (!bundle.getEntry().isEmpty()) {
-        Map<Encounter, Date> encounterMap = new HashMap<>();
-        for (Entry entry : bundle.getEntry()) {
-          Encounter encounterEntry = (Encounter) entry.getResource();
-          String encounterId = encounterEntry.getIdElement().getIdPart();
-          logger.info("Received Encounter Id========> {}", encounterId);
-          encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+      IGenericClient client =
+          fhirContextInitializer.createClient(
+              context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken());
+      dstu2Period = null;
+      r4Period = null;
+
+      if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())
+          && currentStateDetails.getEncounterId() != null) {
+        logger.info("DSTU2");
+        Encounter encounter =
+            (Encounter)
+                fhirContextInitializer.getResouceById(
+                    currentStateDetails,
+                    client,
+                    context,
+                    "Encounter",
+                    currentStateDetails.getEncounterId());
+        if (encounter != null && encounter.getPeriod() != null) {
+          dstu2Period = encounter.getPeriod();
         }
-        encounter = Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-        if (encounter != null) {
-          currentStateDetails.setEncounterId(encounter.getIdElement().getIdPart());
-          if (encounter.getPeriod() != null) {
-            dstu2Period = encounter.getPeriod();
+      } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
+        Encounter encounter;
+        // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
+        // and Find the latest Encounter
+        ca.uhn.fhir.model.dstu2.resource.Bundle bundle =
+            (ca.uhn.fhir.model.dstu2.resource.Bundle)
+                fhirContextInitializer.getResourceByPatientId(
+                    currentStateDetails, client, context, "Encounter");
+        if (bundle != null && !bundle.getEntry().isEmpty()) {
+          Map<Encounter, Date> encounterMap = new HashMap<>();
+          for (Entry entry : bundle.getEntry()) {
+            Encounter encounterEntry = (Encounter) entry.getResource();
+            String encounterId = encounterEntry.getIdElement().getIdPart();
+            logger.info("Received Encounter Id========> {}", encounterId);
+            encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+          }
+          encounter =
+              Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+          if (encounter != null) {
+            currentStateDetails.setEncounterId(encounter.getIdElement().getIdPart());
+            if (encounter.getPeriod() != null) {
+              dstu2Period = encounter.getPeriod();
+            }
           }
         }
       }
-    }
 
-    if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())
-        && currentStateDetails.getEncounterId() != null) {
-      org.hl7.fhir.r4.model.Encounter r4Encounter =
-          (org.hl7.fhir.r4.model.Encounter)
-              fhirContextInitializer.getResouceById(
-                  currentStateDetails,
-                  client,
-                  context,
-                  "Encounter",
-                  currentStateDetails.getEncounterId());
-      if (r4Encounter != null && r4Encounter.getPeriod() != null) {
-        r4Period = r4Encounter.getPeriod();
-      }
-    } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
-      org.hl7.fhir.r4.model.Encounter r4Encounter;
-      // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
-      // and Find the latest Encounter
-      Bundle bundle =
-          (Bundle)
-              fhirContextInitializer.getResourceByPatientId(
-                  currentStateDetails, client, context, "Encounter");
-
-      if (!bundle.getEntry().isEmpty()) {
-        Map<org.hl7.fhir.r4.model.Encounter, Date> encounterMap = new HashMap<>();
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          org.hl7.fhir.r4.model.Encounter encounterEntry =
-              (org.hl7.fhir.r4.model.Encounter) entry.getResource();
-          String encounterId = encounterEntry.getIdElement().getIdPart();
-          logger.info("Received Encounter Id========> {}", encounterId);
-          encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+      if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())
+          && currentStateDetails.getEncounterId() != null) {
+        org.hl7.fhir.r4.model.Encounter r4Encounter =
+            (org.hl7.fhir.r4.model.Encounter)
+                fhirContextInitializer.getResouceById(
+                    currentStateDetails,
+                    client,
+                    context,
+                    "Encounter",
+                    currentStateDetails.getEncounterId());
+        if (r4Encounter != null && r4Encounter.getPeriod() != null) {
+          r4Period = r4Encounter.getPeriod();
         }
-        r4Encounter =
-            Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-        if (r4Encounter != null) {
-          currentStateDetails.setEncounterId(r4Encounter.getIdElement().getIdPart());
-          if (r4Encounter.getPeriod() != null) {
-            r4Period = r4Encounter.getPeriod();
+      } else if (currentStateDetails.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
+        org.hl7.fhir.r4.model.Encounter r4Encounter;
+        // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
+        // and Find the latest Encounter
+        Bundle bundle =
+            (Bundle)
+                fhirContextInitializer.getResourceByPatientId(
+                    currentStateDetails, client, context, "Encounter");
+        if (bundle != null && !bundle.getEntry().isEmpty()) {
+          Map<org.hl7.fhir.r4.model.Encounter, Date> encounterMap = new HashMap<>();
+          for (BundleEntryComponent entry : bundle.getEntry()) {
+            org.hl7.fhir.r4.model.Encounter encounterEntry =
+                (org.hl7.fhir.r4.model.Encounter) entry.getResource();
+            String encounterId = encounterEntry.getIdElement().getIdPart();
+            logger.info("Received Encounter Id========> {}", encounterId);
+            encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+          }
+          r4Encounter =
+              Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+          if (r4Encounter != null) {
+            currentStateDetails.setEncounterId(r4Encounter.getIdElement().getIdPart());
+            if (r4Encounter.getPeriod() != null) {
+              r4Period = r4Encounter.getPeriod();
+            }
           }
         }
       }
+    } catch (Exception e) {
+      logger.error("Error getting period date time from Encounter:", e);
     }
 
     if (dstu2Period != null) {

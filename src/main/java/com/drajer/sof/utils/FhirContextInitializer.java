@@ -185,7 +185,7 @@ public class FhirContextInitializer {
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         getAllDSTU2RecordsUsingPagination(genericClient, bundle);
-        if (logger.isInfoEnabled()) {
+        if (bundle.getEntry() != null) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
@@ -200,7 +200,7 @@ public class FhirContextInitializer {
                 .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
                 .execute();
         getAllR4RecordsUsingPagination(genericClient, bundle);
-        if (logger.isInfoEnabled()) {
+        if (bundle.getEntry() != null) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
@@ -240,31 +240,35 @@ public class FhirContextInitializer {
 
   private static void getAllR4RecordsUsingPagination(
       IGenericClient genericClient, org.hl7.fhir.r4.model.Bundle bundle) {
-    if (bundle.hasEntry()) {
+    if (bundle != null && bundle.hasEntry()) {
       List<BundleEntryComponent> entriesList = bundle.getEntry();
       if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
         logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
             genericClient.loadPage().next(bundle).execute();
-        entriesList.addAll(nextPageBundleResults.getEntry());
-        nextPageBundleResults.setEntry(entriesList);
-        getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
+        if (nextPageBundleResults != null) {
+          entriesList.addAll(nextPageBundleResults.getEntry());
+          nextPageBundleResults.setEntry(entriesList);
+          getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
+        }
       }
     }
   }
 
   private static void getAllDSTU2RecordsUsingPagination(
       IGenericClient genericClient, Bundle bundle) {
-    if (bundle.getEntry() != null) {
+    if (bundle != null && bundle.getEntry() != null) {
       List<Entry> entriesList = bundle.getEntry();
       if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
         logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
-        entriesList.addAll(nextPageBundleResults.getEntry());
-        nextPageBundleResults.setEntry(entriesList);
-        getAllDSTU2RecordsUsingPagination(genericClient, nextPageBundleResults);
+        if (nextPageBundleResults != null) {
+          entriesList.addAll(nextPageBundleResults.getEntry());
+          nextPageBundleResults.setEntry(entriesList);
+          getAllDSTU2RecordsUsingPagination(genericClient, nextPageBundleResults);
+        }
       }
     }
   }
