@@ -185,7 +185,7 @@ public class FhirContextInitializer {
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         getAllDSTU2RecordsUsingPagination(genericClient, bundle);
-        if (bundle.getEntry() != null) {
+        if (bundle != null && bundle.getEntry() != null) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
@@ -200,7 +200,7 @@ public class FhirContextInitializer {
                 .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
                 .execute();
         getAllR4RecordsUsingPagination(genericClient, bundle);
-        if (bundle.getEntry() != null) {
+        if (bundle != null && bundle.getEntry() != null) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
