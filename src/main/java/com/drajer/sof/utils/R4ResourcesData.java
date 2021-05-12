@@ -2,8 +2,10 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -58,13 +60,29 @@ public class R4ResourcesData {
     Encounter encounter = null;
     // If Encounter Id is present in Launch Details
     if (launchDetails.getEncounterId() != null) {
-      encounter =
-          (Encounter)
-              resourceData.getResouceById(
-                  launchDetails, client, context, "Encounter", launchDetails.getEncounterId());
+      try {
+        encounter =
+            (Encounter)
+                client
+                    .read()
+                    .resource("Encounter")
+                    .withId(launchDetails.getEncounterId())
+                    .execute();
+      } catch (ResourceNotFoundException resourceNotFoundException) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            launchDetails.getEncounterId(),
+            resourceNotFoundException);
+        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails.getId());
+        return null;
+      } catch (Exception e) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}", launchDetails.getEncounterId(), e);
+      }
       if (encounter != null) {
         r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
       }
+
     } else {
       // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
       // and Find the latest Encounter

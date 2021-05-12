@@ -19,9 +19,12 @@ import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kagkarlsson.scheduler.ScheduledExecution;
+import com.github.kagkarlsson.scheduler.ScheduledExecutionsFilter;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -306,5 +309,17 @@ public class WorkflowService {
 
     logger.info(" task  ::: {}", task);
     return task;
+  }
+
+  public static void cancelAllScheduledTasksForLaunch(Integer launchDetailsId) {
+
+    List<ScheduledExecution<Object>> executions =
+        staticScheduler.getScheduledExecutions(ScheduledExecutionsFilter.all());
+    for (ScheduledExecution<Object> scheduledTask : executions) {
+      LaunchDetails launchDetails = (LaunchDetails) scheduledTask.getData();
+      if (launchDetails.getId().equals(launchDetailsId)) {
+        staticScheduler.cancel(scheduledTask.getTaskInstance());
+      }
+    }
   }
 }
