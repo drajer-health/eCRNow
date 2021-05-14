@@ -7,6 +7,7 @@ import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.Date;
+import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +43,17 @@ public class TriggerQueryService implements AbstractQueryService {
       return dstu2FhirData;
 
     } else if (launchDetails.getFhirVersion().equalsIgnoreCase(FhirVersionEnum.R4.toString())) {
+
       R4FhirData r4FhirData = new R4FhirData();
-      org.hl7.fhir.r4.model.Bundle bundle = new org.hl7.fhir.r4.model.Bundle();
       try {
-        bundle = generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
+        org.hl7.fhir.r4.model.Bundle bundle =
+            generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
+        r4FhirData.setData(bundle);
+      } catch (ObjectDeletedException objectDeletedException) {
+        throw objectDeletedException;
       } catch (Exception e) {
         logger.error("Error in Generating the R4 Bundle", e);
       }
-      r4FhirData.setData(bundle);
       return r4FhirData;
     }
     return null;

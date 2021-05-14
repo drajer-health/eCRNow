@@ -3,12 +3,14 @@ package com.drajer.eca.model;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
 import org.slf4j.Logger;
@@ -309,9 +312,21 @@ public class EcaUtils {
       IGenericClient client =
           ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
 
-      Encounter enc =
-          (Encounter)
-              ci.getResouceById(details, client, ctx, "Encounter", details.getEncounterId());
+      Encounter enc = null;
+      try {
+        enc =
+            (Encounter)
+                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+      } catch (ResourceNotFoundException resourceNotFoundException) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            details.getEncounterId(),
+            resourceNotFoundException);
+        WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+        String expMsg =
+            "Deleted the launch_detail " + details.getId() + " as encounter was not found";
+        throw new ObjectDeletedException(expMsg, details.getId(), "launch_details");
+      }
 
       if (enc != null) {
         logger.info(" Found Encounter for checking encounter closure ");

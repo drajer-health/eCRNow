@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -73,8 +74,10 @@ public class R4ResourcesData {
             "Error in getting Encounter resource by Id: {}",
             launchDetails.getEncounterId(),
             resourceNotFoundException);
-        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails.getId());
-        return null;
+        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+        String expMsg =
+            "Deleted the launch_detail " + launchDetails.getId() + " as encounter was not found";
+        throw new ObjectDeletedException(expMsg, launchDetails.getId(), "launch_details");
       } catch (Exception e) {
         logger.error(
             "Error in getting Encounter resource by Id: {}", launchDetails.getEncounterId(), e);
@@ -1086,6 +1089,8 @@ public class R4ResourcesData {
         BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
         bundle.addEntry(encounterEntry);
       }
+    } catch (ObjectDeletedException objectDeletedException) {
+      throw objectDeletedException;
     } catch (Exception e) {
       logger.error("Error in getting Encounter Data", e);
     }

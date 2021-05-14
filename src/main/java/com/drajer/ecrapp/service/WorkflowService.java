@@ -19,9 +19,11 @@ import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kagkarlsson.scheduler.CurrentlyExecuting;
 import com.github.kagkarlsson.scheduler.ScheduledExecution;
 import com.github.kagkarlsson.scheduler.ScheduledExecutionsFilter;
 import com.github.kagkarlsson.scheduler.Scheduler;
+import com.github.kagkarlsson.scheduler.task.TaskInstanceId;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -311,15 +313,34 @@ public class WorkflowService {
     return task;
   }
 
-  public static void cancelAllScheduledTasksForLaunch(Integer launchDetailsId) {
-
+  public static void cancelAllScheduledTasksForLaunch(
+      LaunchDetails launchDetails, Boolean deleteLaunchDetails) {
+    logger.info("Cancelling the scheduled tasks for launch_id {}", launchDetails.getId());
     List<ScheduledExecution<Object>> executions =
         staticScheduler.getScheduledExecutions(ScheduledExecutionsFilter.all());
     for (ScheduledExecution<Object> scheduledTask : executions) {
-      LaunchDetails launchDetails = (LaunchDetails) scheduledTask.getData();
-      if (launchDetails.getId().equals(launchDetailsId)) {
+      TaskTimer taskTimer = (TaskTimer) scheduledTask.getData();
+      if (taskTimer.getLaunchDetailsId().equals(launchDetails.getId())
+          && !isCurrentExecutionTask(scheduledTask.getTaskInstance())) {
+        logger.info("Cancelling scheduled task {}", scheduledTask.getTaskInstance().getId());
         staticScheduler.cancel(scheduledTask.getTaskInstance());
       }
     }
+
+    if (deleteLaunchDetails) {
+      workflowInstance.launchService.delete(launchDetails);
+    }
+  }
+
+  public static boolean isCurrentExecutionTask(TaskInstanceId taskInstanceId) {
+
+    Boolean currentTask = false;
+    List<CurrentlyExecuting> currentExecutions = staticScheduler.getCurrentlyExecuting();
+    for (CurrentlyExecuting currentExecution : currentExecutions) {
+      if (currentExecution.getTaskInstance().getId().equals(taskInstanceId.getId())) {
+        currentTask = true;
+      }
+    }
+    return currentTask;
   }
 }
