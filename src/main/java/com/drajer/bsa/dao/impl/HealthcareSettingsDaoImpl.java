@@ -4,7 +4,6 @@ import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
-import com.drajer.sof.model.ClientDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,7 +84,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
     Criteria criteria = getSession().createCriteria(HealthcareSetting.class);
     criteria.add(Restrictions.eq("fhirServerBaseURL", url));
     HealthcareSetting hs = (HealthcareSetting) criteria.uniqueResult();
-
+    
     if (hs != null) setKars(hs);
 
     return hs;
@@ -99,7 +98,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public List<HealthcareSetting> getAllHealthcareSettings() {
-    Criteria criteria = getSession().createCriteria(ClientDetails.class);
+    Criteria criteria = getSession().createCriteria(HealthcareSetting.class);
     return criteria.addOrder(Order.desc("id")).list();
   }
 
@@ -109,10 +108,12 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
     HealthcareSettingOperationalKnowledgeArtifacts artifacts = null;
 
     try {
-      artifacts =
-          mapper.readValue(
-              hs.getKarsActive(), HealthcareSettingOperationalKnowledgeArtifacts.class);
-      hs.setKars(artifacts);
+      if (hs.getKarsActive() != null) {
+        artifacts =
+            mapper.readValue(
+                hs.getKarsActive(), HealthcareSettingOperationalKnowledgeArtifacts.class);
+        hs.setKars(artifacts);
+      }
       logger.info(" Successfully set the KAR status ");
     } catch (JsonMappingException e) {
       logger.info(" Error reading Kars Active status from the database. {}", e);
