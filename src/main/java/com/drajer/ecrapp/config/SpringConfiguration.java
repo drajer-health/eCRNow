@@ -15,7 +15,8 @@ import org.springframework.context.annotation.Configuration;
       "com.drajer.ersd",
       "com.drajer.sof",
       "com.drajer.eca",
-      "com.drajer.routing"
+      "com.drajer.routing",
+      "com.drajer.bsa"
     })
 public class SpringConfiguration {
 

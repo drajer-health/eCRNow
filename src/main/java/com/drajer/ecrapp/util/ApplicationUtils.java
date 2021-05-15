@@ -450,4 +450,20 @@ public class ApplicationUtils {
     }
     return bundle;
   }
+
+  public Bundle readBundleFromString(String str) {
+
+    logger.info("About to read str ");
+    Bundle bundle = null;
+    try {
+      logger.info("Reading String ");
+
+      bundle = (Bundle) jsonParser.parseResource(str);
+
+      logger.info("Completed Reading String");
+    } catch (Exception e) {
+      logger.error("Exception Reading File", e);
+    }
+    return bundle;
+  }
 }

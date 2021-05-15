@@ -839,7 +839,7 @@ public class R4ResourcesData {
     List<ServiceRequest> serviceRequests = new ArrayList<>();
     List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
     // Filter ServiceRequests based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
@@ -855,7 +855,7 @@ public class R4ResourcesData {
       }
       // If Encounter Id is not present using start and end dates to filter
       // ServiceRequests
-    } else {
+    } else if (bundle != null) {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
         // Checking If ServiceRequest DateTime is present in ServiceRequest

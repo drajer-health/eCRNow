@@ -1,0 +1,270 @@
+package com.drajer.bsa.service.impl;
+
+import com.drajer.bsa.kar.action.BsaRelatedAction;
+import com.drajer.bsa.kar.condition.BsaFhirPathCondition;
+import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.BsaCondition;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.service.KarParser;
+import com.drajer.bsa.utils.BsaServiceUtils;
+import com.drajer.bsa.utils.SubscriptionUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import javax.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Expression;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
+import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionComponent;
+import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.TriggerDefinition;
+import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ *
+ *
+ * <h1>KarParserImpl</h1>
+ *
+ * This is an implementation class for the KarParser Interface.
+ *
+ * @author nbashyam
+ */
+@Service
+@Transactional
+public class KarParserImpl implements KarParser {
+
+  private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
+  private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
+
+  @Value("${kar.directory}")
+  String karDirectory;
+
+  @Autowired BsaServiceUtils utils;
+
+  private static String[] KAR_FILE_EXT = {"json"};
+  private static HashMap<String, String> actionClasses = new HashMap<>();
+
+  // Load the Topic to Named Event Map.
+  static {
+    try (InputStream input =
+        SubscriptionUtils.class.getClassLoader().getResourceAsStream("action-classes.properties")) {
+
+      Properties prop = new Properties();
+      prop.load(input);
+
+      prop.forEach((key, value) -> actionClasses.put((String) key, (String) value));
+
+    } catch (IOException ex) {
+      logger2.error("Error while loading Action Classes from Proporties File ");
+    }
+  }
+
+  public BsaAction getAction(String actionId) {
+
+    BsaAction instance = null;
+    if (actionClasses != null && actionClasses.containsKey(actionId)) {
+      try {
+        instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
+      } catch (InstantiationException e) {
+        logger.error(" Error instantiating the object {}", e);
+      } catch (IllegalAccessException e) {
+        logger.error(" Error instantiating the object {}", e);
+      } catch (ClassNotFoundException e) {
+        logger.error(" Error instantiating the object {}", e);
+      }
+    }
+
+    return instance;
+  }
+
+  @PostConstruct
+  public void initializeRepository() {
+    loadKars();
+  }
+
+  @Override
+  public void loadKars() {
+
+    // Load each of the Knowledge Artifact Bundles.
+    File folder = new File(karDirectory);
+    List<File> kars = (List<File>) FileUtils.listFiles(folder, KAR_FILE_EXT, true);
+
+    for (File kar : kars) {
+
+      logger.info(" Processing File : {}", kar);
+
+      Bundle karBundle = utils.readKarFromFile(kar.getPath());
+
+      if (karBundle != null && (karBundle.getType() == Bundle.BundleType.COLLECTION)) {
+
+        logger.info(" Successfully read the KAR from File ");
+
+        KnowledgeArtifact art = new KnowledgeArtifact();
+
+        // Setup the Id.
+        art.setKarId(karBundle.getId());
+
+        // Setup Version.
+        if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
+          art.setKarVersion(karBundle.getMeta().getVersionId());
+
+        // Set Bundle
+        art.setOriginalKarBundle(karBundle);
+
+        List<BundleEntryComponent> entries = karBundle.getEntry();
+
+        for (BundleEntryComponent comp : entries) {
+
+          if (Optional.ofNullable(comp).isPresent()
+              && comp.getResource().getResourceType() == ResourceType.ValueSet) {
+            logger.info(" Processing ValueSet ");
+          } else if (Optional.ofNullable(comp).isPresent()
+              && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
+            logger.info(" Processing PlanDefinition ");
+            processPlanDefinition((PlanDefinition) comp.getResource(), art);
+          } else if (Optional.ofNullable(comp).isPresent()
+              && comp.getResource().getResourceType() == ResourceType.Library) {
+            logger.info(" Processing Library");
+          }
+        }
+
+        KnowledgeArtifactRepository.getIntance().add(art);
+
+      } else {
+
+        logger.error(
+            " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
+            kar);
+      }
+    }
+  }
+
+  private void processPlanDefinition(PlanDefinition plan, KnowledgeArtifact art) {
+
+    List<PlanDefinitionActionComponent> actions = plan.getAction();
+
+    for (PlanDefinitionActionComponent act : actions) {
+
+      BsaAction action = getAction(act.getId());
+      action.setActionId(act.getId());
+
+      if (act.hasTrigger()) {
+        action.setNamedEventTriggers(getNamedEvents(act));
+      }
+
+      if (act.hasInput()) {
+        populateInputDataReq(act, action);
+      }
+
+      if (act.hasOutput()) {
+        populateOutputDataReq(act, action);
+      }
+
+      if (act.hasCondition()) {
+        populateCondition(act, action);
+      }
+
+      if (act.hasRelatedAction()) {
+        populateRelatedAction(act, action);
+      }
+
+      if (act.hasTiming()) {
+
+        // Todo - handle timing elements in the action itslef.
+      }
+    }
+  }
+
+  private void populateOutputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
+
+    List<DataRequirement> drs = ac.getOutput();
+    action.setOutputData(drs);
+  }
+
+  private void populateInputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
+
+    List<DataRequirement> drs = ac.getInput();
+    action.setInputData(drs);
+
+    for (DataRequirement dr : drs) {
+      try {
+        ResourceType rt = ResourceType.fromCode(dr.getType());
+        action.addInputResourceType(rt);
+      } catch (FHIRException ex) {
+        logger.error(" Type specified is not a resource Type {}", dr.getType());
+      }
+    }
+  }
+
+  private void populateCondition(PlanDefinitionActionComponent ac, BsaAction action) {
+
+    List<PlanDefinitionActionConditionComponent> conds = ac.getCondition();
+
+    for (PlanDefinitionActionConditionComponent con : conds) {
+
+      if (con.getExpression() != null
+          && (con.getExpression()
+              .getLanguage()
+              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))) {
+
+        BsaCondition bc = new BsaFhirPathCondition();
+        bc.setLogicExpression(con.getExpression());
+        action.addCondition(bc);
+      }
+    }
+  }
+
+  private void populateRelatedAction(PlanDefinitionActionComponent ac, BsaAction action) {
+
+    List<PlanDefinitionActionRelatedActionComponent> racts = ac.getRelatedAction();
+
+    for (PlanDefinitionActionRelatedActionComponent ract : racts) {
+
+      if (ract.getRelationship() == ActionRelationshipType.BEFORESTART) {
+
+        BsaRelatedAction bract = new BsaRelatedAction();
+        bract.setRelationship(ract.getRelationship());
+        bract.setRelatedActionId(ract.getActionId());
+
+        if (ract.getOffsetDuration() != null) {
+          bract.setDuration(ract.getOffsetDuration());
+        }
+
+        action.addRelatedAction(bract);
+      }
+    }
+  }
+
+  private Set<String> getNamedEvents(PlanDefinitionActionComponent ac) {
+
+    Set<String> events = new HashSet<String>();
+
+    List<TriggerDefinition> triggers = ac.getTrigger();
+
+    for (TriggerDefinition td : triggers) {
+      if (td.getType() == TriggerType.NAMEDEVENT) events.add(td.getId());
+    }
+
+    return events;
+  }
+}
