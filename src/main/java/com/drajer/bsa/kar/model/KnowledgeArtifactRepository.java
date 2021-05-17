@@ -27,6 +27,14 @@ public class KnowledgeArtifactRepository {
     artifacts = new HashMap<>();
   }
 
+  public HashMap<String, KnowledgeArtifact> getArtifacts() {
+    return artifacts;
+  }
+
+  public void setArtifacts(HashMap<String, KnowledgeArtifact> artifacts) {
+    this.artifacts = artifacts;
+  }
+
   public void remove(String karId) {
 
     if (artifacts.containsKey(karId)) artifacts.remove(karId);

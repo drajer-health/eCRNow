@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class HealthcareSetting {
    * Authorization. This is provided to override what is present in the CapabilityStatement.
    */
   @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
-  private String tokenURL;
+  private String tokenUrl;
 
   /**
    * The attribute represents the scopes for which permission is requested during the SMART on FHIR
@@ -109,6 +110,10 @@ public class HealthcareSetting {
   /** This attribute represents the type of authentication to be used by the healthcare setting. */
   @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
   private String authType;
+
+  @Column(name = "require_aud", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean requireAud = false;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -170,11 +175,11 @@ public class HealthcareSetting {
   }
 
   public String getTokenURL() {
-    return tokenURL;
+    return tokenUrl;
   }
 
   public void setTokenURL(String tokenURL) {
-    this.tokenURL = tokenURL;
+    this.tokenUrl = tokenURL;
   }
 
   public String getScopes() {
@@ -225,6 +230,22 @@ public class HealthcareSetting {
     this.lastUpdated = lastUpdated;
   }
 
+  public String getTokenUrl() {
+    return tokenUrl;
+  }
+
+  public void setTokenUrl(String tokenUrl) {
+    this.tokenUrl = tokenUrl;
+  }
+
+  public Boolean getRequireAud() {
+    return requireAud;
+  }
+
+  public void setRequireAud(Boolean requireAud) {
+    this.requireAud = requireAud;
+  }
+
   public void log() {
 
     logger.info(" **** Printing HealthcareSetting Details **** ");
@@ -232,7 +253,7 @@ public class HealthcareSetting {
     logger.info(" Id : {}", id);
     logger.info(" Client Id : {}", clientId);
     logger.info(" FHIR Server URL : {}", fhirServerBaseURL);
-    logger.info(" Token URL : {}", tokenURL);
+    logger.info(" Token URL : {}", tokenUrl);
     logger.info(" Rest API URL : {}", restApiUrl);
     logger.info(" Encounter Start Threshold : {}", encounterStartThreshold);
     logger.info(" Encounter End Threshold : {}", encounterEndThreshold);
