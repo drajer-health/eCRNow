@@ -192,6 +192,10 @@ public class KarParserImpl implements KarParser {
 
         // Todo - handle timing elements in the action itslef.
       }
+
+      // Setup the artifact details.
+      art.addAction(action);
+      art.addTriggerEvent(action);
     }
   }
 

@@ -46,6 +46,11 @@ public class HealthcareSettingOperationalKnowledgeArtifacts {
     this.artifactStatus = artifactStatus;
   }
 
+  public void addArtifactStatus(KnowledgeArtifactStatus ks) {
+
+    this.artifactStatus.add(ks);
+  }
+
   public void log() {
 
     logger.info(

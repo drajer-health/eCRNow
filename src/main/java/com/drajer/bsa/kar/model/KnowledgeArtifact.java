@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
@@ -62,6 +63,15 @@ public class KnowledgeArtifact {
    */
   HashMap<ResourceType, HashMap<String, Resource>> dependencies;
 
+  public KnowledgeArtifact() {
+    originalKarBundle = null;
+    karId = "";
+    karVersion = "";
+    actionMap = new HashMap<String, BsaAction>();
+    triggerEventActionMap = new HashMap<String, Set<BsaAction>>();
+    dependencies = new HashMap<ResourceType, HashMap<String, Resource>>();
+  }
+
   public String getKarId() {
     return karId;
   }
@@ -118,7 +128,33 @@ public class KnowledgeArtifact {
 
     if (triggerEventActionMap != null && triggerEventActionMap.containsKey(event))
       return triggerEventActionMap.get(event);
-    else return null;
+    else return new HashSet<BsaAction>();
+  }
+
+  public void addAction(BsaAction act) {
+    if (!actionMap.containsKey(act.getActionId())) {
+      actionMap.put(act.getActionId(), act);
+    }
+  }
+
+  public void addTriggerEvent(BsaAction act) {
+
+    Set<String> triggers = act.getNamedEventTriggers();
+
+    for (String s : triggers) {
+
+      addTriggerEvent(s, act);
+    }
+  }
+
+  public void addTriggerEvent(String event, BsaAction act) {
+    if (!triggerEventActionMap.containsKey(event)) {
+      Set<BsaAction> acts = new HashSet<BsaAction>();
+      acts.add(act);
+      triggerEventActionMap.put(event, acts);
+    } else {
+      triggerEventActionMap.get(event).add(act);
+    }
   }
 
   public void log() {

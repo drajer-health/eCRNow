@@ -4,8 +4,6 @@ import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class HealthcareSetting {
    * Authorization. This is provided to override what is present in the CapabilityStatement.
    */
   @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
-  private String tokenURL;
+  private String tokenUrl;
 
   /**
    * The attribute represents the scopes for which permission is requested during the SMART on FHIR
@@ -80,7 +79,7 @@ public class HealthcareSetting {
    * used.
    */
   @Column(name = "rest_api_url", nullable = true)
-  private String restAPIURL;
+  private String restApiUrl;
 
   /**
    * This attribute represents the lower threshold time to be used for retrieving FHIR Resources
@@ -109,9 +108,12 @@ public class HealthcareSetting {
   private String karsActive;
 
   /** This attribute represents the type of authentication to be used by the healthcare setting. */
-  @Enumerated(EnumType.STRING)
-  @Column(name = "auth_type", nullable = false)
-  private BsaTypes.AuthenticationType authType;
+  @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
+  private String authType;
+
+  @Column(name = "require_aud", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean requireAud = false;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -173,11 +175,11 @@ public class HealthcareSetting {
   }
 
   public String getTokenURL() {
-    return tokenURL;
+    return tokenUrl;
   }
 
   public void setTokenURL(String tokenURL) {
-    this.tokenURL = tokenURL;
+    this.tokenUrl = tokenURL;
   }
 
   public String getScopes() {
@@ -188,12 +190,12 @@ public class HealthcareSetting {
     this.scopes = scopes;
   }
 
-  public String getRestAPIURL() {
-    return restAPIURL;
+  public String getRestApiUrl() {
+    return restApiUrl;
   }
 
-  public void setRestAPIURL(String restAPIURL) {
-    this.restAPIURL = restAPIURL;
+  public void setRestApiUrl(String rul) {
+    this.restApiUrl = rul;
   }
 
   public String getEncounterStartThreshold() {
@@ -212,11 +214,11 @@ public class HealthcareSetting {
     this.encounterEndThreshold = encounterEndThreshold;
   }
 
-  public BsaTypes.AuthenticationType getAuthType() {
+  public String getAuthType() {
     return authType;
   }
 
-  public void setAuthType(BsaTypes.AuthenticationType authType) {
+  public void setAuthType(String authType) {
     this.authType = authType;
   }
 
@@ -228,6 +230,22 @@ public class HealthcareSetting {
     this.lastUpdated = lastUpdated;
   }
 
+  public String getTokenUrl() {
+    return tokenUrl;
+  }
+
+  public void setTokenUrl(String tokenUrl) {
+    this.tokenUrl = tokenUrl;
+  }
+
+  public Boolean getRequireAud() {
+    return requireAud;
+  }
+
+  public void setRequireAud(Boolean requireAud) {
+    this.requireAud = requireAud;
+  }
+
   public void log() {
 
     logger.info(" **** Printing HealthcareSetting Details **** ");
@@ -235,8 +253,8 @@ public class HealthcareSetting {
     logger.info(" Id : {}", id);
     logger.info(" Client Id : {}", clientId);
     logger.info(" FHIR Server URL : {}", fhirServerBaseURL);
-    logger.info(" Token URL : {}", tokenURL);
-    logger.info(" Rest API URL : {}", restAPIURL);
+    logger.info(" Token URL : {}", tokenUrl);
+    logger.info(" Rest API URL : {}", restApiUrl);
     logger.info(" Encounter Start Threshold : {}", encounterStartThreshold);
     logger.info(" Encounter End Threshold : {}", encounterEndThreshold);
     logger.info(" KnowledgArtifacts Active : {}", karsActive);

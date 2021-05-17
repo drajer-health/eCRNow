@@ -2,11 +2,17 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -108,12 +114,39 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
     HealthcareSettingOperationalKnowledgeArtifacts artifacts = null;
 
     try {
+
+      // To be discussed at the connectathon, no operation defined to make this work currently.
+
       if (hs.getKarsActive() != null) {
         artifacts =
             mapper.readValue(
                 hs.getKarsActive(), HealthcareSettingOperationalKnowledgeArtifacts.class);
         hs.setKars(artifacts);
       }
+
+      // Setup using Knowledge Artifact Repository temporarily as a work around.
+      logger.info(" TODO : Remove after finalizing approach at the Connecathon");
+
+      HashMap<String, KnowledgeArtifact> arts =
+          KnowledgeArtifactRepository.getIntance().getArtifacts();
+
+      HealthcareSettingOperationalKnowledgeArtifacts opkars =
+          new HealthcareSettingOperationalKnowledgeArtifacts();
+      opkars.setId(hs.getId());
+      for (HashMap.Entry<String, KnowledgeArtifact> entry : arts.entrySet()) {
+
+        KnowledgeArtifactStatus stat = new KnowledgeArtifactStatus();
+        stat.setKarId(entry.getValue().getKarId());
+        stat.setKarVersion(entry.getValue().getKarVersion());
+        stat.setIsActive(true);
+        stat.setLastActivationDate(Date.from(Instant.now()));
+        stat.setVersionUniqueKarId(entry.getValue().getVersionUniqueId());
+
+        opkars.addArtifactStatus(stat);
+      }
+
+      hs.setKars(opkars);
+
       logger.info(" Successfully set the KAR status ");
     } catch (JsonMappingException e) {
       logger.info(" Error reading Kars Active status from the database. {}", e);
