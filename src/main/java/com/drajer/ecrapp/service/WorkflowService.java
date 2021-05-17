@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -329,6 +330,10 @@ public class WorkflowService {
 
     if (deleteLaunchDetails) {
       workflowInstance.launchService.delete(launchDetails);
+      String expMsg =
+          "Deleted the launch_detail " + launchDetails.getId() + " as encounter was not found";
+      logger.info(expMsg);
+      throw new ObjectDeletedException(expMsg, launchDetails.getId(), "launch_details");
     }
   }
 

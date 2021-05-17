@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -23,6 +23,7 @@ import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -75,9 +76,6 @@ public class R4ResourcesData {
             launchDetails.getEncounterId(),
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
-        String expMsg =
-            "Deleted the launch_detail " + launchDetails.getId() + " as encounter was not found";
-        throw new ObjectDeletedException(expMsg, launchDetails.getId(), "launch_details");
       } catch (Exception e) {
         logger.error(
             "Error in getting Encounter resource by Id: {}", launchDetails.getEncounterId(), e);
@@ -1089,10 +1087,8 @@ public class R4ResourcesData {
         BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
         bundle.addEntry(encounterEntry);
       }
-    } catch (ObjectDeletedException objectDeletedException) {
-      throw objectDeletedException;
     } catch (Exception e) {
-      logger.error("Error in getting Encounter Data", e);
+      ApplicationUtils.handleException(e, "Error in getting Encounter Data", LogLevel.ERROR);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)

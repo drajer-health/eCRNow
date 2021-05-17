@@ -2,15 +2,16 @@ package com.drajer.sof.service;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.Date;
-import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,10 +50,8 @@ public class TriggerQueryService implements AbstractQueryService {
         org.hl7.fhir.r4.model.Bundle bundle =
             generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
         r4FhirData.setData(bundle);
-      } catch (ObjectDeletedException objectDeletedException) {
-        throw objectDeletedException;
       } catch (Exception e) {
-        logger.error("Error in Generating the R4 Bundle", e);
+        ApplicationUtils.handleException(e, "Error in Generating the R4 Bundle", LogLevel.ERROR);
       }
       return r4FhirData;
     }

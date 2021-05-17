@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
-import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
 import org.slf4j.Logger;
@@ -323,9 +322,6 @@ public class EcaUtils {
             details.getEncounterId(),
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
-        String expMsg =
-            "Deleted the launch_detail " + details.getId() + " as encounter was not found";
-        throw new ObjectDeletedException(expMsg, details.getId(), "launch_details");
       }
 
       if (enc != null) {
