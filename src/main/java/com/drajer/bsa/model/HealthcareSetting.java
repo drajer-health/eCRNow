@@ -4,8 +4,6 @@ import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -80,7 +78,7 @@ public class HealthcareSetting {
    * used.
    */
   @Column(name = "rest_api_url", nullable = true)
-  private String restAPIURL;
+  private String restApiUrl;
 
   /**
    * This attribute represents the lower threshold time to be used for retrieving FHIR Resources
@@ -109,9 +107,8 @@ public class HealthcareSetting {
   private String karsActive;
 
   /** This attribute represents the type of authentication to be used by the healthcare setting. */
-  @Enumerated(EnumType.STRING)
-  @Column(name = "auth_type", nullable = false)
-  private BsaTypes.AuthenticationType authType;
+  @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
+  private String authType;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -188,12 +185,12 @@ public class HealthcareSetting {
     this.scopes = scopes;
   }
 
-  public String getRestAPIURL() {
-    return restAPIURL;
+  public String getRestApiUrl() {
+    return restApiUrl;
   }
 
-  public void setRestAPIURL(String restAPIURL) {
-    this.restAPIURL = restAPIURL;
+  public void setRestApiUrl(String rul) {
+    this.restApiUrl = rul;
   }
 
   public String getEncounterStartThreshold() {
@@ -228,7 +225,7 @@ public class HealthcareSetting {
     logger.info(" Client Id : {}", clientId);
     logger.info(" FHIR Server URL : {}", fhirServerBaseURL);
     logger.info(" Token URL : {}", tokenURL);
-    logger.info(" Rest API URL : {}", restAPIURL);
+    logger.info(" Rest API URL : {}", restApiUrl);
     logger.info(" Encounter Start Threshold : {}", encounterStartThreshold);
     logger.info(" Encounter End Threshold : {}", encounterEndThreshold);
     logger.info(" KnowledgArtifacts Active : {}", karsActive);
