@@ -84,7 +84,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
     Criteria criteria = getSession().createCriteria(HealthcareSetting.class);
     criteria.add(Restrictions.eq("fhirServerBaseURL", url));
     HealthcareSetting hs = (HealthcareSetting) criteria.uniqueResult();
-    
+
     if (hs != null) setKars(hs);
 
     return hs;

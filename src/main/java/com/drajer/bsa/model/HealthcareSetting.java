@@ -209,11 +209,11 @@ public class HealthcareSetting {
     this.encounterEndThreshold = encounterEndThreshold;
   }
 
-  public BsaTypes.AuthenticationType getAuthType() {
+  public String getAuthType() {
     return authType;
   }
 
-  public void setAuthType(BsaTypes.AuthenticationType authType) {
+  public void setAuthType(String authType) {
     this.authType = authType;
   }
 
