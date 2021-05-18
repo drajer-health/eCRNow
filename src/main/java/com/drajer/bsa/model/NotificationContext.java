@@ -7,9 +7,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +61,12 @@ public class NotificationContext {
   private String notificationResourceType;
 
   /**
+   * Transient attribute containing the actual resource that was part of the notification, this is
+   * used only during processing
+   */
+  @Transient Resource notifiedResource;
+
+  /**
    * The attribute represents the data received as part of the notification. This is a FHIR Bundle,
    * stored as part of the table.
    */
@@ -71,6 +80,19 @@ public class NotificationContext {
   /** This attribute tracks the API Request Ids when present. */
   @Column(name = "x_request_id", nullable = true, columnDefinition = "TEXT")
   private String xRequestId;
+
+  /** The access token after authorization to the EHR */
+  @Column(name = "ehr_access_token", nullable = true, columnDefinition = "TEXT")
+  private String ehrAccessToken;
+
+  /** The expiry duration in seconds for the EHR Access Token */
+  @Column(name = "ehr_access_token_expiry_duration", nullable = true)
+  private int ehrAccessTokenExpiryDuration;
+
+  /** The expiration time for EHR Access Token. */
+  @Column(name = "token_expiry_date", nullable = true)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date ehrAccessTokenExpirationTime;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -157,7 +179,35 @@ public class NotificationContext {
     this.notificationData = notificationData;
   }
 
-  public Logger getLogger() {
-    return logger;
+  public String getEhrAccessToken() {
+    return ehrAccessToken;
+  }
+
+  public void setEhrAccessToken(String ehrAccessToken) {
+    this.ehrAccessToken = ehrAccessToken;
+  }
+
+  public int getEhrAccessTokenExpiryDuration() {
+    return ehrAccessTokenExpiryDuration;
+  }
+
+  public void setEhrAccessTokenExpiryDuration(int ehrAccessTokenExpiryDuration) {
+    this.ehrAccessTokenExpiryDuration = ehrAccessTokenExpiryDuration;
+  }
+
+  public Date getEhrAccessTokenExpirationTime() {
+    return ehrAccessTokenExpirationTime;
+  }
+
+  public void setEhrAccessTokenExpirationTime(Date ehrAccessTokenExpirationTime) {
+    this.ehrAccessTokenExpirationTime = ehrAccessTokenExpirationTime;
+  }
+
+  public Resource getNotifiedResource() {
+    return notifiedResource;
+  }
+
+  public void setNotifiedResource(Resource notifiedResource) {
+    this.notifiedResource = notifiedResource;
   }
 }

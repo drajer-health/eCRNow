@@ -1,9 +1,10 @@
 package com.drajer.bsa.service.impl;
 
-import com.drajer.bsa.kar.action.BsaRelatedAction;
+import com.drajer.bsa.kar.condition.BsaCqlCondition;
 import com.drajer.bsa.kar.condition.BsaFhirPathCondition;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
+import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.service.KarParser;
@@ -33,6 +34,7 @@ import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionCom
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,10 +140,12 @@ public class KarParserImpl implements KarParser {
           if (Optional.ofNullable(comp).isPresent()
               && comp.getResource().getResourceType() == ResourceType.ValueSet) {
             logger.info(" Processing ValueSet ");
+            processValueSet((ValueSet) comp.getResource(), art);
           } else if (Optional.ofNullable(comp).isPresent()
               && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
             logger.info(" Processing PlanDefinition ");
             processPlanDefinition((PlanDefinition) comp.getResource(), art);
+            art.initializeRelatedActions();
           } else if (Optional.ofNullable(comp).isPresent()
               && comp.getResource().getResourceType() == ResourceType.Library) {
             logger.info(" Processing Library");
@@ -213,7 +217,7 @@ public class KarParserImpl implements KarParser {
     for (DataRequirement dr : drs) {
       try {
         ResourceType rt = ResourceType.fromCode(dr.getType());
-        action.addInputResourceType(rt);
+        action.addInputResourceType(dr.getId(), rt);
       } catch (FHIRException ex) {
         logger.error(" Type specified is not a resource Type {}", dr.getType());
       }
@@ -231,9 +235,19 @@ public class KarParserImpl implements KarParser {
               .getLanguage()
               .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))) {
 
+        logger.info(" Found a FHIR Path Expression ");
         BsaCondition bc = new BsaFhirPathCondition();
         bc.setLogicExpression(con.getExpression());
         action.addCondition(bc);
+      } else if (con.getExpression() != null
+          && (con.getExpression().getLanguage().equals(Expression.ExpressionLanguage.TEXT_CQL))) {
+
+        logger.info(" Found a CQL Expression ");
+        BsaCondition bc = new BsaCqlCondition();
+        bc.setLogicExpression(con.getExpression());
+        action.addCondition(bc);
+      } else {
+        logger.error(" Unknown type of Expression passed, cannot process ");
       }
     }
   }
@@ -270,5 +284,10 @@ public class KarParserImpl implements KarParser {
     }
 
     return events;
+  }
+
+  private void processValueSet(ValueSet vs, KnowledgeArtifact art) {
+
+    art.addDependentValueSet(vs);
   }
 }

@@ -1,12 +1,15 @@
 package com.drajer.bsa.service.impl;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.KarProcessor;
+import java.util.HashMap;
 import java.util.Set;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,16 +47,26 @@ public class KarProcessorImpl implements KarProcessor {
     NotificationContext nc = data.getNotificationContext();
     String namedEvent = nc.getTriggerEvent();
 
+    logger.info(" *** START Executing Trigger Actions *** ");
     Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
 
     for (BsaAction action : actions) {
 
-      Set<ResourceType> types = action.getInputResourceTypes();
+      logger.info(" **** Executing Action Id {} **** ", action.getActionId());
+
+      // Get the Resources that need to be retrieved.
+      HashMap<String, ResourceType> resourceTypes = action.getInputResourceTypes();
 
       // Get necessary data to process.
-      ehrInterface.getFilteredData(data);
+      HashMap<ResourceType, Set<Resource>> res = ehrInterface.getFilteredData(data, resourceTypes);
 
-      action.process(data);
+      BsaActionStatus status = action.process(data);
+
+      data.addActionStatus(action.getActionId(), status);
+
+      logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }
+
+    logger.info(" *** END Executing Trigger Actions *** ");
   }
 }

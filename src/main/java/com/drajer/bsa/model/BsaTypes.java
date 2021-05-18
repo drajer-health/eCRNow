@@ -27,6 +27,7 @@ public final class BsaTypes {
 
   public enum BsaActionStatusType {
     NotStarted,
+    Scheduled,
     InProgress,
     Completed,
     Failed,

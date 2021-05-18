@@ -6,8 +6,9 @@ import com.drajer.bsa.model.KarProcessingData;
 public class CompleteReporting extends BsaAction {
 
   @Override
-  public void process(KarProcessingData data) {
+  public BsaActionStatus process(KarProcessingData data) {
     // TODO Auto-generated method stub
 
+    return null;
   }
 }

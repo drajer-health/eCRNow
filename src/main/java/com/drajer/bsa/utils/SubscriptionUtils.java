@@ -150,6 +150,7 @@ public class SubscriptionUtils {
             nc.setNotificationResourceId(res.getIdElement().getIdPart());
             nc.setNotificationResourceType(resourceType);
             nc.setLastUpdated(Date.from(Instant.now()));
+            nc.setNotifiedResource(res);
 
             String xRequestId = request.getHeader("X-Request-ID");
             String xCorrelationId = request.getHeader("X-Correlation-ID");

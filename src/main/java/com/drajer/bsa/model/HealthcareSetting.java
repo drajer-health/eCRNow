@@ -59,6 +59,10 @@ public class HealthcareSetting {
   @Column(name = "fhir_server_base_url", nullable = false, unique = true)
   private String fhirServerBaseURL;
 
+  /** The attribute represents the FHIR Server version of the specification supported. */
+  @Column(name = "fhir_version", nullable = true, unique = false)
+  private String fhirVersion;
+
   /**
    * The attribute represents the Token URL for requesting access tokens as part of SMART on FHIR
    * Authorization. This is provided to override what is present in the CapabilityStatement.
@@ -244,6 +248,14 @@ public class HealthcareSetting {
 
   public void setRequireAud(Boolean requireAud) {
     this.requireAud = requireAud;
+  }
+
+  public String getFhirVersion() {
+    return fhirVersion;
+  }
+
+  public void setFhirVersion(String fhirVersion) {
+    this.fhirVersion = fhirVersion;
   }
 
   public void log() {

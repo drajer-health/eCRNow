@@ -13,10 +13,14 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.SubscriptionUtils;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,12 +101,24 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
                 if (kar != null) {
 
+                  logger.info(" Processing KAR since we found the one that we needed. ");
+
                   // Setup the initial Kar
                   KarProcessingData kd = new KarProcessingData();
                   kd.setNotificationContext(nc);
                   kd.setHealthcareSetting(hs);
                   kd.setKar(kar);
                   kd.setNotificationBundle(notificationBundle);
+
+                  if (nc.getNotifiedResource() != null) {
+                    logger.info("Adding notified resource to the set of inputs ");
+                    HashMap<ResourceType, Set<Resource>> res =
+                        new HashMap<ResourceType, Set<Resource>>();
+                    Set<Resource> results = new HashSet<Resource>();
+                    results.add(nc.getNotifiedResource());
+                    res.put(nc.getNotifiedResource().getResourceType(), results);
+                    kd.addResourcesByType(res);
+                  }
 
                   karProcessor.applyKarForNotification(kd);
                 } else {

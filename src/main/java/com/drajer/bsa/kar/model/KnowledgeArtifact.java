@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,79 @@ public class KnowledgeArtifact {
    * <p>The Inner HashMap stores the Resource by its full URL so that it can be easily accessed.
    */
   HashMap<ResourceType, HashMap<String, Resource>> dependencies;
+
+  public Resource getDependentResource(ResourceType rt, String url) {
+
+    if (dependencies.containsKey(rt)) {
+
+      if (dependencies.get(rt).containsKey(url)) return dependencies.get(rt).get(url);
+    }
+
+    return null;
+  }
+
+  public void addDependentValueSet(ValueSet res) {
+
+    if (dependencies.containsKey(res.getResourceType())) {
+
+      // Dependency to be added.
+      HashMap<String, Resource> resources = dependencies.get(res.getResourceType());
+
+      if (resources != null && resources.containsKey(res.getUrl())) {
+        logger.info(" Value Set already present ");
+      } else if (res.getUrl() != null) {
+        resources.put(res.getUrl(), res);
+        dependencies.put(res.getResourceType(), resources);
+      }
+    } else if (res.getUrl() != null) {
+      logger.info("Resource Type does not exist, so add to map ");
+      HashMap<String, Resource> resources = new HashMap<>();
+      resources.put(res.getUrl(), res);
+      dependencies.put(res.getResourceType(), resources);
+    }
+  }
+
+  public void initializeRelatedActions() {
+
+    for (Map.Entry<String, BsaAction> entry : actionMap.entrySet()) {
+
+      BsaAction act = entry.getValue();
+
+      if (act.getRelatedActions() != null) {
+
+        for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> ent :
+            act.getRelatedActions().entrySet()) {
+
+          Set<BsaRelatedAction> racts = ent.getValue();
+
+          for (BsaRelatedAction ract : racts) {
+
+            ract.setAction(actionMap.get(ract.getRelatedActionId()));
+          }
+        }
+      }
+    }
+  }
+
+  public void addTriggerEvent(BsaAction act) {
+
+    Set<String> triggers = act.getNamedEventTriggers();
+
+    for (String s : triggers) {
+
+      addTriggerEvent(s, act);
+    }
+  }
+
+  public void addTriggerEvent(String event, BsaAction act) {
+    if (!triggerEventActionMap.containsKey(event)) {
+      Set<BsaAction> acts = new HashSet<BsaAction>();
+      acts.add(act);
+      triggerEventActionMap.put(event, acts);
+    } else {
+      triggerEventActionMap.get(event).add(act);
+    }
+  }
 
   public KnowledgeArtifact() {
     originalKarBundle = null;
@@ -134,26 +209,6 @@ public class KnowledgeArtifact {
   public void addAction(BsaAction act) {
     if (!actionMap.containsKey(act.getActionId())) {
       actionMap.put(act.getActionId(), act);
-    }
-  }
-
-  public void addTriggerEvent(BsaAction act) {
-
-    Set<String> triggers = act.getNamedEventTriggers();
-
-    for (String s : triggers) {
-
-      addTriggerEvent(s, act);
-    }
-  }
-
-  public void addTriggerEvent(String event, BsaAction act) {
-    if (!triggerEventActionMap.containsKey(event)) {
-      Set<BsaAction> acts = new HashSet<BsaAction>();
-      acts.add(act);
-      triggerEventActionMap.put(event, acts);
-    } else {
-      triggerEventActionMap.get(event).add(act);
     }
   }
 

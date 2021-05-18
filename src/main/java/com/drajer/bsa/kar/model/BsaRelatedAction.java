@@ -1,4 +1,4 @@
-package com.drajer.bsa.kar.action;
+package com.drajer.bsa.kar.model;
 
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -18,9 +18,21 @@ public class BsaRelatedAction {
 
   private Duration duration;
 
+  private BsaAction action;
+
   private final Logger logger = LoggerFactory.getLogger(BsaRelatedAction.class);
 
-  public BsaRelatedAction() {}
+  public BsaRelatedAction() {
+    action = null;
+  }
+
+  public BsaAction getAction() {
+    return action;
+  }
+
+  public void setAction(BsaAction action) {
+    this.action = action;
+  }
 
   public ActionRelationshipType getRelationship() {
     return relationship;

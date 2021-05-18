@@ -1,12 +1,14 @@
 package com.drajer.bsa.kar.model;
 
-import com.drajer.bsa.kar.action.BsaRelatedAction;
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.TimingSchedule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -25,19 +27,19 @@ public abstract class BsaAction {
   private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifact.class);
 
   /** The unique Id for the action. */
-  private String actionId;
+  protected String actionId;
 
   /** The list of named events upon which this action will be triggered, this may be empty. */
-  private Set<String> namedEventTriggers;
+  protected Set<String> namedEventTriggers;
 
   /** The list of input data requirements required for processing of the action. */
-  private List<DataRequirement> inputData;
+  protected List<DataRequirement> inputData;
 
   /** The list of Resource Types summarized from input Data */
-  private Set<ResourceType> inputResourceTypes;
+  protected HashMap<String, ResourceType> inputResourceTypes;
 
   /** The list of output data the action is supposed to create. */
-  private List<DataRequirement> outputData;
+  protected List<DataRequirement> outputData;
 
   /**
    * The conditions when present and evaluated to true, the action will be executed. If the
@@ -60,14 +62,79 @@ public abstract class BsaAction {
   private List<TimingSchedule> timingData;
 
   /** */
-  public abstract void process(KarProcessingData data);
+  public abstract BsaActionStatus process(KarProcessingData data);
+
+  public Boolean conditionsMet(KarProcessingData kd) {
+
+    Boolean retVal = true;
+
+    for (BsaCondition bc : conditions) {
+
+      // If any of the conditions evaluate to be false, then the method returns false.
+      if (!bc.getConditionProcessor().evaluateExpression(bc, this, kd)) {
+        logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
+        retVal = false;
+      }
+    }
+
+    return retVal;
+  }
+
+  public void executeRelatedActions(KarProcessingData kd) {
+
+    logger.info(" Start Executing Related Action for action {}", this.getActionId());
+
+    for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
+        relatedActions.entrySet()) {
+
+      if (entry.getKey() == ActionRelationshipType.BEFORESTART) {
+
+        Set<BsaRelatedAction> actions = entry.getValue();
+
+        for (BsaRelatedAction ract : actions) {
+
+          logger.info(" **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+          if (ract.getAction() != null) {
+            logger.info(" Found the Related Action, hence execuing it ");
+            ract.getAction().process(kd);
+            logger.info(" **** Finished execuing the Related Action. **** ");
+          } else {
+            logger.info(
+                " Related Action not found, so skipping executing of action {} ",
+                ract.getRelatedActionId());
+          }
+        }
+
+      } else {
+
+        logger.info(
+            " Not executing Related Action because relationship type is {}", entry.getKey());
+      }
+    }
+
+    logger.info(" Finished Executing Related Action for action {}", this.getActionId());
+  }
+
+  public BsaActionStatusType processTimingData(KarProcessingData kd) {
+
+    if (timingData != null && timingData.size() > 0) {
+
+      // Check and setup future timers.
+
+      return BsaActionStatusType.Scheduled;
+    } else {
+
+      logger.info(" No timing data, so continue with the execution of the action ");
+      return BsaActionStatusType.InProgress;
+    }
+  }
 
   public BsaAction() {
 
     actionId = "";
     namedEventTriggers = new HashSet<>();
     inputData = new ArrayList<DataRequirement>();
-    inputResourceTypes = new HashSet<ResourceType>();
+    inputResourceTypes = new HashMap<>();
     outputData = new ArrayList<DataRequirement>();
     conditions = new ArrayList<BsaCondition>();
     relatedActions = new HashMap<>();
@@ -131,16 +198,22 @@ public abstract class BsaAction {
     this.timingData = timingData;
   }
 
-  public Set<ResourceType> getInputResourceTypes() {
+  public HashMap<String, ResourceType> getInputResourceTypes() {
     return inputResourceTypes;
   }
 
-  public void setInputResourceTypes(Set<ResourceType> inputResourceTypes) {
+  public void setInputResourceTypes(HashMap<String, ResourceType> inputResourceTypes) {
     this.inputResourceTypes = inputResourceTypes;
   }
 
-  public void addInputResourceType(ResourceType rt) {
-    this.inputResourceTypes.add(rt);
+  public void addInputResourceType(String id, ResourceType rt) {
+
+    if (!inputResourceTypes.containsKey(id)) {
+      inputResourceTypes.put(id, rt);
+    } else {
+
+      //  nothing to do , it is already present.
+    }
   }
 
   public void addCondition(BsaCondition cond) {

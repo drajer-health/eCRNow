@@ -4,7 +4,9 @@ import com.drajer.bsa.ehr.service.EhrAuthorizationService;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.model.Response;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Date;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +85,15 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
         tokenResponse = new JSONObject(response.getBody());
 
         logger.info("Received AccessToken: {}", tokenResponse);
+
+        kd.getNotificationContext().setEhrAccessToken(tokenResponse.getString("access_token"));
+        kd.getNotificationContext()
+            .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
+
+        Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
+        Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
+        kd.getNotificationContext()
+            .setEhrAccessTokenExpirationTime(new Date().from(expireInstantTime));
       }
 
     } catch (Exception e) {

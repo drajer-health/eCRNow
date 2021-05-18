@@ -29,4 +29,28 @@ public abstract class BsaActionStatus {
     actionStatus = BsaActionStatusType.NotStarted;
     outputProduced = new HashSet<>();
   }
+
+  public String getActionId() {
+    return actionId;
+  }
+
+  public void setActionId(String actionId) {
+    this.actionId = actionId;
+  }
+
+  public BsaActionStatusType getActionStatus() {
+    return actionStatus;
+  }
+
+  public void setActionStatus(BsaActionStatusType actionStatus) {
+    this.actionStatus = actionStatus;
+  }
+
+  public Set<String> getOutputProduced() {
+    return outputProduced;
+  }
+
+  public void setOutputProduced(Set<String> outputProduced) {
+    this.outputProduced = outputProduced;
+  }
 }
