@@ -209,7 +209,7 @@ public class CreateEicrAction extends AbstractAction {
 
       } catch (Exception e) {
 
-        StringBuffer expMsg = new StringBuffer();
+        StringBuilder expMsg = new StringBuilder();
         if (state != null) {
 
           expMsg.append(" Unable to create Eicr due to exceptions during processing ");

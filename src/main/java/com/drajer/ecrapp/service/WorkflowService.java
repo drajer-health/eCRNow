@@ -328,7 +328,7 @@ public class WorkflowService {
       }
     }
 
-    if (deleteLaunchDetails) {
+    if (Boolean.TRUE.equals(deleteLaunchDetails)) {
       workflowInstance.launchService.delete(launchDetails);
       String expMsg =
           "Deleted the launch_detail " + launchDetails.getId() + " as encounter was not found";
