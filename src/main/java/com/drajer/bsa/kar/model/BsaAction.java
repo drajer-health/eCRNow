@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.model;
 
+import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
@@ -62,7 +63,7 @@ public abstract class BsaAction {
   private List<TimingSchedule> timingData;
 
   /** */
-  public abstract BsaActionStatus process(KarProcessingData data);
+  public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
 
   public Boolean conditionsMet(KarProcessingData kd) {
 
@@ -80,7 +81,7 @@ public abstract class BsaAction {
     return retVal;
   }
 
-  public void executeRelatedActions(KarProcessingData kd) {
+  public void executeRelatedActions(KarProcessingData kd, EhrQueryService ehrService) {
 
     logger.info(" Start Executing Related Action for action {}", this.getActionId());
 
@@ -96,7 +97,7 @@ public abstract class BsaAction {
           logger.info(" **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
           if (ract.getAction() != null) {
             logger.info(" Found the Related Action, hence execuing it ");
-            ract.getAction().process(kd);
+            ract.getAction().process(kd, ehrService);
             logger.info(" **** Finished execuing the Related Action. **** ");
           } else {
             logger.info(

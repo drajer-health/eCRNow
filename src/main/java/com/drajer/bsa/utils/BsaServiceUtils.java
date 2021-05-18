@@ -103,7 +103,7 @@ public class BsaServiceUtils {
               for (ConceptReferenceComponent crc : crcs) {
 
                 if (crc.getCode().contentEquals(code)) {
-                  logger.info(" Found code in value set ");
+                  logger.info(" Found code system {} and code {} in value set ", system, code);
                   retVal = true;
                 }
               }

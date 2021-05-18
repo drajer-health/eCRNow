@@ -4,16 +4,22 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ValueSet;
 
 public class FhirPathProcessor implements BsaConditionProcessor {
+	
+	private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
@@ -24,10 +30,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public Set<Resource> filterResources(DataRequirement dr, KarProcessingData kd) {
 
     // This will have to be changed once we plugin a real FhirPath Engine.
-    Set<Resource> resources = null;
-
-    List<DataRequirementCodeFilterComponent> drcs = dr.getCodeFilter();
-
+    Set<Resource> resources = new HashSet<Resource>();
+    
     Set<Resource> candidates = kd.getResourcesByType(dr.getType());
 
     if (candidates != null) {
@@ -55,7 +59,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   ValueSet vs = (ValueSet) vsr;
                   if (BsaServiceUtils.isCodeableConceptPresentInValueSet(vs, c.getCode())) {
 
-                    candidates.add(c);
+                	  logger.info(" Found a match for the code, adding resource {}", c.getId());
+                    resources.add(c);
                   }
                 }
               }

@@ -107,7 +107,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
 
     // Get other resources for Patient
-    return null;
+    return kd.getFhirInputData();
   }
 
   public Resource getResourceById(
@@ -171,6 +171,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
           resources = new HashSet<Resource>();
           resMap = new HashMap<>();
+          resMapById = new HashMap<>();
           for (BundleEntryComponent comp : bc) {
 
             logger.info(" Adding Resource Id : {}", comp.getResource().getId());
