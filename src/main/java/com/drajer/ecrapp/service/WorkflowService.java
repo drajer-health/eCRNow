@@ -19,12 +19,18 @@ import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kagkarlsson.scheduler.CurrentlyExecuting;
+import com.github.kagkarlsson.scheduler.ScheduledExecution;
+import com.github.kagkarlsson.scheduler.ScheduledExecutionsFilter;
 import com.github.kagkarlsson.scheduler.Scheduler;
+import com.github.kagkarlsson.scheduler.task.TaskInstanceId;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,5 +312,41 @@ public class WorkflowService {
 
     logger.info(" task  ::: {}", task);
     return task;
+  }
+
+  public static void cancelAllScheduledTasksForLaunch(
+      LaunchDetails launchDetails, Boolean deleteLaunchDetails) {
+    logger.info("Cancelling the scheduled tasks for launch_id {}", launchDetails.getId());
+    List<ScheduledExecution<Object>> executions =
+        staticScheduler.getScheduledExecutions(ScheduledExecutionsFilter.all());
+    for (ScheduledExecution<Object> scheduledTask : executions) {
+      TaskTimer taskTimer = (TaskTimer) scheduledTask.getData();
+      if (taskTimer.getLaunchDetailsId().equals(launchDetails.getId())
+          && !isCurrentExecutionTask(scheduledTask.getTaskInstance())) {
+        logger.info("Cancelling scheduled task {}", scheduledTask.getTaskInstance().getId());
+        staticScheduler.cancel(scheduledTask.getTaskInstance());
+      }
+    }
+
+    if (Boolean.TRUE.equals(deleteLaunchDetails)) {
+      workflowInstance.launchService.delete(launchDetails);
+      String expMsg =
+          "Deleted the launch_detail " + launchDetails.getId() + " as encounter was not found";
+      logger.info(expMsg);
+      throw new ObjectDeletedException(expMsg, launchDetails.getId(), "launch_details");
+    }
+  }
+
+  public static boolean isCurrentExecutionTask(TaskInstanceId taskInstanceId) {
+
+    Boolean currentTask = false;
+    List<CurrentlyExecuting> currentExecutions = staticScheduler.getCurrentlyExecuting();
+    for (CurrentlyExecuting currentExecution : currentExecutions) {
+      if (currentExecution.getTaskInstance().getId().equals(taskInstanceId.getId())) {
+        currentTask = true;
+        break;
+      }
+    }
+    return currentTask;
   }
 }

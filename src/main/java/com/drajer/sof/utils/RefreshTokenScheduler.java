@@ -120,19 +120,20 @@ public class RefreshTokenScheduler {
   }
 
   private void updateAccessToken(LaunchDetails authDetails, JSONObject tokenResponse) {
-    LaunchDetails existingAuthDetails = new LaunchDetails();
     try {
-      logger.info("Updating the AccessToken value in database");
-      existingAuthDetails =
+      LaunchDetails existingAuthDetails =
           ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
-      existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
-      existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
-      existingAuthDetails.setLastUpdated(new Date());
-      Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-      Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
-      existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
-      ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
-      logger.info("Successfully updated AccessToken value in database");
+      if (existingAuthDetails != null) {
+        logger.info("Updating the AccessToken value in database");
+        existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
+        existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
+        existingAuthDetails.setLastUpdated(new Date());
+        Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
+        Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
+        existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+        ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
+        logger.info("Successfully updated AccessToken value in database");
+      }
     } catch (Exception e) {
       logger.error("Error in Updating the AccessToken value into database: ", e);
     }
@@ -171,74 +172,4 @@ public class RefreshTokenScheduler {
     }
     return tokenResponse;
   }
-  /*
-    private void getResourcesData(LaunchDetails authDetails) {
-      FhirContext context = resourceData.getFhirContext(authDetails.getFhirVersion());
-      context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-      IGenericClient genericClient =
-          resourceData.createClient(
-              context, authDetails.getEhrServerURL(), authDetails.getAccessToken());
-      try {
-        resourceData.getResouceById(
-            authDetails, genericClient, context, "Patient", authDetails.getLaunchPatientId());
-      } catch (Exception e) {
-        logger.error("Error in getting Patient details", e);
-      }
-
-      try {
-        resourceData.getResouceById(
-            authDetails, genericClient, context, "Encounter", authDetails.getEncounterId());
-        // resourceData.getEncounterData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Encounter details", e);
-      }
-
-      try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Observation");
-        // resourceData.getObservationData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Observation details", e);
-      }
-
-      try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Condition");
-        // resourceData.getConditionData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Condition details", e);
-      }
-
-      if (authDetails.getFhirVersion().equalsIgnoreCase("DSTU2")) {
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationAdministration");
-          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationAdministration details", e);
-        }
-
-        try {
-          resourceData.getResourceByPatientId(authDetails, genericClient, context, "MedicationOrder");
-          // resourceData.getMedicationOrderData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationOrder details", e);
-        }
-
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationStatement");
-          // resourceData.getMedicationStatementData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationStatement details", e);
-        }
-      } else if (authDetails.getFhirVersion().equalsIgnoreCase("R4")) {
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationRequest");
-          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationRequest details", e);
-        }
-      }
-    }
-  */
 }
