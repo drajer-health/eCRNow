@@ -344,6 +344,7 @@ public class WorkflowService {
     for (CurrentlyExecuting currentExecution : currentExecutions) {
       if (currentExecution.getTaskInstance().getId().equals(taskInstanceId.getId())) {
         currentTask = true;
+        break;
       }
     }
     return currentTask;
