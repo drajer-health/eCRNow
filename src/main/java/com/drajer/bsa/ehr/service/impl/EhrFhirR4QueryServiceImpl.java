@@ -93,6 +93,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info(" Fetching Resource of type {}", entry.getValue());
 
+      if(entry.getValue() != ResourceType.Patient || entry.getValue() != ResourceType.Encounter)
+      {
       String url =
           kd.getNotificationContext().getFhirServerBaseUrl()
               + "/"
@@ -104,6 +106,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       getResourcesByPatientId(
           client, context, entry.getValue().toString(), url, kd, entry.getValue(), entry.getKey());
+      }
     }
 
     // Get other resources for Patient

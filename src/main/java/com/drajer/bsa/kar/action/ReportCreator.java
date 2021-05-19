@@ -26,12 +26,44 @@ public abstract class ReportCreator {
 
   public static ReportCreator getReportCreator(String profileName) {
 
-    if (reportingClasses.containsKey(profileName)) {
-      return reportingClasses.get(profileName);
-    } else return null;
+    if (reportingClasses.size() == 0)
+    	initReportingClasses();
+    	
+    	
+    if(reportingClasses.containsKey(profileName)) {
+    		return reportingClasses.get(profileName);
+    } else 
+    	return null;
   }
 
   // Load the Topic to Named Event Map.
+  public static void initReportingClasses() {
+	  
+	  try (InputStream input =
+		        ReportCreator.class.getClassLoader().getResourceAsStream("create-report.properties")) {
+
+		      Properties prop = new Properties();
+		      prop.load(input);
+
+		      Set<String> entries = prop.stringPropertyNames();
+
+		      for (String propName : entries) {
+		        ReportCreator creator;
+		        try {
+		          creator = (ReportCreator) (Class.forName(prop.getProperty(propName))).newInstance();
+		          reportingClasses.put(propName, creator);
+		        } catch (InstantiationException e) {
+		          logger2.error(" Instantiation Exception in creating reporting class {}", propName, e);
+		        } catch (IllegalAccessException e) {
+		          logger2.error(" IllegalAccess Exception in creating reporting class {}", propName, e);
+		        } catch (ClassNotFoundException e) {
+		          logger2.error(" ClassNotFoudn Exception in creating reporting class {}", propName, e);
+		        }
+		      }
+		    } catch (IOException ex) {
+		      logger2.error("Error while loading Action Classes from Proporties File ");
+		    }
+  }
   static {
     try (InputStream input =
         SubscriptionUtils.class.getClassLoader().getResourceAsStream("create-report.properties")) {

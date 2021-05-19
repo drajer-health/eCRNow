@@ -1,13 +1,19 @@
 package com.drajer.bsa.utils;
 
 import ca.uhn.fhir.parser.IParser;
+
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
@@ -16,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +44,9 @@ public class BsaServiceUtils {
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
+  
+  @Value("${bsa.output.directory}")
+  String debugDirectory;
 
   public Bundle readKarFromFile(String filePath) {
 
@@ -114,5 +124,21 @@ public class BsaServiceUtils {
     }
 
     return retVal;
+  }
+  
+  public void saveResorceToFile(Resource res) {
+	  
+	  String fileName = debugDirectory + res.getResourceType().toString() + "_" + res.getId() + ".json";
+		        
+	  String data = jsonParser.encodeResourceToString(res); 
+	  
+	  try (DataOutputStream outStream =
+		        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
+
+		      logger.info(" Writing data to file: {}", fileName);
+		      outStream.writeBytes(data);
+		    } catch (IOException e) {
+		      logger.debug(" Unable to write data to file: {}", fileName, e);
+		    }
   }
 }

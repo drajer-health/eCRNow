@@ -4,6 +4,8 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.ecrapp.util.ApplicationUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -61,6 +63,7 @@ public class CreateReport extends BsaAction {
 
                 logger.info(" Adding Report to output generated {}", output.getId());
                 data.addActionOutput(actionId, output);
+               
               }
             }
           }
