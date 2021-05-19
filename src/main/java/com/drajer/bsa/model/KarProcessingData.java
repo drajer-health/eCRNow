@@ -53,10 +53,10 @@ public class KarProcessingData {
 
   /**
    * The output produced by applying the KAR actions. The Key for the outer map is the Action Id
-   * that produced the data. The Key for the inner map is the Resource Type of the Resource produced
+   * that produced the data. The Key for the inner map is the Resource Id of the Resource produced
    * by the Action
    */
-  HashMap<String, HashMap<String, Set<Resource>>> actionOutputData;
+  HashMap<String, HashMap<String, Resource>> actionOutputData;
 
   /** The status of each Action after its execution. */
   HashMap<String, BsaActionStatus> actionStatus;
@@ -66,6 +66,19 @@ public class KarProcessingData {
 
   /** The response data received from the TTP/PHA. */
   String responseData;
+
+  public void addActionOutput(String actionId, Resource res) {
+
+    if (actionOutputData.containsKey(actionId)) {
+
+      actionOutputData.get(actionId).put(res.getIdElement().getId(), res);
+
+    } else {
+      HashMap<String, Resource> resMap = new HashMap<>();
+      resMap.put(res.getIdElement().getIdPart(), res);
+      actionOutputData.put(actionId, resMap);
+    }
+  }
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -157,12 +170,11 @@ public class KarProcessingData {
     this.fhirInputDataByType = fhirInputData;
   }
 
-  public HashMap<String, HashMap<String, Set<Resource>>> getActionOutputData() {
+  public HashMap<String, HashMap<String, Resource>> getActionOutputData() {
     return actionOutputData;
   }
 
-  public void setActionOutputData(
-      HashMap<String, HashMap<String, Set<Resource>>> actionOutputData) {
+  public void setActionOutputData(HashMap<String, HashMap<String, Resource>> actionOutputData) {
     this.actionOutputData = actionOutputData;
   }
 

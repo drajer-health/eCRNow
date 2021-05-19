@@ -32,18 +32,18 @@ public class CheckTriggerCodes extends BsaAction {
 
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
-    
+
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.Scheduled) {
 
-    	// Get the Resources that need to be retrieved.
-        HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
-        // Get necessary data to process.
-        HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
-
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
+
+      // Get the Resources that need to be retrieved.
+      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+
+      // Get necessary data to process.
+      HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
       // Apply filters for data and then send the collections to the Condition Evaluator.
       for (DataRequirement dr : inputData) {

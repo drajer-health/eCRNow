@@ -26,14 +26,18 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Expression;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
+import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
+import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +68,8 @@ public class KarParserImpl implements KarParser {
   @Autowired BsaServiceUtils utils;
 
   private static String[] KAR_FILE_EXT = {"json"};
+  private static String RECEIVER_ADDRESS_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
   // Load the Topic to Named Event Map.
@@ -165,6 +171,7 @@ public class KarParserImpl implements KarParser {
 
   private void processPlanDefinition(PlanDefinition plan, KnowledgeArtifact art) {
 
+    processExtensions(plan, art);
     List<PlanDefinitionActionComponent> actions = plan.getAction();
 
     for (PlanDefinitionActionComponent act : actions) {
@@ -200,6 +207,27 @@ public class KarParserImpl implements KarParser {
       // Setup the artifact details.
       art.addAction(action);
       art.addTriggerEvent(action);
+    }
+  }
+
+  public void processExtensions(PlanDefinition plan, KnowledgeArtifact art) {
+
+    if (plan.hasExtension()) {
+
+      Extension ext = plan.getExtensionByUrl(RECEIVER_ADDRESS_URL);
+
+      if (ext != null) {
+
+        Type t = ext.getValue();
+        if (t instanceof PrimitiveType) {
+          PrimitiveType i = (PrimitiveType) t;
+          if (i instanceof UriType) {
+
+            logger.info(" Found Receiver Address {}", i.getValueAsString());
+            art.addReceiverAddress((UriType) i);
+          }
+        }
+      }
     }
   }
 

@@ -4,10 +4,8 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-
 import java.util.HashMap;
 import java.util.Set;
-
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -27,17 +25,15 @@ public class InitiateReporting extends BsaAction {
 
     BsaActionStatus actStatus = new InitiateReportingStatus();
     actStatus.setActionId(this.getActionId());
-    
+
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
-    
+
     // Get the Resources that need to be retrieved.
     HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
     // Get necessary data to process.
     HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
-
-    
 
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.Scheduled && conditionsMet(data)) {

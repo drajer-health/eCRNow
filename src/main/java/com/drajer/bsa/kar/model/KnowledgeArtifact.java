@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,8 @@ public class KnowledgeArtifact {
    * <p>The Inner HashMap stores the Resource by its full URL so that it can be easily accessed.
    */
   HashMap<ResourceType, HashMap<String, Resource>> dependencies;
+
+  Set<UriType> receiverAddresses;
 
   public Resource getDependentResource(ResourceType rt, String url) {
 
@@ -138,6 +141,10 @@ public class KnowledgeArtifact {
     }
   }
 
+  public void addReceiverAddress(UriType t) {
+    receiverAddresses.add(t);
+  }
+
   public KnowledgeArtifact() {
     originalKarBundle = null;
     karId = "";
@@ -145,6 +152,7 @@ public class KnowledgeArtifact {
     actionMap = new HashMap<String, BsaAction>();
     triggerEventActionMap = new HashMap<String, Set<BsaAction>>();
     dependencies = new HashMap<ResourceType, HashMap<String, Resource>>();
+    receiverAddresses = new HashSet<UriType>();
   }
 
   public String getKarId() {
@@ -210,6 +218,14 @@ public class KnowledgeArtifact {
     if (!actionMap.containsKey(act.getActionId())) {
       actionMap.put(act.getActionId(), act);
     }
+  }
+
+  public Set<UriType> getReceiverAddresses() {
+    return receiverAddresses;
+  }
+
+  public void setReceiverAddresses(Set<UriType> receiverAddresses) {
+    this.receiverAddresses = receiverAddresses;
   }
 
   public void log() {

@@ -33,4 +33,20 @@ public final class BsaTypes {
     Failed,
     Aborted
   }
+
+  public enum MessageType {
+    CancerReportMessage,
+    HepCReportMessage,
+    HealthcareSurveyReportMessage,
+    MessageReport
+  }
+
+  public static String getMessageTypeString(MessageType t) {
+
+    if (t == MessageType.CancerReportMessage) return "cancer-report-message";
+    else if (t == MessageType.HepCReportMessage) return "hepc-report-message";
+    else if (t == MessageType.HealthcareSurveyReportMessage)
+      return "healthcare-survey-report-message";
+    else return "message-report";
+  }
 }
