@@ -191,12 +191,20 @@ public class LaunchController {
           if (urlExtension.getString("url").equals("token")) {
             logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
-            clientDetails.setTokenURL(tokenEndpoint);
+            if((clientDetails.getIsUserAccountLaunch() && clientDetails.getTokenURL() == null) || clientDetails.getIsSystem()) {
+            	clientDetails.setTokenURL(tokenEndpoint);	
+            }
           }
         }
       }
 
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      JSONObject tokenResponse = null;
+      if (clientDetails.getIsSystem()) {
+        tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      }
+      if (clientDetails.getIsUserAccountLaunch()) {
+        tokenResponse = tokenScheduler.getAccessTokenUsingUserCredentials(clientDetails);
+      }
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
