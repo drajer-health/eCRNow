@@ -39,7 +39,8 @@ public class EicrController {
       @RequestParam(name = "patientId", required = false) String patientId,
       @RequestParam(name = "encounterId", required = false) String encounterId,
       @RequestParam(name = "version", required = false) String version,
-      @RequestParam(name = "fhirServerUrl", required = false) String fhirServerUrl) {
+      @RequestParam(name = "fhirServerUrl", required = false) String fhirServerUrl,
+      @RequestParam(name = "xRequestId", required = false) String xRequestId) {
     List<JSONObject> eicrData = new ArrayList<>();
     try {
       logger.info("Received EicrId::::: {}", eicrId);
@@ -54,6 +55,7 @@ public class EicrController {
       searchParams.put("encounterId", encounterId);
       searchParams.put("version", version);
       searchParams.put("fhirServerUrl", fhirServerUrl);
+      searchParams.put("xRequestId", xRequestId);
       eicrData = eicrRRService.getEicrData(searchParams);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
