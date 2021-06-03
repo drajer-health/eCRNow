@@ -119,12 +119,19 @@ public class EicrController {
   public ResponseEntity<Object> getEicrAllAttributes(@RequestParam String eicr_doc_id) {
     JSONObject eicrObject = new JSONObject();
     try {
+      if (eicr_doc_id == null || eicr_doc_id.isEmpty()) {
+        logger.error("Eicr Doc Id is null ");
+        return new ResponseEntity("Eicr Doc Id can't be null", HttpStatus.BAD_REQUEST);
+      }
       Eicr eicr = eicrRRService.getEicrByDocId(eicr_doc_id);
-      eicrObject.put("rrId", eicr.getResponseDocId());
-      eicrObject.put("docRefId", eicr.getEhrDocRefId());
+      if (eicr != null) {
+        eicrObject.put("rrId", eicr.getResponseDocId());
+        eicrObject.put("docRefId", eicr.getEhrDocRefId());
+      }
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
     }
     return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
   }
