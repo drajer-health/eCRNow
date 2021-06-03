@@ -127,6 +127,8 @@ public class EicrController {
       if (eicr != null) {
         eicrObject.put("rrId", eicr.getResponseDocId());
         eicrObject.put("docRefId", eicr.getEhrDocRefId());
+      } else {
+        return new ResponseEntity<>(eicrObject.toString(), HttpStatus.NO_CONTENT);
       }
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
