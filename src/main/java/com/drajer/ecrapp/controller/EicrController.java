@@ -121,14 +121,16 @@ public class EicrController {
     try {
       if (eicr_doc_id == null || eicr_doc_id.isEmpty()) {
         logger.error("Eicr Doc Id is null ");
-        return new ResponseEntity("Eicr Doc Id can't be null", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(
+            "Requested eicr_doc_id is missing or empty", HttpStatus.BAD_REQUEST);
       }
       Eicr eicr = eicrRRService.getEicrByDocId(eicr_doc_id);
       if (eicr != null) {
         eicrObject.put("rrId", eicr.getResponseDocId());
         eicrObject.put("docRefId", eicr.getEhrDocRefId());
       } else {
-        return new ResponseEntity<>(eicrObject.toString(), HttpStatus.NO_CONTENT);
+        String message = "Failed to find EICR by EICR_DOC_ID: " + eicr_doc_id;
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
       }
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
