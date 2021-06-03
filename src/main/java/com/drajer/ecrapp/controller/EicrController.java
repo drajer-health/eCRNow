@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.controller;
 
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,5 +112,20 @@ public class EicrController {
     }
 
     return new ResponseEntity<>(eicrList.toString(), HttpStatus.OK);
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/rrIdAndDocRefId", method = RequestMethod.GET)
+  public ResponseEntity<Object> getEicrAllAttributes(@RequestParam String eicr_doc_id) {
+    JSONObject eicrObject = new JSONObject();
+    try {
+      Eicr eicr = eicrRRService.getEicrByDocId(eicr_doc_id);
+      eicrObject.put("rrId", eicr.getResponseDocId());
+      eicrObject.put("docRefId", eicr.getEhrDocRefId());
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+    return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
   }
 }
