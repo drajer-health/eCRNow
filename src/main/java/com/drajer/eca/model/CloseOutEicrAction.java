@@ -6,6 +6,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -140,7 +141,8 @@ public class CloseOutEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
 
-              if (ecr != null) {
+              try {
+                MDCUtils.addCorrelationId(ecr.getxCorrelationId());
 
                 newState.getCloseOutEicrStatus().setEicrClosed(true);
                 newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
@@ -162,6 +164,8 @@ public class CloseOutEicrAction extends AbstractAction {
                 ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
                 logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+              } finally {
+                MDCUtils.removeCorrelationId();
               }
 
             } // Check if Trigger Code Match found

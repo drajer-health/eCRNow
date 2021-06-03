@@ -6,6 +6,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -140,8 +141,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
 
-              if (ecr != null) {
-
+              MDCUtils.addCorrelationId(ecr.getxCorrelationId());
+              try {
                 status.setEicrUpdated(true);
                 status.seteICRId(ecr.getId().toString());
                 status.setJobStatus(JobStatus.COMPLETED);
@@ -165,13 +166,15 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
                 logger.info(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
-              }
 
-              // Schedule job again.
-              if (getTimingData() != null && !getTimingData().isEmpty()) {
+                // Schedule job again.
+                if (getTimingData() != null && !getTimingData().isEmpty()) {
 
-                logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state);
+                  logger.info(" Timing Data is present , so create a job based on timing data.");
+                  scheduleJob(details, state);
+                }
+              } finally {
+                MDCUtils.removeCorrelationId();
               }
 
             } // Check if Trigger Code Match found
