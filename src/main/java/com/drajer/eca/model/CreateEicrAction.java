@@ -6,12 +6,14 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -156,7 +158,8 @@ public class CreateEicrAction extends AbstractAction {
                 // Call the Loading Queries and create eICR.
                 Eicr ecr = EcaUtils.createEicr(details);
 
-                if (ecr != null) {
+                try {
+                  MDCUtils.addCorrelationId(ecr.getxCorrelationId());
 
                   newState.getCreateEicrStatus().setEicrCreated(true);
                   newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
@@ -178,8 +181,9 @@ public class CreateEicrAction extends AbstractAction {
                   ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
                   logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+                } finally {
+                  MDCUtils.removeCorrelationId();
                 }
-
               } // Check if Trigger Code Match found
               else {
 
@@ -208,9 +212,10 @@ public class CreateEicrAction extends AbstractAction {
 
       } catch (Exception e) {
 
+        StringBuilder expMsg = new StringBuilder();
         if (state != null) {
 
-          logger.error(" Unable to create Eicr due to exceptions during processing ", e);
+          expMsg.append(" Unable to create Eicr due to exceptions during processing ");
           // Update
           state.getCreateEicrStatus().setEicrCreated(false);
           state.getCreateEicrStatus().seteICRId("0");
@@ -218,10 +223,10 @@ public class CreateEicrAction extends AbstractAction {
 
           EcaUtils.updateDetailStatus(details, state);
         } else {
-          logger.error(
-              "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it ",
-              e);
+          expMsg.append(
+              "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it ");
         }
+        ApplicationUtils.handleException(e, expMsg.toString(), LogLevel.ERROR);
       }
 
     } else {

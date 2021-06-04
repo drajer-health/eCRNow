@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -449,5 +451,22 @@ public class ApplicationUtils {
       logger.error("Exception Reading File", e);
     }
     return bundle;
+  }
+
+  public static void handleException(Exception e, String expMsg, LogLevel loglevel) {
+
+    if (e instanceof ObjectDeletedException) {
+      throw (ObjectDeletedException) e;
+    }
+
+    if (loglevel == LogLevel.INFO) {
+      logger.info(expMsg, e);
+    } else if (loglevel == LogLevel.WARN) {
+      logger.warn(expMsg, e);
+    } else if (loglevel == LogLevel.ERROR) {
+      logger.error(expMsg, e);
+    } else if (loglevel == LogLevel.DEBUG) {
+      logger.debug(expMsg, e);
+    }
   }
 }

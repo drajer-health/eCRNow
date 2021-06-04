@@ -3,7 +3,9 @@ package com.drajer.eca.model;
 import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
@@ -89,31 +91,38 @@ public class ValidateEicrAction extends AbstractAction {
 
       if (id != 0) {
         logger.info(" Found eICR with Id {} to validate ", id);
-        String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getEicrData();
+        Eicr eicr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
+        String eicrData = eicr.getEicrData();
 
-        // Validate incoming XML
-        if (StringUtils.isNotEmpty(eICR)) {
+        try {
+          MDCUtils.addCorrelationId(eicr.getxCorrelationId());
 
-          boolean validationResultSchema = CdaValidatorUtil.validateEicrXMLData(eICR);
+          // Validate incoming XML
+          if (StringUtils.isNotEmpty(eicrData)) {
 
-          logger.info(" Validation Result from Schema Validation = {}", validationResultSchema);
+            boolean validationResultSchema = CdaValidatorUtil.validateEicrXMLData(eicrData);
 
-        } else {
-          logger.info(" **** Skipping Eicr XML Validation: eICR is null**** ");
+            logger.info(" Validation Result from Schema Validation = {}", validationResultSchema);
+
+          } else {
+            logger.info(" **** Skipping Eicr XML Validation: eICR is null**** ");
+          }
+
+          boolean validationResultSchematron = CdaValidatorUtil.validateEicrToSchematron(eicrData);
+
+          logger.info(" Validation Result from Schema Validation = {}", validationResultSchematron);
+
+          // Add a validate object every time.
+          ValidateEicrStatus validate = new ValidateEicrStatus();
+          validate.setActionId(getActionId());
+          validate.seteICRId(id.toString());
+          validate.setEicrValidated(true);
+          validate.setJobStatus(JobStatus.COMPLETED);
+          validate.setValidationTime(new Date());
+          state.getValidateEicrStatus().add(validate);
+        } finally {
+          MDCUtils.removeCorrelationId();
         }
-
-        boolean validationResultSchematron = CdaValidatorUtil.validateEicrToSchematron(eICR);
-
-        logger.info(" Validation Result from Schema Validation = {}", validationResultSchematron);
-
-        // Add a validate object every time.
-        ValidateEicrStatus validate = new ValidateEicrStatus();
-        validate.setActionId(getActionId());
-        validate.seteICRId(id.toString());
-        validate.setEicrValidated(true);
-        validate.setJobStatus(JobStatus.COMPLETED);
-        validate.setValidationTime(new Date());
-        state.getValidateEicrStatus().add(validate);
       }
     }
   }

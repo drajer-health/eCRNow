@@ -3,12 +3,14 @@ package com.drajer.eca.model;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
@@ -309,9 +311,18 @@ public class EcaUtils {
       IGenericClient client =
           ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
 
-      Encounter enc =
-          (Encounter)
-              ci.getResouceById(details, client, ctx, "Encounter", details.getEncounterId());
+      Encounter enc = null;
+      try {
+        enc =
+            (Encounter)
+                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+      } catch (ResourceNotFoundException resourceNotFoundException) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            details.getEncounterId(),
+            resourceNotFoundException);
+        WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+      }
 
       if (enc != null) {
         logger.info(" Found Encounter for checking encounter closure ");

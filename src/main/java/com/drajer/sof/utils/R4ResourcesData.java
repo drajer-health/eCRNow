@@ -2,8 +2,11 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
+import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -58,13 +62,28 @@ public class R4ResourcesData {
     Encounter encounter = null;
     // If Encounter Id is present in Launch Details
     if (launchDetails.getEncounterId() != null) {
-      encounter =
-          (Encounter)
-              resourceData.getResouceById(
-                  launchDetails, client, context, "Encounter", launchDetails.getEncounterId());
+      try {
+        encounter =
+            (Encounter)
+                client
+                    .read()
+                    .resource("Encounter")
+                    .withId(launchDetails.getEncounterId())
+                    .execute();
+      } catch (ResourceNotFoundException resourceNotFoundException) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            launchDetails.getEncounterId(),
+            resourceNotFoundException);
+        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+      } catch (Exception e) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}", launchDetails.getEncounterId(), e);
+      }
       if (encounter != null) {
         r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
       }
+
     } else {
       // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
       // and Find the latest Encounter
@@ -1069,7 +1088,7 @@ public class R4ResourcesData {
         bundle.addEntry(encounterEntry);
       }
     } catch (Exception e) {
-      logger.error("Error in getting Encounter Data", e);
+      ApplicationUtils.handleException(e, "Error in getting Encounter Data", LogLevel.ERROR);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)
