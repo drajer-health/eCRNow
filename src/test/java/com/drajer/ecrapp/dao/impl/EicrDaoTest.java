@@ -76,6 +76,16 @@ public class EicrDaoTest {
   }
 
   @Test
+  public void getEicrByDocId() {
+
+    Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
+    Eicr actualEicr = eicrDaoImpl.getEicrByDocId(savedEicr.getEicrDocId());
+
+    assertNotNull(actualEicr);
+    assertEicr(expectedEicr, actualEicr);
+  }
+
+  @Test
   public void getEicrAndRRDataByXRequestId() {
 
     Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);

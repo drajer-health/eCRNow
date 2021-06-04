@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.controller;
 
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,5 +114,31 @@ public class EicrController {
     }
 
     return new ResponseEntity<>(eicrList.toString(), HttpStatus.OK);
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/rrIdAndDocRefId", method = RequestMethod.GET)
+  public ResponseEntity<Object> getEicrAllAttributes(@RequestParam String eicr_doc_id) {
+    JSONObject eicrObject = new JSONObject();
+    try {
+      if (eicr_doc_id == null || eicr_doc_id.isEmpty()) {
+        logger.error("Eicr Doc Id is null ");
+        return new ResponseEntity(
+            "Requested eicr_doc_id is missing or empty", HttpStatus.BAD_REQUEST);
+      }
+      Eicr eicr = eicrRRService.getEicrByDocId(eicr_doc_id);
+      if (eicr != null) {
+        eicrObject.put("rrId", eicr.getResponseDocId());
+        eicrObject.put("docRefId", eicr.getEhrDocRefId());
+      } else {
+        String message = "Failed to find EICR by EICR_DOC_ID: " + eicr_doc_id;
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+      }
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+    return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
   }
 }
