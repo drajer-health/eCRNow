@@ -8,7 +8,6 @@ import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.utils.BsaServiceUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +35,7 @@ public class KarProcessorImpl implements KarProcessor {
   private final Logger logger = LoggerFactory.getLogger(KarProcessorImpl.class);
 
   @Autowired EhrQueryService ehrInterface;
-  
+
   @Autowired BsaServiceUtils serviceUtils;
 
   /**
@@ -71,28 +70,27 @@ public class KarProcessorImpl implements KarProcessor {
 
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }
-    
+
     saveDataForDebug(data);
 
     logger.info(" *** END Executing Trigger Actions *** ");
   }
-  
+
   public void saveDataForDebug(KarProcessingData kd) {
-	  
-	  HashMap<String, HashMap<String, Resource>> res = kd.getActionOutputData();
-	  
-	  for(Map.Entry<String, HashMap<String, Resource>> entry : res.entrySet()) {
-		  
-		  logger.info("Saving data to file for {}", entry.getKey());
-		  
-		  HashMap<String, Resource> resOutput = entry.getValue();
-		  
-		  for(Map.Entry<String, Resource> resEnt : resOutput.entrySet()) {
-			  
-			  logger.info(" Saving Data to file for {}", resEnt.getKey());
-			  serviceUtils.saveResorceToFile(resEnt.getValue());
-		  }
-	  }
-	  
+
+    HashMap<String, HashMap<String, Resource>> res = kd.getActionOutputData();
+
+    for (Map.Entry<String, HashMap<String, Resource>> entry : res.entrySet()) {
+
+      logger.info("Saving data to file for {}", entry.getKey());
+
+      HashMap<String, Resource> resOutput = entry.getValue();
+
+      for (Map.Entry<String, Resource> resEnt : resOutput.entrySet()) {
+
+        logger.info(" Saving Data to file for {}", resEnt.getKey());
+        serviceUtils.saveResorceToFile(resEnt.getValue());
+      }
+    }
   }
 }

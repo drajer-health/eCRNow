@@ -1,7 +1,6 @@
 package com.drajer.bsa.utils;
 
 import ca.uhn.fhir.parser.IParser;
-
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -44,7 +43,7 @@ public class BsaServiceUtils {
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
-  
+
   @Value("${bsa.output.directory}")
   String debugDirectory;
 
@@ -125,20 +124,21 @@ public class BsaServiceUtils {
 
     return retVal;
   }
-  
-  public void saveResorceToFile(Resource res) {
-	  
-	  String fileName = debugDirectory + res.getResourceType().toString() + "_" + res.getId() + ".json";
-		        
-	  String data = jsonParser.encodeResourceToString(res); 
-	  
-	  try (DataOutputStream outStream =
-		        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
 
-		      logger.info(" Writing data to file: {}", fileName);
-		      outStream.writeBytes(data);
-		    } catch (IOException e) {
-		      logger.debug(" Unable to write data to file: {}", fileName, e);
-		    }
+  public void saveResorceToFile(Resource res) {
+
+    String fileName =
+        debugDirectory + res.getResourceType().toString() + "_" + res.getId() + ".json";
+
+    String data = jsonParser.encodeResourceToString(res);
+
+    try (DataOutputStream outStream =
+        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
+
+      logger.info(" Writing data to file: {}", fileName);
+      outStream.writeBytes(data);
+    } catch (IOException e) {
+      logger.debug(" Unable to write data to file: {}", fileName, e);
+    }
   }
 }
