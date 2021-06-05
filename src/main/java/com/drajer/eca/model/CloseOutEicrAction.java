@@ -150,7 +150,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
                 EcaUtils.updateDetailStatus(details, newState);
 
-                logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+                logger.debug(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
@@ -163,7 +163,7 @@ public class CloseOutEicrAction extends AbstractAction {
                         + ".xml";
                 ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+                logger.debug(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
               } finally {
                 MDCUtils.removeCorrelationId();
               }

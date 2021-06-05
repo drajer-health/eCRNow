@@ -43,26 +43,26 @@ public class EcaUtils {
       PatientExecutionState state,
       LaunchDetails details) {
 
-    logger.info(" Start Matching Trigger Codes ");
+    logger.info("Start Matching Trigger Codes ");
     boolean matchfound = false;
     state.getMatchTriggerStatus().setTriggerMatchStatus(false);
 
     for (ActionData ad : codePaths) {
 
-      logger.info(" Need to match Trigger Codes for : {}", ad.getPath());
+      logger.info("Need to match Trigger Codes for : {}", ad.getPath());
 
       List<CodeableConceptDt> ptCodes = data.getCodesForExpression(ad.getPath());
 
       if (ptCodes != null && !ptCodes.isEmpty()) {
 
-        logger.info(" Found total {} {}  for Patient", ptCodes.size(), ad.getPath());
+        logger.info("Found total {} {}  for Patient", ptCodes.size(), ad.getPath());
 
         Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
         matchfound = matchTriggerCodes(details, ad, codesToMatch, state);
       }
     }
 
-    logger.info(" End Matching Trigger Codes ");
+    logger.info("End Matching Trigger Codes ");
     return matchfound;
   }
 
@@ -72,26 +72,26 @@ public class EcaUtils {
       PatientExecutionState state,
       LaunchDetails details) {
 
-    logger.info(" Start Matching Trigger Codes ");
+    logger.info("Start Matching Trigger Codes ");
     boolean matchfound = false;
     state.getMatchTriggerStatus().setTriggerMatchStatus(false);
 
     for (ActionData ad : codePaths) {
 
-      logger.info(" Need to match Trigger Codes for :{} ", ad.getPath());
+      logger.info("Need to match Trigger Codes for :{} ", ad.getPath());
 
       List<CodeableConcept> ptCodes = data.getR4CodesForExpression(ad.getPath());
 
       if (ptCodes != null && !ptCodes.isEmpty()) {
 
-        logger.info(" Found total {} {} for Patient.", ptCodes.size(), ad.getPath());
+        logger.debug("Found total {} {} for Patient.", ptCodes.size(), ad.getPath());
 
         Set<String> codesToMatch = ApplicationUtils.convertR4CodeableConceptsToString(ptCodes);
         matchfound = matchTriggerCodes(details, ad, codesToMatch, state);
       }
     }
 
-    logger.info(" End Matching Trigger Codes ");
+    logger.info("End Matching Trigger Codes ");
     return matchfound;
   }
 
@@ -104,15 +104,15 @@ public class EcaUtils {
 
       codesToMatchAgainst =
           ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
-      logger.info(
-          " Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
+      logger.debug(
+          "Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
           codesToMatchAgainst.size());
     } else {
 
       codesToMatchAgainst =
           ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
-      logger.info(
-          " Total # of {} Codes in Trigger Code Value Set for matching for Full EICR ",
+      logger.debug(
+          "Total # of {} Codes in Trigger Code Value Set for matching for Full EICR ",
           codesToMatchAgainst.size());
     }
 
@@ -120,7 +120,7 @@ public class EcaUtils {
 
     if (intersection != null && !intersection.isEmpty()) {
 
-      logger.info(" Number of Matched Codes = {}", intersection.size());
+      logger.info("Number of Matched Codes = {}", intersection.size());
 
       state.getMatchTriggerStatus().setTriggerMatchStatus(true);
       matchfound = true;
@@ -134,7 +134,7 @@ public class EcaUtils {
 
     } else {
 
-      logger.info(" No Matched codes found for : {}", ad.getPath());
+      logger.info("No Matched codes found for : {}", ad.getPath());
     }
     return matchfound;
   }
@@ -145,7 +145,7 @@ public class EcaUtils {
 
     if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
-      logger.info(" Getting necessary data from Loading Queries ");
+      logger.info("Getting necessary data from Loading Queries");
       FhirData data =
           ActionRepo.getInstance()
               .getLoadingQueryService()
@@ -155,13 +155,13 @@ public class EcaUtils {
 
       if (data instanceof Dstu2FhirData) {
 
-        logger.info("Creating eICR based on FHIR DSTU2 ");
+        logger.info("Creating eICR based on FHIR DSTU2");
         Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
         eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
 
       } else if (data instanceof R4FhirData) {
 
-        logger.info("Creating eICR based on FHIR R4 ");
+        logger.info("Creating eICR based on FHIR R4");
         R4FhirData r4Data = (R4FhirData) data;
 
         eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
@@ -178,6 +178,7 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+        logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);

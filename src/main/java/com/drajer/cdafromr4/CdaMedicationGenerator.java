@@ -440,8 +440,8 @@ public class CdaMedicationGenerator {
 
     if (data.getMedicationRequests() != null && !data.getMedicationRequests().isEmpty()) {
 
-      logger.info(
-          " Total num of Medication Requests available for Patient {}",
+      logger.debug(
+          "Total num of Medication Requests available for Patient {}",
           data.getMedicationRequests().size());
 
       for (MedicationRequest m : data.getMedicationRequests()) {
@@ -459,7 +459,7 @@ public class CdaMedicationGenerator {
 
               for (Resource r : meds) {
 
-                logger.info("starting to examine contained meds ");
+                logger.debug("starting to examine contained meds ");
                 if (r.getId().contains(refId) && r instanceof Medication) {
 
                   Medication cmed = (Medication) r;
@@ -472,7 +472,7 @@ public class CdaMedicationGenerator {
                           cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
 
                     // Found the Medication that matters.
-                    logger.info("Adding Med Req - due to code ");
+                    logger.debug("Adding Med Req - due to code ");
                     cmeds.add(cmed);
                     mr.add(m);
                     break;
@@ -486,7 +486,7 @@ public class CdaMedicationGenerator {
 
                     for (MedicationIngredientComponent ing : ings) {
 
-                      logger.info("starting to examine contained ingredients ");
+                      logger.debug("starting to examine contained ingredients ");
                       if (ing.getItem() instanceof CodeableConcept) {
 
                         CodeableConcept cc = (CodeableConcept) ing.getItem();
@@ -496,7 +496,7 @@ public class CdaMedicationGenerator {
                             && CdaFhirUtilities.isCodingPresentForCodeSystem(
                                 cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
 
-                          logger.info("Adding Med Req due to ingredient ");
+                          logger.debug("Adding Med Req due to ingredient ");
                           cmeds.add(cmed);
                           mr.add(m);
                           found = true;
@@ -527,13 +527,13 @@ public class CdaMedicationGenerator {
               && CdaFhirUtilities.isCodingPresentForCodeSystem(
                   cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
 
-            logger.info(" Found a Medication Request with a RxNorm code ");
+            logger.debug("Found a Medication Request with a RxNorm code");
             mr.add(m);
           }
         }
       }
     } else {
-      logger.info(" No Valid Medication Requests in the bundle to process ");
+      logger.debug("No Valid Medication Requests in the bundle to process");
     }
 
     return mr;

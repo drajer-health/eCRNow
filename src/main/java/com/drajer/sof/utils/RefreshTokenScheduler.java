@@ -41,8 +41,9 @@ public class RefreshTokenScheduler {
   private static final String GRANT_TYPE = "grant_type";
 
   public void scheduleJob(LaunchDetails authDetails) {
-    logger.info("Scheduling Job to Get AccessToken");
-    logger.info("Accesstoken Expires in========>" + authDetails.getExpiry());
+    logger.info(
+        "Scheduling Cron Job to Get AccessToken which expires every {} seconds",
+        authDetails.getExpiry());
     long minutes = TimeUnit.SECONDS.toMinutes(authDetails.getExpiry());
     String cronExpression = "0 " + "0/" + minutes + " * * * ?";
     CronTrigger cronTrigger = new CronTrigger(cronExpression);
@@ -74,7 +75,7 @@ public class RefreshTokenScheduler {
 
   public JSONObject getAccessToken(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + authDetails.getClientId());
+    logger.trace("Getting AccessToken for Client: {}", authDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -99,7 +100,7 @@ public class RefreshTokenScheduler {
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
         if (authDetails.getRequireAud()) {
-          logger.info("Adding Aud Parameter while getting Accesstoken");
+          logger.debug("Adding Aud Parameter while getting AccessToken");
           map.add("aud", authDetails.getEhrServerURL());
         }
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
@@ -108,8 +109,7 @@ public class RefreshTokenScheduler {
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
       }
-      logger.info("Received AccessToken for Client: " + authDetails.getClientId());
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
       updateAccessToken(authDetails, tokenResponse);
 
     } catch (Exception e) {
@@ -124,7 +124,7 @@ public class RefreshTokenScheduler {
       LaunchDetails existingAuthDetails =
           ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
       if (existingAuthDetails != null) {
-        logger.info("Updating the AccessToken value in database");
+        logger.trace("Updating the AccessToken value in LaunchDetails table");
         existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
         existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
         existingAuthDetails.setLastUpdated(new Date());
@@ -132,16 +132,16 @@ public class RefreshTokenScheduler {
         Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
         existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
         ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
-        logger.info("Successfully updated AccessToken value in database");
+        logger.trace("Successfully updated AccessToken value in LaunchDetails table");
       }
     } catch (Exception e) {
-      logger.error("Error in Updating the AccessToken value into database: ", e);
+      logger.error("Error in Updating the AccessToken value into LaunchDetails: ", e);
     }
   }
 
   public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + clientDetails.getClientId());
+    logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -154,7 +154,7 @@ public class RefreshTokenScheduler {
       map.add(GRANT_TYPE, "client_credentials");
       map.add("scope", clientDetails.getScopes());
       if (clientDetails.getRequireAud()) {
-        logger.info("Adding Aud Parameter while getting Accesstoken");
+        logger.debug("Adding Aud Parameter while getting Access token");
         map.add("aud", clientDetails.getFhirServerBaseURL());
       }
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
@@ -163,12 +163,11 @@ public class RefreshTokenScheduler {
           resTemplate.exchange(
               clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
-      logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {} ", clientDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the client: {}", clientDetails.getClientId(), e);
     }
     return tokenResponse;
   }

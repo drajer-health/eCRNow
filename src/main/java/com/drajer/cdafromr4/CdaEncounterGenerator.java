@@ -31,7 +31,7 @@ public class CdaEncounterGenerator {
 
     if (encounter != null) {
 
-      logger.info(" Generating Encounter section ");
+      logger.debug("Generating Encounter section");
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -75,13 +75,13 @@ public class CdaEncounterGenerator {
       if (encounter.getClass_() != null
           && encounter.getClass_().getCode() != null
           && !StringUtils.isEmpty(encounter.getClass_().getDisplay())) {
-        logger.info("Found Encounter Class value, so using it for display");
+        logger.debug("Found Encounter Class value, so using it for display");
         actDisplayName = encounter.getClass_().getDisplay();
       } else if (encounter.getTypeFirstRep() != null
           && encounter.getTypeFirstRep().getCodingFirstRep() != null
           && !StringUtils.isEmpty(encounter.getTypeFirstRep().getCodingFirstRep().getDisplay())) {
 
-        logger.info("Did not find Encounter class, but Found Encounter Type value, so using it ");
+        logger.debug("Did not find Encounter class, but Found Encounter Type value, so using it");
         actDisplayName = encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
       }
 
@@ -148,7 +148,7 @@ public class CdaEncounterGenerator {
 
       if (encDiagXml != null && !encDiagXml.isEmpty()) {
 
-        logger.info(" Adding Encounter Diagnosis to the Encounter Section ");
+        logger.debug("Adding Encounter Diagnosis to the Encounter Section");
         sb.append(encDiagXml);
       }
 
@@ -345,7 +345,7 @@ public class CdaEncounterGenerator {
       }
 
       if (!codeXml.isEmpty()) {
-        logger.info("Found Encounter class information, so use it ");
+        logger.debug("Found Encounter class information, so use it ");
         return codeXml;
       } else {
 
@@ -361,7 +361,7 @@ public class CdaEncounterGenerator {
                 true);
 
         if (!codeXml.isEmpty()) {
-          logger.info("Found Encounter Information using CPT, so using it ");
+          logger.debug("Found Encounter Information using CPT, so using it ");
           return codeXml;
         } else {
           codeXml =
@@ -373,7 +373,7 @@ public class CdaEncounterGenerator {
                   true);
 
           if (!codeXml.isEmpty()) {
-            logger.info("Found Encounter Information using ICD10, so using it ");
+            logger.debug("Found Encounter Information using ICD10, so using it ");
             return codeXml;
           } else {
 
@@ -386,10 +386,10 @@ public class CdaEncounterGenerator {
                     true);
 
             if (!codeXml.isEmpty()) {
-              logger.info("Found Encounter Information using SNOMED, so using it ");
+              logger.debug("Found Encounter Information using SNOMED, so using it ");
               return codeXml;
             } else {
-              logger.info(
+              logger.debug(
                   "Append Encounter Information using other code systems if found or append null");
               codeXml =
                   CdaFhirUtilities.getCodeableConceptXml(

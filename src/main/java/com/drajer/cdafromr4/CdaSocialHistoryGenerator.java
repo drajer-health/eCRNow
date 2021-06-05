@@ -70,7 +70,7 @@ public class CdaSocialHistoryGenerator {
 
       if (birthSex != null) {
 
-        logger.info(" Found Birth Sex ");
+        logger.info("Found Birth Sex");
         bodyvals.put(
             CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
             CdaGeneratorConstants.BIRTH_SEX_DISPLAY);
@@ -85,7 +85,7 @@ public class CdaSocialHistoryGenerator {
       }
 
       if (pregCond != null && !pregCond.isEmpty()) {
-        logger.info(" Pregnancy Condition Found");
+        logger.info("Pregnancy Condition Found");
 
         for (Condition c : pregCond) {
 
@@ -108,7 +108,7 @@ public class CdaSocialHistoryGenerator {
 
       if (pregObs != null && !pregObs.isEmpty()) {
 
-        logger.info(" Pregnancy Status Observation Found - Will be added as needed.");
+        logger.info("Pregnancy Status Observation Found - Will be added as needed.");
         // These are not available in FHIR right now reliably, so nothing to process until further
         // discussion with vendors.
 
@@ -118,7 +118,7 @@ public class CdaSocialHistoryGenerator {
       }
 
       if (occHistory != null && !occHistory.isEmpty()) {
-        logger.info(" Occupation History Observation Found");
+        logger.info("Occupation History Observation Found");
 
         for (Observation obs : occHistory) {
 
@@ -143,7 +143,7 @@ public class CdaSocialHistoryGenerator {
 
       if (travelHistory != null && !travelHistory.isEmpty()) {
 
-        logger.error(" Travel History Observation Found ");
+        logger.info("Travel History Observation Found ");
 
         for (Observation obs : travelHistory) {
 
