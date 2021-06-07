@@ -28,7 +28,8 @@ public class ValidateEicrAction extends AbstractAction {
       LaunchDetails launchDetails = (LaunchDetails) obj;
       PatientExecutionState state = ApplicationUtils.getDetailStatus(launchDetails);
       logger.info(
-          "Executing Validate Eicr Action , Prior Execution State : = {}", launchDetails.getStatus());
+          "Executing Validate Eicr Action , Prior Execution State : = {}",
+          launchDetails.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
         logger.info("Validation actions to be performed based on other related actions.");
