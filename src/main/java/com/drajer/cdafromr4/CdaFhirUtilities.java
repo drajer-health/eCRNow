@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -265,79 +264,74 @@ public class CdaFhirUtilities {
 
       for (Address addr : addrs) {
 
-        if (addr.getUseElement().getValue() == AddressUse.HOME
-            || addr.getUseElement().getValue() == AddressUse.WORK) {
+        logger.debug(" Found a valid address. ");
+        addrString.append(
+            CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
 
-          logger.debug(" Found Home or Work Address ");
+        // Address Line
+        List<StringType> lines = addr.getLine();
+
+        if (lines != null && !lines.isEmpty()) {
+
+          for (StringType s : lines) {
+            addrString.append(
+                CdaGeneratorUtils.getXmlForText(
+                    CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, s.getValue()));
+          }
+
+        } else {
           addrString.append(
-              CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
-
-          // Address Line
-          List<StringType> lines = addr.getLine();
-
-          if (lines != null && !lines.isEmpty()) {
-
-            for (StringType s : lines) {
-              addrString.append(
-                  CdaGeneratorUtils.getXmlForText(
-                      CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, s.getValue()));
-            }
-
-          } else {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForNFText(
-                    CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, CdaGeneratorConstants.NF_NI));
-          }
-
-          // City
-          if (!StringUtils.isEmpty(addr.getCity())) {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.CITY_EL_NAME, addr.getCity()));
-          } else {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForNFText(
-                    CdaGeneratorConstants.CITY_EL_NAME, CdaGeneratorConstants.NF_NI));
-          }
-
-          // State
-          if (!StringUtils.isEmpty(addr.getState())) {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.STATE_EL_NAME, addr.getState()));
-          } else {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForNFText(
-                    CdaGeneratorConstants.STATE_EL_NAME, CdaGeneratorConstants.NF_NI));
-          }
-
-          // Postal Code
-          if (!StringUtils.isEmpty(addr.getPostalCode())) {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.POSTAL_CODE_EL_NAME, addr.getPostalCode()));
-          } else {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForNFText(
-                    CdaGeneratorConstants.POSTAL_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-          }
-
-          // Country
-          if (!StringUtils.isEmpty(addr.getCountry())) {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.COUNTRY_EL_NAME, addr.getCountry()));
-          } else {
-            addrString.append(
-                CdaGeneratorUtils.getXmlForNFText(
-                    CdaGeneratorConstants.COUNTRY_EL_NAME, CdaGeneratorConstants.NF_NI));
-          }
-
-          addrString.append(
-              CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
-
-          break;
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.ST_ADDR_LINE_EL_NAME, CdaGeneratorConstants.NF_NI));
         }
+
+        // City
+        if (!StringUtils.isEmpty(addr.getCity())) {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.CITY_EL_NAME, addr.getCity()));
+        } else {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.CITY_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        // State
+        if (!StringUtils.isEmpty(addr.getState())) {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForText(
+                  CdaGeneratorConstants.STATE_EL_NAME, addr.getState()));
+        } else {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.STATE_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        // Postal Code
+        if (!StringUtils.isEmpty(addr.getPostalCode())) {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForText(
+                  CdaGeneratorConstants.POSTAL_CODE_EL_NAME, addr.getPostalCode()));
+        } else {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.POSTAL_CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        // Country
+        if (!StringUtils.isEmpty(addr.getCountry())) {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForText(
+                  CdaGeneratorConstants.COUNTRY_EL_NAME, addr.getCountry()));
+        } else {
+          addrString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.COUNTRY_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        addrString.append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
+
+        break;
       }
     } else {
 
@@ -367,7 +361,7 @@ public class CdaFhirUtilities {
     return addrString.toString();
   }
 
-  public static String getTelecomXml(List<ContactPoint> tels) {
+  public static String getTelecomXml(List<ContactPoint> tels, boolean onlyOne) {
 
     StringBuilder telString = new StringBuilder(200);
 
@@ -389,6 +383,8 @@ public class CdaFhirUtilities {
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use));
+
+          if (onlyOne) break;
         }
       }
     } else {
