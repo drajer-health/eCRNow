@@ -25,10 +25,10 @@ public class ValidateEicrAction extends AbstractAction {
     logger.info("**** START Executing Validate Eicr Action ****");
 
     if (obj instanceof LaunchDetails) {
-      LaunchDetails details = (LaunchDetails) obj;
-      PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
+      LaunchDetails launchDetails = (LaunchDetails) obj;
+      PatientExecutionState state = ApplicationUtils.getDetailStatus(launchDetails);
       logger.info(
-          "Executing Validate Eicr Action , Prior Execution State : = {}", details.getStatus());
+          "Executing Validate Eicr Action , Prior Execution State : = {}", launchDetails.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
         logger.info("Validation actions to be performed based on other related actions.");
@@ -65,7 +65,7 @@ public class ValidateEicrAction extends AbstractAction {
         validateEicrs(state, ids);
       }
 
-      EcaUtils.updateDetailStatus(details, state);
+      EcaUtils.updateDetailStatus(launchDetails, state);
     }
   }
 
