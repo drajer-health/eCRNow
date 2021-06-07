@@ -27,9 +27,8 @@ public class TriggerQueryR4Bundle {
   public Bundle createR4Bundle(
       LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {
 
-    logger.info("Initializing FHIR Context for Version::::" + launchDetails.getFhirVersion());
+    logger.trace("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
-    logger.info("Initializing Client");
     IGenericClient client =
         fhirContextInitializer.createClient(
             context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
@@ -38,16 +37,18 @@ public class TriggerQueryR4Bundle {
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);
 
     // Setting bundle to FHIR Data
-    if (logger.isInfoEnabled()) {
-      logger.info(
-          "------------------------------CodeableConcept Codes------------------------------");
-      logger.info("Encounter Codes Size=====> {}", r4FhirData.getR4EncounterCodes().size());
-      logger.info("Conditions Codes Size=====> {}", r4FhirData.getR4ConditionCodes().size());
-      logger.info("Observation Codes Size=====> {}", r4FhirData.getR4LabResultCodes().size());
-      logger.info("Medication Codes Size=====> {}", r4FhirData.getR4MedicationCodes().size());
-      logger.info(
-          "ServiceRequests Codes Size=====> {}", r4FhirData.getR4ServiceRequestCodes().size());
-    }
+    logger.info(
+        "------------------------------CodeableConcept Codes------------------------------\n"
+            + "Encounter Codes Size=====> {} \n"
+            + "Conditions Codes Size=====> {} \n"
+            + "Observation Codes Size=====> {}\n"
+            + "Medication Codes Size=====> {}\n"
+            + "ServiceRequests Codes Size=====> {}",
+        r4FhirData.getR4EncounterCodes().size(),
+        r4FhirData.getR4ConditionCodes().size(),
+        r4FhirData.getR4LabResultCodes().size(),
+        r4FhirData.getR4MedicationCodes().size(),
+        r4FhirData.getR4ServiceRequestCodes().size());
 
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()

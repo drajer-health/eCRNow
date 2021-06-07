@@ -59,14 +59,14 @@ public class FhirContextInitializer {
    * @return a Generic Client
    */
   public IGenericClient createClient(FhirContext context, String url, String accessToken) {
-    logger.info("Initializing the Client");
+    logger.trace("Initializing the Client");
     IGenericClient client = context.newRestfulGenericClient(url);
     context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
-    logger.info("Initialized the Client");
+    logger.trace("Initialized the Client");
     return client;
   }
 
@@ -90,7 +90,7 @@ public class FhirContextInitializer {
       String resourceId) {
     IBaseResource resource = null;
     try {
-      logger.info("Getting {} data", resourceName);
+      logger.info("Getting {} data by ID {}", resourceName, resourceId);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (ForbiddenOperationException scopeException) {
       logger.info(
@@ -177,11 +177,14 @@ public class FhirContextInitializer {
       FhirContext context,
       String resourceName,
       String url) {
-    logger.info("Invoking url::::::::::::::: {}", url);
+
     IBaseBundle bundleResponse = null;
     try {
       logger.info(
-          "Getting {} data using Patient Id: {}", resourceName, authDetails.getLaunchPatientId());
+          "Getting {} data using Patient Id {} by URL {}",
+          resourceName,
+          authDetails.getLaunchPatientId(),
+          url);
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         getAllDSTU2RecordsUsingPagination(genericClient, bundle);
@@ -243,7 +246,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.hasEntry()) {
       List<BundleEntryComponent> entriesList = bundle.getEntry();
       if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.info(
+        logger.debug(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
             genericClient.loadPage().next(bundle).execute();
@@ -261,7 +264,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.getEntry() != null) {
       List<Entry> entriesList = bundle.getEntry();
       if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.info(
+        logger.debug(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
         if (nextPageBundleResults != null) {

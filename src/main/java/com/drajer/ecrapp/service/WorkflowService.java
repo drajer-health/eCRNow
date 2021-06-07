@@ -145,9 +145,9 @@ public class WorkflowService {
     PatientExecutionState state = null;
 
     try {
-      logger.info(" Reading object State ");
+      logger.debug("Reading object State ");
       state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
-      logger.info(" Finished Reading object State ");
+      logger.debug("Finished Reading object State ");
     } catch (JsonProcessingException e1) {
 
       String msg = "Unable to read/write execution state";
@@ -156,44 +156,44 @@ public class WorkflowService {
     }
 
     if (state.getMatchTriggerStatus().getJobStatus() != JobStatus.COMPLETED) {
-      logger.info(" Execute Match Trigger Action ");
+      logger.info("Execute Match Trigger Action");
       executeActionsForType(details, EcrActionTypes.MATCH_TRIGGER, launchType);
     }
 
     if (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED
         && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
-      logger.info(" Execute Create Eicr Action ");
+      logger.info("Execute Create Eicr Action");
       executeActionsForType(details, EcrActionTypes.CREATE_EICR, launchType);
     } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
-      logger.info(" Stopping Create Action ");
+      logger.info("Stopping Create Action");
       state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
     }
 
     if (state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED
         && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
-      logger.info(" Execute Periodic Update Action ");
+      logger.info("Execute Periodic Update Action");
       executeActionsForType(details, EcrActionTypes.PERIODIC_UPDATE_EICR, launchType);
     } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
-      logger.info(" Stopping Periodic Update Action ");
+      logger.info("Stopping Periodic Update Action");
       state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
     }
 
     if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
-      logger.info(" Execute Close Out Action ");
+      logger.info("Execute Close Out Action");
       executeActionsForType(details, EcrActionTypes.CLOSE_OUT_EICR, launchType);
     }
 
-    logger.info(" Execute Validate Eicr Action ");
+    logger.info("Execute Validate Eicr Action");
     executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType);
 
     if (!details.getValidationMode()) {
-      logger.info(" Execute Submit Eicr Action ");
+      logger.info("Execute Submit Eicr Action");
       executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType);
     }
-    logger.info(" Execute RR Check Action ");
+    logger.info("Execute RR Check Action");
     executeActionsForType(details, EcrActionTypes.RR_CHECK, launchType);
 
-    logger.info(" ***** END EXECUTING EICR WORKFLOW ***** ");
+    logger.info("***** END EXECUTING EICR WORKFLOW *****");
   }
 
   public void executeActions(
@@ -288,14 +288,14 @@ public class WorkflowService {
     invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = t.toString();
-    logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+    logger.info("Job Scheduled for Action {} to execute at time {}", actionType, timing);
   }
 
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
     CommandLineRunner task = null;
-    logger.info("Scheduling one time task to {}", t);
+    logger.info("Scheduling one time task to execute at {}", t);
 
     task = ignored -> logger.info("Scheduling one time task to after!");
     staticScheduler.schedule(
@@ -310,7 +310,7 @@ public class WorkflowService {
                 new TaskTimer(100L, launchDetailsId, actionType, t)),
         t);
 
-    logger.info(" task  ::: {}", task);
+    logger.debug("task  ::: {}", task);
     return task;
   }
 

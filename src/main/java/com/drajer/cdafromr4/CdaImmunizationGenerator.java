@@ -142,7 +142,7 @@ public class CdaImmunizationGenerator {
 
         // Set up Effective Time for start and End time.
         if (imm.getOccurrenceDateTimeType() != null) {
-          logger.info(" Date Value = {}", imm.getOccurrenceDateTimeType().getValue());
+          logger.debug("Date Value = {}", imm.getOccurrenceDateTimeType().getValue());
           sb.append(
               CdaGeneratorUtils.getXmlForEffectiveTime(
                   CdaGeneratorConstants.EFF_TIME_EL_NAME,

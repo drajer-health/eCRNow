@@ -60,25 +60,20 @@ public class R4ResourcesData {
       Date start,
       Date end) {
     Encounter encounter = null;
+    String encounterID = launchDetails.getEncounterId();
     // If Encounter Id is present in Launch Details
-    if (launchDetails.getEncounterId() != null) {
+    if (encounterID != null) {
       try {
-        encounter =
-            (Encounter)
-                client
-                    .read()
-                    .resource("Encounter")
-                    .withId(launchDetails.getEncounterId())
-                    .execute();
+        logger.info("Getting Encounter data by ID {}", encounterID);
+        encounter = (Encounter) client.read().resource("Encounter").withId(encounterID).execute();
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
-            launchDetails.getEncounterId(),
+            encounterID,
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
       } catch (Exception e) {
-        logger.error(
-            "Error in getting Encounter resource by Id: {}", launchDetails.getEncounterId(), e);
+        logger.error("Error in getting Encounter resource by Id: {}", encounterID, e);
       }
       if (encounter != null) {
         r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
@@ -133,6 +128,8 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+
+    logger.trace("Getting Conditions Data");
     Bundle bundle =
         (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, CONDITION);
     List<Condition> allConditions = new ArrayList<>();
@@ -172,7 +169,7 @@ public class R4ResourcesData {
                                     .anyMatch(coding.getCode()::equals));
                 if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
                     && !foundPregnancyCondition) {
-                  logger.info("Added condition to problem list {}", condition.getId());
+                  logger.debug("Added condition to problem list {}", condition.getId());
                   problemConditions.add(condition);
                   conditionCodes.addAll(findConditionCodes(condition));
                 } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
@@ -183,7 +180,7 @@ public class R4ResourcesData {
                       .getEncounter()
                       .getReference()
                       .equals("Encounter/" + launchDetails.getEncounterId())) {
-                    logger.info(
+                    logger.debug(
                         "Added condition to Encounter Diagnosis list {}", condition.getId());
                     encounterDiagnosisConditions.add(condition);
                     conditionCodes.addAll(findConditionCodes(condition));
@@ -211,7 +208,7 @@ public class R4ResourcesData {
           conditionInError,
           conditionMissingAbatement);
     }
-
+    logger.info("Filtered ConditionsList ----> {}", allConditions.size());
     return allConditions;
   }
 
@@ -232,6 +229,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Observation Data");
     Bundle bundle =
         (Bundle)
             resourceData.getObservationByPatientId(
@@ -286,6 +284,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4LabResultCodes(observationCodes);
     }
+    logger.info("Filtered Observations ----> {}", observations.size());
     return observations;
   }
 
@@ -297,6 +296,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Pregnancy Observation Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientIdAndCode(
@@ -310,6 +310,7 @@ public class R4ResourcesData {
     if (bundle != null) {
       bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
       observations = filterObservation(bundle, encounter, start, end);
+      logger.info("Filtered Pregnancy Observations ----> {}", observations.size());
     }
     return observations;
   }
@@ -322,6 +323,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Travel Observation Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientIdAndCode(
@@ -361,7 +363,7 @@ public class R4ResourcesData {
         observations.addAll(travelobs);
       }
     }
-
+    logger.info("Filtered Travel Observations ----> {}", observations.size());
     return observations;
   }
 
@@ -416,6 +418,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
     for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
       Bundle occupationCodesbundle =
@@ -453,6 +456,7 @@ public class R4ResourcesData {
         }
       }
     }
+    logger.info("Filtered Social History Occupation Observations ----> {}", observations.size());
     return observations;
   }
 
@@ -464,8 +468,8 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Pregnancy Conditions");
     List<Condition> conditions = new ArrayList<>();
-
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
       Bundle pregnancyCodesbundle =
           (Bundle)
@@ -489,6 +493,7 @@ public class R4ResourcesData {
         }
       }
     }
+    logger.info("Filtered Pregnancy Conditions ----> {}", conditions.size());
     return conditions;
   }
 
@@ -525,6 +530,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get MedicationAdministration Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
@@ -573,6 +579,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4MedicationCodes(medicationCodes);
     }
+    logger.info("Filtered MedicationAdministration -----------> {}", medAdministrations.size());
     return medAdministrations;
   }
 
@@ -599,7 +606,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
-
+    logger.trace("Get MedicationRequest Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
@@ -646,6 +653,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4MedicationCodes(medicationCodes);
     }
+    logger.info("Filtered MedicationRequests -----------> {} ", medRequests.size());
     return medRequests;
   }
 
@@ -672,6 +680,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get MedicationStatement Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
@@ -719,6 +728,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4MedicationCodes(medicationCodes);
     }
+    logger.info("Filtered MedicationStatement -----------> {}", medStatements.size());
     return medStatements;
   }
 
@@ -739,6 +749,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get DiagnosticReport Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "DiagnosticReport");
@@ -790,6 +801,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4DiagnosticReportCodes(diagnosticReportCodes);
     }
+    logger.info("Filtered DiagnosticReports -----------> {}", diagnosticReports.size());
     return diagnosticReports;
   }
 
@@ -811,6 +823,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Immunization Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "Immunization");
@@ -858,6 +871,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4ImmunizationCodes(immunizationCodes);
     }
+    logger.info("Filtered Immunizations -----------> {}", immunizations.size());
     return immunizations;
   }
 
@@ -877,6 +891,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get ServiceRequest Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
@@ -928,6 +943,7 @@ public class R4ResourcesData {
       }
       r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
     }
+    logger.info("Filtered ServiceRequests -----------> {}", serviceRequests.size());
     return serviceRequests;
   }
 
@@ -988,7 +1004,6 @@ public class R4ResourcesData {
     Bundle bundle = new Bundle();
     // GET Patient Details and Add to Bundle
     try {
-      logger.info("Get Patient Data");
       Patient patient =
           (Patient)
               fhirContextInitializer.getResouceById(
@@ -1011,7 +1026,6 @@ public class R4ResourcesData {
     // also to the list of encounterCodes.
     Encounter encounter = null;
     try {
-      logger.info("Get Encounter Data");
       encounter = getEncounterData(context, client, launchDetails, r4FhirData, start, end);
 
       if (encounter != null) {
@@ -1100,11 +1114,9 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of ConditionCodes.
     try {
-      logger.info("Get Condition Data");
       List<Condition> conditionsList =
           getConditionData(context, client, launchDetails, r4FhirData, encounter, start, end);
       if (conditionsList != null && !conditionsList.isEmpty()) {
-        logger.info("Filtered ConditionsList----> {}", conditionsList.size());
         // Already sorted and set in the getConditionData method
         for (Condition condition : conditionsList) {
           BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
@@ -1123,11 +1135,9 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of labResultCodes.
     try {
-      logger.info("Get Observation Data");
       List<Observation> observationList =
           getObservationData(context, client, launchDetails, r4FhirData, encounter, start, end);
       if (observationList != null && !observationList.isEmpty()) {
-        logger.info("Filtered Observations----> {}", observationList.size());
         r4FhirData.setLabResults(observationList);
         for (Observation observation : observationList) {
           BundleEntryComponent observationsEntry =
@@ -1150,13 +1160,10 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of medicationCodes.
     try {
-      logger.info("Get MedicationAdministration Data");
       List<MedicationAdministration> medAdministrationsList =
           getMedicationAdministrationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
       if (medAdministrationsList != null && !medAdministrationsList.isEmpty()) {
-        logger.info(
-            "Filtered MedicationAdministration-----------> {}", medAdministrationsList.size());
         List<Medication> medicationList = r4FhirData.getMedicationList();
         r4FhirData.setMedicationAdministrations(medAdministrationsList);
         for (MedicationAdministration medAdministration : medAdministrationsList) {
@@ -1170,11 +1177,12 @@ public class R4ResourcesData {
               if (medAdministrationContained
                   .stream()
                   .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
-                logger.info(
-                    "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
+                logger.debug(
+                    "Medication Resource {} exists in MedicationAdministration.contained, So no need to add again in Bundle.",
+                    medReference);
               }
             } else {
-              logger.info("Medication Reference Found=============>");
+              logger.debug("Medication Reference Found=============> {}", medReference);
               Medication medication =
                   getMedicationData(context, client, launchDetails, r4FhirData, medReference);
               if (medication != null) {
@@ -1196,12 +1204,10 @@ public class R4ResourcesData {
     }
 
     try {
-      logger.info("Get MedicationRequest Data");
       List<MedicationRequest> medRequestsList =
           getMedicationRequestData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
       if (medRequestsList != null && !medRequestsList.isEmpty()) {
-        logger.info("Filtered MedicationRequests-----------> {} ", medRequestsList.size());
         List<Medication> medicationList = r4FhirData.getMedicationList();
         r4FhirData.setMedicationRequests(medRequestsList);
         for (MedicationRequest medRequest : medRequestsList) {
@@ -1215,11 +1221,12 @@ public class R4ResourcesData {
               if (medRequestContained
                   .stream()
                   .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
-                logger.info(
-                    "Medication Resource exists in MedicationRequest.contained. So no need to add again in Bundle.");
+                logger.debug(
+                    "Medication Resource {} exists in MedicationRequest.contained, So no need to add again in Bundle.",
+                    medReference);
               }
             } else {
-              logger.info("Medication Reference Found=============>");
+              logger.debug("Medication Reference Found=============> {}", medReference);
               Medication medication =
                   getMedicationData(context, client, launchDetails, r4FhirData, medReference);
               if (medication != null) {
@@ -1249,11 +1256,9 @@ public class R4ResourcesData {
     // also to the list of ServiceRequestCodes.
 
     try {
-      logger.info("Get ServiceRequest Data");
       List<ServiceRequest> serviceRequestsList =
           getServiceRequestData(context, client, launchDetails, r4FhirData, encounter, start, end);
       if (serviceRequestsList != null && !serviceRequestsList.isEmpty()) {
-        logger.info("Filtered ServiceRequests-----------> {}", serviceRequestsList.size());
         r4FhirData.setServiceRequests(serviceRequestsList);
         for (ServiceRequest serviceRequest : serviceRequestsList) {
           BundleEntryComponent serviceRequestEntry =
