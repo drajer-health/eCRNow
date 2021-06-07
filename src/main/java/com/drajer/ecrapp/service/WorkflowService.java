@@ -288,14 +288,14 @@ public class WorkflowService {
     invokeScheduler(launchDetailsId, actionType, t);
 
     String timing = t.toString();
-    logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
+    logger.info("Job Scheduled for Action {} to execute at time {}", actionType, timing);
   }
 
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
     CommandLineRunner task = null;
-    logger.info("Scheduling one time task to {}", t);
+    logger.info("Scheduling one time task to execute at {}", t);
 
     task = ignored -> logger.info("Scheduling one time task to after!");
     staticScheduler.schedule(

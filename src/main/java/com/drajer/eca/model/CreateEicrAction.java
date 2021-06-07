@@ -202,7 +202,7 @@ public class CreateEicrAction extends AbstractAction {
             }
 
           } else {
-            logger.info(" elated Actions are not completed, hence EICR will not be created.");
+            logger.info(" Related Actions are not completed, hence EICR will not be created.");
           }
 
         } else {
