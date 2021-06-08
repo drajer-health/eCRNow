@@ -5,6 +5,7 @@ import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
 import com.drajer.sof.service.LaunchService;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -28,13 +29,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class RefreshTokenScheduler {
 
-  @Autowired RestTemplate restTemplate;
-
-  @Autowired LaunchService authDetailsService;
-
   @Autowired ThreadPoolTaskScheduler taskScheduler;
-
-  @Autowired FhirContextInitializer resourceData;
 
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
@@ -79,7 +74,7 @@ public class RefreshTokenScheduler {
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
-      if (!authDetails.getIsSystem()) {
+      if (Boolean.FALSE.equals(authDetails.getIsSystem())) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "refresh_token");
@@ -94,12 +89,12 @@ public class RefreshTokenScheduler {
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
         String base64EncodedString =
-            Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+            Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
-        if (authDetails.getRequireAud()) {
+        if (Boolean.TRUE.equals(authDetails.getRequireAud())) {
           logger.debug("Adding Aud Parameter while getting AccessToken");
           map.add("aud", authDetails.getEhrServerURL());
         }
@@ -128,9 +123,9 @@ public class RefreshTokenScheduler {
         existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
         existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
         existingAuthDetails.setLastUpdated(new Date());
-        Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-        Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
-        existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+        long expiresInSec = tokenResponse.getLong("expires_in");
+        Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+        existingAuthDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
         ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
         logger.trace("Successfully updated AccessToken value in LaunchDetails table");
       }
@@ -148,12 +143,13 @@ public class RefreshTokenScheduler {
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
       String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
-      String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+      String base64EncodedString =
+          Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
       headers.add("Authorization", "Basic " + base64EncodedString);
       MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
       map.add(GRANT_TYPE, "client_credentials");
       map.add("scope", clientDetails.getScopes());
-      if (clientDetails.getRequireAud()) {
+      if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
         logger.debug("Adding Aud Parameter while getting Access token");
         map.add("aud", clientDetails.getFhirServerBaseURL());
       }
