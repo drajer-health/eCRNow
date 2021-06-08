@@ -85,6 +85,11 @@
             "system": "phone",
             "value": "5555550013",
             "use": "work"
+        },
+        {
+            "system": "phone",
+            "value": "5555550013",
+            "use": "work"
         }
     ],
     "address": [

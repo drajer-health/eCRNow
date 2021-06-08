@@ -2,6 +2,7 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -266,9 +267,12 @@ public class LaunchDetails {
 
   public String getAccessToken() {
     if (this.getTokenExpiryDateTime() != null) {
-      Date currentDate = new Date();
-      Date tokenExpirtyDate = this.getTokenExpiryDateTime();
-      int value = currentDate.compareTo(tokenExpirtyDate);
+      // Retrieve Access token 1 minute before it expires.
+      // 1 minute is enough buffer for Trigger or Loading query to complete.
+      Instant currentInstant = new Date().toInstant().plusSeconds(60);
+      Date currentDate = Date.from(currentInstant);
+      Date tokenExpiryTime = this.getTokenExpiryDateTime();
+      int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
         logger.info("AccessToken is Expired. Getting new AccessToken");
         JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);

@@ -152,7 +152,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
                 EcaUtils.updateDetailStatus(details, state);
 
-                logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
+                logger.debug(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
@@ -165,7 +165,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                         + ".xml";
                 ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                logger.info(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
+                logger.debug(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
 
                 // Schedule job again.
                 if (getTimingData() != null && !getTimingData().isEmpty()) {

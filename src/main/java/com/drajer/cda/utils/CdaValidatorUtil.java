@@ -33,13 +33,11 @@ public class CdaValidatorUtil {
   private static Schema getSchema() {
     Schema schema;
     try {
-      logger.info("*** Inside getSchema Method ***");
+      logger.trace("*** Inside getSchema Method ***");
       String xsd = new File(ActionRepo.getInstance().getXsdSchemasLocation()).getAbsolutePath();
       StreamSource xsdStreamSource = new StreamSource(xsd);
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
       System.setProperty("javax.xml.accessExternalSchema", "file");
-      // schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "all");
-      // schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       schema = schemaFactory.newSchema(xsdStreamSource);
       System.clearProperty("javax.xml.accessExternalSchema");
     } catch (SAXException e) {
@@ -61,10 +59,10 @@ public class CdaValidatorUtil {
   public static boolean validateEicrXMLData(String xmlData) {
 
     try {
-      logger.info(" **** Starting XML validation from xsd **** ");
+      logger.trace("**** Starting CDA Schema Validation from XSD ****");
 
       if (schema == null) {
-        logger.error("Message: Error validating XML Data ");
+        logger.error("No schema present to validate the EICR XML");
         return false;
       }
 
@@ -74,14 +72,18 @@ public class CdaValidatorUtil {
       validator.setErrorHandler(errorHandler);
       validator.validate(new StreamSource(new ByteArrayInputStream(xmlData.getBytes())));
 
-      logger.info(" **** End of XML validation from xsd **** ");
+      logger.trace("**** End CDA Schema Validation from XSD ****");
 
-      if (errorHandler.getIsException()) return false;
+      if (errorHandler.getIsException()) {
+        logger.info("CDA Schema Validation Failed");
+        return false;
+      }
 
     } catch (SAXException | IOException e) {
-      logger.error("Message: Error validating XML Data ", e);
+      logger.error("Error in CDA Schema Validation", e);
       return false;
     }
+    logger.info("CDA Schema Validation Succeed");
     return true;
   }
 
@@ -99,11 +101,11 @@ public class CdaValidatorUtil {
         SchematronResourceSCH.fromFile(ActionRepo.getInstance().getSchematronFileLocation());
 
     if (!aResSCH.isValidSchematron()) {
-      logger.info(" *** Cannot Validate since Schematron is not valid *** ");
+      logger.warn("*** Cannot Validate EICR since Schematron is not valid ***");
     } else {
       SchematronOutputType output = null;
       try {
-        logger.info("Found Valid Schematron which can be applied EICR ");
+        logger.debug("Found Valid Schematron which can be applied to EICR");
         output =
             aResSCH.applySchematronValidationToSVRL(new StreamSource(new StringReader(ecrData)));
       } catch (Exception e) {
@@ -113,26 +115,36 @@ public class CdaValidatorUtil {
       if (output != null) {
         List<Object> objs = output.getActivePatternAndFiredRuleAndFailedAssert();
         boolean foundFailures = false;
-        logger.info(" Number of Failed Assertions {}", objs.size());
+        logger.info("Number of Failed Assertions {}", objs.size());
 
         for (Object obj : objs) {
           if (obj instanceof FailedAssert) {
             FailedAssert fa = (FailedAssert) obj;
             if (fa.getFlag() != null && (fa.getFlag().contentEquals("error"))) {
               foundFailures = true;
-              logger.info(
-                  " Failed Asertion : Id = "
-                      + fa.getId()
-                      + " , Location = "
-                      + fa.getLocation()
-                      + " , Text = "
-                      + fa.getText()
-                      + ", Flag = "
-                      + fa.getFlag());
+              logger.error(
+                  "Failed Assertion: \n"
+                      + "Id = {}\n"
+                      + "Location = {}\n"
+                      + "Text = {}\n"
+                      + "Flag = {}",
+                  fa.getId(),
+                  fa.getLocation(),
+                  fa.getText(),
+                  fa.getFlag());
             } else {
 
               // It is a warning, so need to print to log for analysis
-              // logger.info("Failed Asertion : Id = " + fa.getId() + ", Flag = " + fa.getFlag());
+              logger.debug(
+                  "Failed Assertion: \n"
+                      + "Id = {}\n"
+                      + "Location = {}\n"
+                      + "Text = {}\n"
+                      + "Flag = {}",
+                  fa.getId(),
+                  fa.getLocation(),
+                  fa.getText(),
+                  fa.getFlag());
             }
           }
         }
@@ -140,10 +152,11 @@ public class CdaValidatorUtil {
         if (foundFailures) validationResult = false;
         else validationResult = true;
       } else {
-        logger.info("Schematron Validation Ouput is null, so validation was not performed ");
+        logger.warn("Schematron Validation Output is null, so validation was not performed");
         validationResult = false;
       }
     }
+    logger.info("Schematron Validation Result: {}", validationResult);
     return validationResult;
   }
 }

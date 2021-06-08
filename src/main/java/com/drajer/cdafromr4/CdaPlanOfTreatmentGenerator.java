@@ -30,7 +30,7 @@ public class CdaPlanOfTreatmentGenerator {
     List<ServiceRequest> sr = getValidServiceRequests(data);
 
     if (sr != null && !sr.isEmpty()) {
-      logger.info(" Found a total of {} service request objects to translate to CDA.", sr.size());
+      logger.debug("Found a total of {} service request objects to translate to CDA.", sr.size());
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -83,7 +83,7 @@ public class CdaPlanOfTreatmentGenerator {
         }
 
         String serviceDate = CdaFhirUtilities.getStringForType(s.getOccurrence());
-        logger.info(" Service Date for display {} ", serviceDate);
+        logger.debug("Service Date for display {} ", serviceDate);
 
         if (serviceDate.isEmpty() && s.getAuthoredOn() != null) {
           serviceDate = CdaGeneratorUtils.getStringForDate(s.getAuthoredOn());
@@ -150,7 +150,7 @@ public class CdaPlanOfTreatmentGenerator {
     String codeXml = "";
     // Add Trigger code template if the code matched the Url in the Service Request.
     if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-      logger.info(" Found a Matched Code that is for Service Request ");
+      logger.debug("Found a Matched Code that is for Service Request");
 
       String mCd =
           CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
@@ -174,8 +174,8 @@ public class CdaPlanOfTreatmentGenerator {
                 "",
                 contentRef);
       } else {
-        logger.info(
-            " Did not find the code value in the matched codes, make it a regular Planned Observation ");
+        logger.debug(
+            "Did not find the code value in the matched codes, make it a regular Planned Observation");
       }
     }
 
@@ -209,7 +209,7 @@ public class CdaPlanOfTreatmentGenerator {
 
     Date effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
     if (effDate == null) {
-      logger.info(" Use Authored Date ");
+      logger.debug("Use Authored Date");
 
       effDate = sr.getAuthoredOn();
     }
@@ -232,8 +232,8 @@ public class CdaPlanOfTreatmentGenerator {
 
     if (data.getServiceRequests() != null && !data.getServiceRequests().isEmpty()) {
 
-      logger.info(
-          " Total num of Service Requests available for Patient {}",
+      logger.debug(
+          "Total num of Service Requests available for Patient {}",
           data.getServiceRequests().size());
 
       for (ServiceRequest s : data.getServiceRequests()) {
@@ -246,12 +246,12 @@ public class CdaPlanOfTreatmentGenerator {
             && s.getStatus() != null
             && s.getStatus() == ServiceRequestStatus.ACTIVE) {
 
-          logger.info(" Found a Service Request with a LOINC code ");
+          logger.debug("Found a Service Request with a LOINC code");
           sr.add(s);
         }
       }
     } else {
-      logger.info(" No Valid Service Requests in the bundle to process ");
+      logger.debug("No Valid Service Requests in the bundle to process");
     }
 
     return sr;
