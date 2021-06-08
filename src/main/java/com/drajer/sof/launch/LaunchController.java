@@ -591,6 +591,7 @@ public class LaunchController {
             systemLaunch.getFhirServerURL());
     if (launchDetails != null) {
       authDetailsService.delete(launchDetails);
+      WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, false);
       return "LaunchDetails deleted successfully.";
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Launch Details Not found");
