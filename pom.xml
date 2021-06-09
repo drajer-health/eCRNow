@@ -19,6 +19,8 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<fhir.version>4.2.0</fhir.version>
+		<fhirpath.version>5.4.0</fhirpath.version>
+		<cql-evaluator.version>1.2.0</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 	<dependencyManagement>
@@ -97,11 +99,19 @@
 		</dependency>
 
 		<!-- FHIR Dependencies -->
-		<dependency>
+	 	<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
+	
+	<!--  
+ 		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-base</artifactId>
+			<version>${fhirpath.version}</version>
+		</dependency> -->
+
 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -114,7 +124,7 @@
 			<artifactId>hapi-fhir-structures-dstu2</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
-
+ 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-validation-resources-r4</artifactId>
@@ -126,6 +136,18 @@
 			<artifactId>hapi-fhir-client</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
+<!-- 	  
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.spring</artifactId>
+			<version>${cql-evaluator.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+			<version>${cql-evaluator.version}</version>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.json</groupId>
@@ -171,22 +193,12 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.2</version>
 		</dependency>
-		<!--  <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.21</version>
-            </dependency> -->
+
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>dsn</artifactId>
 			<version>1.4.7</version>
 		</dependency>
-		<!--  <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-jdk14</artifactId>
-                <version>1.7.21</version>
-            </dependency> -->
-
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

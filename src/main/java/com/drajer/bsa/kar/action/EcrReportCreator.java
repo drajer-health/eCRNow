@@ -13,13 +13,13 @@ import java.util.UUID;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
@@ -65,14 +65,21 @@ public class EcrReportCreator extends ReportCreator {
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    Composition comp = createComposition(kd);
+    logger.info(" Creating Composition Resource ");
+    List<Resource> resourcesTobeAdded = new ArrayList<>();
+    Composition comp = createComposition(kd, resourcesTobeAdded);
 
     returnBundle.addEntry(new BundleEntryComponent().setResource(comp));
+
+    for (Resource res : resourcesTobeAdded) {
+
+      returnBundle.addEntry(new BundleEntryComponent().setResource(res));
+    }
 
     return returnBundle;
   }
 
-  public Composition createComposition(KarProcessingData kd) {
+  public Composition createComposition(KarProcessingData kd, List<Resource> resTobeAdded) {
 
     Composition comp = new Composition();
     comp.setId(UUID.randomUUID().toString());
@@ -94,10 +101,13 @@ public class EcrReportCreator extends ReportCreator {
 
     // Set Patient
     Set<Resource> patients = kd.getResourcesByType(ResourceType.Patient.toString());
-    if (patients != null && patients.size() == 1) {
+    if (patients != null && patients.size() >= 1) {
 
       logger.info(" Setting up the patient for the composition ");
-      comp.getSubject().setResource(patients.iterator().next());
+      Resource patient = patients.iterator().next();
+
+      comp.getSubject().setResource(patient);
+      resTobeAdded.add(patient);
     } else {
 
       logger.error(
@@ -106,10 +116,13 @@ public class EcrReportCreator extends ReportCreator {
 
     // Set Encounter
     Set<Resource> encounters = kd.getResourcesByType(ResourceType.Encounter.toString());
-    if (encounters != null && encounters.size() == 1) {
+    if (encounters != null && encounters.size() >= 1) {
 
       logger.info(" Setting up the patient for the composition ");
+      Resource encounter = encounters.iterator().next();
       comp.getEncounter().setResource(encounters.iterator().next());
+      resTobeAdded.add(encounter);
+
     } else {
 
       logger.error(
@@ -189,54 +202,135 @@ public class EcrReportCreator extends ReportCreator {
 
   public SectionComponent getSection(SectionTypeEnum st, KarProcessingData kd) {
 
-    SectionComponent sc = null;
-
-    if (getCodeableConcept(st) != null) {
-      sc = new SectionComponent();
-      sc.setCode(getCodeableConcept(st));
-    }
+    SectionComponent sc = getSectionComponent(st, kd);
 
     return sc;
   }
 
-  public CodeableConcept getCodeableConcept(SectionTypeEnum st) {
+  public SectionComponent getSectionComponent(SectionTypeEnum st, KarProcessingData kd) {
 
-    CodeableConcept cd = null;
+    SectionComponent sc = null;
 
     switch (st) {
       case CHIEF_COMPLAINT:
-        //  cd = FhirGeneratorUtils.getCodeableConcept(ReportGenerat, code, display);
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.CHIEF_COMPLAINT_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.CHIEF_COMPLAINT_SECTION_LOINC_CODE_DISPLAY);
+        populateChiefComplaintNarrative(sc, kd);
+        break;
 
       case HISTORY_OF_PRESENT_ILLNESS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case REVIEW_OF_SYSTEMS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case PROBLEM:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case MEDICAL_HISTORY:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case MEDICATION_ADMINISTERED:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case RESULTS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case PLAN_OF_TREATMENT:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case IMMUNIZATIONS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case PROCEDURES:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case VITAL_SIGNS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case SOCIAL_HISTORY:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case PREGNANCY:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       case EMERGENCY_OUTBREAK_SECTION:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE_DISPLAY);
+        break;
 
       default:
+        sc = null;
+        break;
     }
 
-    return cd;
+    return sc;
   }
 
   public List<Extension> getExtensions() {
@@ -262,5 +356,12 @@ public class EcrReportCreator extends ReportCreator {
     dev.setDeviceName(dncs);
 
     return dev;
+  }
+
+  void populateChiefComplaintNarrative(SectionComponent sc, KarProcessingData kd) {
+
+    Narrative val = new Narrative();
+    val.setDivAsString("No Information");
+    sc.setText(val);
   }
 }

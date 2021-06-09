@@ -62,6 +62,12 @@ public abstract class BsaAction {
    */
   private List<TimingSchedule> timingData;
 
+  /**
+   * The list of sub actions that need to be executed as part of the parent action, when the
+   * conditions are met.
+   */
+  private List<BsaAction> subActions;
+
   /** */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
 
@@ -79,6 +85,19 @@ public abstract class BsaAction {
     }
 
     return retVal;
+  }
+
+  public void executeSubActions(KarProcessingData kd, EhrQueryService ehrService) {
+
+    logger.info(" Start Executing Sub Actions for action {}", this.getActionId());
+
+    for (BsaAction act : subActions) {
+
+      logger.info(" Executing Action {}", act.getActionId());
+      act.process(kd, ehrService);
+    }
+
+    logger.info(" Finished Executing Sub Actions for action {}", this.getActionId());
   }
 
   public void executeRelatedActions(KarProcessingData kd, EhrQueryService ehrService) {
@@ -140,6 +159,7 @@ public abstract class BsaAction {
     conditions = new ArrayList<BsaCondition>();
     relatedActions = new HashMap<>();
     timingData = new ArrayList<TimingSchedule>();
+    subActions = new ArrayList<>();
   }
 
   public String getActionId() {
@@ -207,6 +227,14 @@ public abstract class BsaAction {
     this.inputResourceTypes = inputResourceTypes;
   }
 
+  public List<BsaAction> getSubActions() {
+    return subActions;
+  }
+
+  public void setSubActions(List<BsaAction> subActions) {
+    this.subActions = subActions;
+  }
+
   public void addInputResourceType(String id, ResourceType rt) {
 
     if (!inputResourceTypes.containsKey(id)) {
@@ -215,6 +243,10 @@ public abstract class BsaAction {
 
       //  nothing to do , it is already present.
     }
+  }
+
+  public void addAction(BsaAction action) {
+    subActions.add(action);
   }
 
   public void addCondition(BsaCondition cond) {
@@ -285,6 +317,10 @@ public abstract class BsaAction {
       relatedActions.forEach((key, value) -> value.forEach(act -> act.log()));
 
     timingData.forEach(td -> td.print());
+
+    logger.info(" Start Printing Sub Actions ");
+    subActions.forEach(act -> act.log());
+    logger.info(" Finished Printing Sub Actions ");
 
     logger.info(" **** END Printing Action **** ");
   }

@@ -50,6 +50,7 @@ public class CheckTriggerCodes extends BsaAction {
 
         if (dr.hasCodeFilter()) {
 
+          logger.info(" Checking Trigger Codes based on code filter ");
           Set<Resource> resources = fhirPathProcessor.filterResources(dr, data);
 
           HashMap<String, Set<Resource>> idres = new HashMap<>();
@@ -59,6 +60,9 @@ public class CheckTriggerCodes extends BsaAction {
       }
 
       if (conditionsMet(data)) {
+
+        // Execute sub Actions
+        executeSubActions(data, ehrService);
 
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);

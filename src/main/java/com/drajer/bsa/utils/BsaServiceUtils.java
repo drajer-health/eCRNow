@@ -125,7 +125,7 @@ public class BsaServiceUtils {
     return retVal;
   }
 
-  public void saveResorceToFile(Resource res) {
+  public void saveResourceToFile(Resource res) {
 
     String fileName =
         debugDirectory + res.getResourceType().toString() + "_" + res.getId() + ".json";

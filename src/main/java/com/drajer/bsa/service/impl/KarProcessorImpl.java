@@ -89,7 +89,7 @@ public class KarProcessorImpl implements KarProcessor {
       for (Map.Entry<String, Resource> resEnt : resOutput.entrySet()) {
 
         logger.info(" Saving Data to file for {}", resEnt.getKey());
-        serviceUtils.saveResorceToFile(resEnt.getValue());
+        serviceUtils.saveResourceToFile(resEnt.getValue());
       }
     }
   }

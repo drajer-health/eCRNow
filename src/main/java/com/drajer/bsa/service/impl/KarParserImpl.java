@@ -159,6 +159,7 @@ public class KarParserImpl implements KarParser {
         }
 
         KnowledgeArtifactRepository.getIntance().add(art);
+        art.log();
 
       } else {
 
@@ -179,30 +180,7 @@ public class KarParserImpl implements KarParser {
       BsaAction action = getAction(act.getId());
       action.setActionId(act.getId());
 
-      if (act.hasTrigger()) {
-        action.setNamedEventTriggers(getNamedEvents(act));
-      }
-
-      if (act.hasInput()) {
-        populateInputDataReq(act, action);
-      }
-
-      if (act.hasOutput()) {
-        populateOutputDataReq(act, action);
-      }
-
-      if (act.hasCondition()) {
-        populateCondition(act, action);
-      }
-
-      if (act.hasRelatedAction()) {
-        populateRelatedAction(act, action);
-      }
-
-      if (act.hasTiming()) {
-
-        // Todo - handle timing elements in the action itslef.
-      }
+      populateAction(act, action);
 
       // Setup the artifact details.
       art.addAction(action);
@@ -248,6 +226,56 @@ public class KarParserImpl implements KarParser {
         action.addInputResourceType(dr.getId(), rt);
       } catch (FHIRException ex) {
         logger.error(" Type specified is not a resource Type {}", dr.getType());
+      }
+    }
+  }
+
+  private void populateAction(PlanDefinitionActionComponent act, BsaAction action) {
+
+    if (act.hasTrigger()) {
+      action.setNamedEventTriggers(getNamedEvents(act));
+    }
+
+    if (act.hasInput()) {
+      populateInputDataReq(act, action);
+    }
+
+    if (act.hasOutput()) {
+      populateOutputDataReq(act, action);
+    }
+
+    if (act.hasCondition()) {
+      populateCondition(act, action);
+    }
+
+    if (act.hasRelatedAction()) {
+      populateRelatedAction(act, action);
+    }
+
+    if (act.hasAction()) {
+      populateSubActions(act, action);
+    }
+
+    if (act.hasTiming()) {
+
+      // Todo - handle timing elements in the action itslef.
+    }
+  }
+
+  private void populateSubActions(PlanDefinitionActionComponent ac, BsaAction action) {
+
+    List<PlanDefinitionActionComponent> actions = ac.getAction();
+
+    if (actions != null && actions.size() > 0) {
+      for (PlanDefinitionActionComponent act : actions) {
+
+        BsaAction subAction = getAction(act.getId());
+        subAction.setActionId(act.getId());
+
+        populateAction(act, subAction);
+
+        // Setup the artifact details.
+        action.addAction(subAction);
       }
     }
   }

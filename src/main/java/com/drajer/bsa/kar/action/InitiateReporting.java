@@ -40,6 +40,9 @@ public class InitiateReporting extends BsaAction {
 
       logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
 
+      // Execute sub Actions
+      executeSubActions(data, ehrService);
+
       // Execute Related Actions.
       executeRelatedActions(data, ehrService);
 

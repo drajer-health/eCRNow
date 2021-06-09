@@ -129,6 +129,12 @@ public class KnowledgeArtifact {
 
       addTriggerEvent(s, act);
     }
+
+    // Recursively add actions and trigger events
+    for (BsaAction action : act.getSubActions()) {
+
+      addTriggerEvent(action);
+    }
   }
 
   public void addTriggerEvent(String event, BsaAction act) {

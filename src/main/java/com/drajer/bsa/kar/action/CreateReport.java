@@ -69,6 +69,9 @@ public class CreateReport extends BsaAction {
 
       if (conditionsMet(data)) {
 
+        // Execute sub Actions
+        executeSubActions(data, ehrService);
+
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
