@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.9.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
+		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
 	<artifactId>ecr-now</artifactId>
@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<fhir.version>4.2.0</fhir.version>
+		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.2.0</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
@@ -49,7 +49,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -77,20 +77,20 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
 			<version>9.2</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
-<dependency>
-    <groupId>javax.interceptor</groupId>
-    <artifactId>javax.interceptor-api</artifactId>
-    <version>1.2-b06</version>
-</dependency>
-		
+		<dependency>
+			<groupId>javax.interceptor</groupId>
+			<artifactId>javax.interceptor-api</artifactId>
+			<version>1.2-b06</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -99,13 +99,13 @@
 		</dependency>
 
 		<!-- FHIR Dependencies -->
-	 	<dependency>
+		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
-	
-	<!--  
+
+		<!--  
  		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-base</artifactId>
@@ -124,7 +124,7 @@
 			<artifactId>hapi-fhir-structures-dstu2</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
- 
+
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-validation-resources-r4</artifactId>
@@ -136,18 +136,30 @@
 			<artifactId>hapi-fhir-client</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
-<!-- 	  
+
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.spring</artifactId>
 			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.library</artifactId>
 			<version>${cql-evaluator.version}</version>
-		</dependency> -->
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<dependency>
 			<groupId>org.json</groupId>
@@ -157,9 +169,9 @@
 
 		<!-- Java stuff -->
 		<dependency>
-   			<groupId>com.fasterxml.jackson.core</groupId>
-   			<artifactId>jackson-databind</artifactId>
-   			<version>2.11.3</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.11.3</version>
 		</dependency>
 
 		<dependency>

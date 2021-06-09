@@ -1,6 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
-import ca.uhn.fhir.fluentpath.IFluentPath;
+import ca.uhn.fhir.fhirpath.IFhirPath;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
@@ -23,7 +23,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
-  IFluentPath fhirPathProcessor;
+  IFhirPath fhirPathProcessor;
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
