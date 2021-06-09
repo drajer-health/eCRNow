@@ -159,7 +159,8 @@ public class CdaMedicationGenerator {
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
         if (medAdm.getStatus() != null) {
-          medstatus = CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(medAdm.getStatus());
+          medstatus =
+              CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(medAdm.getStatus().toCode());
         } else {
           medstatus = COMPLETED;
         }
