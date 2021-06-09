@@ -77,23 +77,23 @@ public class RRReceiverController {
     try {
       logger.info("Received EicrId:: {}, EicrDocId:: {} in the request", eicrId, eicrDocId);
       Eicr eicr = null;
-      if (eicrId == null && eicrDocId == null) {
+      if (eicrId != null) {
+        eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));
+      } else if (eicrDocId != null) {
+        eicr = rrReceieverService.getEicrByDocId(eicrDocId);
+      } else {
         logger.error("EicrId and EicrDocId is not present in the request");
         throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, "EicrId or EicrDocId is not present in the request");
-      } else {
-        if (eicrId != null) {
-          eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));
-        } else if (eicrDocId != null) {
-          eicr = rrReceieverService.getEicrByDocId(eicrDocId);
-        }
-        if (eicr != null) {
-          ReportabilityResponse rr = new ReportabilityResponse();
-          rr.setRrXml(eicr.getResponseData());
-          rr.setResponseType(eicr.getResponseType());
-          rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
-        }
       }
+
+      if (eicr != null) {
+        ReportabilityResponse rr = new ReportabilityResponse();
+        rr.setRrXml(eicr.getResponseData());
+        rr.setResponseType(eicr.getResponseType());
+        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
+      }
+
     } catch (IllegalArgumentException e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

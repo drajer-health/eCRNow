@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
 import com.drajer.cda.parser.CdaIi;
 import com.drajer.cda.parser.CdaRrModel;
 import com.drajer.cda.parser.RrParser;
@@ -214,7 +215,7 @@ public class EicrServiceImpl implements EicrRRService {
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 
-      if (outcome.getCreated()) {
+      if (outcome != null && outcome.getCreated()) {
         logger.info("Successfully sent RR to fhir");
         // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
         ecr.setEhrDocRefId(outcome.getId().getIdPart());
@@ -223,7 +224,7 @@ public class EicrServiceImpl implements EicrRRService {
       } else {
         String errorMsg = "Unable to post RR response to FHIR server: " + ecr.getFhirServerUrl();
         logger.error(errorMsg);
-        throw new RuntimeException(errorMsg);
+        throw new UnclassifiedServerFailureException(500, errorMsg);
       }
 
     } else {
@@ -240,7 +241,10 @@ public class EicrServiceImpl implements EicrRRService {
             || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
           data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
-    } else return null;
+    } else {
+      logger.info("Not posting RR to EHR as it is of type {}", ecr.getResponseType());
+      return null;
+    }
   }
 
   public List<JSONObject> getEicrData(Map<String, String> searchParams) {
@@ -275,12 +279,5 @@ public class EicrServiceImpl implements EicrRRService {
       eicrDataList.add(eicrObject);
     }
     return eicrDataList;
-  }
-
-  @Override
-  public void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId) {
-    // TODO Auto-generated method stub
-
   }
 }
