@@ -24,9 +24,6 @@ public interface EicrRRService {
 
   void handleFailureMdn(ReportabilityResponse data, String xCorrelationId, String xRequestId);
 
-  void handleReportabilityResponse(
-      ReportabilityResponse data, String xCorrelationId, String xRequestId);
-
   List<JSONObject> getEicrData(Map<String, String> searchParams);
 
   List<JSONObject> getRRData(Map<String, String> searchParams);
