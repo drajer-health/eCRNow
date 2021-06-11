@@ -52,7 +52,7 @@ public class ITClientController extends BaseIntegrationTest {
 
     // Resend the same client details
     response = invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
   }
 
   @Test
@@ -96,7 +96,7 @@ public class ITClientController extends BaseIntegrationTest {
 
     // Update same client details above - this will act as duplicate due to different ID
     response = invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.PUT);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
   }
 
   @Test
