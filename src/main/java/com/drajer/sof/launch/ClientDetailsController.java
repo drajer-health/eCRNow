@@ -33,7 +33,7 @@ public class ClientDetailsController {
   // POST method to create a Client
   @CrossOrigin
   @RequestMapping(value = "/api/clientDetails", method = RequestMethod.POST)
-  public ResponseEntity<?> createClientDetails(@RequestBody ClientDetails clientDetails) {
+  public ResponseEntity<Object> createClientDetails(@RequestBody ClientDetails clientDetails) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
     if (checkClientDetails == null) {
@@ -45,13 +45,13 @@ public class ClientDetailsController {
       JSONObject responseObject = new JSONObject();
       responseObject.put("status", "error");
       responseObject.put("message", "URL is already registered");
-      return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(responseObject, HttpStatus.CONFLICT);
     }
   }
 
   @CrossOrigin
   @RequestMapping(value = "/api/clientDetails", method = RequestMethod.PUT)
-  public ResponseEntity<?> updateClientDetails(@RequestBody ClientDetails clientDetail) {
+  public ResponseEntity<Object> updateClientDetails(@RequestBody ClientDetails clientDetail) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetail.getFhirServerBaseURL());
     if (checkClientDetails == null || (checkClientDetails.getId().equals(clientDetail.getId()))) {
@@ -63,7 +63,7 @@ public class ClientDetailsController {
       JSONObject responseObject = new JSONObject();
       responseObject.put("status", "error");
       responseObject.put("message", "URL is already registered");
-      return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(responseObject, HttpStatus.CONFLICT);
     }
   }
 
