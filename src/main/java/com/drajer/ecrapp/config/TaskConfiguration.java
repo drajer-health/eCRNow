@@ -4,15 +4,18 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.ecrapp.model.WorkflowTask;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
 import java.util.Map;
+import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -54,8 +57,11 @@ public class TaskConfiguration {
                             workflowTask.getActionType(),
                             workflowTask.getWorkflowEvent());
 
+                  } catch (ObjectDeletedException deletedException) {
+                    log.info("Error in completing the Execution:::::", deletedException);
                   } catch (Exception e) {
-                    log.error("Error in completing the Execution:::::", e);
+                    ApplicationUtils.handleException(
+                        e, "Error in completing the Execution:::::", LogLevel.ERROR);
                   } finally {
                     MDC.clear();
                   }

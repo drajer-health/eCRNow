@@ -3,12 +3,14 @@ package com.drajer.eca.model;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
@@ -41,26 +43,26 @@ public class EcaUtils {
       PatientExecutionState state,
       LaunchDetails details) {
 
-    logger.info(" Start Matching Trigger Codes ");
+    logger.info("Start Matching Trigger Codes ");
     boolean matchfound = false;
     state.getMatchTriggerStatus().setTriggerMatchStatus(false);
 
     for (ActionData ad : codePaths) {
 
-      logger.info(" Need to match Trigger Codes for : {}", ad.getPath());
+      logger.info("Need to match Trigger Codes for : {}", ad.getPath());
 
       List<CodeableConceptDt> ptCodes = data.getCodesForExpression(ad.getPath());
 
       if (ptCodes != null && !ptCodes.isEmpty()) {
 
-        logger.info(" Found total {} {}  for Patient", ptCodes.size(), ad.getPath());
+        logger.info("Found total {} {}  for Patient", ptCodes.size(), ad.getPath());
 
         Set<String> codesToMatch = ApplicationUtils.convertCodeableConceptsToString(ptCodes);
         matchfound = matchTriggerCodes(details, ad, codesToMatch, state);
       }
     }
 
-    logger.info(" End Matching Trigger Codes ");
+    logger.info("End Matching Trigger Codes ");
     return matchfound;
   }
 
@@ -70,26 +72,26 @@ public class EcaUtils {
       PatientExecutionState state,
       LaunchDetails details) {
 
-    logger.info(" Start Matching Trigger Codes ");
+    logger.info("Start Matching Trigger Codes ");
     boolean matchfound = false;
     state.getMatchTriggerStatus().setTriggerMatchStatus(false);
 
     for (ActionData ad : codePaths) {
 
-      logger.info(" Need to match Trigger Codes for :{} ", ad.getPath());
+      logger.info("Need to match Trigger Codes for :{} ", ad.getPath());
 
       List<CodeableConcept> ptCodes = data.getR4CodesForExpression(ad.getPath());
 
       if (ptCodes != null && !ptCodes.isEmpty()) {
 
-        logger.info(" Found total {} {} for Patient.", ptCodes.size(), ad.getPath());
+        logger.debug("Found total {} {} for Patient.", ptCodes.size(), ad.getPath());
 
         Set<String> codesToMatch = ApplicationUtils.convertR4CodeableConceptsToString(ptCodes);
         matchfound = matchTriggerCodes(details, ad, codesToMatch, state);
       }
     }
 
-    logger.info(" End Matching Trigger Codes ");
+    logger.info("End Matching Trigger Codes ");
     return matchfound;
   }
 
@@ -102,15 +104,15 @@ public class EcaUtils {
 
       codesToMatchAgainst =
           ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
-      logger.info(
-          " Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
+      logger.debug(
+          "Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
           codesToMatchAgainst.size());
     } else {
 
       codesToMatchAgainst =
           ValueSetSingleton.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
-      logger.info(
-          " Total # of {} Codes in Trigger Code Value Set for matching for Full EICR ",
+      logger.debug(
+          "Total # of {} Codes in Trigger Code Value Set for matching for Full EICR ",
           codesToMatchAgainst.size());
     }
 
@@ -118,7 +120,7 @@ public class EcaUtils {
 
     if (intersection != null && !intersection.isEmpty()) {
 
-      logger.info(" Number of Matched Codes = {}", intersection.size());
+      logger.info("Number of Matched Codes = {}", intersection.size());
 
       state.getMatchTriggerStatus().setTriggerMatchStatus(true);
       matchfound = true;
@@ -132,7 +134,7 @@ public class EcaUtils {
 
     } else {
 
-      logger.info(" No Matched codes found for : {}", ad.getPath());
+      logger.info("No Matched codes found for : {}", ad.getPath());
     }
     return matchfound;
   }
@@ -143,7 +145,7 @@ public class EcaUtils {
 
     if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
-      logger.info(" Getting necessary data from Loading Queries ");
+      logger.info("Getting necessary data from Loading Queries");
       FhirData data =
           ActionRepo.getInstance()
               .getLoadingQueryService()
@@ -153,13 +155,13 @@ public class EcaUtils {
 
       if (data instanceof Dstu2FhirData) {
 
-        logger.info("Creating eICR based on FHIR DSTU2 ");
+        logger.info("Creating eICR based on FHIR DSTU2");
         Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
         eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
 
       } else if (data instanceof R4FhirData) {
 
-        logger.info("Creating eICR based on FHIR R4 ");
+        logger.info("Creating eICR based on FHIR R4");
         R4FhirData r4Data = (R4FhirData) data;
 
         eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
@@ -176,6 +178,7 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+        logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
@@ -309,9 +312,18 @@ public class EcaUtils {
       IGenericClient client =
           ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
 
-      Encounter enc =
-          (Encounter)
-              ci.getResouceById(details, client, ctx, "Encounter", details.getEncounterId());
+      Encounter enc = null;
+      try {
+        enc =
+            (Encounter)
+                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+      } catch (ResourceNotFoundException resourceNotFoundException) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            details.getEncounterId(),
+            resourceNotFoundException);
+        WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+      }
 
       if (enc != null) {
         logger.info(" Found Encounter for checking encounter closure ");

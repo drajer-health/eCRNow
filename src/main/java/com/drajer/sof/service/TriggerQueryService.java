@@ -2,6 +2,7 @@ package com.drajer.sof.service;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -10,6 +11,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,14 +44,15 @@ public class TriggerQueryService implements AbstractQueryService {
       return dstu2FhirData;
 
     } else if (launchDetails.getFhirVersion().equalsIgnoreCase(FhirVersionEnum.R4.toString())) {
+
       R4FhirData r4FhirData = new R4FhirData();
-      org.hl7.fhir.r4.model.Bundle bundle = new org.hl7.fhir.r4.model.Bundle();
       try {
-        bundle = generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
+        org.hl7.fhir.r4.model.Bundle bundle =
+            generateR4Bundles.createR4Bundle(launchDetails, r4FhirData, start, end);
+        r4FhirData.setData(bundle);
       } catch (Exception e) {
-        logger.error("Error in Generating the R4 Bundle", e);
+        ApplicationUtils.handleException(e, "Error in Generating the R4 Bundle", LogLevel.ERROR);
       }
-      r4FhirData.setData(bundle);
       return r4FhirData;
     }
     return null;

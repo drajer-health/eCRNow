@@ -6,12 +6,14 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -156,7 +158,8 @@ public class CreateEicrAction extends AbstractAction {
                 // Call the Loading Queries and create eICR.
                 Eicr ecr = EcaUtils.createEicr(details);
 
-                if (ecr != null) {
+                try {
+                  MDCUtils.addCorrelationId(ecr.getxCorrelationId());
 
                   newState.getCreateEicrStatus().setEicrCreated(true);
                   newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
@@ -164,7 +167,7 @@ public class CreateEicrAction extends AbstractAction {
 
                   EcaUtils.updateDetailStatus(details, newState);
 
-                  logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
+                  logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
                   String fileName =
                       ActionRepo.getInstance().getLogFileDirectory()
@@ -177,9 +180,10 @@ public class CreateEicrAction extends AbstractAction {
                           + ".xml";
                   ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                  logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+                  logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+                } finally {
+                  MDCUtils.removeCorrelationId();
                 }
-
               } // Check if Trigger Code Match found
               else {
 
@@ -193,24 +197,25 @@ public class CreateEicrAction extends AbstractAction {
               }
             } else {
               logger.info(
-                  " EICR job is in a state of {} , due to which EICR will not be created. ",
+                  "EICR job is in a state of {} , due to which EICR will not be created.",
                   state.getCreateEicrStatus().getJobStatus());
             }
 
           } else {
-            logger.info(" Related Actions are not completed, hence EICR will not be created. ");
+            logger.info(" Related Actions are not completed, hence EICR will not be created.");
           }
 
         } else {
 
-          logger.info(" Conditions not met, hence EICR will not be created. ");
+          logger.info("Conditions not met, hence EICR will not be created.");
         }
 
       } catch (Exception e) {
 
+        StringBuilder expMsg = new StringBuilder();
         if (state != null) {
 
-          logger.error(" Unable to create Eicr due to exceptions during processing ", e);
+          expMsg.append("Unable to create Eicr due to exceptions during processing");
           // Update
           state.getCreateEicrStatus().setEicrCreated(false);
           state.getCreateEicrStatus().seteICRId("0");
@@ -218,10 +223,10 @@ public class CreateEicrAction extends AbstractAction {
 
           EcaUtils.updateDetailStatus(details, state);
         } else {
-          logger.error(
-              "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it ",
-              e);
+          expMsg.append(
+              "Unable to create Eicr due to exceptions during processing. The state is not present hence not updating it ");
         }
+        ApplicationUtils.handleException(e, expMsg.toString(), LogLevel.ERROR);
       }
 
     } else {
@@ -234,7 +239,7 @@ public class CreateEicrAction extends AbstractAction {
       throw new RuntimeException(msg);
     }
 
-    logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
+    logger.info("**** END Executing Create Eicr Action after completing normal execution. ****");
   }
 
   @Override

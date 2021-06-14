@@ -104,10 +104,8 @@ public class PlanDefinitionProcessor {
 
     if (ersdBundle != null) {
 
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            " Bundle has been created with Entries : "
-                + ((ersdBundle.getEntry() != null) ? ersdBundle.getEntry().size() : " zero "));
+      if (ersdBundle.getEntry() != null) {
+        logger.info(" Bundle has been created with Entries : {}", ersdBundle.getEntry().size());
       }
 
       // Check to see if this is a searchset bundle.
@@ -125,7 +123,7 @@ public class PlanDefinitionProcessor {
           if (Optional.ofNullable(bundleEntry).isPresent()
               && bundleEntry.getResource().getResourceType().equals(ResourceType.Bundle)) {
 
-            logger.info(" Found a bundle within a bundle ");
+            logger.debug(" Found a bundle within a bundle ");
 
             Bundle ib = (Bundle) (bundleEntry.getResource());
 
@@ -143,11 +141,11 @@ public class PlanDefinitionProcessor {
       List<BundleEntryComponent> bundleEntries = null;
 
       if (actualErsdBundle != null) {
-        logger.info(" Innder ERSD Bundle Found from where we need to extract the plan definition");
+        logger.info(" Inner ERSD Bundle Found from where we need to extract the plan definition");
         bundleEntries = actualErsdBundle.getEntry();
       } else {
         logger.info(
-            " Bundle read from configuration is a valid bundle to extarct the plan definition");
+            " Bundle read from configuration is a valid bundle to extract the plan definition");
         bundleEntries = ersdBundle.getEntry();
       }
 
@@ -162,46 +160,44 @@ public class PlanDefinitionProcessor {
 
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
-        logger.info(" Processing Bundle Entries ");
-
         if (Optional.ofNullable(bundleEntry).isPresent()) {
 
-          logger.info(
-              " Bundle Entries present and is of type "
-                  + bundleEntry.getResource().getResourceType());
+          logger.debug(
+              " Bundle Entries present and is of type {}",
+              bundleEntry.getResource().getResourceType());
 
           if (bundleEntry.getResource().getResourceType().equals(ResourceType.ValueSet)) {
 
-            logger.info(" Found Value set");
+            logger.debug(" Found Value set");
 
             valueSet = (ValueSet) bundleEntry.getResource();
 
             if (ApplicationUtils.isACovidValueSet(valueSet)) {
 
-              logger.info(" Found a COVID Value Set " + valueSet.getId());
+              logger.debug(" Found a COVID Value Set {}", valueSet.getId());
 
               valueSetService.createValueSet(valueSet);
               covidValuesets.add(valueSet);
               valuesets.add(valueSet);
             } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {
 
-              logger.info(" Found a Grouper Value Set " + valueSet.getId());
+              logger.debug(" Found a Grouper Value Set {}", valueSet.getId());
               valueSetService.createValueSetGrouper(valueSet);
               grouperValueSets.add(valueSet);
 
             } else {
-              logger.info(" Found a Regular Value Set " + valueSet.getId());
+              logger.debug(" Found a Regular Value Set {}", valueSet.getId());
               valueSetService.createValueSet(valueSet);
               valuesets.add(valueSet);
             }
 
           } else if (bundleEntry.getResource().getResourceType().equals(ResourceType.Library)) {
-            logger.info(" Found the Library ");
+            logger.debug(" Found the Library ");
             Library lib = (Library) bundleEntry.getResource();
 
             if (lib.getId().contains("rctc")) {
 
-              logger.info(" Adding Rctc Version to the Action Repo" + lib.getVersion());
+              logger.debug(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
               ActionRepo.getInstance().setRctcVersion(lib.getVersion());
             }
           }
@@ -344,13 +340,13 @@ public class PlanDefinitionProcessor {
 
   private Bundle readErsdBundleFromFile() {
 
-    logger.info("About to read ERSD File {}", ersdFileLocation);
+    logger.debug("About to read ERSD File {}", ersdFileLocation);
     Bundle bundle = null;
     try (InputStream in = new FileInputStream(new File(ersdFileLocation))) {
-      logger.info("Reading ERSD File ");
+      logger.debug("Reading ERSD File ");
 
       bundle = jsonParser.parseResource(Bundle.class, in);
-      logger.info("Completed Reading ERSD File");
+      logger.debug("Completed Reading ERSD File");
     } catch (Exception e) {
       logger.error("Exception Reading ERSD File", e);
     }
@@ -383,20 +379,12 @@ public class PlanDefinitionProcessor {
 
     if (acts != null) {
       if (acts.containsKey(type)) {
-
         acts.get(type).add(act);
-
-        if (logger.isInfoEnabled()) {
-          logger.info(
-              " Map contained {}, so added to map resulting in size {}",
-              type.toString(),
-              acts.size());
-        }
+        logger.info(" Map contained {}, so added to map resulting in size {}", type, acts.size());
       } else {
         Set<AbstractAction> aa = new HashSet<>();
         aa.add(act);
         acts.put(type, aa);
-
         logger.info(
             " Map did not contain {}, so added to map resulting in size {}", type, acts.size());
       }
@@ -434,7 +422,7 @@ public class PlanDefinitionProcessor {
 
               if (cf.hasPath()) {
                 ad.setPath(d.getType() + "." + cf.getPath());
-                logger.info(" Evaluation Path = " + ad.getPath());
+                logger.info(" Evaluation Path = {}", ad.getPath());
               }
 
               if (cf.hasValueSet()) ad.setValueSet(cf.getValueSetElement());
@@ -475,8 +463,6 @@ public class PlanDefinitionProcessor {
 
     if (t != null && t.hasRepeat()) {
 
-      logger.info(" Found Timing Element ");
-
       TimingRepeatComponent rc = t.getRepeat();
 
       // Create Timing Data
@@ -489,17 +475,17 @@ public class PlanDefinitionProcessor {
       ts.setFrequency(rc.getFrequency());
       ts.setFrequencyMax(rc.getFrequencyMax());
 
-      logger.info(" Period Freq = " + rc.getPeriod());
       ts.setFrequencyPeriod(rc.getPeriod());
-
-      logger.info(" Period Freq Unit = " + rc.getPeriodUnitElement().getValueAsString());
       ts.setFrequencyPeriodUnit(rc.getPeriodUnitElement().getValue());
-
-      logger.info(" Duration = " + rc.getDuration());
       ts.setDuration(rc.getDuration());
-
-      logger.info(" Duration Unit = " + rc.getDurationUnit());
       ts.setDurationUnit(rc.getDurationUnit());
+
+      logger.info(
+          "Found Timing Element with Frequency Period {} {} AND Duration {} {}",
+          rc.getPeriod(),
+          rc.getPeriodUnitElement().getValueAsString(),
+          rc.getDuration(),
+          rc.getDurationUnit());
 
       return ts;
     }

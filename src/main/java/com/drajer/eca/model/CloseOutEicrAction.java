@@ -6,6 +6,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +41,7 @@ public class CloseOutEicrAction extends AbstractAction {
       Boolean conditionsMet = true;
       conditionsMet = matchCondition(details);
       boolean encounterClosed = EcaUtils.checkEncounterClose(details);
-      logger.info(" Encounter is closed : {} : ", encounterClosed);
+      logger.info(" Encounter is closed = {}", encounterClosed);
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
@@ -85,7 +86,7 @@ public class CloseOutEicrAction extends AbstractAction {
                 } else {
 
                   logger.info(
-                      " No need to scheuled job as it has already been scheduled or completed. ");
+                      " No need to schedule job as it has already been scheduled or completed. ");
                 }
               }
             } else {
@@ -140,7 +141,8 @@ public class CloseOutEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
 
-              if (ecr != null) {
+              try {
+                MDCUtils.addCorrelationId(ecr.getxCorrelationId());
 
                 newState.getCloseOutEicrStatus().setEicrClosed(true);
                 newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
@@ -148,7 +150,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
                 EcaUtils.updateDetailStatus(details, newState);
 
-                logger.info(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+                logger.debug(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
                 String fileName =
                     ActionRepo.getInstance().getLogFileDirectory()
@@ -161,7 +163,9 @@ public class CloseOutEicrAction extends AbstractAction {
                         + ".xml";
                 ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                logger.info(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+                logger.debug(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
+              } finally {
+                MDCUtils.removeCorrelationId();
               }
 
             } // Check if Trigger Code Match found
@@ -181,8 +185,7 @@ public class CloseOutEicrAction extends AbstractAction {
                 state.getCloseOutEicrStatus().getJobStatus());
           }
         } else {
-          logger.info(
-              " Related Actions are not completed, hence Close Out Action : EICR will not be created. ");
+          logger.info(" Related Actions are not completed, hence EICR will not be created.");
         }
 
       } else {

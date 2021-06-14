@@ -164,7 +164,7 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress()));
-      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom()));
+      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
 
       sb.append(
           CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
@@ -185,7 +185,7 @@ public class CdaHeaderGenerator {
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
 
       List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps));
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
 
       sb.append(
           CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
@@ -208,7 +208,7 @@ public class CdaHeaderGenerator {
 
     if (loc != null) {
 
-      logger.info(" Location is not null, so get the location populated");
+      logger.info("Location data is present, using it to populate LOCATION detail in XML");
       Identifier npi =
           CdaFhirUtilities.getIdentifierForSystem(
               loc.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
@@ -247,7 +247,8 @@ public class CdaHeaderGenerator {
 
     } else if (org != null) {
 
-      logger.info(" Location is null, so get the location populated using Organization details ");
+      logger.info(
+          "Location data is not present, using Organization data to populate LOCATION detail in XML");
       Identifier npi =
           CdaFhirUtilities.getIdentifierForSystem(
               org.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
@@ -262,7 +263,7 @@ public class CdaHeaderGenerator {
       if (org.getType() != null) {
 
         List<CodeableConcept> cds = org.getType();
-        logger.debug(" Getting organization Type to populate location code ");
+        logger.debug("Getting organization Type to populate location code");
         String typeXml =
             CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.CODE_EL_NAME, false);
 
@@ -285,7 +286,7 @@ public class CdaHeaderGenerator {
 
     } else {
 
-      logger.info(" Location is null, Organization is null, so populate using null flavors ");
+      logger.info("Location and Organization data not present, so populate using null flavors");
 
       sb.append(
           CdaGeneratorUtils.getXmlForII(
@@ -329,40 +330,36 @@ public class CdaHeaderGenerator {
     if (practMap != null && !practMap.isEmpty()) {
 
       if (practMap.containsKey(V3ParticipationType.AUT)) {
-
-        logger.info(" Found Practitioner who is an Author ");
+        logger.debug("Found Practitioner who is an Author");
         practs.addAll(practMap.get(V3ParticipationType.AUT));
         foundAuthor = true;
       } else if (practMap.containsKey(V3ParticipationType.PPRF)) {
-
-        logger.info(" Found Practitioner who is a PPRF for an Author");
+        logger.debug("Found Practitioner who is a PPRF for an Author");
         practs.addAll(practMap.get(V3ParticipationType.PPRF));
         foundAuthor = true;
       } else if (practMap.containsKey(V3ParticipationType.ATND)) {
-        logger.info(" Found Practitioner who is an ATND for an Author ");
+        logger.debug("Found Practitioner who is an ATND for an Author");
         practs.addAll(practMap.get(V3ParticipationType.ATND));
         foundAuthor = true;
       } else if (practMap.containsKey(V3ParticipationType.SPRF)) {
-        logger.info(" Found Practitioner who is an SPRF for an Author");
+        logger.debug("Found Practitioner who is an SPRF for an Author");
         practs.addAll(practMap.get(V3ParticipationType.SPRF));
         foundAuthor = true;
       }
 
-      logger.info(" Practs size = {}", practs.size());
       if (!practs.isEmpty()) {
-
-        logger.info(" Practs is not empty, adding XML for Practitioner ");
+        logger.info(
+            "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
         sb.append(getPractitionerXml(pr));
       } else {
-        logger.info(" Practs is null or empty after author checking ");
+        logger.info("Didn't find a Practitioner with valid type");
       }
     } else {
-      logger.info(" Pract Map is null or empty ");
+      logger.info("No Practitioner found");
     }
 
     if (!foundAuthor) {
-      logger.info(" Did not find author ");
       sb.append(getPractitionerXml(null));
     }
 
@@ -372,7 +369,8 @@ public class CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getOrganizationXml(Organization org, LaunchDetails details) {
+  public static String getOrganizationXml(
+      Organization org, LaunchDetails details, boolean onlyOneTelecom) {
 
     StringBuilder sb = new StringBuilder(200);
     if (org != null) {
@@ -390,7 +388,7 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
-      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom()));
+      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), onlyOneTelecom));
       sb.append(CdaFhirUtilities.getAddressXml(org.getAddress()));
 
     } else {
@@ -402,7 +400,7 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 
       List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps));
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, onlyOneTelecom));
 
       List<Address> addrs = null;
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
@@ -419,7 +417,7 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details));
+    sb.append(getOrganizationXml(data.getOrganization(), details, true));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
@@ -480,7 +478,7 @@ public class CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -500,7 +498,7 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
@@ -527,7 +525,7 @@ public class CdaHeaderGenerator {
 
     if (!practs.isEmpty()) {
 
-      logger.info(" Found Author Practitioner {}", practs.size());
+      logger.debug("Found Author Practitioner {}", practs.size());
       practitionerMap.put(V3ParticipationType.AUT, practs);
     }
 
@@ -536,7 +534,7 @@ public class CdaHeaderGenerator {
 
     if (!practs.isEmpty()) {
 
-      logger.info(" Found PPRF Practitioners {}", practs.size());
+      logger.debug("Found PPRF Practitioners {}", practs.size());
       practitionerMap.put(V3ParticipationType.PPRF, practs);
     }
 
@@ -545,7 +543,7 @@ public class CdaHeaderGenerator {
 
     if (!practs.isEmpty()) {
 
-      logger.info(" Found SPRF Practitioners {}", practs.size());
+      logger.debug("Found SPRF Practitioners {}", practs.size());
       practitionerMap.put(V3ParticipationType.SPRF, practs);
     }
 
@@ -554,7 +552,7 @@ public class CdaHeaderGenerator {
 
     if (!practs.isEmpty()) {
 
-      logger.info(" Found ATND Practitioners {}", practs.size());
+      logger.debug("Found ATND Practitioners {}", practs.size());
       practitionerMap.put(V3ParticipationType.ATND, practs);
     }
 
@@ -572,35 +570,32 @@ public class CdaHeaderGenerator {
     if (practMap != null && !practMap.isEmpty()) {
 
       if (practMap.containsKey(V3ParticipationType.PPRF)) {
-
-        logger.info(" Found Practitioner who is a Primary Performer ");
+        logger.debug("Found Practitioner who is a Primary Performer");
         practs.addAll(practMap.get(V3ParticipationType.PPRF));
         foundPrimaryPerformer = true;
       } else if (practMap.containsKey(V3ParticipationType.ATND)) {
-        logger.info(" Found Practitioner who is an ATND for a Primary performer ");
+        logger.debug("Found Practitioner who is an ATND for a Primary performer");
         practs.addAll(practMap.get(V3ParticipationType.ATND));
         foundPrimaryPerformer = true;
       } else if (practMap.containsKey(V3ParticipationType.SPRF)) {
-        logger.info(" Found Practitioner who is an SPRF for a Pimary Performer");
+        logger.debug("Found Practitioner who is an SPRF for a Pimary Performer");
         practs.addAll(practMap.get(V3ParticipationType.SPRF));
         foundPrimaryPerformer = true;
       }
 
-      logger.info(" Practs size = {}", practs.size());
       if (!practs.isEmpty()) {
-
-        logger.info(" Practs is not empty, adding XML for Practitioner ");
+        logger.info(
+            "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
         practXml.append(getPractitionerXml(pr));
       } else {
-        logger.info(" Practs is null or empty after author checking ");
+        logger.info("Didn't find a Practitioner with valid type");
       }
     } else {
-      logger.info(" Pract Map is null or empty ");
+      logger.info("No Practitioner found");
     }
 
     if (!foundPrimaryPerformer) {
-      logger.info(" Did not find author ");
       practXml.append(getPractitionerXml(null));
     }
 
@@ -670,7 +665,7 @@ public class CdaHeaderGenerator {
 
         if (!StringUtils.isEmpty(id.getSystem()) && !StringUtils.isEmpty(id.getValue())) {
 
-          logger.debug(" Found Identifier with Type MR ");
+          logger.debug("Found Identifier with Type MR");
 
           String system =
               CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId());
@@ -679,7 +674,7 @@ public class CdaHeaderGenerator {
 
         } else {
 
-          logger.debug(" Using Resource Identifier as id ");
+          logger.debug("Using Resource Identifier as id");
 
           if (addOnce) {
             patientDetails.append(
@@ -690,7 +685,7 @@ public class CdaHeaderGenerator {
       }
 
     } else {
-      logger.info(" Using Resource Identifier as id ");
+      logger.debug("Using Resource Identifier as id");
       patientDetails.append(
           CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
     }
@@ -699,7 +694,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress()));
 
     // Add Telecom (Phone)
-    patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom()));
+    patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false));
 
     // Add Telecom (Email)
     patientDetails.append(CdaFhirUtilities.getEmailXml(p.getTelecom()));
@@ -793,14 +788,14 @@ public class CdaHeaderGenerator {
         // Add address if found
         if (guardianContact.getAddress() != null) {
 
-          logger.info(" Adding Address for Guardian");
+          logger.debug("Adding Address for Guardian");
           List<Address> addrs = new ArrayList<>();
           addrs.add(guardianContact.getAddress());
           patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
         }
 
         // Add Telecom
-        patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));
+        patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false));
         patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
 
         patientDetails.append(

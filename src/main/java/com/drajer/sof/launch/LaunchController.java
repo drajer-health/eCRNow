@@ -573,6 +573,9 @@ public class LaunchController {
         currentStateDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
       }
     } else {
+
+      // This is explicitly set to null so that when we dont have the encounter period present,
+      // we can default it to launch immediately.
       currentStateDetails.setStartDate(null);
       currentStateDetails.setEndDate(null);
     }
@@ -596,6 +599,7 @@ public class LaunchController {
             systemLaunch.getFhirServerURL());
     if (launchDetails != null) {
       authDetailsService.delete(launchDetails);
+      WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, false);
       return "LaunchDetails deleted successfully.";
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Launch Details Not found");
