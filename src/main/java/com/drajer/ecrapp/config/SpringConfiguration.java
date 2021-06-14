@@ -4,9 +4,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+
+import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
 @ComponentScan(
@@ -18,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
       "com.drajer.routing",
       "com.drajer.bsa"
     })
+@Import(EvaluatorConfiguration.class)
 public class SpringConfiguration {
 
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
@@ -26,6 +30,12 @@ public class SpringConfiguration {
       "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde";
 
   public static final FhirContext ctx = FhirContext.forR4();
+
+  // Needed for the evaluator configuration
+  @Bean
+  public FhirContext fhirContext() {
+    return ctx;
+  }
 
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {

@@ -2,6 +2,8 @@ package com.drajer.ecrapp.service;
 
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+
+import com.drajer.bsa.kar.action.EvaluateMeasure;
 import com.drajer.eca.model.AbstractAction;
 import com.drajer.eca.model.ActionData;
 import com.drajer.eca.model.ActionRepo;
@@ -294,6 +296,11 @@ public class PlanDefinitionProcessor {
                   populateActionData(mta, acts, action, EcrActionTypes.SUBMIT_EICR);
 
                   populateRRCheckAction(acts, mta);
+                }
+                else if (action.getId().equals(("evaluate-measure"))) {
+                  logger.info(" Identifier Evaluate Measure action");
+
+                  EvaluateMeasure em = new EvaluateMeasure();
                 }
               }
             }
