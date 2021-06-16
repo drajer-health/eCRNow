@@ -1,6 +1,6 @@
 package com.drajer.bsa.dao.impl;
 
-import com.drajer.bsa.dao.KARDao;
+import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.model.KAR;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class KARDaoImpl extends AbstractDao implements KARDao {
+public class KARDaoImpl extends AbstractDao implements KarDao {
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
 

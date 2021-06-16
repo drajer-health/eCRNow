@@ -296,40 +296,47 @@ public class ApplicationUtils {
   public static Instant convertDurationToInstant(Duration d) {
 
     Instant t = null;
+    String unit = "";
+
+    if (d.getCode() != null) {
+      unit = d.getCode();
+    } else if (d.getUnit() != null) {
+      unit = d.getUnit();
+    }
 
     if (d != null) {
 
-      if (d.getUnit().equalsIgnoreCase("a")) {
+      if (unit.equalsIgnoreCase("a")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.YEAR, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("mo")) {
+      } else if (unit.equalsIgnoreCase("mo")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("wk")) {
+      } else if (unit.equalsIgnoreCase("wk")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, (d.getValue().intValue() * 7));
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("d")) {
+      } else if (unit.equalsIgnoreCase("d")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("h")) {
+      } else if (unit.equalsIgnoreCase("h")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60 * 60);
-      } else if (d.getUnit().equalsIgnoreCase("min")) {
+      } else if (unit.equalsIgnoreCase("min")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60);
-      } else if (d.getUnit().equalsIgnoreCase("s")) {
+      } else if (unit.equalsIgnoreCase("s")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
       } else {

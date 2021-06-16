@@ -1,7 +1,7 @@
 package com.drajer.bsa.controller;
 
 import com.drajer.bsa.model.KAR;
-import com.drajer.bsa.service.KARService;
+import com.drajer.bsa.service.KarService;
 import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class KARController {
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
 
-  @Autowired KARService karService;
+  @Autowired KarService karService;
 
   @CrossOrigin
   @RequestMapping("/api/kar/{karId}")

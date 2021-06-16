@@ -2,8 +2,10 @@ package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.eca.model.TimingSchedule;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +31,9 @@ public abstract class BsaAction {
 
   /** The unique Id for the action. */
   protected String actionId;
+
+  /** The type of action */
+  protected BsaTypes.ActionType type;
 
   /** The list of named events upon which this action will be triggered, this may be empty. */
   protected Set<String> namedEventTriggers;
@@ -67,6 +72,9 @@ public abstract class BsaAction {
    * conditions are met.
    */
   private List<BsaAction> subActions;
+
+  /** The scheduler that is required to be used to schedule jobs. */
+  BsaScheduler scheduler;
 
   /** */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
@@ -113,16 +121,39 @@ public abstract class BsaAction {
 
         for (BsaRelatedAction ract : actions) {
 
-          logger.info(" **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+          logger.info(" Found the Related Action, trying to execute it. ");
           if (ract.getAction() != null) {
             logger.info(" Found the Related Action, hence execuing it ");
             ract.getAction().process(kd, ehrService);
             logger.info(" **** Finished execuing the Related Action. **** ");
           } else {
-            logger.info(
+            logger.error(
                 " Related Action not found, so skipping executing of action {} ",
                 ract.getRelatedActionId());
           }
+
+          /*
+          if (ract.getDuration() == null && ract.getAction() != null) {
+
+            logger.info(
+                " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+            ract.getAction().process(kd, ehrService);
+            logger.info(" **** Finished execuing the Related Action. **** ");
+
+          } else if (ract.getDuration() != null && ract.getAction() != null) {
+
+            logger.info(
+                " Found the Related Action, with a duration so need to setup a timer to execute later ");
+
+            Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+
+            scheduler.scheduleJob(1, actionId, type, t);
+
+          } else {
+            logger.info(
+                " Related Action not found, so skipping executing of action {} ",
+                ract.getRelatedActionId());
+          }*/
         }
 
       } else {
@@ -251,6 +282,22 @@ public abstract class BsaAction {
 
   public void addCondition(BsaCondition cond) {
     conditions.add(cond);
+  }
+
+  public BsaTypes.ActionType getType() {
+    return type;
+  }
+
+  public void setType(BsaTypes.ActionType type) {
+    this.type = type;
+  }
+
+  public BsaScheduler getScheduler() {
+    return scheduler;
+  }
+
+  public void setScheduler(BsaScheduler scheduler) {
+    this.scheduler = scheduler;
   }
 
   public void addRelatedAction(BsaRelatedAction ract) {

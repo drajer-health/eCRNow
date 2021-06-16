@@ -7,6 +7,8 @@ import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
@@ -24,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
@@ -66,6 +69,8 @@ public class KarParserImpl implements KarParser {
   String karDirectory;
 
   @Autowired BsaServiceUtils utils;
+
+  @Autowired BsaScheduler scheduler;
 
   private static String[] KAR_FILE_EXT = {"json"};
   private static String RECEIVER_ADDRESS_URL =
@@ -177,14 +182,21 @@ public class KarParserImpl implements KarParser {
 
     for (PlanDefinitionActionComponent act : actions) {
 
-      BsaAction action = getAction(act.getId());
-      action.setActionId(act.getId());
+      if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
 
-      populateAction(act, action);
+        Coding cd = act.getCodeFirstRep().getCodingFirstRep();
 
-      // Setup the artifact details.
-      art.addAction(action);
-      art.addTriggerEvent(action);
+        BsaAction action = getAction(cd.getCode());
+        action.setActionId(act.getId());
+        action.setScheduler(scheduler);
+        action.setType(BsaTypes.getActionType(cd.getCode()));
+
+        populateAction(act, action);
+
+        // Setup the artifact details.
+        art.addAction(action);
+        art.addTriggerEvent(action);
+      }
     }
   }
 
@@ -269,13 +281,20 @@ public class KarParserImpl implements KarParser {
     if (actions != null && actions.size() > 0) {
       for (PlanDefinitionActionComponent act : actions) {
 
-        BsaAction subAction = getAction(act.getId());
-        subAction.setActionId(act.getId());
+        if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
 
-        populateAction(act, subAction);
+          Coding cd = act.getCodeFirstRep().getCodingFirstRep();
 
-        // Setup the artifact details.
-        action.addAction(subAction);
+          BsaAction subAction = getAction(cd.getCode());
+          subAction.setActionId(act.getId());
+          subAction.setScheduler(scheduler);
+          subAction.setType(BsaTypes.getActionType(cd.getCode()));
+
+          populateAction(act, subAction);
+
+          // Setup the artifact details.
+          action.addAction(subAction);
+        }
       }
     }
   }

@@ -3,7 +3,16 @@ package com.drajer.bsa.dao;
 import com.drajer.bsa.model.KAR;
 import java.util.List;
 
-public interface KARDao {
+/**
+ *
+ *
+ * <h1>KarDao</h1>
+ *
+ * This interface declares methods to perform CRUD operations on the Knowledge Artifact.
+ *
+ * @author nbashyam
+ */
+public interface KarDao {
 
   public KAR saveOrUpdate(KAR kar);
 

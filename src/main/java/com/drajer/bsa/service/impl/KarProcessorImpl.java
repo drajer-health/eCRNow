@@ -6,6 +6,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  *
  *
- * <h1>KarProcessor</h1>
+ * <h1>KarProcessorImpl</h1>
  *
  * This interface declares methods to apply a (Knowledge Artifact) KAR to notifications received.
  *
@@ -50,6 +51,9 @@ public class KarProcessorImpl implements KarProcessor {
     KnowledgeArtifact kar = data.getKar();
     NotificationContext nc = data.getNotificationContext();
     String namedEvent = nc.getTriggerEvent();
+
+    // Setup scheduler for processing actions.
+    // data.setScheduler(scheduler);
 
     logger.info(" *** START Executing Trigger Actions *** ");
     Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
@@ -92,5 +96,12 @@ public class KarProcessorImpl implements KarProcessor {
         serviceUtils.saveResourceToFile(resEnt.getValue());
       }
     }
+  }
+
+  @Override
+  public void applyKarForScheduledJob(ScheduledJobData data) {
+    // TODO Auto-generated method stub
+
+    logger.info(" Scheduled Job invoked ");
   }
 }

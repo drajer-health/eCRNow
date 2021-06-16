@@ -209,4 +209,36 @@ public class KarProcessingData {
   public void setNotificationBundle(Bundle notificationBundle) {
     this.notificationBundle = notificationBundle;
   }
+
+  public HashMap<ResourceType, Set<Resource>> getFhirInputDataByType() {
+    return fhirInputDataByType;
+  }
+
+  public void setFhirInputDataByType(HashMap<ResourceType, Set<Resource>> fhirInputDataByType) {
+    this.fhirInputDataByType = fhirInputDataByType;
+  }
+
+  public HashMap<String, Set<Resource>> getFhirInputDataById() {
+    return fhirInputDataById;
+  }
+
+  public void setFhirInputDataById(HashMap<String, Set<Resource>> fhirInputDataById) {
+    this.fhirInputDataById = fhirInputDataById;
+  }
+
+  public String getSubmittedData() {
+    return submittedData;
+  }
+
+  public void setSubmittedData(String submittedData) {
+    this.submittedData = submittedData;
+  }
+
+  public String getResponseData() {
+    return responseData;
+  }
+
+  public void setResponseData(String responseData) {
+    this.responseData = responseData;
+  }
 }

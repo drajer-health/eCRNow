@@ -3,7 +3,7 @@ package com.drajer.bsa.service;
 import com.drajer.bsa.model.KAR;
 import java.util.List;
 
-public interface KARService {
+public interface KarService {
 
   public KAR saveOrUpdate(KAR kar);
 

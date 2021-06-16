@@ -1,6 +1,7 @@
 package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.scheduler.ScheduledJobData;
 
 /**
  *
@@ -19,4 +20,6 @@ public interface KarProcessor {
    * @param data The complete context required including the KAR to be applied for the notification.
    */
   public void applyKarForNotification(KarProcessingData data);
+
+  public void applyKarForScheduledJob(ScheduledJobData data);
 }
