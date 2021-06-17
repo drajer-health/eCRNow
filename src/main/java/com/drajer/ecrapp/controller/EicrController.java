@@ -160,7 +160,6 @@ public class EicrController {
         eicrRRService.deleteEicr(eicr);
         return new ResponseEntity("Eicr deleted successfully.", HttpStatus.OK);
       }
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Eicr Not found");
       return new ResponseEntity("Eicr Not found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);

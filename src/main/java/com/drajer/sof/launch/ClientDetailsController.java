@@ -100,7 +100,6 @@ public class ClientDetailsController {
         clientDetailsService.delete(checkClientDetails);
         return new ResponseEntity("ClientDetails deleted successfully.", HttpStatus.OK);
       }
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Client Details Not found");
       return new ResponseEntity("Client Details Not found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
