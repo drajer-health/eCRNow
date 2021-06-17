@@ -2,7 +2,10 @@ package com.drajer.sof.launch;
 
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.service.ClientDetailsService;
+import java.io.IOException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,5 +80,22 @@ public class ClientDetailsController {
   @RequestMapping("/api/clientDetails/")
   public List<ClientDetails> getAllClientDetails() {
     return clientDetailsService.getAllClientDetails();
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.DELETE)
+  public String deleteClientDetails(
+      @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    if (fhirUrl == null || fhirUrl.isEmpty()) {
+      return "Requested FHIR Url is missing or empty";
+    }
+    ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
+    if (checkClientDetails != null) {
+      clientDetailsService.delete(checkClientDetails);
+      return "ClientDetails deleted successfully.";
+    }
+    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Client Details Not found");
+    return "ClientDetails Not found";
   }
 }

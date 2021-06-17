@@ -2,10 +2,13 @@ package com.drajer.ecrapp.controller;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,5 +143,22 @@ public class EicrController {
           HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
     }
     return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/eicrData", method = RequestMethod.DELETE)
+  public String deleteClientDetails(
+      @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    if (eicrDocId == null || eicrDocId.isEmpty()) {
+      return "Requested Eicr Doc Id is missing or empty";
+    }
+    Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
+    if (eicr != null) {
+      eicrRRService.deleteEicr(eicr);
+      return "Eicr deleted successfully.";
+    }
+    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Eicr Not found");
+    return "Eicr Not found";
   }
 }
