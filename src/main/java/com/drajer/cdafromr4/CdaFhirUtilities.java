@@ -670,7 +670,6 @@ public class CdaFhirUtilities {
 
         logger.debug(" Found the bounds element ");
         return getActualDate(tmg.getRepeat().getBounds());
-
       }
     }
 
