@@ -191,8 +191,9 @@ public class LaunchController {
           if (urlExtension.getString("url").equals("token")) {
             logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
-            if((clientDetails.getIsUserAccountLaunch() && clientDetails.getTokenURL() == null) || clientDetails.getIsSystem()) {
-            	clientDetails.setTokenURL(tokenEndpoint);	
+            if ((clientDetails.getIsUserAccountLaunch() && clientDetails.getTokenURL() == null)
+                || clientDetails.getIsSystem()) {
+              clientDetails.setTokenURL(tokenEndpoint);
             }
           }
         }
