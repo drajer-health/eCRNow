@@ -4,7 +4,6 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
-import com.drajer.sof.service.LaunchService;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -35,8 +34,8 @@ public class RefreshTokenScheduler {
 
   private static final String GRANT_TYPE = "grant_type";
   private static final String SCOPE = "scope";
-  private static final String CLIENT_CREDENTIALS= "client_credentials";
-  private static final String ACCEPT_HEADER= "Accept";
+  private static final String CLIENT_CREDENTIALS = "client_credentials";
+  private static final String ACCEPT_HEADER = "Accept";
 
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info(
@@ -187,8 +186,7 @@ public class RefreshTokenScheduler {
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
       ResponseEntity<?> response =
-          resTemplate.exchange(
-              clientDetails.getTokenURL(), HttpMethod.GET, entity, Response.class);
+          resTemplate.exchange(clientDetails.getTokenURL(), HttpMethod.GET, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
       logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());
       logger.info("Received AccessToken: {}", tokenResponse);
