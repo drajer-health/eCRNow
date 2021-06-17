@@ -150,16 +150,22 @@ public class EicrController {
   public ResponseEntity<Object> deleteClientDetails(
       @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    if (eicrDocId == null || eicrDocId.isEmpty()) {
-      return new ResponseEntity(
-          "Requested Eicr Doc Id is missing or empty", HttpStatus.BAD_REQUEST);
+    try {
+      if (eicrDocId == null || eicrDocId.isEmpty()) {
+        return new ResponseEntity(
+            "Requested Eicr Doc Id is missing or empty", HttpStatus.BAD_REQUEST);
+      }
+      Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
+      if (eicr != null) {
+        eicrRRService.deleteEicr(eicr);
+        return new ResponseEntity("Eicr deleted successfully.", HttpStatus.OK);
+      }
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Eicr Not found");
+      return new ResponseEntity("Eicr Not found", HttpStatus.NOT_FOUND);
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
     }
-    Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
-    if (eicr != null) {
-      eicrRRService.deleteEicr(eicr);
-      return new ResponseEntity("Eicr deleted successfully.", HttpStatus.OK);
-    }
-    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Eicr Not found");
-    return new ResponseEntity("Eicr Not found", HttpStatus.NOT_FOUND);
   }
 }

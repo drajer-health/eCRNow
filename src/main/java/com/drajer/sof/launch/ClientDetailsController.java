@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class ClientDetailsController {
+
+  public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
 
   @Autowired ClientDetailsService clientDetailsService;
 
@@ -87,15 +90,22 @@ public class ClientDetailsController {
   public ResponseEntity<Object> deleteClientDetails(
       @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    if (fhirUrl == null || fhirUrl.isEmpty()) {
-      return new ResponseEntity("Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
+
+    try {
+      if (fhirUrl == null || fhirUrl.isEmpty()) {
+        return new ResponseEntity("Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
+      }
+      ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
+      if (checkClientDetails != null) {
+        clientDetailsService.delete(checkClientDetails);
+        return new ResponseEntity("ClientDetails deleted successfully.", HttpStatus.OK);
+      }
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Client Details Not found");
+      return new ResponseEntity("Client Details Not found", HttpStatus.NOT_FOUND);
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
     }
-    ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
-    if (checkClientDetails != null) {
-      clientDetailsService.delete(checkClientDetails);
-      return new ResponseEntity("ClientDetails deleted successfully.", HttpStatus.OK);
-    }
-    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Client Details Not found");
-    return new ResponseEntity("Client Details Not found", HttpStatus.NOT_FOUND);
   }
 }
