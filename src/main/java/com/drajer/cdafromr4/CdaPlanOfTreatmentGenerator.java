@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
@@ -31,7 +32,7 @@ public class CdaPlanOfTreatmentGenerator {
     List<ServiceRequest> sr = getValidServiceRequests(data);
 
     if (sr != null && !sr.isEmpty()) {
-      logger.info(" Found a total of {} service request objects to translate to CDA.", sr.size());
+      logger.debug("Found a total of {} service request objects to translate to CDA.", sr.size());
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -84,13 +85,13 @@ public class CdaPlanOfTreatmentGenerator {
         }
 
         String serviceDate = CdaFhirUtilities.getStringForType(s.getOccurrence());
-        logger.info(" Service Date for display {} ", serviceDate);
+        logger.debug("Service Date for display {} ", serviceDate);
 
         if (serviceDate.isEmpty() && s.getAuthoredOnElement() != null) {
-          serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(s.getAuthoredOnElement());
-        } else {
-          logger.error(" Authored time is null or the datetime is null or timezone is null ");
-        }
+            serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(s.getAuthoredOnElement());
+          } else {
+            logger.error(" Authored time is null or the datetime is null or timezone is null ");
+          }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(
@@ -153,7 +154,7 @@ public class CdaPlanOfTreatmentGenerator {
     String codeXml = "";
     // Add Trigger code template if the code matched the Url in the Service Request.
     if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-      logger.info(" Found a Matched Code that is for Service Request ");
+      logger.debug("Found a Matched Code that is for Service Request");
 
       String mCd =
           CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
@@ -177,8 +178,8 @@ public class CdaPlanOfTreatmentGenerator {
                 "",
                 contentRef);
       } else {
-        logger.info(
-            " Did not find the code value in the matched codes, make it a regular Planned Observation ");
+        logger.debug(
+            "Did not find the code value in the matched codes, make it a regular Planned Observation");
       }
     }
 
@@ -210,16 +211,15 @@ public class CdaPlanOfTreatmentGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
 
-    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
+    Pair<Date,TimeZone> effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
     if (effDate.getValue0() == null) {
-      logger.info(" Use Authored Date ");
+      logger.debug("Use Authored Date");
 
       effDate.setAt0(sr.getAuthoredOn());
     }
 
     sb.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(
-            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+    		CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -234,8 +234,8 @@ public class CdaPlanOfTreatmentGenerator {
 
     if (data.getServiceRequests() != null && !data.getServiceRequests().isEmpty()) {
 
-      logger.info(
-          " Total num of Service Requests available for Patient {}",
+      logger.debug(
+          "Total num of Service Requests available for Patient {}",
           data.getServiceRequests().size());
 
       for (ServiceRequest s : data.getServiceRequests()) {
@@ -248,12 +248,12 @@ public class CdaPlanOfTreatmentGenerator {
             && s.getStatus() != null
             && s.getStatus() == ServiceRequestStatus.ACTIVE) {
 
-          logger.info(" Found a Service Request with a LOINC code ");
+          logger.debug("Found a Service Request with a LOINC code");
           sr.add(s);
         }
       }
     } else {
-      logger.info(" No Valid Service Requests in the bundle to process ");
+      logger.debug("No Valid Service Requests in the bundle to process");
     }
 
     return sr;

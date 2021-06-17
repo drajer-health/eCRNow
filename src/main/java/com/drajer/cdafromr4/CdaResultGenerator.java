@@ -140,7 +140,7 @@ public class CdaResultGenerator {
         lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
         // Fix the Code to be the same as the result code..
-        logger.info("Find the Loinc Code as a priority first for Lab Results");
+        logger.debug("Find the Loinc Code as a priority first for Lab Results");
         String codeXml =
             CdaFhirUtilities.getCodingXmlForCodeSystem(
                 cds,
@@ -149,7 +149,7 @@ public class CdaResultGenerator {
                 false,
                 "");
 
-        logger.debug(" Code Xml = {}", codeXml);
+        logger.debug("Code Xml = {}", codeXml);
         if (!codeXml.isEmpty()) {
           lrEntry.append(codeXml);
         } else {
@@ -216,7 +216,7 @@ public class CdaResultGenerator {
 
       for (ObservationComponentComponent oc : obs.getComponent()) {
 
-        logger.info(" Found Observation Components ");
+        logger.debug("Found Observation Components ");
         if (oc.getCode() != null) {
           cc = oc.getCode();
         }
@@ -246,7 +246,7 @@ public class CdaResultGenerator {
 
     if (!foundComponent) {
 
-      logger.info(" No component found , so directly adding the observation code ");
+      logger.debug("No component found , so directly adding the observation code ");
       lrEntry.append(
           getXmlForObservationComponent(
               details,
@@ -258,7 +258,7 @@ public class CdaResultGenerator {
               contentRef));
     }
 
-    logger.debug(" Lr Entry = {}", lrEntry);
+    logger.debug("Lr Entry = {}", lrEntry);
 
     return lrEntry.toString();
   }
@@ -301,7 +301,7 @@ public class CdaResultGenerator {
     String obsValueXml = "";
     // Add Trigger code template if the code matched the Url in the Service Request.
     if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-      logger.info(" Found a Matched Code that is for Observation.code ");
+      logger.debug("Found a Matched Code that is for Observation.code ");
 
       String mCd =
           CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
@@ -309,7 +309,7 @@ public class CdaResultGenerator {
 
       if (!mCd.isEmpty()) {
 
-        logger.info(" Found exact code that matches the trigger codes ");
+        logger.debug("Found exact code that matches the trigger codes");
         lrEntry.append(
             CdaGeneratorUtils.getXmlForTemplateId(
                 CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
@@ -327,11 +327,11 @@ public class CdaResultGenerator {
                 CdaGeneratorConstants.FHIR_LOINC_URL,
                 contentRef);
       } else {
-        logger.error(
-            " Did not find the code value in the matched codes, make it a regular Observation ");
+        logger.debug(
+            "Did not find the code value in the matched codes, make it a regular Observation");
       }
     } else if (matchedTriggerValues != null && !matchedTriggerValues.isEmpty()) {
-      logger.info(" Found a Matched Code that is for Observation.value ");
+      logger.debug("Found a Matched Code that is for Observation.value");
 
       String mCd =
           CdaFhirUtilities.getMatchingCodeFromTypeForCodeSystem(
@@ -339,7 +339,7 @@ public class CdaResultGenerator {
 
       if (!mCd.isEmpty() && val instanceof CodeableConcept) {
 
-        logger.info(" Found exact Value Codeable concept that matches the trigger codes ");
+        logger.debug("Found exact Value Codeable concept that matches the trigger codes");
         lrEntry.append(
             CdaGeneratorUtils.getXmlForTemplateId(
                 CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
@@ -359,14 +359,14 @@ public class CdaResultGenerator {
                 CdaGeneratorConstants.FHIR_LOINC_URL,
                 contentRef);
       } else {
-        logger.error(
-            " Did not find the code value in the matched values, make it a regular Observation ");
+        logger.debug(
+            "Did not find the code value in the matched values, make it a regular Observation");
       }
     }
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    logger.info("Find the Loinc Code as priority for Lab Results");
+    logger.debug("Find the Loinc Code as priority for Lab Results");
     List<Coding> cds = null;
     if (cd != null && cd.getCodingFirstRep() != null) {
       cds = cd.getCoding();
@@ -374,7 +374,7 @@ public class CdaResultGenerator {
 
     if (obsCodeXml.isEmpty()) {
 
-      logger.info(" Did not find the trigger code matches, adding XML based on code system");
+      logger.debug("Did not find the trigger code matches, adding XML based on code system");
       obsCodeXml =
           CdaFhirUtilities.getCodingXmlForCodeSystem(
               cds,
@@ -384,10 +384,10 @@ public class CdaResultGenerator {
               contentRef);
 
       if (!obsCodeXml.isEmpty()) {
-        logger.info(" Did not find the trigger code matches, adding XML based on code system ");
+        logger.debug("Did not find the trigger code matches, adding XML based on code system");
         lrEntry.append(obsCodeXml);
       } else {
-        logger.info(" Did not find the trigger code matches, creating default xml ");
+        logger.debug("Did not find the trigger code matches, creating default xml");
         lrEntry.append(
             CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME, contentRef));
       }
@@ -412,7 +412,7 @@ public class CdaResultGenerator {
     // Add interpretation code.
     if (interpretation != null) {
 
-      logger.info(" Adding Interpretaion Code ");
+      logger.debug("Adding Interpretation Code");
 
       String interpretXml =
           CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
@@ -436,7 +436,7 @@ public class CdaResultGenerator {
 
     StringBuilder lrEntry = new StringBuilder();
 
-    logger.info(" Adding Trigger Code Reason for Result Observation ");
+    logger.debug("Adding Trigger Code Reason for Result Observation");
 
     PatientExecutionState state = null;
 
@@ -529,7 +529,7 @@ public class CdaResultGenerator {
 
       } else {
 
-        logger.info(" Not adding matched Trigger codes as they are not present for Lab Result ");
+        logger.debug("Not adding matched Trigger codes as they are not present for Lab Result");
       }
     }
 
@@ -583,8 +583,8 @@ public class CdaResultGenerator {
 
     if (data.getLabResults() != null && !data.getLabResults().isEmpty()) {
 
-      logger.info(
-          " Total num of Lab Results available for Patient {}", data.getLabResults().size());
+      logger.debug(
+          "Total num of Lab Results available for Patient {}", data.getLabResults().size());
 
       for (Observation s : data.getLabResults()) {
 
@@ -594,12 +594,12 @@ public class CdaResultGenerator {
             && CdaFhirUtilities.isCodingPresentForCodeSystem(
                 s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
 
-          logger.info(" Found a Lab Results with a LOINC code ");
+          logger.debug("Found a Lab Results with a LOINC code");
           sr.add(s);
         }
       }
     } else {
-      logger.info(" No Valid Lab Results in the bundle to process ");
+      logger.debug("No Valid Lab Results in the bundle to process");
     }
 
     return sr;

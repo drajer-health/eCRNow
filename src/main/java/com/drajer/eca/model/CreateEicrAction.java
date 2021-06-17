@@ -167,7 +167,7 @@ public class CreateEicrAction extends AbstractAction {
 
                   EcaUtils.updateDetailStatus(details, newState);
 
-                  logger.info(" **** Printing Eicr from CREATE EICR ACTION **** ");
+                  logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
                   String fileName =
                       ActionRepo.getInstance().getLogFileDirectory()
@@ -180,7 +180,7 @@ public class CreateEicrAction extends AbstractAction {
                           + ".xml";
                   ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                  logger.info(" **** End Printing Eicr from CREATE EICR ACTION **** ");
+                  logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
                 } finally {
                   MDCUtils.removeCorrelationId();
                 }
@@ -197,17 +197,17 @@ public class CreateEicrAction extends AbstractAction {
               }
             } else {
               logger.info(
-                  " EICR job is in a state of {} , due to which EICR will not be created. ",
+                  "EICR job is in a state of {} , due to which EICR will not be created.",
                   state.getCreateEicrStatus().getJobStatus());
             }
 
           } else {
-            logger.info(" Related Actions are not completed, hence EICR will not be created. ");
+            logger.info(" Related Actions are not completed, hence EICR will not be created.");
           }
 
         } else {
 
-          logger.info(" Conditions not met, hence EICR will not be created. ");
+          logger.info("Conditions not met, hence EICR will not be created.");
         }
 
       } catch (Exception e) {
@@ -215,7 +215,7 @@ public class CreateEicrAction extends AbstractAction {
         StringBuilder expMsg = new StringBuilder();
         if (state != null) {
 
-          expMsg.append(" Unable to create Eicr due to exceptions during processing ");
+          expMsg.append("Unable to create Eicr due to exceptions during processing");
           // Update
           state.getCreateEicrStatus().setEicrCreated(false);
           state.getCreateEicrStatus().seteICRId("0");
@@ -239,7 +239,7 @@ public class CreateEicrAction extends AbstractAction {
       throw new RuntimeException(msg);
     }
 
-    logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
+    logger.info("**** END Executing Create Eicr Action after completing normal execution. ****");
   }
 
   @Override
