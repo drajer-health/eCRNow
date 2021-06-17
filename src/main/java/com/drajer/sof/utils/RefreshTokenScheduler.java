@@ -34,6 +34,9 @@ public class RefreshTokenScheduler {
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
   private static final String GRANT_TYPE = "grant_type";
+  private static final String SCOPE = "scope";
+  private static final String CLIENT_CREDENTIALS= "client_credentials";
+  private static final String ACCEPT_HEADER= "Accept";
 
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info(
@@ -170,22 +173,22 @@ public class RefreshTokenScheduler {
 
   public JSONObject getAccessTokenUsingUserCredentials(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken with Username: " + clientDetails.getClientId());
+    logger.info("Getting AccessToken with Username: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
-      headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+      headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
       String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
       String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
       headers.add("Authorization", "Basic " + base64EncodedString);
       MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-      // map.add(GRANT_TYPE, "client_credentials");
-      // map.add("scope", clientDetails.getScopes());
+      map.add(GRANT_TYPE, CLIENT_CREDENTIALS);
+      map.add(SCOPE, clientDetails.getScopes());
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
       ResponseEntity<?> response =
           resTemplate.exchange(
-              clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
+              clientDetails.getTokenURL(), HttpMethod.GET, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
       logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());
       logger.info("Received AccessToken: {}", tokenResponse);
