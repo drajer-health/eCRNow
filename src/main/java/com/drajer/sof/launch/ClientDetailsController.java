@@ -84,18 +84,18 @@ public class ClientDetailsController {
 
   @CrossOrigin
   @RequestMapping(value = "/api/clientDetails", method = RequestMethod.DELETE)
-  public String deleteClientDetails(
+  public ResponseEntity<Object> deleteClientDetails(
       @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     if (fhirUrl == null || fhirUrl.isEmpty()) {
-      return "Requested FHIR Url is missing or empty";
+      return new ResponseEntity("Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
     }
     ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
     if (checkClientDetails != null) {
       clientDetailsService.delete(checkClientDetails);
-      return "ClientDetails deleted successfully.";
+      return new ResponseEntity("ClientDetails deleted successfully.", HttpStatus.OK);
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Client Details Not found");
-    return "ClientDetails Not found";
+    return new ResponseEntity("Client Details Not found", HttpStatus.NOT_FOUND);
   }
 }

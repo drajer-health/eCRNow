@@ -147,18 +147,19 @@ public class EicrController {
 
   @CrossOrigin
   @RequestMapping(value = "/api/eicrData", method = RequestMethod.DELETE)
-  public String deleteClientDetails(
+  public ResponseEntity<Object> deleteClientDetails(
       @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     if (eicrDocId == null || eicrDocId.isEmpty()) {
-      return "Requested Eicr Doc Id is missing or empty";
+      return new ResponseEntity(
+          "Requested Eicr Doc Id is missing or empty", HttpStatus.BAD_REQUEST);
     }
     Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
     if (eicr != null) {
       eicrRRService.deleteEicr(eicr);
-      return "Eicr deleted successfully.";
+      return new ResponseEntity("Eicr deleted successfully.", HttpStatus.OK);
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Eicr Not found");
-    return "Eicr Not found";
+    return new ResponseEntity("Eicr Not found", HttpStatus.NOT_FOUND);
   }
 }
