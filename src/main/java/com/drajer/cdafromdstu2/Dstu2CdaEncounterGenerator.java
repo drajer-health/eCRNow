@@ -76,9 +76,19 @@ public class Dstu2CdaEncounterGenerator {
       }
 
       String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-      if (encounter.getPeriod() != null && encounter.getPeriod().getStart() != null) {
+      if (encounter.getPeriod() != null
+          && encounter.getPeriod().getStartElement() != null
+          && encounter.getPeriod().getStartElement().getTimeZone() != null) {
 
-        dt = CdaGeneratorUtils.getStringForDate(encounter.getPeriod().getStart());
+        dt =
+            CdaGeneratorUtils.getStringForDateTime(
+                encounter.getPeriod().getStart(),
+                encounter.getPeriod().getStartElement().getTimeZone());
+      } else if (encounter.getPeriod() != null && encounter.getPeriod().getStart() != null) {
+        dt = CdaGeneratorUtils.getStringForDateTime(encounter.getPeriod().getStart(), null);
+      } else {
+        logger.error(
+            " Period is either null or the Period.DateTime has a null value or null timezone value ");
       }
 
       Map<String, String> bodyvals = new HashMap<String, String>();

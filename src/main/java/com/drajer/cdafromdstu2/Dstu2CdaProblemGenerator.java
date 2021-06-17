@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,22 +158,25 @@ public class Dstu2CdaProblemGenerator {
                   CdaGeneratorConstants.COMPLETED_STATUS));
         }
 
-        Date onset = null;
-        Date abatement = null;
-        Date recorded = null;
+        Pair<Date, TimeZone> onset = null;
+        Pair<Date, TimeZone> abatement = null;
+        Pair<Date, TimeZone> recorded = null;
+
         if (pr.getOnset() != null && pr.getOnset() instanceof DateTimeDt) {
 
           DateTimeDt dt = (DateTimeDt) pr.getOnset();
-          onset = dt.getValue();
+          onset = new Pair<>(dt.getValue(), dt.getTimeZone());
         }
 
         if (pr.getAbatement() != null && pr.getAbatement() instanceof DateTimeDt) {
 
           DateTimeDt dt = (DateTimeDt) pr.getAbatement();
-          abatement = dt.getValue();
+          abatement = new Pair<>(dt.getValue(), dt.getTimeZone());
         }
 
-        recorded = pr.getDateRecorded();
+        if (pr.getDateRecordedElement() != null) {
+          recorded = new Pair<>(pr.getDateRecorded(), null);
+        }
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
@@ -256,7 +260,11 @@ public class Dstu2CdaProblemGenerator {
   }
 
   public static String addTriggerCodes(
-      Dstu2FhirData data, LaunchDetails details, Condition cond, Date onset, Date abatement) {
+      Dstu2FhirData data,
+      LaunchDetails details,
+      Condition cond,
+      Pair<Date, TimeZone> onset,
+      Pair<Date, TimeZone> abatement) {
 
     StringBuilder sb = new StringBuilder();
 

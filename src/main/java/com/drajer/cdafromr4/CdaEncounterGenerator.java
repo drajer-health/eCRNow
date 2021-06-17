@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Identifier;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,9 +88,15 @@ public class CdaEncounterGenerator {
       }
 
       String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-      if (encounter.getPeriod() != null && encounter.getPeriod().getStart() != null) {
+      if (encounter.getPeriod() != null && encounter.getPeriod().getStartElement() != null) {
 
-        dt = CdaGeneratorUtils.getStringForDate(encounter.getPeriod().getStart());
+        dt =
+            CdaFhirUtilities.getDisplayStringForDateTimeType(
+                encounter.getPeriod().getStartElement());
+
+      } else {
+        logger.error(
+            " Period is either null or the Period.DateTime has a null value or null timezone value ");
       }
 
       Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -248,8 +256,8 @@ public class CdaEncounterGenerator {
             CdaGeneratorUtils.getXmlForCD(
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-        Date onset = CdaFhirUtilities.getActualDate(c.getOnset());
-        Date abatement = CdaFhirUtilities.getActualDate(c.getAbatement());
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(c.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(c.getAbatement());
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(

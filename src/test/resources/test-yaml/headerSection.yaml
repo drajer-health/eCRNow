@@ -59,7 +59,7 @@ testCase:
       'administrativeGenderCode/@codeSystem': "2.16.840.1.113883.5.1"
       'name/given': "COVIDONE"
       'name/family': "FHIRTest"
-      'birthTime/@value': "19700102000000"
+      'birthTime/@value': "19700102"
       'deceasedInd/@value': "false"
       'raceCode/@code': "2054-5"
       'raceCode/@codeSystem': "2.16.840.1.113883.6.238"
@@ -117,7 +117,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
     - xPath: "patient/"
-      'deceasedTime/@value': "20201013000000"
+      'deceasedTime/@value': "20201013192945+0000"
       'deceasedInd/@value': "true"
   eCR-header-author:
     testData:

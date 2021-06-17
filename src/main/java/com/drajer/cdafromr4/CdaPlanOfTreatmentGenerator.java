@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
@@ -85,8 +86,10 @@ public class CdaPlanOfTreatmentGenerator {
         String serviceDate = CdaFhirUtilities.getStringForType(s.getOccurrence());
         logger.debug("Service Date for display {} ", serviceDate);
 
-        if (serviceDate.isEmpty() && s.getAuthoredOn() != null) {
-          serviceDate = CdaGeneratorUtils.getStringForDate(s.getAuthoredOn());
+        if (serviceDate.isEmpty() && s.getAuthoredOnElement() != null) {
+          serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(s.getAuthoredOnElement());
+        } else {
+          logger.error(" Authored time is null or the datetime is null or timezone is null ");
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -207,17 +210,16 @@ public class CdaPlanOfTreatmentGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
 
-    Date effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
-    if (effDate == null) {
+    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
+    if (effDate.getValue0() == null) {
       logger.debug("Use Authored Date");
 
-      effDate = sr.getAuthoredOn();
+      effDate.setAt0(sr.getAuthoredOn());
     }
 
-    if (effDate != null) {}
-
     sb.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate));
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
