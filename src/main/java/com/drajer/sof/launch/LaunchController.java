@@ -199,13 +199,7 @@ public class LaunchController {
         }
       }
 
-      JSONObject tokenResponse = null;
-      if (clientDetails.getIsSystem()) {
-        tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
-      }
-      if (clientDetails.getIsUserAccountLaunch()) {
-        tokenResponse = tokenScheduler.getAccessTokenUsingUserCredentials(clientDetails);
-      }
+      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
@@ -236,6 +230,7 @@ public class LaunchController {
                 systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsUserAccountLaunch(clientDetails.getIsUserAccountLaunch());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());

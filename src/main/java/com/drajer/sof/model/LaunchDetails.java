@@ -147,6 +147,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
+  @Column(name = "is_user_account_launch", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isUserAccountLaunch;
+
   @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
@@ -275,7 +279,8 @@ public class LaunchDetails {
       int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
         logger.info("AccessToken is Expired. Getting new AccessToken");
-        JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
+        JSONObject accessTokenObj =
+            new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
         logger.info("AccessToken is Valid. No need to get new AccessToken");
@@ -452,6 +457,14 @@ public class LaunchDetails {
 
   public void setIsSystem(Boolean isSystem) {
     this.isSystem = isSystem;
+  }
+
+  public Boolean getIsUserAccountLaunch() {
+    return isUserAccountLaunch;
+  }
+
+  public void setIsUserAccountLaunch(Boolean isUserAccountLaunch) {
+    this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
   public String getSmtpPort() {
