@@ -5,12 +5,12 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Dosage;
 import org.hl7.fhir.r4.model.Medication;
@@ -190,7 +190,7 @@ public class CdaMedicationGenerator {
           medDisplayName = CdaFhirUtilities.getStringForMedicationType(medReq);
         }
 
-        Date startDate = null;
+        DateTimeType startDate = null;
         Dosage dosage = null;
         if (medReq.getDosageInstructionFirstRep() != null
             && medReq.getDosageInstructionFirstRep().getTiming() != null) {
@@ -198,13 +198,16 @@ public class CdaMedicationGenerator {
           dosage = medReq.getDosageInstructionFirstRep();
           Timing t = medReq.getDosageInstructionFirstRep().getTiming();
           if (t != null && t.getRepeat() != null && t.getRepeat().getBoundsPeriod() != null) {
-            startDate = t.getRepeat().getBoundsPeriod().getStart();
+            startDate = t.getRepeat().getBoundsPeriod().getStartElement();
           }
         }
 
         String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (startDate != null) {
-          dt = CdaGeneratorUtils.getStringForDate(startDate);
+          dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
+        } else {
+          logger.error(
+              " Dosage field does not have a valid period either due to datetime or timezone being null ");
         }
 
         Map<String, String> bodyvals = new HashMap<>();
@@ -271,7 +274,7 @@ public class CdaMedicationGenerator {
       Dosage dosage,
       LaunchDetails details,
       Quantity dose,
-      Date startDate,
+      DateTimeType startDate,
       String moodCode,
       DomainResource res) {
 
@@ -303,8 +306,7 @@ public class CdaMedicationGenerator {
               effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
     } else if (startDate != null) {
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME, startDate));
+          CdaFhirUtilities.getDateTimeTypeXml(startDate, CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else {
       sb.append(
           CdaGeneratorUtils.getXmlForNullEffectiveTime(

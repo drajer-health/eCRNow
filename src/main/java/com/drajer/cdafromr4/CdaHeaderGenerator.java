@@ -310,10 +310,12 @@ public class CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
-    if (en != null && en.getPeriod().getStart() != null) {
+    if (en != null && en.getPeriod() != null && en.getPeriod().getStartElement() != null) {
       sb.append(
           CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_EL_NAME, en.getPeriod().getStart()));
+              CdaGeneratorConstants.TIME_EL_NAME,
+              en.getPeriod().getStart(),
+              en.getPeriod().getStartElement().getTimeZone()));
     } else {
       sb.append(
           CdaGeneratorUtils.getXmlForEffectiveTime(
@@ -716,9 +718,10 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
+
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(
-            CdaGeneratorConstants.BIRTH_TIME_EL_NAME, p.getBirthDate()));
+        CdaFhirUtilities.getDateTypeXml(
+            p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
 
     if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
       patientDetails.append(
@@ -732,8 +735,7 @@ public class CdaHeaderGenerator {
       if (p.getDeceased() instanceof DateTimeType) {
         DateTimeType d = (DateTimeType) p.getDeceased();
         patientDetails.append(
-            CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue()));
+            CdaFhirUtilities.getDateTimeTypeXml(d, CdaGeneratorConstants.SDTC_DECEASED_TIME));
       } else {
         patientDetails.append(
             CdaGeneratorUtils.getXmlForNullEffectiveTime(

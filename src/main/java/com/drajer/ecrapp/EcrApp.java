@@ -2,6 +2,7 @@ package com.drajer.ecrapp;
 
 import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.ecrapp.security.SampleAuthorizationServiceImpl;
+import java.util.TimeZone;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -22,6 +23,7 @@ public class EcrApp extends SpringBootServletInitializer {
   }
 
   public static void main(String[] args) {
+    TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
     SpringApplication.run(EcrApp.class, args);
   }
 

@@ -16,10 +16,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -555,8 +557,9 @@ public class R4ResourcesData {
               (MedicationAdministration) entry.getResource();
           // Checking If Effective Date is present in MedicationAdministration resource
           if (medAdministration.getEffective() != null) {
-            Date effDate = CdaFhirUtilities.getActualDate(medAdministration.getEffective());
-            if (isResourceWithinDateTime(start, end, effDate)) {
+            Pair<Date, TimeZone> effDate =
+                CdaFhirUtilities.getActualDate(medAdministration.getEffective());
+            if (isResourceWithinDateTime(start, end, effDate.getValue0())) {
               medAdministrations.add(medAdministration);
               medicationCodes.addAll(findMedicationCodes(medAdministration));
             }

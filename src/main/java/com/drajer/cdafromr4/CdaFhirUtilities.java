@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -658,33 +660,48 @@ public class CdaFhirUtilities {
     else return new Pair<>("", disp.getValue1());
   }
 
-  public static Date getActualDate(Type dt) {
+  public static Pair<Date, TimeZone> getActualDate(Type dt) {
 
+    Date d = null;
+    TimeZone t = null;
     if (dt instanceof DateTimeType) {
 
       DateTimeType d1 = (DateTimeType) dt;
-      return d1.getValue();
+      d = d1.getValue();
+      t = d1.getTimeZone();
+
     } else if (dt instanceof Period) {
 
       logger.debug(" Found an instance of period ");
       Period d1 = (Period) dt;
-      return d1.getStart();
+
+      if (d1.getStartElement() != null) {
+
+        d = d1.getStart();
+        t = d1.getStartElement().getTimeZone();
+      } else if (d1.getEndElement() != null) {
+        d = d1.getEnd();
+        t = d1.getEndElement().getTimeZone();
+      }
+
     } else if (dt instanceof InstantType) {
 
       InstantType d1 = (InstantType) dt;
-      return d1.getValue();
+      d = d1.getValue();
+      t = d1.getTimeZone();
+
     } else if (dt instanceof Timing) {
 
       logger.debug(" Found an instance of timing ");
-      Timing t = (Timing) (dt);
-      if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+      Timing tmg = (Timing) (dt);
+      if (tmg.getRepeat() != null && tmg.getRepeat().getBounds() != null) {
 
         logger.debug(" Found the bounds element ");
-        return getActualDate(t.getRepeat().getBounds());
+        return getActualDate(tmg.getRepeat().getBounds());
       }
     }
 
-    return null;
+    return new Pair<>(d, t);
   }
 
   public static String getCodeableConceptDisplayForCodeSystem(
@@ -1132,6 +1149,36 @@ public class CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getDateTimeTypeXml(DateTimeType dt, String elName) {
+
+    if (dt != null) {
+
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, dt.getValue(), dt.getTimeZone());
+    } else {
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, null, null);
+    }
+  }
+
+  public static String getDateTypeXml(DateType dt, String elName) {
+
+    if (dt != null) {
+
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, dt.getValue(), null);
+    } else {
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, null, null);
+    }
+  }
+
+  public static String getDisplayStringForDateTimeType(DateTimeType dt) {
+
+    if (dt != null) {
+
+      return CdaGeneratorUtils.getStringForDateTime(dt.getValue(), dt.getTimeZone());
+    } else {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+  }
+
   public static String getPeriodXml(Period period, String elName) {
 
     StringBuilder sb = new StringBuilder(200);
@@ -1139,12 +1186,15 @@ public class CdaFhirUtilities {
     if (period != null) {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(elName));
+
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_LOW_EL_NAME, period.getStart()));
+          CdaFhirUtilities.getDateTimeTypeXml(
+              period.getStartElement(), CdaGeneratorConstants.TIME_LOW_EL_NAME));
+
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_HIGH_EL_NAME, period.getEnd()));
+          CdaFhirUtilities.getDateTimeTypeXml(
+              period.getEndElement(), CdaGeneratorConstants.TIME_HIGH_EL_NAME));
+
       sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
 
     } else {
@@ -1631,7 +1681,7 @@ public class CdaFhirUtilities {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
+        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
 
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;
@@ -1678,7 +1728,7 @@ public class CdaFhirUtilities {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
+        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
 
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;

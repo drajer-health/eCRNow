@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.StringType;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,10 +234,11 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    Date effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
+    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
 
     sb.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate));
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
@@ -290,10 +293,11 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    Date effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
+    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
 
     sb.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate));
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
     sb.append(
         CdaFhirUtilities.getXmlForType(obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
@@ -334,8 +338,8 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    Date onset = CdaFhirUtilities.getActualDate(cond.getOnset());
-    Date abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
+    Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(cond.getOnset());
+    Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
 
     sb.append(
         CdaGeneratorUtils.getXmlForIVLWithTS(
