@@ -2,7 +2,6 @@ package com.drajer.sof.launch;
 
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.service.ClientDetailsService;
-import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,14 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ClientDetailsController {
@@ -86,25 +78,24 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.DELETE)
-  public ResponseEntity<Object> deleteClientDetails(
-      @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
-
+  @DeleteMapping(value = "/api/clientDetails")
+  public ResponseEntity<String> deleteClientDetails(
+      @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response) {
     try {
       if (fhirUrl == null || fhirUrl.isEmpty()) {
-        return new ResponseEntity("Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+            "Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
       }
       ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
       if (checkClientDetails != null) {
         clientDetailsService.delete(checkClientDetails);
-        return new ResponseEntity("ClientDetails deleted successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("ClientDetails deleted successfully.", HttpStatus.OK);
       }
-      return new ResponseEntity("Client Details Not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("Client Details Not found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
+      return new ResponseEntity<>(
+          ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
