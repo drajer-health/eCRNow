@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
+ *
  * <h1>HealthcareSettingsServiceImpl</h1>
  *
  * The HealthcareSettingsServiceImpl class implements the Create, Read, Update service methods for

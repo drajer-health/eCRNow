@@ -40,7 +40,7 @@ public class BsaScheduler {
             + java.util.UUID.randomUUID().toString();
 
     logger.info(" Scheduling Job Id {} to be executed at : {}", jobId, t.toString());
-    
+
     scheduler.schedule(
         schedulerConfig
             .sampleOneTimeJob()

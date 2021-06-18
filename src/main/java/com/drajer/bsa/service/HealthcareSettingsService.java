@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  *
+ *
  * <h1>HealthcareSettingsService Interface</h1>
  *
  * The HealthcareSettingsService Interface class defines the typical Create, Read, Update service

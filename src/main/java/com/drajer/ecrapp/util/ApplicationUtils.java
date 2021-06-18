@@ -339,12 +339,11 @@ public class ApplicationUtils {
       } else if (unit.equalsIgnoreCase("s")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
-      } else if(d.getValue() != null){
+      } else if (d.getValue() != null) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
-      }
-      else {
-    	  t = null;
+      } else {
+        t = null;
       }
     }
 

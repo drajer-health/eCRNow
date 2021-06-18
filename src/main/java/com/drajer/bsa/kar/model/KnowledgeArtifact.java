@@ -47,7 +47,8 @@ public class KnowledgeArtifact {
   String karVersion;
 
   /**
-   * The Map of actions present in the KnowledgeArtifact. The string(Key) is the Action id present in the Knowledge Artifact.
+   * The Map of actions present in the KnowledgeArtifact. The string(Key) is the Action id present
+   * in the Knowledge Artifact.
    */
   HashMap<String, BsaAction> actionMap;
 
@@ -67,23 +68,16 @@ public class KnowledgeArtifact {
    */
   HashMap<ResourceType, HashMap<String, Resource>> dependencies;
 
-  /**
-   * This attribute represents the receivers of the Report created by the BSA.
-   */
+  /** This attribute represents the receivers of the Report created by the BSA. */
   Set<UriType> receiverAddresses;
-  
-  /**
-   * This attribute represents the first level actions of the KAR.
-   */
+
+  /** This attribute represents the first level actions of the KAR. */
   List<BsaAction> firstLevelActions;
-  
+
   public BsaAction getAction(String actionId) {
-	  
-	  if(actionMap != null && actionMap.containsKey(actionId))
-		  return actionMap.get(actionId);
-	  else
-		  return null;
-	  
+
+    if (actionMap != null && actionMap.containsKey(actionId)) return actionMap.get(actionId);
+    else return null;
   }
 
   public Resource getDependentResource(ResourceType rt, String url) {
@@ -231,8 +225,6 @@ public class KnowledgeArtifact {
   public String getVersionUniqueId() {
     return this.karId + "|" + this.getKarVersion();
   }
-  
-  
 
   public Set<BsaAction> getActionsForTriggerEvent(String event) {
 
@@ -244,52 +236,50 @@ public class KnowledgeArtifact {
   public void addAction(BsaAction act) {
     if (!actionMap.containsKey(act.getActionId())) {
       actionMap.put(act.getActionId(), act);
-      
+
       List<BsaAction> subActions = act.getSubActions();
-      
-      if(subActions != null) {
-    	  
-    	  for(BsaAction subAct : subActions) {
-    		  
-    		  addAction(subAct);
-    	  }
+
+      if (subActions != null) {
+
+        for (BsaAction subAct : subActions) {
+
+          addAction(subAct);
+        }
       }
     }
   }
 
-  
   public List<BsaAction> getFirstLevelActions() {
-	return firstLevelActions;
-}
-
-public void setFirstLevelActions(List<BsaAction> firstLevelActions) {
-	this.firstLevelActions = firstLevelActions;
-}
-
-  public void addFirstLevelAction(BsaAction act) {
-	  
-	  firstLevelActions.add(act);
+    return firstLevelActions;
   }
 
-public Set<UriType> getReceiverAddresses() {
+  public void setFirstLevelActions(List<BsaAction> firstLevelActions) {
+    this.firstLevelActions = firstLevelActions;
+  }
+
+  public void addFirstLevelAction(BsaAction act) {
+
+    firstLevelActions.add(act);
+  }
+
+  public Set<UriType> getReceiverAddresses() {
     return receiverAddresses;
   }
 
   public void setReceiverAddresses(Set<UriType> receiverAddresses) {
     this.receiverAddresses = receiverAddresses;
   }
-  
+
   public void printKarSummary() {
-	  
-	  logger.info(" **** START Printing KnowledgeArtifactSummary **** ");
-	  
-	  logger.info(" KAR Id : {}", karId);
-	  logger.info(" Kar Version : {} ", karVersion);
-	  
-	  firstLevelActions.forEach(act -> act.printSummary());
-	  
-	  logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
-	  
+
+    logger.info(" **** START Printing KnowledgeArtifactSummary **** ");
+
+    logger.info(" KAR Id : {}", karId);
+    logger.info(" Kar Version : {} ", karVersion);
+
+    firstLevelActions.forEach(act -> act.printSummary());
+
+    logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
   }
 
   public void log() {

@@ -4,7 +4,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.service.KarExecutionStateService;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -69,13 +68,13 @@ public class KarProcessingData {
 
   /** The response data received from the TTP/PHA. */
   String responseData;
-  
+
   /** The Dao Helper that will help us save the ExecutionState */
-  KarExecutionStateService 		karExecutionStateService;
+  KarExecutionStateService karExecutionStateService;
 
   /** The Service Helper that will help us save the ExecutionState */
-  EhrQueryService 			ehrQueryService;
-  
+  EhrQueryService ehrQueryService;
+
   public void addActionOutput(String actionId, Resource res) {
 
     if (actionOutputData.containsKey(actionId)) {
@@ -162,22 +161,23 @@ public class KarProcessingData {
     actionOutputData = new HashMap<>();
     actionStatus = new HashMap<>();
   }
-  
+
   /**
-   * The method returns a KarExecutionState object that can be used to store execution state in the database when current 
-   * processing is delayed due to timers and scheduled job constraints present in the PlanDefinition.
-   * 
-   * @return	KarExecutionState
+   * The method returns a KarExecutionState object that can be used to store execution state in the
+   * database when current processing is delayed due to timers and scheduled job constraints present
+   * in the PlanDefinition.
+   *
+   * @return KarExecutionState
    */
   public KarExecutionState getKarExecutionState() {
-	
-	  KarExecutionState st = new KarExecutionState();
-	  
-	  st.setNcId(this.getNotificationContext().getId());
-	  st.setHsFhirServerUrl(this.getHealthcareSetting().getFhirServerBaseURL());
-	  st.setKarUniqueId(this.getKar().getVersionUniqueId());
-	  
-	  return st;
+
+    KarExecutionState st = new KarExecutionState();
+
+    st.setNcId(this.getNotificationContext().getId());
+    st.setHsFhirServerUrl(this.getHealthcareSetting().getFhirServerBaseURL());
+    st.setKarUniqueId(this.getKar().getVersionUniqueId());
+
+    return st;
   }
 
   public KnowledgeArtifact getKar() {
@@ -268,21 +268,19 @@ public class KarProcessingData {
     this.responseData = responseData;
   }
 
-public KarExecutionStateService getKarExecutionStateService() {
-	return karExecutionStateService;
-}
+  public KarExecutionStateService getKarExecutionStateService() {
+    return karExecutionStateService;
+  }
 
-public void setKarExecutionStateService(KarExecutionStateService karExecutionStateService) {
-	this.karExecutionStateService = karExecutionStateService;
-}
+  public void setKarExecutionStateService(KarExecutionStateService karExecutionStateService) {
+    this.karExecutionStateService = karExecutionStateService;
+  }
 
-public EhrQueryService getEhrQueryService() {
-	return ehrQueryService;
-}
+  public EhrQueryService getEhrQueryService() {
+    return ehrQueryService;
+  }
 
-public void setEhrQueryService(EhrQueryService ehrQueryService) {
-	this.ehrQueryService = ehrQueryService;
-}
-  
-  
+  public void setEhrQueryService(EhrQueryService ehrQueryService) {
+    this.ehrQueryService = ehrQueryService;
+  }
 }
