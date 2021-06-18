@@ -141,7 +141,7 @@ public class EicrController {
   }
 
   @CrossOrigin
-  @DeleteMapping(value = "/api/eicrData")
+  @DeleteMapping(value = "/api/eicrDataByDocId")
   public ResponseEntity<String> deleteEicrByEicrDocID(
       @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response) {
     try {

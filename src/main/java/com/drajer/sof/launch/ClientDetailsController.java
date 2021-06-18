@@ -78,7 +78,7 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @DeleteMapping(value = "/api/clientDetails")
+  @DeleteMapping(value = "/api/clientDetailsByFhirUrl")
   public ResponseEntity<String> deleteClientDetails(
       @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response) {
     try {
