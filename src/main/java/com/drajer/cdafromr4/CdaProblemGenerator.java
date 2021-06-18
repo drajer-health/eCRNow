@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
@@ -119,7 +120,6 @@ public class CdaProblemGenerator {
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
-      Boolean triggerCodesAdded = false;
       for (Condition pr : conds) {
         // Add the Entries.
         sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
@@ -169,9 +169,13 @@ public class CdaProblemGenerator {
                   CdaGeneratorConstants.COMPLETED_STATUS));
         }
 
-        Date onset = CdaFhirUtilities.getActualDate(pr.getOnset());
-        Date abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
-        Date recordedDate = pr.getRecordedDate();
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
+        Pair<Date, TimeZone> recordedDate = null;
+        if (pr.getRecordedDateElement() != null) {
+          recordedDate =
+              new Pair<>(pr.getRecordedDate(), pr.getRecordedDateElement().getTimeZone());
+        }
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
@@ -242,13 +246,10 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
-        logger.info(" Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
-        //  if (!triggerCodesAdded) {
+        logger.debug("Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
         sb.append(addTriggerCodes(details, pr, onset, abatement));
-        //   triggerCodesAdded = true;
-        //  }
 
-        logger.info(" Completed adding Trigger Codes ");
+        logger.debug("Completed adding Trigger Codes ");
 
         // End Tags for Entries
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
@@ -268,11 +269,14 @@ public class CdaProblemGenerator {
   }
 
   public static String addTriggerCodes(
-      LaunchDetails details, Condition cond, Date onset, Date abatement) {
+      LaunchDetails details,
+      Condition cond,
+      Pair<Date, TimeZone> onset,
+      Pair<Date, TimeZone> abatement) {
 
     StringBuilder sb = new StringBuilder();
 
-    logger.info(" Adding Trigger Code Reason for Problem Observation ");
+    logger.debug("Adding Trigger Code Reason for Problem Observation");
 
     PatientExecutionState state = null;
 
@@ -284,7 +288,7 @@ public class CdaProblemGenerator {
 
       // Add each code as an entry relationship observation
       CodeableConcept cd = cond.getCode();
-      List<CodeableConcept> cds = new ArrayList<CodeableConcept>();
+      List<CodeableConcept> cds = new ArrayList<>();
       if (cd != null) cds.add(cd);
 
       Set<String> matchedCodesFromCc =
@@ -292,7 +296,7 @@ public class CdaProblemGenerator {
 
       if (matchedCodesFromCc != null && !matchedCodesFromCc.isEmpty()) {
 
-        logger.info(
+        logger.debug(
             " Matched Codes from Codeable Concept is not empty, size = {}",
             matchedCodesFromCc.size());
 
@@ -345,10 +349,6 @@ public class CdaProblemGenerator {
             CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
-        // Set<String> matchedCodes = mtc.getMatchedCodes();
-
-        // if (matchedCodesFromCc) {
-
         // Split the system and code.
         matchedCodesFromCc
             .stream()
@@ -356,35 +356,34 @@ public class CdaProblemGenerator {
             .findFirst()
             .ifPresent(
                 matchCode -> {
-                  logger.info(" Starting to add trigger code that was matched " + matchCode);
+                  logger.debug("Starting to add trigger code that was matched {}", matchCode);
 
                   String[] parts = matchCode.split("\\|");
 
-                  logger.info(" Parts [0] = {}", parts[0]);
+                  logger.debug("Parts [0] = {}", parts[0]);
 
                   Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
-                  logger.info(" Retrieved CSD Values ");
-                  logger.info("Retrieved CSD Values {}, {}", csd.getValue0(), csd.getValue1());
+                  logger.debug("Retrieved CSD Values");
+                  logger.debug("Retrieved CSD Values {}, {}", csd.getValue0(), csd.getValue1());
 
                   // Add Value SEt and ValueSEt Version
                   String vs = CdaGeneratorConstants.RCTC_OID;
                   String vsVersion = ActionRepo.getInstance().getRctcVersion();
 
-                  logger.info("Retrieved RCTC Values: Vs {}, vsVersion {}", vs, vsVersion);
+                  logger.debug("Retrieved RCTC Values: Vs {}, vsVersion {}", vs, vsVersion);
                   sb.append(
                       CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                           parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
-                  logger.info(" Constructed Value CD ");
+                  logger.debug("Constructed Value CD");
                 });
-        // }
 
         // End Tag for Entry Relationship
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
       } else {
 
-        logger.info(" Not adding matched Trigger codes as they are not present ");
+        logger.debug("Not adding matched Trigger codes as they are not present");
       }
     }
 

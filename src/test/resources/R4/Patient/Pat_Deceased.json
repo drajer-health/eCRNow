@@ -126,7 +126,7 @@
   ],
   "gender": "female",
   "birthDate": "1970-01-02",
-  "deceasedDateTime": "2020-10-13",
+  "deceasedDateTime": "2020-10-13T19:29:45.000Z",
   "address": [
     {
       "id": "CI-24326634-0",

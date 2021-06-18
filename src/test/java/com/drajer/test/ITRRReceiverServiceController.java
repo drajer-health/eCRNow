@@ -3,6 +3,7 @@ package com.drajer.test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.drajer.ecrapp.model.Eicr;
@@ -52,14 +53,24 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     stubHelper.stubAuthAndMetadata(map);
 
+    String response =
+        TestUtils.getFileContentAsString("R4/DocumentReference/DocumentReference.json");
+
     wireMockServer.stubFor(
-        post(urlPathEqualTo(
-                getURLPath(clientDetails.getFhirServerBaseURL()) + "/DocumentReference"))
+        post(urlEqualTo("/FHIR/DocumentReference?_pretty=true"))
             .atPriority(1)
             .willReturn(
                 aResponse()
                     .withStatus(201)
-                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
+                    .withBody(response)
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")
+                    .withHeader(
+                        "location",
+                        "http://localhost:"
+                            + wireMockHttpPort
+                            + "/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
+                    .withHeader("x-request-id", "32034a8e-07ff-4bfb-a686-de8a956fbda9")
+                    .withHeader("Cache-Control", "no-cache")));
   }
 
   @Test
@@ -73,6 +84,51 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertEquals("197477086", eicr.getEhrDocRefId());
+  }
+
+  @Test
+  public void testRRReceiver_WithRRVS2_Success() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("RRVS2", eicr != null ? eicr.getResponseType() : null);
+    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+    assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertEquals("197477086", eicr.getEhrDocRefId());
+  }
+
+  @Test
+  public void testRRReceiver_WithRRVS3() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    rr.setRrXml(rr.getRrXml().replace("RRVS2", "RRVS3"));
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("RRVS3", eicr != null ? eicr.getResponseType() : null);
+    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+    assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertNull(eicr.getEhrDocRefId());
+  }
+
+  @Test
+  public void testRRReceiver_WithRRVS4() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    rr.setRrXml(rr.getRrXml().replace("RRVS2", "RRVS4"));
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("RRVS4", eicr != null ? eicr.getResponseType() : null);
+    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+    assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertNull(eicr.getEhrDocRefId());
   }
 
   @Test

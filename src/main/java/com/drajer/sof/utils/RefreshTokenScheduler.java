@@ -4,7 +4,7 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
-import com.drajer.sof.service.LaunchService;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -28,21 +28,16 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class RefreshTokenScheduler {
 
-  @Autowired RestTemplate restTemplate;
-
-  @Autowired LaunchService authDetailsService;
-
   @Autowired ThreadPoolTaskScheduler taskScheduler;
-
-  @Autowired FhirContextInitializer resourceData;
 
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
   private static final String GRANT_TYPE = "grant_type";
 
   public void scheduleJob(LaunchDetails authDetails) {
-    logger.info("Scheduling Job to Get AccessToken");
-    logger.info("Accesstoken Expires in========>" + authDetails.getExpiry());
+    logger.info(
+        "Scheduling Cron Job to Get AccessToken which expires every {} seconds",
+        authDetails.getExpiry());
     long minutes = TimeUnit.SECONDS.toMinutes(authDetails.getExpiry());
     String cronExpression = "0 " + "0/" + minutes + " * * * ?";
     CronTrigger cronTrigger = new CronTrigger(cronExpression);
@@ -74,11 +69,11 @@ public class RefreshTokenScheduler {
 
   public JSONObject getAccessToken(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + authDetails.getClientId());
+    logger.trace("Getting AccessToken for Client: {}", authDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
-      if (!authDetails.getIsSystem()) {
+      if (Boolean.FALSE.equals(authDetails.getIsSystem())) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "refresh_token");
@@ -93,13 +88,13 @@ public class RefreshTokenScheduler {
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
         String base64EncodedString =
-            Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+            Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
-        if (authDetails.getRequireAud()) {
-          logger.info("Adding Aud Parameter while getting Accesstoken");
+        if (Boolean.TRUE.equals(authDetails.getRequireAud())) {
+          logger.debug("Adding Aud Parameter while getting AccessToken");
           map.add("aud", authDetails.getEhrServerURL());
         }
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
@@ -108,8 +103,7 @@ public class RefreshTokenScheduler {
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
       }
-      logger.info("Received AccessToken for Client: " + authDetails.getClientId());
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
       updateAccessToken(authDetails, tokenResponse);
 
     } catch (Exception e) {
@@ -120,40 +114,42 @@ public class RefreshTokenScheduler {
   }
 
   private void updateAccessToken(LaunchDetails authDetails, JSONObject tokenResponse) {
-    LaunchDetails existingAuthDetails = new LaunchDetails();
     try {
-      logger.info("Updating the AccessToken value in database");
-      existingAuthDetails =
+      LaunchDetails existingAuthDetails =
           ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
-      existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
-      existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
-      existingAuthDetails.setLastUpdated(new Date());
-      Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-      Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
-      existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
-      ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
-      logger.info("Successfully updated AccessToken value in database");
+      if (existingAuthDetails != null) {
+        logger.trace("Updating the AccessToken value in LaunchDetails table");
+        existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
+        existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
+        existingAuthDetails.setLastUpdated(new Date());
+        long expiresInSec = tokenResponse.getLong("expires_in");
+        Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+        existingAuthDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+        ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
+        logger.trace("Successfully updated AccessToken value in LaunchDetails table");
+      }
     } catch (Exception e) {
-      logger.error("Error in Updating the AccessToken value into database: ", e);
+      logger.error("Error in Updating the AccessToken value into LaunchDetails: ", e);
     }
   }
 
   public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + clientDetails.getClientId());
+    logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
       String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
-      String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+      String base64EncodedString =
+          Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
       headers.add("Authorization", "Basic " + base64EncodedString);
       MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
       map.add(GRANT_TYPE, "client_credentials");
       map.add("scope", clientDetails.getScopes());
-      if (clientDetails.getRequireAud()) {
-        logger.info("Adding Aud Parameter while getting Accesstoken");
+      if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
+        logger.debug("Adding Aud Parameter while getting Access token");
         map.add("aud", clientDetails.getFhirServerBaseURL());
       }
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
@@ -162,83 +158,12 @@ public class RefreshTokenScheduler {
           resTemplate.exchange(
               clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
-      logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {} ", clientDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the client: {}", clientDetails.getClientId(), e);
     }
     return tokenResponse;
   }
-  /*
-    private void getResourcesData(LaunchDetails authDetails) {
-      FhirContext context = resourceData.getFhirContext(authDetails.getFhirVersion());
-      context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-      IGenericClient genericClient =
-          resourceData.createClient(
-              context, authDetails.getEhrServerURL(), authDetails.getAccessToken());
-      try {
-        resourceData.getResouceById(
-            authDetails, genericClient, context, "Patient", authDetails.getLaunchPatientId());
-      } catch (Exception e) {
-        logger.error("Error in getting Patient details", e);
-      }
-
-      try {
-        resourceData.getResouceById(
-            authDetails, genericClient, context, "Encounter", authDetails.getEncounterId());
-        // resourceData.getEncounterData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Encounter details", e);
-      }
-
-      try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Observation");
-        // resourceData.getObservationData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Observation details", e);
-      }
-
-      try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Condition");
-        // resourceData.getConditionData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Condition details", e);
-      }
-
-      if (authDetails.getFhirVersion().equalsIgnoreCase("DSTU2")) {
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationAdministration");
-          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationAdministration details", e);
-        }
-
-        try {
-          resourceData.getResourceByPatientId(authDetails, genericClient, context, "MedicationOrder");
-          // resourceData.getMedicationOrderData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationOrder details", e);
-        }
-
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationStatement");
-          // resourceData.getMedicationStatementData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationStatement details", e);
-        }
-      } else if (authDetails.getFhirVersion().equalsIgnoreCase("R4")) {
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationRequest");
-          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationRequest details", e);
-        }
-      }
-    }
-  */
 }

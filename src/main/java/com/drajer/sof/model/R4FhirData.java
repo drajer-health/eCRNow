@@ -69,17 +69,17 @@ public class R4FhirData extends FhirData {
 
     // Check Patient and Encounter.
     if (patient == null) {
-      logger.warn(" Patient is null, cannot generate eICR ");
+      logger.warn("Patient is null, cannot generate eICR ");
       requiredDataPresent = false;
     }
 
     if (encounter == null) {
-      logger.warn(" Encounter is null, cannot generate eICR ");
+      logger.warn("Encounter is null, cannot generate eICR ");
       requiredDataPresent = false;
     }
 
     if (jurisdiction == null) {
-      logger.warn(" Jurisdiction is null, cannot generate eICR ");
+      logger.warn("Jurisdiction is null, cannot generate eICR ");
       requiredDataPresent = false;
     }
 
@@ -88,7 +88,7 @@ public class R4FhirData extends FhirData {
 
   public Practitioner getPractitionerById(String id) {
 
-    logger.info(" Id for retrieving practitioner = {}", id);
+    logger.debug("Id for retrieving practitioner = {}", id);
     for (Practitioner pr : practitionersList) {
 
       if (pr.getId().contains(id)) return pr;

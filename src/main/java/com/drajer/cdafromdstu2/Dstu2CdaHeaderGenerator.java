@@ -259,10 +259,10 @@ public class Dstu2CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
-    if (en != null && en.getPeriod().getStart() != null) {
+    if (en != null && en.getPeriod() != null && en.getPeriod().getStartElement() != null) {
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_EL_NAME, en.getPeriod().getStart()));
+          Dstu2CdaFhirUtilities.getDateTimeTypeXml(
+              en.getPeriod().getStartElement(), CdaGeneratorConstants.TIME_EL_NAME));
     } else {
       sb.append(
           CdaGeneratorUtils.getXmlForEffectiveTime(
@@ -504,8 +504,8 @@ public class Dstu2CdaHeaderGenerator {
 
     patientDetails.append(Dstu2CdaFhirUtilities.getGenderXml(p.getGenderElement()));
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(
-            CdaGeneratorConstants.BIRTH_TIME_EL_NAME, p.getBirthDate()));
+        Dstu2CdaFhirUtilities.getDateTypeXml(
+            p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
 
     if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
       patientDetails.append(

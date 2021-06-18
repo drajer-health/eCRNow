@@ -1,7 +1,9 @@
 package com.drajer.cdafromr4;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.test.util.TestUtils;
@@ -14,8 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Location;
@@ -23,6 +30,7 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceFactory;
+import org.hl7.fhir.r4.model.StringType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -65,6 +73,109 @@ public class CdaFhirUtilitiesTest {
 
     Organization testOrg = CdaFhirUtilities.getOrganization(entries, en);
     assertNull(testOrg);
+  }
+
+  @Test
+  public void testGetTelecomXml() {
+
+    List<ContactPoint> cps = new ArrayList<ContactPoint>();
+    ContactPoint cp1 = new ContactPoint();
+    cp1.setUse(ContactPointUse.HOME);
+    cp1.setSystem(ContactPointSystem.PHONE);
+    cp1.setValue("1234567890");
+    cps.add(cp1);
+    ContactPoint cp2 = new ContactPoint();
+    cp2.setUse(ContactPointUse.MOBILE);
+    cp2.setSystem(ContactPointSystem.PHONE);
+    cp2.setValue("0987654321");
+    cps.add(cp2);
+    ContactPoint cp3 = new ContactPoint();
+    cp3.setUse(ContactPointUse.WORK);
+    cp3.setSystem(ContactPointSystem.EMAIL);
+    cp3.setValue("a@b.com");
+    cps.add(cp3);
+
+    String result = CdaFhirUtilities.getTelecomXml(cps, false);
+
+    assertTrue(result.contains("(123)456-7890"));
+    assertTrue(result.contains("(098)765-4321"));
+    assertFalse(result.contains("a@b.com"));
+
+    String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
+    assertTrue(result2.contains("(123)456-7890"));
+    assertFalse(result2.contains("(098)765-4321"));
+    assertFalse(result2.contains("a@b.com"));
+  }
+
+  @Test
+  public void testGetAddressXml() {
+
+    List<Address> addrs = new ArrayList<Address>();
+    Address ad1 = new Address();
+    ad1.setUse(AddressUse.HOME);
+    StringType line = new StringType();
+    line.setValue("142 Example Drive");
+    List<StringType> lines = new ArrayList<StringType>();
+    lines.add(line);
+    ad1.setLine(lines);
+    ad1.setCity("Rockville");
+    ad1.setState("MD");
+    ad1.setPostalCode("20874");
+    ad1.setCountry("US");
+    addrs.add(ad1);
+
+    String result = CdaFhirUtilities.getAddressXml(addrs);
+
+    assertTrue(result.contains("142 Example Drive"));
+    assertTrue(result.contains("20874"));
+    assertTrue(result.contains("MD"));
+    assertTrue(result.contains("Rockville"));
+
+    addrs.clear();
+    Address ad2 = new Address();
+    ad1.setUse(AddressUse.BILLING);
+    StringType line2 = new StringType();
+    line2.setValue("142 Example Drive");
+    List<StringType> lines2 = new ArrayList<StringType>();
+    lines2.add(line2);
+    ad2.setLine(lines2);
+    ad2.setCity("Rockville");
+    ad2.setState("MD");
+    ad2.setPostalCode("20874");
+    ad2.setCountry("US");
+    addrs.add(ad2);
+
+    String result2 = CdaFhirUtilities.getAddressXml(addrs);
+
+    assertTrue(result2.contains("142 Example Drive"));
+    assertTrue(result2.contains("20874"));
+    assertTrue(result2.contains("MD"));
+    assertTrue(result2.contains("Rockville"));
+
+    addrs.clear();
+    String result3 = CdaFhirUtilities.getAddressXml(addrs);
+
+    assertTrue(result3.contains("nullFlavor=\"NI\""));
+
+    addrs.clear();
+    Address ad3 = new Address();
+    StringType line3 = new StringType();
+    line3.setValue("142 Example Drive");
+    List<StringType> lines3 = new ArrayList<StringType>();
+    lines3.add(line3);
+    ad3.setLine(lines3);
+    ad3.setCity("Rockville");
+    ad3.setState("MD");
+    ad3.setPostalCode("20874");
+    ad3.setCountry("US");
+    addrs.add(ad3);
+
+    String result4 = CdaFhirUtilities.getAddressXml(addrs);
+
+    assertTrue(result4.contains("142 Example Drive"));
+    assertTrue(result4.contains("20874"));
+    assertTrue(result4.contains("MD"));
+    assertTrue(result4.contains("Rockville"));
   }
 
   @Test

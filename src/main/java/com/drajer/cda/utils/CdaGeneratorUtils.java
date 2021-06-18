@@ -1,9 +1,12 @@
 package com.drajer.cda.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.javatuples.Pair;
@@ -30,20 +33,22 @@ public class CdaGeneratorUtils {
   }
 
   public static String getCurrentDateTime() {
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssZ");
     Date date = new Date(System.currentTimeMillis());
     return formatter.format(date);
   }
 
-  public static String getStringForDate(Date d) {
+  public static String getStringForDateTime(Date d, TimeZone t) {
 
-    if (d != null) {
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+    if (d != null && t != null) {
+
+      ZonedDateTime zt = ZonedDateTime.ofInstant(d.toInstant(), t.toZoneId());
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssZ");
+      return zt.format(formatter);
+    } else if (d != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
       return formatter.format(d);
-    } else {
-
-      return CdaGeneratorConstants.UNKNOWN_VALUE;
-    }
+    } else return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
 
   public static String getXmlForStartElement(String name) {
@@ -478,11 +483,11 @@ public class CdaGeneratorUtils {
     return s;
   }
 
-  public static String getXmlForEffectiveTime(String elName, Date value) {
+  public static String getXmlForEffectiveTime(String elName, Date value, TimeZone t) {
     String s = "";
     if (value != null) {
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-      String val = formatter.format(value);
+
+      String val = CdaGeneratorUtils.getStringForDateTime(value, t);
 
       s +=
           CdaGeneratorConstants.START_XMLTAG
@@ -799,21 +804,24 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForIVLWithTS(
-      String elName, Date low, Date high, Boolean requireNullFlavor) {
+      String elName,
+      Pair<Date, TimeZone> low,
+      Pair<Date, TimeZone> high,
+      Boolean requireNullFlavor) {
     String s = "";
     if (low != null && high != null) {
       s +=
           CdaGeneratorUtils.getXmlForStartElement(elName)
               + CdaGeneratorUtils.getXmlForEffectiveTime(
-                  CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
+                  CdaGeneratorConstants.TIME_LOW_EL_NAME, low.getValue0(), low.getValue1())
               + CdaGeneratorUtils.getXmlForEffectiveTime(
-                  CdaGeneratorConstants.TIME_HIGH_EL_NAME, high)
+                  CdaGeneratorConstants.TIME_HIGH_EL_NAME, high.getValue0(), high.getValue1())
               + CdaGeneratorUtils.getXmlForEndElement(elName);
     } else if (low != null) {
       s +=
           CdaGeneratorUtils.getXmlForStartElement(elName)
               + CdaGeneratorUtils.getXmlForEffectiveTime(
-                  CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
+                  CdaGeneratorConstants.TIME_LOW_EL_NAME, low.getValue0(), low.getValue1())
               + CdaGeneratorUtils.getXmlForEndElement(elName);
     } else if (high != null) {
 
@@ -821,10 +829,12 @@ public class CdaGeneratorUtils {
       s +=
           CdaGeneratorUtils.getXmlForNullEffectiveTime(
               CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
-      s += CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high);
+      s +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, high.getValue0(), high.getValue1());
       s += CdaGeneratorUtils.getXmlForEndElement(elName);
 
-    } else if (requireNullFlavor) {
+    } else if (Boolean.TRUE.equals(requireNullFlavor)) {
       s += CdaGeneratorUtils.getXmlForStartElement(elName);
       s +=
           CdaGeneratorUtils.getXmlForNullEffectiveTime(
@@ -2076,22 +2086,19 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForOriginalTextWithReference(String refText) {
 
-    String s =
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
-            + CdaGeneratorConstants.START_XMLTAG
-            + CdaGeneratorConstants.REFR_EL_NAME
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.VALUE_WITH_EQUAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + "#"
-            + refText
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.FORWARD_SLASH
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-            + "\n"
-            + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME);
-
-    return s;
+    return CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.REFR_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + "#"
+        + refText
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.FORWARD_SLASH
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + "\n"
+        + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME);
   }
 
   public static String getXmlForPerformer(String perfType) {

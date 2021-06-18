@@ -16,6 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
+  public static final String FHIR_SERVER_URL = "fhirServerUrl";
+  public static final String ENCOUNTER_ID = "encounterId";
+  public static final String EICR_DOC_ID = "eicrDocId";
+  public static final String RESPONSE_DOC_ID = "responseDocId";
+  public static final String SET_ID = "setId";
+
   public Eicr saveOrUpdate(Eicr eicr) {
     getSession().saveOrUpdate(eicr);
     return eicr;
@@ -36,9 +42,9 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
   public Integer getMaxVersionId(Eicr eicr) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq("fhirServerUrl", eicr.getFhirServerUrl()));
+    criteria.add(Restrictions.eq(FHIR_SERVER_URL, eicr.getFhirServerUrl()));
     criteria.add(Restrictions.eq("launchPatientId", eicr.getLaunchPatientId()));
-    criteria.add(Restrictions.eq("encounterId", eicr.getEncounterId()));
+    criteria.add(Restrictions.eq(ENCOUNTER_ID, eicr.getEncounterId()));
     criteria.addOrder(Order.desc("docVersion"));
     criteria.setMaxResults(1);
 
@@ -68,8 +74,8 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
   public List<Eicr> getRRData(Map<String, String> searchParams) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
-    if (searchParams.get("responseDocId") != null) {
-      criteria.add(Restrictions.eq("responseDocId", searchParams.get("responseDocId")));
+    if (searchParams.get(RESPONSE_DOC_ID) != null) {
+      criteria.add(Restrictions.eq(RESPONSE_DOC_ID, searchParams.get(RESPONSE_DOC_ID)));
     }
     prepareCriteria(criteria, searchParams);
     return criteria.addOrder(Order.desc("id")).list();
@@ -84,30 +90,33 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   @Override
   public Eicr getEicrByDocId(String docId) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq("eicrDocId", docId));
+    criteria.add(Restrictions.eq(EICR_DOC_ID, docId));
 
     return (Eicr) criteria.uniqueResult();
   }
 
   public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
 
-    if (searchParams.get("eicrDocId") != null) {
-      criteria.add(Restrictions.eq("eicrDocId", searchParams.get("eicrDocId")));
+    if (searchParams.get(EICR_DOC_ID) != null) {
+      criteria.add(Restrictions.eq(EICR_DOC_ID, searchParams.get(EICR_DOC_ID)));
     }
-    if (searchParams.get("fhirServerUrl") != null) {
-      criteria.add(Restrictions.eq("fhirServerUrl", searchParams.get("fhirServerUrl")));
+    if (searchParams.get(FHIR_SERVER_URL) != null) {
+      criteria.add(Restrictions.eq(FHIR_SERVER_URL, searchParams.get(FHIR_SERVER_URL)));
     }
-    if (searchParams.get("setId") != null) {
-      criteria.add(Restrictions.eq("setId", searchParams.get("setId")));
+    if (searchParams.get(SET_ID) != null) {
+      criteria.add(Restrictions.eq(SET_ID, searchParams.get(SET_ID)));
     }
     if (searchParams.get("patientId") != null) {
       criteria.add(Restrictions.eq("launchPatientId", searchParams.get("patientId")));
     }
-    if (searchParams.get("encounterId") != null) {
-      criteria.add(Restrictions.eq("encounterId", searchParams.get("encounterId")));
+    if (searchParams.get(ENCOUNTER_ID) != null) {
+      criteria.add(Restrictions.eq(ENCOUNTER_ID, searchParams.get(ENCOUNTER_ID)));
     }
     if (searchParams.get("version") != null) {
       criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
+    }
+    if (searchParams.get("xRequestId") != null) {
+      criteria.add(Restrictions.eq("xRequestId", searchParams.get("xRequestId")));
     }
   }
 }

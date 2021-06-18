@@ -62,6 +62,9 @@ testCase:
       Patient:
       - params: "12742571"
         responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Misc/InsufficientScopeResponse.json"
       Condition:
       - params:
           patient: "12742571"
