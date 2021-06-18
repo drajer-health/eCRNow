@@ -1,0 +1,36 @@
+version: '2'
+services:
+   ecrnow-db:
+      container_name: ecrnow-db
+      network_mode: bridge
+      image: ecrnow/ecrnow-db:1.0
+      environment: 
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=postgres
+      volumes:
+        - /Users/arunk/workspace_drajer/eCRNow/dc:/mnt
+      ports:
+        - 5432:5432
+      restart: always
+
+   ecrnow-app:
+     container_name: ecrnow-app
+     network_mode: bridge
+     image: ecrnow/ecrnow-app:1.0
+     environment:
+        SLEEP_LENGTH: 0.10
+        app_log: /mnt
+        app_db: ecrnow-db
+        app_db_port: 5432
+        app_db_name: postgres
+        app_db_user: postgres
+        app_db_pwd: postgres
+     depends_on: 
+        - ecrnow-db
+     links: 
+        - ecrnow-db   
+     volumes:
+        - /Users/arunk/workspace_drajer/eCRNow:/mnt   
+     ports:
+       - 8081:8081
