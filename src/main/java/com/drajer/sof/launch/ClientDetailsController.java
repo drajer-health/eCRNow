@@ -2,7 +2,10 @@ package com.drajer.sof.launch;
 
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.service.ClientDetailsService;
+import java.io.IOException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class ClientDetailsController {
+
+  public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
 
   @Autowired ClientDetailsService clientDetailsService;
 
@@ -77,5 +83,28 @@ public class ClientDetailsController {
   @RequestMapping("/api/clientDetails/")
   public List<ClientDetails> getAllClientDetails() {
     return clientDetailsService.getAllClientDetails();
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.DELETE)
+  public ResponseEntity<Object> deleteClientDetails(
+      @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+
+    try {
+      if (fhirUrl == null || fhirUrl.isEmpty()) {
+        return new ResponseEntity("Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
+      }
+      ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
+      if (checkClientDetails != null) {
+        clientDetailsService.delete(checkClientDetails);
+        return new ResponseEntity("ClientDetails deleted successfully.", HttpStatus.OK);
+      }
+      return new ResponseEntity("Client Details Not found", HttpStatus.NOT_FOUND);
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
   }
 }

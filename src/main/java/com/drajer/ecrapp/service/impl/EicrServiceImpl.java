@@ -280,4 +280,8 @@ public class EicrServiceImpl implements EicrRRService {
     }
     return eicrDataList;
   }
+
+  public void deleteEicr(Eicr eicr) {
+    eicrDao.deleteEicr(eicr);
+  }
 }
