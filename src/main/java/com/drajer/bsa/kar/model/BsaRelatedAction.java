@@ -62,19 +62,17 @@ public class BsaRelatedAction {
 
     if (logger.isInfoEnabled()) {
 
-      logger.info(" *** Printing Related Action *** ");
+      logger.info(" *** Printing Related Action *** {}", relatedActionId);
 
       if (relationship != null) logger.info(" Relationship : {}", relationship.toString());
-
-      if (relatedActionId != null) logger.info(" Related Action Id : {}", relatedActionId);
 
       if (duration != null) {
 
         logger.info(" Duration period : {}", duration.getValue());
-        logger.info(" Duration unit : {}", duration.getUnit());
+        logger.info(" Duration unit : {}", duration.getCode());
       }
 
-      logger.info("*** End Printing Related Action *** ");
+      logger.info("*** End Printing Related Action *** {}", relatedActionId);
     }
   }
 }

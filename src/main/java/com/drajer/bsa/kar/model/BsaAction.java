@@ -4,9 +4,13 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
+import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.eca.model.TimingSchedule;
+import com.drajer.ecrapp.util.ApplicationUtils;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -121,18 +125,6 @@ public abstract class BsaAction {
 
         for (BsaRelatedAction ract : actions) {
 
-          logger.info(" Found the Related Action, trying to execute it. ");
-          if (ract.getAction() != null) {
-            logger.info(" Found the Related Action, hence execuing it ");
-            ract.getAction().process(kd, ehrService);
-            logger.info(" **** Finished execuing the Related Action. **** ");
-          } else {
-            logger.error(
-                " Related Action not found, so skipping executing of action {} ",
-                ract.getRelatedActionId());
-          }
-
-          /*
           if (ract.getDuration() == null && ract.getAction() != null) {
 
             logger.info(
@@ -145,15 +137,26 @@ public abstract class BsaAction {
             logger.info(
                 " Found the Related Action, with a duration so need to setup a timer to execute later ");
 
+            // Save the execution state, before the scheduling of a job.
+            KarExecutionState st = kd.getKarExecutionStateService().saveOrUpdate(kd.getKarExecutionState());
+            
             Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
 
-            scheduler.scheduleJob(1, actionId, type, t);
+            if(t != null)
+            	scheduler.scheduleJob(st.getId(), ract.getAction().getActionId(), ract.getAction().getType(), t);
+            else {
+            	logger.info(
+                        " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+                    ract.getAction().process(kd, ehrService);
+                    logger.info(" **** Finished execuing the Related Action. **** ");
+            }
+            	
 
           } else {
             logger.info(
                 " Related Action not found, so skipping executing of action {} ",
                 ract.getRelatedActionId());
-          }*/
+          }
         }
 
       } else {
@@ -310,13 +313,74 @@ public abstract class BsaAction {
       relatedActions.put(ract.getRelationship(), racts);
     }
   }
+  
+  public void printSummary() {
+	  
+	  logger.info(" **** START Printing Action **** ({})", actionId);
+	  
+	  logger.info(" Action Type : {}", type.toString());
+	  
+	  namedEventTriggers.forEach(ne -> logger.info(" Named Event : ({})", ne));
+	  
+	  conditions.forEach(con -> con.log());
+	  
+	  if (relatedActions != null && relatedActions.size() > 0) {
+		  
+		  logger.info(" ****** Number of Related Actions : ({}) ****** ",relatedActions.size());
+		  
+		  for(Map.Entry<ActionRelationshipType, Set<BsaRelatedAction> > entry : relatedActions.entrySet()) {
+			  
+			  logger.info(" ****** RelationshipType : ({}) ****** ",entry.getKey().toString());
+			  Set<BsaRelatedAction> racts = entry.getValue();
+			  
+			  for(BsaRelatedAction ract: racts) {
+				  
+				  logger.info(" ******** Related Action Id : ({}) ******** ", ract.getRelatedActionId());
+			  }
+			  
+		  }
+	  }
+
+	  if(subActions.size() > 0) {
+		  
+		  logger.info(" ****** Number of SubActions : ({}) ****** ",subActions.size());
+		  for(BsaAction subAct : subActions) {
+			  
+			  logger.info(" ******** Sub Action Id : ({}) ******** ", subAct.getActionId());
+			  
+			  if(subAct.getRelatedActions() != null && subAct.getRelatedActions().size() > 0) {
+				  
+				  for(Map.Entry<ActionRelationshipType, Set<BsaRelatedAction> > entry : subAct.getRelatedActions().entrySet()) {
+					  
+					  logger.info(" ********** RelationshipType : ({}) ********** ",entry.getKey().toString());
+					  Set<BsaRelatedAction> racts = entry.getValue();
+					  
+					  for(BsaRelatedAction ract: racts) {
+						  
+						  logger.info(" ************ Related Action Id : ({}) ************ ", ract.getRelatedActionId());
+					  }
+					  
+				  }
+			  }
+			  else {
+				  
+				  logger.info(" ********** No Related Actions for sub Action : ({}) ********** ", subAct.getActionId());
+			  }
+		  }
+		  
+	  }
+	  else {
+		  logger.info(" ******** No Sub Actions for : ({}) ******** ", actionId);
+	  }
+	  
+	  logger.info(" **** END Printing Action **** {}", actionId);
+  }
 
   public void log() {
 
-    logger.info(" **** START Printing Action **** ");
+    logger.info(" **** START Printing Action **** {}", actionId);
 
-    logger.info(" Action Id : {}", actionId);
-
+    logger.info(" Action Type : {}", type.toString());
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : {}", ne));
 
     for (DataRequirement inp : inputData) {
@@ -369,6 +433,6 @@ public abstract class BsaAction {
     subActions.forEach(act -> act.log());
     logger.info(" Finished Printing Sub Actions ");
 
-    logger.info(" **** END Printing Action **** ");
+    logger.info(" **** END Printing Action **** {}", actionId);
   }
 }

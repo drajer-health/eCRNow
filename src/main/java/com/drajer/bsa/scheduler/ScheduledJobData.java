@@ -6,16 +6,18 @@ import java.time.Instant;
 
 public class ScheduledJobData implements Serializable {
 
-  Integer karExecutionStateId;
-  String actionId;
-  BsaTypes.ActionType actionType;
-  transient Instant expirationTime;
+  Integer 				karExecutionStateId;
+  String 				actionId;
+  BsaTypes.ActionType 	actionType;
+  String  				jobId;
+  transient Instant 	expirationTime;
 
-  ScheduledJobData(Integer id, String action, BsaTypes.ActionType type, Instant t) {
+  ScheduledJobData(Integer id, String action, BsaTypes.ActionType type, Instant t, String job) {
     karExecutionStateId = id;
     actionId = action;
     actionType = type;
     expirationTime = t;
+    jobId = job;
   }
 
   public Integer getKarExecutionStateId() {
@@ -49,4 +51,14 @@ public class ScheduledJobData implements Serializable {
   public void setExpirationTime(Instant expirationTime) {
     this.expirationTime = expirationTime;
   }
+
+public String getJobId() {
+	return jobId;
+}
+
+public void setJobId(String jobId) {
+	this.jobId = jobId;
+}
+  
+  
 }

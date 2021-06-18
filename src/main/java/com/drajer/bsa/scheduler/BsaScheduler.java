@@ -30,19 +30,21 @@ public class BsaScheduler {
 
   public void scheduleJob(Integer karExecId, String actionId, BsaTypes.ActionType type, Instant t) {
 
-    String id =
-        type.toString()
+    String jobId =
+        actionId
+            + "_"
+            + type.toString()
             + "_"
             + Integer.toString(karExecId)
             + "_"
-            + actionId
-            + "_"
             + java.util.UUID.randomUUID().toString();
 
+    logger.info(" Scheduling Job Id {} to be executed at : {}", jobId, t.toString());
+    
     scheduler.schedule(
         schedulerConfig
             .sampleOneTimeJob()
-            .instance(id, new ScheduledJobData(karExecId, actionId, type, t)),
+            .instance(jobId, new ScheduledJobData(karExecId, actionId, type, t, jobId)),
         t);
   }
 }

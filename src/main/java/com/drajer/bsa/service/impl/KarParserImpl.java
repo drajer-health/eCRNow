@@ -150,7 +150,7 @@ public class KarParserImpl implements KarParser {
 
           if (Optional.ofNullable(comp).isPresent()
               && comp.getResource().getResourceType() == ResourceType.ValueSet) {
-            logger.info(" Processing ValueSet ");
+            logger.debug(" Processing ValueSet ");
             processValueSet((ValueSet) comp.getResource(), art);
           } else if (Optional.ofNullable(comp).isPresent()
               && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
@@ -164,7 +164,7 @@ public class KarParserImpl implements KarParser {
         }
 
         KnowledgeArtifactRepository.getIntance().add(art);
-        art.log();
+        art.printKarSummary();
 
       } else {
 
@@ -195,6 +195,7 @@ public class KarParserImpl implements KarParser {
 
         // Setup the artifact details.
         art.addAction(action);
+        art.addFirstLevelAction(action);
         art.addTriggerEvent(action);
       }
     }
