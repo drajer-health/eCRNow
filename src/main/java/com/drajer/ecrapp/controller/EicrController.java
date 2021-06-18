@@ -2,7 +2,6 @@ package com.drajer.ecrapp.controller;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -120,51 +115,50 @@ public class EicrController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/rrIdAndDocRefId", method = RequestMethod.GET)
-  public ResponseEntity<Object> getEicrAllAttributes(@RequestParam String eicr_doc_id) {
+  @GetMapping(value = "/api/rrIdAndDocRefId")
+  public ResponseEntity<String> getEicrAllAttributes(@RequestParam String eicrDocId) {
     JSONObject eicrObject = new JSONObject();
     try {
-      if (eicr_doc_id == null || eicr_doc_id.isEmpty()) {
+      if (eicrDocId == null || eicrDocId.isEmpty()) {
         logger.error("Eicr Doc Id is null ");
-        return new ResponseEntity(
-            "Requested eicr_doc_id is missing or empty", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+            "Requested eicrDocId is missing or empty", HttpStatus.BAD_REQUEST);
       }
-      Eicr eicr = eicrRRService.getEicrByDocId(eicr_doc_id);
+      Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
       if (eicr != null) {
         eicrObject.put("rrId", eicr.getResponseDocId());
         eicrObject.put("docRefId", eicr.getEhrDocRefId());
       } else {
-        String message = "Failed to find EICR by EICR_DOC_ID: " + eicr_doc_id;
+        String message = "Failed to find EICR by EICR_DOC_ID: " + eicrDocId;
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
       }
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
+      return new ResponseEntity<>(
+          ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/eicrData", method = RequestMethod.DELETE)
-  public ResponseEntity<Object> deleteClientDetails(
-      @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+  @DeleteMapping(value = "/api/eicrData")
+  public ResponseEntity<String> deleteEicrByEicrDocID(
+      @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response) {
     try {
       if (eicrDocId == null || eicrDocId.isEmpty()) {
-        return new ResponseEntity(
+        return new ResponseEntity<>(
             "Requested Eicr Doc Id is missing or empty", HttpStatus.BAD_REQUEST);
       }
       Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
       if (eicr != null) {
         eicrRRService.deleteEicr(eicr);
-        return new ResponseEntity("Eicr deleted successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("Eicr deleted successfully.", HttpStatus.OK);
       }
-      return new ResponseEntity("Eicr Not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("Eicr Not found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, ERROR_IN_PROCESSING_THE_REQUEST);
+      return new ResponseEntity<>(
+          ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
