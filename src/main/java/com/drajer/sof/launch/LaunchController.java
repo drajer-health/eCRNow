@@ -200,6 +200,7 @@ public class LaunchController {
       }
 
       JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
@@ -209,6 +210,7 @@ public class LaunchController {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
             launchDetails.setClientId(clientDetails.getClientId());
             launchDetails.setClientSecret(clientDetails.getClientSecret());
@@ -221,7 +223,6 @@ public class LaunchController {
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
-            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
@@ -239,7 +240,7 @@ public class LaunchController {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
             if (tokenResponse.get(EXPIRES_IN) != null) {
-              Integer expiresInSec = (Integer) tokenResponse.get(EXPIRES_IN);
+              Integer expiresInSec = tokenResponse.getInt(EXPIRES_IN);
               Instant expireInstantTime =
                   new Date().toInstant().plusSeconds(new Long(expiresInSec));
               launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
