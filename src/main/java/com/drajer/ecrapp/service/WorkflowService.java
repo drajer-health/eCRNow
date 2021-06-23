@@ -223,10 +223,14 @@ public class WorkflowService {
   public void executeScheduledAction(
       Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 
+    final Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
+
     logger.info(
         "Get Launch Details from Database for Id  : {} for Action Type {} and start execution ",
         launchDetailsId,
         actionType);
+
+    MDC.setContextMap(loggingDiagnosticContext);
 
     LaunchDetails launchDetails =
         ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
