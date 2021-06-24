@@ -9,11 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 public class ITClientController extends BaseIntegrationTest {
 
@@ -159,6 +155,48 @@ public class ITClientController extends BaseIntegrationTest {
         (List<ClientDetails>) mapper.readValue(response.getBody(), List.class);
 
     assertEquals(2, clientList.size());
+  }
+
+  @Test
+  public void testDeleteClientDetailsByURL_Success() throws IOException {
+    // Insert ClientDetail Row
+    ResponseEntity<String> response =
+        invokeClientDetailAPI(clientDetailPayload, clientUrl, HttpMethod.POST);
+    ClientDetails clientDetails = mapper.readValue(response.getBody(), ClientDetails.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Delete the row
+    String getUrl = clientUrl + "?url=" + clientDetails.getFhirServerBaseURL();
+    headers.add("X-Request-ID", "test-delete-client-by-url");
+    response = invokeClientDetailAPI("", getUrl, HttpMethod.DELETE);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("ClientDetails deleted successfully", response.getBody());
+  }
+
+  @Test
+  public void testDeleteClientDetailsByURL_BadRequest() {
+
+    // Delete the row
+    String getUrl = clientUrl + "?url=" + "";
+    headers.add("X-Request-ID", "test-delete-client-by-url");
+    ResponseEntity<String> response = invokeClientDetailAPI("", getUrl, HttpMethod.DELETE);
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals("Requested FHIR Url is missing or empty", response.getBody());
+  }
+
+  @Test
+  public void testDeleteClientDetailsByURL_NotFound() {
+
+    // Delete the row
+    String getUrl = clientUrl + "?url=" + "https://dummy/url";
+    headers.add("X-Request-ID", "test-delete-client-by-url");
+    ResponseEntity<String> response = invokeClientDetailAPI("", getUrl, HttpMethod.DELETE);
+
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals("Client Details Not found", response.getBody());
   }
 
   private ResponseEntity<String> invokeClientDetailAPI(

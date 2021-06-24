@@ -42,19 +42,50 @@ public class EicrController {
       @RequestParam(name = "xRequestId", required = false) String xRequestId) {
     List<JSONObject> eicrData = new ArrayList<>();
     try {
-      logger.info("Received EicrId::::: {}", eicrId);
-      logger.info("Received EicrDocId::::: {}", eicrDocId);
-      logger.info("Received SetId::::: {}", setId);
+      logger.info(
+          "Retrieving EICR based on request\n"
+              + "eicrId = {} \n"
+              + "eicrDocId = {}\n"
+              + "setId = {}\n"
+              + "patientId = {}\n"
+              + "encounterId = {}\n"
+              + "version = {}\n"
+              + "fhirServerUrl = {}\n"
+              + "xRequestId = {}",
+          eicrId,
+          eicrDocId,
+          setId,
+          patientId,
+          encounterId,
+          version,
+          fhirServerUrl,
+          xRequestId);
 
       Map<String, String> searchParams = new HashMap<>();
-      searchParams.put("eicrId", eicrId);
-      searchParams.put("eicrDocId", eicrDocId);
-      searchParams.put("setId", setId);
-      searchParams.put("patientId", patientId);
-      searchParams.put("encounterId", encounterId);
-      searchParams.put("version", version);
-      searchParams.put("fhirServerUrl", fhirServerUrl);
-      searchParams.put("xRequestId", xRequestId);
+      if (eicrId != null && !eicrId.isEmpty()) {
+        searchParams.put("eicrId", eicrId);
+      }
+      if (eicrDocId != null && !eicrDocId.isEmpty()) {
+        searchParams.put("eicrDocId", eicrDocId);
+      }
+      if (setId != null && !setId.isEmpty()) {
+        searchParams.put("setId", setId);
+      }
+      if (patientId != null && !patientId.isEmpty()) {
+        searchParams.put("patientId", patientId);
+      }
+      if (encounterId != null && !encounterId.isEmpty()) {
+        searchParams.put("encounterId", encounterId);
+      }
+      if (version != null && !version.isEmpty()) {
+        searchParams.put("version", version);
+      }
+      if (fhirServerUrl != null && !fhirServerUrl.isEmpty()) {
+        searchParams.put("fhirServerUrl", fhirServerUrl);
+      }
+      if (xRequestId != null && !xRequestId.isEmpty()) {
+        searchParams.put("xRequestId", xRequestId);
+      }
       eicrData = eicrRRService.getEicrData(searchParams);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -79,18 +110,46 @@ public class EicrController {
       @RequestParam(name = "version", required = false) String version) {
     List<JSONObject> rrData = new ArrayList<>();
     try {
-      logger.info("Received ResponseDocId::::: {}", responseDocId);
-      logger.info("Received SetId::::: {}", setId);
-      logger.info("Received FHIRServerURL::::: {}", fhirServerUrl);
+      logger.info(
+          "Retrieving EICR based on request\n"
+              + "responseDocId = {} \n"
+              + "eicrDocId = {}\n"
+              + "setId = {}\n"
+              + "patientId = {}\n"
+              + "encounterId = {}\n"
+              + "version = {}\n"
+              + "fhirServerUrl = {}",
+          responseDocId,
+          eicrDocId,
+          setId,
+          patientId,
+          encounterId,
+          version,
+          fhirServerUrl);
 
       Map<String, String> searchParams = new HashMap<>();
-      searchParams.put("responseDocId", responseDocId);
-      searchParams.put("eicrDocId", eicrDocId);
-      searchParams.put("fhirServerUrl", fhirServerUrl);
-      searchParams.put("setId", setId);
-      searchParams.put("patientId", patientId);
-      searchParams.put("encounterId", encounterId);
-      searchParams.put("version", version);
+      if (responseDocId != null && !responseDocId.isEmpty()) {
+        searchParams.put("responseDocId", responseDocId);
+      }
+      if (eicrDocId != null && !eicrDocId.isEmpty()) {
+        searchParams.put("eicrDocId", eicrDocId);
+      }
+      if (setId != null && !setId.isEmpty()) {
+        searchParams.put("setId", setId);
+      }
+      if (fhirServerUrl != null && !fhirServerUrl.isEmpty()) {
+        searchParams.put("fhirServerUrl", fhirServerUrl);
+      }
+      if (patientId != null && !patientId.isEmpty()) {
+        searchParams.put("patientId", patientId);
+      }
+      if (encounterId != null && !encounterId.isEmpty()) {
+        searchParams.put("encounterId", encounterId);
+      }
+      if (version != null && !version.isEmpty()) {
+        searchParams.put("version", version);
+      }
+
       rrData = eicrRRService.getRRData(searchParams);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -102,9 +161,17 @@ public class EicrController {
 
   @CrossOrigin
   @RequestMapping(value = "/api/eicrAndRRData", method = RequestMethod.GET)
-  public ResponseEntity<Object> redirectEndPoint(@RequestParam String xRequestId) {
+  public ResponseEntity<Object> getEicrAndRRByRequestId(
+      @RequestParam String xRequestId,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID", required = false)
+          String xCorrelationIdHttpHeaderValue) {
     List<JSONObject> eicrList = new ArrayList<>();
     try {
+      logger.info(
+          "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
+          xCorrelationIdHttpHeaderValue,
+          xRequestIdHttpHeaderValue);
       eicrList = eicrRRService.getEicrAndRRByXRequestId(xRequestId);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -115,10 +182,18 @@ public class EicrController {
   }
 
   @CrossOrigin
-  @GetMapping(value = "/api/rrIdAndDocRefId")
-  public ResponseEntity<String> getEicrAllAttributes(@RequestParam String eicrDocId) {
-    JSONObject eicrObject = new JSONObject();
+  @GetMapping(value = "/api/eicr")
+  public ResponseEntity<Object> getEicrByEicrDocID(
+      @RequestParam String eicrDocId,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID", required = false)
+          String xCorrelationIdHttpHeaderValue) {
     try {
+      logger.info(
+          "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
+          xCorrelationIdHttpHeaderValue,
+          xRequestIdHttpHeaderValue);
+
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         logger.error("Eicr Doc Id is null ");
         return new ResponseEntity<>(
@@ -126,8 +201,7 @@ public class EicrController {
       }
       Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
       if (eicr != null) {
-        eicrObject.put("rrId", eicr.getResponseDocId());
-        eicrObject.put("docRefId", eicr.getEhrDocRefId());
+        return new ResponseEntity<>(eicr, HttpStatus.OK);
       } else {
         String message = "Failed to find EICR by EICR_DOC_ID: " + eicrDocId;
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
@@ -137,14 +211,23 @@ public class EicrController {
       return new ResponseEntity<>(
           ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
   }
 
   @CrossOrigin
-  @DeleteMapping(value = "/api/eicrDataByDocId")
+  @DeleteMapping(value = "/api/eicr")
   public ResponseEntity<String> deleteEicrByEicrDocID(
-      @RequestParam String eicrDocId, HttpServletRequest request, HttpServletResponse response) {
+      @RequestParam String eicrDocId,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID", required = false)
+          String xCorrelationIdHttpHeaderValue,
+      HttpServletRequest request,
+      HttpServletResponse response) {
     try {
+      logger.info(
+          "X-Request-ID: {} and X-Correlation-ID: {} received for deleting ECR",
+          xCorrelationIdHttpHeaderValue,
+          xRequestIdHttpHeaderValue);
+
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         return new ResponseEntity<>(
             "Requested Eicr Doc Id is missing or empty", HttpStatus.BAD_REQUEST);
@@ -152,7 +235,7 @@ public class EicrController {
       Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
       if (eicr != null) {
         eicrRRService.deleteEicr(eicr);
-        return new ResponseEntity<>("Eicr deleted successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("Eicr deleted successfully", HttpStatus.OK);
       }
       return new ResponseEntity<>("Eicr Not found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
