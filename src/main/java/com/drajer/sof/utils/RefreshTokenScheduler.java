@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,15 +113,21 @@ public class RefreshTokenScheduler {
       } else if (authDetails.getIsUserAccountLaunch()) {
         headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
 
-        URIBuilder uriBuilder = new URIBuilder(authDetails.getTokenUrl());
-        uriBuilder.addParameter(GRANT_TYPE, CLIENT_CREDENTIALS);
-        uriBuilder.addParameter(SCOPE, authDetails.getScope());
+        String tokenUrl =
+            authDetails.getTokenUrl()
+                + "?"
+                + GRANT_TYPE
+                + "="
+                + CLIENT_CREDENTIALS
+                + "&"
+                + SCOPE
+                + "="
+                + authDetails.getScope();
 
         HttpEntity entity = new HttpEntity(headers);
 
         ResponseEntity<?> response =
-            resTemplate.exchange(
-                uriBuilder.build().toString(), HttpMethod.GET, entity, String.class);
+            resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
         String responseBody =
             response
                 .getBody()
@@ -191,15 +196,21 @@ public class RefreshTokenScheduler {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientDetails.getClientId(), clientDetails.getClientSecret());
 
-        URIBuilder uriBuilder = new URIBuilder(clientDetails.getTokenURL());
-        uriBuilder.addParameter(GRANT_TYPE, CLIENT_CREDENTIALS);
-        uriBuilder.addParameter(SCOPE, clientDetails.getScopes());
+        String tokenUrl =
+            clientDetails.getTokenURL()
+                + "?"
+                + GRANT_TYPE
+                + "="
+                + CLIENT_CREDENTIALS
+                + "&"
+                + SCOPE
+                + "="
+                + clientDetails.getScopes();
 
         HttpEntity entity = new HttpEntity(headers);
 
         ResponseEntity<?> response =
-            resTemplate.exchange(
-                uriBuilder.build().toString(), HttpMethod.GET, entity, String.class);
+            resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
         String responseBody =
             response
                 .getBody()
