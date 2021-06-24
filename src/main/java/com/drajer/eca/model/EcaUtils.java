@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -312,11 +313,20 @@ public class EcaUtils {
       IGenericClient client =
           ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
 
-      Encounter enc = null;
+      Encounter r4Encounter = null;
+      ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
       try {
-        enc =
-            (Encounter)
-                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+        if (details.getFhirVersion().equals(FhirVersionEnum.R4)) {
+          r4Encounter =
+              (Encounter)
+                  client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+        }
+        if (details.getFhirVersion().equals(FhirVersionEnum.DSTU2)) {
+          dstu2Encounter =
+              (ca.uhn.fhir.model.dstu2.resource.Encounter)
+                  client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+        }
+
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
@@ -325,12 +335,24 @@ public class EcaUtils {
         WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
       }
 
-      if (enc != null) {
+      if (r4Encounter != null) {
         logger.info(" Found Encounter for checking encounter closure ");
 
-        if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
+        if (r4Encounter.getPeriod() != null && r4Encounter.getPeriod().getEnd() != null) {
           logger.info(
-              " Encounter has an end date so it is considered closed {}", enc.getPeriod().getEnd());
+              " Encounter has an end date so it is considered closed {}",
+              r4Encounter.getPeriod().getEnd());
+          retVal = true;
+        }
+      }
+
+      if (dstu2Encounter != null) {
+        logger.info(" Found Encounter for checking encounter closure ");
+
+        if (dstu2Encounter.getPeriod() != null && dstu2Encounter.getPeriod().getEnd() != null) {
+          logger.info(
+              " Encounter has an end date so it is considered closed {}",
+              dstu2Encounter.getPeriod().getEnd());
           retVal = true;
         }
       }
