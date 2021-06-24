@@ -88,8 +88,6 @@ public class CdaPlanOfTreatmentGenerator {
 
         if (serviceDate.isEmpty() && s.getAuthoredOnElement() != null) {
           serviceDate = CdaFhirUtilities.getDisplayStringForDateTimeType(s.getAuthoredOnElement());
-        } else {
-          logger.error(" Authored time is null or the datetime is null or timezone is null ");
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();

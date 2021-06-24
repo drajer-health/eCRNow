@@ -78,18 +78,28 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @DeleteMapping(value = "/api/clientDetailsByFhirUrl")
+  @DeleteMapping(value = "/api/clientDetails")
   public ResponseEntity<String> deleteClientDetails(
-      @RequestParam String fhirUrl, HttpServletRequest request, HttpServletResponse response) {
+      @RequestParam(value = "url") String url,
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID", required = false)
+          String xCorrelationIdHttpHeaderValue,
+      HttpServletRequest request,
+      HttpServletResponse response) {
     try {
-      if (fhirUrl == null || fhirUrl.isEmpty()) {
+      logger.info(
+          "X-Request-ID: {} and X-Correlation-ID: {} received for deleting clientDetail",
+          xCorrelationIdHttpHeaderValue,
+          xRequestIdHttpHeaderValue);
+
+      if (url == null || url.isEmpty()) {
         return new ResponseEntity<>(
             "Requested FHIR Url is missing or empty", HttpStatus.BAD_REQUEST);
       }
-      ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(fhirUrl);
+      ClientDetails checkClientDetails = clientDetailsService.getClientDetailsByUrl(url);
       if (checkClientDetails != null) {
         clientDetailsService.delete(checkClientDetails);
-        return new ResponseEntity<>("ClientDetails deleted successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("ClientDetails deleted successfully", HttpStatus.OK);
       }
       return new ResponseEntity<>("Client Details Not found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
