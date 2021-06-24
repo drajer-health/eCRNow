@@ -129,13 +129,16 @@ public class EicrController {
 
       Map<String, String> searchParams = new HashMap<>();
       if (responseDocId != null && !responseDocId.isEmpty()) {
-        searchParams.put("eicrId", responseDocId);
+        searchParams.put("responseDocId", responseDocId);
       }
       if (eicrDocId != null && !eicrDocId.isEmpty()) {
         searchParams.put("eicrDocId", eicrDocId);
       }
       if (setId != null && !setId.isEmpty()) {
         searchParams.put("setId", setId);
+      }
+      if (fhirServerUrl != null && !fhirServerUrl.isEmpty()) {
+        searchParams.put("fhirServerUrl", fhirServerUrl);
       }
       if (patientId != null && !patientId.isEmpty()) {
         searchParams.put("patientId", patientId);
@@ -146,9 +149,7 @@ public class EicrController {
       if (version != null && !version.isEmpty()) {
         searchParams.put("version", version);
       }
-      if (fhirServerUrl != null && !fhirServerUrl.isEmpty()) {
-        searchParams.put("fhirServerUrl", fhirServerUrl);
-      }
+
       rrData = eicrRRService.getRRData(searchParams);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -187,7 +188,6 @@ public class EicrController {
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue) {
-    // JSONObject eicrObject = new JSONObject();
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
@@ -201,8 +201,6 @@ public class EicrController {
       }
       Eicr eicr = eicrRRService.getEicrByDocId(eicrDocId);
       if (eicr != null) {
-        /*        eicrObject.put("rrId", eicr.getResponseDocId());
-        eicrObject.put("docRefId", eicr.getEhrDocRefId());*/
         return new ResponseEntity<>(eicr, HttpStatus.OK);
       } else {
         String message = "Failed to find EICR by EICR_DOC_ID: " + eicrDocId;
@@ -213,7 +211,6 @@ public class EicrController {
       return new ResponseEntity<>(
           ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    // return new ResponseEntity<>(eicrObject.toString(), HttpStatus.OK);
   }
 
   @CrossOrigin
