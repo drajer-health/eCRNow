@@ -55,6 +55,7 @@ public class CdaGeneratorUtilsTest {
         CdaGeneratorUtils.getStringForDateTime(
             Date.from(anotherSummerDay.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
             null);
+
     assertEquals(8, nullZoneDate.length());
     assertTrue(nullZoneDate.equalsIgnoreCase("20160823"));
 
@@ -65,12 +66,14 @@ public class CdaGeneratorUtilsTest {
     try {
       Date d2 = formatter.parse(dateInString);
       String d2String = CdaGeneratorUtils.getStringForDateTime(d2, null);
+
       assertEquals(8, d2String.length());
       assertTrue(d2String.equalsIgnoreCase("20130101"));
 
       dateInString = "201904";
       Date d3 = formatter1.parse(dateInString);
       String d3String = CdaGeneratorUtils.getStringForDateTime(d3, null);
+
       assertEquals(8, d3String.length());
       assertTrue(d3String.equalsIgnoreCase("20190401"));
 
