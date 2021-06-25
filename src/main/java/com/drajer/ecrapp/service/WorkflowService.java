@@ -223,14 +223,12 @@ public class WorkflowService {
   public void executeScheduledAction(
       Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 
-    final Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
+    MDC.setContextMap(TaskConfiguration.loggingDiagnosticContext);
 
     logger.info(
         "Get Launch Details from Database for Id  : {} for Action Type {} and start execution ",
         launchDetailsId,
         actionType);
-
-    MDC.setContextMap(loggingDiagnosticContext);
 
     LaunchDetails launchDetails =
         ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
@@ -256,13 +254,13 @@ public class WorkflowService {
         Map<String, String> loggingDiagnosticContext) {
       this.launchDetailsId = launchDetailsId;
       this.actionType = actionType;
-      this.loggingDiagnosticContext = loggingDiagnosticContext;
+      this.loggingDiagnosticContext = MDC.getCopyOfContextMap();
     }
 
     @Override
     public void run() {
       try {
-        MDC.setContextMap(loggingDiagnosticContext);
+        MDC.setContextMap(this.loggingDiagnosticContext);
         logger.info("Starting the Thread");
         executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);
       } catch (Exception e) {
