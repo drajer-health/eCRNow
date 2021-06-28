@@ -61,7 +61,7 @@ public class FhirContextInitializer {
   public IGenericClient createClient(FhirContext context, String url, String accessToken) {
     logger.trace("Initializing the Client");
     IGenericClient client = context.newRestfulGenericClient(url);
-    context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
