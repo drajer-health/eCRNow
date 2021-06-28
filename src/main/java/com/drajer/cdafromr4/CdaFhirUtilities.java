@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -24,21 +23,17 @@ import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.InstantType;
-import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
@@ -196,25 +191,6 @@ public class CdaFhirUtilities {
     }
 
     logger.debug("Did not find the Extension or sub extensions for the Url {}", extUrl);
-    return null;
-  }
-
-  public static Coding getLanguage(List<PatientCommunicationComponent> comms) {
-
-    if (comms != null && !comms.isEmpty()) {
-
-      for (PatientCommunicationComponent comm : comms) {
-
-        if (comm.getLanguage() != null
-            && comm.getLanguage().getCodingFirstRep() != null
-            && comm.getLanguage().getCodingFirstRep().getCode() != null) {
-
-          return comm.getLanguage().getCodingFirstRep();
-        }
-      }
-    }
-
-    logger.debug("Did not find the communication language ");
     return null;
   }
 
@@ -425,44 +401,6 @@ public class CdaFhirUtilities {
     return telString.toString();
   }
 
-  public static Organization getOrganization(List<BundleEntryComponent> entries, Encounter en) {
-
-    if (en.getServiceProvider().getReference() != null) {
-
-      BundleEntryComponent ent =
-          getResourceEntryForId(en.getServiceProvider().getReference(), "Organization", entries);
-
-      if (ent != null) {
-
-        logger.debug("Found organization for Id {}", en.getServiceProvider().getReference());
-        return (Organization) ent.getResource();
-      }
-    }
-
-    logger.debug("Did not find the organization resource for encounter");
-    return null;
-  }
-
-  public static Location getLocation(List<BundleEntryComponent> entries, Encounter en) {
-
-    EncounterLocationComponent loc = en.getLocationFirstRep();
-
-    if (loc != null && loc.getLocation() != null) {
-
-      BundleEntryComponent ent =
-          getResourceEntryForId(loc.getLocation().getReference(), "Location", entries);
-
-      if (ent != null) {
-
-        logger.debug("Found Location for Id {}", loc.getLocation().getReference());
-        return (Location) ent.getResource();
-      }
-    }
-
-    logger.debug("Did not find the location resource for encounter");
-    return null;
-  }
-
   public static List<Practitioner> getPractitionersForType(
       R4FhirData data, V3ParticipationType type) {
 
@@ -548,27 +486,6 @@ public class CdaFhirUtilities {
 
     return practs;
   } // Method end
-
-  public static BundleEntryComponent getResourceEntryForId(
-      String id, String type, List<BundleEntryComponent> entries) {
-
-    for (BundleEntryComponent ent : entries) {
-
-      if (ent.getResource() != null
-          &&
-          //  ent.getResource() != null &&
-          //   ent.getResource().fhirType().contentEquals(type) &&
-          ent.getResource().getId() != null
-          && ent.getResource().getId().contentEquals(id)) {
-
-        logger.debug("Found entry for ID {} Type : {}", id, type);
-        return ent;
-      }
-    }
-
-    logger.debug("Did not find entry for ID {} Type : {}", id, type);
-    return null;
-  }
 
   public static Boolean isCodingPresentForCodeSystem(List<Coding> codings, String codeSystemUrl) {
 
@@ -674,36 +591,6 @@ public class CdaFhirUtilities {
     }
 
     return new Pair<>(d, t);
-  }
-
-  public static String getCodeableConceptDisplayForCodeSystem(
-      List<CodeableConcept> cds, String codeSystemUrl, Boolean csOptional) {
-
-    String anyCdDisplay = "";
-    Pair<String, Boolean> disp = null;
-
-    if (cds != null && !cds.isEmpty()) {
-
-      for (CodeableConcept cd : cds) {
-
-        disp = getCodeableConceptDisplayForCodeSystem(cd, codeSystemUrl, csOptional);
-
-        if (!StringUtils.isEmpty(disp.getValue0())) {
-
-          // Found a display
-          break;
-        }
-
-        // If display is at the Codeable Concept level, use it in case we don't find anything else
-        if (cd != null && !StringUtils.isEmpty(cd.getText())) {
-          anyCdDisplay = cd.getText();
-        }
-      }
-    }
-
-    if (disp != null && !StringUtils.isEmpty(disp.getValue0())) return disp.getValue0();
-    else if (!StringUtils.isEmpty(anyCdDisplay)) return anyCdDisplay;
-    else return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
 
   public static String getCodeableConceptXmlForCodeSystem(
@@ -1687,37 +1574,6 @@ public class CdaFhirUtilities {
 
     if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
-
-    return val;
-  }
-
-  public static String getXmlForTypeForValueIvlTsEffectiveTime(String elName, Type dt) {
-
-    String val = "";
-    if (dt != null) {
-
-      if (dt instanceof DateTimeType) {
-
-        DateTimeType d = (DateTimeType) dt;
-
-        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
-
-      } else if (dt instanceof Period) {
-        Period pt = (Period) dt;
-
-        val += getPeriodXml(pt, elName);
-      } else if (dt instanceof Timing) {
-
-        Timing t = (Timing) (dt);
-        if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
-
-          logger.debug("Found the bounds element for creating xml");
-        }
-      }
-
-      logger.debug("Printing the class name {}", dt.getClass());
-      return val;
-    }
 
     return val;
   }
