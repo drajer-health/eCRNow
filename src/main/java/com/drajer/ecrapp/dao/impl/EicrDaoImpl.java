@@ -119,4 +119,8 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
       criteria.add(Restrictions.eq("xRequestId", searchParams.get("xRequestId")));
     }
   }
+
+  public void deleteEicr(Eicr eicr) {
+    getSession().delete(eicr);
+  }
 }

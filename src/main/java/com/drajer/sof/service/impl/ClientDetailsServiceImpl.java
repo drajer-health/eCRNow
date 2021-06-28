@@ -30,4 +30,8 @@ public class ClientDetailsServiceImpl implements ClientDetailsService {
   public List<ClientDetails> getAllClientDetails() {
     return clientDetailsDao.getAllClientDetails();
   }
+
+  public void delete(ClientDetails clientDetails) {
+    clientDetailsDao.delete(clientDetails);
+  }
 }

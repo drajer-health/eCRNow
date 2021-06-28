@@ -32,7 +32,7 @@ public class CdaGeneratorUtilsTest {
     String formattedTime = CdaGeneratorUtils.getCurrentDateTime();
     logger.info(" Formatted Time {}", formattedTime);
     assertTrue(formattedTime.contains("+0000"));
-    assertTrue(formattedTime.length() == 19);
+    assertEquals(19, formattedTime.length());
   }
 
   @Test
@@ -55,7 +55,8 @@ public class CdaGeneratorUtilsTest {
         CdaGeneratorUtils.getStringForDateTime(
             Date.from(anotherSummerDay.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
             null);
-    assertTrue(nullZoneDate.length() == 8);
+
+    assertEquals(8, nullZoneDate.length());
     assertTrue(nullZoneDate.equalsIgnoreCase("20160823"));
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
@@ -65,18 +66,19 @@ public class CdaGeneratorUtilsTest {
     try {
       Date d2 = formatter.parse(dateInString);
       String d2String = CdaGeneratorUtils.getStringForDateTime(d2, null);
-      assertTrue(d2String.length() == 8);
+
+      assertEquals(8, d2String.length());
       assertTrue(d2String.equalsIgnoreCase("20130101"));
 
       dateInString = "201904";
       Date d3 = formatter1.parse(dateInString);
       String d3String = CdaGeneratorUtils.getStringForDateTime(d3, null);
-      assertTrue(d3String.length() == 8);
+
+      assertEquals(8, d3String.length());
       assertTrue(d3String.equalsIgnoreCase("20190401"));
 
     } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error("Error executing test testGetStringForDateTime", e);
     }
   }
 

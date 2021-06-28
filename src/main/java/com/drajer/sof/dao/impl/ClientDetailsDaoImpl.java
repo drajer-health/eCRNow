@@ -33,4 +33,8 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
     Criteria criteria = getSession().createCriteria(ClientDetails.class);
     return criteria.addOrder(Order.desc("id")).list();
   }
+
+  public void delete(ClientDetails clientDetails) {
+    getSession().delete(clientDetails);
+  }
 }

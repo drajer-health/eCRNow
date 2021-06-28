@@ -1,6 +1,7 @@
 package com.drajer.sof.dao.impl;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
@@ -49,6 +50,21 @@ public class ClientDetailsDaoTest {
 
     assertNotNull(actualClientDetails);
     assertClientDetails(expectedClientDetails, actualClientDetails);
+  }
+
+  @Test
+  public void deleteClientDetails() {
+
+    ClientDetails clientDetails = clientDetailsDao.saveOrUpdate(expectedClientDetails);
+    assertNotNull(clientDetails);
+    String fhirUrl = clientDetails.getFhirServerBaseURL();
+
+    ClientDetails clientDetailsSaved = clientDetailsDao.getClientDetailsByUrl(fhirUrl);
+    assertNotNull(clientDetailsSaved);
+
+    clientDetailsDao.delete(clientDetailsSaved);
+    clientDetailsSaved = clientDetailsDao.getClientDetailsByUrl(fhirUrl);
+    assertNull(clientDetailsSaved);
   }
 
   @Test

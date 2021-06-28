@@ -2,6 +2,7 @@ package com.drajer.ecrapp.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
@@ -54,6 +55,21 @@ public class EicrDaoTest {
       logger.error("Exception in parsing input data: ", e);
       fail("This exception is not expected, fix the test");
     }
+  }
+
+  @Test
+  public void deleteEicr() {
+
+    Eicr eicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
+    assertNotNull(eicr);
+    String eicrDocId = eicr.getEicrDocId();
+
+    Eicr eicrSaved = eicrDaoImpl.getEicrByDocId(eicrDocId);
+    assertNotNull(eicrSaved);
+
+    eicrDaoImpl.deleteEicr(eicrSaved);
+    eicrSaved = eicrDaoImpl.getEicrByDocId(eicrDocId);
+    assertNull(eicrSaved);
   }
 
   @Test

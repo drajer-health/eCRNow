@@ -267,9 +267,9 @@ public class LaunchDetails {
 
   public String getAccessToken() {
     if (this.getTokenExpiryDateTime() != null) {
-      // Retrieve Access token 1 minute before it expires.
-      // 1 minute is enough buffer for Trigger or Loading query to complete.
-      Instant currentInstant = new Date().toInstant().plusSeconds(60);
+      // Retrieve Access token 3 minutes before it expires.
+      // 3 minutes is enough buffer for Trigger or Loading query to complete.
+      Instant currentInstant = new Date().toInstant().plusSeconds(180);
       Date currentDate = Date.from(currentInstant);
       Date tokenExpiryTime = this.getTokenExpiryDateTime();
       int value = currentDate.compareTo(tokenExpiryTime);
