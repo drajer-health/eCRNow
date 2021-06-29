@@ -223,9 +223,6 @@ public class WorkflowService {
   public void executeScheduledAction(
       Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 
-    // MDC.setContextMap(TaskConfiguration.loggingDiagnosticContext);
-
-    MDC.setContextMap(ActionRepo.getInstance().getLoggingDiagnosticContext());
     logger.info("***************MDC correlation id ***************** {}", MDC.get("correlationId"));
     logger.info("***************MDC correlation id ***************** {}", MDC.get("requestId"));
 
@@ -313,7 +310,7 @@ public class WorkflowService {
                     + String.valueOf(launchDetailsId)
                     + "_"
                     + java.util.UUID.randomUUID().toString(),
-                new TaskTimer(100L, launchDetailsId, actionType, t)),
+                new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
         t);
 
     logger.debug("task  ::: {}", task);

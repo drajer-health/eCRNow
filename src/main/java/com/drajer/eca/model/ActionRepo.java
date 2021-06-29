@@ -17,7 +17,6 @@ import java.util.Set;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -64,8 +63,6 @@ public class ActionRepo {
 
   String rctcVersion;
 
-  public Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
-
   private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
   public static ActionRepo getInstance() {
@@ -73,14 +70,6 @@ public class ActionRepo {
       instance = new ActionRepo();
     }
     return instance;
-  }
-
-  public Map<String, String> getLoggingDiagnosticContext() {
-    return loggingDiagnosticContext;
-  }
-
-  public void setLoggingDiagnosticContext() {
-    ActionRepo.getInstance().loggingDiagnosticContext = MDC.getCopyOfContextMap();
   }
 
   public String getRctcOid() {

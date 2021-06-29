@@ -166,7 +166,6 @@ public class LaunchController {
       HttpServletRequest request,
       HttpServletResponse response)
       throws IOException {
-
     logger.info("***************MDC correlation id ***************** {}", MDC.get("correlationId"));
     logger.info("***************MDC request id ***************** {}", MDC.get("requestId"));
     ClientDetails clientDetails =
