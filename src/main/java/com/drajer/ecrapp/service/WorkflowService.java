@@ -223,9 +223,6 @@ public class WorkflowService {
   public void executeScheduledAction(
       Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 
-    logger.info("***************MDC correlation id ***************** {}", MDC.get("correlationId"));
-    logger.info("***************MDC correlation id ***************** {}", MDC.get("requestId"));
-
     logger.info(
         "Get Launch Details from Database for Id  : {} for Action Type {} and start execution ",
         launchDetailsId,

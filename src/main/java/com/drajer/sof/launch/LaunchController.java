@@ -42,7 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -166,8 +165,6 @@ public class LaunchController {
       HttpServletRequest request,
       HttpServletResponse response)
       throws IOException {
-    logger.info("***************MDC correlation id ***************** {}", MDC.get("correlationId"));
-    logger.info("***************MDC request id ***************** {}", MDC.get("requestId"));
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
     String requestIdHeadervalue = request.getHeader("X-Request-ID");
