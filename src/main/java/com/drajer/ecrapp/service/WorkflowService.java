@@ -223,8 +223,9 @@ public class WorkflowService {
   public void executeScheduledAction(
       Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
 
-    MDC.setContextMap(TaskConfiguration.loggingDiagnosticContext);
+    // MDC.setContextMap(TaskConfiguration.loggingDiagnosticContext);
 
+    MDC.setContextMap(ActionRepo.getInstance().getLoggingDiagnosticContext());
     logger.info("***************MDC correlation id ***************** {}", MDC.get("correlationId"));
     logger.info("***************MDC correlation id ***************** {}", MDC.get("requestId"));
 

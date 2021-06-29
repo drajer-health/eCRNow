@@ -35,7 +35,8 @@ public class TaskConfiguration {
   @Bean
   public Task<TaskTimer> sampleOneTimeTask() {
     log.info("Initializing the One time task");
-    loggingDiagnosticContext = MDC.getCopyOfContextMap();
+    // loggingDiagnosticContext = MDC.getCopyOfContextMap();
+    loggingDiagnosticContext = ActionRepo.getInstance().getLoggingDiagnosticContext();
     OneTimeTask<TaskTimer> myTask =
         Tasks.oneTime("EICRTask", TaskTimer.class)
             .onFailureRetryLater()
