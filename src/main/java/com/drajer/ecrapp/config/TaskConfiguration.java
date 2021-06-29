@@ -29,13 +29,13 @@ public class TaskConfiguration {
   @Value("${workflow.endpoint:}")
   private String workflowEndpoint;
 
-  public static final Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
+  public static Map<String, String> loggingDiagnosticContext;
 
   /** Define a one-time task which have to be manually scheduled. */
   @Bean
   public Task<TaskTimer> sampleOneTimeTask() {
     log.info("Initializing the One time task");
-    // final Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
+    loggingDiagnosticContext = MDC.getCopyOfContextMap();
     OneTimeTask<TaskTimer> myTask =
         Tasks.oneTime("EICRTask", TaskTimer.class)
             .onFailureRetryLater()
