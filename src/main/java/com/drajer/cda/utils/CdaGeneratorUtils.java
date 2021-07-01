@@ -415,16 +415,6 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForIIWithElName(String elName, String root) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + " root="
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + root
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
   public static String getXmlForText(String elName, String text) {
     return CdaGeneratorConstants.START_XMLTAG
         + elName
@@ -450,17 +440,6 @@ public class CdaGeneratorUtils {
         + "\n";
   }
 
-  public static String getXmlForSDTCElement(String elName, String value) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.VALUE_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + value
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
   public static String getXmlForEffectiveTime(String elName, String value) {
     return CdaGeneratorConstants.START_XMLTAG
         + elName
@@ -470,17 +449,6 @@ public class CdaGeneratorUtils {
         + value
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
-  public static String getHl7StringForDate(Date value) {
-
-    String s = "";
-    if (value != null) {
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-      s = formatter.format(value);
-    }
-
-    return s;
   }
 
   public static String getXmlForEffectiveTime(String elName, Date value, TimeZone t) {
@@ -648,33 +616,6 @@ public class CdaGeneratorUtils {
     return s;
   }
 
-  public static String getCDADocHeaderTemplateXML() {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.TYPEID_ROOT
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.CDA_DOC_ROOT
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.EXTENSION
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.CDA_DOC_EXT
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
-  public static String getXmlForEntryTemplate(String template, String typeCode) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + template
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.TYPECODE_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + typeCode
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
-  }
-
   public static String getXmlForActEntry(String typeCode) {
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.ENTRY_EL_NAME
@@ -696,25 +637,6 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + typeCode
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
-  }
-
-  public static String getXmlForEntryRelationship(String typeCode, String invInd) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.ENTRY_REL_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.TYPECODE_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + typeCode
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.INV_IND_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + invInd
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
         + "\n";
@@ -796,13 +718,6 @@ public class CdaGeneratorUtils {
     }
   }
 
-  public static String getXmlForIVLWithTS(String elName, String low, String high) {
-    return CdaGeneratorUtils.getXmlForStartElement(elName)
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high)
-        + CdaGeneratorUtils.getXmlForEndElement(elName);
-  }
-
   public static String getXmlForIVLWithTS(
       String elName,
       Pair<Date, TimeZone> low,
@@ -851,76 +766,6 @@ public class CdaGeneratorUtils {
     return s;
   }
 
-  public static String getXmlForValueIVLWithTS(String elName, String low, String high) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.XSI_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.IVL_TS_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high)
-        + CdaGeneratorUtils.getXmlForEndElement(elName);
-  }
-
-  public static String getXmlForLowIVLWithTSWithNFHigh(String elName, String value) {
-    String s = "";
-
-    s +=
-        CdaGeneratorConstants.START_XMLTAG
-            + elName
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.XSI_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.IVL_TS_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-            + "\n"
-            + CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.TIME_LOW_EL_NAME, value)
-            + CdaGeneratorUtils.getXmlForNullEffectiveTime(
-                CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NF_UNK)
-            + CdaGeneratorUtils.getXmlForEndElement(elName);
-
-    return s;
-  }
-
-  public static String getXmlForPartialValueIVLWithTS(
-      String elName, String value, String lowOrHigh) {
-    String s = "";
-    if (lowOrHigh == CdaGeneratorConstants.TIME_LOW_EL_NAME) {
-      s +=
-          CdaGeneratorConstants.START_XMLTAG
-              + elName
-              + CdaGeneratorConstants.SPACE
-              + CdaGeneratorConstants.XSI_TYPE
-              + CdaGeneratorConstants.DOUBLE_QUOTE
-              + CdaGeneratorConstants.IVL_TS_TYPE
-              + CdaGeneratorConstants.DOUBLE_QUOTE
-              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-              + CdaGeneratorUtils.getXmlForEffectiveTime(
-                  CdaGeneratorConstants.TIME_LOW_EL_NAME, value)
-              + CdaGeneratorUtils.getXmlForEndElement(elName);
-    } else if (lowOrHigh == CdaGeneratorConstants.TIME_HIGH_EL_NAME) {
-      s +=
-          CdaGeneratorConstants.START_XMLTAG
-              + elName
-              + CdaGeneratorConstants.SPACE
-              + CdaGeneratorConstants.XSI_TYPE
-              + CdaGeneratorConstants.DOUBLE_QUOTE
-              + CdaGeneratorConstants.IVL_TS_TYPE
-              + CdaGeneratorConstants.DOUBLE_QUOTE
-              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-              + CdaGeneratorUtils.getXmlForEffectiveTime(
-                  CdaGeneratorConstants.TIME_HIGH_EL_NAME, value)
-              + CdaGeneratorUtils.getXmlForEndElement(elName);
-    }
-
-    return s;
-  }
-
   public static String getXmlForPIVLWithTS(String elName, String frequencyInHours) {
 
     String s = "";
@@ -948,46 +793,6 @@ public class CdaGeneratorUtils {
             + "period value="
             + CdaGeneratorConstants.DOUBLE_QUOTE
             + frequencyInHours
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.UNIT_WITH_EQUAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.HOURS_UNITS_NAME
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.END_XMLTAG_NEWLN
-            + CdaGeneratorUtils.getXmlForEndElement(elName);
-
-    return s;
-  }
-
-  public static String getXmlForPIVLWithTS(String elName, int frequency) {
-    int hours = 24 / frequency;
-    String s = "";
-
-    s +=
-        CdaGeneratorConstants.START_XMLTAG
-            + elName
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.XSI_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.PIVL_TS_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + "institutionSpecified="
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.CCDA_TRUE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + "operator="
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.PIVL_TS_OPERATOR_VAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-            + "\n"
-            + CdaGeneratorConstants.START_XMLTAG
-            + "period value="
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + Integer.toString(hours)
             + CdaGeneratorConstants.DOUBLE_QUOTE
             + CdaGeneratorConstants.SPACE
             + CdaGeneratorConstants.UNIT_WITH_EQUAL
@@ -1118,100 +923,6 @@ public class CdaGeneratorUtils {
     }
   }
 
-  public static String getXmlForValueCDWithValueSet(
-      String code, String codeSystem, String codeSystemName, String displayName, String valueSet) {
-    if (!StringUtils.isEmpty(displayName) && !StringUtils.isEmpty(valueSet)) {
-      return CdaGeneratorConstants.START_XMLTAG
-          + CdaGeneratorConstants.VAL_EL_NAME
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.XSI_TYPE
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.CD_TYPE
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + StringEscapeUtils.escapeXml10(displayName)
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.VALUESET
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + valueSet
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-
-    } else if (!StringUtils.isEmpty(displayName)) {
-      return CdaGeneratorConstants.START_XMLTAG
-          + CdaGeneratorConstants.VAL_EL_NAME
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.XSI_TYPE
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.CD_TYPE
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + StringEscapeUtils.escapeXml10(displayName)
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-
-    } else {
-      return CdaGeneratorConstants.START_XMLTAG
-          + CdaGeneratorConstants.VAL_EL_NAME
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.XSI_TYPE
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.CD_TYPE
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-    }
-  }
-
   public static String getXmlForValueCDWithValueSetAndVersion(
       String code,
       String codeSystem,
@@ -1335,93 +1046,6 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.CD_TYPE
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-    }
-  }
-
-  public static String getXmlForCDWithValueSet(
-      String elName,
-      String code,
-      String codeSystem,
-      String codeSystemName,
-      String displayName,
-      String valueSet) {
-    if (!StringUtils.isEmpty(displayName) && !StringUtils.isEmpty(valueSet)) {
-      return CdaGeneratorConstants.START_XMLTAG
-          + elName
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + StringEscapeUtils.escapeXml10(displayName)
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.VALUESET
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + valueSet
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-
-    } else if (!StringUtils.isEmpty(displayName)) {
-      return CdaGeneratorConstants.START_XMLTAG
-          + elName
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODE_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystem
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + codeSystemName
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.SPACE
-          + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + StringEscapeUtils.escapeXml10(displayName)
-          + CdaGeneratorConstants.DOUBLE_QUOTE
-          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-
-    } else {
-      return CdaGeneratorConstants.START_XMLTAG
-          + elName
-          + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
@@ -1863,55 +1487,6 @@ public class CdaGeneratorUtils {
     }
   }
 
-  public static String getXmlForValueCO(
-      String code, String codeSystem, String codeSystemName, String displayName) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.VAL_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.XSI_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.CO_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.CODE_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + code
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + codeSystem
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.CODESYSTEMNAME_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + codeSystemName
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + StringEscapeUtils.escapeXml10(displayName)
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
-  public static String getXmlForValueEd(String value) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.VAL_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.XSI_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.ED_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + StringEscapeUtils.escapeXml10(value)
-        + CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.FORWARD_SLASH
-        + CdaGeneratorConstants.VAL_EL_NAME
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
-  }
-
   public static String getXmlForValueString(String value) {
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.VAL_EL_NAME
@@ -2000,22 +1575,6 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForValueINT(String value) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.VAL_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.XSI_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.INT_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.VALUE_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + value
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
   public static String getNFXMLForValue(String nf) {
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.VAL_EL_NAME
@@ -2030,58 +1589,6 @@ public class CdaGeneratorUtils {
         + nf
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-  }
-
-  public static String getNFXMLForValueWithText(String nf, String text) {
-    String s =
-        CdaGeneratorConstants.START_XMLTAG
-            + CdaGeneratorConstants.VAL_EL_NAME
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.XSI_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.CD_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + nf
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
-
-    s += getXmlForText(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME, text);
-
-    s += getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME);
-
-    return s;
-  }
-
-  public static String getXmlForValueCDTranslation(
-      String code, String codeSystem, String codeSystemName, String displayName) {
-    String s =
-        CdaGeneratorConstants.START_XMLTAG
-            + CdaGeneratorConstants.VAL_EL_NAME
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.XSI_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.CD_TYPE
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.SPACE
-            + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.NF_OTH
-            + CdaGeneratorConstants.DOUBLE_QUOTE
-            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
-
-    s +=
-        getXmlForCD(
-            CdaGeneratorConstants.TRANSLATION_EL_NAME,
-            code,
-            codeSystem,
-            codeSystemName,
-            displayName);
-    s += getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME);
-
-    return s;
   }
 
   public static String getXmlForOriginalTextWithReference(String refText) {
@@ -2099,45 +1606,6 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
         + "\n"
         + CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME);
-  }
-
-  public static String getXmlForPerformer(String perfType) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.PERF_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.TYPECODE_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + perfType
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
-  }
-
-  public static String getXmlForParticipant(String participantType) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.PARTICIPANT_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.TYPECODE_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + participantType
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
-  }
-
-  public static String getXmlForParticipantRole(String classCode) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.CLASSCODE_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + classCode
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
   }
 
   public static String getXmlForTableHeader(List<String> headerVals, int border, int width) {
@@ -2211,19 +1679,6 @@ public class CdaGeneratorUtils {
 
     sb.append(getXmlForEndElement(CdaGeneratorConstants.TABLE_ROW_EL_NAME));
     return sb.toString();
-  }
-
-  public static String getXmlForReference(String typecode) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + CdaGeneratorConstants.REFR_EL_NAME
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.TYPECODE_ATTR_NAME
-        + CdaGeneratorConstants.EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + typecode
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + "\n";
   }
 
   public static String getRootOid(String systemValue, String aaId) {
