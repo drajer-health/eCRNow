@@ -1,5 +1,6 @@
 package com.drajer.cda.utils;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -9,7 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import org.javatuples.Pair;
 import org.junit.Before;
@@ -88,13 +93,6 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
-  public void getXmlForValueEdTest() {
-    String expectedResult = "<value xsi:type=\"ED\">TestValue &amp; TestValue</value>\n";
-    String result = CdaGeneratorUtils.getXmlForValueEd("TestValue & TestValue");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
   public void getXmlForValueStringTest() {
     String expectedResult = "<value xsi:type=\"ST\">TestString &gt; &lt; TestString</value>\n";
     String result = CdaGeneratorUtils.getXmlForValueString("TestString > < TestString");
@@ -106,6 +104,17 @@ public class CdaGeneratorUtilsTest {
     String expectedResult =
         "<value xsi:type=\"ST\" nullFlavor=\"TestString &quot; TestString\"/>\n";
     String result = CdaGeneratorUtils.getNFXmlForValueString("TestString \" TestString");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForQuantityWithUnitsTest() {
+    String expectedResult = "<TestEL value=\"TestValue\" unit=\"TestUnit\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForQuantityWithUnits("TestEL", "TestValue", "TestUnit");
+    assertEquals(expectedResult, result);
+
+    expectedResult = "<TestEL value=\"TestValue\"/>\n";
+    result = CdaGeneratorUtils.getXmlForQuantityWithUnits("TestEL", "TestValue", "");
     assertEquals(expectedResult, result);
   }
 
@@ -221,6 +230,26 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
+  public void getXmlForIITest() {
+    String expectedResult = "<id root=\"TemplId\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForII("TemplId");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForIIWithExtTest() {
+    String expectedResult = "<id root=\"TemplId\" extension=\"EXT\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForII("TemplId", "EXT");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForIIUsingGuidTest() {
+    String result = CdaGeneratorUtils.getXmlForIIUsingGuid();
+    assertNotNull(result);
+  }
+
+  @Test
   public void getNFXMLForIITest() {
     String expectedResult = "<id nullFlavor=\"NullFlavourText\"/>\n";
     String result = CdaGeneratorUtils.getNFXMLForII("NullFlavourText");
@@ -235,11 +264,56 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
-  public void getXmlForCDTest_NoDisplayName() {
+  public void getXmlForCD_NoDisplayTest() {
+    String expectedResult = "<CodeName code=\"Code\" codeSystem=\"CodeSystem\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForCD("CodeName", "Code", "CodeSystem");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueTest() {
+    String expectedResult = "<ElementName value=\"11\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForValue("ElementName", "11");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForNullCDTest() {
+    String expectedResult = "<CodeName nullFlavor=\"Code\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForNullCD("CodeName", "Code");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForCDTest() {
     String expectedResult =
         "<CodeName code=\"Code\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
     String result =
         CdaGeneratorUtils.getXmlForCD("CodeName", "Code", "CodeSystem", "CodeSystemName", "");
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<CodeName code=\"Code\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
+    result =
+        CdaGeneratorUtils.getXmlForCD(
+            "CodeName", "Code", "CodeSystem", "CodeSystemName", "DisplayName");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForCDWithoutEndTagTest() {
+    String expectedResult =
+        "<CodeName code=\"Code\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\">";
+    String result =
+        CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+            "CodeName", "Code", "CodeSystem", "CodeSystemName", "");
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<CodeName code=\"Code\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\">";
+    result =
+        CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+            "CodeName", "Code", "CodeSystem", "CodeSystemName", "DisplayName");
     assertEquals(expectedResult, result);
   }
 
@@ -258,33 +332,9 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
-  public void getCDADocHeaderTemplateXMLTest() {
-    String expectedResult =
-        "<typeId root=\"2.16.840.1.113883.1.3\" extension=\"POCD_HD000040\"/>\n";
-    String result = CdaGeneratorUtils.getCDADocHeaderTemplateXML();
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForEntryTemplateTest() {
-    String expectedResult = "<TemplateName typeCode=\"TypeCodeName\">\n";
-    String result = CdaGeneratorUtils.getXmlForEntryTemplate("TemplateName", "TypeCodeName");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForPartialValueIVLWithTSTest_low() {
-    String expectedResult =
-        "<elName xsi:type=\"IVL_TS\"><low value=\"valueText\"/>\n" + "</elName>\n";
-    String result = CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "low");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForPartialValueIVLWithTSTest_high() {
-    String expectedResult =
-        "<elName xsi:type=\"IVL_TS\"><high value=\"valueText\"/>\n" + "</elName>\n";
-    String result = CdaGeneratorUtils.getXmlForPartialValueIVLWithTS("elName", "valueText", "high");
+  public void getXmlForNullCDWithoutEndTagTest() {
+    String expectedResult = "<CodeName nullFlavor=\"Code\">";
+    String result = CdaGeneratorUtils.getXmlForNullCDWithoutEndTag("CodeName", "Code");
     assertEquals(expectedResult, result);
   }
 
@@ -292,69 +342,9 @@ public class CdaGeneratorUtilsTest {
   public void getXmlForPIVLWithTSTest() {
     String expectedResult =
         "<elName xsi:type=\"PIVL_TS\" institutionSpecified=\"true\" operator=\"A\">\n"
-            + "<period value=\"0\" unit=\"h\"/>\n"
+            + "<period value=\"1000\" unit=\"h\"/>\n"
             + "</elName>\n";
-    String result = CdaGeneratorUtils.getXmlForPIVLWithTS("elName", 1000);
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForValueCDWithValueSet_EmptyDisplay_EmptyValue() {
-    String expectedResult =
-        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForValueCDWithValueSet(
-            "codeName", "CodeSystem", "CodeSystemName", "", "");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForValueCDWithValueSet_EmptyValue() {
-    String expectedResult =
-        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForValueCDWithValueSet(
-            "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForValueCDWithValueSet() {
-    String expectedResult =
-        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName &quot; DisplayName\" sdtc:valueSet=\"ValueName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForValueCDWithValueSet(
-            "codeName", "CodeSystem", "CodeSystemName", "DisplayName \" DisplayName", "ValueName");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForCDWithValueSetTest_EmptyDisplay_EmptyValue() {
-    String expectedResult =
-        "<elName  code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForCDWithValueSet(
-            "elName", "codeName", "CodeSystem", "CodeSystemName", "", "");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForCDWithValueSetTest_EmptyValue() {
-    String expectedResult =
-        "<elName  code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName &amp; DisplayName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForCDWithValueSet(
-            "elName", "codeName", "CodeSystem", "CodeSystemName", "DisplayName & DisplayName", "");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForCDWithValueSetTest() {
-    String expectedResult =
-        "<elName  code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForCDWithValueSet(
-            "elName", "codeName", "CodeSystem", "CodeSystemName", "DisplayName", "ValueName");
+    String result = CdaGeneratorUtils.getXmlForPIVLWithTS("elName", "1000");
     assertEquals(expectedResult, result);
   }
 
@@ -371,16 +361,6 @@ public class CdaGeneratorUtilsTest {
             "ValueName",
             "ValueSetVersion",
             "DisplayName");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForValueCOTest() {
-    String expectedResult =
-        "<value xsi:type=\"CO\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
-    String result =
-        CdaGeneratorUtils.getXmlForValueCO(
-            "codeName", "CodeSystem", "CodeSystemName", "DisplayName");
     assertEquals(expectedResult, result);
   }
 
@@ -436,6 +416,58 @@ public class CdaGeneratorUtilsTest {
             "DisplayName",
             "");
     assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<elName code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">\n"
+            + "<originalText>\n"
+            + "<reference value=\"#ContentRef\"/>\n"
+            + "</originalText>\n"
+            + "</elName>\n";
+    result =
+        CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+            "elName",
+            "codeName",
+            "CodeSystem",
+            "CodeSystemName",
+            "ValueName",
+            "ValueSetVersion",
+            "DisplayName",
+            "ContentRef");
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<elName code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">\n"
+            + "</elName>\n";
+    result =
+        CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+            "elName",
+            "codeName",
+            "CodeSystem",
+            "CodeSystemName",
+            "ValueName",
+            "ValueSetVersion",
+            "",
+            "");
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<elName code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\">\n"
+            + "<originalText>\n"
+            + "<reference value=\"#ContentRef\"/>\n"
+            + "</originalText>\n"
+            + "</elName>\n";
+
+    result =
+        CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+            "elName",
+            "codeName",
+            "CodeSystem",
+            "CodeSystemName",
+            "ValueName",
+            "",
+            "DisplayName",
+            "ContentRef");
+    assertEquals(expectedResult, result);
   }
 
   @Test
@@ -469,66 +501,9 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
-  public void getXmlForValueINTTest() {
-    String expectedResult = "<value xsi:type=\"INT\" value=\"1357\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForValueINT("1357");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
   public void getNFXMLForValueTest() {
     String expectedResult = "<value xsi:type=\"CD\" nullFlavor=\"NF\"/>\n";
     String result = CdaGeneratorUtils.getNFXMLForValue("NF");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getNFXMLForValueWithTextTest() {
-    String expectedResult =
-        "<value xsi:type=\"CD\" nullFlavor=\"NF\"><originalText>COVID-19</originalText>\n"
-            + "</value>"
-            + "\n";
-    String result = CdaGeneratorUtils.getNFXMLForValueWithText("NF", "COVID-19");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForValueCDTranslationTest() {
-    String expectedResult =
-        "<value xsi:type=\"CD\" nullFlavor=\"OTH\"><translation code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n"
-            + "</value>"
-            + "\n";
-    String result =
-        CdaGeneratorUtils.getXmlForValueCDTranslation(
-            "codeName", "CodeSystem", "CodeSystemName", "DisplayName");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForPerformerTest() {
-    String expectedResult = "<performer typeCode=\"PERFTYPE\">\n";
-    String result = CdaGeneratorUtils.getXmlForPerformer("PERFTYPE");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForParticipantTest() {
-    String expectedResult = "<participant typeCode=\"NURSE\">\n";
-    String result = CdaGeneratorUtils.getXmlForParticipant("NURSE");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForParticipantRoleTest() {
-    String expectedResult = "<participantRole classCode=\"NURSE\">\n";
-    String result = CdaGeneratorUtils.getXmlForParticipantRole("NURSE");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForReferenceTest() {
-    String expectedResult = "<reference typeCode=\"TYPECODE\">\n";
-    String result = CdaGeneratorUtils.getXmlForReference("TYPECODE");
     assertEquals(expectedResult, result);
   }
 
@@ -537,19 +512,66 @@ public class CdaGeneratorUtilsTest {
     String expectedResult = "1357";
     String result = CdaGeneratorUtils.getRootOid("COVID", "1357");
     assertEquals(expectedResult, result);
-  }
 
-  @Test
-  public void getXmlForIIWithElNameTest() {
-    String expectedResult = "<elName root=\"ROOT\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForIIWithElName("elName", "ROOT");
+    expectedResult = "12345";
+    result = CdaGeneratorUtils.getRootOid(null, "12345");
+    assertEquals(expectedResult, result);
+
+    expectedResult = "12345";
+    result = CdaGeneratorUtils.getRootOid("urn:oid:12345", "12345");
+    assertEquals(expectedResult, result);
+
+    expectedResult = "2.16.840.1.113883.11.11555";
+    result = CdaGeneratorUtils.getRootOid("http://terminology.hl7.org/RoleClass", "1357");
     assertEquals(expectedResult, result);
   }
 
   @Test
-  public void getXmlForSDTCElementTest() {
-    String expectedResult = "<elName value=\"value\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForSDTCElement("elName", "value");
+  public void getXmlForIIWithElNameTest() {
+    String expectedResult = "<elName root=\"ROOT\" extension=\"EXT\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForIIWithElName("elName", "ROOT", "EXT");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForTextTest() {
+    String expectedResult = "<elName>Text</elName>\n";
+    String result = CdaGeneratorUtils.getXmlForText("elName", "Text");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForNFTextTest() {
+    String expectedResult = "<elName nullFlavor=\"Text\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForNFText("elName", "Text");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForEffectiveTimeTest() {
+    String expectedResult = "<elName value=\"VALUE\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForEffectiveTime("elName", "VALUE");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForEffectiveTimeWithTimeZoneTest() {
+
+    LocalDate date = LocalDate.of(2021, 6, 30);
+    LocalTime time = LocalTime.of(6, 6, 6);
+    ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, ZoneId.of("America/New_York"));
+
+    Date d = Date.from(zonedDateTime.toInstant());
+    String expectedResult = "<elName value=\"20210630060606-0400\"/>\n";
+
+    String result =
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            "elName", d, TimeZone.getTimeZone(zonedDateTime.getZone()));
+    assertEquals(expectedResult, result);
+    expectedResult = "<elName nullFlavor=\"NI\"/>\n";
+    result =
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            "elName", null, TimeZone.getTimeZone(zonedDateTime.getZone()));
     assertEquals(expectedResult, result);
   }
 
@@ -570,21 +592,36 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForTelecomTest() {
     String expectedResult = "<MOBILE value=\"tel:(202)102-1012\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "20210210123", "WORK");
+    String result = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "20210210123", "v");
+    assertEquals(expectedResult, result);
+
+    expectedResult = "<MOBILE value=\"tel:(202)102-1012\" use=\"WORK\"/>\n";
+    result = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "2021021012", "WORK");
     assertEquals(expectedResult, result);
   }
 
   @Test
   public void getXmlForEmailTest() {
-    String expectedResult = "<MOBILE value=\"mailto:20210210123\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForEmail("MOBILE", "20210210123", "");
+    String expectedResult = "<MOBILE value=\"mailto:2021021012\" use=\"WORK\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForEmail("MOBILE", "2021021012", "WORK");
+    assertEquals(expectedResult, result);
+
+    expectedResult = "<MOBILE value=\"mailto:2021021012\"/>\n";
+    result = CdaGeneratorUtils.getXmlForEmail("MOBILE", "2021021012", "");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForEntryTest() {
+    String expectedResult = "<entry typeCode=\"TYPECODE\">\n";
+    String result = CdaGeneratorUtils.getXmlForActEntry("TYPECODE");
     assertEquals(expectedResult, result);
   }
 
   @Test
   public void getXmlForEntryRelationshipTest() {
-    String expectedResult = "<entryRelationship typeCode=\"TYPECODE\" inversionInd=\"IND\">\n";
-    String result = CdaGeneratorUtils.getXmlForEntryRelationship("TYPECODE", "IND");
+    String expectedResult = "<entryRelationship typeCode=\"TYPECODE\">\n";
+    String result = CdaGeneratorUtils.getXmlForEntryRelationship("TYPECODE");
     assertEquals(expectedResult, result);
   }
 
@@ -593,6 +630,20 @@ public class CdaGeneratorUtilsTest {
     String expectedResult = "<ACT classCode=\"CLASS\" moodCode=\"MOOD\" negationInd=\"true\" >\n";
     String result =
         CdaGeneratorUtils.getXmlForActWithNegationInd("ACT", "CLASS", "MOOD", "T", true);
+    assertEquals(expectedResult, result);
+
+    result = CdaGeneratorUtils.getXmlForActWithNegationInd("ACT", "CLASS", "MOOD", "true", true);
+    assertEquals(expectedResult, result);
+
+    expectedResult = "<ACT classCode=\"CLASS\" moodCode=\"MOOD\" negationInd=\"false\" >\n";
+    result = CdaGeneratorUtils.getXmlForActWithNegationInd("ACT", "CLASS", "MOOD", "false", true);
+    assertEquals(expectedResult, result);
+
+    result = CdaGeneratorUtils.getXmlForActWithNegationInd("ACT", "CLASS", "MOOD", null, true);
+    assertEquals(expectedResult, result);
+
+    expectedResult = "<ACT classCode=\"CLASS\" moodCode=\"MOOD\">\n";
+    result = CdaGeneratorUtils.getXmlForActWithNegationInd("ACT", "CLASS", "MOOD", "false", false);
     assertEquals(expectedResult, result);
   }
 
@@ -605,37 +656,42 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
-  public void getXmlForIVLWithTSTest() {
-    String expectedResult =
-        "<EL>\n" + "<low value=\"LO\"/>\n" + "<high value=\"HIGH\"/>\n" + "</EL>\n";
-    String result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", "LO", "HIGH");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
   public void getXmlForIVLWithNullTSTest() {
-    Pair<Date, TimeZone> date = null;
-    String expectedResult = "<EL nullFlavor=\"NI\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", date, date, false);
-    assertEquals(expectedResult, result);
-  }
+    LocalDate date1 = LocalDate.of(2021, 6, 30);
+    LocalTime time = LocalTime.of(6, 6, 6);
+    ZonedDateTime zonedDateTime = ZonedDateTime.of(date1, time, ZoneId.of("America/New_York"));
 
-  @Test
-  public void getXmlForValueIVLWithTSTest() {
+    Date d = Date.from(zonedDateTime.toInstant());
+    Pair<Date, TimeZone> lowHigh =
+        new Pair<Date, TimeZone>(d, TimeZone.getTimeZone(zonedDateTime.getZone()));
     String expectedResult =
-        "<EL xsi:type=\"IVL_TS\"><low value=\"LO\"/>\n" + "<high value=\"HIGH\"/>\n" + "</EL>\n";
-    String result = CdaGeneratorUtils.getXmlForValueIVLWithTS("EL", "LO", "HIGH");
-    assertEquals(expectedResult, result);
-  }
-
-  @Test
-  public void getXmlForLowIVLWithTSWithNFHighTest() {
-    String expectedResult =
-        "<EL xsi:type=\"IVL_TS\">\n"
-            + "<low value=\"VALUE\"/>\n"
-            + "<high nullFlavor=\"UNK\"/>\n"
+        "<EL>\n"
+            + "<low value=\"20210630060606-0400\"/>\n"
+            + "<high value=\"20210630060606-0400\"/>\n"
             + "</EL>\n";
-    String result = CdaGeneratorUtils.getXmlForLowIVLWithTSWithNFHigh("EL", "VALUE");
+    String result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", lowHigh, lowHigh, false);
+    assertEquals(expectedResult, result);
+
+    expectedResult = "<EL>\n" + "<low value=\"20210630060606-0400\"/>\n" + "</EL>\n";
+    result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", lowHigh, null, false);
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<EL>\n"
+            + "<low nullFlavor=\"NI\"/>\n"
+            + "<high value=\"20210630060606-0400\"/>\n"
+            + "</EL>\n";
+    result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", null, lowHigh, false);
+    assertEquals(expectedResult, result);
+
+    Pair<Date, TimeZone> date = null;
+    expectedResult = "<EL nullFlavor=\"NI\"/>\n";
+    result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", date, date, false);
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<EL>\n" + "<low nullFlavor=\"NI\"/>\n" + "<high nullFlavor=\"NI\"/>\n" + "</EL>\n";
+    result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", date, date, true);
     assertEquals(expectedResult, result);
   }
 
@@ -645,6 +701,30 @@ public class CdaGeneratorUtilsTest {
         "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\"/>\n";
     String result =
         CdaGeneratorUtils.getXmlForValueCD("codeName", "CodeSystem", "CodeSystemName", "");
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\"/>\n";
+    result =
+        CdaGeneratorUtils.getXmlForValueCD(
+            "codeName", "CodeSystem", "CodeSystemName", "DisplayName");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForValueCDWithoutEndTagTest() {
+    String expectedResult =
+        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\">";
+    String result =
+        CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
+            "codeName", "CodeSystem", "CodeSystemName", "");
+    assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<value xsi:type=\"CD\" code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\">";
+    result =
+        CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
+            "codeName", "CodeSystem", "CodeSystemName", "DisplayName");
     assertEquals(expectedResult, result);
   }
 
@@ -697,6 +777,56 @@ public class CdaGeneratorUtilsTest {
             "ValueSetVersion",
             "");
     assertEquals(expectedResult, result);
+
+    expectedResult =
+        "<elName code=\"codeName\" codeSystem=\"CodeSystem\" codeSystemName=\"CodeSystemName\" displayName=\"DisplayName\" sdtc:valueSet=\"ValueName\" sdtc:valueSetVersion=\"ValueSetVersion\">";
+    result =
+        CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
+            "elName",
+            "codeName",
+            "CodeSystem",
+            "CodeSystemName",
+            "ValueName",
+            "ValueSetVersion",
+            "DisplayName");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForTableHeaderTest() {
+    String expectedResult =
+        "<table border=\"10\" width=\"12%\">\n"
+            + "<thead>\n"
+            + "<tr>\n"
+            + "<th>HEADER1</th>\n"
+            + "<th>HEADER2</th>\n"
+            + "</tr>\n"
+            + "</thead>\n";
+    List<String> headerVals = new ArrayList<String>();
+    headerVals.add("HEADER1");
+    headerVals.add("HEADER2");
+
+    String result = CdaGeneratorUtils.getXmlForTableHeader(headerVals, 10, 12);
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void addTableRowTest() {
+    String expectedResult =
+        "<tr>\n"
+            + "<td>\n"
+            + "<content ID=\"VALUE110\">value1</content>\n"
+            + "</td>\n"
+            + "<td>\n"
+            + "<content ID=\"VALUE210\">value2</content>\n"
+            + "</td>\n"
+            + "</tr>\n";
+    Map<String, String> vals = new HashMap<String, String>();
+    vals.put("VALUE1", "value1");
+    vals.put("VALUE2", "value2");
+
+    String result = CdaGeneratorUtils.addTableRow(vals, 10);
+    assertEquals(expectedResult, result);
   }
 
   @Test
@@ -716,6 +846,14 @@ public class CdaGeneratorUtilsTest {
     String result =
         CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
             "elName", "codeName", "CodeSystem", "CodeSystemName", "", "", "");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForOriginalTextWithReferenceTest() {
+    String expectedResult =
+        "<originalText>\n" + "<reference value=\"#REF-TEXT\"/>\n" + "</originalText>\n";
+    String result = CdaGeneratorUtils.getXmlForOriginalTextWithReference("REF-TEXT");
     assertEquals(expectedResult, result);
   }
 }
