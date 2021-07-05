@@ -12,6 +12,7 @@ import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -178,6 +179,7 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+        MDCUtils.addEicrDocId(ecr.getEicrDocId());
         logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
