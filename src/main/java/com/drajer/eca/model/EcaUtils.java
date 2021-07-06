@@ -312,7 +312,8 @@ public class EcaUtils {
       FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
 
       IGenericClient client =
-          ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
+          ci.createClient(
+              ctx, details.getEhrServerURL(), details.getAccessToken(), details.getxRequestId());
 
       Encounter enc = null;
       try {
