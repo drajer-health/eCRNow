@@ -4,18 +4,16 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.HashMap;
 import java.util.Set;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
-import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureEvaluation;
 
 public class EvaluateMeasure extends BsaAction {
 
@@ -29,10 +27,10 @@ public class EvaluateMeasure extends BsaAction {
   private IBaseBundle bundle;
 
   public EvaluateMeasure() {
-	 // meaasureProcessor = new R4MeasureEvaluation();
-	  int year = Year.now().getValue();
-	  periodStart = LocalDate.of(year, 01, 01).toString();
-	  periodEnd = LocalDate.of(year, 12, 31).toString();
+    // meaasureProcessor = new R4MeasureEvaluation();
+    int year = Year.now().getValue();
+    periodStart = LocalDate.of(year, 01, 01).toString();
+    periodEnd = LocalDate.of(year, 12, 31).toString();
   }
 
   @Override
@@ -43,7 +41,6 @@ public class EvaluateMeasure extends BsaAction {
 
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
-   
 
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.Scheduled) {
@@ -58,26 +55,26 @@ public class EvaluateMeasure extends BsaAction {
       HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
       // Evaluate Measure by passing the required parameters
-   // Set up and evaluate the measure.
+      // Set up and evaluate the measure.
       /*
-       * MeasureReport result =
-                    measureProcessor.evaluateMeasure(
-                        getMeasureUri(),
-                        periodStart,
-                        periodEnd,
-                        data.getNotificationContext().getPatientId();
-                        "subject",
-                        null, // practitioner
-                        null, // received on
-                        data.getKar().getOriginalKarBundle(),
-                        data.getKar().getOriginalKarBundle(),
-                        this.dataEndpoint,
-                        data.getKar().getOriginalKarBundle());
-       * 
-       * 
-       * if result != null .. then proceed.
-       * 
-       */
+      * MeasureReport result =
+                   measureProcessor.evaluateMeasure(
+                       getMeasureUri(),
+                       periodStart,
+                       periodEnd,
+                       data.getNotificationContext().getPatientId();
+                       "subject",
+                       null, // practitioner
+                       null, // received on
+                       data.getKar().getOriginalKarBundle(),
+                       data.getKar().getOriginalKarBundle(),
+                       this.dataEndpoint,
+                       data.getKar().getOriginalKarBundle());
+      *
+      *
+      * if result != null .. then proceed.
+      *
+      */
 
       if (conditionsMet(data)) {
 
