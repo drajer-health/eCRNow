@@ -8,9 +8,11 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.util.HashMap;
 import java.util.Set;
-import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +26,38 @@ public class EvaluateMeasure extends BsaAction {
   private String periodStart;
   private String periodEnd;
 
-  private IBaseBundle bundle;
+  private String measureReportId;
+
+  public String getPeriodStart() {
+    return periodStart;
+  }
+
+  public void setPeriodStart(String periodStart) {
+    this.periodStart = periodStart;
+  }
+
+  public String getPeriodEnd() {
+    return periodEnd;
+  }
+
+  public void setPeriodEnd(String periodEnd) {
+    this.periodEnd = periodEnd;
+  }
+
+  public String getMeasureReportId() {
+    return measureReportId;
+  }
+
+  public void setMeasureReportId(String measureReportId) {
+    this.measureReportId = measureReportId;
+  }
 
   public EvaluateMeasure() {
     // meaasureProcessor = new R4MeasureEvaluation();
     int year = Year.now().getValue();
     periodStart = LocalDate.of(year, 01, 01).toString();
     periodEnd = LocalDate.of(year, 12, 31).toString();
+    measureReportId = "";
   }
 
   @Override
@@ -54,6 +81,11 @@ public class EvaluateMeasure extends BsaAction {
       // Get necessary data to process.
       HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
+      Endpoint endpoint =
+          new Endpoint()
+              .setAddress(data.getKar().getKarPath())
+              .setConnectionType(new Coding().setCode(Constants.HL7_FHIR_FILES));
+
       // Evaluate Measure by passing the required parameters
       // Set up and evaluate the measure.
       /*
@@ -66,13 +98,20 @@ public class EvaluateMeasure extends BsaAction {
                        "subject",
                        null, // practitioner
                        null, // received on
-                       data.getKar().getOriginalKarBundle(),
-                       data.getKar().getOriginalKarBundle(),
-                       this.dataEndpoint,
-                       data.getKar().getOriginalKarBundle());
+                	   endpoint, // Library Bundle
+            		   endpoint, // Terminology Bundle
+                       null, // Endpoint for data
+                       data.getInputResourcesAsBundle(); // Data Bundle
       *
+      * if (result != null) {
       *
-      * if result != null .. then proceed.
+      *    data.addActionOutput(this.getActionId(), result);
+      *
+      *    if(measureReportId != null && measureReportId.length() > 0 )
+      *    	data.addActionOutputById(measureReportId, result);
+      *
+      * }
+      *
       *
       */
 

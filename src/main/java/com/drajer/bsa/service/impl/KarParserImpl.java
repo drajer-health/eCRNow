@@ -1,5 +1,6 @@
 package com.drajer.bsa.service.impl;
 
+import com.drajer.bsa.kar.action.EvaluateMeasure;
 import com.drajer.bsa.kar.condition.BsaCqlCondition;
 import com.drajer.bsa.kar.condition.BsaFhirPathCondition;
 import com.drajer.bsa.kar.model.BsaAction;
@@ -8,6 +9,7 @@ import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.utils.BsaServiceUtils;
@@ -146,6 +148,7 @@ public class KarParserImpl implements KarParser {
 
         // Set Bundle
         art.setOriginalKarBundle(karBundle);
+        art.setKarPath(kar.getPath());
 
         List<BundleEntryComponent> entries = karBundle.getEntry();
 
@@ -280,6 +283,25 @@ public class KarParserImpl implements KarParser {
     if (act.hasTiming()) {
 
       // Todo - handle timing elements in the action itslef.
+    }
+
+    if (action.getType() == ActionType.EvaluateMeasure) {
+      setMeasureReportId(act, action);
+    }
+  }
+
+  private void setMeasureReportId(PlanDefinitionActionComponent act, BsaAction action) {
+
+    // Setup the MeasureReportId that is generated.
+    if (act.hasOutput()) {
+
+      for (DataRequirement dr : act.getOutput()) {
+
+        if (dr.getType() != null && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
+          EvaluateMeasure em = (EvaluateMeasure) (action);
+          em.setMeasureReportId(dr.getId());
+        }
+      }
     }
   }
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -32,31 +33,34 @@ public class KnowledgeArtifact {
    * The original Bundle containing all the components of a knowledge artifact. This is flattened
    * into what is required for processing in the other attributes.
    */
-  Bundle originalKarBundle;
+  private Bundle originalKarBundle;
+
+  /** The path to the actual KAR that is used to load it into memory. */
+  private String karPath;
 
   /**
    * The unique id for the KnowledgeArtifact, this along with the version will make the
    * KnowledgeArtifact unique.
    */
-  String karId;
+  private String karId;
 
   /**
    * The version of the KnowledgeArtifact, this along with the karId will make the KnowledgeArtifact
    * unique.
    */
-  String karVersion;
+  private String karVersion;
 
   /**
    * The Map of actions present in the KnowledgeArtifact. The string(Key) is the Action id present
    * in the Knowledge Artifact.
    */
-  HashMap<String, BsaAction> actionMap;
+  private HashMap<String, BsaAction> actionMap;
 
   /**
    * The Map of Named Event Triggers that are mapped to Actions. The string (Key) is the Named Event
    * published in the US PH Named Event value set.
    */
-  HashMap<String, Set<BsaAction>> triggerEventActionMap;
+  private HashMap<String, Set<BsaAction>> triggerEventActionMap;
 
   /**
    * This attribute stores different types of resources that are required for the processing of the
@@ -66,13 +70,13 @@ public class KnowledgeArtifact {
    *
    * <p>The Inner HashMap stores the Resource by its full URL so that it can be easily accessed.
    */
-  HashMap<ResourceType, HashMap<String, Resource>> dependencies;
+  private HashMap<ResourceType, HashMap<String, Resource>> dependencies;
 
   /** This attribute represents the receivers of the Report created by the BSA. */
-  Set<UriType> receiverAddresses;
+  private Set<UriType> receiverAddresses;
 
   /** This attribute represents the first level actions of the KAR. */
-  List<BsaAction> firstLevelActions;
+  private List<BsaAction> firstLevelActions;
 
   public BsaAction getAction(String actionId) {
 
@@ -159,12 +163,36 @@ public class KnowledgeArtifact {
     }
   }
 
+  /**
+   * The method returns the list of variable ids that are used across actions from the Output Data
+   * Requirement element of an action for a given Resource Type. For e.g, get the variable Id of the
+   * MeasureReport output produced by an action.
+   */
+  public List<String> getOuputVariableIdsForResourceType(ResourceType type) {
+
+    List<String> retVal = new ArrayList<String>();
+
+    for (Map.Entry<String, BsaAction> entry : actionMap.entrySet()) {
+
+      for (DataRequirement dr : entry.getValue().getOutputData()) {
+
+        if (dr.hasType() && dr.getType().contentEquals(type.toString())) {
+
+          retVal.add(dr.getId());
+        }
+      }
+    }
+
+    return retVal;
+  }
+
   public void addReceiverAddress(UriType t) {
     receiverAddresses.add(t);
   }
 
   public KnowledgeArtifact() {
     originalKarBundle = null;
+    karPath = "";
     karId = "";
     karVersion = "";
     actionMap = new HashMap<String, BsaAction>();
@@ -270,6 +298,14 @@ public class KnowledgeArtifact {
     this.receiverAddresses = receiverAddresses;
   }
 
+  public String getKarPath() {
+    return karPath;
+  }
+
+  public void setKarPath(String karPath) {
+    this.karPath = karPath;
+  }
+
   public void printKarSummary() {
 
     logger.info(" **** START Printing KnowledgeArtifactSummary **** ");
@@ -286,6 +322,7 @@ public class KnowledgeArtifact {
 
     logger.info(" **** START Printing Knowledge Artifact **** ");
 
+    logger.info(" KAR Path : {}", karPath);
     logger.info(" KAR Id : {}", karId);
     logger.info(" Kar Version : {} ", karVersion);
 

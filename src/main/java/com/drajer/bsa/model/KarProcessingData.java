@@ -6,9 +6,11 @@ import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -72,6 +74,13 @@ public class KarProcessingData {
    */
   HashMap<String, HashMap<String, Resource>> actionOutputData;
 
+  /**
+   * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
+   * Context Variable. These are typically the variable ids used for the Data Requirement classes
+   * specified in the PlanDefinition.
+   */
+  HashMap<String, Set<Resource>> actionOutputDataById;
+
   /** The status of each Action after its execution. */
   HashMap<String, BsaActionStatus> actionStatus;
 
@@ -100,6 +109,19 @@ public class KarProcessingData {
     }
   }
 
+  public void addActionOutputById(String id, Resource res) {
+
+    if (res != null) {
+
+      if (actionOutputDataById.containsKey(id)) actionOutputDataById.get(id).add(res);
+      else {
+        Set<Resource> resources = new HashSet<Resource>();
+        resources.add(res);
+        actionOutputDataById.put(id, resources);
+      }
+    }
+  }
+
   public void addNotifiedResource(String resId, Resource res) {}
 
   public Set<Resource> getResourcesByType(String type) {
@@ -112,6 +134,13 @@ public class KarProcessingData {
     }
 
     return null;
+  }
+
+  public Set<Resource> getOutputDataById(String id) {
+
+    if (actionOutputDataById != null && actionOutputDataById.containsKey(id)) {
+      return actionOutputDataById.get(id);
+    } else return null;
   }
 
   public void addActionStatus(String id, BsaActionStatus status) {
@@ -173,6 +202,7 @@ public class KarProcessingData {
     fhirInputDataByType = new HashMap<>();
     fhirInputDataById = new HashMap<>();
     actionOutputData = new HashMap<>();
+    actionOutputDataById = new HashMap<>();
     actionStatus = new HashMap<>();
   }
 
@@ -192,6 +222,27 @@ public class KarProcessingData {
     st.setKarUniqueId(this.getKar().getVersionUniqueId());
 
     return st;
+  }
+
+  public Bundle getInputResourcesAsBundle() {
+
+    Bundle bund = null;
+
+    if (fhirInputDataByType != null && fhirInputDataByType.size() > 0) {
+
+      bund = new Bundle();
+
+      for (Map.Entry<ResourceType, Set<Resource>> entry : fhirInputDataByType.entrySet()) {
+
+        Set<Resource> res = entry.getValue();
+
+        for (Resource r : res) {
+          bund.addEntry(new BundleEntryComponent().setResource(r));
+        }
+      }
+    }
+
+    return bund;
   }
 
   public KnowledgeArtifact getKar() {
