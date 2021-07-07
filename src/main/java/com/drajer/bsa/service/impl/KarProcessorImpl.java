@@ -139,14 +139,20 @@ public class KarProcessorImpl implements KarProcessor {
         karExecutionStateService.getKarExecutionStateById(data.getKarExecutionStateId());
 
     NotificationContext nc = ncService.getNotificationContext(state.getNcId());
+
+    // Setup Processing data
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
     kd.setKar(KnowledgeArtifactRepository.getIntance().getById(state.getKarUniqueId()));
 
+    // Setup Notification Data
     Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
     kd.setNotificationBundle(nb);
+    nc.setNotifiedResource(nb.getEntry().get(1).getResource());
+
     kd.setEhrQueryService(ehrInterface);
     kd.setKarExecutionStateService(karExecutionStateService);
+    kd.setScheduledJobData(data);
 
     // Get the action that needs to be executed.
     BsaAction action = kd.getKar().getAction(data.getActionId());

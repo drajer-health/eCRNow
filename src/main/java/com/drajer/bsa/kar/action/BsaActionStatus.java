@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.action;
 
+import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +19,9 @@ public abstract class BsaActionStatus {
   /** The action to which the instance belongs to. */
   String actionId;
 
+  /** The action to which the instance belongs to. */
+  ActionType actionType;
+
   /** The status of the action. */
   BsaActionStatusType actionStatus;
 
@@ -26,6 +30,7 @@ public abstract class BsaActionStatus {
 
   public BsaActionStatus() {
     actionId = "";
+    actionType = ActionType.Unknown;
     actionStatus = BsaActionStatusType.NotStarted;
     outputProduced = new HashSet<>();
   }
@@ -52,5 +57,9 @@ public abstract class BsaActionStatus {
 
   public void setOutputProduced(Set<String> outputProduced) {
     this.outputProduced = outputProduced;
+  }
+
+  public void addOutputProducedId(String out) {
+    outputProduced.add(out);
   }
 }

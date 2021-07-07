@@ -1,10 +1,12 @@
 package com.drajer.bsa.kar.condition;
 
 import ca.uhn.fhir.fhirpath.IFhirPath;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,10 +16,9 @@ import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// import ca.uhn.fhir.fhirpath.IFhirPath;
 
 public class FhirPathProcessor implements BsaConditionProcessor {
 
@@ -32,10 +33,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     return true;
   }
 
-  public Set<Resource> filterResources(DataRequirement dr, KarProcessingData kd) {
+  public Pair<CheckTriggerCodeStatus, Set<Resource>> filterResources(
+      DataRequirement dr, KarProcessingData kd) {
 
     // This will have to be changed once we plugin a real FhirPath Engine.
+    CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
     Set<Resource> resources = new HashSet<Resource>();
+    Pair<CheckTriggerCodeStatus, Set<Resource>> retVal =
+        new Pair<CheckTriggerCodeStatus, Set<Resource>>(ctc, resources);
 
     logger.info(" Getting Resources by Type {}", dr.getType());
 
@@ -67,9 +72,15 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   logger.info(" Found Value Set {} to compare codes.", vsr.getId());
 
                   ValueSet vs = (ValueSet) vsr;
-                  if (BsaServiceUtils.isCodeableConceptPresentInValueSet(vs, c.getCode())) {
+
+                  Pair<Boolean, MatchedTriggerCodes> retInfo =
+                      BsaServiceUtils.isCodeableConceptPresentInValueSet(vs, c.getCode(), false);
+
+                  if (retInfo != null) {
 
                     logger.info(" Found a match for the code, adding resource {}", c.getId());
+                    ctc.setTriggerMatchStatus(retInfo.getValue0());
+                    ctc.addMatchedTriggerCodes(retInfo.getValue1());
                     resources.add(c);
                   } else {
                     logger.info(" No match found for code ");
@@ -94,6 +105,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       }
     }
 
-    return resources;
+    return retVal;
   }
 }

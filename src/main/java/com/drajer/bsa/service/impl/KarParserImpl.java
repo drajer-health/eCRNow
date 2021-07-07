@@ -68,6 +68,9 @@ public class KarParserImpl implements KarParser {
   @Value("${kar.directory}")
   String karDirectory;
 
+  @Value("${ignore.timers}")
+  Boolean ignoreTimers;
+
   @Autowired BsaServiceUtils utils;
 
   @Autowired BsaScheduler scheduler;
@@ -189,6 +192,7 @@ public class KarParserImpl implements KarParser {
         BsaAction action = getAction(cd.getCode());
         action.setActionId(act.getId());
         action.setScheduler(scheduler);
+        action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
 
         populateAction(act, action);
@@ -269,6 +273,10 @@ public class KarParserImpl implements KarParser {
       populateSubActions(act, action);
     }
 
+    if (act.hasDefinitionUriType()) {
+      action.setMeasureUri(act.getDefinitionUriType().getValue());
+    }
+
     if (act.hasTiming()) {
 
       // Todo - handle timing elements in the action itslef.
@@ -289,6 +297,7 @@ public class KarParserImpl implements KarParser {
           BsaAction subAction = getAction(cd.getCode());
           subAction.setActionId(act.getId());
           subAction.setScheduler(scheduler);
+          action.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
 
           populateAction(act, subAction);

@@ -3,6 +3,7 @@ package com.drajer.bsa.model;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,9 @@ public class KarProcessingData {
   /** The context data that was received via notification. */
   NotificationContext notificationContext;
 
+  /** The context data that was received via notification. */
+  ScheduledJobData scheduledJobData;
+
   /**
    * The healthcare setting which will provide the necessary data to access for applying the Kar.
    */
@@ -48,10 +52,18 @@ public class KarProcessingData {
   HashMap<ResourceType, Set<Resource>> fhirInputDataByType;
 
   /**
-   * The data accessed and collected from the healthcare setting for applying the KAR by variable
-   * id.
+   * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
+   * Context Variable. These are typically the variable ids used for the Data Requirement classes
+   * specified in the PlanDefinition.
    */
   HashMap<String, Set<Resource>> fhirInputDataById;
+
+  /**
+   * These are the resources that are received by notification, stored by he FHIR Path context
+   * variables. (For e.g an encounter received via Subscription notification would be called
+   * %encounter)
+   */
+  HashMap<String, Resource> notificationContextResources;
 
   /**
    * The output produced by applying the KAR actions. The Key for the outer map is the Action Id
@@ -87,6 +99,8 @@ public class KarProcessingData {
       actionOutputData.put(actionId, resMap);
     }
   }
+
+  public void addNotifiedResource(String resId, Resource res) {}
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -282,5 +296,22 @@ public class KarProcessingData {
 
   public void setEhrQueryService(EhrQueryService ehrQueryService) {
     this.ehrQueryService = ehrQueryService;
+  }
+
+  public ScheduledJobData getScheduledJobData() {
+    return scheduledJobData;
+  }
+
+  public void setScheduledJobData(ScheduledJobData scheduledJobData) {
+    this.scheduledJobData = scheduledJobData;
+  }
+
+  public HashMap<String, Resource> getNotificationContextResources() {
+    return notificationContextResources;
+  }
+
+  public void setNotificationContextResources(
+      HashMap<String, Resource> notificationContextResources) {
+    this.notificationContextResources = notificationContextResources;
   }
 }

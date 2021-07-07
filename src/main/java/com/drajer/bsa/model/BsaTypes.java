@@ -15,6 +15,7 @@ public final class BsaTypes {
     CheckTriggerCodes,
     CheckParticipantRegistration,
     EvaluateCondition,
+    EvaluateMeasure,
     CreateReport,
     ValidateReport,
     SubmitReport,
@@ -81,6 +82,7 @@ public final class BsaTypes {
     else if (code.equalsIgnoreCase("check-participant-registration"))
       return ActionType.CheckParticipantRegistration;
     else if (code.equalsIgnoreCase("evaluate-condition")) return ActionType.EvaluateCondition;
+    else if (code.equalsIgnoreCase("evaluate-measure")) return ActionType.EvaluateMeasure;
     else if (code.equalsIgnoreCase("create-report")) return ActionType.CreateReport;
     else if (code.equalsIgnoreCase("validate-report")) return ActionType.ValidateReport;
     else if (code.equalsIgnoreCase("submit-report")) return ActionType.SubmitReport;

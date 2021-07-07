@@ -32,6 +32,13 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
     return null;
   }
 
+  public void addMatchedTriggerCodes(MatchedTriggerCodes mtc) {
+
+    if (mtc != null) {
+      matchedCodes.add(mtc);
+    }
+  }
+
   public void addMatchedCodes(
       Set<String> codes, String valueSet, String path, String valuesetVersion) {
 
@@ -55,5 +62,27 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
     super();
     matchedCodes = new ArrayList<>();
     triggerMatchStatus = false;
+  }
+
+  public Boolean getTriggerMatchStatus() {
+    return triggerMatchStatus;
+  }
+
+  public void setTriggerMatchStatus(Boolean triggerMatchStatus) {
+    this.triggerMatchStatus = triggerMatchStatus;
+  }
+
+  public List<MatchedTriggerCodes> getMatchedCodes() {
+    return matchedCodes;
+  }
+
+  public void setMatchedCodes(List<MatchedTriggerCodes> matchedCodes) {
+    this.matchedCodes = matchedCodes;
+  }
+
+  public void copyFrom(CheckTriggerCodeStatus ctc) {
+
+    this.triggerMatchStatus = ctc.triggerMatchStatus;
+    this.matchedCodes.addAll(ctc.getMatchedCodes());
   }
 }

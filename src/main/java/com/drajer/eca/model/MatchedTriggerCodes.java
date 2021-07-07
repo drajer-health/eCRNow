@@ -21,6 +21,7 @@ public class MatchedTriggerCodes {
 
   public MatchedTriggerCodes() {
     matchedCodes = new HashSet<>();
+    matchedValues = new HashSet<>();
   }
 
   public Set<String> getMatchedCodes() {
@@ -125,6 +126,16 @@ public class MatchedTriggerCodes {
     }
   }
 
+  public void addCode(String code) {
+
+    if (matchedCodes == null) matchedCodes = new HashSet<>();
+
+    if (code != null) {
+
+      matchedCodes.add(code);
+    }
+  }
+
   public void addValues(Set<String> values) {
 
     if (matchedValues == null) matchedValues = new HashSet<>();
@@ -133,6 +144,16 @@ public class MatchedTriggerCodes {
       Set<String> union = SetUtils.union(matchedValues, values);
 
       matchedValues = union;
+    }
+  }
+
+  public void addValue(String value) {
+
+    if (matchedValues == null) matchedValues = new HashSet<>();
+
+    if (value != null) {
+
+      matchedValues.add(value);
     }
   }
 }

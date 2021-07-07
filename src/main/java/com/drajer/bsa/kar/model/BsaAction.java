@@ -76,10 +76,16 @@ public abstract class BsaAction {
    */
   private List<BsaAction> subActions;
 
+  /** The attribute that holds a definition of a measure in case of measure evaluation */
+  private String measureUri;
+
   /** The scheduler that is required to be used to schedule jobs. */
   BsaScheduler scheduler;
 
-  /** */
+  /** Attribute that can be set to ignore timers for testing through the same code paths */
+  Boolean ignoreTimers;
+
+  /** The method that all actions have to implement to process data. */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
 
   public Boolean conditionsMet(KarProcessingData kd) {
@@ -142,7 +148,7 @@ public abstract class BsaAction {
 
             Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
 
-            if (t != null)
+            if (t != null && !ignoreTimers)
               scheduler.scheduleJob(
                   st.getId(), ract.getAction().getActionId(), ract.getAction().getType(), t);
             else {
@@ -171,7 +177,7 @@ public abstract class BsaAction {
 
   public BsaActionStatusType processTimingData(KarProcessingData kd) {
 
-    if (timingData != null && timingData.size() > 0) {
+    if (timingData != null && timingData.size() > 0 && !ignoreTimers) {
 
       // Check and setup future timers.
 
@@ -194,6 +200,7 @@ public abstract class BsaAction {
     relatedActions = new HashMap<>();
     timingData = new ArrayList<TimingSchedule>();
     subActions = new ArrayList<>();
+    measureUri = "";
   }
 
   public String getActionId() {
@@ -295,12 +302,28 @@ public abstract class BsaAction {
     this.type = type;
   }
 
+  public String getMeasureUri() {
+    return measureUri;
+  }
+
+  public void setMeasureUri(String measureUri) {
+    this.measureUri = measureUri;
+  }
+
   public BsaScheduler getScheduler() {
     return scheduler;
   }
 
   public void setScheduler(BsaScheduler scheduler) {
     this.scheduler = scheduler;
+  }
+
+  public Boolean getIgnoreTimers() {
+    return ignoreTimers;
+  }
+
+  public void setIgnoreTimers(Boolean ignoreTimers) {
+    this.ignoreTimers = ignoreTimers;
   }
 
   public void addRelatedAction(BsaRelatedAction ract) {

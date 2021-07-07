@@ -1,38 +1,49 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.kar.condition.FhirPathProcessor;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.HashMap;
 import java.util.Set;
-import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureEvaluation;
 
-public class CheckTriggerCodes extends BsaAction {
+public class EvaluateMeasure extends BsaAction {
 
-  private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodes.class);
+  private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private FhirPathProcessor fhirPathProcessor;
+  private R4MeasureEvaluation measureProcessor;
 
-  public CheckTriggerCodes() {
+  private String periodStart;
+  private String periodEnd;
 
-    fhirPathProcessor = new FhirPathProcessor();
+  private IBaseBundle bundle;
+
+  public EvaluateMeasure() {
+	 // meaasureProcessor = new R4MeasureEvaluation();
+	  int year = Year.now().getValue();
+	  periodStart = LocalDate.of(year, 01, 01).toString();
+	  periodEnd = LocalDate.of(year, 12, 31).toString();
   }
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
 
-    CheckTriggerCodeStatus actStatus = new CheckTriggerCodeStatus();
+    EvaluateMeasureStatus actStatus = new EvaluateMeasureStatus();
     actStatus.setActionId(this.getActionId());
 
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
+   
 
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.Scheduled) {
@@ -46,33 +57,27 @@ public class CheckTriggerCodes extends BsaAction {
       // Get necessary data to process.
       HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
-      // Apply filters for data and then send the collections to the Condition Evaluator.
-      for (DataRequirement dr : inputData) {
-
-        if (dr.hasCodeFilter()) {
-
-          logger.info(" Checking Trigger Codes based on code filter ");
-          Pair<CheckTriggerCodeStatus, Set<Resource>> matchInfo =
-              fhirPathProcessor.filterResources(dr, data);
-
-          if (matchInfo != null) {
-
-            logger.info(" Found Match for Code Filter {}", dr.getType());
-
-            HashMap<String, Set<Resource>> idres = new HashMap<>();
-            idres.put(dr.getId(), matchInfo.getValue1());
-            data.resetResourcesById(idres);
-
-            actStatus.addOutputProducedId(dr.getId());
-            actStatus.copyFrom(matchInfo.getValue0());
-
-          } else {
-            logger.info(" No Match found for Code Filter {}", dr.getType());
-          }
-        } else {
-          logger.error(" Not processing Data Requirement which is not a code filter ");
-        }
-      }
+      // Evaluate Measure by passing the required parameters
+   // Set up and evaluate the measure.
+      /*
+       * MeasureReport result =
+                    measureProcessor.evaluateMeasure(
+                        getMeasureUri(),
+                        periodStart,
+                        periodEnd,
+                        data.getNotificationContext().getPatientId();
+                        "subject",
+                        null, // practitioner
+                        null, // received on
+                        data.getKar().getOriginalKarBundle(),
+                        data.getKar().getOriginalKarBundle(),
+                        this.dataEndpoint,
+                        data.getKar().getOriginalKarBundle());
+       * 
+       * 
+       * if result != null .. then proceed.
+       * 
+       */
 
       if (conditionsMet(data)) {
 

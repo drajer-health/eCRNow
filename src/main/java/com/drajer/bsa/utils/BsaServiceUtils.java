@@ -1,6 +1,7 @@
 package com.drajer.bsa.utils;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.eca.model.MatchedTriggerCodes;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -17,6 +18,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetComposeComponent;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,23 @@ public class BsaServiceUtils {
   @Value("${bsa.output.directory}")
   String debugDirectory;
 
+  private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
+
+  public static String getFhirPathVariableString(String id) {
+
+    if (id.length() > 2) {
+
+      String part1 = id.substring(0, 1).toLowerCase();
+      String part2 = id.substring(1);
+
+      String result = FHIR_PATH_VARIABLE_PREFIX + part1 + part2;
+
+      return result;
+    }
+
+    return id.toLowerCase();
+  }
+
   public Bundle readKarFromFile(String filePath) {
 
     logger.info("About to read KAR File {}", filePath);
@@ -62,27 +81,57 @@ public class BsaServiceUtils {
     return bundle;
   }
 
-  public static Boolean isCodeableConceptPresentInValueSet(ValueSet vs, CodeableConcept cd) {
+  public static Pair<Boolean, MatchedTriggerCodes> isCodeableConceptPresentInValueSet(
+      ValueSet vs, CodeableConcept cd, Boolean valElem) {
 
-    Boolean retVal = false;
+    Pair<Boolean, MatchedTriggerCodes> retVal = null;
+    Boolean matchFound = false;
+    MatchedTriggerCodes mtc = null;
 
     if (cd != null && cd.getCoding().size() > 0) {
 
       for (Coding c : cd.getCoding()) {
 
-        if (isCodingPresentInValueSet(vs, c)) retVal = true;
+        Pair<Boolean, Pair<String, String>> retInfo = isCodingPresentInValueSet(vs, c);
+
+        if (retInfo != null) {
+
+          logger.info(" Match Found for code {} | {}", retInfo.getValue0(), retInfo.getValue1());
+
+          if (mtc != null) {
+            mtc = new MatchedTriggerCodes();
+            mtc.setValueSet(vs.getUrl());
+            mtc.setValueSetVersion(vs.getVersion());
+            matchFound = true;
+
+            if (valElem) {
+              logger.info(" Matched Code is part of a Value Element ");
+              mtc.addValue(retInfo.getValue0() + "|" + retInfo.getValue1());
+            } else {
+              logger.info(" Matched Code is part of a Code Element ");
+              mtc.addCode(retInfo.getValue0() + "|" + retInfo.getValue1());
+            }
+          }
+        }
       }
+    }
+
+    if (matchFound) {
+      retVal = new Pair<Boolean, MatchedTriggerCodes>(true, mtc);
     }
 
     return retVal;
   }
 
-  public static Boolean isCodingPresentInValueSet(ValueSet vs, Coding coding) {
+  public static Pair<Boolean, Pair<String, String>> isCodingPresentInValueSet(
+      ValueSet vs, Coding coding) {
 
-    Boolean retVal = false;
+    Pair<Boolean, Pair<String, String>> retVal = null;
 
-    if (coding != null && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode()))
-      return true;
+    if (coding != null && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
+      Pair<String, String> matchedCodeInfo = new Pair<>(coding.getSystem(), coding.getCode());
+      retVal = new Pair<Boolean, Pair<String, String>>(true, matchedCodeInfo);
+    }
 
     return retVal;
   }
