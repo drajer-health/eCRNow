@@ -20,7 +20,7 @@
 		<java.version>1.8</java.version>
 		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
-		<cql-evaluator.version>1.2.0</cql-evaluator.version>
+		<cql-evaluator.version>1.2.1-SNAPSHOT</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 	
@@ -179,7 +179,7 @@
 	 	<dependency>
             <groupId>org.opencds.cqf.cql</groupId>
             <artifactId>evaluator.expression</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>${cql-evaluator.version}</version>
             <exclusions>
 				<exclusion>
 					<groupId>javax</groupId>
@@ -190,7 +190,7 @@
         
         <dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.measure</artifactId>
+			<artifactId>evaluator.measure-hapi</artifactId>
 			<version>${cql-evaluator.version}</version>
 			<exclusions>
 				<exclusion>

@@ -297,7 +297,8 @@ public class KarParserImpl implements KarParser {
 
       for (DataRequirement dr : act.getOutput()) {
 
-        if (dr.getType() != null && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
+        if (dr.getType() != null
+            && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
           EvaluateMeasure em = (EvaluateMeasure) (action);
           em.setMeasureReportId(dr.getId());
         }

@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.opencds.cqf.cql.evaluator.builder.Constants;
-import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureEvaluation;
+import org.opencds.cqf.cql.evaluator.measure.r4.MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class EvaluateMeasure extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private R4MeasureEvaluation measureProcessor;
+  private MeasureProcessor measureProcessor;
 
   private String periodStart;
   private String periodEnd;
@@ -53,7 +54,6 @@ public class EvaluateMeasure extends BsaAction {
   }
 
   public EvaluateMeasure() {
-    // meaasureProcessor = new R4MeasureEvaluation();
     int year = Year.now().getValue();
     periodStart = LocalDate.of(year, 01, 01).toString();
     periodEnd = LocalDate.of(year, 12, 31).toString();
@@ -88,32 +88,27 @@ public class EvaluateMeasure extends BsaAction {
 
       // Evaluate Measure by passing the required parameters
       // Set up and evaluate the measure.
-      /*
-      * MeasureReport result =
-                   measureProcessor.evaluateMeasure(
-                       getMeasureUri(),
-                       periodStart,
-                       periodEnd,
-                       data.getNotificationContext().getPatientId();
-                       "subject",
-                       null, // practitioner
-                       null, // received on
-                	   endpoint, // Library Bundle
-            		   endpoint, // Terminology Bundle
-                       null, // Endpoint for data
-                       data.getInputResourcesAsBundle(); // Data Bundle
-      *
-      * if (result != null) {
-      *
-      *    data.addActionOutput(this.getActionId(), result);
-      *
-      *    if(measureReportId != null && measureReportId.length() > 0 )
-      *    	data.addActionOutputById(measureReportId, result);
-      *
-      * }
-      *
-      *
-      */
+      MeasureReport result =
+          measureProcessor.evaluateMeasure(
+              getMeasureUri(),
+              periodStart,
+              periodEnd,
+              "subject",
+              data.getNotificationContext().getPatientId(),
+              null, // practitioner
+              null, // received on
+              endpoint, // Library Bundle
+              endpoint, // Terminology Bundle
+              null, // Endpoint for data
+              data.getInputResourcesAsBundle()); // Data Bundle
+
+      if (result != null) {
+
+        data.addActionOutput(this.getActionId(), result);
+
+        if (measureReportId != null && measureReportId.length() > 0)
+          data.addActionOutputById(measureReportId, result);
+      }
 
       if (conditionsMet(data)) {
 
