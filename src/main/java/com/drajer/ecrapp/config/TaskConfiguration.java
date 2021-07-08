@@ -38,7 +38,9 @@ public class TaskConfiguration {
             .execute(
                 (inst, ctx) -> {
                   try {
-                    MDC.setContextMap(inst.getData().getMdcContext());
+                    if (inst.getData().getMdcContext() != null) {
+                      MDC.setContextMap(inst.getData().getMdcContext());
+                    }
                     log.info(
                         "Executing Task for {}, Launch Id::: {}",
                         inst.getTaskAndInstance(),
