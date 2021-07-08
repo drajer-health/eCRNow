@@ -44,6 +44,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.opencds.cqf.cql.evaluator.measure.r4.MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ public class KarParserImpl implements KarParser {
   @Autowired BsaServiceUtils utils;
 
   @Autowired BsaScheduler scheduler;
+  
+  @Autowired MeasureProcessor measureProcessor;
 
   private static String[] KAR_FILE_EXT = {"json"};
   private static String RECEIVER_ADDRESS_URL =
@@ -286,11 +289,11 @@ public class KarParserImpl implements KarParser {
     }
 
     if (action.getType() == ActionType.EvaluateMeasure) {
-      setMeasureReportId(act, action);
+      setMeasureParameters(act, action);
     }
   }
 
-  private void setMeasureReportId(PlanDefinitionActionComponent act, BsaAction action) {
+  private void setMeasureParameters(PlanDefinitionActionComponent act, BsaAction action) {
 
     // Setup the MeasureReportId that is generated.
     if (act.hasOutput()) {
@@ -301,6 +304,9 @@ public class KarParserImpl implements KarParser {
             && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
           EvaluateMeasure em = (EvaluateMeasure) (action);
           em.setMeasureReportId(dr.getId());
+          
+          //setup the Measure Processor
+          em.setMeasureProcessor(measureProcessor);
         }
       }
     }
