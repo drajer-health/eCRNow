@@ -56,17 +56,20 @@ public class FhirContextInitializer {
    *
    * @param url the base URL of the FHIR server to connect to
    * @param accessToken the name of the key to use to generate the token
+   * @param requestId the prefix for all X-Request-ID values used with this new client
    * @return a Generic Client
    */
-  public IGenericClient createClient(FhirContext context, String url, String accessToken) {
+  public IGenericClient createClient(
+      FhirContext context, String url, String accessToken, String requestId) {
     logger.trace("Initializing the Client");
-    IGenericClient client = context.newRestfulGenericClient(url);
+    FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
     context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
-    logger.trace("Initialized the Client");
+    logger.trace(
+        "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
     return client;
   }
 

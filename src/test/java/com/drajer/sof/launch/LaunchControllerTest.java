@@ -61,7 +61,10 @@ public class LaunchControllerTest {
         .thenReturn(context);
 
     when(fhirContextInitializer.createClient(
-            context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken()))
+            context,
+            currentStateDetails.getEhrServerURL(),
+            currentStateDetails.getAccessToken(),
+            currentStateDetails.getxRequestId()))
         .thenReturn(client);
 
     Encounter encounter = new Encounter();
@@ -97,7 +100,10 @@ public class LaunchControllerTest {
         .thenReturn(context);
 
     when(fhirContextInitializer.createClient(
-            context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken()))
+            context,
+            currentStateDetails.getEhrServerURL(),
+            currentStateDetails.getAccessToken(),
+            currentStateDetails.getxRequestId()))
         .thenReturn(client);
 
     org.hl7.fhir.r4.model.Encounter r4Encounter = new org.hl7.fhir.r4.model.Encounter();
