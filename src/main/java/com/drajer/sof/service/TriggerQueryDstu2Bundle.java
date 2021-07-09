@@ -51,7 +51,10 @@ public class TriggerQueryDstu2Bundle {
     logger.info("Initializing Client");
     IGenericClient client =
         fhirContextInitializer.createClient(
-            context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
+            context,
+            launchDetails.getEhrServerURL(),
+            launchDetails.getAccessToken(),
+            launchDetails.getxRequestId());
 
     // GET Patient Details and Add to Bundle
     try {

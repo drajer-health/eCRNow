@@ -453,7 +453,10 @@ public class LaunchController {
 
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, currentStateDetails.getEhrServerURL(), currentStateDetails.getAccessToken());
+              context,
+              currentStateDetails.getEhrServerURL(),
+              currentStateDetails.getAccessToken(),
+              currentStateDetails.getxRequestId());
       dstu2Period = null;
       r4Period = null;
 

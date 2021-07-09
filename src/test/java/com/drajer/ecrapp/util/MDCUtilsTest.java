@@ -15,4 +15,12 @@ public class MDCUtilsTest {
     MDCUtils.removeCorrelationId();
     assertNull(MDC.get("correlationId"));
   }
+
+  @Test
+  public void testAddAndRemoveMdcKeyEicrDocId() {
+    MDCUtils.addEicrDocId("test");
+    assertEquals("test", MDC.get("eicrDocId"));
+    MDCUtils.removeEicrDocId();
+    assertNull(MDC.get("eicrDocId"));
+  }
 }

@@ -252,13 +252,13 @@ public class WorkflowService {
         Map<String, String> loggingDiagnosticContext) {
       this.launchDetailsId = launchDetailsId;
       this.actionType = actionType;
-      this.loggingDiagnosticContext = loggingDiagnosticContext;
+      this.loggingDiagnosticContext = MDC.getCopyOfContextMap();
     }
 
     @Override
     public void run() {
       try {
-        MDC.setContextMap(loggingDiagnosticContext);
+        MDC.setContextMap(this.loggingDiagnosticContext);
         logger.info("Starting the Thread");
         executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);
       } catch (Exception e) {
@@ -307,7 +307,7 @@ public class WorkflowService {
                     + String.valueOf(launchDetailsId)
                     + "_"
                     + java.util.UUID.randomUUID().toString(),
-                new TaskTimer(100L, launchDetailsId, actionType, t)),
+                new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
         t);
 
     logger.debug("task  ::: {}", task);

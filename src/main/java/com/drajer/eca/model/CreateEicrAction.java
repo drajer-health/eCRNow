@@ -6,7 +6,6 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -158,32 +157,26 @@ public class CreateEicrAction extends AbstractAction {
                 // Call the Loading Queries and create eICR.
                 Eicr ecr = EcaUtils.createEicr(details);
 
-                try {
-                  MDCUtils.addCorrelationId(ecr.getxCorrelationId());
+                newState.getCreateEicrStatus().setEicrCreated(true);
+                newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+                newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-                  newState.getCreateEicrStatus().setEicrCreated(true);
-                  newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-                  newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+                EcaUtils.updateDetailStatus(details, newState);
 
-                  EcaUtils.updateDetailStatus(details, newState);
+                logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
-                  logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
+                String fileName =
+                    ActionRepo.getInstance().getLogFileDirectory()
+                        + "/"
+                        + details.getLaunchPatientId()
+                        + "_CreateEicrAction"
+                        + LocalDateTime.now().getHour()
+                        + LocalDateTime.now().getMinute()
+                        + LocalDateTime.now().getSecond()
+                        + ".xml";
+                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                  String fileName =
-                      ActionRepo.getInstance().getLogFileDirectory()
-                          + "/"
-                          + details.getLaunchPatientId()
-                          + "_CreateEicrAction"
-                          + LocalDateTime.now().getHour()
-                          + LocalDateTime.now().getMinute()
-                          + LocalDateTime.now().getSecond()
-                          + ".xml";
-                  ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
-
-                  logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
-                } finally {
-                  MDCUtils.removeCorrelationId();
-                }
+                logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
               } // Check if Trigger Code Match found
               else {
 

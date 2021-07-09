@@ -6,7 +6,6 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -141,32 +140,26 @@ public class CloseOutEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
 
-              try {
-                MDCUtils.addCorrelationId(ecr.getxCorrelationId());
+              newState.getCloseOutEicrStatus().setEicrClosed(true);
+              newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
+              newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-                newState.getCloseOutEicrStatus().setEicrClosed(true);
-                newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
-                newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+              EcaUtils.updateDetailStatus(details, newState);
 
-                EcaUtils.updateDetailStatus(details, newState);
+              logger.debug(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
-                logger.debug(" **** Printing Eicr from CLOSE OUT EICR ACTION **** ");
+              String fileName =
+                  ActionRepo.getInstance().getLogFileDirectory()
+                      + "/"
+                      + details.getLaunchPatientId()
+                      + "_CloseOutEicrAction"
+                      + LocalDateTime.now().getHour()
+                      + LocalDateTime.now().getMinute()
+                      + LocalDateTime.now().getSecond()
+                      + ".xml";
+              ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                String fileName =
-                    ActionRepo.getInstance().getLogFileDirectory()
-                        + "/"
-                        + details.getLaunchPatientId()
-                        + "_CloseOutEicrAction"
-                        + LocalDateTime.now().getHour()
-                        + LocalDateTime.now().getMinute()
-                        + LocalDateTime.now().getSecond()
-                        + ".xml";
-                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
-
-                logger.debug(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
-              } finally {
-                MDCUtils.removeCorrelationId();
-              }
+              logger.debug(" **** End Printing Eicr from CLOSE OUT EICR ACTION **** ");
 
             } // Check if Trigger Code Match found
             else {
