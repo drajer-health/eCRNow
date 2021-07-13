@@ -15,7 +15,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -167,17 +166,19 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
       store.close();
       Key key = ks.getKey(alias, passwordChar);
 
-      return Jwts.builder()
-          .setIssuer(clientId)
-          .setSubject(clientId)
-          .setAudience(aud)
-          .setExpiration(
-              new Date(
-                  System.currentTimeMillis()
-                      + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-          .setId(UUID.randomUUID().toString())
-          .signWith(key)
-          .compact();
+      String compact =
+          Jwts.builder()
+              .setIssuer(clientId)
+              .setSubject(clientId)
+              .setAudience(aud)
+              .setExpiration(
+                  new Date(
+                      System.currentTimeMillis()
+                          + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+              .setId(UUID.randomUUID().toString())
+              .signWith(key)
+              .compact();
+      return compact;
     } catch (IOException
         | NoSuchAlgorithmException
         | CertificateException

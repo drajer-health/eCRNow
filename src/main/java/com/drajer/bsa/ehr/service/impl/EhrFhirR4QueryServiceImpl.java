@@ -48,7 +48,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Autowired
   EhrAuthorizationService ehrAuthorizationService;
 
-
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
   private static final String PATIENT_CONTEXT = "patientContext";
