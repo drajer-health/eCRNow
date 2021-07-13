@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private final Logger logger = LoggerFactory.getLogger(EhrFhirR4QueryServiceImpl.class);
 
   /** The EHR Authorization Service class enables the BSA to get an access token. */
-  @Autowired EhrAuthorizationService authorizationService;
+  @Qualifier("backendauth")
+  @Autowired
+  EhrAuthorizationService backendAuthorizationService;
+
+  @Qualifier("ehrauth")
+  @Autowired
+  EhrAuthorizationService ehrAuthorizationService;
+
 
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
@@ -60,7 +68,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   public HashMap<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, HashMap<String, ResourceType> resTypes) {
 
-    authorizationService.getAuthorizationToken(kd);
+    String secret = kd.getHealthcareSetting().getClientSecret();
+    if (secret == null || secret.isEmpty() || secret.isBlank()) {
+      backendAuthorizationService.getAuthorizationToken(kd);
+    } else {
+      ehrAuthorizationService.getAuthorizationToken(kd);
+    }
 
     logger.info(" Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);

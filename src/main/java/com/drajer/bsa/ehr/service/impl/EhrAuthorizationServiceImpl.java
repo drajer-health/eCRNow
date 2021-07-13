@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author nbashyam
  */
-@Service
+@Service("ehrauth")
 @Transactional
 public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
 
