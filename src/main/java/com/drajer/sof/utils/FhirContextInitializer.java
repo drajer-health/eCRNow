@@ -2,13 +2,18 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import com.drajer.sof.model.LaunchDetails;
+import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +27,10 @@ public class FhirContextInitializer {
   private static final String DSTU2_1 = "DSTU2_1";
   private static final String DSTU3 = "DSTU3";
   private static final String R4 = "R4";
-
-  @Autowired FHIRContextURLBuilder fhirContextURLBuilder;
+  private static final String QUERY_PATIENT = "?patient=";
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
-
+  @Autowired FHIRContextURLBuilder fhirContextURLBuilder;
   /**
    * Get FhirContext appropriate to fhirVersion
    *
@@ -56,11 +60,14 @@ public class FhirContextInitializer {
    * @return a Generic Client
    */
   public IGenericClient createClient(FhirContext context, String url, String accessToken) {
-    logger.info("Initializing the Client");
+    logger.trace("Initializing the Client");
     IGenericClient client = context.newRestfulGenericClient(url);
-    context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
-    logger.info("Initialized the Client");
+    if (logger.isDebugEnabled()) {
+      client.registerInterceptor(new LoggingInterceptor(true));
+    }
+    logger.trace("Initialized the Client");
     return client;
   }
 
@@ -84,20 +91,26 @@ public class FhirContextInitializer {
       String resourceId) {
     IBaseResource resource = null;
     try {
-      logger.info("Getting {} data", resourceName);
+      logger.info("Getting {} data by ID {}", resourceName, resourceId);
       resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
-    } catch (Exception e) {
-      logger.info(e.getMessage());
-      if (e instanceof BaseServerResponseException) {
-        if (((BaseServerResponseException) e).getOperationOutcome() != null) {
-          logger.info(
-              context
-                  .newJsonParser()
-                  .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
-        }
+    } catch (ForbiddenOperationException scopeException) {
+      logger.info(
+          "Failed getting {} resource by Id: {}\n{}\nCurrent scope: {}",
+          resourceName,
+          resourceId,
+          scopeException.getMessage(),
+          authDetails.getScope());
+    } catch (BaseServerResponseException responseException) {
+      if (responseException.getOperationOutcome() != null) {
+        logger.debug(
+            context
+                .newJsonParser()
+                .encodeResourceToString(responseException.getOperationOutcome()));
       }
       logger.error(
-          "Error in getting {} resource by Id: {}", resourceName, resourceId, e.getMessage());
+          "Error in getting {} resource by Id: {}", resourceName, resourceId, responseException);
+    } catch (Exception e) {
+      logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }
     return resource;
   }
@@ -130,8 +143,7 @@ public class FhirContextInitializer {
     fhirContextValues.setEhrServerURL(authDetails.getEhrServerURL());
     fhirContextValues.setPatientID(authDetails.getLaunchPatientId());
     fhirContextValues.setCategory(category);
-    String url =
-        fhirContextURLBuilder.getFHRContextURL("observationByPatientID", fhirContextValues);
+    String url = fhirContextURLBuilder.getFHRContextURL("observationByPatientID", fhirContextValues);
     logger.info("FHIR Context URL BUilder for observationByPatientID :::::::::::: {}", url);
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
@@ -164,53 +176,102 @@ public class FhirContextInitializer {
       FhirContext context,
       String resourceName,
       String url) {
-    logger.info("Invoking url::::::::::::::: {}", url);
+
     IBaseBundle bundleResponse = null;
     try {
       logger.info(
-          "Getting {} data using Patient Id: {}", resourceName, authDetails.getLaunchPatientId());
+          "Getting {} data using Patient Id {} by URL {}",
+          resourceName,
+          authDetails.getLaunchPatientId(),
+          url);
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
-        bundleResponse = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
-        Bundle bundle = (Bundle) bundleResponse;
-
-        if (logger.isInfoEnabled()) {
+        Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
+        getAllDSTU2RecordsUsingPagination(genericClient, bundle);
+        if (bundle != null && bundle.getEntry() != null) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
               bundle.getEntry().size());
         }
+        bundleResponse = bundle;
       } else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
-        bundleResponse =
+        org.hl7.fhir.r4.model.Bundle bundle =
             genericClient
                 .search()
                 .byUrl(url)
                 .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
                 .execute();
-        org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) bundleResponse;
-
-        if (logger.isInfoEnabled()) {
+        getAllR4RecordsUsingPagination(genericClient, bundle);
+        if (bundle != null && bundle.getEntry() != null) {
           logger.info(
               "Total No of {} received::::::::::::::::: {}",
               resourceName,
               bundle.getEntry().size());
         }
+        bundleResponse = bundle;
       }
-    } catch (Exception e) {
-      if (e instanceof BaseServerResponseException) {
-        if (((BaseServerResponseException) e).getOperationOutcome() != null) {
-          logger.info(
-              context
-                  .newJsonParser()
-                  .encodeResourceToString(((BaseServerResponseException) e).getOperationOutcome()));
-        }
-      }
+    } catch (ForbiddenOperationException scopeException) {
       logger.info(
+          "Failed getting {} resource by Patient Id: {}\n{}\nCurrent scope: {}",
+          resourceName,
+          authDetails.getLaunchPatientId(),
+          scopeException.getMessage(),
+          authDetails.getScope());
+    } catch (BaseServerResponseException responseException) {
+      if (responseException.getOperationOutcome() != null) {
+        logger.debug(
+            context
+                .newJsonParser()
+                .encodeResourceToString(responseException.getOperationOutcome()));
+      }
+      logger.error(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
-          e.getMessage());
+          responseException);
+    } catch (Exception e) {
+      logger.error(
+          "Error in getting {} resource by Patient Id: {}",
+          resourceName,
+          authDetails.getLaunchPatientId(),
+          e);
     }
 
     return bundleResponse;
+  }
+
+  private static void getAllR4RecordsUsingPagination(
+      IGenericClient genericClient, org.hl7.fhir.r4.model.Bundle bundle) {
+    if (bundle != null && bundle.hasEntry()) {
+      List<BundleEntryComponent> entriesList = bundle.getEntry();
+      if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
+        logger.debug(
+            "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
+        org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
+            genericClient.loadPage().next(bundle).execute();
+        if (nextPageBundleResults != null) {
+          entriesList.addAll(nextPageBundleResults.getEntry());
+          nextPageBundleResults.setEntry(entriesList);
+          getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
+        }
+      }
+    }
+  }
+
+  private static void getAllDSTU2RecordsUsingPagination(
+      IGenericClient genericClient, Bundle bundle) {
+    if (bundle != null && bundle.getEntry() != null) {
+      List<Entry> entriesList = bundle.getEntry();
+      if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
+        logger.debug(
+            "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
+        Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
+        if (nextPageBundleResults != null) {
+          entriesList.addAll(nextPageBundleResults.getEntry());
+          nextPageBundleResults.setEntry(entriesList);
+          getAllDSTU2RecordsUsingPagination(genericClient, nextPageBundleResults);
+        }
+      }
+    }
   }
 }
