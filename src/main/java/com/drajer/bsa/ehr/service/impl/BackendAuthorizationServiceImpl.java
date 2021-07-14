@@ -77,7 +77,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
     String tokenEndpoint;
 
     tokenEndpoint = kd.getHealthcareSetting().getTokenUrl();
-    if (tokenEndpoint == null || tokenEndpoint.isEmpty() || tokenEndpoint.isBlank()) {
+    if (tokenEndpoint == null || tokenEndpoint.isEmpty()) {
       tokenEndpoint = getTokenEndpoint(url);
     }
     String clientId = kd.getHealthcareSetting().getClientId();

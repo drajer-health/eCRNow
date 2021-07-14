@@ -68,7 +68,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       KarProcessingData kd, HashMap<String, ResourceType> resTypes) {
 
     String secret = kd.getHealthcareSetting().getClientSecret();
-    if (secret == null || secret.isEmpty() || secret.isBlank()) {
+    if (secret == null || secret.isEmpty()) {
       backendAuthorizationService.getAuthorizationToken(kd);
     } else {
       ehrAuthorizationService.getAuthorizationToken(kd);
