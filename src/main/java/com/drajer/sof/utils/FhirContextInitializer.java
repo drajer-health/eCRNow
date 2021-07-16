@@ -228,13 +228,13 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
           responseException);
     } catch (Exception e) {
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
