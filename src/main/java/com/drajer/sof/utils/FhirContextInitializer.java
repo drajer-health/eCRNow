@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,7 +30,7 @@ public class FhirContextInitializer {
   private static final String QUERY_PATIENT = "?patient=";
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
-
+  @Autowired FHIRContextURLBuilder fhirContextURLBuilder;
   /**
    * Get FhirContext appropriate to fhirVersion
    *
@@ -120,12 +121,12 @@ public class FhirContextInitializer {
       FhirContext context,
       String resourceName) {
     IBaseBundle bundleResponse = null;
-    String url =
-        authDetails.getEhrServerURL()
-            + "/"
-            + resourceName
-            + QUERY_PATIENT
-            + authDetails.getLaunchPatientId();
+    FhirContextValues fhirContextValues = new FhirContextValues();
+    fhirContextValues.setResourceName(resourceName);
+    fhirContextValues.setEhrServerURL(authDetails.getEhrServerURL());
+    fhirContextValues.setPatientID(authDetails.getLaunchPatientId());
+    String url = fhirContextURLBuilder.getFHRContextURL("resourceByPatientID", fhirContextValues);
+    logger.info("FHIR Context URL BUilder for resourceByPatientID :::::::::::: {}", url);
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
@@ -137,14 +138,13 @@ public class FhirContextInitializer {
       String resourceName,
       String category) {
     IBaseBundle bundleResponse = null;
-    String url =
-        authDetails.getEhrServerURL()
-            + "/"
-            + resourceName
-            + QUERY_PATIENT
-            + authDetails.getLaunchPatientId()
-            + "&category="
-            + category;
+    FhirContextValues fhirContextValues = new FhirContextValues();
+    fhirContextValues.setResourceName(resourceName);
+    fhirContextValues.setEhrServerURL(authDetails.getEhrServerURL());
+    fhirContextValues.setPatientID(authDetails.getLaunchPatientId());
+    fhirContextValues.setCategory(category);
+    String url = fhirContextURLBuilder.getFHRContextURL("observationByPatientID", fhirContextValues);
+    logger.info("FHIR Context URL BUilder for observationByPatientID :::::::::::: {}", url);
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
@@ -157,16 +157,15 @@ public class FhirContextInitializer {
       String code,
       String system) {
     IBaseBundle bundleResponse = null;
+    FhirContextValues fhirContextValues = new FhirContextValues();
+    fhirContextValues.setEhrServerURL(authDetails.getEhrServerURL());
+    fhirContextValues.setResourceName(resourceName);
+    fhirContextValues.setPatientID(authDetails.getLaunchPatientId());
+    fhirContextValues.setSystem(system);
+    fhirContextValues.setCode(code);
     String url =
-        authDetails.getEhrServerURL()
-            + "/"
-            + resourceName
-            + QUERY_PATIENT
-            + authDetails.getLaunchPatientId()
-            + "&code="
-            + system
-            + "|"
-            + code;
+        fhirContextURLBuilder.getFHRContextURL("resourceByPatientIDAndCode", fhirContextValues);
+    logger.info("FHIR Context URL BUilder for resourceByPatientIDAndCode :::::::::::: {}", url);
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
