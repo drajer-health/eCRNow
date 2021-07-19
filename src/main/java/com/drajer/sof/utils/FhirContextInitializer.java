@@ -109,10 +109,10 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Id: {}", resourceName, resourceId, responseException);
     } catch (Exception e) {
-      logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
+      logger.info("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }
     return resource;
   }
