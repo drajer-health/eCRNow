@@ -190,6 +190,7 @@ public class EcrReportCreator extends ReportCreator {
     sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.ServiceRequest, kd, sc, resTobeAdded);
+    addEntries(ResourceType.MedicationRequest, kd, sc, resTobeAdded);
 
     // Add Immunizations section.
     sc = getSection(SectionTypeEnum.IMMUNIZATIONS, kd);
@@ -204,10 +205,12 @@ public class EcrReportCreator extends ReportCreator {
     // Add Vital Signs section.
     sc = getSection(SectionTypeEnum.VITAL_SIGNS, kd);
     if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
     // Add Social History section.
     sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
     if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
     // Add Pregnancy section.
     sc = getSection(SectionTypeEnum.PREGNANCY, kd);
