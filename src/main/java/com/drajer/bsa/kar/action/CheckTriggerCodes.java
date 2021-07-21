@@ -3,6 +3,7 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.condition.FhirPathProcessor;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class CheckTriggerCodes extends BsaAction {
 
     CheckTriggerCodeStatus actStatus = new CheckTriggerCodeStatus();
     actStatus.setActionId(this.getActionId());
+    actStatus.setActionType(ActionType.CheckTriggerCodes);
 
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
@@ -73,6 +75,9 @@ public class CheckTriggerCodes extends BsaAction {
           logger.error(" Not processing Data Requirement which is not a code filter ");
         }
       }
+
+      actStatus.log();
+      data.addActionStatus(getActionId(), actStatus);
 
       if (conditionsMet(data)) {
 

@@ -6,6 +6,11 @@ import java.util.Date;
 import java.util.List;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a utlities class for processing actions.
@@ -13,6 +18,8 @@ import org.hl7.fhir.r4.model.Meta;
  * @author nbashyam
  */
 public class ActionUtils {
+
+  private static final Logger logger = LoggerFactory.getLogger(ActionUtils.class);
 
   public static Meta getMeta(String version, String profile) {
 
@@ -26,5 +33,31 @@ public class ActionUtils {
     m.setLastUpdated(Date.from(Instant.now()));
 
     return m;
+  }
+
+  public static Boolean operationOutcomeHasErrors(OperationOutcome outcome) {
+
+    Boolean retVal = false;
+
+    if (outcome != null && outcome.hasIssue()) {
+
+      List<OperationOutcomeIssueComponent> issues = outcome.getIssue();
+
+      for (OperationOutcomeIssueComponent ic : issues) {
+
+        if (ic.getSeverity() == IssueSeverity.ERROR) {
+
+          logger.info(" Issue of error detected ");
+          retVal = true;
+          break;
+        }
+      }
+    } else {
+
+      logger.info(" No Issues in the Report ");
+      retVal = false;
+    }
+
+    return retVal;
   }
 }

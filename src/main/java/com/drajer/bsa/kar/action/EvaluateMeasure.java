@@ -54,14 +54,14 @@ public class EvaluateMeasure extends BsaAction {
   }
 
   public MeasureProcessor getMeasureProcessor() {
-	return measureProcessor;
-}
+    return measureProcessor;
+  }
 
-public void setMeasureProcessor(MeasureProcessor measureProcessor) {
-	this.measureProcessor = measureProcessor;
-}
+  public void setMeasureProcessor(MeasureProcessor measureProcessor) {
+    this.measureProcessor = measureProcessor;
+  }
 
-public EvaluateMeasure() {
+  public EvaluateMeasure() {
     int year = Year.now().getValue();
     periodStart = LocalDate.of(year, 01, 01).toString();
     periodEnd = LocalDate.of(year, 12, 31).toString();

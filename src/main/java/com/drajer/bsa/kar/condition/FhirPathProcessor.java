@@ -72,9 +72,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   logger.info(" Found Value Set {} to compare codes.", vsr.getId());
 
                   ValueSet vs = (ValueSet) vsr;
+                  String matchPath = dr.getType() + "." + drcf.getPath();
 
                   Pair<Boolean, MatchedTriggerCodes> retInfo =
-                      BsaServiceUtils.isCodeableConceptPresentInValueSet(vs, c.getCode(), false);
+                      BsaServiceUtils.isCodeableConceptPresentInValueSet(
+                          vs, c.getCode(), matchPath, false);
 
                   if (retInfo != null) {
 

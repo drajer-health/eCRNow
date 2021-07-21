@@ -1,6 +1,9 @@
 package com.drajer.bsa.service.impl;
 
+import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.EvaluateMeasure;
+import com.drajer.bsa.kar.action.SubmitReport;
+import com.drajer.bsa.kar.action.ValidateReport;
 import com.drajer.bsa.kar.condition.BsaCqlCondition;
 import com.drajer.bsa.kar.condition.BsaFhirPathCondition;
 import com.drajer.bsa.kar.model.BsaAction;
@@ -48,9 +51,11 @@ import org.opencds.cqf.cql.evaluator.measure.r4.MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -76,9 +81,24 @@ public class KarParserImpl implements KarParser {
 
   @Autowired BsaServiceUtils utils;
 
+  // Autowired to pass to action processors.
   @Autowired BsaScheduler scheduler;
-  
+
+  // Autowired to pass to action processors.
   @Autowired MeasureProcessor measureProcessor;
+
+  // Autowired to pass to actions
+  @Autowired
+  @Qualifier("jsonParser")
+  IParser jsonParser;
+
+  @Autowired RestTemplate restTemplate;
+
+  @Value("${report-validator.endpoint}")
+  private String validatorEndpoint;
+
+  @Value("${report-submission.endpoint}")
+  private String reportSubmissionEndpoint;
 
   private static String[] KAR_FILE_EXT = {"json"};
   private static String RECEIVER_ADDRESS_URL =
@@ -198,6 +218,8 @@ public class KarParserImpl implements KarParser {
         BsaAction action = getAction(cd.getCode());
         action.setActionId(act.getId());
         action.setScheduler(scheduler);
+        action.setJsonParser(jsonParser);
+        action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
 
@@ -290,6 +312,12 @@ public class KarParserImpl implements KarParser {
 
     if (action.getType() == ActionType.EvaluateMeasure) {
       setMeasureParameters(act, action);
+    } else if (action.getType() == ActionType.ValidateReport) {
+      ValidateReport vr = (ValidateReport) (action);
+      vr.setValidatorEndpoint(validatorEndpoint);
+    } else if (action.getType() == ActionType.SubmitReport) {
+      SubmitReport sr = (SubmitReport) (action);
+      sr.setSubmissionEndpoint(reportSubmissionEndpoint);
     }
   }
 
@@ -304,8 +332,8 @@ public class KarParserImpl implements KarParser {
             && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
           EvaluateMeasure em = (EvaluateMeasure) (action);
           em.setMeasureReportId(dr.getId());
-          
-          //setup the Measure Processor
+
+          // setup the Measure Processor
           em.setMeasureProcessor(measureProcessor);
         }
       }

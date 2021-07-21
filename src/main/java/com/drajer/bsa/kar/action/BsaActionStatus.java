@@ -35,6 +35,14 @@ public abstract class BsaActionStatus {
     outputProduced = new HashSet<>();
   }
 
+  public ActionType getActionType() {
+    return actionType;
+  }
+
+  public void setActionType(ActionType actionType) {
+    this.actionType = actionType;
+  }
+
   public String getActionId() {
     return actionId;
   }

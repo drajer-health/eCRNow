@@ -1,9 +1,16 @@
 package com.drajer.bsa.kar.action;
 
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.collections4.SetUtils;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.ResourceType;
+import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,8 +23,64 @@ import java.util.Set;
  */
 public class CheckTriggerCodeStatus extends BsaActionStatus {
 
+  private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodes.class);
+
   private Boolean triggerMatchStatus; // Did anything match or not
   private List<MatchedTriggerCodes> matchedCodes;
+
+  public Pair<Boolean, ReportableMatchedTriggerCode> getMatchedCode(CodeableConcept cc) {
+
+    Pair<Boolean, ReportableMatchedTriggerCode> rmtc = new Pair<>(false, null);
+
+    Set<String> codes = BsaServiceUtils.getMatchableCodes(cc);
+
+    for (MatchedTriggerCodes mtc : matchedCodes) {
+
+      Set<String> codesToMatch = mtc.getMatchedCodes();
+      Set<String> matches = SetUtils.intersection(codes, codesToMatch);
+
+      if (matches != null && matches.size() > 0) {
+
+        ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
+        rc.setValueSet(mtc.getValueSet());
+        rc.setValueSetVersion(mtc.getValueSetVersion());
+
+        String rcode = matches.stream().findFirst().get();
+        String[] rcodes = rcode.split("\\|");
+
+        rc.setCode(rcodes[1]);
+        rc.setCodeSystem(rcodes[0]);
+        rc.setAllMatches(matches);
+
+        rmtc = new Pair<>(true, rc);
+
+        break;
+      } else {
+
+        matches = SetUtils.intersection(codes, mtc.getMatchedValues());
+
+        if (matches != null && matches.size() > 0) {
+          ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
+          rc.setValueSet(mtc.getValueSet());
+          rc.setValueSetVersion(mtc.getValueSetVersion());
+
+          String rcode = matches.stream().findFirst().get();
+          String[] rcodes = rcode.split("|");
+
+          rc.setCode(rcodes[1]);
+          rc.setCodeSystem(rcodes[0]);
+          rc.setAllMatches(matches);
+
+          rmtc.setAt0(true);
+          rmtc.setAt1(rc);
+
+          break;
+        }
+      }
+    }
+
+    return rmtc;
+  }
 
   public MatchedTriggerCodes getMatchedTriggerCodes(
       String path, String valueSet, String valuesetVersion) {
@@ -30,6 +93,16 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
     }
 
     return null;
+  }
+
+  public Boolean containsMatches(ResourceType rt) {
+
+    for (MatchedTriggerCodes mtc : matchedCodes) {
+
+      if (mtc.containsMatch(rt)) return true;
+    }
+
+    return false;
   }
 
   public void addMatchedTriggerCodes(MatchedTriggerCodes mtc) {
@@ -82,7 +155,25 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
   public void copyFrom(CheckTriggerCodeStatus ctc) {
 
-    this.triggerMatchStatus = ctc.triggerMatchStatus;
-    this.matchedCodes.addAll(ctc.getMatchedCodes());
+    // this.triggerMatchStatus = ctc.triggerMatchStatus;
+
+    for (MatchedTriggerCodes mtc : ctc.getMatchedCodes()) {
+
+      matchedCodes.add(mtc);
+    }
+    // this.matchedCodes.addAll(ctc.getMatchedCodes());
+  }
+
+  public void log() {
+
+    logger.info(" *** START Printing Check Trigger Code Status *** ");
+    logger.info(" Trigger Match Status {}", triggerMatchStatus);
+
+    for (MatchedTriggerCodes mtc : matchedCodes) {
+
+      mtc.log();
+    }
+
+    logger.info(" *** End Printing Check Trigger Code Status *** ");
   }
 }

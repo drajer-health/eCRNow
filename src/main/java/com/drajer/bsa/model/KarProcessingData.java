@@ -3,6 +3,7 @@ package com.drajer.bsa.model;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import java.util.HashMap;
@@ -152,6 +153,19 @@ public class KarProcessingData {
 
       actionStatus.put(id, status);
     }
+  }
+
+  public BsaActionStatus getActionStatusByType(ActionType type) {
+
+    for (Map.Entry<String, BsaActionStatus> entry : actionStatus.entrySet()) {
+
+      if (entry.getValue().getActionType() == ActionType.CheckTriggerCodes) {
+
+        return entry.getValue();
+      }
+    }
+
+    return null;
   }
 
   public void addResourcesByType(HashMap<ResourceType, Set<Resource>> res) {

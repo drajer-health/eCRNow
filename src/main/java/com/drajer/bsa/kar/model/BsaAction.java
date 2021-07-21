@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.model;
 
+import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * This class is used to represent the PlanDefinition Action. The model has been simplified for
@@ -79,11 +81,17 @@ public abstract class BsaAction {
   /** The attribute that holds a definition of a measure in case of measure evaluation */
   private String measureUri;
 
+  /** RestTemplate used to invoke other APIs */
+  protected RestTemplate restTemplate;
+
+  /** JSON Parser to deal with FHIR Encode and Decode */
+  protected IParser jsonParser;
+
   /** The scheduler that is required to be used to schedule jobs. */
-  BsaScheduler scheduler;
+  protected BsaScheduler scheduler;
 
   /** Attribute that can be set to ignore timers for testing through the same code paths */
-  Boolean ignoreTimers;
+  protected Boolean ignoreTimers;
 
   /** The method that all actions have to implement to process data. */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
@@ -324,6 +332,22 @@ public abstract class BsaAction {
 
   public void setIgnoreTimers(Boolean ignoreTimers) {
     this.ignoreTimers = ignoreTimers;
+  }
+
+  public RestTemplate getRestTemplate() {
+    return restTemplate;
+  }
+
+  public void setRestTemplate(RestTemplate restTemplate) {
+    this.restTemplate = restTemplate;
+  }
+
+  public IParser getJsonParser() {
+    return jsonParser;
+  }
+
+  public void setJsonParser(IParser jsonParser) {
+    this.jsonParser = jsonParser;
   }
 
   public void addRelatedAction(BsaRelatedAction ract) {
