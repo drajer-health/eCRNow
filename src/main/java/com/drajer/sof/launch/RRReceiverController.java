@@ -29,6 +29,7 @@ public class RRReceiverController {
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue,
       @RequestBody ReportabilityResponse data,
+      @RequestParam(name = "saveToEhr", required = false, defaultValue = "true") boolean saveToEhr,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
@@ -54,8 +55,8 @@ public class RRReceiverController {
       } else {
         logger.info(" Received RR as expected on the RR API ");
 
-        // For MDN, no other data will be present.
-        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
+        // Handle RR and optionally save to EHR.
+        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue, saveToEhr);
       }
 
     } catch (IllegalArgumentException e) {
@@ -91,7 +92,9 @@ public class RRReceiverController {
         ReportabilityResponse rr = new ReportabilityResponse();
         rr.setRrXml(eicr.getResponseData());
         rr.setResponseType(eicr.getResponseType());
-        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
+
+        // Always save it to the EHR.
+        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId(), true);
       }
 
     } catch (IllegalArgumentException e) {
