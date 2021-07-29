@@ -34,6 +34,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ *
+ *
+ * <h1>BackendAuthorizationServiceImpl</h1>
+ *
+ * This class defines the implementation methods to get authorized with the EHRs.
+ *
+ * @author kghoreshi
+ */
 @Service("backendauth")
 @Transactional
 public class BackendAuthorizationServiceImpl implements EhrAuthorizationService {
