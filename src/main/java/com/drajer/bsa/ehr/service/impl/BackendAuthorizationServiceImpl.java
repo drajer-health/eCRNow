@@ -52,6 +52,9 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
   @Value("${jwks.keystore.alias}")
   String alias;
 
+  /**
+   * @param kd The processing context which contains information such as patient, encounter
+   */
   @Override
   public void getAuthorizationToken(KarProcessingData kd) {
     String baseUrl = kd.getHealthcareSetting().getFhirServerBaseURL();
@@ -72,6 +75,12 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
     }
   }
 
+  /**
+   * @param url base url of ehr
+   * @param kd knowledge artifact data
+   * @return the token response from the auth server
+   * @throws KeyStoreException in case of invalid public/private keys
+   */
   public JSONObject connectToServer(String url, KarProcessingData kd) throws KeyStoreException {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
@@ -98,6 +107,10 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 
+  /**
+   * @param url base ehr url
+   * @return token endpoint from the server's capability statement
+   */
   public String getTokenEndpoint(String url) {
     RestTemplate resTemplate = new RestTemplate();
     try {
@@ -127,35 +140,12 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
     }
   }
 
-  public String getRegistrationEndpoint(String url) {
-    RestTemplate resTemplate = new RestTemplate();
-    try {
-      ResponseEntity<String> res =
-          resTemplate.getForEntity(String.format("%s/%s", url, WELL_KNOWN), String.class);
-      JSONArray result = JsonPath.read(res.getBody(), "$.registration_endpoint");
-      return result.get(0).toString();
-    } catch (Exception ex1) {
-      try {
-        ResponseEntity<String> res =
-            resTemplate.getForEntity(String.format("%s/metadata", url), String.class);
-        // jsonpath allows filtering through lists with '?', where '@' represents the current
-        // element
-        JSONArray result =
-            JsonPath.read(
-                res.getBody(),
-                "$.rest[?(@.mode == 'server')].security"
-                    + ".extension[?(@.url =='"
-                    + OAUTH_URIS
-                    + "')]"
-                    + ".extension[?(@.url == 'register')].valueUri");
-        return result.get(0).toString();
-      } catch (Exception ex2) {
-        logger.error("Error trying to access ehr metadata endpoint");
-        throw ex2;
-      }
-    }
-  }
-
+  /**
+   * @param clientId client id of the app
+   * @param aud the token endpoint of the ehr
+   * @return a signed JWT
+   * @throws KeyStoreException for problems with public/private keys
+   */
   public String generateJwt(String clientId, String aud) throws KeyStoreException {
 
     KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -166,19 +156,17 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
       store.close();
       Key key = ks.getKey(alias, passwordChar);
 
-      String compact =
-          Jwts.builder()
-              .setIssuer(clientId)
-              .setSubject(clientId)
-              .setAudience(aud)
-              .setExpiration(
-                  new Date(
-                      System.currentTimeMillis()
-                          + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-              .setId(UUID.randomUUID().toString())
-              .signWith(key)
-              .compact();
-      return compact;
+      return Jwts.builder()
+          .setIssuer(clientId)
+          .setSubject(clientId)
+          .setAudience(aud)
+          .setExpiration(
+              new Date(
+                  System.currentTimeMillis()
+                      + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+          .setId(UUID.randomUUID().toString())
+          .signWith(key)
+          .compact();
     } catch (IOException
         | NoSuchAlgorithmException
         | CertificateException
