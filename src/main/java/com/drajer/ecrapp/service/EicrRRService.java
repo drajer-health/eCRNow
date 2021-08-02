@@ -28,7 +28,8 @@ public interface EicrRRService {
 
   List<JSONObject> getRRData(Map<String, String> searchParams);
 
-  void handleReportabilityResponse(ReportabilityResponse data, String xRequestId);
+  void handleReportabilityResponse(
+      ReportabilityResponse data, String xRequestId, boolean saveToEhr);
 
   void deleteEicr(Eicr eicr);
 }

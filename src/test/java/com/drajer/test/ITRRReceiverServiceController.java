@@ -26,6 +26,8 @@ import org.springframework.http.*;
 
 public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
+  private static final String FHIR_DOCREF_URL = "/FHIR/DocumentReference?_pretty=true";
+
   private static final Logger logger = LoggerFactory.getLogger(ITRRReceiverServiceController.class);
   WireMockHelper stubHelper;
   private Eicr eicr;
@@ -57,7 +59,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
         TestUtils.getFileContentAsString("R4/DocumentReference/DocumentReference.json");
 
     wireMockServer.stubFor(
-        post(urlEqualTo("/FHIR/DocumentReference?_pretty=true"))
+        post(urlEqualTo(FHIR_DOCREF_URL))
             .atPriority(1)
             .willReturn(
                 aResponse()
@@ -80,6 +82,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
@@ -93,6 +98,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS2", eicr != null ? eicr.getResponseType() : null);
@@ -109,6 +117,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
+    // Mock FHIR not called (not reportable condition).
+    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS3", eicr != null ? eicr.getResponseType() : null);
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
@@ -121,6 +132,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
     rr.setRrXml(rr.getRrXml().replace("RRVS2", "RRVS4"));
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    // Mock FHIR not called (not reportable condition).
+    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -150,6 +164,17 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
+  public void testRRReceiver_WithRR_NoSaveToEHR() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr, false);
+
+    // Mock FHIR not called (reportable condition, but saveToEhr = false).
+    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
   public void testReSubmitRR() {
     // Mock FHIR Document Reference to return failure.
     wireMockServer.stubFor(
@@ -162,6 +187,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
                     .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
 
     ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
+
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
@@ -302,6 +330,11 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   private ResponseEntity<String> postReportabilityResponse(ReportabilityResponse rr, Eicr eicr) {
+    return postReportabilityResponse(rr, eicr, true);
+  }
+
+  private ResponseEntity<String> postReportabilityResponse(
+      ReportabilityResponse rr, Eicr eicr, boolean saveToEhr) {
 
     headers.clear();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -311,6 +344,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     URIBuilder ub;
     try {
       ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
+      ub.addParameter("saveToEhr", Boolean.toString(saveToEhr));
 
       HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
       return restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
