@@ -394,21 +394,18 @@ public class EcrReportCreator extends ReportCreator {
   public void addEntries(
       ResourceType rt, KarProcessingData kd, SectionComponent sc, Set<Resource> resTobeAdded) {
 
-	  Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
-	  Set<Resource> res = null;
-	  
-	  if(rt == ResourceType.Observation && isResultsSection(sc)) {
-		  res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
-	  }
-	  else if(rt == ResourceType.Observation && isVitalsSection(sc)) {
-		  res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
-	  }
-	  else if(rt == ResourceType.Observation && isSocialHistorySection(sc)) {
-		  res = filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
-	  }
-	  else 
-		  res = resourcesByType;
-    
+    Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
+    Set<Resource> res = null;
+
+    if (rt == ResourceType.Observation && isResultsSection(sc)) {
+      res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
+    } else if (rt == ResourceType.Observation && isVitalsSection(sc)) {
+      res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
+    } else if (rt == ResourceType.Observation && isSocialHistorySection(sc)) {
+      res =
+          filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
+    } else res = resourcesByType;
+
     if (res != null && res.size() >= 1) {
 
       logger.info(" Addding resources of type {}", rt.toString());
@@ -520,67 +517,88 @@ public class EcrReportCreator extends ReportCreator {
 
     return mtc;
   }
-  
+
   public Boolean isResultsSection(SectionComponent sc) {
-	  
-	  if(sc.getCode() != null && 
-			  sc.getCode().getCodingFirstRep() != null && 
-			  sc.getCode().getCodingFirstRep().getSystem() != null && 
-			  sc.getCode().getCodingFirstRep().getSystem().contentEquals(FhirGeneratorConstants.LOINC_CS_URL) && 
-			  sc.getCode().getCodingFirstRep().getCode() != null && 
-			  sc.getCode().getCodingFirstRep().getCode().contentEquals(FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE) ) {
-		  return true;
-	  }
-	
-	  return false;
+
+    if (sc.getCode() != null
+        && sc.getCode().getCodingFirstRep() != null
+        && sc.getCode().getCodingFirstRep().getSystem() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getSystem()
+            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
+        && sc.getCode().getCodingFirstRep().getCode() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE)) {
+      return true;
+    }
+
+    return false;
   }
-  
+
   public Boolean isVitalsSection(SectionComponent sc) {
-	  
-	  if(sc.getCode() != null && 
-			  sc.getCode().getCodingFirstRep() != null && 
-			  sc.getCode().getCodingFirstRep().getSystem() != null && 
-			  sc.getCode().getCodingFirstRep().getSystem().contentEquals(FhirGeneratorConstants.LOINC_CS_URL) && 
-			  sc.getCode().getCodingFirstRep().getCode() != null && 
-			  sc.getCode().getCodingFirstRep().getCode().contentEquals(FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE) ) {
-		  return true;
-	  }
-	
-	  return false;
+
+    if (sc.getCode() != null
+        && sc.getCode().getCodingFirstRep() != null
+        && sc.getCode().getCodingFirstRep().getSystem() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getSystem()
+            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
+        && sc.getCode().getCodingFirstRep().getCode() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE)) {
+      return true;
+    }
+
+    return false;
   }
-  
+
   public Boolean isSocialHistorySection(SectionComponent sc) {
-	  
-	  if(sc.getCode() != null && 
-			  sc.getCode().getCodingFirstRep() != null && 
-			  sc.getCode().getCodingFirstRep().getSystem() != null && 
-			  sc.getCode().getCodingFirstRep().getSystem().contentEquals(FhirGeneratorConstants.LOINC_CS_URL) && 
-			  sc.getCode().getCodingFirstRep().getCode() != null && 
-			  sc.getCode().getCodingFirstRep().getCode().contentEquals(FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE) ) {
-		  return true;
-	  }
-	
-	  return false;
+
+    if (sc.getCode() != null
+        && sc.getCode().getCodingFirstRep() != null
+        && sc.getCode().getCodingFirstRep().getSystem() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getSystem()
+            .contentEquals(FhirGeneratorConstants.LOINC_CS_URL)
+        && sc.getCode().getCodingFirstRep().getCode() != null
+        && sc.getCode()
+            .getCodingFirstRep()
+            .getCode()
+            .contentEquals(FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE)) {
+      return true;
+    }
+
+    return false;
   }
-  
+
   public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
-	  
-	  Set<Resource> returnVal = new HashSet<Resource>();
-	  for(Resource r : res) {
-		  
-		  Observation obs = (Observation)(r);
-		  
-		  if(obs.getCategoryFirstRep() != null && 
-			  obs.getCategoryFirstRep().getCodingFirstRep() != null && 
-			  obs.getCategoryFirstRep().getCodingFirstRep().getSystem() != null && 
-			  obs.getCategoryFirstRep().getCodingFirstRep().getSystem().contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY) &&
-			  obs.getCategoryFirstRep().getCodingFirstRep().getCode() != null && 
-			  obs.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals(category)) {
-			  
-			  returnVal.add(r);
-		  }	  
-	  }
-	  
-	  return returnVal;
+
+    Set<Resource> returnVal = new HashSet<Resource>();
+    for (Resource r : res) {
+
+      Observation obs = (Observation) (r);
+
+      if (obs.getCategoryFirstRep() != null
+          && obs.getCategoryFirstRep().getCodingFirstRep() != null
+          && obs.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
+          && obs.getCategoryFirstRep()
+              .getCodingFirstRep()
+              .getSystem()
+              .contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
+          && obs.getCategoryFirstRep().getCodingFirstRep().getCode() != null
+          && obs.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals(category)) {
+
+        returnVal.add(r);
+      }
+    }
+
+    return returnVal;
   }
 }

@@ -69,19 +69,17 @@ public class SubmitReport extends BsaAction {
                     .encodedJson()
                     .execute();
 
-        if(responseBundle != null) {
-        	logger.info(
-            "Response Bundle:::::{}",
-            context.newJsonParser().encodeResourceToString(responseBundle));
-        	
-        	data.addActionOutput(actionId, responseBundle);
+        if (responseBundle != null) {
+          logger.info(
+              "Response Bundle:::::{}",
+              context.newJsonParser().encodeResourceToString(responseBundle));
 
-            logger.info(" Adding Response Bundle to output using id {}", responseBundle.getId());
+          data.addActionOutput(actionId, responseBundle);
 
-            data.addActionOutputById(responseBundle.getId(), responseBundle);
-        
+          logger.info(" Adding Response Bundle to output using id {}", responseBundle.getId());
+
+          data.addActionOutputById(responseBundle.getId(), responseBundle);
         }
-        
 
         if (conditionsMet(data)) {
 

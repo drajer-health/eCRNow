@@ -14,7 +14,8 @@ public class FhirGeneratorConstants {
 
   // Code Systems
   public static final String LOINC_CS_URL = "http://loinc.org";
-  public static final String HL7_OBSERVATION_CATEGORY = "http://terminology.hl7.org/CodeSystem/observation-category";
+  public static final String HL7_OBSERVATION_CATEGORY =
+      "http://terminology.hl7.org/CodeSystem/observation-category";
 
   // Composition Codes
   public static final String COMP_TYPE_CODE = "55751-2";
