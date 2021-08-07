@@ -5,7 +5,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
-import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -143,7 +143,7 @@ public class KarProcessorImpl implements KarProcessor {
     // Setup Processing data
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-    kd.setKar(KnowledgeArtifactRepository.getIntance().getById(state.getKarUniqueId()));
+    kd.setKar(KnowledgeArtifactRepositorySystem.getIntance().getById(state.getKarUniqueId()));
 
     // Setup Notification Data
     Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());

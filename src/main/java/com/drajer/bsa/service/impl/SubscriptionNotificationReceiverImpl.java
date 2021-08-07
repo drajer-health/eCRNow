@@ -5,7 +5,7 @@ import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
-import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -97,7 +97,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
 
                 KnowledgeArtifact kar =
-                    KnowledgeArtifactRepository.getIntance().getById(ks.getVersionUniqueKarId());
+                    KnowledgeArtifactRepositorySystem.getIntance().getById(ks.getVersionUniqueKarId());
 
                 if (kar != null) {
 

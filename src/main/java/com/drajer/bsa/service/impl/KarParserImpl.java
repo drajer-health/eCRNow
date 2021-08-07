@@ -10,7 +10,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
-import com.drajer.bsa.kar.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.BsaScheduler;
@@ -192,7 +192,7 @@ public class KarParserImpl implements KarParser {
           }
         }
 
-        KnowledgeArtifactRepository.getIntance().add(art);
+        KnowledgeArtifactRepositorySystem.getIntance().add(art);
         art.printKarSummary();
 
       } else {

@@ -13,17 +13,17 @@ import org.slf4j.LoggerFactory;
  * @author nbashyam
  * @since 2021-04-15
  */
-public class KnowledgeArtifactRepository {
+public class KnowledgeArtifactRepositorySystem {
 
   /** Singleton Instance for the Repository. */
-  private static KnowledgeArtifactRepository instance = null;
+  private static KnowledgeArtifactRepositorySystem instance = null;
 
-  private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactRepository.class);
+  private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactRepositorySystem.class);
 
   /** The list of Knowledge Artifacts accessible by its identifiers. */
   HashMap<String, KnowledgeArtifact> artifacts;
 
-  private KnowledgeArtifactRepository() {
+  private KnowledgeArtifactRepositorySystem() {
     artifacts = new HashMap<>();
   }
 
@@ -52,9 +52,9 @@ public class KnowledgeArtifactRepository {
     else return null;
   }
 
-  public static KnowledgeArtifactRepository getIntance() {
+  public static KnowledgeArtifactRepositorySystem getIntance() {
 
-    if (instance == null) instance = new KnowledgeArtifactRepository();
+    if (instance == null) instance = new KnowledgeArtifactRepositorySystem();
 
     return instance;
   }
