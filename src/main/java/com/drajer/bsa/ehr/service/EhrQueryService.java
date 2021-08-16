@@ -26,4 +26,6 @@ public interface EhrQueryService {
    */
   public HashMap<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, HashMap<String, ResourceType> resTypes);
+
+  public void createResource(KarProcessingData kd, Resource resource);
 }

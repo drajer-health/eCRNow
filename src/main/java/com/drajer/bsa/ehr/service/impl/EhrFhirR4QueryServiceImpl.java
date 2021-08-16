@@ -130,6 +130,26 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputData();
   }
 
+  public void createResource(KarProcessingData kd, Resource resource) {
+    String secret = kd.getHealthcareSetting().getClientSecret();
+    if (secret == null || secret.isEmpty()) {
+      backendAuthorizationService.getAuthorizationToken(kd);
+    } else {
+      ehrAuthorizationService.getAuthorizationToken(kd);
+    }
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info("Initializing FHIR Client");
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context,
+            kd.getHealthcareSetting().getFhirServerBaseURL(),
+            kd.getNotificationContext().getEhrAccessToken());
+    client.create().resource(resource);
+  }
+
   public Resource getResourceById(
       IGenericClient genericClient, FhirContext context, String resourceName, String resourceId) {
 
