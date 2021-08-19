@@ -61,9 +61,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
   @Value("${jwks.keystore.alias}")
   String alias;
 
-  /**
-   * @param kd The processing context which contains information such as patient, encounter
-   */
+  /** @param kd The processing context which contains information such as patient, encounter */
   @Override
   public void getAuthorizationToken(KarProcessingData kd) {
     String baseUrl = kd.getHealthcareSetting().getFhirServerBaseURL();
@@ -171,8 +169,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
           .setAudience(aud)
           .setExpiration(
               new Date(
-                  System.currentTimeMillis()
-                      + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
           .setId(UUID.randomUUID().toString())
           .signWith(key)
           .compact();

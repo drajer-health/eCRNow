@@ -97,7 +97,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
 
                 KnowledgeArtifact kar =
-                    KnowledgeArtifactRepositorySystem.getIntance().getById(ks.getVersionUniqueKarId());
+                    KnowledgeArtifactRepositorySystem.getIntance()
+                        .getById(ks.getVersionUniqueKarId());
 
                 if (kar != null) {
 

@@ -99,4 +99,24 @@ public final class BsaTypes {
     else if (code.equalsIgnoreCase("cancel-report")) return ActionType.CancelReport;
     else return ActionType.Unknown;
   }
+
+  public enum OutputContentType {
+    FHIR,
+    CDA,
+    Unknown
+  }
+
+  public static String getOutputContentType(OutputContentType t) {
+
+    if (t == OutputContentType.FHIR) return "FHIR";
+    else if (t == OutputContentType.CDA) return "CDA";
+    else return "Unknown";
+  }
+
+  public static OutputContentType getOutputContentType(String code) {
+
+    if (code.equalsIgnoreCase("FHIR")) return OutputContentType.FHIR;
+    else if (code.equalsIgnoreCase("CDA")) return OutputContentType.CDA;
+    else return OutputContentType.Unknown;
+  }
 }

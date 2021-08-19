@@ -14,7 +14,7 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.opencds.cqf.cql.evaluator.builder.Constants;
-import org.opencds.cqf.cql.evaluator.measure.r4.MeasureProcessor;
+import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class EvaluateMeasure extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private MeasureProcessor measureProcessor;
+  private R4MeasureProcessor measureProcessor;
 
   private String periodStart;
   private String periodEnd;
@@ -53,11 +53,11 @@ public class EvaluateMeasure extends BsaAction {
     this.measureReportId = measureReportId;
   }
 
-  public MeasureProcessor getMeasureProcessor() {
+  public R4MeasureProcessor getMeasureProcessor() {
     return measureProcessor;
   }
 
-  public void setMeasureProcessor(MeasureProcessor measureProcessor) {
+  public void setMeasureProcessor(R4MeasureProcessor measureProcessor) {
     this.measureProcessor = measureProcessor;
   }
 

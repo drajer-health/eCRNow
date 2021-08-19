@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.model;
 
+import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,6 +62,13 @@ public class KnowledgeArtifactStatus {
    * HealthcareSetting.
    */
   Set<String> subscriptions;
+
+  /**
+   * The flag indicates the type of output to be produced. If the output format is FHIR, then a FHIR
+   * bundle would be produced for the KAR. If the output format is CDA, then a CDA document would be
+   * produced for the KAR.
+   */
+  OutputContentType outputFormat;
 
   public KnowledgeArtifactStatus() {
 

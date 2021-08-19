@@ -11,7 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Table(name = "kar_info")
 @DynamicUpdate
-public class KARInfo {
+public class KnowledgeArtifactSummaryInfo {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

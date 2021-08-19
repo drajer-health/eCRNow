@@ -1,6 +1,6 @@
 package com.drajer.bsa.controller;
 
-import com.drajer.bsa.model.KAR;
+import com.drajer.bsa.model.KnowledgeArtifiactRepository;
 import com.drajer.bsa.service.KarService;
 import java.util.List;
 import org.json.JSONObject;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class KARController {
+public class KnowledgeArtifactRepositoryController {
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
 
@@ -26,14 +26,14 @@ public class KARController {
 
   @CrossOrigin
   @RequestMapping("/api/kar/{karId}")
-  public KAR getHealthcareSettingById(@PathVariable("hsId") Integer hsId) {
+  public KnowledgeArtifiactRepository getHealthcareSettingById(@PathVariable("hsId") Integer hsId) {
     return karService.getKARById(hsId);
   }
 
   @CrossOrigin
   @RequestMapping(value = "/api/kar", method = RequestMethod.POST)
-  public ResponseEntity<?> createKARs(@RequestBody KAR kar) {
-    KAR existingKar = karService.getKARByUrl(kar.getFhirServerURL());
+  public ResponseEntity<?> createKARs(@RequestBody KnowledgeArtifiactRepository kar) {
+    KnowledgeArtifiactRepository existingKar = karService.getKARByUrl(kar.getFhirServerURL());
     if (existingKar == null || (existingKar.getId().equals(existingKar.getId()))) {
       logger.info("Saving the KAR Details");
       karService.saveOrUpdate(kar);
@@ -53,13 +53,13 @@ public class KARController {
 
   @CrossOrigin
   @RequestMapping("/api/kars")
-  public KAR getKARByUrl(@RequestParam(value = "url") String url) {
+  public KnowledgeArtifiactRepository getKARByUrl(@RequestParam(value = "url") String url) {
     return karService.getKARByUrl(url);
   }
 
   @CrossOrigin
   @RequestMapping("/api/kars/")
-  public List<KAR> getAllKARs() {
+  public List<KnowledgeArtifiactRepository> getAllKARs() {
     return karService.getAllKARs();
   }
 }

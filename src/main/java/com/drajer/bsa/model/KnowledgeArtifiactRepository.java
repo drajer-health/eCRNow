@@ -21,7 +21,7 @@ import org.hibernate.annotations.FetchMode;
 @Table(name = "kar_mng")
 @DynamicUpdate
 @JsonInclude(Include.NON_NULL)
-public class KAR {
+public class KnowledgeArtifiactRepository {
 
   /** The attribute represents the primary key for the table and is auto incremented. */
   @Id
@@ -35,7 +35,7 @@ public class KAR {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @Fetch(FetchMode.SELECT)
   @JoinColumn(name = "kar_id")
-  private Set<KARInfo> kars_info;
+  private Set<KnowledgeArtifactSummaryInfo> kars_info;
 
   public Integer getId() {
     return id;
@@ -53,11 +53,11 @@ public class KAR {
     this.fhirServerURL = fhirServerURL;
   }
 
-  public Set<KARInfo> getKars_info() {
+  public Set<KnowledgeArtifactSummaryInfo> getKars_info() {
     return kars_info;
   }
 
-  public void setKars_info(Set<KARInfo> kars_info) {
+  public void setKars_info(Set<KnowledgeArtifactSummaryInfo> kars_info) {
     this.kars_info = kars_info;
   }
 }

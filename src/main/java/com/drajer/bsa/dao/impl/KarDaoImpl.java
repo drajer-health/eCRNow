@@ -1,7 +1,7 @@
 package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.KarDao;
-import com.drajer.bsa.model.KAR;
+import com.drajer.bsa.model.KnowledgeArtifiactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -14,33 +14,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class KARDaoImpl extends AbstractDao implements KarDao {
+public class KarDaoImpl extends AbstractDao implements KarDao {
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
 
   @Override
-  public KAR saveOrUpdate(KAR kar) {
+  public KnowledgeArtifiactRepository saveOrUpdate(KnowledgeArtifiactRepository kar) {
     getSession().saveOrUpdate(kar);
     return kar;
   }
 
   @Override
-  public KAR getKARById(Integer id) {
-    KAR kar = getSession().get(KAR.class, id);
+  public KnowledgeArtifiactRepository getKARById(Integer id) {
+    KnowledgeArtifiactRepository kar = getSession().get(KnowledgeArtifiactRepository.class, id);
     return kar;
   }
 
   @Override
-  public KAR getKARByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(KAR.class);
+  public KnowledgeArtifiactRepository getKARByUrl(String url) {
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifiactRepository.class);
     criteria.add(Restrictions.eq("fhirServerURL", url));
-    KAR kar = (KAR) criteria.uniqueResult();
+    KnowledgeArtifiactRepository kar = (KnowledgeArtifiactRepository) criteria.uniqueResult();
     return kar;
   }
 
   @Override
-  public List<KAR> getAllKARs() {
-    Criteria criteria = getSession().createCriteria(KAR.class);
+  public List<KnowledgeArtifiactRepository> getAllKARs() {
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifiactRepository.class);
     return criteria.addOrder(Order.desc("id")).list();
   }
 }

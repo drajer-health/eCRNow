@@ -1,7 +1,7 @@
 package com.drajer.bsa.service.impl;
 
 import com.drajer.bsa.dao.KarDao;
-import com.drajer.bsa.model.KAR;
+import com.drajer.bsa.model.KnowledgeArtifiactRepository;
 import com.drajer.bsa.service.KarService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,28 +10,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class KARServiceImpl implements KarService {
+public class KarServiceImpl implements KarService {
 
   @Autowired KarDao karDao;
 
   @Override
-  public KAR saveOrUpdate(KAR kar) {
+  public KnowledgeArtifiactRepository saveOrUpdate(KnowledgeArtifiactRepository kar) {
     karDao.saveOrUpdate(kar);
     return kar;
   }
 
   @Override
-  public KAR getKARById(Integer id) {
+  public KnowledgeArtifiactRepository getKARById(Integer id) {
     return karDao.getKARById(id);
   }
 
   @Override
-  public KAR getKARByUrl(String url) {
+  public KnowledgeArtifiactRepository getKARByUrl(String url) {
     return karDao.getKARByUrl(url);
   }
 
   @Override
-  public List<KAR> getAllKARs() {
+  public List<KnowledgeArtifiactRepository> getAllKARs() {
     return karDao.getAllKARs();
   }
 }

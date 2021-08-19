@@ -3,6 +3,7 @@ package com.drajer.bsa.model;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
@@ -33,6 +34,12 @@ public class KarProcessingData {
 
   /** The Knowledge Artifact to be processed. */
   KnowledgeArtifact kar;
+
+  /**
+   * The KnowledgeArtifactStatus containing detailed information on how the knowledge artifact has
+   * to be processed
+   */
+  KnowledgeArtifactStatus karStatus;
 
   /** The context data that was received via notification. */
   NotificationContext notificationContext;

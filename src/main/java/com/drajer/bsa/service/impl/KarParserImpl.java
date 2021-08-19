@@ -47,7 +47,7 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.opencds.cqf.cql.evaluator.measure.r4.MeasureProcessor;
+import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class KarParserImpl implements KarParser {
   @Autowired BsaScheduler scheduler;
 
   // Autowired to pass to action processors.
-  @Autowired MeasureProcessor measureProcessor;
+  @Autowired R4MeasureProcessor measureProcessor;
 
   // Autowired to pass to actions
   @Autowired
