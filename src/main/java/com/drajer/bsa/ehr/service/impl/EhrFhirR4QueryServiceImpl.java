@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -67,22 +69,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   public HashMap<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, HashMap<String, ResourceType> resTypes) {
 
-    String secret = kd.getHealthcareSetting().getClientSecret();
-    if (secret == null || secret.isEmpty()) {
-      backendAuthorizationService.getAuthorizationToken(kd);
-    } else {
-      ehrAuthorizationService.getAuthorizationToken(kd);
-    }
-
     logger.info(" Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info("Initializing FHIR Client");
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken());
+    IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always
     Resource res =
@@ -93,7 +84,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       logger.info(
           " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
 
-      Set<Resource> resources = new HashSet<Resource>();
+      Set<Resource> resources = new HashSet<>();
       resources.add(res);
       HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
       resMap.put(res.getResourceType(), resources);
@@ -130,7 +121,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputData();
   }
 
-  public void createResource(KarProcessingData kd, Resource resource) {
+  public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
     String secret = kd.getHealthcareSetting().getClientSecret();
     if (secret == null || secret.isEmpty()) {
       backendAuthorizationService.getAuthorizationToken(kd);
@@ -138,18 +129,32 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
+    return fhirContextInitializer.createClient(
+        context,
+        kd.getHealthcareSetting().getFhirServerBaseURL(),
+        kd.getNotificationContext().getEhrAccessToken());
+
+  }
+  public void createResource(KarProcessingData kd, Resource resource) {
+
     logger.info(" Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info("Initializing FHIR Client");
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken());
+    IGenericClient client = getClient(kd, context);
     client.create().resource(resource);
   }
 
+  public void deleteResource(KarProcessingData kd, String id) {
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    IIdType iIdType = new IdType(id);
+    logger.info("Initializing FHIR Client");
+    IGenericClient client = getClient(kd, context);
+    client.delete().resourceById(iIdType);
+  }
   public Resource getResourceById(
       IGenericClient genericClient, FhirContext context, String resourceName, String resourceId) {
 

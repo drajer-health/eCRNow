@@ -1,10 +1,13 @@
-package com.drajer.bsa.ehr.subscriptions;
+package com.drajer.bsa.ehr.subscriptions.impl;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.service.impl.SubscriptionNotificationReceiverImpl;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeType;
@@ -20,21 +23,13 @@ import org.hl7.fhir.r4.model.Subscription.SubscriptionChannelComponent;
 import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SubscriptionGenerator {
+public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
 
-  @Autowired EhrQueryService ehrQueryService;
-
-  private String notificationEndpoint;
-
-  public SubscriptionGenerator(@Value("${notification.endpoint}") String notificationEndpoint) {
-    this.notificationEndpoint = notificationEndpoint;
-  }
-
+  private final String notificationEndpoint;
   private final String NAMED_EVENT_EXTENSION =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType";
   private final String NAMED_EVENT_CODE_SYSTEM =
@@ -49,6 +44,31 @@ public class SubscriptionGenerator {
       "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-additional-criteria";
 
   private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
+  public SubscriptionGeneratorImpl(@Value("${notification.endpoint}") String notificationEndpoint) {
+    this.notificationEndpoint = notificationEndpoint;
+  }
+
+  public void createSubscriptions(KarProcessingData kd){
+    KnowledgeArtifactStatus status = kd.getKarStatus();
+    EhrQueryService ehrQueryService = kd.getEhrQueryService();
+
+    if(status.getIsActive() && status.getSubscriptionsEnabled()) {
+      Set<String> subscriptions = status.getSubscriptions();
+      if(subscriptions.size() == 0) {
+        List<Subscription> subscriptionResources = subscriptionsFromBundle(kd.getKar().getOriginalKarBundle());
+        for (Subscription sub : subscriptionResources) {
+          ehrQueryService.createResource(kd, sub);
+          subscriptions.add(sub.getId());
+        }
+      }
+    }
+  }
+
+  public void deleteSubscriptions(KarProcessingData kd) {
+    Set<String> subscriptions = kd.getKarStatus().getSubscriptions();
+    EhrQueryService ehrQueryService = kd.getEhrQueryService();
+    subscriptions.forEach(s -> ehrQueryService.deleteResource(kd, s));
+  }
 
   public List<Subscription> subscriptionsFromBundle(Bundle bundle) {
     List<PlanDefinition> planDefinitions =
@@ -150,14 +170,6 @@ public class SubscriptionGenerator {
     }
 
     return subscription;
-  }
-
-  // TODO: Figure out where to call this
-  public void postSubscriptionToEHR(List<Subscription> subscriptions, KarProcessingData kd) {
-    subscriptions.forEach(
-        subscription -> {
-          ehrQueryService.createResource(kd, subscription);
-        });
   }
 
   private String namedEventToCriteria(String code) {

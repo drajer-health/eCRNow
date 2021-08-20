@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
+
+import com.drajer.bsa.ehr.subscriptions.impl.SubscriptionGeneratorImpl;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Subscription;
 import org.junit.Test;
@@ -21,7 +23,7 @@ public class SubscriptionGeneratorTest {
   @Test
   public void testSubscriptionGeneration() {
     String resourceName = "Bsa/TestPlanDefinition.json";
-    SubscriptionGenerator subscriptionGenerator = new SubscriptionGenerator("http://example.org/");
+    SubscriptionGeneratorImpl subscriptionGenerator = new SubscriptionGeneratorImpl("http://example.org/");
     ClassLoader classLoader = getClass().getClassLoader();
     File file = new File(Objects.requireNonNull(classLoader.getResource(resourceName)).getFile());
     IParser jsonParser = new JsonParser(FhirContext.forR4(), new LenientErrorHandler());
