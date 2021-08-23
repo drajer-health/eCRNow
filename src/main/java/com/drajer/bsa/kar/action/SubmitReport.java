@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +52,13 @@ public class SubmitReport extends BsaAction {
         }
       }
 
+      String operation = submissionEndpoint.substring(submissionEndpoint.lastIndexOf("/") + 1);
+      String serverBase = submissionEndpoint.substring(0, submissionEndpoint.lastIndexOf("/"));
+      IGenericClient client = context.newRestfulGenericClient(serverBase);
+
+      context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+
       for (Resource r : resourcesToSubmit) {
-
-        IGenericClient client = context.newRestfulGenericClient(submissionEndpoint);
-
-        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
-
         // All submissions are expected to be bundles
         Bundle bundleToSubmit = (Bundle) r;
 
@@ -64,8 +66,10 @@ public class SubmitReport extends BsaAction {
             (Bundle)
                 client
                     .operation()
-                    .processMessage()
-                    .setMessageBundle(bundleToSubmit)
+                    .onServer()
+                    .named(operation)
+                    .withParameter(Parameters.class, "content", bundleToSubmit)
+                    .returnResourceType(Bundle.class)
                     .encodedJson()
                     .execute();
 
