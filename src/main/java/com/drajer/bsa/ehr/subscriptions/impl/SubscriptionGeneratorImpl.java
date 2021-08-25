@@ -44,18 +44,20 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
       "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-additional-criteria";
 
   private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
+
   public SubscriptionGeneratorImpl(@Value("${notification.endpoint}") String notificationEndpoint) {
     this.notificationEndpoint = notificationEndpoint;
   }
 
-  public void createSubscriptions(KarProcessingData kd){
+  public void createSubscriptions(KarProcessingData kd) {
     KnowledgeArtifactStatus status = kd.getKarStatus();
     EhrQueryService ehrQueryService = kd.getEhrQueryService();
 
-    if(status.getIsActive() && status.getSubscriptionsEnabled()) {
+    if (status.getIsActive() && status.getSubscriptionsEnabled()) {
       Set<String> subscriptions = status.getSubscriptions();
-      if(subscriptions.size() == 0) {
-        List<Subscription> subscriptionResources = subscriptionsFromBundle(kd.getKar().getOriginalKarBundle());
+      if (subscriptions.size() == 0) {
+        List<Subscription> subscriptionResources =
+            subscriptionsFromBundle(kd.getKar().getOriginalKarBundle());
         for (Subscription sub : subscriptionResources) {
           ehrQueryService.createResource(kd, sub);
           subscriptions.add(sub.getId());

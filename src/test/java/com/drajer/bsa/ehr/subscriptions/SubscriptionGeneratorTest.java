@@ -6,14 +6,13 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.parser.JsonParser;
 import ca.uhn.fhir.parser.LenientErrorHandler;
+import com.drajer.bsa.ehr.subscriptions.impl.SubscriptionGeneratorImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
-
-import com.drajer.bsa.ehr.subscriptions.impl.SubscriptionGeneratorImpl;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Subscription;
 import org.junit.Test;
@@ -23,7 +22,8 @@ public class SubscriptionGeneratorTest {
   @Test
   public void testSubscriptionGeneration() {
     String resourceName = "Bsa/TestPlanDefinition.json";
-    SubscriptionGeneratorImpl subscriptionGenerator = new SubscriptionGeneratorImpl("http://example.org/");
+    SubscriptionGeneratorImpl subscriptionGenerator =
+        new SubscriptionGeneratorImpl("http://example.org/");
     ClassLoader classLoader = getClass().getClassLoader();
     File file = new File(Objects.requireNonNull(classLoader.getResource(resourceName)).getFile());
     IParser jsonParser = new JsonParser(FhirContext.forR4(), new LenientErrorHandler());

@@ -28,6 +28,6 @@ public interface EhrQueryService {
       KarProcessingData kd, HashMap<String, ResourceType> resTypes);
 
   void createResource(KarProcessingData kd, Resource resource);
-  void deleteResource(KarProcessingData kd, String id);
 
+  void deleteResource(KarProcessingData kd, String id);
 }

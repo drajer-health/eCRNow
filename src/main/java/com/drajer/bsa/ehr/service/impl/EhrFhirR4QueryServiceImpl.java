@@ -133,8 +133,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         context,
         kd.getHealthcareSetting().getFhirServerBaseURL(),
         kd.getNotificationContext().getEhrAccessToken());
-
   }
+
   public void createResource(KarProcessingData kd, Resource resource) {
 
     logger.info(" Getting FHIR Context for R4");
@@ -155,6 +155,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     IGenericClient client = getClient(kd, context);
     client.delete().resourceById(iIdType);
   }
+
   public Resource getResourceById(
       IGenericClient genericClient, FhirContext context, String resourceName, String resourceId) {
 
