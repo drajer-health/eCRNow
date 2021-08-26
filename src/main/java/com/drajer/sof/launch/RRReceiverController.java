@@ -71,7 +71,9 @@ public class RRReceiverController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/reSubmitRR", method = RequestMethod.GET)
+  @RequestMapping(
+      value = "/api/reSubmitRR",
+      method = {RequestMethod.GET, RequestMethod.POST})
   public ResponseEntity<String> reSubmitRR(
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
