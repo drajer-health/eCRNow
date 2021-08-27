@@ -49,6 +49,12 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
     this.notificationEndpoint = notificationEndpoint;
   }
 
+  // KarProcessingData fields required to run this:
+  // KarStatus
+  // ehrQueryService
+  // HealthCareSetting
+  // karbundle
+  //
   public void createSubscriptions(KarProcessingData kd) {
     KnowledgeArtifactStatus status = kd.getKarStatus();
     EhrQueryService ehrQueryService = kd.getEhrQueryService();
