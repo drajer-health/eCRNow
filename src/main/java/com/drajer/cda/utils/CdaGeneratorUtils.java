@@ -890,7 +890,7 @@ public class CdaGeneratorUtils {
   public static String getXmlForPartialValueIVLWithTS(
       String elName, String value, String lowOrHigh) {
     String s = "";
-    if (lowOrHigh == CdaGeneratorConstants.TIME_LOW_EL_NAME) {
+    if (CdaGeneratorConstants.TIME_LOW_EL_NAME.equals(lowOrHigh)) {
       s +=
           CdaGeneratorConstants.START_XMLTAG
               + elName
@@ -903,7 +903,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorUtils.getXmlForEffectiveTime(
                   CdaGeneratorConstants.TIME_LOW_EL_NAME, value)
               + CdaGeneratorUtils.getXmlForEndElement(elName);
-    } else if (lowOrHigh == CdaGeneratorConstants.TIME_HIGH_EL_NAME) {
+    } else if (CdaGeneratorConstants.TIME_HIGH_EL_NAME.equals(lowOrHigh)) {
       s +=
           CdaGeneratorConstants.START_XMLTAG
               + elName
