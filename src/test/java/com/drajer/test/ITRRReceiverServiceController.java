@@ -366,7 +366,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ub.addParameter("eicrId", String.valueOf(eicr.getId()));
       ub.addParameter("eicrDocId", eicr.getEicrDocId());
       logger.info("Constructed URL:::::" + ub.toString());
-      return restTemplate.getForEntity(ub.toString(), String.class);
+      return restTemplate.postForEntity(ub.toString(), null, String.class);
 
     } catch (URISyntaxException e) {
       logger.error("Error building the URL", e);

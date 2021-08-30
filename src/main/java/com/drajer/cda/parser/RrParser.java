@@ -24,6 +24,7 @@ public class RrParser {
       throws ParserConfigurationException, SAXException, IOException {
     logger.debug("Initializing Document ");
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     DocumentBuilder builder = factory.newDocumentBuilder();
     return builder.parse(
         new BOMInputStream(IOUtils.toInputStream(cdaFile, StandardCharsets.UTF_8.name())));
