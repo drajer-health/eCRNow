@@ -142,7 +142,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     logger.info("Initializing FHIR Client");
     IGenericClient client = getClient(kd, context);
-    client.create().resource(resource);
+    client.create().resource(resource).execute();
   }
 
   public void deleteResource(KarProcessingData kd, String id) {
@@ -153,7 +153,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     IIdType iIdType = new IdType(id);
     logger.info("Initializing FHIR Client");
     IGenericClient client = getClient(kd, context);
-    client.delete().resourceById(iIdType);
+    client.delete().resourceById(iIdType).execute();
   }
 
   public Resource getResourceById(
