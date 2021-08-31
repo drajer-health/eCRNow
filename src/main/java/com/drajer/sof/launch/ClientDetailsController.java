@@ -1,6 +1,7 @@
 package com.drajer.sof.launch;
 
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.sof.model.ClientDetailsDTO;
 import com.drajer.sof.service.ClientDetailsService;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,17 @@ public class ClientDetailsController {
   // POST method to create a Client
   @CrossOrigin
   @RequestMapping(value = "/api/clientDetails", method = RequestMethod.POST)
-  public ResponseEntity<Object> createClientDetails(@RequestBody ClientDetails clientDetails) {
+  public ResponseEntity<Object> createClientDetails(
+      @RequestBody ClientDetailsDTO clientDetailsDTO) {
     ClientDetails checkClientDetails =
-        clientDetailsService.getClientDetailsByUrl(clientDetails.getFhirServerBaseURL());
+        clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
     if (checkClientDetails == null) {
       logger.info("Saving the Client Details");
+      ClientDetails clientDetails = new ClientDetails();
+      BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
       clientDetailsService.saveOrUpdate(clientDetails);
-      return new ResponseEntity<>(clientDetails, HttpStatus.OK);
+      BeanUtils.copyProperties(clientDetails, clientDetailsDTO);
+      return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
       JSONObject responseObject = new JSONObject();
@@ -49,13 +55,18 @@ public class ClientDetailsController {
 
   @CrossOrigin
   @RequestMapping(value = "/api/clientDetails", method = RequestMethod.PUT)
-  public ResponseEntity<Object> updateClientDetails(@RequestBody ClientDetails clientDetail) {
+  public ResponseEntity<Object> updateClientDetails(
+      @RequestBody ClientDetailsDTO clientDetailsDTO) {
     ClientDetails checkClientDetails =
-        clientDetailsService.getClientDetailsByUrl(clientDetail.getFhirServerBaseURL());
-    if (checkClientDetails == null || (checkClientDetails.getId().equals(clientDetail.getId()))) {
+        clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
+    if (checkClientDetails == null
+        || (checkClientDetails.getId().equals(clientDetailsDTO.getId()))) {
       logger.info("Saving the Client Details");
-      clientDetailsService.saveOrUpdate(clientDetail);
-      return new ResponseEntity<>(clientDetail, HttpStatus.OK);
+      ClientDetails clientDetails = new ClientDetails();
+      BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
+      clientDetailsService.saveOrUpdate(clientDetails);
+      BeanUtils.copyProperties(clientDetails, clientDetailsDTO);
+      return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
       JSONObject responseObject = new JSONObject();
