@@ -100,8 +100,8 @@ public class ClientDetailsController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for deleting clientDetail",
-          xCorrelationIdHttpHeaderValue,
-          xRequestIdHttpHeaderValue);
+          xRequestIdHttpHeaderValue,
+          xCorrelationIdHttpHeaderValue);
 
       if (url == null || url.isEmpty()) {
         return new ResponseEntity<>(
