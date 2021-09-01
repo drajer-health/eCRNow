@@ -36,7 +36,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
 
-    //  fhirPathProcessor.e
     return true;
   }
 
