@@ -49,12 +49,12 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
     this.notificationEndpoint = notificationEndpoint;
   }
 
-  // KarProcessingData fields required to run this:
-  // KarStatus
-  // ehrQueryService
-  // HealthCareSetting
-  // karbundle
-  //
+  /**
+   * Creates a subscription and posts it to the EHR in EhrQueryService
+   *
+   * @param kd The processing context which contains information such as KnowledgeArtifact and
+   *     KnowledgeArtifactStatus
+   */
   public void createSubscriptions(KarProcessingData kd) {
     KnowledgeArtifactStatus status = kd.getKarStatus();
     EhrQueryService ehrQueryService = kd.getEhrQueryService();
@@ -72,12 +72,22 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
     }
   }
 
+  /**
+   * Deletes a subscription from the EHR in EhrQueryService
+   *
+   * @param kd The processing context which contains information such as KnowledgeArtifact and
+   *     KnowledgeArtifactStatus
+   */
   public void deleteSubscriptions(KarProcessingData kd) {
     Set<String> subscriptions = kd.getKarStatus().getSubscriptions();
     EhrQueryService ehrQueryService = kd.getEhrQueryService();
-    subscriptions.forEach(s -> ehrQueryService.deleteResource(kd, s));
+    subscriptions.forEach(s -> ehrQueryService.deleteResource(kd, ResourceType.Subscription, s));
   }
 
+  /**
+   * @param bundle The knowledge artifact bundle
+   * @return A list of subscriptions to be made
+   */
   public List<Subscription> subscriptionsFromBundle(Bundle bundle) {
     List<PlanDefinition> planDefinitions =
         bundle
@@ -93,6 +103,10 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * @param planDefinition The plan definition to make subscriptions from
+   * @return A list of subscriptions to be made
+   */
   public List<Subscription> subscriptionsFromPlanDef(PlanDefinition planDefinition) {
     PlanDefinition.PlanDefinitionActionComponent action = planDefinition.getActionFirstRep();
     String planDefinitionId = planDefinition.getIdElement().getIdPart();
@@ -137,6 +151,13 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
     return subscriptions;
   }
 
+  /**
+   * @param criteria the fhir path specifying what resources to subscribe to
+   * @param notificationEndpoint the endpoint to send the notification
+   * @param id a unique identifier
+   * @param code the triggering event code
+   * @return a populated subscription resource
+   */
   public Subscription generateSubscription(
       String criteria, String notificationEndpoint, String id, String code) {
     Subscription subscription = new Subscription();
@@ -223,25 +244,4 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
         return null;
     }
   }
-
-  //        planDefinition.getAction()
-  //        .stream()
-  //        .filter(
-  //            action ->
-  //                action
-  //                    .getCode()
-  //                    .stream()
-  //                    .anyMatch(
-  //                        codeableConcept ->
-  //                            codeableConcept
-  //                                .getCoding()
-  //                                .stream()
-  //                                .anyMatch(
-  //                                    coding ->
-  //                                        coding
-  //                                            .getCode()
-  //                                            .equals(
-  //                                                BsaTypes.ActionType.InitiateReportingWorkflow
-  //                                                    .toString()))));
-
 }

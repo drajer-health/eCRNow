@@ -121,6 +121,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputData();
   }
 
+  /**
+   * @param kd The data object for getting the healthcareSetting and notification context from
+   * @param context The HAPI FHIR context for making a FHIR client with
+   * @return
+   */
   public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
     String secret = kd.getHealthcareSetting().getClientSecret();
     if (secret == null || secret.isEmpty()) {
@@ -135,6 +140,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         kd.getNotificationContext().getEhrAccessToken());
   }
 
+  /**
+   * @param kd The KarProcessingData includes data about the fhir server to create a resource on
+   * @param resource the resource to create on the fhir server
+   */
   public void createResource(KarProcessingData kd, Resource resource) {
 
     logger.info(" Getting FHIR Context for R4");
@@ -145,7 +154,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     client.create().resource(resource).execute();
   }
 
-  public void deleteResource(KarProcessingData kd, String id) {
+  /**
+   * @param kd The KarProcessingData which contains information about the fhir server
+   * @param resourceType The resource type of the resource to be deleted
+   * @param id The logical ID of the resource to be deleted
+   */
+  public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id) {
 
     logger.info(" Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
@@ -153,7 +167,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     IIdType iIdType = new IdType(id);
     logger.info("Initializing FHIR Client");
     IGenericClient client = getClient(kd, context);
-    client.delete().resourceById(iIdType).execute();
+    client.delete().resourceById(resourceType.toString(), id).execute();
   }
 
   public Resource getResourceById(

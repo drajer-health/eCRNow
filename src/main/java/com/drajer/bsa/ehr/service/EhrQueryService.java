@@ -29,5 +29,5 @@ public interface EhrQueryService {
 
   void createResource(KarProcessingData kd, Resource resource);
 
-  void deleteResource(KarProcessingData kd, String id);
+  void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
 }
