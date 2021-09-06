@@ -25,20 +25,20 @@ public class ClientDetailsController {
   private final Logger logger = LoggerFactory.getLogger(ClientDetailsController.class);
 
   @CrossOrigin
-  @RequestMapping("/api/clientDetails/{clientId}")
+  @GetMapping("/api/clientDetails/{clientId}")
   public ClientDetails getClientDetailsById(@PathVariable("clientId") Integer clientId) {
     return clientDetailsService.getClientDetailsById(clientId);
   }
 
   // POST method to create a Client
   @CrossOrigin
-  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.POST)
+  @PostMapping(value = "/api/clientDetails")
   public ResponseEntity<Object> createClientDetails(
       @RequestBody ClientDetailsDTO clientDetailsDTO) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
     if (checkClientDetails == null) {
-      logger.info("Saving the Client Details");
+      logger.info("Adding the Client Details");
       ClientDetails clientDetails = new ClientDetails();
       BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
       clientDetailsService.saveOrUpdate(clientDetails);
@@ -54,14 +54,14 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.PUT)
+  @PutMapping(value = "/api/clientDetails")
   public ResponseEntity<Object> updateClientDetails(
       @RequestBody ClientDetailsDTO clientDetailsDTO) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
     if (checkClientDetails == null
         || (checkClientDetails.getId().equals(clientDetailsDTO.getId()))) {
-      logger.info("Saving the Client Details");
+      logger.info("Updating the Client Details with id {}", checkClientDetails.getId());
       ClientDetails clientDetails = new ClientDetails();
       BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
       clientDetailsService.saveOrUpdate(clientDetails);
@@ -77,13 +77,13 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @RequestMapping("/api/clientDetails")
+  @GetMapping("/api/clientDetails")
   public ClientDetails getClientDetailsByUrl(@RequestParam(value = "url") String url) {
     return clientDetailsService.getClientDetailsByUrl(url);
   }
 
   @CrossOrigin
-  @RequestMapping("/api/clientDetails/")
+  @GetMapping("/api/clientDetails/")
   public List<ClientDetails> getAllClientDetails() {
     return clientDetailsService.getAllClientDetails();
   }
