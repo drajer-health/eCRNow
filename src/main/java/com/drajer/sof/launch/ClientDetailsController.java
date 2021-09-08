@@ -39,10 +39,10 @@ public class ClientDetailsController {
         clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
     if (checkClientDetails == null) {
       logger.info("Adding the Client Details");
-      ClientDetails clientDetails = new ClientDetails();
-      BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
-      clientDetailsService.saveOrUpdate(clientDetails);
-      BeanUtils.copyProperties(clientDetails, clientDetailsDTO);
+      ClientDetails newClientDetails = new ClientDetails();
+      BeanUtils.copyProperties(clientDetailsDTO, newClientDetails);
+      clientDetailsService.saveOrUpdate(newClientDetails);
+      BeanUtils.copyProperties(newClientDetails, clientDetailsDTO);
       return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
@@ -61,11 +61,11 @@ public class ClientDetailsController {
         clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
     if (checkClientDetails == null
         || (checkClientDetails.getId().equals(clientDetailsDTO.getId()))) {
-      logger.info("Updating the Client Details with id {}", checkClientDetails.getId());
-      ClientDetails clientDetails = new ClientDetails();
-      BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
-      clientDetailsService.saveOrUpdate(clientDetails);
-      BeanUtils.copyProperties(clientDetails, clientDetailsDTO);
+      logger.info("Saving the Client Details");
+      ClientDetails updateClientDetails = new ClientDetails();
+      BeanUtils.copyProperties(clientDetailsDTO, updateClientDetails);
+      clientDetailsService.saveOrUpdate(updateClientDetails);
+      BeanUtils.copyProperties(updateClientDetails, clientDetailsDTO);
       return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
