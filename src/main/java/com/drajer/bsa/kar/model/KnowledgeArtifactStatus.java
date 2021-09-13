@@ -19,6 +19,9 @@ public class KnowledgeArtifactStatus {
 
   private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactStatus.class);
 
+  /** The Id of the HealthcareSetting */
+  private Integer hsId;
+
   /**
    * The Id of the Knowledge Artifact as defined by the Public Health Agency or Research
    * Organization.
@@ -73,8 +76,9 @@ public class KnowledgeArtifactStatus {
   public KnowledgeArtifactStatus() {
 
     karId = "";
-    isActive = false;
+    isActive = true;
     subscriptionsEnabled = false;
+    outputFormat = OutputContentType.Both;
     lastActivationDate = new Date();
     lastInActivationDate = new Date();
     subscriptions = new HashSet<String>();

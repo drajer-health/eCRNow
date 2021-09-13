@@ -26,8 +26,9 @@ public class KnowledgeArtifactRepositoryController {
 
   @CrossOrigin
   @RequestMapping("/api/kar/{karId}")
-  public KnowledgeArtifiactRepository getHealthcareSettingById(@PathVariable("hsId") Integer hsId) {
-    return karService.getKARById(hsId);
+  public KnowledgeArtifiactRepository getHealthcareSettingById(
+      @PathVariable("karId") Integer karId) {
+    return karService.getKARById(karId);
   }
 
   @CrossOrigin

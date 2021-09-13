@@ -17,8 +17,15 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+/*
+ * <h1>KnowledgeArtifactRepository</h1>
+ *
+ * An instance of this class is created for each FHIR Server that is hosting Knowledge Artifacts.
+ *
+ * @author nbashyam
+ */
 @Entity
-@Table(name = "kar_mng")
+@Table(name = "kar_repos")
 @DynamicUpdate
 @JsonInclude(Include.NON_NULL)
 public class KnowledgeArtifiactRepository {
@@ -28,14 +35,21 @@ public class KnowledgeArtifiactRepository {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  /** The attribute represents the client id that is to be used for SMART on FHIR Authorization. */
-  @Column(name = "fhirServerURL", nullable = false, columnDefinition = "TEXT")
+  /** The attribute represents the FHIR Server URL which hosts the Knowledge Artifact. */
+  @Column(name = "repo_fhir_url", nullable = false, columnDefinition = "TEXT")
   private String fhirServerURL;
+
+  /**
+   * The attribute represents the FHIR Server URL for the HealthcareSetting. This is unique for the
+   * entire table.
+   */
+  @Column(name = "repo_name", nullable = false, unique = true)
+  private String repoName;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @Fetch(FetchMode.SELECT)
-  @JoinColumn(name = "kar_id")
-  private Set<KnowledgeArtifactSummaryInfo> kars_info;
+  @JoinColumn(name = "repo_id")
+  private Set<KnowledgeArtifactSummaryInfo> karsInfo;
 
   public Integer getId() {
     return id;
@@ -54,10 +68,26 @@ public class KnowledgeArtifiactRepository {
   }
 
   public Set<KnowledgeArtifactSummaryInfo> getKars_info() {
-    return kars_info;
+    return karsInfo;
   }
 
-  public void setKars_info(Set<KnowledgeArtifactSummaryInfo> kars_info) {
-    this.kars_info = kars_info;
+  public void setKars_info(Set<KnowledgeArtifactSummaryInfo> karsinfo) {
+    this.karsInfo = karsinfo;
+  }
+
+  public String getRepoName() {
+    return repoName;
+  }
+
+  public void setRepoName(String repoName) {
+    this.repoName = repoName;
+  }
+
+  public Set<KnowledgeArtifactSummaryInfo> getKarsInfo() {
+    return karsInfo;
+  }
+
+  public void setKarsInfo(Set<KnowledgeArtifactSummaryInfo> karsInfo) {
+    this.karsInfo = karsInfo;
   }
 }

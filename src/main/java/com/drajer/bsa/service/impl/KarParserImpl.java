@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -101,6 +102,7 @@ public class KarParserImpl implements KarParser {
   private String reportSubmissionEndpoint;
 
   private static String[] KAR_FILE_EXT = {"json"};
+  private static String JSON_KAR_EXT = "json";
   private static String RECEIVER_ADDRESS_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
   private static HashMap<String, String> actionClasses = new HashMap<>();
@@ -145,62 +147,82 @@ public class KarParserImpl implements KarParser {
 
   @Override
   public void loadKars() {
+    loadKarsFromDirectory(karDirectory);
+  }
+
+  public void loadKarsFromDirectory(String dirName) {
 
     // Load each of the Knowledge Artifact Bundles.
-    File folder = new File(karDirectory);
-    List<File> kars = (List<File>) FileUtils.listFiles(folder, KAR_FILE_EXT, true);
+    File folder = new File(dirName);
+    List<File> kars = (List<File>) FileUtils.listFiles(folder, null, false);
 
     for (File kar : kars) {
 
-      logger.info(" Processing File : {}", kar);
+      if (kar.isFile() && JSON_KAR_EXT.contentEquals(FilenameUtils.getExtension(kar.getName()))) {
 
-      Bundle karBundle = utils.readKarFromFile(kar.getPath());
+        processKar(kar);
 
-      if (karBundle != null && (karBundle.getType() == Bundle.BundleType.COLLECTION)) {
+      } // For a File
+      else if (kar.isDirectory()) {
 
-        logger.info(" Successfully read the KAR from File ");
-
-        KnowledgeArtifact art = new KnowledgeArtifact();
-
-        // Setup the Id.
-        art.setKarId(karBundle.getId());
-
-        // Setup Version.
-        if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
-          art.setKarVersion(karBundle.getMeta().getVersionId());
-
-        // Set Bundle
-        art.setOriginalKarBundle(karBundle);
-        art.setKarPath(kar.getPath());
-
-        List<BundleEntryComponent> entries = karBundle.getEntry();
-
-        for (BundleEntryComponent comp : entries) {
-
-          if (Optional.ofNullable(comp).isPresent()
-              && comp.getResource().getResourceType() == ResourceType.ValueSet) {
-            logger.debug(" Processing ValueSet ");
-            processValueSet((ValueSet) comp.getResource(), art);
-          } else if (Optional.ofNullable(comp).isPresent()
-              && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
-            logger.info(" Processing PlanDefinition ");
-            processPlanDefinition((PlanDefinition) comp.getResource(), art);
-            art.initializeRelatedActions();
-          } else if (Optional.ofNullable(comp).isPresent()
-              && comp.getResource().getResourceType() == ResourceType.Library) {
-            logger.info(" Processing Library");
-          }
-        }
-
-        KnowledgeArtifactRepositorySystem.getIntance().add(art);
-        art.printKarSummary();
-
+        logger.info(" About to process directory : {}", kar.getName());
+        loadKarsFromDirectory(kar.getName());
       } else {
 
-        logger.error(
-            " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
-            kar);
+        logger.info(" Ignoring File {} as it is not the right extension", kar.getName());
       }
+    } // For
+  }
+
+  private void processKar(File kar) {
+    logger.info(" Processing File : {}", kar);
+
+    Bundle karBundle = utils.readKarFromFile(kar.getPath());
+
+    if (karBundle != null && (karBundle.getType() == Bundle.BundleType.COLLECTION)) {
+
+      logger.info(" Successfully read the KAR from File ");
+
+      KnowledgeArtifact art = new KnowledgeArtifact();
+
+      // Setup the Id.
+      art.setKarId(karBundle.getId());
+
+      // Setup Version.
+      if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
+        art.setKarVersion(karBundle.getMeta().getVersionId());
+
+      // Set Bundle
+      art.setOriginalKarBundle(karBundle);
+      art.setKarPath(kar.getPath());
+
+      List<BundleEntryComponent> entries = karBundle.getEntry();
+
+      for (BundleEntryComponent comp : entries) {
+
+        if (Optional.ofNullable(comp).isPresent()
+            && comp.getResource().getResourceType() == ResourceType.ValueSet) {
+          logger.debug(" Processing ValueSet ");
+          processValueSet((ValueSet) comp.getResource(), art);
+        } else if (Optional.ofNullable(comp).isPresent()
+            && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
+          logger.info(" Processing PlanDefinition ");
+          processPlanDefinition((PlanDefinition) comp.getResource(), art);
+          art.initializeRelatedActions();
+        } else if (Optional.ofNullable(comp).isPresent()
+            && comp.getResource().getResourceType() == ResourceType.Library) {
+          logger.info(" Processing Library");
+        }
+      }
+
+      KnowledgeArtifactRepositorySystem.getIntance().add(art);
+      art.printKarSummary();
+
+    } else {
+
+      logger.error(
+          " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
+          kar);
     }
   }
 

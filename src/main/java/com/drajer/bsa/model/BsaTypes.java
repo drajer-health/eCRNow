@@ -103,6 +103,7 @@ public final class BsaTypes {
   public enum OutputContentType {
     FHIR,
     CDA,
+    Both,
     Unknown
   }
 
