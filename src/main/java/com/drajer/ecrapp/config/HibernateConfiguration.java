@@ -29,7 +29,8 @@ public class HibernateConfiguration {
         "com.drajer.sof.model",
         "com.drajer.eca.model",
         "com.drajer.ecrapp.model",
-        "com.drajer.bsa.model");
+        "com.drajer.bsa.model",
+        "com.drajer.bsa.kar.model");
     sessionFactory.setHibernateProperties(hibernateProperties());
     return sessionFactory;
   }

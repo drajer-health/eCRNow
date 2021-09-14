@@ -1,5 +1,6 @@
 package com.drajer.bsa.controller;
 
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KnowledgeArtifiactRepository;
 import com.drajer.bsa.service.KarService;
 import java.util.List;
@@ -20,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class KnowledgeArtifactRepositoryController {
 
-  private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
+  private final Logger logger =
+      LoggerFactory.getLogger(KnowledgeArtifactRepositoryController.class);
 
   @Autowired KarService karService;
 
@@ -62,5 +64,31 @@ public class KnowledgeArtifactRepositoryController {
   @RequestMapping("/api/kars/")
   public List<KnowledgeArtifiactRepository> getAllKARs() {
     return karService.getAllKARs();
+  }
+
+  @CrossOrigin
+  @RequestMapping(value = "/api/addKARStatus/", method = RequestMethod.POST)
+  public ResponseEntity<?> addKARStatus(@RequestBody List<KnowledgeArtifactStatus> karStatuses) {
+    for (KnowledgeArtifactStatus karStatus : karStatuses) {
+      KnowledgeArtifactStatus existingKarStatus =
+          karService.getKarStatusByKarIdAndKarVersion(
+              karStatus.getKarId(), karStatus.getKarVersion());
+      if (existingKarStatus == null) {
+        karService.saveOrUpdateKARStatus(karStatus);
+      } else {
+        karStatus.setId(existingKarStatus.getId());
+        karStatus.setLastActivationDate(existingKarStatus.getLastActivationDate());
+        karStatus.setLastInActivationDate(existingKarStatus.getLastInActivationDate());
+        karService.saveOrUpdateKARStatus(karStatus);
+      }
+    }
+    return new ResponseEntity<>(karStatuses, HttpStatus.OK);
+  }
+
+  @CrossOrigin
+  @RequestMapping("/api/karStatusByHsId")
+  public List<KnowledgeArtifactStatus> getKARStatusByHsId(
+      @RequestParam(value = "hsId") Integer hsId) {
+    return karService.getKARStatusByHsId(hsId);
   }
 }

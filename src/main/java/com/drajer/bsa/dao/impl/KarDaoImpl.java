@@ -1,6 +1,7 @@
 package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.KarDao;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KnowledgeArtifiactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
@@ -42,5 +43,27 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   public List<KnowledgeArtifiactRepository> getAllKARs() {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifiactRepository.class);
     return criteria.addOrder(Order.desc("id")).list();
+  }
+
+  @Override
+  public KnowledgeArtifactStatus saveOrUpdateKARStatus(KnowledgeArtifactStatus karStatus) {
+    getSession().saveOrUpdate(karStatus);
+    return karStatus;
+  }
+
+  @Override
+  public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId) {
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
+    criteria.add(Restrictions.eq("hsId", hsId));
+    List<KnowledgeArtifactStatus> kars = criteria.list();
+    return kars;
+  }
+
+  @Override
+  public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(String karId, String karVersion) {
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
+    criteria.add(Restrictions.eq("versionUniqueKarId", karId + "|" + karVersion));
+    KnowledgeArtifactStatus kars = (KnowledgeArtifactStatus) criteria.uniqueResult();
+    return kars;
   }
 }
