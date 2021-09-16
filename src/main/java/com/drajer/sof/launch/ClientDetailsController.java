@@ -25,24 +25,24 @@ public class ClientDetailsController {
   private final Logger logger = LoggerFactory.getLogger(ClientDetailsController.class);
 
   @CrossOrigin
-  @RequestMapping("/api/clientDetails/{clientId}")
+  @GetMapping("/api/clientDetails/{clientId}")
   public ClientDetails getClientDetailsById(@PathVariable("clientId") Integer clientId) {
     return clientDetailsService.getClientDetailsById(clientId);
   }
 
   // POST method to create a Client
   @CrossOrigin
-  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.POST)
+  @PostMapping(value = "/api/clientDetails")
   public ResponseEntity<Object> createClientDetails(
       @RequestBody ClientDetailsDTO clientDetailsDTO) {
     ClientDetails checkClientDetails =
         clientDetailsService.getClientDetailsByUrl(clientDetailsDTO.getFhirServerBaseURL());
     if (checkClientDetails == null) {
-      logger.info("Saving the Client Details");
-      ClientDetails clientDetails = new ClientDetails();
-      BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
-      clientDetailsService.saveOrUpdate(clientDetails);
-      BeanUtils.copyProperties(clientDetails, clientDetailsDTO);
+      logger.info("Adding the Client Details");
+      ClientDetails newClientDetails = new ClientDetails();
+      BeanUtils.copyProperties(clientDetailsDTO, newClientDetails);
+      clientDetailsService.saveOrUpdate(newClientDetails);
+      BeanUtils.copyProperties(newClientDetails, clientDetailsDTO);
       return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
@@ -54,7 +54,7 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/clientDetails", method = RequestMethod.PUT)
+  @PutMapping(value = "/api/clientDetails")
   public ResponseEntity<Object> updateClientDetails(
       @RequestBody ClientDetailsDTO clientDetailsDTO) {
     ClientDetails checkClientDetails =
@@ -62,10 +62,10 @@ public class ClientDetailsController {
     if (checkClientDetails == null
         || (checkClientDetails.getId().equals(clientDetailsDTO.getId()))) {
       logger.info("Saving the Client Details");
-      ClientDetails clientDetails = new ClientDetails();
-      BeanUtils.copyProperties(clientDetailsDTO, clientDetails);
-      clientDetailsService.saveOrUpdate(clientDetails);
-      BeanUtils.copyProperties(clientDetails, clientDetailsDTO);
+      ClientDetails updateClientDetails = new ClientDetails();
+      BeanUtils.copyProperties(clientDetailsDTO, updateClientDetails);
+      clientDetailsService.saveOrUpdate(updateClientDetails);
+      BeanUtils.copyProperties(updateClientDetails, clientDetailsDTO);
       return new ResponseEntity<>(clientDetailsDTO, HttpStatus.OK);
     } else {
       logger.error("FHIR Server URL is already registered");
@@ -77,13 +77,13 @@ public class ClientDetailsController {
   }
 
   @CrossOrigin
-  @RequestMapping("/api/clientDetails")
+  @GetMapping("/api/clientDetails")
   public ClientDetails getClientDetailsByUrl(@RequestParam(value = "url") String url) {
     return clientDetailsService.getClientDetailsByUrl(url);
   }
 
   @CrossOrigin
-  @RequestMapping("/api/clientDetails/")
+  @GetMapping("/api/clientDetails/")
   public List<ClientDetails> getAllClientDetails() {
     return clientDetailsService.getAllClientDetails();
   }
