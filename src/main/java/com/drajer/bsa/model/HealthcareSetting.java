@@ -161,6 +161,18 @@ public class HealthcareSetting {
   @CreationTimestamp
   private Date lastUpdated;
 
+  /** The attribute represents the name of the organization. */
+  @Column(name = "orgName", nullable = true, columnDefinition = "TEXT")
+  private String orgName;
+
+  /** The attribute represents the namespace for the "orgId" identifier value . */
+  @Column(name = "orgIdSystem", nullable = false, columnDefinition = "TEXT")
+  private String orgIdSystem;
+
+  /** The attribute represents a unique identifier for the organization */
+  @Column(name = "orgId", nullable = false, columnDefinition = "TEXT")
+  private String orgId;
+
   /**
    * This is an object that is used for convenience to exchange the information as objects. The data
    * itself gets stored in the karsActive attribute in the database.
@@ -381,6 +393,30 @@ public class HealthcareSetting {
 
   public void setFhirVersion(String fhirVersion) {
     this.fhirVersion = fhirVersion;
+  }
+
+  public String getOrgName() {
+    return orgName;
+  }
+
+  public void setOrgName(String orgName) {
+    this.orgName = orgName;
+  }
+
+  public String getOrgIdSystem() {
+    return orgIdSystem;
+  }
+
+  public void setOrgIdSystem(String orgIdSystem) {
+    this.orgIdSystem = orgIdSystem;
+  }
+
+  public String getOrgId() {
+    return orgId;
+  }
+
+  public void setOrgId(String orgId) {
+    this.orgId = orgId;
   }
 
   public void log() {

@@ -3,9 +3,11 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -59,12 +62,12 @@ public class MedMorphReportCreator extends ReportCreator {
     // Create the Message Header resource.
     MessageHeader header = createMessageHeader(kd);
 
+    Organization sender = createSender(kd);
+
     // Setup Message Header to Content Bundle Linkage.
-    Reference ref = new Reference();
-    ref.setReference(BUNDLE_REL_URL + contentBundle.getId());
-    List<Reference> refs = new ArrayList<Reference>();
-    refs.add(ref);
-    header.setFocus(refs);
+    header.setFocus(Arrays.asList(referenceTo(contentBundle)));
+
+    header.setSender(referenceTo(sender));
 
     // Add the Message Header Resource
     returnBundle.addEntry(new BundleEntryComponent().setResource(header));
@@ -72,7 +75,25 @@ public class MedMorphReportCreator extends ReportCreator {
     // Add the Content Bundle.
     returnBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
 
+    returnBundle.addEntry(new BundleEntryComponent().setResource(sender));
+
     return returnBundle;
+  }
+
+  public Reference referenceTo(Resource dest) {
+    Reference ref = new Reference();
+    ref.setReference(dest.fhirType() + "/" + dest.getId());
+    return ref;
+  }
+
+  public Organization createSender(KarProcessingData kd) {
+    HealthcareSetting hs = kd.getHealthcareSetting();
+    Organization org = new Organization();
+    org.setId(UUID.randomUUID().toString());
+    org.setName(hs.getOrgName());
+    org.addIdentifier().setSystem(hs.getOrgIdSystem()).setValue(hs.getOrgId());
+
+    return org;
   }
 
   public MessageHeader createMessageHeader(KarProcessingData kd) {
