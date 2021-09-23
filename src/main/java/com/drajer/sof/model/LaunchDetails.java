@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -395,7 +396,7 @@ public class LaunchDetails {
   }
 
   public String getDirectPwd() {
-    if (directPwd != null) {
+    if (directPwd != null && !StringUtils.isEmpty(directPwd)) {
       return AESEncryption.decrypt(directPwd);
     } else {
       return null;
