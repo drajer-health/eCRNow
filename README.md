@@ -32,8 +32,8 @@ The HL7 CDA Generator module is a very simple set of transforms to create a eICR
 ## 2.5 Routing Module: ##
 The routing module is used to submit/transmit the eICR created to the public health agencies. Currently the Direct Transport is integrated into the app. Future versions will add other modes of submission which may include IHE XDR, HL7 FHIR among others. 
 
-# 3. eCRNow-UI
-The eCRNow-UI is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configurstion Guide is present in the documents folder which contains the instructions on how to configure the eCRNow App.
+# 3. eCRNow-UI Project and its relationship to eCRNow:
+The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.
 
 
 # 4. Build and Deploy #
