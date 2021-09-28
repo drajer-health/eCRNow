@@ -1,0 +1,34 @@
+---
+testName: "DiabetesDenomCMS122Patient"
+testCase:
+  eCR-encounter:
+    testData:
+      BaseXPath: "(/Bundle/"
+    resourceMappingData:
+      Patient:
+      - params: "denom-CMS122-Patient"
+        responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Patient.json"
+      Encounter:
+      - params: "denom-CMS122-Encounter"
+        responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Encounter.json"
+      Observation:
+      - params: "denom-CMS122-Observation"
+        responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Observation.json"
+      Observation:
+      - params: "denom-CMS122-Observation2"
+        responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Observation2.json"
+      Condition:
+      - params:
+          patient: "denom-CMS122-Condition"
+        responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Condition.json"
+    validate:
+    - xPath: "entry)"
+      count: 6
+    - xPath: "entry/resource)"
+      count: 6
+    - xPath: "entry/resource[contains(@resourceType, 'Encounter')])[1]"
+      count: 1
+    - xPath: "entry/resource[0]/)"
+      'type/@code': "99202"
+      'type/@codeSystem': "http://www.ama-assn.org/go/cpt"
+      'type/@display': "Office or other outpatient visit for the evaluation and management of a new patient, which requires a medically appropriate history and/or examination and straightforward medical decision making. When using time for code selection, 15-29 minutes of total time is spent on the date of the encounter."

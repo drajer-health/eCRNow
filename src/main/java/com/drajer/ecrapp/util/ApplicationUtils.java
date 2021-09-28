@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -458,6 +459,21 @@ public class ApplicationUtils {
       logger.error("Exception Reading File", e);
     }
     return bundle;
+  }
+
+  public IBaseResource readResourceFromFile(String filename) {
+
+    logger.info("About to read File {}", filename);
+    IBaseResource resource = null;
+    try (InputStream in = new FileInputStream(new File(filename))) {
+      logger.info("Reading File ");
+
+      resource = jsonParser.parseResource(in);
+      logger.info("Completed Reading File");
+    } catch (Exception e) {
+      logger.error("Exception Reading File", e);
+    }
+    return resource;
   }
 
   public Bundle readBundleFromString(String str) {

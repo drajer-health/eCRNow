@@ -1,0 +1,33 @@
+{
+  "resourceType": "Encounter",
+  "id": "bp-trigger-in",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-encounter"
+    ]
+  },
+  "status": "finished",
+  "class": {
+    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+    "code": "IMP",
+    "display": "inpatient encounter"
+  },
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://www.ama-assn.org/go/cpt",
+          "code": "99234"
+        }
+      ],
+      "text": "Under Observation or Inpatient Care Services (Including Admission and Discharge Services)"
+    }
+  ],
+  "subject": {
+    "reference": "Patient/bp-trigger-in"
+  },
+  "period": {
+    "start": "2018-12-31T22:00:00.0-06:00",
+    "end": "2019-01-01T00:00:00.0-06:00"
+  }
+}
