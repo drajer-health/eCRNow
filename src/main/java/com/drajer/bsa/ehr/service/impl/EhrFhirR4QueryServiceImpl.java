@@ -7,11 +7,13 @@ import com.drajer.bsa.ehr.service.EhrAuthorizationService;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
+import com.drajer.sof.utils.ResourceUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -198,13 +200,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             logger.info(" Adding Resource Id : {}", comp.getResource().getId());
             resources.add(comp.getResource());
           }
-
-          resMap.put(resType, resources);
-          resMapById.put(id, resources);
+          Set<Resource> uniqueResources =
+              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+          resMap.put(resType, uniqueResources);
+          resMapById.put(id, uniqueResources);
           kd.addResourcesByType(resMap);
           kd.addResourcesById(resMapById);
 
-          logger.info(" Adding {} resources of type : {}", resources.size(), resType);
+          logger.info(" Adding {} resources of type : {}", uniqueResources.size(), resType);
         } else {
           logger.error(" No entries found for type : {}", resType);
         }
