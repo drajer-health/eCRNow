@@ -215,8 +215,8 @@ public abstract class BsaAction {
     return actionId;
   }
 
-  public void setActionId(String actionId) {
-    this.actionId = actionId;
+  public void setActionId(String actionId, String planDefinitionContext) {
+    this.actionId = String.format("%s-PlanDefinition/%s", actionId, planDefinitionContext);
   }
 
   public Set<String> getNamedEventTriggers() {

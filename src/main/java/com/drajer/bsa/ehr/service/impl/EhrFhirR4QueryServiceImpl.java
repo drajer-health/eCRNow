@@ -105,6 +105,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info(" Fetching Resource of type {}", entry.getValue());
 
+      // Always true...
       if (entry.getValue() != ResourceType.Patient || entry.getValue() != ResourceType.Encounter) {
         String url =
             kd.getNotificationContext().getFhirServerBaseUrl()

@@ -52,7 +52,6 @@ public class SubmitReport extends BsaAction {
       }
 
       for (Resource r : resourcesToSubmit) {
-
         IGenericClient client = context.newRestfulGenericClient(submissionEndpoint);
 
         context.getRestfulClientFactory().setSocketTimeout(30 * 1000);

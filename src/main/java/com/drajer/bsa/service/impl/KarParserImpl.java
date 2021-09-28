@@ -238,14 +238,14 @@ public class KarParserImpl implements KarParser {
         Coding cd = act.getCodeFirstRep().getCodingFirstRep();
 
         BsaAction action = getAction(cd.getCode());
-        action.setActionId(act.getId());
+        action.setActionId(act.getId(), plan.getUrl());
         action.setScheduler(scheduler);
         action.setJsonParser(jsonParser);
         action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
 
-        populateAction(act, action);
+        populateAction(plan, act, action);
 
         // Setup the artifact details.
         art.addAction(action);
@@ -297,7 +297,8 @@ public class KarParserImpl implements KarParser {
     }
   }
 
-  private void populateAction(PlanDefinitionActionComponent act, BsaAction action) {
+  private void populateAction(
+      PlanDefinition plan, PlanDefinitionActionComponent act, BsaAction action) {
 
     if (act.hasTrigger()) {
       action.setNamedEventTriggers(getNamedEvents(act));
@@ -316,11 +317,11 @@ public class KarParserImpl implements KarParser {
     }
 
     if (act.hasRelatedAction()) {
-      populateRelatedAction(act, action);
+      populateRelatedAction(plan, act, action);
     }
 
     if (act.hasAction()) {
-      populateSubActions(act, action);
+      populateSubActions(plan, act, action);
     }
 
     if (act.hasDefinitionUriType()) {
@@ -362,7 +363,8 @@ public class KarParserImpl implements KarParser {
     }
   }
 
-  private void populateSubActions(PlanDefinitionActionComponent ac, BsaAction action) {
+  private void populateSubActions(
+      PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action) {
 
     List<PlanDefinitionActionComponent> actions = ac.getAction();
 
@@ -374,12 +376,12 @@ public class KarParserImpl implements KarParser {
           Coding cd = act.getCodeFirstRep().getCodingFirstRep();
 
           BsaAction subAction = getAction(cd.getCode());
-          subAction.setActionId(act.getId());
+          subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
           action.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
 
-          populateAction(act, subAction);
+          populateAction(plan, act, subAction);
 
           // Setup the artifact details.
           action.addAction(subAction);
@@ -395,8 +397,7 @@ public class KarParserImpl implements KarParser {
     for (PlanDefinitionActionConditionComponent con : conds) {
 
       if (con.getExpression() != null
-          && (con.getExpression()
-              .getLanguage()
+          && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
               .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))) {
 
         logger.info(" Found a FHIR Path Expression ");
@@ -404,7 +405,8 @@ public class KarParserImpl implements KarParser {
         bc.setLogicExpression(con.getExpression());
         action.addCondition(bc);
       } else if (con.getExpression() != null
-          && (con.getExpression().getLanguage().equals(Expression.ExpressionLanguage.TEXT_CQL))) {
+          && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
+              .equals(Expression.ExpressionLanguage.TEXT_CQL))) {
 
         logger.info(" Found a CQL Expression ");
         BsaCondition bc = new BsaCqlCondition();
@@ -416,7 +418,8 @@ public class KarParserImpl implements KarParser {
     }
   }
 
-  private void populateRelatedAction(PlanDefinitionActionComponent ac, BsaAction action) {
+  private void populateRelatedAction(
+      PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action) {
 
     List<PlanDefinitionActionRelatedActionComponent> racts = ac.getRelatedAction();
 
@@ -426,12 +429,11 @@ public class KarParserImpl implements KarParser {
 
         BsaRelatedAction bract = new BsaRelatedAction();
         bract.setRelationship(ract.getRelationship());
-        bract.setRelatedActionId(ract.getActionId());
+        bract.setRelatedActionId(ract.getActionId(), plan.getUrl());
 
         if (ract.getOffsetDuration() != null) {
           bract.setDuration(ract.getOffsetDuration());
         }
-
         action.addRelatedAction(bract);
       }
     }
