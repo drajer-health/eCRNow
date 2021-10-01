@@ -22,7 +22,7 @@
     ]
   },
   "subject" : {
-    "reference" : "Patient/denom-CMS122-Patient"
+    "reference" : "Patient/denom-3-CMS122-Patient"
   },
   "effectiveDateTime" : "2019-01-17T12:30:00",
 

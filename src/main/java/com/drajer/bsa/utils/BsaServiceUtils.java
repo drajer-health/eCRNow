@@ -51,9 +51,6 @@ public class BsaServiceUtils {
   @Value("${bsa.output.directory}")
   String debugDirectory;
 
-  @Value("${eCRFhir.endpoint}")
-  String eCRonFhirEndpoint;
-
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
 
   public static String getFhirPathVariableString(String id) {

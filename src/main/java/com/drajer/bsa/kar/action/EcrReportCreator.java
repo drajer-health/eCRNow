@@ -397,18 +397,18 @@ public class EcrReportCreator extends ReportCreator {
     Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
     Set<Resource> res = null;
 
-    if (rt == ResourceType.Observation && isResultsSection(sc)) {
+    if (resourcesByType != null && rt == ResourceType.Observation && isResultsSection(sc)) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
-    } else if (rt == ResourceType.Observation && isVitalsSection(sc)) {
+    } else if (resourcesByType != null && rt == ResourceType.Observation && isVitalsSection(sc)) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
-    } else if (rt == ResourceType.Observation && isSocialHistorySection(sc)) {
+    } else if (resourcesByType != null && rt == ResourceType.Observation && isSocialHistorySection(sc)) {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
     } else res = resourcesByType;
 
     if (res != null && res.size() >= 1) {
 
-      logger.info(" Addding resources of type {}", rt.toString());
+      logger.info(" Adding resources of type {}", rt.toString());
 
       for (Resource r : res) {
 

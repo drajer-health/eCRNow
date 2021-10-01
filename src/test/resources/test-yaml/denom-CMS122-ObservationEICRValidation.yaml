@@ -14,7 +14,6 @@ testCase:
       Observation:
       - params: "denom-CMS122-Observation"
         responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Observation.json"
-      Observation:
       - params: "denom-CMS122-Observation2"
         responseFilePath: "Bsa/Scenarios/Diabetes/denom-CMS122-Patient/denom-CMS122-Observation2.json"
       Condition:

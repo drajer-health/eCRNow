@@ -80,6 +80,12 @@ public class KarParserImpl implements KarParser {
   @Value("${ignore.timers}")
   Boolean ignoreTimers;
 
+  @Value("${measure-reporting-period.start}")
+  String measurePeriodStart;
+
+  @Value("${measure-reporting-period.end}")
+  String measurePeriodEnd;
+
   @Autowired BsaServiceUtils utils;
 
   // Autowired to pass to action processors.
@@ -118,7 +124,7 @@ public class KarParserImpl implements KarParser {
       prop.forEach((key, value) -> actionClasses.put((String) key, (String) value));
 
     } catch (IOException ex) {
-      logger2.error("Error while loading Action Classes from Proporties File ");
+      logger2.error("Error while loading Action Classes from Properties File ");
     }
   }
 
@@ -215,7 +221,7 @@ public class KarParserImpl implements KarParser {
         }
       }
 
-      KnowledgeArtifactRepositorySystem.getIntance().add(art);
+      KnowledgeArtifactRepositorySystem.getInstance().add(art);
       art.printKarSummary();
 
     } else {
@@ -265,7 +271,7 @@ public class KarParserImpl implements KarParser {
 
         Type t = ext.getValue();
         if (t instanceof PrimitiveType) {
-          PrimitiveType i = (PrimitiveType) t;
+          PrimitiveType<?> i = (PrimitiveType<?>) t;
           if (i instanceof UriType) {
 
             logger.info(" Found Receiver Address {}", i.getValueAsString());
@@ -333,6 +339,11 @@ public class KarParserImpl implements KarParser {
       // Todo - handle timing elements in the action itslef.
     }
 
+  
+    // TODO: Why are these populated at this point?
+    action.setJsonParser(this.jsonParser);
+    action.setIgnoreTimers(this.ignoreTimers);
+
     if (action.getType() == ActionType.EvaluateMeasure) {
       setMeasureParameters(act, action);
     } else if (action.getType() == ActionType.ValidateReport) {
@@ -355,6 +366,14 @@ public class KarParserImpl implements KarParser {
             && dr.getType().contentEquals(ResourceType.MeasureReport.toString())) {
           EvaluateMeasure em = (EvaluateMeasure) (action);
           em.setMeasureReportId(dr.getId());
+
+          if (measurePeriodStart != null) {
+            em.setPeriodStart(measurePeriodStart);
+          }
+
+          if (measurePeriodEnd != null) {
+            em.setPeriodEnd(measurePeriodEnd);
+          }
 
           // setup the Measure Processor
           em.setMeasureProcessor(measureProcessor);

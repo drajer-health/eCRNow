@@ -18,7 +18,7 @@
   }
   ],
   "subject" : {
-  "reference" : "Patient/denom-CMS122-Patient"
+  "reference" : "Patient/denom-3-CMS122-Patient"
   },
   "period" : {
   "start" : "2019-01-16T08:30:00",

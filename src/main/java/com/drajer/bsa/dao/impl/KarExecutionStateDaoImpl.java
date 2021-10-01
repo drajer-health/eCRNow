@@ -6,6 +6,7 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

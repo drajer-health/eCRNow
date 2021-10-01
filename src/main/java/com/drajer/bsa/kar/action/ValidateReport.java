@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import net.sf.saxon.regex.Operation;
+
 @Service
 public class ValidateReport extends BsaAction {
 
@@ -24,6 +26,8 @@ public class ValidateReport extends BsaAction {
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
+
+    OperationOutcome outcome = new OperationOutcome();
 
     logger.info(" Executing the Validation of the Report");
 
@@ -35,9 +39,6 @@ public class ValidateReport extends BsaAction {
 
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.Scheduled || getIgnoreTimers()) {
-
-      OperationOutcome outcome = new OperationOutcome();
-
       try {
 
         List<DataRequirement> input = getInputData();
@@ -58,10 +59,17 @@ public class ValidateReport extends BsaAction {
           String request = jsonParser.encodeResourceToString(r);
 
           logger.info(" Data to be validated : {}", request);
-          ResponseEntity<String> response =
+
+          if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
+              ResponseEntity<String> response =
               restTemplate.postForEntity(validatorEndpoint, request, String.class);
           logger.info(response.getBody());
-          outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
+            outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
+          }
+          else {
+            logger.warn("No validation endpoint set. Skipping validation");
+          }
+
 
           if (ActionUtils.operationOutcomeHasErrors(outcome)) {
 

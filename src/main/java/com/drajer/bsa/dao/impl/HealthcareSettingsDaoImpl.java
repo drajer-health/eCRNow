@@ -125,10 +125,10 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
       }
 
       // Setup using Knowledge Artifact Repository temporarily as a work around.
-      logger.info(" TODO : Remove after finalizing approach at the Connecathon");
+      logger.info(" TODO : Remove after finalizing approach at the Connectathon");
 
       HashMap<String, KnowledgeArtifact> arts =
-          KnowledgeArtifactRepositorySystem.getIntance().getArtifacts();
+          KnowledgeArtifactRepositorySystem.getInstance().getArtifacts();
 
       HealthcareSettingOperationalKnowledgeArtifacts opkars =
           new HealthcareSettingOperationalKnowledgeArtifacts();

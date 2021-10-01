@@ -95,7 +95,7 @@ public class SubscriptionUtils {
         && (bundle.getEntryFirstRep().getResource() instanceof Parameters)
         && bundle.getEntry().size() >= 2) {
 
-      logger.info(" The notification passes the first level of checks for procecssing ");
+      logger.info(" The notification passes the first level of checks for processing ");
 
       // Ensure that the Parameters resource can be retrieved first.
       BundleEntryComponent bec = bundle.getEntryFirstRep();
@@ -246,7 +246,7 @@ public class SubscriptionUtils {
           return en.getSubject().getReferenceElement().getIdPart();
       }
 
-      logger.error(" Need to add other resources here after connecathon ");
+      logger.error(" Need to add other resources here after connectathon ");
     }
 
     return null;
