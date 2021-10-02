@@ -1,6 +1,7 @@
 package com.drajer.bsa.model;
 
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
+import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,6 +78,39 @@ public class HealthcareSetting {
   @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
   private String scopes;
 
+  @Column(name = "is_direct", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isDirect;
+
+  @Column(name = "is_xdr", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isXdr;
+
+  @Column(name = "is_restapi", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isRestAPI;
+
+  @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
+  private String directHost;
+
+  @Column(name = "direct_user", nullable = true)
+  private String directUser;
+
+  @Column(name = "direct_pwd", nullable = true)
+  private String directPwd;
+
+  @Column(name = "smtp_port", nullable = true)
+  private String smtpPort;
+
+  @Column(name = "imap_port", nullable = true)
+  private String imapPort;
+
+  @Column(name = "direct_recipient_address", nullable = true)
+  private String directRecipientAddress;
+
+  @Column(name = "xdr_recipient_address", nullable = true)
+  private String xdrRecipientAddress;
+
   /**
    * This attribute represents the intermediary URL where the messages have to be sent when
    * populated. IF this is not populated the Recipients Address from the Knowledge Artifact will be
@@ -84,6 +118,9 @@ public class HealthcareSetting {
    */
   @Column(name = "rest_api_url", nullable = true)
   private String restApiUrl;
+
+  @Column(name = "aa_id", nullable = true)
+  private String assigningAuthorityId;
 
   /**
    * This attribute represents the lower threshold time to be used for retrieving FHIR Resources
@@ -163,11 +200,15 @@ public class HealthcareSetting {
   }
 
   public String getClientSecret() {
-    return clientSecret;
+    if (clientSecret != null) {
+      return AESEncryption.decrypt(clientSecret);
+    } else {
+      return null;
+    }
   }
 
   public void setClientSecret(String clientSecret) {
-    this.clientSecret = clientSecret;
+    if (clientSecret != null) this.clientSecret = AESEncryption.encrypt(clientSecret);
   }
 
   public String getFhirServerBaseURL() {
@@ -194,12 +235,104 @@ public class HealthcareSetting {
     this.scopes = scopes;
   }
 
+  public Boolean getIsDirect() {
+    return isDirect;
+  }
+
+  public void setIsDirect(Boolean isDirect) {
+    this.isDirect = isDirect;
+  }
+
+  public Boolean getIsXdr() {
+    return isXdr;
+  }
+
+  public void setIsXdr(Boolean isXdr) {
+    this.isXdr = isXdr;
+  }
+
+  public Boolean getIsRestAPI() {
+    return isRestAPI;
+  }
+
+  public void setIsRestAPI(Boolean isRestAPI) {
+    this.isRestAPI = isRestAPI;
+  }
+
+  public String getDirectHost() {
+    return directHost;
+  }
+
+  public void setDirectHost(String directHost) {
+    this.directHost = directHost;
+  }
+
+  public String getDirectUser() {
+    return directUser;
+  }
+
+  public void setDirectUser(String directUser) {
+    this.directUser = directUser;
+  }
+
+  public String getDirectPwd() {
+    if (directPwd != null) {
+      return AESEncryption.decrypt(directPwd);
+    } else {
+      return null;
+    }
+  }
+
+  public void setDirectPwd(String directPwd) {
+    if (directPwd != null) this.directPwd = AESEncryption.encrypt(directPwd);
+  }
+
+  public String getSmtpPort() {
+    return smtpPort;
+  }
+
+  public void setSmtpPort(String smtpPort) {
+    this.smtpPort = smtpPort;
+  }
+
+  public String getImapPort() {
+    return imapPort;
+  }
+
+  public void setImapPort(String imapPort) {
+    this.imapPort = imapPort;
+  }
+
+  public String getDirectRecipientAddress() {
+    return directRecipientAddress;
+  }
+
+  public void setDirectRecipientAddress(String directRecipientAddress) {
+    this.directRecipientAddress = directRecipientAddress;
+  }
+
+  public String getXdrRecipientAddress() {
+    return xdrRecipientAddress;
+  }
+
+  public void setXdrRecipientAddress(String xdrRecipientAddress) {
+    this.xdrRecipientAddress = xdrRecipientAddress;
+  }
+
   public String getRestApiUrl() {
     return restApiUrl;
   }
 
   public void setRestApiUrl(String rul) {
     this.restApiUrl = rul;
+  }
+
+  public String getAssigningAuthorityId() {
+    return assigningAuthorityId;
+  }
+
+  public void setAssigningAuthorityId(String assigningAuthorityId) {
+    this.assigningAuthorityId = assigningAuthorityId;
   }
 
   public String getEncounterStartThreshold() {

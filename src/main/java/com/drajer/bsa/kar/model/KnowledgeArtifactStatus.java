@@ -97,6 +97,10 @@ public class KnowledgeArtifactStatus {
   @Type(type = "StringJsonObject")
   String subscriptions;
 
+  @Column(name = "is_only_covid", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  Boolean covidOnly;
+
   /**
    * The flag indicates the type of output to be produced. If the output format is FHIR, then a FHIR
    * bundle would be produced for the KAR. If the output format is CDA, then a CDA document would be
@@ -220,6 +224,14 @@ public class KnowledgeArtifactStatus {
 
   public void setVersionUniqueKarId(String versionUniqueKarId) {
     this.versionUniqueKarId = versionUniqueKarId;
+  }
+
+  public Boolean getCovidOnly() {
+    return covidOnly;
+  }
+
+  public void setCovidOnly(Boolean covidOnly) {
+    this.covidOnly = covidOnly;
   }
 
   public OutputContentType getOutputFormat() {
