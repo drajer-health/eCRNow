@@ -2,50 +2,61 @@ package com.drajer.bsa.controller;
 
 public class TestCaseInfo {
 
-    private String planDef;
-    private String name;
-    private boolean shouldTrigger;
-    private int initialPopulation;
-    private int denominator;
-    private int denomExclusion;
-    private int numerator;
-    public TestCaseInfo(String planDef, String name, boolean shouldTrigger, int initialPopulation, int denominator, int denomExclusion, int numerator)
-    {
-        this.planDef = planDef;
-        this.name = name;
-        this.shouldTrigger = shouldTrigger;
-        this.initialPopulation = initialPopulation;
-        this.denominator = denominator;
-        this.denomExclusion = denomExclusion;
-        this.numerator = numerator;
-    }
+  private String planDef;
+  private String name;
+  private boolean shouldTrigger;
+  private int initialPopulation;
+  private int denominator;
+  private int denomExclusion;
+  private int numerator;
 
-    public String getPlanDef() {
-        return this.planDef;
-    }
+  public TestCaseInfo(
+      String planDef,
+      String name,
+      boolean shouldTrigger,
+      int initialPopulation,
+      int denominator,
+      int denomExclusion,
+      int numerator) {
+    this.planDef = planDef;
+    this.name = name;
+    this.shouldTrigger = shouldTrigger;
+    this.initialPopulation = initialPopulation;
+    this.denominator = denominator;
+    this.denomExclusion = denomExclusion;
+    this.numerator = numerator;
+  }
 
-    public String getName() {
-        return this.name;
-    }
+  public String getPlanDef() {
+    return this.planDef;
+  }
 
-    public boolean getShouldTrigger() {
-        return this.shouldTrigger;
-    }
+  public String getName() {
+    return this.name;
+  }
 
-    public int getInitialPopulation() {
-        return this.initialPopulation;
-    }
+  public boolean getShouldTrigger() {
+    return this.shouldTrigger;
+  }
 
-    public int getDenominator() {
-        return this.denominator;
-    }
+  public int getInitialPopulation() {
+    return this.initialPopulation;
+  }
 
-    public int getDenominatorExclusion() {
-        return this.denomExclusion;
-    }
+  public int getDenominator() {
+    return this.denominator;
+  }
 
-    public int getNumerator() {
-        return this.numerator;
-    }
-    
+  public int getDenominatorExclusion() {
+    return this.denomExclusion;
+  }
+
+  public int getNumerator() {
+    return this.numerator;
+  }
+
+  @Override
+  public String toString() {
+    return this.getPlanDef() + "/" + this.getName();
+  }
 }

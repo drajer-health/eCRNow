@@ -401,7 +401,9 @@ public class EcrReportCreator extends ReportCreator {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
     } else if (resourcesByType != null && rt == ResourceType.Observation && isVitalsSection(sc)) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
-    } else if (resourcesByType != null && rt == ResourceType.Observation && isSocialHistorySection(sc)) {
+    } else if (resourcesByType != null
+        && rt == ResourceType.Observation
+        && isSocialHistorySection(sc)) {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
     } else res = resourcesByType;

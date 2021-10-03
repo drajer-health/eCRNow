@@ -339,7 +339,6 @@ public class KarParserImpl implements KarParser {
       // Todo - handle timing elements in the action itslef.
     }
 
-  
     // TODO: Why are these populated at this point?
     action.setJsonParser(this.jsonParser);
     action.setIgnoreTimers(this.ignoreTimers);

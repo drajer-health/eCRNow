@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import net.sf.saxon.regex.Operation;
-
 @Service
 public class ValidateReport extends BsaAction {
 
@@ -61,15 +59,13 @@ public class ValidateReport extends BsaAction {
           logger.info(" Data to be validated : {}", request);
 
           if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
-              ResponseEntity<String> response =
-              restTemplate.postForEntity(validatorEndpoint, request, String.class);
-          logger.info(response.getBody());
+            ResponseEntity<String> response =
+                restTemplate.postForEntity(validatorEndpoint, request, String.class);
+            logger.info(response.getBody());
             outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
-          }
-          else {
+          } else {
             logger.warn("No validation endpoint set. Skipping validation");
           }
-
 
           if (ActionUtils.operationOutcomeHasErrors(outcome)) {
 
