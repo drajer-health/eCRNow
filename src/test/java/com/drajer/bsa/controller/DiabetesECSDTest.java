@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.test.context.TestPropertySource;
+import org.junit.Test;
 
 @RunWith(Parameterized.class)
 @TestPropertySource(properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/diabetes"})
@@ -16,6 +17,11 @@ public class DiabetesECSDTest extends BaseKarsTest {
 
   public DiabetesECSDTest(TestCaseInfo testCaseInfo) {
     super(testCaseInfo);
+  }
+
+  @Test
+  public void test() throws Exception {
+      super.testScenarioAndValidate();
   }
 
   // This generates a list of "TestCaseInfos" that describe the scenario
@@ -47,7 +53,7 @@ public class DiabetesECSDTest extends BaseKarsTest {
             "ChronicDSDiabetesPoorControl", "diabetes-report-numer-in", true, 0, 0, 0, 0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl",
-            "diabetes-report-trigger-condition-in",
+            "diabetes-trigger-condition-in",
             true,
             0,
             0,
@@ -55,7 +61,7 @@ public class DiabetesECSDTest extends BaseKarsTest {
             0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl",
-            "diabetes-report-trigger-condition-missing",
+            "diabetes-trigger-condition-missing",
             false,
             0,
             0,
@@ -63,16 +69,16 @@ public class DiabetesECSDTest extends BaseKarsTest {
             0), // TODO: Ought to null things that don't matter
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl",
-            "diabetes-report-trigger-condition-out",
+            "diabetes-trigger-condition-out",
             false,
             0,
             0,
             0,
             0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-trigger-in", true, 0, 0, 0, 0),
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-in", true, 0, 0, 0, 0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-trigger-out", false, 0, 0, 0, 0),
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-out", false, 0, 0, 0, 0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "numer-CMS122-2-Patient", false, 1, 1, 0, 1),
         new TestCaseInfo(

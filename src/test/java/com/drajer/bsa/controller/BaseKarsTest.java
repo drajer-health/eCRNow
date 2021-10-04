@@ -24,7 +24,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +39,6 @@ import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,21 +73,6 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected WireMockHelper stubHelper;
 
-  // This generates a list of "TestCaseInfos" that describe the scenario
-  // Comment out lines that don't work to temporarily disable test cases.
-  // for eCSD tests the main points are
-  // 1. Whether or not a reporting Bundle is generated (i.e. initial-pop = true)
-  // 2. The Bundle contains a Measure report (TODO: validate that the other
-  // resources are present)
-  // 3. The MeasureReport has the correct info for the test case
-  @Parameters(name = "{0}")
-  public static Collection<TestCaseInfo> data() {
-    return Arrays.asList(
-        new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "denom-3-CMS122-Patient", true, 1, 1, 0, 0),
-        new TestCaseInfo("ChronicDSDiabetesPoorControl", "denom-CMS122-Patient", true, 1, 1, 0, 0));
-  }
-
   @Before
   public void setupNotificationMocking() throws IOException {
     this.wireMockServer.resetAll();
@@ -111,7 +93,6 @@ public class BaseKarsTest extends BaseIntegrationTest {
                 .getPath()));
   }
 
-  @Test
   public void testScenarioAndValidate() throws InterruptedException {
     logger.info("Executing Test: {}", this.testCaseInfo.getName());
     try {
