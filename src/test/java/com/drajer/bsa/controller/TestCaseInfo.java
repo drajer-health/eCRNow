@@ -5,19 +5,34 @@ public class TestCaseInfo {
   private String planDef;
   private String name;
   private boolean shouldTrigger;
-  private int initialPopulation;
-  private int denominator;
-  private int denomExclusion;
-  private int numerator;
+  private Integer initialPopulation;
+  private Integer denominator;
+  private Integer denomExclusion;
+  private Integer numerator;
+
+  public TestCaseInfo(String planDef,
+  String name,
+  boolean shouldTrigger)
+  {
+    this(planDef, name, shouldTrigger, null, null, null, null);
+  }
+
+  public TestCaseInfo(String planDef,
+  String name,
+  boolean shouldTrigger,
+  Integer initialPopulation)
+  {
+    this(planDef, name, shouldTrigger, initialPopulation, null, null, null);
+  }
 
   public TestCaseInfo(
       String planDef,
       String name,
       boolean shouldTrigger,
-      int initialPopulation,
-      int denominator,
-      int denomExclusion,
-      int numerator) {
+      Integer initialPopulation,
+      Integer denominator,
+      Integer denomExclusion,
+      Integer numerator) {
     this.planDef = planDef;
     this.name = name;
     this.shouldTrigger = shouldTrigger;
@@ -39,19 +54,19 @@ public class TestCaseInfo {
     return this.shouldTrigger;
   }
 
-  public int getInitialPopulation() {
+  public Integer getInitialPopulation() {
     return this.initialPopulation;
   }
 
-  public int getDenominator() {
+  public Integer getDenominator() {
     return this.denominator;
   }
 
-  public int getDenominatorExclusion() {
+  public Integer getDenominatorExclusion() {
     return this.denomExclusion;
   }
 
-  public int getNumerator() {
+  public Integer getNumerator() {
     return this.numerator;
   }
 

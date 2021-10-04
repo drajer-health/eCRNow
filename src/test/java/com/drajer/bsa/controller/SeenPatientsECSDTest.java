@@ -11,11 +11,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.junit.Test;
 
 @RunWith(Parameterized.class)
-@TestPropertySource(properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/diabetes"})
-public class DiabetesECSDTest extends BaseKarsTest {
+@TestPropertySource(properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/seenpatients"})
+public class SeenPatientsECSDTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 
-  public DiabetesECSDTest(TestCaseInfo testCaseInfo) {
+  public SeenPatientsECSDTest(TestCaseInfo testCaseInfo) {
     super(testCaseInfo);
   }
 
@@ -33,46 +33,32 @@ public class DiabetesECSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
+        new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-no-trigger-in", false, 0), // TODO: Should trigger = false
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-denom-exc-in", true, 1, 1, 1, 0),
-        new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-report-ip-in", true, 1, 1, 0, 0),
-        new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl",
-            "diabetes-report-ip-out",
+            "ChronicDSSeenPatients",
+            "seen-patients-reported-ip-mp-in-high",
             false,
-            0,
-            0,
-            0,
-            0), // TODO: Should trigger = false
+            1), // TODO: Should trigger = false
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-numer-in", true, 1, 1, 0, 1),
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-low", true, 1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl",
-            "diabetes-trigger-condition-in",
+            "ChronicDSSeenPatients",
+            "seen-patients-reported-ip-mp-in-mid",
             true,
-            0,
-            0,
-            0,
+            1),
+        new TestCaseInfo(
+            "ChronicDSSeenPatients",
+            "seen-patients-reported-ip-mp-out-post",
+            false,
+            0), 
+        new TestCaseInfo(
+            "ChronicDSSeenPatients",
+            "seen-patients-reported-ip-mp-out-prior",
+            false,
             0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl",
-            "diabetes-trigger-condition-missing",
-            false,
-            0,
-            0,
-            0,
-            0), // TODO: Ought to null things that don't matter
+            "ChronicDSSeenPatients", "seen-patients-sde-in", true, 1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl",
-            "diabetes-trigger-condition-out",
-            false,
-            0,
-            0,
-            0,
-            0),
-        new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-in", true, 0, 0, 0, 0),
-        new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-out", false, 0, 0, 0, 0));
+            "ChronicDSSeenPatients", "seen-patients-trigger-in", false, 1));
   }
 }

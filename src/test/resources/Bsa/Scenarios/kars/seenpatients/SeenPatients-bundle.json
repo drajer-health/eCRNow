@@ -5106,6 +5106,251 @@
         "method": "PUT",
         "url": "Measure/SeenPatients"
       }
+    },
+    {
+      "resource": {
+        "resourceType": "PlanDefinition",
+        "id": "ChronicDSSeenPatients",
+        "url": "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
+        "name": "ChronicDSSeenPatients",
+        "title": "Chronic Disease Surveillance Reporting Specification for Seen Patients Cohort",
+        "type": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+            "code": "workflow-definition",
+            "display": "Workflow Definition"
+          } ]
+        },
+        "status": "active",
+        "experimental": true,
+        "date": "2020-07-31T12:32:29.858-05:00",
+        "publisher": "HL7 Public Health Work Group",
+        "description": "Reporting specification for Chronic Disease Surveillance for Seen Patients Cohort",
+        "jurisdiction": [ {
+          "coding": [ {
+            "system": "urn:iso:std:iso:3166",
+            "code": "US",
+            "display": "United States of America"
+          } ],
+          "text": "United States of America"
+        } ],
+        "effectivePeriod": {
+          "start": "2021-06-01"
+        },
+        "library": [ "http://hl7.org/fhir/us/chronic-ds/Library/SeenPatients" ],
+        "_library": [ {
+          "fhir_comments": [ " TODO: Update this to the value sets required by the measures used\n    <relatedArtifact>\n        <type value=\"depends-on\"/>\n        <label value=\"RCTC Value Set Library of Trigger Codes\"/>\n        <resource value=\"http://hl7.org/fhir/us/ecr/Library/library-rctc\"/>\n    </relatedArtifact>\n    " ]
+        } ],
+        "action": [ {
+          "id": "start",
+          "description": "This action represents the start of the reporting workflow in response to the encounter-end event",
+          "textEquivalent": "Start the reporting workflow in response to an encounter-end event",
+          "code": [ {
+            "coding": [ {
+              "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+              "code": "initiate-reporting-workflow"
+            } ]
+          } ],
+          "trigger": [ {
+            "id": "encounter-end",
+            "type": "named-event",
+            "name": "encounter-end"
+          } ],
+          "relatedAction": [ {
+            "actionId": "check-reportable",
+            "relationship": "before-start",
+            "offsetDuration": {
+              "value": 24,
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            }
+          } ]
+        }, {
+          "id": "check-reportable",
+          "description": "This action represents the check for reportability of the surveillance event.",
+          "textEquivalent": "Check Reportable",
+          "code": [ {
+            "coding": [ {
+              "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+              "code": "execute-reporting-workflow"
+            } ]
+          } ],
+          "action": [ {
+            "id": "ckr-is-encounter-reportable",
+            "description": "This action represents the check for reportability to create the patients eICR.",
+            "textEquivalent": "Check Trigger Codes based on RCTC Value sets.",
+            "code": [ {
+              "coding": [ {
+                "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                "code": "check-trigger-codes"
+              } ]
+            } ],
+            "condition": [ {
+              "kind": "applicability",
+              "expression": {
+                "language": "text/fhirpath",
+                "expression": "%conditions.exists()"
+              }
+            } ],
+            "input": [ {
+              "id": "conditions",
+              "type": "Condition",
+              "codeFilter": [ {
+                "path": "code",
+                "valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.103.12.1001"
+              } ]
+            } ],
+            "relatedAction": [ {
+              "actionId": "evaluate-measure",
+              "relationship": "before-start"
+            } ]
+          } ]
+        }, {
+          "id": "evaluate-measure",
+          "description": "This action represents the evaluation of the measure.",
+          "textEquivalent": "Evaluate measure",
+          "code": [ {
+            "coding": [ {
+              "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+              "code": "evaluate-measure"
+            } ]
+          } ],
+          "input": [ {
+            "id": "patient",
+            "type": "Patient",
+            "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient" ]
+          }, {
+            "id": "conditions",
+            "type": "Condition",
+            "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+          }, {
+            "id": "encounter",
+            "type": "Encounter",
+            "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" ]
+          }, {
+            "id": "mr",
+            "type": "MedicationRequest",
+            "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest" ]
+          }, {
+            "id": "obs",
+            "type": "Observation",
+            "profile": [ "http://hl7.org/fhir/StructureDefinition/vitalsigns" ]
+          } ],
+          "output": [ {
+            "id": "measurereport",
+            "type": "MeasureReport",
+            "profile": [ "http://hl7.org/fhir/MeasureReport" ]
+          } ],
+          "relatedAction": [ {
+            "actionId": "report-ds",
+            "relationship": "before-start"
+          } ],
+          "definitionCanonical": "http://hl7.org/fhir/us/chronic-ds/Measure/SeenPatients"
+        }, {
+          "id": "report-ds",
+          "description": "This action represents the reporting of the Chronic Disease Surveillance event.",
+          "textEquivalent": "Report Chronic Disease Surveillance",
+          "code": [ {
+            "coding": [ {
+              "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+              "code": "execute-reporting-workflow"
+            } ]
+          } ],
+          "action": [ {
+            "id": "create-eicr",
+            "description": "This action invokes the creation of the eICR report.",
+            "textEquivalent": "Create eICR",
+            "code": [ {
+              "coding": [ {
+                "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                "code": "create-report"
+              } ]
+            } ],
+            "input": [ {
+              "id": "patient",
+              "type": "Patient",
+              "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient" ]
+            }, {
+              "id": "conditions",
+              "type": "Condition",
+              "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+            }, {
+              "id": "encounter",
+              "type": "Encounter",
+              "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" ]
+            }, {
+              "id": "mr",
+              "type": "MedicationRequest",
+              "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest" ]
+            }, {
+              "id": "obs",
+              "type": "Observation",
+              "profile": [ "http://hl7.org/fhir/StructureDefinition/vitalsigns" ]
+            }, {
+              "id": "measurereport",
+              "type": "MeasureReport",
+              "profile": [ "http://hl7.org/fhir/MeasureReport" ]
+            } ],
+            "output": [ {
+              "id": "eicr-report-ChronicDSSeenPatients",
+              "type": "Bundle",
+              "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-measurereport-bundle" ]
+            } ],
+            "relatedAction": [ {
+              "actionId": "validate-eicr",
+              "relationship": "before-start"
+            } ]
+          }, {
+            "id": "validate-eicr",
+            "description": "This action represents the validation of the eICR.",
+            "textEquivalent": "Validate eICR",
+            "code": [ {
+              "coding": [ {
+                "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                "code": "validate-report"
+              } ]
+            } ],
+            "input": [ {
+              "id": "eicr-report-ChronicDSSeenPatients",
+              "type": "Bundle",
+              "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
+            } ],
+            "output": [ {
+              "id": "validated-eicr-report",
+              "type": "Bundle",
+              "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
+            } ],
+            "relatedAction": [ {
+              "actionId": "submit-eicr",
+              "relationship": "before-start"
+            } ]
+          }, {
+            "id": "submit-eicr",
+            "description": "This action represents the validation of the eICR.",
+            "textEquivalent": "Submit eICR",
+            "code": [ {
+              "coding": [ {
+                "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                "code": "submit-report"
+              } ]
+            } ],
+            "input": [ {
+              "id": "validated-eicr-report",
+              "type": "Bundle",
+              "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
+            } ],
+            "output": [ {
+              "id": "eicr-report-submitted",
+              "type": "Bundle",
+              "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
+            } ]
+          } ]
+        } ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "PlanDefinition/ChronicDSSeenPatients"
+      }
     }
   ]
 }

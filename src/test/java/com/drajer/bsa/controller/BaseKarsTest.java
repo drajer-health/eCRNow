@@ -46,12 +46,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 @ContextConfiguration(classes = ScheduleJobConfiguration.class)
-@TestPropertySource(
-    properties = {
-      "ignore.timers=true",
-      "report-submission.endpoint=http://localhost:9010/fhir",
-      "report-validator.endpoint="
-    })
+@TestPropertySource(properties = { "ignore.timers=true", "report-submission.endpoint=http://localhost:9010/fhir",
+    "report-validator.endpoint=" })
 public class BaseKarsTest extends BaseIntegrationTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 
@@ -63,11 +59,14 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   private static Logger logger = LoggerFactory.getLogger(BaseKarsTest.class);
 
-  @Autowired protected SubscriptionNotificationReceiver notificationReceiver;
+  @Autowired
+  protected SubscriptionNotificationReceiver notificationReceiver;
 
-  @Autowired protected ApplicationUtils ap;
+  @Autowired
+  protected ApplicationUtils ap;
 
-  @Autowired protected HealthcareSettingsDao hsDao;
+  @Autowired
+  protected HealthcareSettingsDao hsDao;
 
   protected ClassLoader classLoader = getClass().getClassLoader();
 
@@ -82,27 +81,18 @@ public class BaseKarsTest extends BaseIntegrationTest {
     logger.info("Set up Test: {}", this.testCaseInfo.getName());
     setupHealthCareSettings();
     mockAccessToken();
-    mockScenarioFolder(
-        new File(
-            classLoader
-                .getResource(
-                    "Bsa/Scenarios/"
-                        + this.testCaseInfo.getPlanDef()
-                        + "/"
-                        + this.testCaseInfo.getName())
-                .getPath()));
+    mockScenarioFolder(new File(classLoader
+        .getResource("Bsa/Scenarios/" + this.testCaseInfo.getPlanDef() + "/" + this.testCaseInfo.getName()).getPath()));
   }
 
   public void testScenarioAndValidate() throws InterruptedException {
     logger.info("Executing Test: {}", this.testCaseInfo.getName());
     try {
       deleteOutputFiles();
-      Bundle bundle =
-          getNotificationBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
+      Bundle bundle = getNotificationBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
       this.stubHelper.mockProcessMessageBundle(bundle);
 
-      notificationReceiver.processNotification(
-          bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
+      notificationReceiver.processNotification(bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
 
       // TODO: We need a processing complete signal that's not the file output.
       // Some tests should never generate a report
@@ -119,31 +109,35 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
       if (!processingComplete(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
         throw new RuntimeException(
-            String.format(
-                "test case %s/%s timed out.",
-                this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
+            String.format("test case %s/%s timed out.", this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
       }
 
-      MeasureReport report = this.getMeasureReport();
-      validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
-      validatePopulation(report, "denominator", this.testCaseInfo.getDenominator());
-      validatePopulation(report, "numerator", this.testCaseInfo.getNumerator());
-      Bundle eICR = this.getEicrBundle(this.testCaseInfo.getPlanDef());
+      if (this.testCaseInfo.getInitialPopulation() != null) {
+        MeasureReport report = this.getMeasureReport();
+        validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
 
-      validateBundle(eICR);
+        if (this.testCaseInfo.getDenominator() != null) {
+          validatePopulation(report, "denominator", this.testCaseInfo.getDenominator());
+        }
+
+        // TODO: Denom exclusion?
+
+        if (this.testCaseInfo.getNumerator() != null) {
+          validatePopulation(report, "numerator", this.testCaseInfo.getNumerator());
+        }
+      }
+
+      Bundle eICR = this.getEicrBundle(this.testCaseInfo.getPlanDef());
+      validateBundle(eICR, this.testCaseInfo.getInitialPopulation() != null);
 
     } catch (Exception e) {
-      logger.error(
-          String.format(
-              "Test %s/%s failed with: %s",
-              this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName(), e.getMessage()),
-          e);
+      logger.error(String.format("Test %s/%s failed with: %s", this.testCaseInfo.getPlanDef(),
+          this.testCaseInfo.getName(), e.getMessage()), e);
 
       throw e;
     }
 
-    logger.info(
-        "Test {}/{} succeeded", this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
+    logger.info("Test {}/{} succeeded", this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
   }
 
   File getMeasureReportFile() {
@@ -165,8 +159,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     }
 
     String processMessageUrl = "/fhir/$process-message";
-    List<LoggedRequest> requests =
-        wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
+    List<LoggedRequest> requests = wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
     if (requests.size() > 0) {
       return true;
@@ -252,17 +245,13 @@ public class BaseKarsTest extends BaseIntegrationTest {
     HashMap<String, List<IBaseResource>> resources = new HashMap<>();
 
     // Filter subdirectories for now..
-    List<File> files =
-        Arrays.asList(scenario.listFiles())
-            .stream()
-            .filter(x -> x.isFile())
-            .collect(Collectors.toList());
+    List<File> files = Arrays.asList(scenario.listFiles()).stream().filter(x -> x.isFile())
+        .collect(Collectors.toList());
 
     for (File f : files) {
       try {
         IBaseResource r = parser.parseResource(new FileInputStream(f));
-        List<IBaseResource> resourceList =
-            resources.computeIfAbsent(r.fhirType(), k -> new ArrayList<>());
+        List<IBaseResource> resourceList = resources.computeIfAbsent(r.fhirType(), k -> new ArrayList<>());
         resourceList.add(r);
       } catch (Exception e) {
         logger.warn("Error reading resource: {}", f.getName());
@@ -306,29 +295,21 @@ public class BaseKarsTest extends BaseIntegrationTest {
   private void mockAccessToken() {
     String accessToken = "cb81ec9fa7d7605a060ffc756fc7d130";
     String expireTime = "3600";
-    stubHelper.mockTokenResponse(
-        "/token",
-        String.format(
-            "{ \"access_token\": \"%s\", \n\"expires_in\": \"%s\" }", accessToken, expireTime));
+    stubHelper.mockTokenResponse("/token",
+        String.format("{ \"access_token\": \"%s\", \n\"expires_in\": \"%s\" }", accessToken, expireTime));
   }
 
   private Bundle getNotificationBundle(String planDef, String testCase) {
-    java.net.URL url =
-        DiabetesECSDTest.class
-            .getClassLoader()
-            .getResource("Bsa/Scenarios/" + planDef + "/" + testCase);
+    java.net.URL url = DiabetesECSDTest.class.getClassLoader().getResource("Bsa/Scenarios/" + planDef + "/" + testCase);
     File rootFile = new File(url.getPath());
 
-    File[] bundles =
-        rootFile.listFiles((FilenameFilter) new WildcardFileFilter("*notification-bundle.json"));
+    File[] bundles = rootFile.listFiles((FilenameFilter) new WildcardFileFilter("*notification-bundle.json"));
     if (bundles == null || bundles.length == 0) {
-      throw new RuntimeException(
-          "Did not find a notification bundle for test case: " + this.testCaseInfo.getName());
+      throw new RuntimeException("Did not find a notification bundle for test case: " + this.testCaseInfo.getName());
     }
 
     if (bundles.length > 1) {
-      throw new RuntimeException(
-          "Found multiple notification bundles for test case: " + this.testCaseInfo.getName());
+      throw new RuntimeException("Found multiple notification bundles for test case: " + this.testCaseInfo.getName());
     }
 
     String absolutePath = bundles[0].getAbsolutePath();
@@ -342,24 +323,19 @@ public class BaseKarsTest extends BaseIntegrationTest {
   }
 
   protected void validatePopulation(MeasureReport report, String population, int count) {
-    Optional<MeasureReportGroupPopulationComponent> pgc =
-        report
-            .getGroup()
-            .get(0)
-            .getPopulation()
-            .stream()
-            .filter(x -> x.getCode().getCodingFirstRep().getCode().equals(population))
-            .findFirst();
+    Optional<MeasureReportGroupPopulationComponent> pgc = report.getGroup().get(0).getPopulation().stream()
+        .filter(x -> x.getCode().getCodingFirstRep().getCode().equals(population)).findFirst();
     if (!pgc.isPresent()) {
       throw new RuntimeException(String.format("MeasureReport missing {} population", population));
     }
 
-    assertEquals(count, pgc.get().getCount());
+    assertEquals(String.format("population: \"%s\"", population), count, pgc.get().getCount());
   }
 
-  protected void validateBundle(Bundle bundle) {
-    List<MeasureReport> mrs =
-        BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
-    assertEquals("Did not find expected MeasureReport", 1, mrs.size());
+  protected void validateBundle(Bundle bundle, Boolean shouldHaveMeasureReport) {
+    if (shouldHaveMeasureReport) {
+      List<MeasureReport> mrs = BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
+      assertEquals("Did not find expected MeasureReport", 1, mrs.size());
+    }
   }
 }
