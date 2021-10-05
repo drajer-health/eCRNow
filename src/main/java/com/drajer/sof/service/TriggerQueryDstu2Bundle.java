@@ -99,16 +99,19 @@ public class TriggerQueryDstu2Bundle {
       }
       if (encounter.getServiceProvider() != null) {
         ResourceReferenceDt organizationReference = encounter.getServiceProvider();
-        Organization organization =
-            (Organization)
-                fhirContextInitializer.getResouceById(
-                    launchDetails,
-                    client,
-                    context,
-                    "Organization",
-                    organizationReference.getReference().getIdPart());
-        Entry organizationEntry = new Entry().setResource(organization);
-        bundle.addEntry(organizationEntry);
+        if (organizationReference.getReference() != null
+            && !organizationReference.getReference().isEmpty()) {
+          Organization organization =
+              (Organization)
+                  fhirContextInitializer.getResouceById(
+                      launchDetails,
+                      client,
+                      context,
+                      "Organization",
+                      organizationReference.getReference().getIdPart());
+          Entry organizationEntry = new Entry().setResource(organization);
+          bundle.addEntry(organizationEntry);
+        }
       }
       if (encounter.getLocation() != null) {
         List<Location> enocunterLocations = encounter.getLocation();

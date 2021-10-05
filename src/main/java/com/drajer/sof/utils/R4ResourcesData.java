@@ -1057,21 +1057,23 @@ public class R4ResourcesData {
             r4FhirData.setPractitionersList(practitionerList);
           }
         }
-        if (encounter.getServiceProvider() != null) {
+        if (encounter.hasServiceProvider()) {
           Reference organizationReference = encounter.getServiceProvider();
-          Organization organization =
-              (Organization)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Organization",
-                      organizationReference.getReferenceElement().getIdPart());
-          if (organization != null) {
-            BundleEntryComponent organizationEntry =
-                new BundleEntryComponent().setResource(organization);
-            bundle.addEntry(organizationEntry);
-            r4FhirData.setOrganization(organization);
+          if (organizationReference.hasReferenceElement()) {
+            Organization organization =
+                (Organization)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Organization",
+                        organizationReference.getReferenceElement().getIdPart());
+            if (organization != null) {
+              BundleEntryComponent organizationEntry =
+                  new BundleEntryComponent().setResource(organization);
+              bundle.addEntry(organizationEntry);
+              r4FhirData.setOrganization(organization);
+            }
           }
         }
         if (encounter.getLocation() != null) {
