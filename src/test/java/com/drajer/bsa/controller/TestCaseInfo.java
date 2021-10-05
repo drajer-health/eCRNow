@@ -10,18 +10,12 @@ public class TestCaseInfo {
   private Integer denomExclusion;
   private Integer numerator;
 
-  public TestCaseInfo(String planDef,
-  String name,
-  boolean shouldTrigger)
-  {
+  public TestCaseInfo(String planDef, String name, boolean shouldTrigger) {
     this(planDef, name, shouldTrigger, null, null, null, null);
   }
 
-  public TestCaseInfo(String planDef,
-  String name,
-  boolean shouldTrigger,
-  Integer initialPopulation)
-  {
+  public TestCaseInfo(
+      String planDef, String name, boolean shouldTrigger, Integer initialPopulation) {
     this(planDef, name, shouldTrigger, initialPopulation, null, null, null);
   }
 

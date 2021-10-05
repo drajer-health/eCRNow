@@ -4,11 +4,11 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.test.context.TestPropertySource;
-import org.junit.Test;
 
 @RunWith(Parameterized.class)
 @TestPropertySource(properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/diabetes"})
@@ -21,7 +21,7 @@ public class DiabetesECSDTest extends BaseKarsTest {
 
   @Test
   public void test() throws Exception {
-      super.testScenarioAndValidate();
+    super.testScenarioAndValidate();
   }
 
   // This generates a list of "TestCaseInfos" that describe the scenario
@@ -47,13 +47,7 @@ public class DiabetesECSDTest extends BaseKarsTest {
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "diabetes-report-numer-in", true, 1, 1, 0, 1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl",
-            "diabetes-trigger-condition-in",
-            true,
-            0,
-            0,
-            0,
-            0),
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-in", true, 0, 0, 0, 0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl",
             "diabetes-trigger-condition-missing",
@@ -63,15 +57,8 @@ public class DiabetesECSDTest extends BaseKarsTest {
             0,
             0), // TODO: Ought to null things that don't matter
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl",
-            "diabetes-trigger-condition-out",
-            false,
-            0,
-            0,
-            0,
-            0),
-        new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-in", true, 0, 0, 0, 0),
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-out", false, 0, 0, 0, 0),
+        new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-trigger-in", true, 0, 0, 0, 0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "diabetes-trigger-out", false, 0, 0, 0, 0));
   }

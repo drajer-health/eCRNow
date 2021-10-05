@@ -4,14 +4,15 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.test.context.TestPropertySource;
-import org.junit.Test;
 
 @RunWith(Parameterized.class)
-@TestPropertySource(properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/seenpatients"})
+@TestPropertySource(
+    properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/seenpatients"})
 public class SeenPatientsECSDTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 
@@ -21,7 +22,7 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
 
   @Test
   public void test() throws Exception {
-      super.testScenarioAndValidate();
+    super.testScenarioAndValidate();
   }
 
   // This generates a list of "TestCaseInfos" that describe the scenario
@@ -33,32 +34,23 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-no-trigger-in", false, 0), // TODO: Should trigger = false
+        new TestCaseInfo(
+            "ChronicDSSeenPatients",
+            "seen-patients-no-trigger-in",
+            false,
+            0), // TODO: Should trigger = false
         new TestCaseInfo(
             "ChronicDSSeenPatients",
             "seen-patients-reported-ip-mp-in-high",
             false,
             1), // TODO: Should trigger = false
+        new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-low", true, 1),
+        new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-mid", true, 1),
         new TestCaseInfo(
-            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-low", true, 1),
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-post", false, 0),
         new TestCaseInfo(
-            "ChronicDSSeenPatients",
-            "seen-patients-reported-ip-mp-in-mid",
-            true,
-            1),
-        new TestCaseInfo(
-            "ChronicDSSeenPatients",
-            "seen-patients-reported-ip-mp-out-post",
-            false,
-            0), 
-        new TestCaseInfo(
-            "ChronicDSSeenPatients",
-            "seen-patients-reported-ip-mp-out-prior",
-            false,
-            0),
-        new TestCaseInfo(
-            "ChronicDSSeenPatients", "seen-patients-sde-in", true, 1),
-        new TestCaseInfo(
-            "ChronicDSSeenPatients", "seen-patients-trigger-in", false, 1));
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-prior", false, 0),
+        new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-sde-in", true, 1),
+        new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-trigger-in", false, 1));
   }
 }
