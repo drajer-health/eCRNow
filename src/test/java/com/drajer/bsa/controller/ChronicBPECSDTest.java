@@ -56,8 +56,6 @@ public class ChronicBPECSDTest extends BaseKarsTest {
             1,
             0,
             1), // TODO: Ought to null things that don't matter
-        new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-out", false, 0, 0, 0, 0),
-        new TestCaseInfo("ChronicDSControllingBloodPressure", "denom-EXM165", true, 1, 1, 0, 0),
-        new TestCaseInfo("ChronicDSControllingBloodPressure", "numer-EXM165", true, 1, 1, 0, 1));
+        new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-out", false, 0, 0, 0, 0));
   }
 }
