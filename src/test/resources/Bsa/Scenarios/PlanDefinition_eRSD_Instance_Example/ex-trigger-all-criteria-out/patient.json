@@ -11,50 +11,87 @@
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
       "extension": [
         {
-          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-          "value": "text"
-        }, {
-          "url": "ombCategory",
-          "valueCoding": {
-            "system" : "urn:oid:2.16.840.1.113883.6.238",
-            "verxsion": "3.1.0",
+          "url" : "ombCategory",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "2106-3",
+            "display" : "White"
+          }
+        },
+        {
+          "url" : "ombCategory",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
             "code" : "1002-5",
             "display" : "American Indian or Alaska Native"
           }
-        }, {
-          "url": "detailed",
-          "valueCoding": {
-            "system" : "urn:oid:2.16.840.1.113883.6.238",
-            "version": "3.1.0",
-            "code" : "1735-0",
-            "display" : "Alaska Native"
-          }
-        }
-      ]
-    }, {
-      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-      "extension": [
+        },
         {
-          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-          "value": "text"
-        }, {
-          "url": "ombCategory",
-          "valueCoding": {
-            "system" : "urn:oid:2.16.840.1.113883.6.238",
-            "version": "3.1.0",
-            "code" : "2186-5",
-            "display" : "Non Hispanic or Latino"
+          "url" : "ombCategory",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "2028-9",
+            "display" : "Asian"
           }
-        }, {
-          "url": "detailed",
-          "valueCoding": {
-            "system" : "urn:oid:2.16.840.1.113883.6.238",
-            "version": "3.1.0",
-            "code" : "2186-5",
-            "display" : "Non Hispanic or Latino"
+        },
+        {
+          "url" : "detailed",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "1586-7",
+            "display" : "Shoshone"
           }
+        },
+        {
+          "url" : "detailed",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "2036-2",
+            "display" : "Filipino"
+          }
+        },
+        {
+          "url" : "text",
+          "valueString" : "Mixed"
         }
       ]
+    },
+    {
+      "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+      "extension" : [
+        {
+          "url" : "ombCategory",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "2135-2",
+            "display" : "Hispanic or Latino"
+          }
+        },
+        {
+          "url" : "detailed",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "2184-0",
+            "display" : "Dominican"
+          }
+        },
+        {
+          "url" : "detailed",
+          "valueCoding" : {
+            "system" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "code" : "2148-5",
+            "display" : "Mexican"
+          }
+        },
+        {
+          "url" : "text",
+          "valueString" : "Hispanic or Latino"
+        }
+      ]
+    },
+    {
+      "url" : "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "valueCode" : "M"
     }
   ],
   "identifier": [

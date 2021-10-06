@@ -5880,7 +5880,7 @@
             "profile": [ "http://hl7.org/fhir/StructureDefinition/ServiceRequest" ]
           } ],
           "output": [ {
-            "id": "eicr-report-output",
+            "id": "eicr-report",
             "type": "Bundle",
             "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
           } ],
@@ -5899,12 +5899,12 @@
             } ]
           } ],
           "input": [ {
-            "id": "eicr-report-input",
+            "id": "eicr-report",
             "type": "Bundle",
             "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
           } ],
           "output": [ {
-            "id": "validated-eicr-report-output",
+            "id": "validated-eicr-report",
             "type": "Bundle",
             "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
           } ],
@@ -5923,7 +5923,7 @@
             } ]
           } ],
           "input": [ {
-            "id": "validated-eicr-report-input",
+            "id": "validated-eicr-report",
             "type": "Bundle",
             "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle" ]
           } ],
