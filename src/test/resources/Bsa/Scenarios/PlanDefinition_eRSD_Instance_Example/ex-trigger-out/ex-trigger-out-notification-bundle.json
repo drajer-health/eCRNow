@@ -1,73 +1,62 @@
 {
-    "resourceType" : "Bundle",
-    "id" : "ex-trigger-out-notification-bundle",
-    "meta" : {
-        "lastUpdated":"2021-05-07T04:54:11.358+00:00",
-      "profile" : [
-        "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscription-notification"
-      ]
-    },
-    "type" : "history",
-    "timestamp" : "2020-05-29T11:44:13.1882432-05:00",
-    "entry" : [
-      {
-        "fullUrl" : "urn:uuid:b21e4fae-ce73-45cb-8e37-1e203362b2ae",
-        "resource" : {
-          "resourceType" : "Parameters",
-          "id" : "b21e4fae-ce73-45cb-8e37-1e203362b2ae",
-          "meta" : {
-              "lastUpdated":"2021-05-07T04:54:11.358+00:00",
-            "profile" : [
-              "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscriptionstatus"
-            ]
-          },
-          "parameter" : [
-            {
-              "name" : "subscription",
-              "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-start"
-              }
-            },
-            {
-              "name" : "topic",
-              "valueCanonical" : "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start"
-            },
-            {
-              "name" : "type",
-              "valueCode" : "event-notification"
-            },
-            {
-              "name" : "status",
-              "valueCode" : "active"
-            },
-            {
-              "name" : "events-since-subscription-start",
-              "valueUnsignedInt" : 310
-            },
-            {
-              "name" : "events-in-notification",
-              "valueUnsignedInt" : 1
-            }
+  "resourceType": "Bundle",
+  "id": "ex-trigger-out-notification-bundle",
+  "meta": {
+    "lastUpdated": "2021-05-07T04:54:11.358+00:00",
+    "profile": [
+      "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscription-notification"
+    ]
+  },
+  "type": "history",
+  "timestamp": "2020-05-29T11:44:13.1882432-05:00",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:b21e4fae-ce73-45cb-8e37-1e203362b2ae",
+      "resource": {
+        "resourceType": "Parameters",
+        "id": "b21e4fae-ce73-45cb-8e37-1e203362b2ae",
+        "meta": {
+          "lastUpdated": "2021-05-07T04:54:11.358+00:00",
+          "profile": [
+            "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscriptionstatus"
           ]
         },
-        "request" : {
-          "method" : "GET",
-          "url" : "https://example.org/fhir/r4/Subscription/admission/$status"
-        },
-        "response" : {
-          "status" : "200"
-        }
+        "parameter": [
+          {
+            "name": "subscription",
+            "valueReference": {
+              "reference": "http://localhost:9010/fhir/Subscription/encounter-start"
+            }
+          },
+          {
+            "name": "topic",
+            "valueCanonical": "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start"
+          },
+          {
+            "name": "type",
+            "valueCode": "event-notification"
+          },
+          {
+            "name": "status",
+            "valueCode": "active"
+          },
+          {
+            "name": "events-since-subscription-start",
+            "valueUnsignedInt": 310
+          },
+          {
+            "name": "events-in-notification",
+            "valueUnsignedInt": 1
+          }
+        ]
       },
-      {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/",
-        "resource" : {},
-        "request" : {
-          "method" : "POST",
-          "url" : "Encounter"
-        },
-        "response" : {
-          "status" : "201"
-        }
+      "request": {
+        "method": "GET",
+        "url": "https://example.org/fhir/r4/Subscription/admission/$status"
+      },
+      "response": {
+        "status": "200"
       }
-    ]
-  }
+    }
+  ]
+}
