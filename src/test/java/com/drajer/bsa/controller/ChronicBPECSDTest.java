@@ -40,8 +40,8 @@ public class ChronicBPECSDTest extends BaseKarsTest {
             "ChronicDSControllingBloodPressure",
             "bp-trigger-condition-in",
             true,
-            1,
-            1,
+            0,
+            0,
             0,
             0), // TODO: Should trigger = false
         new TestCaseInfo(
@@ -52,10 +52,10 @@ public class ChronicBPECSDTest extends BaseKarsTest {
             "ChronicDSControllingBloodPressure",
             "bp-trigger-in",
             true,
-            1,
-            1,
             0,
-            1), // TODO: Ought to null things that don't matter
+            0,
+            0,
+            0), // TODO: Ought to null things that don't matter
         new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-out", false, 0, 0, 0, 0));
   }
 }
