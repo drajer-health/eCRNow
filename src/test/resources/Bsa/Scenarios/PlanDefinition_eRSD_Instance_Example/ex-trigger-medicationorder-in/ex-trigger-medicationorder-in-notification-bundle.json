@@ -25,12 +25,12 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-end"
+                "reference" : "http://localhost:9010/fhir/Subscription/encounter-start"
               }
             },
             {
               "name" : "topic",
-              "valueCanonical" : "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-end"
+              "valueCanonical" : "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start"
             },
             {
               "name" : "type",

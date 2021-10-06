@@ -1,7 +1,7 @@
 {
   "resourceType": "Bundle",
   "id": "eRSD-RuleFilter",
-  "type": "transaction",
+  "type": "collection",
   "entry": [ {
     "resource": {
       "resourceType": "CodeSystem",
