@@ -59,7 +59,7 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
             TRIGGERED_ONLY),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example",
-            "ex-trigger-encounter-immunization-in",
+            "ex-trigger-immunization-in",
             REPORTED),
         new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", REPORTED),
         new TestCaseInfo(
@@ -73,7 +73,6 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
             REPORTED),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-medicationorder-in", REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-out", NOT_TRIGGERED));
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-out", NOT_TRIGGERED));
   }
 }

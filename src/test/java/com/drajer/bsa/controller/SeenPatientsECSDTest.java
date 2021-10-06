@@ -44,9 +44,9 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
         new TestCaseInfo(
             "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-mid", REPORTED, 1),
         new TestCaseInfo(
-            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-post", TRIGGERED_ONLY),
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-post", TRIGGERED_ONLY, 0),
         new TestCaseInfo(
-            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-prior", TRIGGERED_ONLY),
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-prior", TRIGGERED_ONLY, 0),
         new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-sde-in", REPORTED, 1),
         new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-trigger-in", REPORTED, 1));
   }

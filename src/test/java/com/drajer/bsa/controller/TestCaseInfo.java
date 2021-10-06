@@ -24,6 +24,15 @@ public class TestCaseInfo {
       String name,
       ExpectedOutcome expectedOutcome,
       Integer initialPopulation,
+      Integer denominator) {
+    this(planDef, name, expectedOutcome, initialPopulation, denominator, null, null);
+  }
+
+  public TestCaseInfo(
+      String planDef,
+      String name,
+      ExpectedOutcome expectedOutcome,
+      Integer initialPopulation,
       Integer denominator,
       Integer denomExclusion,
       Integer numerator) {
@@ -33,6 +42,7 @@ public class TestCaseInfo {
     this.denominator = denominator;
     this.denomExclusion = denomExclusion;
     this.numerator = numerator;
+    this.expectedOutcome = expectedOutcome;
   }
 
   public String getPlanDef() {

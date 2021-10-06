@@ -107,9 +107,11 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
       // TODO: We need a processing complete signal that's not the file output.
       // Some tests should be trigger, but never generate a report.
+      // This just waits a "reasonable" amount of time for processing to complete before
+      // continuing on
       int loops = 0;
       while (loops < 60) {
-        if (reportGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
+        if (reportBundleGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
           break;
         } else {
           Thread.sleep(1000);
@@ -117,31 +119,34 @@ public class BaseKarsTest extends BaseIntegrationTest {
         }
       }
 
-      Boolean reportGenerated =
-          this.reportGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef());
+      Boolean reportBundleGenerated =
+          this.reportBundleGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef());
 
-      if (!reportGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
+      if (!reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         throw new RuntimeException(
             String.format(
-                "test case %s/%s timed out or did not generate a report",
+                "test case %s/%s timed out or did not generate a report when it should have generated a report.",
                 this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
       }
 
-      if (reportGenerated && this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY) {
+      if (reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY) {
         throw new RuntimeException(
             String.format(
                 "test case %s/%s generated a report when it should not have reported.",
                 this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
       }
 
-      if (reportGenerated && this.testCaseInfo.getExpectedOutcome() == NOT_TRIGGERED) {
+      if (reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == NOT_TRIGGERED) {
         throw new RuntimeException(
             String.format(
                 "test case %s/%s generated a report when it should not have triggered.",
                 this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
       }
 
-      if (this.testCaseInfo.getInitialPopulation() != null) {
+
+      // Check measure reports if the expected outcome is trigger or reported and the initialpop is not null,
+      // IOW, if this is an eCSD test that should have generated a MeasureReport
+      if ((this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY || this.testCaseInfo.getExpectedOutcome() == REPORTED) && this.testCaseInfo.getInitialPopulation() != null) {
         MeasureReport report = this.getMeasureReport();
         validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
 
@@ -155,6 +160,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
         }
       }
 
+      // If this is an eCSD test, ensure the Bundle has a MeasureReport
       if (this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         Bundle eICR = this.getEicrBundle(this.testCaseInfo.getPlanDef());
         validateBundle(eICR, this.testCaseInfo.getInitialPopulation() != null);
@@ -185,7 +191,11 @@ public class BaseKarsTest extends BaseIntegrationTest {
     return new File("target/output/karsBundle_" + patientId + "-notification-bundle.json");
   }
 
-  protected Boolean reportGenerated(String patientId, String planDef) {
+  protected Boolean measureReportGenerated() {
+    return this.getMeasureReportFile().exists();
+  }
+
+  protected Boolean reportBundleGenerated(String patientId, String planDef) {
     File eICRFile = this.getEICRFile(planDef);
     if (eICRFile.exists()) {
       return true;
