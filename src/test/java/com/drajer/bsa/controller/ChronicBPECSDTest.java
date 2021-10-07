@@ -34,20 +34,20 @@ public class ChronicBPECSDTest extends BaseKarsTest {
             "ChronicDSControllingBloodPressure", "bp-report-denom-exc-in", REPORTED, 1, 1, 1, 0),
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure", "bp-report-ip-in", REPORTED, 1, 1, 0, 0),
-        //    new TestCaseInfo(
-        //      "ChronicDSControllingBloodPressure", "bp-report-ip-out", TRIGGERED_ONLY, 0, 0),
+        // new TestCaseInfo(
+        //     "ChronicDSControllingBloodPressure", "bp-report-ip-out", TRIGGERED_ONLY, 0, 0),
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure", "bp-report-numer-in", REPORTED, 1, 1, 0, 1),
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure", "bp-report-numer-out", REPORTED, 1, 1, 0, 0),
-        /*   new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-in", TRIGGERED_ONLY, 0, 0),
-        new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-missing", NOT_TRIGGERED),
-        new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-out", NOT_TRIGGERED),
-        new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-in", TRIGGERED_ONLY, 0, 0), */
+        // new TestCaseInfo(
+        //     "ChronicDSControllingBloodPressure", "bp-trigger-condition-in", TRIGGERED_ONLY, 0, 0),
+        // new TestCaseInfo(
+        //     "ChronicDSControllingBloodPressure", "bp-trigger-condition-missing", NOT_TRIGGERED),
+        // new TestCaseInfo(
+        //     "ChronicDSControllingBloodPressure", "bp-trigger-condition-out", NOT_TRIGGERED),
+        // new TestCaseInfo(
+        //     "ChronicDSControllingBloodPressure", "bp-trigger-in", TRIGGERED_ONLY, 0, 0),
         new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-out", NOT_TRIGGERED));
   }
 }
