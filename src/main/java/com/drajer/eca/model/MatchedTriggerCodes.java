@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ public class MatchedTriggerCodes {
 
   public MatchedTriggerCodes() {
     matchedCodes = new HashSet<>();
+    matchedValues = new HashSet<>();
   }
 
   public Set<String> getMatchedCodes() {
@@ -98,6 +100,12 @@ public class MatchedTriggerCodes {
     return retval;
   }
 
+  public Boolean containsMatch(ResourceType rt) {
+
+    if (hasMatchedTriggerCodes(rt.toString()) || hasMatchedTriggerValue(rt.toString())) return true;
+    else return false;
+  }
+
   public Boolean hasMatchedTriggerCodes(String type) {
 
     return matchedCodes != null
@@ -125,6 +133,16 @@ public class MatchedTriggerCodes {
     }
   }
 
+  public void addCode(String code) {
+
+    if (matchedCodes == null) matchedCodes = new HashSet<>();
+
+    if (code != null) {
+
+      matchedCodes.add(code);
+    }
+  }
+
   public void addValues(Set<String> values) {
 
     if (matchedValues == null) matchedValues = new HashSet<>();
@@ -134,5 +152,29 @@ public class MatchedTriggerCodes {
 
       matchedValues = union;
     }
+  }
+
+  public void addValue(String value) {
+
+    if (matchedValues == null) matchedValues = new HashSet<>();
+
+    if (value != null) {
+
+      matchedValues.add(value);
+    }
+  }
+
+  public void log() {
+
+    logger.info(" *** START Printing Matched Trigger Codes *** ");
+
+    logger.info(" Matched Path {}", matchedPath);
+    logger.info(" Matched ValueSet {}", valueSet);
+    logger.info(" Matched ValueSetVersion {}", valueSetVersion);
+
+    matchedCodes.forEach(matchedCode -> logger.info("Matched Code: {} ", matchedCode));
+    matchedValues.forEach(matchedValue -> logger.info("Matched Code: {} ", matchedValue));
+
+    logger.info(" *** END Printing Matched Trigger Codes *** ");
   }
 }

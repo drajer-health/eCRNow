@@ -884,68 +884,65 @@ public class R4ResourcesData {
   }
 
   public List<ServiceRequest> getServiceRequestData(
-      FhirContext context,
-      IGenericClient client,
-      LaunchDetails launchDetails,
-      R4FhirData r4FhirData,
-      Encounter encounter,
-      Date start,
-      Date end) {
-    logger.trace("Get ServiceRequest Data");
-    Bundle bundle =
-        (Bundle)
-            resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
-    List<ServiceRequest> serviceRequests = new ArrayList<>();
-    List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
-    if (bundle != null && bundle.getEntry() != null) {
-      // Filter ServiceRequests based on Encounter Reference
-      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
+	      FhirContext context,
+	      IGenericClient client,
+	      LaunchDetails launchDetails,
+	      R4FhirData r4FhirData,
+	      Encounter encounter,
+	      Date start,
+	      Date end) {
+	    Bundle bundle =
+	        (Bundle)
+	            resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
+	    List<ServiceRequest> serviceRequests = new ArrayList<>();
+	    List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
+	    // Filter ServiceRequests based on Encounter Reference
+	    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
+	      for (BundleEntryComponent entry : bundle.getEntry()) {
+	        ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
-          if (!serviceRequest.getEncounter().isEmpty()
-              && serviceRequest
-                  .getEncounter()
-                  .getReferenceElement()
-                  .getIdPart()
-                  .equals(encounter.getIdElement().getIdPart())) {
-            serviceRequests.add(serviceRequest);
-            serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
-          }
-        }
-        // If Encounter Id is not present using start and end dates to filter
-        // ServiceRequests
-      } else {
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
-          // Checking If ServiceRequest DateTime is present in ServiceRequest
-          // resource
-          if (serviceRequest.getOccurrence() != null
-              && serviceRequest.getOccurrence().isDateTime()) {
-            if (serviceRequest.getOccurrenceDateTimeType() != null
-                && isResourceWithinDateTime(
-                    start,
-                    end,
-                    serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
-              serviceRequests.add(serviceRequest);
-              serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
-            }
-          }
-          // If ServiceRequest Date is not present looking for LastUpdatedDate
-          else {
-            Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
-            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
-              serviceRequests.add(serviceRequest);
-              serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
-            }
-          }
-        }
-      }
-      r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
-    }
-    logger.info("Filtered ServiceRequests -----------> {}", serviceRequests.size());
-    return serviceRequests;
-  }
+	        if (!serviceRequest.getEncounter().isEmpty()
+	            && serviceRequest
+	                .getEncounter()
+	                .getReferenceElement()
+	                .getIdPart()
+	                .equals(encounter.getIdElement().getIdPart())) {
+	          serviceRequests.add(serviceRequest);
+	          serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+	        }
+	      }
+	      // If Encounter Id is not present using start and end dates to filter
+	      // ServiceRequests
+	    } else if (bundle != null) {
+	      for (BundleEntryComponent entry : bundle.getEntry()) {
+	        ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
+	        // Checking If ServiceRequest DateTime is present in ServiceRequest
+	        // resource
+	        if (serviceRequest.getOccurrence() != null && serviceRequest.getOccurrence().isDateTime()) {
+	          if (serviceRequest.getOccurrenceDateTimeType() != null
+	              && serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
+	              && serviceRequest
+	                  .getOccurrenceDateTimeType()
+	                  .dateTimeValue()
+	                  .getValue()
+	                  .before(end)) {
+	            serviceRequests.add(serviceRequest);
+	            serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+	          }
+	        }
+	        // If ServiceRequest Date is not present looking for LastUpdatedDate
+	        else {
+	          Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
+	          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+	            serviceRequests.add(serviceRequest);
+	            serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+	          }
+	        }
+	      }
+	    }
+	    r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
+	    return serviceRequests;
+	  }
 
   public List<Observation> filterObservation(
       Bundle bundle, Encounter encounter, Date start, Date end) {
@@ -1104,7 +1101,7 @@ public class R4ResourcesData {
         bundle.addEntry(encounterEntry);
       }
     } catch (Exception e) {
-      ApplicationUtils.handleException(e, "Error in getting Encounter Data", LogLevel.ERROR);
+    	logger.error("Error in getting Encounter Data", e);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)

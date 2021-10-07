@@ -1,0 +1,459 @@
+{
+  "resourceType": "Bundle",
+  "id": "cancer-specification-bundle-example",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2020-11-29T02:03:28.045+00:00",
+    "profile": [
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-specification-bundle"
+    ]
+  },
+  "type": "collection",
+  "timestamp": "2020-11-20T11:15:33-10:00",
+  "entry": [
+    {
+      "fullUrl": "PlanDefinition/plandefinition-cancer-example",
+      "resource": {
+        "resourceType": "PlanDefinition",
+        "id": "plandefinition-cancer-example",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-11-29T02:03:28.045+00:00",
+          "profile": [
+            "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-plandefinition"
+          ]
+        },
+        "text": {
+          "status": "extensions",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><p><b>Receiver Endpoint Address</b>: <a href=\"Endpoint-example-ph-endpoint.html\">Generated Summary: id: pha-endpoint-id; status: active; <span title=\"{http://terminology.hl7.org/CodeSystem/endpoint-connection-type hl7-fhir-rest}\">HL7 FHIR</span>; name: PHAReceiver; endpointmanager@example.pha.org; period: 2020-11-20 --&gt; (ongoing); <span title=\"Codes: {http://hl7.org/fhir/resource-types Bundle}\">Bundle</span>; payloadMimeType: application/fhir+xml, payloadMimeType: application/fhir+json; address: http://example.pha.org/fhir</a></p><p><b>Author Signature</b>: </p><p><b style=\"color: maroon\">Exception generating Narrative: type org.hl7.fhir.r5.model.Signature not handled - should not be here</b></p></div>"
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress",
+            "valueReference": {
+              "reference": "http://example-pha/fhir/r4/Endpoint/example-ph-endpoint"
+            }
+          },
+          {
+            "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-authorSignature",
+            "valueSignature": {
+              "type": [
+                {
+                  "system": "urn:iso-astm:E1762-95:2013",
+                  "code": "1.2.840.10065.1.12.1.5",
+                  "display": "Verification Signature"
+                }
+              ],
+              "when": "2020-11-04T08:39:24+10:00",
+              "who": {
+                "reference": "Organization/example-pha-org"
+              },
+              "targetFormat": "application/fhir+xml",
+              "sigFormat": "application/signature+xml",
+              "data": "Li4u"
+            }
+          },
+          {
+            "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-asyncIndicator",
+            "valueBoolean": false
+          },
+          {
+            "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-expectedResponseTime",
+            "valueDuration": {
+              "value": 30,
+              "system": "http://unitsofmeasure.org",
+              "code": "s"
+            }
+          }
+        ],
+        "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/plandefinition-cancer-example",
+        "version": "1.0",
+        "name": "PlanDefinitionCancerExample",
+        "title": "PlanDefinition Cancer Reporting Example",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+              "code": "workflow-definition",
+              "display": "Workflow Definition"
+            }
+          ]
+        },
+        "status": "draft",
+        "experimental": true,
+        "date": "2020-11-04T12:32:29.858-05:00",
+        "publisher": "HL7 Public Health Work Group",
+        "description": "This is the Cancer Reporting Knowledge Artifact",
+        "effectivePeriod": {
+          "start": "2020-11-01"
+        },
+        "relatedArtifact": [
+          {
+            "type": "depends-on",
+            "label": "Cancer Trigger Codes",
+            "resource": "http://hl7.org/fhir/us/medmorph/ValueSet/valueset-cancer-trigger-codes-example"
+          }
+        ],
+        "action": [
+          {
+            "id": "initiate-reporting-workflow",
+            "description": "This action represents the start of a reporting workflow.",
+            "textEquivalent": "Initiate Reporting Workflow",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                    "code": "initiate-reporting-workflow"
+                  }
+                ]
+              }
+            ],
+            "trigger": [
+              {
+                "id": "encounter-end",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                          "code": "encounter-end",
+                          "display": "Indicates the close of an encounter"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "type": "named-event",
+                "name": "encounter-close"
+              }
+            ],
+            "relatedAction": [
+              {
+                "actionId": "check-trigger-codes",
+                "relationship": "before-start",
+                "offsetDuration": {
+                  "value": 2,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "min"
+                }
+              }
+            ]
+          },
+          {
+            "id": "check-trigger-codes",
+            "description": "This action represents the execution of the checking trigger codes in the  workflow.",
+            "textEquivalent": "Check Trigger Codes",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                    "code": "check-trigger-codes"
+                  }
+                ]
+              }
+            ],
+            "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": {
+                      "language": "text/fhirpath",
+                      "expression": "%conditions.exists()"
+                    }
+                  }
+                ],
+                "input": [
+                  {
+                    "id": "conditions",
+                    "type": "Condition",
+                    "codeFilter": [
+                      {
+                        "path": "code",
+                        "valueSet": "http://hl7.org/fhir/us/medmorph/ValueSet/valueset-cancer-trigger-codes-example"
+                      }
+                    ]
+                  }
+                ],
+                "relatedAction": [
+                  {
+                    "actionId": "create-report",
+                    "relationship": "before-start"
+                  }
+                ]
+          },
+          {
+            "id": "create-report",
+            "description": "This action represents the creation of a cancer report.",
+            "textEquivalent": "Create Report",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                    "code": "create-report"
+                  }
+                ]
+              }
+            ],
+            "input": [
+              {
+                    "id":"patient",
+                    "type": "Patient",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+                      
+                    ]
+              },
+              {
+                    "id":"condition",
+                    "type": "Condition",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+                      
+                    ]
+              },
+              {
+                    "id":"encounter",
+                    "type": "Encounter",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+                      
+                    ]
+              },
+              {
+                    "id":"mr",
+                    "type": "MedicationRequest",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest"
+                      
+                    ]
+              },
+              {
+                    "id":"obs",
+                    "type": "Observation",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/StructureDefinition/vitalsigns"
+                      
+                    ]
+              }
+            ],
+            "output": [
+              {
+                    "id":"us-ph-report",
+                    "type": "Bundle",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-reporting-bundle"
+                      
+                    ]
+              }
+            ],
+            "relatedAction": [
+                  {
+                    "actionId": "validate-report",
+                    "relationship": "before-start"
+                  }
+                ]
+          },
+          {
+            "id": "validate-report",
+            "description": "This action represents the validation of a cancer report.",
+            "textEquivalent": "Validate Report",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                    "code": "validate-report"
+                  }
+                ]
+              }
+            ],
+            "input": [
+              {
+                    "id":"val-report",
+                    "type": "Bundle",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-reporting-bundle"
+                      
+                    ]
+              }
+            ],
+            "output": [
+              {
+                    "id":"val-output",
+                    "type": "Bundle",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-reporting-bundle"
+                      
+                    ]
+              }
+            ],
+            "relatedAction": [
+                  {
+                    "actionId": "submit-report",
+                    "relationship": "before-start"
+                  }
+                ]
+          },
+          {
+            "id": "submit-report",
+            "description": "This action represents the submission of a cancer report.",
+            "textEquivalent": "Submit Report",
+            "code": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
+                    "code": "submit-report"
+                  }
+                ]
+              }
+            ],
+            "input": [
+              {
+                    "id":"sub-report",
+                    "type": "Bundle",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-reporting-bundle"
+                      
+                    ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "ValueSet/valueset-cancer-trigger-codes-example",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "valueset-cancer-trigger-codes-example",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-11-30T23:10:42.057+00:00",
+          "profile": [
+            "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-valueset"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>This value set includes trigger code examples for cancer reporting</p></div>"
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+            "valueContactDetail": {
+              "name": "CSTE Steward"
+            }
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+            "valueContactDetail": {
+              "name": "CSTE Author"
+            }
+          }
+        ],
+        "url": "http://hl7.org/fhir/us/medmorph/ValueSet/valueset-cancer-trigger-codes-example",
+        "version": "3.0.0",
+        "name": "CancerCodesExample",
+        "title": "Cancer Codes Example",
+        "status": "draft",
+        "experimental": true,
+        "date": "2018-08-01",
+        "publisher": "HL7 Public Health Work Group (http://www.hl7.org/Special/committees/pher/index.cfm)",
+        "contact": [
+          {
+            "name": "HL7 International - Public Health",
+            "telecom": [
+              {
+                "system": "url",
+                "value": "http://www.hl7.org/Special/committees/pher"
+              }
+            ]
+          }
+        ],
+        "description": "This example set of values contains diagnoses or problems that represent that the patient may have a potentially reportable condition regardless of the clinical presentation of the condition",
+        "useContext": [
+          {
+            "code": {
+              "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+              "code": "program"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-valueset-usecontext-codes",
+                  "code": "ph-reporting",
+                  "display": "ValueSet is to be used in the context of public health reporting use cases."
+                }
+              ]
+            }
+          }
+        ],
+        "jurisdiction": [
+          {
+            "coding": [
+              {
+                "system": "urn:iso:std:iso:3166",
+                "code": "US",
+                "display": "United States of America"
+              }
+            ],
+            "text": "United States of America"
+          }
+        ],
+        "copyright": "This value set includes content from SNOMED CT, which is copyright © 2002+ International Health Terminology Standards Development Organisation (IHTSDO), and distributed by agreement between IHTSDO and HL7. Implementer use of SNOMED CT is not covered by this agreement",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "concept": [
+                {
+                  "code": "281566005",
+                  "display": "Abdominothoracic neuroblastoma"
+                },
+                {
+                  "code": "408643008",
+                  "display": "Infiltrating duct carcinoma of breast"
+                },
+                {
+                  "code": "1080241000119104",
+                  "display": "Infiltrating ductal carcinoma of upper outer quadrant of right female breast"
+                },
+                {
+                  "code": "48694002",
+                  "display": "Anxiety finding"
+                }
+              ]
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "concept": [
+                {
+                  "code": "C50.411",
+                  "display": "Malignant neoplasm of upper-outer quadrant of right female breast"
+                },
+                {
+                  "code": "C50.211",
+                  "display": "Malignant neoplasm of upper-inner quadrant of right female breast"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

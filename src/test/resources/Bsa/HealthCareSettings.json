@@ -1,0 +1,12 @@
+{
+    "authType": "SofSystem",
+    "clientId": "RSSyHhPmeEpFJ4gLa96gPBFPQoAmLn",
+    "clientSecret": "U1lVS2g1ZXJFQ3lEQzNGaENhdmxHWU5LWlY5a2V2eFN5SGdieHlJdDZodloxSjhjV1Y=",
+    "fhirServerBaseURL": "http://localhost:9010/fhir",
+    "tokenUrl": "http://localhost:9010/token",
+    "scopes": "user/*.*",
+    "restApiUrl": "http://localhost:8081/api/receiveEicr",
+    "encounterStartThreshold": "3",
+    "encounterEndThreshold": "30",
+    "lastUpdated": "2021-06-24T20:27:21.939Z"
+}
