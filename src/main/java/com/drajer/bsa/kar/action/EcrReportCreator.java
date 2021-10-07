@@ -90,7 +90,16 @@ public class EcrReportCreator extends ReportCreator {
 
     for (Resource res : resourcesTobeAdded) {
 
-      returnBundle.addEntry(new BundleEntryComponent().setResource(res));
+      BundleEntryComponent bec = new BundleEntryComponent();
+      bec.setResource(res);
+      bec.setFullUrl(
+          kd.getNotificationContext().getFhirServerBaseUrl()
+              + "/"
+              + res.getResourceType().toString()
+              + "/"
+              + res.getIdElement().getIdPart());
+
+      returnBundle.addEntry(bec);
     }
 
     return returnBundle;
