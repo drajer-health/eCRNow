@@ -143,10 +143,12 @@ public class BaseKarsTest extends BaseIntegrationTest {
                 this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
       }
 
-
-      // Check measure reports if the expected outcome is trigger or reported and the initialpop is not null,
+      // Check measure reports if the expected outcome is trigger or reported and the initialpop is
+      // not null,
       // IOW, if this is an eCSD test that should have generated a MeasureReport
-      if ((this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY || this.testCaseInfo.getExpectedOutcome() == REPORTED) && this.testCaseInfo.getInitialPopulation() != null) {
+      if ((this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY
+              || this.testCaseInfo.getExpectedOutcome() == REPORTED)
+          && this.testCaseInfo.getInitialPopulation() != null) {
         MeasureReport report = this.getMeasureReport();
         validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
 

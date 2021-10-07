@@ -37,14 +37,14 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        new TestCaseInfo(
+        /*  new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example",
             "ex-trigger-all-criteria-missing",
             NOT_TRIGGERED),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out", NOT_TRIGGERED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", TRIGGERED_ONLY),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", TRIGGERED_ONLY),*/
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-in", REPORTED),
         new TestCaseInfo(
@@ -53,14 +53,12 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-in", REPORTED),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-inprogress-in", REPORTED),
+        //    new TestCaseInfo(
+        //      "PlanDefinition_eRSD_Instance_Example",
+        //    "ex-trigger-encounter-inprogress-out",
+        //  TRIGGERED_ONLY),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "ex-trigger-encounter-inprogress-out",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "ex-trigger-immunization-in",
-            REPORTED),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-immunization-in", REPORTED),
         new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", REPORTED),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-laborder-in", REPORTED),

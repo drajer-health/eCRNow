@@ -38,7 +38,7 @@ public class Dstu2ResourcesData {
 
   private List<CodeableConceptDt> findEncounterCodes(Encounter encounter) {
     List<CodeableConceptDt> encounterCodes = new ArrayList<>();
-    if (encounter.getType() != null) {
+    if (encounter != null && encounter.getType() != null) {
       encounterCodes = encounter.getType();
     }
     return encounterCodes;
