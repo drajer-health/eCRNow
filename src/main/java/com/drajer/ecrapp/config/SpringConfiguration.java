@@ -5,12 +5,13 @@ import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-@Configuration
 @ComponentScan(
     basePackages = {
       "com.drajer.ecrapp",
@@ -21,6 +22,8 @@ import org.springframework.context.annotation.Import;
       "com.drajer.bsa"
     })
 @Import(EvaluatorConfiguration.class)
+@Configuration
+@EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
 
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";

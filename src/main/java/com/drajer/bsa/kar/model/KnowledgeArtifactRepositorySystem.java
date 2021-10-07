@@ -52,7 +52,7 @@ public class KnowledgeArtifactRepositorySystem {
     else return null;
   }
 
-  public static KnowledgeArtifactRepositorySystem getIntance() {
+  public static KnowledgeArtifactRepositorySystem getInstance() {
 
     if (instance == null) instance = new KnowledgeArtifactRepositorySystem();
 

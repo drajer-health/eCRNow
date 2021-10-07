@@ -143,7 +143,7 @@ public class KarProcessorImpl implements KarProcessor {
     // Setup Processing data
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-    kd.setKar(KnowledgeArtifactRepositorySystem.getIntance().getById(state.getKarUniqueId()));
+    kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
 
     // Setup Notification Data
     Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());

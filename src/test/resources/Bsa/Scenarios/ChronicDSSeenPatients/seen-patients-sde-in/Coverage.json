@@ -1,0 +1,26 @@
+{
+	"resourceType": "Coverage",
+	"id": "seen-patients-sde-in-cov",
+	"status": "active",
+	"type": {
+		"coding": [
+      {
+        "system": "urn:oid:2.16.840.1.113883.3.221.5",
+        "code": "1",
+        "display": "MEDICARE"
+      }
+		]
+	},
+	"beneficiary": {
+		"reference": "Patient/seen-patients-sde-in"
+	},
+	"period": {
+		"start": "2018-05-30T00:00:00-00:00",
+		"end": "2020-05-31T00:00:00-00:00"
+	},
+	"payor": [
+    {
+			"reference": "Patient/seen-patients-sde-in"
+		}
+	]
+}

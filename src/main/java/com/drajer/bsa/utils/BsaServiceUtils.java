@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -41,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author nbashyam
  */
 @Service
-@Transactional
 public class BsaServiceUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(BsaServiceUtils.class);
