@@ -1,5 +1,6 @@
 package com.drajer.bsa.controller;
 
+import static com.drajer.bsa.controller.ExpectedOutcome.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -105,11 +106,12 @@ public class BaseKarsTest extends BaseIntegrationTest {
           bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
 
       // TODO: We need a processing complete signal that's not the file output.
-      // Some tests should never generate a report
-      // this.testCaseInfo.getShouldTrigger()
+      // Some tests should be trigger, but never generate a report.
+      // This just waits a "reasonable" amount of time for processing to complete before
+      // continuing on
       int loops = 0;
       while (loops < 60) {
-        if (processingComplete(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
+        if (reportBundleGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
           break;
         } else {
           Thread.sleep(1000);
@@ -117,14 +119,34 @@ public class BaseKarsTest extends BaseIntegrationTest {
         }
       }
 
-      if (!processingComplete(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
+      Boolean reportBundleGenerated =
+          this.reportBundleGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef());
+
+      if (!reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         throw new RuntimeException(
             String.format(
-                "test case %s/%s timed out.",
+                "test case %s/%s timed out or did not generate a report when it should have generated a report.",
                 this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
       }
 
-      if (this.testCaseInfo.getInitialPopulation() != null) {
+      if (reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY) {
+        throw new RuntimeException(
+            String.format(
+                "test case %s/%s generated a report when it should not have reported.",
+                this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
+      }
+
+      if (reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == NOT_TRIGGERED) {
+        throw new RuntimeException(
+            String.format(
+                "test case %s/%s generated a report when it should not have triggered.",
+                this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName()));
+      }
+
+
+      // Check measure reports if the expected outcome is trigger or reported and the initialpop is not null,
+      // IOW, if this is an eCSD test that should have generated a MeasureReport
+      if ((this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY || this.testCaseInfo.getExpectedOutcome() == REPORTED) && this.testCaseInfo.getInitialPopulation() != null) {
         MeasureReport report = this.getMeasureReport();
         validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
 
@@ -133,15 +155,16 @@ public class BaseKarsTest extends BaseIntegrationTest {
         }
 
         // TODO: Denom exclusion?
-
         if (this.testCaseInfo.getNumerator() != null) {
           validatePopulation(report, "numerator", this.testCaseInfo.getNumerator());
         }
       }
 
-      Bundle eICR = this.getEicrBundle(this.testCaseInfo.getPlanDef());
-      validateBundle(eICR, this.testCaseInfo.getInitialPopulation() != null);
-
+      // If this is an eCSD test, ensure the Bundle has a MeasureReport
+      if (this.testCaseInfo.getExpectedOutcome() == REPORTED) {
+        Bundle eICR = this.getEicrBundle(this.testCaseInfo.getPlanDef());
+        validateBundle(eICR, this.testCaseInfo.getInitialPopulation() != null);
+      }
     } catch (Exception e) {
       logger.error(
           String.format(
@@ -168,7 +191,11 @@ public class BaseKarsTest extends BaseIntegrationTest {
     return new File("target/output/karsBundle_" + patientId + "-notification-bundle.json");
   }
 
-  protected Boolean processingComplete(String patientId, String planDef) {
+  protected Boolean measureReportGenerated() {
+    return this.getMeasureReportFile().exists();
+  }
+
+  protected Boolean reportBundleGenerated(String patientId, String planDef) {
     File eICRFile = this.getEICRFile(planDef);
     if (eICRFile.exists()) {
       return true;

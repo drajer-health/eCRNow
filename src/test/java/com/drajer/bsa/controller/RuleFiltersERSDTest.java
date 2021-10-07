@@ -1,5 +1,7 @@
 package com.drajer.bsa.controller;
 
+import static com.drajer.bsa.controller.ExpectedOutcome.*;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import java.util.Arrays;
@@ -36,29 +38,41 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-missing", false),
+            "PlanDefinition_eRSD_Instance_Example",
+            "ex-trigger-all-criteria-missing",
+            NOT_TRIGGERED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out", false),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", false),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out", NOT_TRIGGERED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-in", true),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", TRIGGERED_ONLY),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-out", true),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-in", true),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-in", REPORTED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-inprogress-in", true),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-out", REPORTED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-inprogress-out", true),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-in", REPORTED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-immunization-in", true),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", true),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-laborder-in", true),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-labresult-in", true),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-labtest-in", true),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-inprogress-in", REPORTED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-medicationadministration-in", true),
+            "PlanDefinition_eRSD_Instance_Example",
+            "ex-trigger-encounter-inprogress-out",
+            TRIGGERED_ONLY),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-medicationorder-in", true),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-trigger-out", true));
+            "PlanDefinition_eRSD_Instance_Example",
+            "ex-trigger-immunization-in",
+            REPORTED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", REPORTED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-laborder-in", REPORTED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-labresult-in", REPORTED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-labtest-in", REPORTED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "ex-trigger-medicationadministration-in",
+            REPORTED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-medicationorder-in", REPORTED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-out", NOT_TRIGGERED));
   }
 }
