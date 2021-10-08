@@ -1419,7 +1419,7 @@
       "title": "Seen Patients",
       "status": "draft",
       "experimental": true,
-      "date": "2021-10-05T15:00:53-06:00",
+      "date": "2021-10-07T13:21:38-06:00",
       "description": "Seen patients during the measurement period",
       "purpose": "The Seen Patients cohort measure is defined to provide a baseline for chronic disease surveillance. For each individual in the cohort, supplemental data is collected aligning with the supplemental data defined for other chronic disease surveillance measure usages, allowing for analytics across and between specific measures.",
       "topic": [ {
@@ -1848,6 +1848,13 @@
             "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-plandefinition-actions",
             "code": "execute-reporting-workflow"
           } ]
+        } ],
+        "condition": [ {
+          "kind": "applicability",
+          "expression": {
+            "language": "text/fhirpath",
+            "expression": "%measurereport.exists() and %measurereport.group.select(population).where(code.coding.code = 'initial-population' and count > 0).exists()"
+          }
         } ],
         "action": [ {
           "id": "create-eicr",
