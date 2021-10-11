@@ -5,6 +5,7 @@ import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
 import com.drajer.sof.service.LaunchService;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -39,6 +40,13 @@ public class RefreshTokenScheduler {
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
   private static final String GRANT_TYPE = "grant_type";
+  private static final String SCOPE = "scope";
+  private static final String CLIENT_CREDENTIALS = "client_credentials";
+  private static final String ACCEPT_HEADER = "Accept";
+  private static final String ACCESS_TOKEN = "access_token";
+  private static final String ACCESS_TOKEN_CAMEL_CASE = "accessToken";
+  private static final String EXPIRES_IN = "expires_in";
+  private static final String EXPIRES_IN_CAMEL_CASE = "expiresIn";
 
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info("Scheduling Job to Get AccessToken");
@@ -78,7 +86,7 @@ public class RefreshTokenScheduler {
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
-      if (!authDetails.getIsSystem()) {
+      if (!authDetails.getIsSystem() && !authDetails.getIsUserAccountLaunch()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "refresh_token");
@@ -88,9 +96,9 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else {
+      } else if (authDetails.getIsSystem()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+        headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
         String base64EncodedString =
             Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
@@ -98,7 +106,7 @@ public class RefreshTokenScheduler {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
-        if (authDetails.getRequireAud()) {
+        if (authDetails.getRequireAud() && authDetails.getIsSystem()) {
           logger.info("Adding Aud Parameter while getting Accesstoken");
           map.add("aud", authDetails.getEhrServerURL());
         }
@@ -107,6 +115,31 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
+      } else if (authDetails.getIsUserAccountLaunch()) {
+        headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
+
+        String tokenUrl =
+            authDetails.getTokenUrl()
+                + "?"
+                + GRANT_TYPE
+                + "="
+                + CLIENT_CREDENTIALS
+                + "&"
+                + SCOPE
+                + "="
+                + authDetails.getScope();
+
+        HttpEntity entity = new HttpEntity(headers);
+
+        ResponseEntity<?> response =
+            resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
+        String responseBody =
+            response
+                .getBody()
+                .toString()
+                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+        tokenResponse = new JSONObject(responseBody);
       }
       logger.info("Received AccessToken for Client: " + authDetails.getClientId());
       logger.info("Received AccessToken: {}", tokenResponse);
@@ -138,107 +171,97 @@ public class RefreshTokenScheduler {
     }
   }
 
-  public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
+  /*
+   * public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
+   * JSONObject tokenResponse = null;
+   * logger.info("Getting AccessToken for Client: " +
+   * clientDetails.getClientId()); try { RestTemplate resTemplate = new
+   * RestTemplate(); HttpHeaders headers = new HttpHeaders();
+   * headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+   * headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); String authValues =
+   * clientDetails.getClientId() + ":" + clientDetails.getClientSecret(); String
+   * base64EncodedString =
+   * Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+   * headers.add("Authorization", "Basic " + base64EncodedString);
+   * MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+   * map.add(GRANT_TYPE, "client_credentials"); map.add("scope",
+   * clientDetails.getScopes()); if (clientDetails.getRequireAud()) {
+   * logger.info("Adding Aud Parameter while getting Accesstoken"); map.add("aud",
+   * clientDetails.getFhirServerBaseURL()); } HttpEntity<MultiValueMap<String,
+   * String>> entity = new HttpEntity<>(map, headers);
+   *
+   * ResponseEntity<?> response = resTemplate.exchange(
+   * clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
+   * tokenResponse = new JSONObject(response.getBody());
+   * logger.info("Received AccessToken for Client: {}",
+   * clientDetails.getClientId()); logger.info("Received AccessToken: {}",
+   * tokenResponse);
+   *
+   * } catch (Exception e) { logger.error(
+   * "Error in Getting the AccessToken for the client: {} ",
+   * clientDetails.getClientId(), e); } return tokenResponse; }
+   */
+
+  public JSONObject getAccessTokenUsingClientDetails(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + clientDetails.getClientId());
+    logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-      headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-      String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
-      String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
-      headers.add("Authorization", "Basic " + base64EncodedString);
-      MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-      map.add(GRANT_TYPE, "client_credentials");
-      map.add("scope", clientDetails.getScopes());
-      if (clientDetails.getRequireAud()) {
-        logger.info("Adding Aud Parameter while getting Accesstoken");
-        map.add("aud", clientDetails.getFhirServerBaseURL());
-      }
-      HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+      if (clientDetails.getIsSystem()) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+        String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
+        String base64EncodedString =
+            Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
+        headers.add("Authorization", "Basic " + base64EncodedString);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add(GRANT_TYPE, "client_credentials");
+        map.add("scope", clientDetails.getScopes());
+        if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
+          logger.debug("Adding Aud Parameter while getting Access token");
+          map.add("aud", clientDetails.getFhirServerBaseURL());
+        }
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
-      ResponseEntity<?> response =
-          resTemplate.exchange(
-              clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
-      tokenResponse = new JSONObject(response.getBody());
-      logger.info("Received AccessToken for Client: {}", clientDetails.getClientId());
-      logger.info("Received AccessToken: {}", tokenResponse);
+        ResponseEntity<?> response =
+            resTemplate.exchange(
+                clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
+        tokenResponse = new JSONObject(response.getBody());
+      } else if (clientDetails.getIsUserAccountLaunch()) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(clientDetails.getClientId(), clientDetails.getClientSecret());
+
+        String tokenUrl =
+            clientDetails.getTokenURL()
+                + "?"
+                + GRANT_TYPE
+                + "="
+                + CLIENT_CREDENTIALS
+                + "&"
+                + SCOPE
+                + "="
+                + clientDetails.getScopes();
+
+        HttpEntity entity = new HttpEntity(headers);
+
+        ResponseEntity<?> response =
+            resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
+        String responseBody =
+            response
+                .getBody()
+                .toString()
+                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+        tokenResponse = new JSONObject(responseBody);
+      }
+
+      logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {} ", clientDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the client: {}", clientDetails.getClientId(), e);
     }
     return tokenResponse;
   }
-  /*
-    private void getResourcesData(LaunchDetails authDetails) {
-      FhirContext context = resourceData.getFhirContext(authDetails.getFhirVersion());
-      context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-      IGenericClient genericClient =
-          resourceData.createClient(
-              context, authDetails.getEhrServerURL(), authDetails.getAccessToken());
-      try {
-        resourceData.getResouceById(
-            authDetails, genericClient, context, "Patient", authDetails.getLaunchPatientId());
-      } catch (Exception e) {
-        logger.error("Error in getting Patient details", e);
-      }
-
-      try {
-        resourceData.getResouceById(
-            authDetails, genericClient, context, "Encounter", authDetails.getEncounterId());
-        // resourceData.getEncounterData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Encounter details", e);
-      }
-
-      try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Observation");
-        // resourceData.getObservationData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Observation details", e);
-      }
-
-      try {
-        resourceData.getResourceByPatientId(authDetails, genericClient, context, "Condition");
-        // resourceData.getConditionData(client, genericClient, ctx);
-      } catch (Exception e) {
-        logger.error("Error in getting Condition details", e);
-      }
-
-      if (authDetails.getFhirVersion().equalsIgnoreCase("DSTU2")) {
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationAdministration");
-          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationAdministration details", e);
-        }
-
-        try {
-          resourceData.getResourceByPatientId(authDetails, genericClient, context, "MedicationOrder");
-          // resourceData.getMedicationOrderData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationOrder details", e);
-        }
-
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationStatement");
-          // resourceData.getMedicationStatementData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationStatement details", e);
-        }
-      } else if (authDetails.getFhirVersion().equalsIgnoreCase("R4")) {
-        try {
-          resourceData.getResourceByPatientId(
-              authDetails, genericClient, context, "MedicationRequest");
-          // resourceData.getMedicationAdministrationData(client, genericClient, ctx);
-        } catch (Exception e) {
-          logger.error("Error in getting MedicationRequest details", e);
-        }
-      }
-    }
-  */
 }
