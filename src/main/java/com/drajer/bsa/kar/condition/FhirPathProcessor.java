@@ -10,6 +10,10 @@ import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.inject.Inject;
+
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -17,6 +21,7 @@ import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -24,19 +29,27 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.javatuples.Pair;
+import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class FhirPathProcessor implements BsaConditionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
   IFhirPath fhirPathProcessor;
+  @Autowired ExpressionEvaluator expressionEvaluator;
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
+    Parameters params = new Parameters();
+    Parameters result =
+        (Parameters) expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+        BooleanType value =
+        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
 
-    return true;
+    return value.getValue();
   }
 
   public Pair<CheckTriggerCodeStatus, Set<Resource>> filterResources(

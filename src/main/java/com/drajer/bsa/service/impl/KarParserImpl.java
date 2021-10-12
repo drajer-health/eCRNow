@@ -7,7 +7,6 @@ import com.drajer.bsa.kar.action.ValidateReport;
 import com.drajer.bsa.kar.condition.BsaCqlCondition;
 import com.drajer.bsa.kar.condition.BsaFhirPathCondition;
 import com.drajer.bsa.kar.model.BsaAction;
-import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
@@ -32,10 +31,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.ParameterDefinition;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -85,6 +89,9 @@ public class KarParserImpl implements KarParser {
 
   @Value("${measure-reporting-period.end}")
   String measurePeriodEnd;
+
+  @Value("${ersd.file.location}")
+  String ersdFileLocation;
 
   @Autowired BsaServiceUtils utils;
 
@@ -213,7 +220,7 @@ public class KarParserImpl implements KarParser {
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.PlanDefinition) {
           logger.info(" Processing PlanDefinition ");
-          processPlanDefinition((PlanDefinition) comp.getResource(), art);
+          processPlanDefinition((PlanDefinition) comp.getResource(), art, kar);
           art.initializeRelatedActions();
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.Library) {
@@ -232,7 +239,8 @@ public class KarParserImpl implements KarParser {
     }
   }
 
-  private void processPlanDefinition(PlanDefinition plan, KnowledgeArtifact art) {
+  private void processPlanDefinition(
+      PlanDefinition plan, KnowledgeArtifact art, File karBundleFile) {
 
     processExtensions(plan, art);
     List<PlanDefinitionActionComponent> actions = plan.getAction();
@@ -251,7 +259,7 @@ public class KarParserImpl implements KarParser {
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
 
-        populateAction(plan, act, action);
+        populateAction(plan, act, action, karBundleFile);
 
         // Setup the artifact details.
         art.addAction(action);
@@ -304,7 +312,10 @@ public class KarParserImpl implements KarParser {
   }
 
   private void populateAction(
-      PlanDefinition plan, PlanDefinitionActionComponent act, BsaAction action) {
+      PlanDefinition plan,
+      PlanDefinitionActionComponent act,
+      BsaAction action,
+      File karBundleFile) {
 
     if (act.hasTrigger()) {
       action.setNamedEventTriggers(getNamedEvents(act));
@@ -318,8 +329,9 @@ public class KarParserImpl implements KarParser {
       populateOutputDataReq(act, action);
     }
 
+    CanonicalType libraryCanonical = plan.hasLibrary() ? plan.getLibrary().get(0) : null;
     if (act.hasCondition()) {
-      populateCondition(act, action);
+      populateCondition(act, action, libraryCanonical, karBundleFile);
     }
 
     if (act.hasRelatedAction()) {
@@ -327,7 +339,7 @@ public class KarParserImpl implements KarParser {
     }
 
     if (act.hasAction()) {
-      populateSubActions(plan, act, action);
+      populateSubActions(plan, act, action, karBundleFile);
     }
 
     if (act.hasDefinitionUriType()) {
@@ -382,7 +394,7 @@ public class KarParserImpl implements KarParser {
   }
 
   private void populateSubActions(
-      PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action) {
+      PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action, File karBundleFile) {
 
     List<PlanDefinitionActionComponent> actions = ac.getAction();
 
@@ -399,7 +411,7 @@ public class KarParserImpl implements KarParser {
           action.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
 
-          populateAction(plan, act, subAction);
+          populateAction(plan, act, subAction, karBundleFile);
 
           // Setup the artifact details.
           action.addAction(subAction);
@@ -408,7 +420,11 @@ public class KarParserImpl implements KarParser {
     }
   }
 
-  private void populateCondition(PlanDefinitionActionComponent ac, BsaAction action) {
+  private void populateCondition(
+      PlanDefinitionActionComponent ac,
+      BsaAction action,
+      CanonicalType libraryCanonical,
+      File karBundleFile) {
 
     List<PlanDefinitionActionConditionComponent> conds = ac.getCondition();
 
@@ -419,21 +435,45 @@ public class KarParserImpl implements KarParser {
               .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))) {
 
         logger.info(" Found a FHIR Path Expression ");
-        BsaCondition bc = new BsaFhirPathCondition();
+        BsaFhirPathCondition bc = new BsaFhirPathCondition();
         bc.setLogicExpression(con.getExpression());
+        bc.setInputParameters(resolveInputParameters(ac.getInput()));
         action.addCondition(bc);
       } else if (con.getExpression() != null
           && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
               .equals(Expression.ExpressionLanguage.TEXT_CQL))) {
 
         logger.info(" Found a CQL Expression ");
-        BsaCondition bc = new BsaCqlCondition();
+        BsaCqlCondition bc = new BsaCqlCondition();
+        bc.setUrl(libraryCanonical.getValue());
+
+        // Set location of eRSD bundle for loading terminology and library logic
+        Endpoint libraryAndTerminologyEndpoint =
+            new Endpoint()
+                .setAddress(karBundleFile.getAbsolutePath())
+                .setConnectionType(new Coding().setCode("hl7-fhir-files"));
+        bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
+        bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
         bc.setLogicExpression(con.getExpression());
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
       }
     }
+  }
+
+  private Parameters resolveInputParameters(List<DataRequirement> dataRequirements) {
+    if (dataRequirements == null || dataRequirements.isEmpty()) {
+      return null;
+    }
+    Parameters params = new Parameters();
+    for (DataRequirement req : dataRequirements) {
+      String name = req.getId();
+      ParametersParameterComponent parameter = new ParametersParameterComponent().setName("%" + String.format("%s", name));
+      parameter.addExtension("http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition", new ParameterDefinition().setMax("*").setName("%" + name));
+      params.addParameter(parameter);
+    }
+    return params;
   }
 
   private void populateRelatedAction(

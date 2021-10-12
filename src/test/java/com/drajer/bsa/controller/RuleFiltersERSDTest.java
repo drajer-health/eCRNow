@@ -42,7 +42,8 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
         //     "ex-trigger-all-criteria-missing",
         //     NOT_TRIGGERED),
         // new TestCaseInfo(
-        //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out", NOT_TRIGGERED),
+        //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out",
+        // NOT_TRIGGERED),
         // new TestCaseInfo(
         //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", TRIGGERED_ONLY),
         new TestCaseInfo(
