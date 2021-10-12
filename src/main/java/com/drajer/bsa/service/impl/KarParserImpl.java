@@ -37,9 +37,6 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.ParameterDefinition;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -449,7 +446,6 @@ public class KarParserImpl implements KarParser {
         logger.info(" Found a FHIR Path Expression ");
         BsaFhirPathCondition bc = new BsaFhirPathCondition();
         bc.setLogicExpression(con.getExpression());
-        bc.setInputParameters(resolveInputParameters(ac.getInput()));
         action.addCondition(bc);
       } else if (con.getExpression() != null
           && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
@@ -473,23 +469,6 @@ public class KarParserImpl implements KarParser {
         logger.error(" Unknown type of Expression passed, cannot process ");
       }
     }
-  }
-
-  private Parameters resolveInputParameters(List<DataRequirement> dataRequirements) {
-    if (dataRequirements == null || dataRequirements.isEmpty()) {
-      return null;
-    }
-    Parameters params = new Parameters();
-    for (DataRequirement req : dataRequirements) {
-      String name = req.getId();
-      ParametersParameterComponent parameter =
-          new ParametersParameterComponent().setName("%" + String.format("%s", name));
-      parameter.addExtension(
-          "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-          new ParameterDefinition().setMax("*").setName("%" + name));
-      params.addParameter(parameter);
-    }
-    return params;
   }
 
   private void populateRelatedAction(
