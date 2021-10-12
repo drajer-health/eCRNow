@@ -89,11 +89,11 @@ public class KarParserImpl implements KarParser {
   @Value("${measure-reporting-period.end}")
   String measurePeriodEnd;
 
-  @Value("${cql.enabled")
-  Boolean cqlEnabled = true;
+  @Value("${cql.enabled:true}")
+  Boolean cqlEnabled;
 
-  @Value("${fhirpath.enabled")
-  Boolean fhirpathEnabled = true;
+  @Value("${fhirpath.enabled:true}")
+  Boolean fhirpathEnabled;
 
   @Autowired BsaServiceUtils utils;
 
@@ -446,6 +446,7 @@ public class KarParserImpl implements KarParser {
         logger.info(" Found a FHIR Path Expression ");
         BsaFhirPathCondition bc = new BsaFhirPathCondition();
         bc.setLogicExpression(con.getExpression());
+        bc.setExpressionEvaluator(expressionEvaluator);
         action.addCondition(bc);
       } else if (con.getExpression() != null
           && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
@@ -464,6 +465,7 @@ public class KarParserImpl implements KarParser {
         bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
         bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
         bc.setLogicExpression(con.getExpression());
+        bc.setLibraryProcessor(libraryProcessor);
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
