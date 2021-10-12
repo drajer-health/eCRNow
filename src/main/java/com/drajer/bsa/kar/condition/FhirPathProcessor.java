@@ -10,9 +10,6 @@ import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.inject.Inject;
-
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
@@ -45,8 +42,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
     Parameters params = new Parameters();
     Parameters result =
-        (Parameters) expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-        BooleanType value =
+        (Parameters)
+            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+    BooleanType value =
         (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
 
     return value.getValue();

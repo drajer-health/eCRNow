@@ -31,7 +31,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -40,6 +39,7 @@ import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -90,8 +90,11 @@ public class KarParserImpl implements KarParser {
   @Value("${measure-reporting-period.end}")
   String measurePeriodEnd;
 
-  @Value("${ersd.file.location}")
-  String ersdFileLocation;
+  @Value("${cql.enabled")
+  Boolean cqlEnabled = true;
+
+  @Value("${fhirpath.enabled")
+  Boolean fhirpathEnabled = true;
 
   @Autowired BsaServiceUtils utils;
 
@@ -432,7 +435,8 @@ public class KarParserImpl implements KarParser {
 
       if (con.getExpression() != null
           && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))) {
+              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+          && fhirpathEnabled) {
 
         logger.info(" Found a FHIR Path Expression ");
         BsaFhirPathCondition bc = new BsaFhirPathCondition();
@@ -441,7 +445,8 @@ public class KarParserImpl implements KarParser {
         action.addCondition(bc);
       } else if (con.getExpression() != null
           && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_CQL))) {
+              .equals(Expression.ExpressionLanguage.TEXT_CQL))
+          && cqlEnabled) {
 
         logger.info(" Found a CQL Expression ");
         BsaCqlCondition bc = new BsaCqlCondition();
@@ -469,8 +474,11 @@ public class KarParserImpl implements KarParser {
     Parameters params = new Parameters();
     for (DataRequirement req : dataRequirements) {
       String name = req.getId();
-      ParametersParameterComponent parameter = new ParametersParameterComponent().setName("%" + String.format("%s", name));
-      parameter.addExtension("http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition", new ParameterDefinition().setMax("*").setName("%" + name));
+      ParametersParameterComponent parameter =
+          new ParametersParameterComponent().setName("%" + String.format("%s", name));
+      parameter.addExtension(
+          "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+          new ParameterDefinition().setMax("*").setName("%" + name));
       params.addParameter(parameter);
     }
     return params;

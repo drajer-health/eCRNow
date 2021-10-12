@@ -4,7 +4,6 @@ import com.drajer.bsa.kar.action.SubmitReport;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.ecrapp.config.SpringConfiguration;
-
 import java.io.File;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Coding;
