@@ -7,17 +7,14 @@ import java.util.HashSet;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Parameters;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class CqlProcessor implements BsaConditionProcessor {
   private static final Logger logger = LoggerFactory.getLogger(CqlProcessor.class);
 
-  @Autowired ExpressionEvaluator expressionEvaluator;
-  @Autowired LibraryProcessor libraryProcessor;
+  private LibraryProcessor libraryProcessor;
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
@@ -43,5 +40,13 @@ public class CqlProcessor implements BsaConditionProcessor {
         (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
 
     return value.getValue();
+  }
+
+  public LibraryProcessor getLibraryProcessor() {
+    return libraryProcessor;
+  }
+
+  public void setLibraryProcessor(LibraryProcessor libraryProcessor) {
+    this.libraryProcessor = libraryProcessor;
   }
 }

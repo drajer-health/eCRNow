@@ -10,10 +10,15 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Expression;
 import org.junit.Test;
+import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = SpringConfiguration.class)
 public class CqlProcessorTest {
+
+  // Autowired to pass to FhirPathProcessors.
+  @Autowired LibraryProcessor libraryProcessor;
 
   private CqlProcessor processor = new CqlProcessor();
   private File karBundleFile =

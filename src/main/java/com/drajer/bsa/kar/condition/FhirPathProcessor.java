@@ -29,14 +29,13 @@ import org.javatuples.Pair;
 import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class FhirPathProcessor implements BsaConditionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
   IFhirPath fhirPathProcessor;
-  @Autowired ExpressionEvaluator expressionEvaluator;
+  ExpressionEvaluator expressionEvaluator;
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
@@ -188,5 +187,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     } else {
       logger.error(" Code Filter Component list is null, cannot proceed with finding matches ");
     }
+  }
+
+  public ExpressionEvaluator getExpressionEvaluator() {
+    return expressionEvaluator;
+  }
+
+  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
+    this.expressionEvaluator = expressionEvaluator;
   }
 }
