@@ -7,9 +7,13 @@ import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -17,6 +21,9 @@ import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.ParameterDefinition;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -24,6 +31,7 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.javatuples.Pair;
+import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,21 +40,28 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
   IFhirPath fhirPathProcessor;
+  ExpressionEvaluator expressionEvaluator;
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
+    Parameters params = resolveInputParameters(act.getInputData(), kd);
+    Parameters result =
+        (Parameters)
+            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+    BooleanType value =
+        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
 
-    return true;
+    return value.getValue();
   }
 
-  public Pair<CheckTriggerCodeStatus, Set<Resource>> filterResources(
+  public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
       DataRequirement dr, KarProcessingData kd) {
 
     // This will have to be changed once we plugin a real FhirPath Engine.
     CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
-    Set<Resource> resources = new HashSet<Resource>();
-    Pair<CheckTriggerCodeStatus, Set<Resource>> retVal =
-        new Pair<CheckTriggerCodeStatus, Set<Resource>>(ctc, resources);
+    Map<String, Set<Resource>> resources = new HashMap<String, Set<Resource>>();
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal =
+        new Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>>(ctc, resources);
 
     logger.info(" Getting Resources by Type {}", dr.getType());
 
@@ -130,7 +145,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       CodeableConcept cc,
       KarProcessingData kd,
       CheckTriggerCodeStatus ctc,
-      Set<Resource> res,
+      Map<String, Set<Resource>> res,
       Resource resourceMatched,
       Boolean valElem) {
 
@@ -162,7 +177,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   " Found a match for the code, adding resource {}", resourceMatched.getId());
               ctc.setTriggerMatchStatus(retInfo.getValue0());
               ctc.addMatchedTriggerCodes(retInfo.getValue1());
-              res.add(resourceMatched);
+              if (res.get(resourceMatched.fhirType()) != null) {
+                res.get(resourceMatched.fhirType()).add(resourceMatched);
+              } else {
+                Set<Resource> resources = new HashSet<Resource>();
+                resources.add(resourceMatched);
+                res.put(resourceMatched.fhirType(), resources);
+              }
             } else {
               logger.info(" No match found for code ");
             }
@@ -177,5 +198,49 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     } else {
       logger.error(" Code Filter Component list is null, cannot proceed with finding matches ");
     }
+  }
+
+  private Parameters resolveInputParameters(
+      List<DataRequirement> dataRequirements, KarProcessingData kd) {
+    if (dataRequirements == null || dataRequirements.isEmpty()) {
+      return null;
+    }
+    Parameters params = new Parameters();
+    for (DataRequirement req : dataRequirements) {
+      String name = req.getId();
+      String fhirType = req.getType();
+      Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources = filterResources(req, kd);
+      if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
+        ParametersParameterComponent parameter =
+            new ParametersParameterComponent().setName("%" + String.format("%s", name));
+        parameter.addExtension(
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+            new ParameterDefinition().setMax("*").setName("%" + name));
+        params.addParameter(parameter);
+      } else {
+        for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
+          if (entry.getKey().equals(fhirType)) {
+            for (Resource resource : entry.getValue()) {
+              ParametersParameterComponent parameter =
+                  new ParametersParameterComponent().setName("%" + String.format("%s", name));
+              parameter.addExtension(
+                  "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+                  new ParameterDefinition().setMax("*").setName("%" + name));
+              parameter.setResource(resource);
+              params.addParameter(parameter);
+            }
+          }
+        }
+      }
+    }
+    return params;
+  }
+
+  public ExpressionEvaluator getExpressionEvaluator() {
+    return expressionEvaluator;
+  }
+
+  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
+    this.expressionEvaluator = expressionEvaluator;
   }
 }

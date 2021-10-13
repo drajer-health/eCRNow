@@ -7,6 +7,8 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Resource;
@@ -54,7 +56,7 @@ public class CheckTriggerCodes extends BsaAction {
         if (dr.hasCodeFilter()) {
 
           logger.info(" Checking Trigger Codes based on code filter ");
-          Pair<CheckTriggerCodeStatus, Set<Resource>> matchInfo =
+          Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> matchInfo =
               fhirPathProcessor.filterResources(dr, data);
 
           if (matchInfo != null) {
@@ -62,7 +64,12 @@ public class CheckTriggerCodes extends BsaAction {
             logger.info(" Found Match for Code Filter {}", dr.getType());
 
             HashMap<String, Set<Resource>> idres = new HashMap<>();
-            idres.put(dr.getId(), matchInfo.getValue1());
+            Set<Resource> allResources = new HashSet<Resource>();
+            matchInfo
+                .getValue1()
+                .values()
+                .forEach(setOfResources -> allResources.addAll(setOfResources));
+            idres.put(dr.getId(), allResources);
             data.resetResourcesById(idres);
 
             actStatus.addOutputProducedId(dr.getId());

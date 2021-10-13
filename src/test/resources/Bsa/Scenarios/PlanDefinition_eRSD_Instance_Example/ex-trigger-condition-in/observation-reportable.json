@@ -1,0 +1,43 @@
+{
+    "resourceType": "Observation",
+    "id": "observation-reportable",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/observation"
+        ]
+      },
+    "status": "final",
+    "code": {
+        "coding": [
+            {
+                "system": "http://loinc.org",
+                "code": "32774-2",
+                "display": "Chlamydia sp DNA [Presence] in Genital specimen by NAA with probe detection"
+            }
+        ]
+    },
+    "valueCodeableConcept": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "131194007",
+          "display": "Non-Reactive (qualifier value)"
+        }
+      ]
+    },
+    "interpretation": [
+        {
+            "coding": [
+                {
+                    "system": "http://hl7.org/fhir/v2/0078",
+                    "code": "NEG",
+                    "display": "Negative"
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "Patient/ex-trigger-condition-in"
+    },
+    "effectiveDateTime": "2019-11-01T00:00:00"
+}
