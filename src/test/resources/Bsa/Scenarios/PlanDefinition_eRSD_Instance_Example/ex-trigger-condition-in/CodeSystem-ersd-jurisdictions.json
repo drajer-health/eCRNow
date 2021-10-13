@@ -1,0 +1,7127 @@
+{
+  "resourceType": "CodeSystem",
+  "id": "ersd-jurisdictions",
+  "url": "http://hl7.org/fhir/us/ecr/CodeSystem/ersd-jurisdictions",
+  "version": "0.1.0",
+  "name": "ERSDJurisdictions",
+  "title": "eRSD Jurisdictions",
+  "status": "active",
+  "description": "This code system describes jurisdictions that require public health reporting.",
+  "caseSensitive": false,
+  "content": "complete",
+  "property": [
+    {
+      "code": "type",
+      "uri": "http://hl7.org/fhir/us/ecr/CodeSystem/ersd-jurisdiction-types",
+      "description": "Type of public health jurisdiction.",
+      "type": "code"
+    },
+    {
+      "code": "state",
+      "uri": "http://hl7.org/fhir/us/ecr/CodeSystem/ersd-jurisdiction-states",
+      "description": "Public health jurisdiction state or territory.",
+      "type": "code"
+    },
+    {
+      "code": "postalcode",
+      "uri": "http://hl7.org/fhir/us/ecr/CodeSystem/ersd-jurisdiction-postalcodes",
+      "description": "Postal code within the public health jurisdiction.",
+      "type": "code"
+    }
+  ],
+  "concept": [
+    {
+      "code": "AK",
+      "display": "ALASKA",
+      "definition": "Alaska Department of Health and Social Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "AK"
+        }
+      ]
+    },
+    {
+      "code": "AL",
+      "display": "ALABAMA",
+      "definition": "Alabama Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "AL"
+        }
+      ]
+    },
+    {
+      "code": "AR",
+      "display": "ARKANSAS",
+      "definition": "Arkansas Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "AR"
+        }
+      ]
+    },
+    {
+      "code": "AS",
+      "display": "AMERICAN_SAMOA",
+      "definition": "American Samoa",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "AS"
+        }
+      ]
+    },
+    {
+      "code": "AZ",
+      "display": "ARIZONA",
+      "definition": "Arizona Department of Health Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "AZ"
+        }
+      ]
+    },
+    {
+      "code": "CA",
+      "display": "CALIFORNIA",
+      "definition": "California Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "CA"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90041"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90042"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90221"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90630"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90706"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90712"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90713"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90716"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90723"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90731"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90744"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90755"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90802"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90803"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90804"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90805"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90806"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90807"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90808"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90810"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90813"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90814"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90815"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90822"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90831"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90840"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90846"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91006"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91101"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91103"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91104"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91105"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91106"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91107"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91108"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91206"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91901"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91902"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91903"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91905"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91906"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91908"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91909"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91910"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91911"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91912"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91913"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91914"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91915"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91916"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91917"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91921"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91931"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91932"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91933"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91934"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91935"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91941"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91942"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91943"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91944"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91945"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91946"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91947"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91948"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91950"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91951"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91962"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91963"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91976"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91977"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91978"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91979"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91980"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91987"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91990"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92003"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92008"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92013"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92014"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92018"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92019"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92022"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92025"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92026"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92027"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92028"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92029"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92033"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92036"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92037"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92038"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92039"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92046"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92049"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92051"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92052"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92054"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92055"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92056"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92057"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92058"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92059"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92060"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92061"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92064"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92065"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92066"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92067"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92068"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92069"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92070"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92071"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92072"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92074"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92075"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92078"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92079"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92081"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92082"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92083"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92084"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92085"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92086"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92088"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92090"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92091"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92092"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92093"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92096"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92101"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92102"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92103"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92104"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92105"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92106"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92107"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92108"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92109"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92110"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92111"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92112"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92113"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92114"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92115"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92116"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92117"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92118"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92119"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92120"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92121"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92122"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92123"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92124"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92126"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92127"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92128"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92129"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92130"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92131"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92132"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92133"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92134"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92135"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92136"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92137"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92138"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92139"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92140"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92142"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92143"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92145"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92147"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92149"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92150"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92152"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92153"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92154"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92155"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92158"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92159"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92160"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92161"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92162"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92163"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92164"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92165"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92166"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92167"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92168"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92169"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92170"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92171"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92172"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92173"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92174"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92175"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92176"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92177"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92178"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92179"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92182"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92184"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92186"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92187"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92190"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92191"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92192"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92193"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92194"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92195"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92196"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92197"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92198"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92199"
+        }
+      ]
+    },
+    {
+      "code": "CHI",
+      "display": "ILLINOIS",
+      "definition": "Chicago Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "CITY"
+        },
+        {
+          "code": "state",
+          "valueCode": "IL"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "60007"
+        }
+      ]
+    },
+    {
+      "code": "CHR",
+      "display": "VIRGIN_ISLANDS",
+      "definition": "Christiansted (Test)",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "CITY"
+        },
+        {
+          "code": "state",
+          "valueCode": "VI"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "00820"
+        }
+      ]
+    },
+    {
+      "code": "CO",
+      "display": "COLORADO",
+      "definition": "Colorado Department of Public Health and Environment",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "CO"
+        }
+      ]
+    },
+    {
+      "code": "CT",
+      "display": "CONNECTICUT",
+      "definition": "Connecticut Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "CT"
+        }
+      ]
+    },
+    {
+      "code": "DC",
+      "display": "DISTRICT_OF_COLUMBIA",
+      "definition": "District of Columbia Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "DC"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "20002"
+        }
+      ]
+    },
+    {
+      "code": "DE",
+      "display": "DELAWARE",
+      "definition": "Delaware Health and Social Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "DE"
+        }
+      ]
+    },
+    {
+      "code": "DED",
+      "display": "GUAM",
+      "definition": "Dededo",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "COUNTY"
+        },
+        {
+          "code": "state",
+          "valueCode": "GU"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "96912"
+        }
+      ]
+    },
+    {
+      "code": "FL",
+      "display": "FLORIDA",
+      "definition": "Florida Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "FL"
+        }
+      ]
+    },
+    {
+      "code": "GA",
+      "display": "GEORGIA",
+      "definition": "Georgia Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "GA"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "30062"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "30066"
+        }
+      ]
+    },
+    {
+      "code": "GU",
+      "display": "GUAM",
+      "definition": "Guam Department of Public Health and Social Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "GU"
+        }
+      ]
+    },
+    {
+      "code": "HI",
+      "display": "HAWAII",
+      "definition": "Hawaii Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "HI"
+        }
+      ]
+    },
+    {
+      "code": "HT",
+      "display": "TEXAS",
+      "definition": "Houston Health Department",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "CITY"
+        },
+        {
+          "code": "state",
+          "valueCode": "TX"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77002"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77003"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77005"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77006"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77008"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77012"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77013"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77014"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77015"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77016"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77017"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77018"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77019"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77022"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77025"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77026"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77027"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77028"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77029"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77031"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77032"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77033"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77034"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77035"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77036"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77037"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77038"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77039"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77041"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77042"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77043"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77044"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77045"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77046"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77047"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77048"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77049"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77050"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77051"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77052"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77053"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77054"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77055"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77056"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77057"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77058"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77059"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77060"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77061"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77062"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77063"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77064"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77065"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77066"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77067"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77068"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77069"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77070"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77071"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77072"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77073"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77074"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77075"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77076"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77077"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77078"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77079"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77080"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77081"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77082"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77083"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77084"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77085"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77086"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77087"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77088"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77089"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77090"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77091"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77092"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77093"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77094"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77095"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77096"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77097"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77098"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77099"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77201"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77202"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77203"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77204"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77205"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77206"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77207"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77208"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77209"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77210"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77212"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77213"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77215"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77216"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77217"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77218"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77219"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77220"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77221"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77222"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77223"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77224"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77225"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77226"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77227"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77228"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77229"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77230"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77231"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77233"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77234"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77235"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77236"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77237"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77238"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77240"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77241"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77242"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77243"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77244"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77245"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77248"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77249"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77251"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77252"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77253"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77254"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77255"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77256"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77257"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77258"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77259"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77261"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77262"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77263"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77265"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77266"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77267"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77268"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77269"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77270"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77271"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77272"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77273"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77274"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77275"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77277"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77279"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77280"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77281"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77282"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77284"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77287"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77288"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77289"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77290"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77291"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77292"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77293"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77297"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77298"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77299"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77327"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77336"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77338"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77339"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77345"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77346"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77354"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77355"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77357"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77362"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77365"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77373"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77375"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77377"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77379"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77380"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77381"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77382"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77386"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77388"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77389"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77396"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77401"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77406"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77407"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77429"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77433"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77447"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77449"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77450"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77459"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77477"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77478"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77484"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77489"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77493"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77494"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77498"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77502"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77503"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77504"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77505"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77506"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77507"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77520"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77521"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77523"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77530"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77532"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77535"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77536"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77545"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77546"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77547"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77562"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77565"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77571"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77573"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77581"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77584"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77586"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77587"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "77598"
+        }
+      ]
+    },
+    {
+      "code": "IA",
+      "display": "IOWA",
+      "definition": "Iowa Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "IA"
+        }
+      ]
+    },
+    {
+      "code": "ID",
+      "display": "IDAHO",
+      "definition": "Idaho Department of Health and Welfare",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "ID"
+        }
+      ]
+    },
+    {
+      "code": "IL",
+      "display": "ILLINOIS",
+      "definition": "Illinois Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "IL"
+        }
+      ]
+    },
+    {
+      "code": "IN",
+      "display": "INDIANA",
+      "definition": "Indiana State Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "IN"
+        }
+      ]
+    },
+    {
+      "code": "KS",
+      "display": "KANSAS",
+      "definition": "Kansas Department of Health and Environment",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "KS"
+        }
+      ]
+    },
+    {
+      "code": "KY",
+      "display": "KENTUCKY",
+      "definition": "Kentucky Cabinet for Health and Family Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "KY"
+        }
+      ]
+    },
+    {
+      "code": "LA",
+      "display": "LOUISIANA",
+      "definition": "Louisiana Department of Health and Hospitals",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "LA"
+        }
+      ]
+    },
+    {
+      "code": "LAC",
+      "display": "CALIFORNIA",
+      "definition": "Los Angeles County Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "COUNTY"
+        },
+        {
+          "code": "state",
+          "valueCode": "CA"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90002"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90003"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90005"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90006"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90008"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90012"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90013"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90014"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90015"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90016"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90017"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90018"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90019"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90022"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90025"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90026"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90027"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90028"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90029"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90031"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90032"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90033"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90034"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90035"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90036"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90037"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90038"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90039"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90041"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90042"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90043"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90044"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90045"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90046"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90047"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90048"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90049"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90050"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90051"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90052"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90053"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90054"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90055"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90056"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90057"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90058"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90059"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90060"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90061"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90062"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90063"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90064"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90065"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90066"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90067"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90068"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90069"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90070"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90071"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90072"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90073"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90074"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90075"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90076"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90077"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90078"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90079"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90080"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90081"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90082"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90083"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90084"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90086"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90087"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90088"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90089"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90091"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90093"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90094"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90095"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90096"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90097"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90099"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90101"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90102"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90103"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90174"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90185"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90201"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90202"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90209"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90210"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90211"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90212"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90213"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90220"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90221"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90222"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90223"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90224"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90230"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90231"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90232"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90233"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90239"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90240"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90241"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90242"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90245"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90247"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90248"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90249"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90250"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90251"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90254"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90255"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90260"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90261"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90262"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90263"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90264"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90265"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90266"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90267"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90270"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90272"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90274"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90275"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90277"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90278"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90280"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90290"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90291"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90292"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90293"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90294"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90295"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90296"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90301"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90302"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90303"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90304"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90305"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90306"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90307"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90308"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90309"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90310"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90311"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90312"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90313"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90397"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90398"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90401"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90402"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90403"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90404"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90405"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90406"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90407"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90408"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90409"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90410"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90411"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90501"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90502"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90503"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90504"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90505"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90506"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90507"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90508"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90509"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90510"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90601"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90602"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90603"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90604"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90605"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90606"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90607"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90608"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90609"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90610"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90612"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90637"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90638"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90639"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90640"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90650"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90651"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90652"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90659"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90660"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90661"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90662"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90665"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90670"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90671"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90701"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90702"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90703"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90704"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90706"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90707"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90710"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90711"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90712"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90713"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90714"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90715"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90716"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90717"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90723"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90731"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90732"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90733"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90734"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90744"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90745"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90746"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90747"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90748"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90749"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90755"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90845"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "90888"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91003"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91006"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91012"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91016"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91017"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91025"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91031"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91041"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91042"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91043"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91046"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91050"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91051"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91066"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91077"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91108"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91118"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91131"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91175"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91186"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91187"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91191"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91201"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91202"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91203"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91204"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91205"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91206"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91207"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91208"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91209"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91210"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91214"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91221"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91222"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91224"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91225"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91226"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91301"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91302"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91303"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91304"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91305"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91306"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91307"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91308"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91309"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91310"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91311"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91312"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91313"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91316"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91321"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91322"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91324"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91325"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91326"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91327"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91328"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91329"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91330"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91331"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91333"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91334"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91335"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91337"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91340"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91341"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91342"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91343"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91344"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91345"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91346"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91350"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91351"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91352"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91353"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91354"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91355"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91356"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91357"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91363"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91364"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91365"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91367"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91371"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91372"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91376"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91380"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91381"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91382"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91383"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91384"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91385"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91386"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91387"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91388"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91390"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91392"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91393"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91394"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91395"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91396"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91399"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91401"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91402"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91403"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91404"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91405"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91406"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91407"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91408"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91409"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91410"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91411"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91412"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91413"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91416"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91423"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91426"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91436"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91470"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91482"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91495"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91496"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91497"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91499"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91501"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91502"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91503"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91504"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91505"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91506"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91507"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91508"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91510"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91521"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91522"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91523"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91526"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91601"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91602"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91603"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91604"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91605"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91606"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91607"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91608"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91609"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91610"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91611"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91612"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91614"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91615"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91616"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91617"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91618"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91702"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91706"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91711"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91714"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91715"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91716"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91722"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91723"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91724"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91731"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91732"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91733"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91734"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91735"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91740"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91741"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91744"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91745"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91746"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91747"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91748"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91749"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91750"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91754"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91755"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91756"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91759"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91765"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91766"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91767"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91768"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91769"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91770"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91771"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91772"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91773"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91775"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91776"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91778"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91780"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91788"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91789"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91790"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91791"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91792"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91793"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91795"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91797"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91799"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91801"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91802"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91803"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91804"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91841"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91896"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91899"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93510"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93532"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93534"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93535"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93536"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93539"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93543"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93544"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93550"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93551"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93552"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93553"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93563"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93584"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93586"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93590"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93591"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "93599"
+        }
+      ]
+    },
+    {
+      "code": "MA",
+      "display": "MASSACHUSETTS",
+      "definition": "Massachusetts Department of Health and Human Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MA"
+        }
+      ]
+    },
+    {
+      "code": "MD",
+      "display": "MARYLAND",
+      "definition": "Maryland Department of Health and Mental Hygiene",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MD"
+        }
+      ]
+    },
+    {
+      "code": "ME",
+      "display": "MAINE",
+      "definition": "Maine Department of Health and Human Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "ME"
+        }
+      ]
+    },
+    {
+      "code": "MI",
+      "display": "MICHIGAN",
+      "definition": "Michigan Department of Community Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MI"
+        }
+      ]
+    },
+    {
+      "code": "MN",
+      "display": "MINNESOTA",
+      "definition": "Minnesota Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MN"
+        }
+      ]
+    },
+    {
+      "code": "MO",
+      "display": "MISSOURI",
+      "definition": "Missouri State Department of Health and Senior Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MO"
+        }
+      ]
+    },
+    {
+      "code": "MS",
+      "display": "MISSISSIPPI",
+      "definition": "Mississippi State Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MS"
+        }
+      ]
+    },
+    {
+      "code": "MT",
+      "display": "MONTANA",
+      "definition": "Montana Department of Public Health and Human Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "MT"
+        }
+      ]
+    },
+    {
+      "code": "NC",
+      "display": "NORTH_CAROLINA",
+      "definition": "North Carolina Department of Health and Human Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NC"
+        }
+      ]
+    },
+    {
+      "code": "ND",
+      "display": "NORTH_DAKOTA",
+      "definition": "North Dakota Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "ND"
+        }
+      ]
+    },
+    {
+      "code": "NE",
+      "display": "NEBRASKA",
+      "definition": "Nebraska Department of Health and Human Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NE"
+        }
+      ]
+    },
+    {
+      "code": "NH",
+      "display": "NEW_HAMPSHIRE",
+      "definition": "New Hampshire Department of Health and Human Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NH"
+        }
+      ]
+    },
+    {
+      "code": "NJ",
+      "display": "NEW_JERSEY",
+      "definition": "New Jersey Department of Health and Senior Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NJ"
+        }
+      ]
+    },
+    {
+      "code": "NM",
+      "display": "NEW_MEXICO",
+      "definition": "New Mexico Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NM"
+        }
+      ]
+    },
+    {
+      "code": "NV",
+      "display": "NEVADA",
+      "definition": "Nevada State Health Division",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NV"
+        }
+      ]
+    },
+    {
+      "code": "NY",
+      "display": "NEW_YORK",
+      "definition": "New York State Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "NY"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10803"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11416"
+        }
+      ]
+    },
+    {
+      "code": "NYC",
+      "display": "NEW_YORK",
+      "definition": "New York City Department of Health and Mental Hygiene",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "CITY"
+        },
+        {
+          "code": "state",
+          "valueCode": "NY"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10002"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10003"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10005"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10006"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10008"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10012"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10013"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10014"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10016"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10017"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10018"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10019"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10022"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10025"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10026"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10027"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10028"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10029"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10031"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10032"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10033"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10034"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10035"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10036"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10037"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10038"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10039"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10041"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10043"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10044"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10045"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10055"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10060"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10065"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10069"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10075"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10080"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10081"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10087"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10090"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10101"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10102"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10103"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10104"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10105"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10106"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10107"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10108"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10109"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10110"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10111"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10112"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10113"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10114"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10115"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10116"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10117"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10118"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10119"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10120"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10121"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10122"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10123"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10124"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10125"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10126"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10128"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10129"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10130"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10131"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10132"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10133"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10138"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10150"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10151"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10152"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10153"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10154"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10155"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10156"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10157"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10158"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10159"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10160"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10162"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10163"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10164"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10165"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10166"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10167"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10168"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10169"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10170"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10171"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10172"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10173"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10174"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10175"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10176"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10177"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10178"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10179"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10185"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10199"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10203"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10211"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10212"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10213"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10242"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10249"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10256"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10258"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10259"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10260"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10261"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10265"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10268"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10269"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10270"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10271"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10272"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10273"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10274"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10275"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10276"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10277"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10278"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10279"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10280"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10281"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10282"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10285"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10286"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10301"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10302"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10303"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10304"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10305"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10306"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10307"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10308"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10309"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10310"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10311"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10312"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10313"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10314"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10451"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10452"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10453"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10454"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10455"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10456"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10457"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10458"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10459"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10460"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10461"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10462"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10463"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10464"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10465"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10466"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10467"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10468"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10469"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10470"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10471"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10472"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10473"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10474"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10475"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "10803"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11005"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11101"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11102"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11103"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11104"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11105"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11106"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11109"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11120"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11201"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11202"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11203"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11204"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11205"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11206"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11207"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11208"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11209"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11210"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11211"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11212"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11213"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11214"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11215"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11216"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11217"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11218"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11219"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11220"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11221"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11222"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11223"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11224"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11225"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11226"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11228"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11229"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11230"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11231"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11232"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11233"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11234"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11235"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11236"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11237"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11238"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11239"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11241"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11242"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11243"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11245"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11247"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11249"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11251"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11252"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11256"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11351"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11352"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11354"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11355"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11356"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11357"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11358"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11359"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11360"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11361"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11362"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11363"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11364"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11365"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11366"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11367"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11368"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11369"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11370"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11371"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11372"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11373"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11374"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11375"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11377"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11378"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11379"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11380"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11381"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11385"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11386"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11405"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11411"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11412"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11413"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11414"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11415"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11416"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11417"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11418"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11419"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11420"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11421"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11422"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11423"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11424"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11425"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11426"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11427"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11428"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11429"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11430"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11431"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11432"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11433"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11434"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11435"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11436"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11439"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11451"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11499"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11690"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11691"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11692"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11693"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11694"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11695"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "11697"
+        }
+      ]
+    },
+    {
+      "code": "OH",
+      "display": "OHIO",
+      "definition": "Ohio Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "OH"
+        }
+      ]
+    },
+    {
+      "code": "OK",
+      "display": "OKLAHOMA",
+      "definition": "Oklahoma State Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "OK"
+        }
+      ]
+    },
+    {
+      "code": "OR",
+      "display": "OREGON",
+      "definition": "Oregon Health Authority",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "OR"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97002"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97005"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97006"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97008"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97013"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97014"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97015"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97016"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97017"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97018"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97019"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97022"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97026"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97027"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "97028"
+        }
+      ]
+    },
+    {
+      "code": "PA",
+      "display": "PENNSYLVANIA",
+      "definition": "Pennsylvania Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "PA"
+        }
+      ]
+    },
+    {
+      "code": "PHL",
+      "display": "PENNSYLVANIA",
+      "definition": "City of Philadelphia Department of Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "CITY"
+        },
+        {
+          "code": "state",
+          "valueCode": "PA"
+        }
+      ]
+    },
+    {
+      "code": "PR",
+      "display": "PUERTO_RICO",
+      "definition": "Puerto Rico",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "PR"
+        }
+      ]
+    },
+    {
+      "code": "RI",
+      "display": "RHODE_ISLAND",
+      "definition": "Rhode Island Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "RI"
+        }
+      ]
+    },
+    {
+      "code": "SC",
+      "display": "SOUTH_CAROLINA",
+      "definition": "South Carolina Department of Health and Environmental Control",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "SC"
+        }
+      ]
+    },
+    {
+      "code": "SD",
+      "display": "SOUTH_DAKOTA",
+      "definition": "South Dakota Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "SD"
+        }
+      ]
+    },
+    {
+      "code": "SDC",
+      "display": "CALIFORNIA",
+      "definition": "San Diego County Public Health Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "COUNTY"
+        },
+        {
+          "code": "state",
+          "valueCode": "CA"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91901"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91902"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91903"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91905"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91906"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91908"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91909"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91910"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91911"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91912"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91913"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91914"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91915"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91916"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91917"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91921"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91931"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91932"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91933"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91934"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91935"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91941"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91942"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91943"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91944"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91945"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91946"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91947"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91948"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91950"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91951"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91962"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91963"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91976"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91977"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91978"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91979"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91980"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91987"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "91990"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92003"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92004"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92007"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92008"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92010"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92011"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92013"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92014"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92018"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92019"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92020"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92021"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92022"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92023"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92024"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92025"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92026"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92027"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92028"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92029"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92033"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92036"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92037"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92038"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92039"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92046"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92049"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92051"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92052"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92054"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92055"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92056"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92057"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92058"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92059"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92060"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92061"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92064"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92065"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92066"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92067"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92068"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92069"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92070"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92071"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92072"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92074"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92075"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92078"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92079"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92081"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92082"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92083"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92084"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92085"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92086"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92088"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92090"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92091"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92092"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92093"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92096"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92101"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92102"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92103"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92104"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92105"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92106"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92107"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92108"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92109"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92110"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92111"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92112"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92113"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92114"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92115"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92116"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92117"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92118"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92119"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92120"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92121"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92122"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92123"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92124"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92126"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92127"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92128"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92129"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92130"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92131"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92132"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92133"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92134"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92135"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92136"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92137"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92138"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92139"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92140"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92142"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92143"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92145"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92147"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92149"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92150"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92152"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92153"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92154"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92155"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92158"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92159"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92160"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92161"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92162"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92163"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92164"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92165"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92166"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92167"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92168"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92169"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92170"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92171"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92172"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92173"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92174"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92175"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92176"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92177"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92178"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92179"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92182"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92184"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92186"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92187"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92190"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92191"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92192"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92193"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92194"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92195"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92196"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92197"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92198"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "92199"
+        }
+      ]
+    },
+    {
+      "code": "SF",
+      "display": "CALIFORNIA",
+      "definition": "San Francisco",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "CITY"
+        },
+        {
+          "code": "state",
+          "valueCode": "CA"
+        }
+      ]
+    },
+    {
+      "code": "SN",
+      "display": "NEVADA",
+      "definition": "Southern Nevada Health District (SNHD)",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "DISTRICT"
+        },
+        {
+          "code": "state",
+          "valueCode": "NV"
+        }
+      ]
+    },
+    {
+      "code": "STC",
+      "display": "VIRGIN_ISLANDS",
+      "definition": "Saint Croix (Test)",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "COUNTY"
+        },
+        {
+          "code": "state",
+          "valueCode": "VI"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "00850"
+        }
+      ]
+    },
+    {
+      "code": "STJ",
+      "display": "VIRGIN_ISLANDS",
+      "definition": "Saint John (Test)",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "COUNTY"
+        },
+        {
+          "code": "state",
+          "valueCode": "VI"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "00830"
+        }
+      ]
+    },
+    {
+      "code": "TN",
+      "display": "TENNESSEE",
+      "definition": "Tennessee Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "TN"
+        }
+      ]
+    },
+    {
+      "code": "TX",
+      "display": "TEXAS",
+      "definition": "Texas Department of State Health Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "TX"
+        }
+      ]
+    },
+    {
+      "code": "UT",
+      "display": "UTAH",
+      "definition": "Utah Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "UT"
+        }
+      ]
+    },
+    {
+      "code": "VA",
+      "display": "VIRGINIA",
+      "definition": "Virginia Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "VA"
+        }
+      ]
+    },
+    {
+      "code": "VI",
+      "display": "VIRGIN_ISLANDS",
+      "definition": "Virgin Islands Department of Health (Test)",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "VI"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "00830"
+        }
+      ]
+    },
+    {
+      "code": "VT",
+      "display": "VERMONT",
+      "definition": "Vermont Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "VT"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05001"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05009"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05030"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05031"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05032"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05033"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05034"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05035"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05036"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05037"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05038"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05039"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05040"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05041"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05042"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05043"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05045"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05046"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05047"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05048"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05049"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05050"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05051"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05052"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05053"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05054"
+        },
+        {
+          "code": "postalcode",
+          "valueCode": "05401"
+        }
+      ]
+    },
+    {
+      "code": "WA",
+      "display": "WASHINGTON",
+      "definition": "Washington State Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "WA"
+        }
+      ]
+    },
+    {
+      "code": "WI",
+      "display": "WISCONSIN",
+      "definition": "Wisconsin Department of Health Services",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "WI"
+        }
+      ]
+    },
+    {
+      "code": "WV",
+      "display": "WEST_VIRGINIA",
+      "definition": "West Virginia Department of Health and Human Resources, Bureau for Public Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "WV"
+        }
+      ]
+    },
+    {
+      "code": "WY",
+      "display": "WYOMING",
+      "definition": "Wyoming Department of Health",
+      "property": [
+        {
+          "code": "type",
+          "valueCode": "STATE"
+        },
+        {
+          "code": "state",
+          "valueCode": "WY"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.1034",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1034",
+  "title": "Negative or Undetected Lab Result Value",
+  "status": "active",
+  "publisher": "Council of State and Territorial Epidemiologists Steward",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-09",
+        "concept": [
+          {
+            "code": "131194007",
+            "display": "Non-Reactive (qualifier value)"
+          },
+          {
+            "code": "168230009",
+            "display": "Sample direct microscopy no organism seen (finding)"
+          },
+          {
+            "code": "17621005",
+            "display": "Normal (qualifier value)"
+          },
+          {
+            "code": "23506009",
+            "display": "Normal flora (finding)"
+          },
+          {
+            "code": "260385009",
+            "display": "Negative (qualifier value)"
+          },
+          {
+            "code": "260389003",
+            "display": "No reaction (qualifier value)"
+          },
+          {
+            "code": "260394003",
+            "display": "Normal limits (qualifier value)"
+          },
+          {
+            "code": "260395002",
+            "display": "Normal range (qualifier value)"
+          },
+          {
+            "code": "260415000",
+            "display": "Not detected (qualifier value)"
+          },
+          {
+            "code": "264868006",
+            "display": "No growth (qualifier value)"
+          },
+          {
+            "code": "264887000",
+            "display": "Not isolated (qualifier value)"
+          },
+          {
+            "code": "2667000",
+            "display": "Absent (qualifier value)"
+          },
+          {
+            "code": "272519000",
+            "display": "Absence findings (qualifier value)"
+          },
+          {
+            "code": "27863008",
+            "display": "No organisms seen (finding)"
+          },
+          {
+            "code": "280413001",
+            "display": "Normal result (qualifier value)"
+          },
+          {
+            "code": "281297005",
+            "display": "Analyte not detected (qualifier value)"
+          },
+          {
+            "code": "371928007",
+            "display": "Not significant (qualifier value)"
+          },
+          {
+            "code": "373067005",
+            "display": "No (qualifier value)"
+          },
+          {
+            "code": "435151000124100",
+            "display": "No acid fast organisms seen (finding)"
+          },
+          {
+            "code": "444991000124106",
+            "display": "Repeatedly non-reactive (qualifier value)"
+          },
+          {
+            "code": "47492008",
+            "display": "Not seen (qualifier value)"
+          }
+        ]
+      }
+    ]
+  }
+}

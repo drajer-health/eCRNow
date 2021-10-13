@@ -1,0 +1,180 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.238",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.238",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.238"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionTestsforChlamydiatrachomatisbyCultureandIdentificationMethod",
+  "title": "Chlamydia trachomatis Infection (Tests for Chlamydia trachomatis by Culture and Identification Method)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection (Tests for Chlamydia trachomatis by Culture and Identification Method)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "concept": [
+          {
+            "code": "14461-8",
+            "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture"
+          },
+          {
+            "code": "14462-6",
+            "display": "Chlamydia trachomatis [Presence] in Cerebral spinal fluid by Organism specific culture"
+          },
+          {
+            "code": "14463-4",
+            "display": "Chlamydia trachomatis [Presence] in Cervix by Organism specific culture"
+          },
+          {
+            "code": "14464-2",
+            "display": "Chlamydia trachomatis [Presence] in Vaginal fluid by Organism specific culture"
+          },
+          {
+            "code": "14465-9",
+            "display": "Chlamydia trachomatis [Presence] in Urethra by Organism specific culture"
+          },
+          {
+            "code": "14467-5",
+            "display": "Chlamydia trachomatis [Presence] in Urine sediment by Organism specific culture"
+          },
+          {
+            "code": "45093-2",
+            "display": "Chlamydia trachomatis [Presence] in Anal by Organism specific culture"
+          },
+          {
+            "code": "45094-0",
+            "display": "Chlamydia trachomatis [Presence] in Conjunctival specimen by Organism specific culture"
+          },
+          {
+            "code": "45095-7",
+            "display": "Chlamydia trachomatis [Presence] in Genital specimen by Organism specific culture"
+          },
+          {
+            "code": "45096-5",
+            "display": "Chlamydia trachomatis [Presence] in Nasopharynx by Organism specific culture"
+          },
+          {
+            "code": "6349-5",
+            "display": "Chlamydia trachomatis [Presence] in Unspecified specimen by Organism specific culture"
+          },
+          {
+            "code": "80367-6",
+            "display": "Chlamydia trachomatis [Presence] in Rectum by Organism specific culture"
+          },
+          {
+            "code": "87950-2",
+            "display": "Chlamydia trachomatis [Presence] in Tissue by Organism specific culture"
+          },
+          {
+            "code": "89648-0",
+            "display": "Chlamydia trachomatis [Presence] in Throat by Organism specific culture"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "code": "14461-8",
+        "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14462-6",
+        "display": "Chlamydia trachomatis [Presence] in Cerebral spinal fluid by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14463-4",
+        "display": "Chlamydia trachomatis [Presence] in Cervix by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14464-2",
+        "display": "Chlamydia trachomatis [Presence] in Vaginal fluid by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14465-9",
+        "display": "Chlamydia trachomatis [Presence] in Urethra by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14467-5",
+        "display": "Chlamydia trachomatis [Presence] in Urine sediment by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45093-2",
+        "display": "Chlamydia trachomatis [Presence] in Anal by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45094-0",
+        "display": "Chlamydia trachomatis [Presence] in Conjunctival specimen by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45095-7",
+        "display": "Chlamydia trachomatis [Presence] in Genital specimen by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45096-5",
+        "display": "Chlamydia trachomatis [Presence] in Nasopharynx by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6349-5",
+        "display": "Chlamydia trachomatis [Presence] in Unspecified specimen by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "80367-6",
+        "display": "Chlamydia trachomatis [Presence] in Rectum by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "87950-2",
+        "display": "Chlamydia trachomatis [Presence] in Tissue by Organism specific culture"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "89648-0",
+        "display": "Chlamydia trachomatis [Presence] in Throat by Organism specific culture"
+      }
+    ]
+  }
+}
