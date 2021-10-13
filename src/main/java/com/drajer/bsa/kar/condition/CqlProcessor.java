@@ -33,7 +33,7 @@ public class CqlProcessor implements BsaConditionProcessor {
                 cqlCondition.getLibraryEndpoint(),
                 cqlCondition.getTerminologyEndpoint(),
                 cqlCondition.getDataEndpoint(),
-                cqlCondition.getBundle(),
+                kd.getInputResourcesAsBundle(),
                 expressions);
 
     BooleanType value =

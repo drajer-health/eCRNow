@@ -1,7 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
 import com.drajer.bsa.kar.model.BsaCondition;
-import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 
@@ -17,8 +16,6 @@ public class BsaCqlCondition extends BsaCondition {
 
   private String patientId;
   private String url;
-
-  private IBaseBundle bundle;
 
   public Endpoint getDataEndpoint() {
     return dataEndpoint;
@@ -58,14 +55,6 @@ public class BsaCqlCondition extends BsaCondition {
 
   public void setUrl(String url) {
     this.url = url;
-  }
-
-  public IBaseBundle getBundle() {
-    return bundle;
-  }
-
-  public void setBundle(IBaseBundle bundle) {
-    this.bundle = bundle;
   }
 
   public BsaCqlCondition() {

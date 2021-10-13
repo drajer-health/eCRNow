@@ -1,0 +1,477 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.632",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.632",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.632"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionSecondarySitesComplicationsDisordersSNOMED",
+  "title": "Chlamydia trachomatis Infection [Secondary Sites Complications] (Disorders) (SNOMED)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection [Secondary Sites Complications] (Disorders) (SNOMED)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "concept": [
+          {
+            "code": "105629000",
+            "display": "Chlamydial infection (disorder)"
+          },
+          {
+            "code": "10750051000119105",
+            "display": "Chlamydia trachomatis infection in mother complicating childbirth (disorder)"
+          },
+          {
+            "code": "1084821000119103",
+            "display": "Cystitis caused by Chlamydia (disorder)"
+          },
+          {
+            "code": "112121000119105",
+            "display": "Venereal disease caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "143511000119105",
+            "display": "Perihepatitis caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "1621000119101",
+            "display": "Chlamydia trachomatis infection in pregnancy (disorder)"
+          },
+          {
+            "code": "186729003",
+            "display": "Chlamydial infection of lower genitourinary tract (disorder)"
+          },
+          {
+            "code": "186731007",
+            "display": "Chlamydial infection of anus and rectum (disorder)"
+          },
+          {
+            "code": "188463006",
+            "display": "Chlamydial pelvic inflammatory disease (disorder)"
+          },
+          {
+            "code": "189312004",
+            "display": "Pelvic inflammation with female sterility caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "197172005",
+            "display": "Chlamydial peritonitis (disorder)"
+          },
+          {
+            "code": "198176005",
+            "display": "Female chlamydial pelvic inflammatory disease (disorder)"
+          },
+          {
+            "code": "206289001",
+            "display": "Congenital chlamydial pneumonia (disorder)"
+          },
+          {
+            "code": "232403001",
+            "display": "Chlamydial pharyngitis (disorder)"
+          },
+          {
+            "code": "233610007",
+            "display": "Neonatal chlamydial pneumonia (disorder)"
+          },
+          {
+            "code": "234099003",
+            "display": "Lymphedema due to lymphogranuloma venereum (disorder)"
+          },
+          {
+            "code": "236672003",
+            "display": "Chlamydial prostatitis (disorder)"
+          },
+          {
+            "code": "236749007",
+            "display": "Chlamydial balanitis (disorder)"
+          },
+          {
+            "code": "236767000",
+            "display": "Chlamydial epididymitis (disorder)"
+          },
+          {
+            "code": "236773004",
+            "display": "Chlamydial epididymo-orchitis (disorder)"
+          },
+          {
+            "code": "237039009",
+            "display": "Chlamydial salpingitis (disorder)"
+          },
+          {
+            "code": "237043008",
+            "display": "Chlamydial perihepatitis (disorder)"
+          },
+          {
+            "code": "237097008",
+            "display": "Chlamydial vulvovaginitis (disorder)"
+          },
+          {
+            "code": "237106009",
+            "display": "Chlamydial bartholinitis (disorder)"
+          },
+          {
+            "code": "238372002",
+            "display": "Chlamydial dermatological disorders (disorder)"
+          },
+          {
+            "code": "240589008",
+            "display": "Chlamydia trachomatis infection (disorder)"
+          },
+          {
+            "code": "240590004",
+            "display": "Neonatal chlamydial infection (disorder)"
+          },
+          {
+            "code": "276681001",
+            "display": "Neonatal chlamydial dacryocystitis (disorder)"
+          },
+          {
+            "code": "312099009",
+            "display": "Genitourinary chlamydia infection (disorder)"
+          },
+          {
+            "code": "367504009",
+            "display": "Pelvic inflammatory disease with female sterility due to Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "406566006",
+            "display": "Chlamydial infection of the central nervous system (disorder)"
+          },
+          {
+            "code": "420910002",
+            "display": "Chlamydia trachomatis infection of anus and rectum (disorder)"
+          },
+          {
+            "code": "426165006",
+            "display": "Acute genitourinary chlamydia infection (disorder)"
+          },
+          {
+            "code": "426247003",
+            "display": "Acute genitourinary Chlamydia trachomatis infection (disorder)"
+          },
+          {
+            "code": "428015005",
+            "display": "Chlamydia trachomatis infection of genital structure (disorder)"
+          },
+          {
+            "code": "446471004",
+            "display": "Infection of epididymis caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "446594000",
+            "display": "Infection of pharynx caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "446642005",
+            "display": "Infection of anus caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "446752000",
+            "display": "Infection of peritoneum caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "446902002",
+            "display": "Infection of testis caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "447372001",
+            "display": "Infection of rectum caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "447386002",
+            "display": "Infection of vulva caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "447402003",
+            "display": "Infection of vagina caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "460618008",
+            "display": "Endocarditis caused by Genus Chlamydia (disorder)"
+          },
+          {
+            "code": "59484000",
+            "display": "Chlamydial polyarthritis (disorder)"
+          },
+          {
+            "code": "722520001",
+            "display": "Non-ulcerative sexually transmitted infection caused by Chlamydia trachomatis (disorder)"
+          },
+          {
+            "code": "722552001",
+            "display": "Sequela of infection caused by Chlamydia (disorder)"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "105629000",
+        "display": "Chlamydial infection (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10750051000119105",
+        "display": "Chlamydia trachomatis infection in mother complicating childbirth (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "1084821000119103",
+        "display": "Cystitis caused by Chlamydia (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "112121000119105",
+        "display": "Venereal disease caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "143511000119105",
+        "display": "Perihepatitis caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "1621000119101",
+        "display": "Chlamydia trachomatis infection in pregnancy (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "186729003",
+        "display": "Chlamydial infection of lower genitourinary tract (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "186731007",
+        "display": "Chlamydial infection of anus and rectum (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "188463006",
+        "display": "Chlamydial pelvic inflammatory disease (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "189312004",
+        "display": "Pelvic inflammation with female sterility caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "197172005",
+        "display": "Chlamydial peritonitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "198176005",
+        "display": "Female chlamydial pelvic inflammatory disease (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "206289001",
+        "display": "Congenital chlamydial pneumonia (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "232403001",
+        "display": "Chlamydial pharyngitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "233610007",
+        "display": "Neonatal chlamydial pneumonia (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "234099003",
+        "display": "Lymphedema due to lymphogranuloma venereum (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "236672003",
+        "display": "Chlamydial prostatitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "236749007",
+        "display": "Chlamydial balanitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "236767000",
+        "display": "Chlamydial epididymitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "236773004",
+        "display": "Chlamydial epididymo-orchitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "237039009",
+        "display": "Chlamydial salpingitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "237043008",
+        "display": "Chlamydial perihepatitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "237097008",
+        "display": "Chlamydial vulvovaginitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "237106009",
+        "display": "Chlamydial bartholinitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "238372002",
+        "display": "Chlamydial dermatological disorders (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "240589008",
+        "display": "Chlamydia trachomatis infection (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "240590004",
+        "display": "Neonatal chlamydial infection (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "276681001",
+        "display": "Neonatal chlamydial dacryocystitis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "312099009",
+        "display": "Genitourinary chlamydia infection (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "367504009",
+        "display": "Pelvic inflammatory disease with female sterility due to Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "406566006",
+        "display": "Chlamydial infection of the central nervous system (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "420910002",
+        "display": "Chlamydia trachomatis infection of anus and rectum (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "426165006",
+        "display": "Acute genitourinary chlamydia infection (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "426247003",
+        "display": "Acute genitourinary Chlamydia trachomatis infection (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "428015005",
+        "display": "Chlamydia trachomatis infection of genital structure (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "446471004",
+        "display": "Infection of epididymis caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "446594000",
+        "display": "Infection of pharynx caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "446642005",
+        "display": "Infection of anus caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "446752000",
+        "display": "Infection of peritoneum caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "446902002",
+        "display": "Infection of testis caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "447372001",
+        "display": "Infection of rectum caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "447386002",
+        "display": "Infection of vulva caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "447402003",
+        "display": "Infection of vagina caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "460618008",
+        "display": "Endocarditis caused by Genus Chlamydia (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "59484000",
+        "display": "Chlamydial polyarthritis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "722520001",
+        "display": "Non-ulcerative sexually transmitted infection caused by Chlamydia trachomatis (disorder)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "722552001",
+        "display": "Sequela of infection caused by Chlamydia (disorder)"
+      }
+    ]
+  }
+}

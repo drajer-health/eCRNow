@@ -127,5 +127,16 @@
   ],
   "gender": "male",
   "birthDate": "2000-01-01",
-  "deceasedBoolean": false
+  "deceasedBoolean": false,
+  "address": [
+    {
+      "line": [
+        "5101 Peachtree St NE"
+      ],
+      "city": "Elko",
+      "state": "NV",
+      "postalCode": "89801",
+      "country": "US"
+    }
+  ]
 }

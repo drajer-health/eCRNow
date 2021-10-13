@@ -439,7 +439,7 @@ public class KarParserImpl implements KarParser {
     for (PlanDefinitionActionConditionComponent con : conds) {
 
       if (con.getExpression() != null
-          && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
+          && (fromCode(con.getExpression().getLanguage())
               .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
           && fhirpathEnabled) {
 
@@ -449,7 +449,9 @@ public class KarParserImpl implements KarParser {
         bc.setExpressionEvaluator(expressionEvaluator);
         action.addCondition(bc);
       } else if (con.getExpression() != null
-          && (Expression.ExpressionLanguage.fromCode(con.getExpression().getLanguage())
+          // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier so using
+          // local fromCode for now
+          && (fromCode(con.getExpression().getLanguage())
               .equals(Expression.ExpressionLanguage.TEXT_CQL))
           && cqlEnabled) {
 
@@ -470,6 +472,25 @@ public class KarParserImpl implements KarParser {
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
       }
+    }
+  }
+
+  private Expression.ExpressionLanguage fromCode(String language) {
+    switch (language) {
+      case "text/cql":
+      case "text/cql.expression":
+      case "text/cql-expression":
+      case "text/cql-identifier":
+      case "text/cql.identifier":
+      case "text/cql.name":
+      case "text/cql-name":
+        return Expression.ExpressionLanguage.TEXT_CQL;
+      case "text/fhirpath":
+        return Expression.ExpressionLanguage.TEXT_FHIRPATH;
+      case "application/x-fhir-query":
+        return Expression.ExpressionLanguage.APPLICATION_XFHIRQUERY;
+      default:
+        throw new FHIRException("Unknown ExpressionLanguage code '" + language + "'");
     }
   }
 

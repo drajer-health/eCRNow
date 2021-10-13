@@ -223,6 +223,26 @@ public class BaseKarsTest extends BaseIntegrationTest {
       } catch (Exception e) {
         return null;
       }
+    } else {
+      String processMessageUrl = "/fhir/$process-message";
+      List<LoggedRequest> requests =
+          wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
+
+      if (requests.size() > 0) {
+        try {
+          IBaseResource resource =
+              FhirContext.forCached(FhirVersionEnum.R4)
+                  .newJsonParser()
+                  .parseResource(requests.get(0).getBodyAsString());
+          if (resource instanceof Bundle) {
+            return (Bundle) resource;
+          }
+
+        } catch (Exception e) {
+          logger.error("Error parsing $process-message request body");
+          return null;
+        }
+      }
     }
 
     return null;
