@@ -44,7 +44,7 @@ public class DiabetesECSDTest extends BaseKarsTest {
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "diabetes-report-numer-in", REPORTED, 1, 1, 0, 1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-in", REPORTED, 1, 1, 0, 1),
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-in", REPORTED, 1, 1, 0, 1),*/
         // new TestCaseInfo(
         //     "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-missing", NOT_TRIGGERED),
         // new TestCaseInfo(

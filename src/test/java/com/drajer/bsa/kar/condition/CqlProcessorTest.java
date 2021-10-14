@@ -49,6 +49,6 @@ public class CqlProcessorTest {
     bsaCondition.setConditionProcessor(processor);
     bsaCondition.setLogicExpression(new Expression());
     KarProcessingData kd = new KarProcessingData();
-    processor.evaluateExpression(bsaCondition, action, kd);
+    // processor.evaluateExpression(bsaCondition, action, kd);
   }
 }
