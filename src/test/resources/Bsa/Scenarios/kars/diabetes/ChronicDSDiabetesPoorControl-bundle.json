@@ -2636,6 +2636,11 @@
             "code": "execute-reporting-workflow"
           } ]
         } ],
+        "input": [ {
+          "id": "measurereport",
+          "type": "MeasureReport",
+          "profile": [ "http://hl7.org/fhir/MeasureReport" ]
+        } ],
         "condition": [ {
           "kind": "applicability",
           "expression": {

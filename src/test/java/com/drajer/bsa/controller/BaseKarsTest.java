@@ -110,7 +110,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
       // This just waits a "reasonable" amount of time for processing to complete before
       // continuing on
       int loops = 0;
-      while (loops < 60) {
+      while (loops < 20) {
         if (reportBundleGenerated(this.testCaseInfo.getName(), this.testCaseInfo.getPlanDef())) {
           break;
         } else {
