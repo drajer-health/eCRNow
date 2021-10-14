@@ -64,7 +64,20 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     logger.info(" Getting Resources by Type {}", dr.getType());
 
-    Set<Resource> candidates = kd.getResourcesByType(dr.getType());
+    HashSet<Resource> candidates = new HashSet<>();
+    Set<Resource> inputCandidates = kd.getResourcesByType(dr.getType());
+    if (inputCandidates != null) {
+      candidates.addAll(inputCandidates);
+    }
+
+    // TODO: Should this be alligned based on action id or datarequirements name or something?
+    for (Map.Entry<String, HashMap<String, Resource>> entry : kd.getActionOutputData().entrySet()) {
+      for (Map.Entry<String, Resource> innerEntry : entry.getValue().entrySet()) {
+        if (innerEntry.getValue().fhirType().equals(dr.getType())) {
+          candidates.add(innerEntry.getValue());
+        }
+      }
+    }
 
     if (candidates != null) {
 
@@ -132,6 +145,15 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           CodeableConcept cc = immz.getVaccineCode();
           filterByCode(dr, cc, kd, ctc, resources, res, false);
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.MeasureReport) {
+          if (resources.get(res.fhirType()) != null) {
+            resources.get(res.fhirType()).add(res);
+          } else {
+            Set<Resource> resources2 = new HashSet<Resource>();
+            resources2.add(res);
+            resources.put(res.fhirType(), resources2);
+          }
         }
       }
     }
@@ -208,13 +230,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     for (DataRequirement req : dataRequirements) {
       String name = req.getId();
       String fhirType = req.getType();
+      String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
       Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources = filterResources(req, kd);
       if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
         ParametersParameterComponent parameter =
             new ParametersParameterComponent().setName("%" + String.format("%s", name));
         parameter.addExtension(
             "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-            new ParameterDefinition().setMax("*").setName("%" + name).setType(fhirType));
+            new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
         params.addParameter(parameter);
       } else {
         for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
@@ -224,7 +247,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   new ParametersParameterComponent().setName("%" + String.format("%s", name));
               parameter.addExtension(
                   "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-                  new ParameterDefinition().setMax("*").setName("%" + name).setType(fhirType));
+                  new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
               parameter.setResource(resource);
               params.addParameter(parameter);
             }

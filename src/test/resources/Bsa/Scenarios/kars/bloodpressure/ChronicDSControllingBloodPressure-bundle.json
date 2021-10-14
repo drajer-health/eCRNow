@@ -2994,13 +2994,14 @@
         "input": [ {
           "id": "measurereport",
           "type": "MeasureReport",
-          "profile": [ "http://hl7.org/fhir/MeasureReport" ]
+          "profile": [ "http://hl7.org/fhir/MeasureReport" ],
+          "limit": "1"
         } ],
         "condition": [ {
           "kind": "applicability",
           "expression": {
             "language": "text/fhirpath",
-            "expression": "%measurereport.exists() and %measurereport.group.select(population).where(code.coding.code = 'denominator' and count > 0).exists()"
+            "expression": "%measurereport.group.select(population).where(code.coding[0].code = 'denominator' and count > 0).exists()"
           }
         } ],
         "action": [ {
@@ -3036,7 +3037,8 @@
           }, {
             "id": "measurereport",
             "type": "MeasureReport",
-            "profile": [ "http://hl7.org/fhir/MeasureReport" ]
+            "profile": [ "http://hl7.org/fhir/MeasureReport" ],
+            "limit": "1"
           } ],
           "output": [ {
             "id": "eicr-report-ChronicDSControllingBloodPressure",
