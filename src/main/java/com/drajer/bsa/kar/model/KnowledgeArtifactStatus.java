@@ -5,6 +5,8 @@ import com.drajer.ecrapp.config.JSONObjectUserType;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -106,6 +108,7 @@ public class KnowledgeArtifactStatus {
    * bundle would be produced for the KAR. If the output format is CDA, then a CDA document would be
    * produced for the KAR.
    */
+  @Enumerated(EnumType.STRING)
   @Column(name = "output_format", columnDefinition = "TEXT")
   OutputContentType outputFormat;
 
