@@ -516,7 +516,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForQuantityWithUnits(String elName, String value, String units) {
 
-    if (!units.isEmpty())
+    if (StringUtils.isNotEmpty(units))
       return CdaGeneratorConstants.START_XMLTAG
           + elName
           + CdaGeneratorConstants.SPACE
