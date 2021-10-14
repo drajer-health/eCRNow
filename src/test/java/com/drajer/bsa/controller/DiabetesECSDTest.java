@@ -35,22 +35,21 @@ public class DiabetesECSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        /*   new TestCaseInfo(
+        new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "diabetes-report-denom-exc-in", REPORTED, 1, 1, 1, 0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "diabetes-report-ip-in", REPORTED, 1, 1, 0, 0),
         new TestCaseInfo(
-             "ChronicDSDiabetesPoorControl", "diabetes-report-ip-out", TRIGGERED_ONLY, 0),
+            "ChronicDSDiabetesPoorControl", "diabetes-report-ip-out", TRIGGERED_ONLY, 0),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl", "diabetes-report-numer-in", REPORTED, 1, 1, 0, 1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-in", REPORTED, 1, 1, 0, 1),*/
-        // new TestCaseInfo(
-        //     "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-missing", NOT_TRIGGERED),
-        // new TestCaseInfo(
-        //     "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-out", NOT_TRIGGERED),
-        // new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-trigger-in", TRIGGERED_ONLY,
-        // 0),
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-in", REPORTED, 1, 1, 0, 1),
+        new TestCaseInfo(
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-missing", NOT_TRIGGERED),
+        new TestCaseInfo(
+            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-out", NOT_TRIGGERED),
+        new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-trigger-in", TRIGGERED_ONLY, 0),
         new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-trigger-out", NOT_TRIGGERED));
   }
 }
