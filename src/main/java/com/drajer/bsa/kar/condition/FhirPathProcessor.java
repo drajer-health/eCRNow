@@ -48,8 +48,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Parameters result =
         (Parameters)
             expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value =
-        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
+    BooleanType value = (BooleanType) result.getParameter("return");
 
     return value.getValue();
   }
@@ -215,7 +214,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             new ParametersParameterComponent().setName("%" + String.format("%s", name));
         parameter.addExtension(
             "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-            new ParameterDefinition().setMax("*").setName("%" + name));
+            new ParameterDefinition().setMax("*").setName("%" + name).setType(fhirType));
         params.addParameter(parameter);
       } else {
         for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
@@ -225,7 +224,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   new ParametersParameterComponent().setName("%" + String.format("%s", name));
               parameter.addExtension(
                   "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-                  new ParameterDefinition().setMax("*").setName("%" + name));
+                  new ParameterDefinition().setMax("*").setName("%" + name).setType(fhirType));
               parameter.setResource(resource);
               params.addParameter(parameter);
             }
