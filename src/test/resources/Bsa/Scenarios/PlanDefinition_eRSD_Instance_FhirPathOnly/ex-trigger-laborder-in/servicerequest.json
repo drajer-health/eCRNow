@@ -1,0 +1,40 @@
+{
+  "resourceType": "ServiceRequest",
+  "id": "ex-trigger-laborder-in-servicerequest-1",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-servicerequest"
+    ]
+  },
+  "status": "completed",
+  "intent": "order",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "4.0.1",
+          "code": "409063005",
+          "display": "Counselling"
+        }
+      ]
+    }
+  ],
+  "priority": "urgent",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "11585-7",
+        "display": "Bordetella pertussis Ab [Units/volume] in Serum"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "ex-trigger-laborder-in"
+  },
+  "encounter": {
+    "reference": "ex-trigger-laborder-in-encounter-1"
+  },
+  "authoredOn": "2020-01-01T11:00:00-07:00"
+}

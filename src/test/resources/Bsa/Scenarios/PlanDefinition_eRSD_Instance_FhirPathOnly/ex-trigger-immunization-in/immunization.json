@@ -1,0 +1,27 @@
+{
+  "resourceType": "Immunization",
+  "id": "ex-trigger-immunization-in-encounter-1",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter"
+    ]
+  },
+  "status": "completed",
+  "vaccineCode": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/sid/cvx",
+          "code": "01",
+          "display": "diphtheria, tetanus toxoids and pertussis vaccine"
+        }
+      ]
+    }
+  ],
+  "patient": {
+    "reference": "ex-trigger-immunization-in"
+  },
+  "occurrenceDateTime": "2020-01-01T11:00:00-07:00",
+  "recorded": "2020-01-01T11:00:00-07:00",
+  "primarySource": true
+}

@@ -1,0 +1,288 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.170",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.170",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.170"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionOrganismorSubstanceinLabResults",
+  "title": "Chlamydia trachomatis Infection (Organism or Substance in Lab Results)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection (Organism or Substance in Lab Results)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "concept": [
+          {
+            "code": "115289001",
+            "display": "Chlamydia trachomatis, serotype A (organism)"
+          },
+          {
+            "code": "115290005",
+            "display": "Chlamydia trachomatis, serotype B (organism)"
+          },
+          {
+            "code": "115291009",
+            "display": "Chlamydia trachomatis, serotype Ba (organism)"
+          },
+          {
+            "code": "115292002",
+            "display": "Chlamydia trachomatis, serotype C (organism)"
+          },
+          {
+            "code": "115293007",
+            "display": "Chlamydia trachomatis, serotype D (organism)"
+          },
+          {
+            "code": "115294001",
+            "display": "Chlamydia trachomatis, serotype E (organism)"
+          },
+          {
+            "code": "115295000",
+            "display": "Chlamydia trachomatis, serotype F (organism)"
+          },
+          {
+            "code": "115296004",
+            "display": "Chlamydia trachomatis, serotype I (organism)"
+          },
+          {
+            "code": "115297008",
+            "display": "Chlamydia trachomatis, serotype J (organism)"
+          },
+          {
+            "code": "115298003",
+            "display": "Chlamydia trachomatis, serotype K (organism)"
+          },
+          {
+            "code": "115299006",
+            "display": "Chlamydia trachomatis, serotype L (organism)"
+          },
+          {
+            "code": "115300003",
+            "display": "Chlamydia trachomatis, serotype L1 (organism)"
+          },
+          {
+            "code": "115301004",
+            "display": "Chlamydia trachomatis, serotype L2 (organism)"
+          },
+          {
+            "code": "115318000",
+            "display": "Chlamydia trachomatis, serotype L3 (organism)"
+          },
+          {
+            "code": "115319008",
+            "display": "Chlamydia trachomatis, serotype G (organism)"
+          },
+          {
+            "code": "115328009",
+            "display": "Chlamydia trachomatis, serotype H (organism)"
+          },
+          {
+            "code": "121002007",
+            "display": "Chlamydia trachomatis antigen (substance)"
+          },
+          {
+            "code": "121015003",
+            "display": "Chlamydia trachomatis F antigen (substance)"
+          },
+          {
+            "code": "121016002",
+            "display": "Chlamydia trachomatis G antigen (substance)"
+          },
+          {
+            "code": "121017006",
+            "display": "Chlamydia trachomatis K antigen (substance)"
+          },
+          {
+            "code": "121106008",
+            "display": "Ribosomal ribonucleic acid of Chlamydia trachomatis (substance)"
+          },
+          {
+            "code": "121181000",
+            "display": "Deoxyribonucleic acid of Chlamydia trachomatis (substance)"
+          },
+          {
+            "code": "442505006",
+            "display": "Chlamydia trachomatis, serotype Ja (organism)"
+          },
+          {
+            "code": "59134003",
+            "display": "Lymphogranuloma venereum antigen (substance)"
+          },
+          {
+            "code": "63938009",
+            "display": "Chlamydia trachomatis (organism)"
+          },
+          {
+            "code": "708219005",
+            "display": "Deoxyribonucleic acid of Chlamydia trachomatis L2 (substance)"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115289001",
+        "display": "Chlamydia trachomatis, serotype A (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115290005",
+        "display": "Chlamydia trachomatis, serotype B (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115291009",
+        "display": "Chlamydia trachomatis, serotype Ba (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115292002",
+        "display": "Chlamydia trachomatis, serotype C (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115293007",
+        "display": "Chlamydia trachomatis, serotype D (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115294001",
+        "display": "Chlamydia trachomatis, serotype E (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115295000",
+        "display": "Chlamydia trachomatis, serotype F (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115296004",
+        "display": "Chlamydia trachomatis, serotype I (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115297008",
+        "display": "Chlamydia trachomatis, serotype J (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115298003",
+        "display": "Chlamydia trachomatis, serotype K (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115299006",
+        "display": "Chlamydia trachomatis, serotype L (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115300003",
+        "display": "Chlamydia trachomatis, serotype L1 (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115301004",
+        "display": "Chlamydia trachomatis, serotype L2 (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115318000",
+        "display": "Chlamydia trachomatis, serotype L3 (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115319008",
+        "display": "Chlamydia trachomatis, serotype G (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "115328009",
+        "display": "Chlamydia trachomatis, serotype H (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121002007",
+        "display": "Chlamydia trachomatis antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121015003",
+        "display": "Chlamydia trachomatis F antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121016002",
+        "display": "Chlamydia trachomatis G antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121017006",
+        "display": "Chlamydia trachomatis K antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121106008",
+        "display": "Ribosomal ribonucleic acid of Chlamydia trachomatis (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121181000",
+        "display": "Deoxyribonucleic acid of Chlamydia trachomatis (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "442505006",
+        "display": "Chlamydia trachomatis, serotype Ja (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "59134003",
+        "display": "Lymphogranuloma venereum antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "63938009",
+        "display": "Chlamydia trachomatis (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "708219005",
+        "display": "Deoxyribonucleic acid of Chlamydia trachomatis L2 (substance)"
+      }
+    ]
+  }
+}

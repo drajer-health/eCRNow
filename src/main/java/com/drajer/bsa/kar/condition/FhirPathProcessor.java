@@ -18,6 +18,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Observation;
@@ -146,6 +147,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           CodeableConcept cc = immz.getVaccineCode();
           filterByCode(dr, cc, kd, ctc, resources, res, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.Encounter) {
+
+          logger.info(" Found Encounter Resource {}", res.getId());
+          Encounter enc = (Encounter) res;
+
+          CodeableConcept cc = enc.getReasonCodeFirstRep();
+          filterByCode(dr, cc, kd, ctc, resources, res, false);
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MeasureReport) {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
@@ -176,14 +185,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
       for (DataRequirementCodeFilterComponent drcf : drcfs) {
 
-        if ((drcf.getPath().equals("code") || drcf.getPath().equals("value"))
+        if ((drcf.getPath().toLowerCase().contains("code") || drcf.getPath().contains("value"))
             && drcf.getValueSet() != null) {
 
           Resource vsr =
               kd.getKar().getDependentResource(ResourceType.ValueSet, drcf.getValueSet());
 
           if (vsr != null) {
-
             logger.info(" Found Value Set {} to compare codes.", vsr.getId());
 
             ValueSet vs = (ValueSet) vsr;
