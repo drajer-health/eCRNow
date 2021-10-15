@@ -188,7 +188,7 @@ public class EicrServiceImpl implements EicrRRService {
 
       logger.info(" Found the Ehr Server Url ");
 
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
       String accessToken = tokenResponse.getString(ACCESS_TOKEN);
 
       String fhirVersion = "";

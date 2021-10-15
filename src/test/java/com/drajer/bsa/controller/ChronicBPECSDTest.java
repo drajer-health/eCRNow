@@ -41,13 +41,12 @@ public class ChronicBPECSDTest extends BaseKarsTest {
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure", "bp-report-numer-out", REPORTED, 1, 1, 0, 0),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-in", TRIGGERED_ONLY, 0, 0),
+            "ChronicDSControllingBloodPressure", "bp-trigger-condition-in", REPORTED, 1, 1),
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure", "bp-trigger-condition-missing", NOT_TRIGGERED),
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure", "bp-trigger-condition-out", NOT_TRIGGERED),
-        new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-in", TRIGGERED_ONLY, 0, 0),
+        new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-in", TRIGGERED_ONLY),
         new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-out", NOT_TRIGGERED));
   }
 }

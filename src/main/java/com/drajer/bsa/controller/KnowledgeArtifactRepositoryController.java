@@ -18,21 +18,46 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ *
+ *
+ * <h1>KnowledgeArtifactRepositoryController</h1>
+ *
+ * The KnowledgeArtifactRepositoryController is used to manage the different Knowledge Artifact
+ * Repositories that will be used by the Backend Service App.(BSA). A Knowledge Artifact Repository
+ * (KAR) is used to publish Knowledge Artifacts for various reporting programs.
+ *
+ * @author nbashyam
+ * @since 2021-04-15
+ */
 @RestController
 public class KnowledgeArtifactRepositoryController {
 
   private final Logger logger =
       LoggerFactory.getLogger(KnowledgeArtifactRepositoryController.class);
 
+  /** The Service class to manage the Knowledge Artifact Repositories */
   @Autowired KarService karService;
 
+  /**
+   * Method to retrieve the Knowledge Artifact Repsoitory by Id
+   *
+   * @param karId - Id of the Knowledge Artifact Repository
+   * @return - The Knowledge Artifact Repository object for the id provided
+   */
   @CrossOrigin
   @RequestMapping("/api/kar/{karId}")
-  public KnowledgeArtifiactRepository getHealthcareSettingById(
+  public KnowledgeArtifiactRepository getKnowledgeArtifactById(
       @PathVariable("karId") Integer karId) {
     return karService.getKARById(karId);
   }
 
+  /**
+   * Method to create a Knowledge Artifact Repository with the summary information.
+   *
+   * @param kar - The KnowledgeArtifactRepository object that needs to be persisted.
+   * @return - Entity that is created.
+   */
   @CrossOrigin
   @RequestMapping(value = "/api/kar", method = RequestMethod.POST)
   public ResponseEntity<?> createKARs(@RequestBody KnowledgeArtifiactRepository kar) {
@@ -54,18 +79,38 @@ public class KnowledgeArtifactRepositoryController {
     }
   }
 
+  /**
+   * Method to retrieve the KAR by its URL.
+   *
+   * @param url - The unique URL for the KAR
+   * @return - The KAR object by its URL
+   */
   @CrossOrigin
   @RequestMapping("/api/kars")
   public KnowledgeArtifiactRepository getKARByUrl(@RequestParam(value = "url") String url) {
     return karService.getKARByUrl(url);
   }
 
+  /**
+   * Method to retrieve the list of all KARs
+   *
+   * @return - List of KARs
+   */
   @CrossOrigin
   @RequestMapping("/api/kars/")
   public List<KnowledgeArtifiactRepository> getAllKARs() {
     return karService.getAllKARs();
   }
 
+  /**
+   * Method to add KARStatus for a specific Healthcare setting. The KARStatus object contains how
+   * the KAR is activated, de-activated for a Healthcare setting. The KARStatus also contains
+   * information on whether subscriptions are enabled, disabled and the type of output that should
+   * be generated for the specific KAR for the specific Healthcare setting.
+   *
+   * @param - The KAR status object for the healthcare setting.
+   * @return - The KARStatus Object that is created.
+   */
   @CrossOrigin
   @RequestMapping(value = "/api/addKARStatus/", method = RequestMethod.POST)
   public ResponseEntity<?> addKARStatus(@RequestBody List<KnowledgeArtifactStatus> karStatuses) {
@@ -85,6 +130,12 @@ public class KnowledgeArtifactRepositoryController {
     return new ResponseEntity<>(karStatuses, HttpStatus.OK);
   }
 
+  /**
+   * Method to retrieve the KARStatus by Healthcare Setting Id.
+   *
+   * @param hsId - The Healthcare setting Id for which the KARStatus is being accessed.
+   * @return - The List of KnowledgeArtifact Status for the HealthcareSetting.
+   */
   @CrossOrigin
   @RequestMapping("/api/karStatusByHsId")
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(

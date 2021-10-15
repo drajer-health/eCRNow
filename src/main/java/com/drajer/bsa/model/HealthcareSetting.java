@@ -219,12 +219,12 @@ public class HealthcareSetting {
     this.fhirServerBaseURL = fhirServerBaseURL;
   }
 
-  public String getTokenURL() {
+  public String getTokenUrl() {
     return tokenUrl;
   }
 
-  public void setTokenURL(String tokenURL) {
-    this.tokenUrl = tokenURL;
+  public void setTokenUrl(String tokenUrl) {
+    this.tokenUrl = tokenUrl;
   }
 
   public String getScopes() {
@@ -365,14 +365,6 @@ public class HealthcareSetting {
 
   public void setLastUpdated(Date lastUpdated) {
     this.lastUpdated = lastUpdated;
-  }
-
-  public String getTokenUrl() {
-    return tokenUrl;
-  }
-
-  public void setTokenUrl(String tokenUrl) {
-    this.tokenUrl = tokenUrl;
   }
 
   public Boolean getRequireAud() {

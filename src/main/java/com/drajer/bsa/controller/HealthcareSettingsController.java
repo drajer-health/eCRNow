@@ -1,8 +1,11 @@
 package com.drajer.bsa.controller;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
+import com.drajer.sof.utils.Authorization;
 import java.util.List;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +35,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class HealthcareSettingsController {
+
+  private static final String FHIR_VERSION = "fhirVersion";
+  private static final String VALUE_URI = "valueUri";
+  private static final String EXTENSION = "extension";
+
+  @Autowired Authorization authorization;
 
   @Autowired HealthcareSettingsService healthcareSettingsService;
 
@@ -70,6 +79,31 @@ public class HealthcareSettingsController {
 
       logger.info("Healthcare Setting does not exist, Saving the Healthcare Settings");
 
+      if (hsDetails.getTokenUrl() == null) {
+        JSONObject object =
+            authorization.getMetadata(hsDetails.getFhirServerBaseURL() + "/metadata");
+        if (object != null) {
+          logger.info("Reading Metadata information");
+          JSONObject security = (JSONObject) object.getJSONArray("rest").get(0);
+          JSONObject sec = security.getJSONObject("security");
+          JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
+          JSONArray innerExtension = extension.getJSONArray(EXTENSION);
+          if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
+            hsDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
+          }
+          if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
+            hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
+          }
+
+          for (int i = 0; i < innerExtension.length(); i++) {
+            JSONObject urlExtension = innerExtension.getJSONObject(i);
+            if (urlExtension.getString("url").equals("token")) {
+              logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
+              hsDetails.setTokenUrl(urlExtension.getString(VALUE_URI));
+            }
+          }
+        }
+      }
       healthcareSettingsService.saveOrUpdate(hsDetails);
 
       return new ResponseEntity<>(hsDetails, HttpStatus.OK);

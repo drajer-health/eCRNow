@@ -146,6 +146,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
+  @Column(name = "is_user_account_launch", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isUserAccountLaunch;
+
   @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
@@ -448,6 +452,14 @@ public class LaunchDetails {
 
   public void setIsSystem(Boolean isSystem) {
     this.isSystem = isSystem;
+  }
+
+  public Boolean getIsUserAccountLaunch() {
+    return isUserAccountLaunch;
+  }
+
+  public void setIsUserAccountLaunch(Boolean isUserAccountLaunch) {
+    this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
   public String getSmtpPort() {

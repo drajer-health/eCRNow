@@ -31,7 +31,8 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
   // Comment out lines that don't work to temporarily disable test cases.
   // for eCSD tests the main points are
   // 1. Whether or not a reporting Bundle is generated (i.e. initial-pop = true)
-  // 2. The Bundle contains a Measure report (TODO: validate that the other resources are present)
+  // 2. The Bundle contains a Measure report (TODO: validate that the other
+  // resources are present)
   // 3. The MeasureReport has the correct info for the test case
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
@@ -39,6 +40,12 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
         new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-no-trigger-in", NOT_TRIGGERED),
         new TestCaseInfo(
             "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-high", REPORTED, 1),
+        new TestCaseInfo(
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-low", REPORTED, 1),
+        new TestCaseInfo(
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-mid", REPORTED, 1),
+        new TestCaseInfo(
+            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-out-post", TRIGGERED_ONLY, 0),
         new TestCaseInfo(
             "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-low", REPORTED, 1),
         new TestCaseInfo(
