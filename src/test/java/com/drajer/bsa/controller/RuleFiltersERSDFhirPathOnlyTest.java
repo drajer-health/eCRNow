@@ -65,7 +65,7 @@ public class RuleFiltersERSDFhirPathOnlyTest extends BaseKarsTest {
             TRIGGERED_ONLY),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-immunization-in", REPORTED),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", REPORTED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", TRIGGERED_ONLY),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-laborder-in", REPORTED),
         new TestCaseInfo(

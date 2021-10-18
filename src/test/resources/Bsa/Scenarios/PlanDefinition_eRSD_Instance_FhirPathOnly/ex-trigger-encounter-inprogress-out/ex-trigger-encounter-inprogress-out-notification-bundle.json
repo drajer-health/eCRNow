@@ -91,7 +91,7 @@
               "coding": [
                 {
                   "system": "http://snomed.info/sct",
-                  "code": "10750051000119105",
+                  "code": "Out",
                   "display": "Chlamydia trachomatis infection in mother complicating childbirth (disorder)"
                 }
               ]

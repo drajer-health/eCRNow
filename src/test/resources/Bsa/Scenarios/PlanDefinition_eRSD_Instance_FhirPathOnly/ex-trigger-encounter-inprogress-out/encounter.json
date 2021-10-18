@@ -6,7 +6,7 @@
       "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter"
     ]
   },
-  "status": "finished",
+  "status": "cancelled",
   "class": {
     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
     "code": "IMP",

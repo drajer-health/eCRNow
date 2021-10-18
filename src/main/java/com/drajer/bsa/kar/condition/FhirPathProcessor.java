@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.ParameterDefinition;
@@ -130,6 +131,19 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
           }
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.MedicationAdministration) {
+
+          logger.info(" Found MedicationAdministration Resource {}", res.getId());
+          MedicationAdministration mr = (MedicationAdministration) res;
+          Type med = mr.getMedication();
+
+          if (med instanceof CodeableConcept) {
+            CodeableConcept cc = (CodeableConcept) med;
+            filterByCode(dr, cc, kd, ctc, resources, res, false);
+          } else {
+            logger.info(" To be done, to navigate the Med Hiearachy to get the code ");
+          }
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Procedure) {
 
           logger.info(" Found Procedure Resource {}", res.getId());
@@ -185,7 +199,9 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
       for (DataRequirementCodeFilterComponent drcf : drcfs) {
 
-        if ((drcf.getPath().toLowerCase().contains("code") || drcf.getPath().contains("value"))
+        if ((drcf.getPath().toLowerCase().contains("code")
+                || drcf.getPath().contains("value")
+                || drcf.getPath().equals("medication"))
             && drcf.getValueSet() != null) {
 
           Resource vsr =
