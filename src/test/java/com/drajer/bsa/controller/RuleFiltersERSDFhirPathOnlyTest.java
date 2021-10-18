@@ -50,7 +50,7 @@ public class RuleFiltersERSDFhirPathOnlyTest extends BaseKarsTest {
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out", NOT_TRIGGERED),
         new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", TRIGGERED_ONLY),
+            "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", REPORTED),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-in", REPORTED),
         new TestCaseInfo(

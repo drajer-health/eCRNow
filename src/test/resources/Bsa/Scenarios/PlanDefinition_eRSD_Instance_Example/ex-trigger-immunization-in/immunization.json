@@ -11,9 +11,9 @@
     {
       "coding": [
         {
-          "system": "http://hl7.org/fhir/sid/cvx",
-          "code": "01",
-          "display": "diphtheria, tetanus toxoids and pertussis vaccine"
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "code": "1191222",
+          "display": "Naloxone Hydrochloride 0.4 MG/ML Injectable Solution"
         }
       ]
     }
