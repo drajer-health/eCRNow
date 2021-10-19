@@ -14,6 +14,7 @@ import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
+import com.drajer.bsa.utils.BsaConstants;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
 import java.io.File;
@@ -449,7 +450,8 @@ public class KarParserImpl implements KarParser {
         bc.setExpressionEvaluator(expressionEvaluator);
         action.addCondition(bc);
       } else if (con.getExpression() != null
-          // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier so using
+          // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
+          // so using
           // local fromCode for now
           && (fromCode(con.getExpression().getLanguage())
               .equals(Expression.ExpressionLanguage.TEXT_CQL))
@@ -469,6 +471,43 @@ public class KarParserImpl implements KarParser {
         bc.setLogicExpression(con.getExpression());
         bc.setLibraryProcessor(libraryProcessor);
         action.addCondition(bc);
+      } else if (con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+          && (cqlEnabled || fhirpathEnabled)) {
+        Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+        Expression exp = (Expression) ext.getValue();
+        if (exp != null
+            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+            && fhirpathEnabled) {
+
+          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
+          BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          bc.setLogicExpression(exp);
+          bc.setExpressionEvaluator(expressionEvaluator);
+          action.addCondition(bc);
+        } else if (exp != null
+            // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
+            // so using
+            // local fromCode for now
+            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_CQL))
+            && cqlEnabled) {
+
+          logger.info(" Found a CQL Expression from an alternative expression extension");
+          BsaCqlCondition bc = new BsaCqlCondition();
+          bc.setUrl(libraryCanonical.getValue());
+
+          // Set location of eRSD bundle for loading terminology and library logic
+          Endpoint libraryAndTerminologyEndpoint =
+              new Endpoint()
+                  .setAddress(karBundleFile.getAbsolutePath())
+                  .setConnectionType(new Coding().setCode("hl7-fhir-files"));
+          bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
+          bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+          bc.setLogicExpression(exp);
+          bc.setLibraryProcessor(libraryProcessor);
+          action.addCondition(bc);
+        } else {
+          logger.error(" Unknown type of Alternative Expression passed, cannot process ");
+        }
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
       }

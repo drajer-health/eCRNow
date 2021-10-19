@@ -42,42 +42,9 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   // 3. The MeasureReport has the correct info for the test case
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
-    return Arrays.asList();
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example",
-    //     "ex-trigger-all-criteria-missing",
-    //     NOT_TRIGGERED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-all-criteria-out",
-    // NOT_TRIGGERED),
-    //     new TestCaseInfo(
-    //       "PlanDefinition_eRSD_Instance_Example", "ex-trigger-condition-in", REPORTED));
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-in", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-completed-out", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-in", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-encounter-inprogress-in", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example",
-    //     "ex-trigger-encounter-inprogress-out",
-    //     TRIGGERED_ONLY),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-immunization-in", REPORTED),
-    // new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-in", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-laborder-in", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-labresult-in", REPORTED),
-    // new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-labtest-in", REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example",
-    //     "ex-trigger-medicationadministration-in",
-    //     REPORTED),
-    // new TestCaseInfo(
-    //     "PlanDefinition_eRSD_Instance_Example", "ex-trigger-medicationorder-in", REPORTED),
-    // new TestCaseInfo("PlanDefinition_eRSD_Instance_Example", "ex-trigger-out", NOT_TRIGGERED));
+    return Arrays.asList(
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "Reportable", REPORTED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "NotTriggered", NOT_TRIGGERED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "Triggered", TRIGGERED_ONLY));
   }
 }

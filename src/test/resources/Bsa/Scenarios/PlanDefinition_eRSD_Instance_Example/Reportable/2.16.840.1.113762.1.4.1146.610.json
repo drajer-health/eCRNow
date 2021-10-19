@@ -1,0 +1,99 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.610",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.610",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.610"
+    }
+  ],
+  "name": "TrachomaDisordersICD10CM",
+  "title": "Trachoma (Disorders) (ICD10CM)",
+  "status": "active",
+  "description": "Trachoma (Disorders) (ICD10CM)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "concept": [
+          {
+            "code": "A71",
+            "display": "Trachoma"
+          },
+          {
+            "code": "A71.0",
+            "display": "Initial stage of trachoma"
+          },
+          {
+            "code": "A71.1",
+            "display": "Active stage of trachoma"
+          },
+          {
+            "code": "A71.9",
+            "display": "Trachoma, unspecified"
+          },
+          {
+            "code": "B94.0",
+            "display": "Sequelae of trachoma"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A71",
+        "display": "Trachoma"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A71.0",
+        "display": "Initial stage of trachoma"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A71.1",
+        "display": "Active stage of trachoma"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A71.9",
+        "display": "Trachoma, unspecified"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "B94.0",
+        "display": "Sequelae of trachoma"
+      }
+    ]
+  }
+}

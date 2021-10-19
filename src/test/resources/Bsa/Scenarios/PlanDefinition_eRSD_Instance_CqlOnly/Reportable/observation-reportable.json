@@ -37,7 +37,7 @@
         }
     ],
     "subject": {
-        "reference": "Patient/ex-trigger-condition-in"
+        "reference": "Patient/reportable"
     },
     "effectiveDateTime": "2019-11-01T00:00:00"
 }

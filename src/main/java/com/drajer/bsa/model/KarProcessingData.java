@@ -222,7 +222,6 @@ public class KarProcessingData {
       for (Map.Entry<String, Set<Resource>> entry : res.entrySet()) {
 
         if (fhirInputDataById.containsKey(entry.getKey())) {
-          fhirInputDataById.get(entry.getKey()).clear();
           fhirInputDataById.put(entry.getKey(), entry.getValue());
         } else fhirInputDataById.put(entry.getKey(), entry.getValue());
       }

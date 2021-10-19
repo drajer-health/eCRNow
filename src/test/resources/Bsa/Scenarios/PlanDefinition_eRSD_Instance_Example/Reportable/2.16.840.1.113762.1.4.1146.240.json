@@ -1,0 +1,369 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.240",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.240",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.240"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionTestsforChlamydiatrachomatisAntigen",
+  "title": "Chlamydia trachomatis Infection (Tests for Chlamydia trachomatis Antigen)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection (Tests for Chlamydia trachomatis Antigen)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "concept": [
+          {
+            "code": "14468-3",
+            "display": "Chlamydia trachomatis Ag [Presence] in Blood by Immunoassay"
+          },
+          {
+            "code": "14469-1",
+            "display": "Chlamydia trachomatis Ag [Presence] in Cerebral spinal fluid by Immunoassay"
+          },
+          {
+            "code": "14470-9",
+            "display": "Chlamydia trachomatis Ag [Presence] in Cervix by Immunoassay"
+          },
+          {
+            "code": "14471-7",
+            "display": "Chlamydia trachomatis Ag [Presence] in Vaginal fluid by Immunoassay"
+          },
+          {
+            "code": "14472-5",
+            "display": "Chlamydia trachomatis Ag [Presence] in Urethra by Immunoassay"
+          },
+          {
+            "code": "14474-1",
+            "display": "Chlamydia trachomatis Ag [Presence] in Urine sediment by Immunoassay"
+          },
+          {
+            "code": "14507-8",
+            "display": "Chlamydia trachomatis Ag [Presence] in Blood by Immunofluorescence"
+          },
+          {
+            "code": "14508-6",
+            "display": "Chlamydia trachomatis Ag [Presence] in Cerebral spinal fluid by Immunofluorescence"
+          },
+          {
+            "code": "14509-4",
+            "display": "Chlamydia trachomatis Ag [Presence] in Cervix by Immunofluorescence"
+          },
+          {
+            "code": "14510-2",
+            "display": "Chlamydia trachomatis Ag [Presence] in Vaginal fluid by Immunofluorescence"
+          },
+          {
+            "code": "14511-0",
+            "display": "Chlamydia trachomatis Ag [Presence] in Urethra by Immunofluorescence"
+          },
+          {
+            "code": "14513-6",
+            "display": "Chlamydia trachomatis Ag [Presence] in Urine sediment by Immunofluorescence"
+          },
+          {
+            "code": "31768-5",
+            "display": "Chlamydia trachomatis Ag [Presence] in Blood"
+          },
+          {
+            "code": "31769-3",
+            "display": "Chlamydia trachomatis Ag [Presence] in Conjunctival specimen"
+          },
+          {
+            "code": "31770-1",
+            "display": "Chlamydia trachomatis Ag [Presence] in Cerebral spinal fluid"
+          },
+          {
+            "code": "31771-9",
+            "display": "Chlamydia trachomatis Ag [Presence] in Cervix"
+          },
+          {
+            "code": "31772-7",
+            "display": "Chlamydia trachomatis Ag [Presence] in Vaginal fluid"
+          },
+          {
+            "code": "31774-3",
+            "display": "Chlamydia trachomatis Ag [Presence] in Stool"
+          },
+          {
+            "code": "31775-0",
+            "display": "Chlamydia trachomatis Ag [Presence] in Urine sediment"
+          },
+          {
+            "code": "31776-8",
+            "display": "Chlamydia trachomatis Ag [Presence] in Urethra"
+          },
+          {
+            "code": "31777-6",
+            "display": "Chlamydia trachomatis Ag [Presence] in Unspecified specimen"
+          },
+          {
+            "code": "34709-6",
+            "display": "Chlamydia trachomatis Ag [Presence] in Nasopharynx"
+          },
+          {
+            "code": "34710-4",
+            "display": "Chlamydia trachomatis Ag [Presence] in Anal"
+          },
+          {
+            "code": "45091-6",
+            "display": "Chlamydia trachomatis Ag [Presence] in Genital specimen"
+          },
+          {
+            "code": "45092-4",
+            "display": "Chlamydia trachomatis Ag [Presence] in Nasopharynx by Immunoassay"
+          },
+          {
+            "code": "47234-0",
+            "display": "Chlamydia trachomatis Ag [Presence] in Body fluid"
+          },
+          {
+            "code": "6350-3",
+            "display": "Chlamydia trachomatis Ag [Presence] in Conjunctival specimen by Immunoassay"
+          },
+          {
+            "code": "6351-1",
+            "display": "Chlamydia trachomatis Ag [Presence] in Conjunctival specimen by Immunofluorescence"
+          },
+          {
+            "code": "6352-9",
+            "display": "Chlamydia trachomatis Ag [Presence] in Stool by Immunofluorescence"
+          },
+          {
+            "code": "6353-7",
+            "display": "Chlamydia trachomatis Ag [Presence] in Tissue by Immunofluorescence"
+          },
+          {
+            "code": "6354-5",
+            "display": "Chlamydia trachomatis Ag [Presence] in Unspecified specimen by Immunoassay"
+          },
+          {
+            "code": "6355-2",
+            "display": "Chlamydia trachomatis Ag [Presence] in Unspecified specimen by Immunofluorescence"
+          },
+          {
+            "code": "91860-7",
+            "display": "Chlamydia trachomatis Ag [Presence] in Genital specimen by Immunofluorescence"
+          },
+          {
+            "code": "91861-5",
+            "display": "Chlamydia trachomatis Ag [Presence] in Aspirate by Immunofluorescence"
+          },
+          {
+            "code": "91873-0",
+            "display": "Chlamydia trachomatis Ag [Presence] in Throat by Immunofluorescence"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "code": "14468-3",
+        "display": "Chlamydia trachomatis Ag [Presence] in Blood by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14469-1",
+        "display": "Chlamydia trachomatis Ag [Presence] in Cerebral spinal fluid by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14470-9",
+        "display": "Chlamydia trachomatis Ag [Presence] in Cervix by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14471-7",
+        "display": "Chlamydia trachomatis Ag [Presence] in Vaginal fluid by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14472-5",
+        "display": "Chlamydia trachomatis Ag [Presence] in Urethra by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14474-1",
+        "display": "Chlamydia trachomatis Ag [Presence] in Urine sediment by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14507-8",
+        "display": "Chlamydia trachomatis Ag [Presence] in Blood by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14508-6",
+        "display": "Chlamydia trachomatis Ag [Presence] in Cerebral spinal fluid by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14509-4",
+        "display": "Chlamydia trachomatis Ag [Presence] in Cervix by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14510-2",
+        "display": "Chlamydia trachomatis Ag [Presence] in Vaginal fluid by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14511-0",
+        "display": "Chlamydia trachomatis Ag [Presence] in Urethra by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "14513-6",
+        "display": "Chlamydia trachomatis Ag [Presence] in Urine sediment by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31768-5",
+        "display": "Chlamydia trachomatis Ag [Presence] in Blood"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31769-3",
+        "display": "Chlamydia trachomatis Ag [Presence] in Conjunctival specimen"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31770-1",
+        "display": "Chlamydia trachomatis Ag [Presence] in Cerebral spinal fluid"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31771-9",
+        "display": "Chlamydia trachomatis Ag [Presence] in Cervix"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31772-7",
+        "display": "Chlamydia trachomatis Ag [Presence] in Vaginal fluid"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31774-3",
+        "display": "Chlamydia trachomatis Ag [Presence] in Stool"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31775-0",
+        "display": "Chlamydia trachomatis Ag [Presence] in Urine sediment"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31776-8",
+        "display": "Chlamydia trachomatis Ag [Presence] in Urethra"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31777-6",
+        "display": "Chlamydia trachomatis Ag [Presence] in Unspecified specimen"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "34709-6",
+        "display": "Chlamydia trachomatis Ag [Presence] in Nasopharynx"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "34710-4",
+        "display": "Chlamydia trachomatis Ag [Presence] in Anal"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45091-6",
+        "display": "Chlamydia trachomatis Ag [Presence] in Genital specimen"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45092-4",
+        "display": "Chlamydia trachomatis Ag [Presence] in Nasopharynx by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "47234-0",
+        "display": "Chlamydia trachomatis Ag [Presence] in Body fluid"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6350-3",
+        "display": "Chlamydia trachomatis Ag [Presence] in Conjunctival specimen by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6351-1",
+        "display": "Chlamydia trachomatis Ag [Presence] in Conjunctival specimen by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6352-9",
+        "display": "Chlamydia trachomatis Ag [Presence] in Stool by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6353-7",
+        "display": "Chlamydia trachomatis Ag [Presence] in Tissue by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6354-5",
+        "display": "Chlamydia trachomatis Ag [Presence] in Unspecified specimen by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6355-2",
+        "display": "Chlamydia trachomatis Ag [Presence] in Unspecified specimen by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "91860-7",
+        "display": "Chlamydia trachomatis Ag [Presence] in Genital specimen by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "91861-5",
+        "display": "Chlamydia trachomatis Ag [Presence] in Aspirate by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "91873-0",
+        "display": "Chlamydia trachomatis Ag [Presence] in Throat by Immunofluorescence"
+      }
+    ]
+  }
+}
