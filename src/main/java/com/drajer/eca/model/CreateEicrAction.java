@@ -136,9 +136,10 @@ public class CreateEicrAction extends AbstractAction {
                   // No need to continue as the job will take over execution.
                   logger.info(" **** End Executing Create Eicr Action **** ");
                 }
+              } else {
+                logger.info(" No job to schedule since there is no timing data ");
               }
 
-              logger.info(" No job to schedule since there is no timing data ");
             } else if ((state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
                     && launchType == WorkflowEvent.SCHEDULED_JOB)
                 || validationMode) {

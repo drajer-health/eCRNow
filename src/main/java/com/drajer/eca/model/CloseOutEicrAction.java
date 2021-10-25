@@ -121,9 +121,10 @@ public class CloseOutEicrAction extends AbstractAction {
 
                 logger.info(" **** END Executing Close Out Eicr Action **** ");
               }
+            } else {
+              logger.info(" Job Not Scheduled since there is no timing data ");
             }
 
-            logger.info(" Job Not Scheduled since there is no timing data ");
           } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.SCHEDULED
               && launchType == WorkflowEvent.SCHEDULED_JOB) {
 
