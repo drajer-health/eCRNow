@@ -249,7 +249,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.hasEntry()) {
       List<BundleEntryComponent> entriesList = bundle.getEntry();
       if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.debug(
+        logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
             genericClient.loadPage().next(bundle).execute();
@@ -267,7 +267,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.getEntry() != null) {
       List<Entry> entriesList = bundle.getEntry();
       if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.debug(
+        logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
         if (nextPageBundleResults != null) {

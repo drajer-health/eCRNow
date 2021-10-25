@@ -117,9 +117,10 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               logger.info(" Timing Data is present , so create a job based on timing data.");
               scheduleJob(details, state);
               return;
+            } else {
+              logger.info(" No job to schedule since there is no timing data ");
             }
 
-            logger.info(" No job to schedule since there is no timing data ");
           } else if (state.getPeriodicUpdateJobStatus() == JobStatus.SCHEDULED
               // && !state.getCreateEicrStatus().getEicrCreated()
               && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {

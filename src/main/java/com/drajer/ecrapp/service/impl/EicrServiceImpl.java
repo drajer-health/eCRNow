@@ -160,7 +160,7 @@ public class EicrServiceImpl implements EicrRRService {
 
           } catch (Exception e) {
 
-            logger.error(" Error in the the submission of the Doc Reference to the EHR due to ", e);
+            logger.error(" Error in the submission of the Doc Reference to the EHR due to ", e);
             // Save the fact that we could not submit the message to the EHR.
             ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
           }
