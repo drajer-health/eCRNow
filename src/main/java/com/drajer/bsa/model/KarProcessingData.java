@@ -398,4 +398,20 @@ public class KarProcessingData {
       HashMap<String, Resource> notificationContextResources) {
     this.notificationContextResources = notificationContextResources;
   }
+
+  public KnowledgeArtifactStatus getKarStatus() {
+    return karStatus;
+  }
+
+  public void setKarStatus(KnowledgeArtifactStatus karStatus) {
+    this.karStatus = karStatus;
+  }
+
+  public HashMap<String, Set<Resource>> getActionOutputDataById() {
+    return actionOutputDataById;
+  }
+
+  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
+    this.actionOutputDataById = actionOutputDataById;
+  }
 }

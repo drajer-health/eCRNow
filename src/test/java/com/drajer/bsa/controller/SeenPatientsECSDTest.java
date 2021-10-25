@@ -38,8 +38,8 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
         new TestCaseInfo("ChronicDSSeenPatients", "seen-patients-no-trigger-in", NOT_TRIGGERED),
-        new TestCaseInfo(
-            "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-high", REPORTED, 1),
+        //   new TestCaseInfo(
+        //      "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-high", REPORTED, 1),
         new TestCaseInfo(
             "ChronicDSSeenPatients", "seen-patients-reported-ip-mp-in-low", REPORTED, 1),
         new TestCaseInfo(

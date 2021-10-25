@@ -65,6 +65,7 @@ public class CheckTriggerCodes extends BsaAction {
 
             HashMap<String, Set<Resource>> idres = new HashMap<>();
             Set<Resource> allResources = new HashSet<Resource>();
+
             matchInfo
                 .getValue1()
                 .values()
