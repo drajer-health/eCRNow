@@ -37,9 +37,9 @@ public class CdaValidatorUtil {
       String xsd = new File(ActionRepo.getInstance().getXsdSchemasLocation()).getAbsolutePath();
       StreamSource xsdStreamSource = new StreamSource(xsd);
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      System.setProperty("javax.xml.accessExternalSchema", "file");
+      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "file");
+      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "file");
       schema = schemaFactory.newSchema(xsdStreamSource);
-      System.clearProperty("javax.xml.accessExternalSchema");
     } catch (SAXException e) {
       schema = null;
       logger.error(

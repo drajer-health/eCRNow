@@ -2,117 +2,65 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Entity
-@Table(name = "client_details")
-@DynamicUpdate
-public class ClientDetails {
+public class ClientDetailsDTO {
 
-  @Transient private final Logger logger = LoggerFactory.getLogger(ClientDetails.class);
+  private final Logger logger = LoggerFactory.getLogger(ClientDetailsDTO.class);
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @Column(name = "is_provider_launch", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isProvider;
 
-  @Column(name = "is_system_launch", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem;
 
-  @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
   private String clientId;
 
-  @Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
   private String clientSecret;
 
-  @Column(name = "fhir_server_base_url", nullable = false, unique = true)
   private String fhirServerBaseURL;
 
-  @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
   private String tokenURL;
 
-  @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
   private String scopes;
 
-  @Column(name = "is_direct", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isDirect;
 
-  @Column(name = "is_xdr", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isXdr;
 
-  @Column(name = "is_restapi", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isRestAPI;
 
-  @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
   private String directHost;
 
-  @Column(name = "direct_user", nullable = true)
   private String directUser;
 
-  @Column(name = "direct_pwd", nullable = true)
   private String directPwd;
 
-  @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
 
-  @Column(name = "imap_port", nullable = true)
   private String imapPort;
 
-  @Column(name = "direct_recipient_address", nullable = true)
   private String directRecipientAddress;
 
-  @Column(name = "xdr_recipient_address", nullable = true)
   private String xdrRecipientAddress;
 
-  @Column(name = "rest_api_url", nullable = true)
   private String restAPIURL;
 
-  @Column(name = "aa_id", nullable = true)
   private String assigningAuthorityId;
 
-  @Column(name = "encounter_start_time", nullable = true)
   private String encounterStartThreshold;
 
-  @Column(name = "encounter_end_time", nullable = true)
   private String encounterEndThreshold;
 
-  @Column(name = "is_covid19", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid;
 
-  @Column(name = "is_full_ecr", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
 
-  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr;
 
-  @Column(name = "require_aud", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
 
-  @Column(name = "last_updated_ts", nullable = false)
-  @CreationTimestamp
   private Date lastUpdated;
 
   public Integer getId() {
@@ -232,7 +180,7 @@ public class ClientDetails {
   }
 
   public String getDirectPwd() {
-    if (directPwd != null && !StringUtils.isEmpty(directPwd)) {
+    if (directPwd != null) {
       return AESEncryption.decrypt(directPwd);
     } else {
       return null;

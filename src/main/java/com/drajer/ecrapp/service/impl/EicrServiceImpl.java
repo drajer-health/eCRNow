@@ -109,13 +109,15 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
+  public void handleReportabilityResponse(
+      ReportabilityResponse data, String xRequestId, boolean saveToEhr) {
 
     logger.debug(" Start processing RR");
 
     if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
 
-      logger.debug("Reportability Response: {}", data.getRrXml());
+      logger.debug("Reportability Response: {}, saveToEhr: {}", data.getRrXml(), saveToEhr);
+
       final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
       final CdaIi docId = rrModel.getRrDocId();
 
@@ -145,21 +147,23 @@ public class EicrServiceImpl implements EicrRRService {
           ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        try {
-          logger.info(" RR Xml and eCR is present hence create a document reference ");
-          DocumentReference docRef = constructDocumentReference(data, ecr);
+        if (saveToEhr) {
+          try {
+            logger.info(" RR Xml and eCR is present hence create a document reference ");
+            DocumentReference docRef = constructDocumentReference(data, ecr);
 
-          if (docRef != null) {
+            if (docRef != null) {
 
-            logger.info(" Document Reference created successfully, submitting to Ehr ");
-            submitDocRefToEhr(docRef, ecr);
+              logger.info(" Document Reference created successfully, submitting to Ehr ");
+              submitDocRefToEhr(docRef, ecr);
+            }
+
+          } catch (Exception e) {
+
+            logger.error(" Error in the submission of the Doc Reference to the EHR due to ", e);
+            // Save the fact that we could not submit the message to the EHR.
+            ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
           }
-
-        } catch (Exception e) {
-
-          logger.error(" Error in the the submission of the Doc Reference to the EHR due to ", e);
-          // Save the fact that we could not submit the message to the EHR.
-          ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
         }
 
         saveOrUpdate(ecr);

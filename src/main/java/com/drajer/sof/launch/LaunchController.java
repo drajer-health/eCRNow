@@ -83,17 +83,17 @@ public class LaunchController {
   private final SecureRandom random = new SecureRandom();
 
   @CrossOrigin
-  @RequestMapping("/api/launchDetails/{tokenId}")
+  @GetMapping("/api/launchDetails/{tokenId}")
   public LaunchDetails getLaunchDetailsById(@PathVariable("tokenId") Integer tokenId) {
     return authDetailsService.getAuthDetailsById(tokenId);
   }
 
   // POST method to create a Client
   @CrossOrigin
-  @RequestMapping(value = "/api/launchDetails", method = RequestMethod.POST)
+  @PostMapping(value = "/api/launchDetails")
   public LaunchDetails saveLaunchDetails(@RequestBody LaunchDetails launchDetails) {
 
-    logger.info(" Saving Launch Context", launchDetails);
+    logger.info(" Saving Launch Context: {}", launchDetails);
     authDetailsService.saveOrUpdate(launchDetails);
 
     logger.info("Scheduling refresh token job ");
@@ -129,7 +129,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping("/api/triggerQueryService/{tokenId}")
+  @GetMapping("/api/triggerQueryService/{tokenId}")
   public String triggerDataFromEHR(@PathVariable("tokenId") Integer tokenId) {
     LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(tokenId);
     SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
@@ -144,7 +144,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping("/api/loadingQueryService/{tokenId}")
+  @GetMapping("/api/loadingQueryService/{tokenId}")
   public String loadingDataFromEHR(@PathVariable("tokenId") Integer tokenId) {
     LaunchDetails launchDetails = authDetailsService.getAuthDetailsById(tokenId);
     SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
@@ -159,7 +159,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/systemLaunch", method = RequestMethod.POST)
+  @PostMapping(value = "/api/systemLaunch")
   public String invokeSystemLaunch(
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,
@@ -270,7 +270,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/launch")
+  @PostMapping(value = "/api/launch")
   public void launchApp(
       @RequestParam String launch,
       @RequestParam String iss,
@@ -344,7 +344,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/redirect")
+  @PostMapping(value = "/api/redirect")
   public void redirectEndPoint(
       @RequestParam String code,
       @RequestParam String state,
@@ -581,7 +581,7 @@ public class LaunchController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/launchDetails", method = RequestMethod.DELETE)
+  @DeleteMapping(value = "/api/launchDetails")
   public String deleteLaunchDetails(
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,

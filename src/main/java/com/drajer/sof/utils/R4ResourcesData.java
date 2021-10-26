@@ -1060,7 +1060,7 @@ public class R4ResourcesData {
             r4FhirData.setPractitionersList(practitionerList);
           }
         }
-        if (encounter.getServiceProvider() != null) {
+        if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
           Reference organizationReference = encounter.getServiceProvider();
           Organization organization =
               (Organization)
@@ -1077,7 +1077,7 @@ public class R4ResourcesData {
             r4FhirData.setOrganization(organization);
           }
         }
-        if (encounter.getLocation() != null) {
+        if (Boolean.TRUE.equals(encounter.hasLocation())) {
           List<Location> locationList = new ArrayList<>();
           List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
           for (EncounterLocationComponent location : enocunterLocations) {

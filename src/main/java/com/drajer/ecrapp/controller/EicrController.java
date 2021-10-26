@@ -44,7 +44,7 @@ public class EicrController {
     try {
       logger.info(
           "Retrieving EICR based on request\n"
-              + "eicrId = {} \n"
+              + "eicrId = {}\n"
               + "eicrDocId = {}\n"
               + "setId = {}\n"
               + "patientId = {}\n"
@@ -112,7 +112,7 @@ public class EicrController {
     try {
       logger.info(
           "Retrieving EICR based on request\n"
-              + "responseDocId = {} \n"
+              + "responseDocId = {}\n"
               + "eicrDocId = {}\n"
               + "setId = {}\n"
               + "patientId = {}\n"
@@ -170,8 +170,8 @@ public class EicrController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          xCorrelationIdHttpHeaderValue,
-          xRequestIdHttpHeaderValue);
+          xRequestIdHttpHeaderValue,
+          xCorrelationIdHttpHeaderValue);
       eicrList = eicrRRService.getEicrAndRRByXRequestId(xRequestId);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -191,8 +191,8 @@ public class EicrController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          xCorrelationIdHttpHeaderValue,
-          xRequestIdHttpHeaderValue);
+          xRequestIdHttpHeaderValue,
+          xCorrelationIdHttpHeaderValue);
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         logger.error("Eicr Doc Id is null ");
@@ -225,8 +225,8 @@ public class EicrController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for deleting ECR",
-          xCorrelationIdHttpHeaderValue,
-          xRequestIdHttpHeaderValue);
+          xRequestIdHttpHeaderValue,
+          xCorrelationIdHttpHeaderValue);
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         return new ResponseEntity<>(

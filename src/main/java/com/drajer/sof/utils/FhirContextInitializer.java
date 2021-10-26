@@ -109,10 +109,10 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Id: {}", resourceName, resourceId, responseException);
     } catch (Exception e) {
-      logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
+      logger.info("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }
     return resource;
   }
@@ -228,13 +228,13 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
           responseException);
     } catch (Exception e) {
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
@@ -249,7 +249,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.hasEntry()) {
       List<BundleEntryComponent> entriesList = bundle.getEntry();
       if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.debug(
+        logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
             genericClient.loadPage().next(bundle).execute();
@@ -267,7 +267,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.getEntry() != null) {
       List<Entry> entriesList = bundle.getEntry();
       if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.debug(
+        logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
         if (nextPageBundleResults != null) {
