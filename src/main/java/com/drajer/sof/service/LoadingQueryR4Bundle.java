@@ -39,7 +39,10 @@ public class LoadingQueryR4Bundle {
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     IGenericClient client =
         fhirContextInitializer.createClient(
-            context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
+            context,
+            launchDetails.getEhrServerURL(),
+            launchDetails.getAccessToken(),
+            launchDetails.getxRequestId());
 
     Bundle bundle =
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);

@@ -6,7 +6,6 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -141,40 +140,35 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
 
-              MDCUtils.addCorrelationId(ecr.getxCorrelationId());
-              try {
-                status.setEicrUpdated(true);
-                status.seteICRId(ecr.getId().toString());
-                status.setJobStatus(JobStatus.COMPLETED);
+              status.setEicrUpdated(true);
+              status.seteICRId(ecr.getId().toString());
+              status.setJobStatus(JobStatus.COMPLETED);
 
-                state.getPeriodicUpdateStatus().add(status);
-                state.setMatchTriggerStatus(newState.getMatchTriggerStatus());
+              state.getPeriodicUpdateStatus().add(status);
+              state.setMatchTriggerStatus(newState.getMatchTriggerStatus());
 
-                EcaUtils.updateDetailStatus(details, state);
+              EcaUtils.updateDetailStatus(details, state);
 
-                logger.debug(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
+              logger.debug(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
-                String fileName =
-                    ActionRepo.getInstance().getLogFileDirectory()
-                        + "/"
-                        + details.getLaunchPatientId()
-                        + "_PeriodicUpdateEicrAction"
-                        + LocalDateTime.now().getHour()
-                        + LocalDateTime.now().getMinute()
-                        + LocalDateTime.now().getSecond()
-                        + ".xml";
-                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
+              String fileName =
+                  ActionRepo.getInstance().getLogFileDirectory()
+                      + "/"
+                      + details.getLaunchPatientId()
+                      + "_PeriodicUpdateEicrAction"
+                      + LocalDateTime.now().getHour()
+                      + LocalDateTime.now().getMinute()
+                      + LocalDateTime.now().getSecond()
+                      + ".xml";
+              ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                logger.debug(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
+              logger.debug(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
 
-                // Schedule job again.
-                if (getTimingData() != null && !getTimingData().isEmpty()) {
+              // Schedule job again.
+              if (getTimingData() != null && !getTimingData().isEmpty()) {
 
-                  logger.info(" Timing Data is present , so create a job based on timing data.");
-                  scheduleJob(details, state);
-                }
-              } finally {
-                MDCUtils.removeCorrelationId();
+                logger.info(" Timing Data is present , so create a job based on timing data.");
+                scheduleJob(details, state);
               }
 
             } // Check if Trigger Code Match found

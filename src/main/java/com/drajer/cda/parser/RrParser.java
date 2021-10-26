@@ -20,24 +20,19 @@ public class RrParser {
 
   private final Logger logger = LoggerFactory.getLogger(RrParser.class);
 
-  private DocumentBuilderFactory factory;
-  private DocumentBuilder builder;
-  private Document doc;
-
-  public void initDoc(String cdaFile)
+  public Document initDoc(String cdaFile)
       throws ParserConfigurationException, SAXException, IOException {
     logger.debug("Initializing Document ");
-    factory = DocumentBuilderFactory.newInstance();
-    builder = factory.newDocumentBuilder();
-    doc =
-        builder.parse(
-            new BOMInputStream(IOUtils.toInputStream(cdaFile, StandardCharsets.UTF_8.name())));
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    return builder.parse(
+        new BOMInputStream(IOUtils.toInputStream(cdaFile, StandardCharsets.UTF_8.name())));
   }
 
   public CdaRrModel parse(String cdaFile) {
     try {
 
-      initDoc(cdaFile);
+      Document doc = initDoc(cdaFile);
 
       logger.debug("Creating Model");
       CdaRrModel model = new CdaRrModel();
