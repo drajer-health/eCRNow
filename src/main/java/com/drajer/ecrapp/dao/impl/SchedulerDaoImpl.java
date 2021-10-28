@@ -19,16 +19,9 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
   @Override
   public List<ScheduledTasks> getScheduledTasks(
       String actionType, String patientId, String encounterId, String launchId) {
-    // String query = "select task_name,task_instance,execution_time from scheduled_tasks where ";
     Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
     if (actionType != null) {
       criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + actionType + "%", MatchMode.ANYWHERE));
-    }
-    if (patientId != null) {
-      criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + patientId + "%", MatchMode.ANYWHERE));
-    }
-    if (encounterId != null) {
-      criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + encounterId + "%", MatchMode.ANYWHERE));
     }
     if (launchId != null) {
       criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + launchId + "%", MatchMode.ANYWHERE));

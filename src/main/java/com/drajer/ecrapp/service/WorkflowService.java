@@ -304,9 +304,9 @@ public class WorkflowService {
             .instance(
                 actionType.toString()
                     + "_"
-                    + String.valueOf(launchDetailsId),
-                    // + "_"
-                   // + java.util.UUID.randomUUID().toString(),
+                    + String.valueOf(launchDetailsId)
+                    + "_"
+                    + java.util.UUID.randomUUID().toString(),
                 new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
         t);
 
