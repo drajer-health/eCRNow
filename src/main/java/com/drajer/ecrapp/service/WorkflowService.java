@@ -10,6 +10,7 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.config.TaskConfiguration;
+import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
@@ -76,6 +77,10 @@ public class WorkflowService {
   @Autowired TaskConfiguration taskConfiguration;
 
   private static TaskConfiguration staticTaskConfiguration;
+  
+  @Autowired SchedulerService schedulerService;
+  
+  private static SchedulerService staticSchedulerService;
 
   @Value("${schematron.file.location}")
   String schematronFileLocation;
@@ -103,6 +108,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setWorkflowService(workflowInstance);
     this.staticScheduler = scheduler;
     this.staticTaskConfiguration = taskConfiguration;
+    this.staticSchedulerService = schedulerService;
   }
 
   public void handleWorkflowEvent(EventTypes.WorkflowEvent type, LaunchDetails details) {
@@ -294,7 +300,25 @@ public class WorkflowService {
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
-    CommandLineRunner task = null;
+	  Boolean timerAlreadyExists = false;
+	  CommandLineRunner task = null;
+	  
+	  if(staticSchedulerService != null) {
+		  
+		  List<ScheduledTasks> tasks = staticSchedulerService.getScheduledTasks(actionType.toString(), String.valueOf(launchDetailsId));
+		  
+		  if(tasks != null && !tasks.isEmpty())
+		  {
+			  logger.info(" Timer already exsits, so do not create new ones ");
+			  timerAlreadyExists = true;
+		  }
+		  else 
+			  logger.info(" Timer does not exist, hence will be creating new ");
+	  }
+	  
+	  if(!timerAlreadyExists)
+	  {
+    
     logger.info("Scheduling one time task to execute at {}", t);
 
     task = ignored -> logger.info("Scheduling one time task to after!");
@@ -311,6 +335,11 @@ public class WorkflowService {
         t);
 
     logger.debug("task  ::: {}", task);
+	  }
+	  else {
+		  logger.info(" Timer already exists, so no need to create a new timer for the same patient and encounter ");
+	  }
+	  
     return task;
   }
 

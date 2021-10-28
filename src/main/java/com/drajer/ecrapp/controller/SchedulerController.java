@@ -22,18 +22,11 @@ public class SchedulerController {
   @GetMapping("/api/scheduledTasks")
   public List<ScheduledTasks> getScheduledTasks(
       @RequestParam(name = "action", required = false) String actionType,
-      @RequestParam(name = "patient", required = false) String patientId,
-      @RequestParam(name = "encounter", required = false) String encounterId,
       @RequestParam(name = "launch", required = false) String launchId) {
 
     logger.info(
-        "Received request to get Scheduled Tasks by action:{},patient:{},encounter:{} and launch:{}",
-        actionType,
-        patientId,
-        encounterId,
-        launchId);
-    List<ScheduledTasks> tasksList =
-        schedulerService.getScheduledTasks(actionType, patientId, encounterId, launchId);
+        "Received request to get Scheduled Tasks by action:{} and launch:{}", actionType, launchId);
+    List<ScheduledTasks> tasksList = schedulerService.getScheduledTasks(actionType, launchId);
     return tasksList;
   }
 }

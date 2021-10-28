@@ -17,15 +17,13 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
   private static final String TASK_INSTANCE = "task_instance";
 
   @Override
-  public List<ScheduledTasks> getScheduledTasks(
-      String actionType, String patientId, String encounterId, String launchId) {
+  public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
     Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
-    if (actionType != null) {
-      criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + actionType + "%", MatchMode.ANYWHERE));
-    }
-    if (launchId != null) {
-      criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + launchId + "%", MatchMode.ANYWHERE));
-    }
+
+    String queryString = actionType + "_" + launchId + "_";
+
+    criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + queryString + "%", MatchMode.START));
+
     return criteria.list();
   }
 }

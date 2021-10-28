@@ -38,10 +38,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       // Handle Conditions
       Boolean conditionsMet = true;
       conditionsMet = matchCondition(details);
+      boolean encounterClosed = EcaUtils.checkEncounterClose(details);
+      logger.info(" Encounter is closed = {}", encounterClosed);
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet) {
+      if (conditionsMet && !encounterClosed) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -140,6 +142,9 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
+              logger.info(
+                  " Created Eicr successfully for Periodic Update Eicr Action with DocId {}",
+                  ecr.getEicrDocId());
 
               status.setEicrUpdated(true);
               status.seteICRId(ecr.getId().toString());
@@ -196,6 +201,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
           logger.info(" Related Actions are not completed, hence EICR will not be created. ");
         }
 
+      } else if (encounterClosed) {
+
+        logger.info(" Encounter is closed, hence EICR will not be created. ");
+        state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
+        EcaUtils.updateDetailStatus(details, state);
       } else {
 
         logger.info(" Conditions not met, hence EICR will not be created. ");

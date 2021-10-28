@@ -140,6 +140,9 @@ public class CloseOutEicrAction extends AbstractAction {
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
+              logger.info(
+                  " Eicr created successfully for close out action with Doc Id",
+                  ecr.getEicrDocId());
 
               newState.getCloseOutEicrStatus().setEicrClosed(true);
               newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
@@ -182,7 +185,7 @@ public class CloseOutEicrAction extends AbstractAction {
           logger.info(" Related Actions are not completed, hence EICR will not be created.");
         }
 
-      } else {
+      } else if(encounterClosed){
 
         logger.info(" Conditions not met, hence Close Out Action will have to be rescheduled . ");
         List<RelatedAction> racts = getRelatedActions();
@@ -194,6 +197,9 @@ public class CloseOutEicrAction extends AbstractAction {
             scheduleJob(details, state, ract, mapper);
           }
         }
+      }
+      else {
+    	  logger.info(" Encounter is not closed, hence close out action will not be scheduled. ");
       }
     } else {
 

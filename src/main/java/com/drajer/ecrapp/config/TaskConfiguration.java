@@ -25,7 +25,10 @@ public class TaskConfiguration {
 
   @Autowired RestTemplate restTemplate;
 
-  @Value("${workflow.endpoint:}")
+  @Value("${timer.retries}")
+  private Integer timerRetries;
+
+  @Value("${workflow.endpoint}")
   private String workflowEndpoint;
 
   /** Define a one-time task which have to be manually scheduled. */
@@ -58,10 +61,23 @@ public class TaskConfiguration {
                             workflowTask.getWorkflowEvent());
 
                   } catch (ObjectDeletedException deletedException) {
-                    log.info("Error in completing the Execution:::::", deletedException);
+                    log.info(
+                        "Error in completing the Execution, finish timer execution without retry.",
+                        deletedException);
                   } catch (Exception e) {
-                    ApplicationUtils.handleException(
-                        e, "Error in completing the Execution:::::", LogLevel.ERROR);
+
+                    if (ctx.getExecution().consecutiveFailures >= timerRetries) {
+                      log.error(
+                          "Error in completing the Execution after consecutive retries, so ENDING the task for Launch Details Id: {}",
+                          inst.getData().getLaunchDetailsId());
+                    } else {
+                      ApplicationUtils.handleException(
+                          e,
+                          "Error in completing the Execution, retry in 5 minutes.",
+                          LogLevel.ERROR);
+                      throw e;
+                    }
+
                   } finally {
                     MDC.clear();
                   }
