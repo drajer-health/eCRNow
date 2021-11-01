@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,7 +186,7 @@ public class CloseOutEicrAction extends AbstractAction {
           logger.info(" Related Actions are not completed, hence EICR will not be created.");
         }
 
-      } else if(encounterClosed){
+      } else if (encounterClosed) {
 
         logger.info(" Conditions not met, hence Close Out Action will have to be rescheduled . ");
         List<RelatedAction> racts = getRelatedActions();
@@ -197,18 +198,17 @@ public class CloseOutEicrAction extends AbstractAction {
             scheduleJob(details, state, ract, mapper);
           }
         }
-      }
-      else {
-    	  logger.info(" Encounter is not closed, hence close out action will not be scheduled. ");
+      } else {
+        logger.info(" Encounter is not closed, hence close out action will not be scheduled. ");
       }
     } else {
 
       String msg =
           "Invalid Object passed to Execute method, Launch Details expected, found : "
-              + obj.getClass().getName();
+              + (obj != null ? obj.getClass().getName() : null);
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
   }
 

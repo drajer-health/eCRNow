@@ -124,7 +124,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus(state.getPeriodicUpdateStatus().size());
-    // assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
+    assertEquals(JobStatus.COMPLETED, state.getPeriodicUpdateJobStatus());
   }
 
   @Test
@@ -138,7 +138,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     waitForEICR(50000);
     getLaunchDetailAndStatus();
     validateActionStatus(state.getPeriodicUpdateStatus().size());
-    // assertEquals(JobStatus.SCHEDULED, state.getPeriodicUpdateJobStatus());
+    assertEquals(JobStatus.COMPLETED, state.getPeriodicUpdateJobStatus());
 
     Eicr ecr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
 

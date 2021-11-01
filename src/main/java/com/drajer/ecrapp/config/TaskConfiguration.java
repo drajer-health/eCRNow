@@ -60,23 +60,33 @@ public class TaskConfiguration {
                             workflowTask.getActionType(),
                             workflowTask.getWorkflowEvent());
 
-                  } catch (ObjectDeletedException deletedException) {
                     log.info(
-                        "Error in completing the Execution, finish timer execution without retry.",
+                        "Successfully Completed Executing Task for {}, Launch Id::: {}",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId());
+
+                  } catch (ObjectDeletedException deletedException) {
+
+                    log.info(
+                        "Error in completing the Execution of Task for {}, Launch Id::: {}, finishing task without retries, Exception {}",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId(),
                         deletedException);
+
                   } catch (Exception e) {
 
-                    if (ctx.getExecution().consecutiveFailures >= timerRetries) {
-                      log.error(
-                          "Error in completing the Execution after consecutive retries, so ENDING the task for Launch Details Id: {}",
-                          inst.getData().getLaunchDetailsId());
-                    } else {
-                      ApplicationUtils.handleException(
-                          e,
-                          "Error in completing the Execution, retry in 5 minutes.",
-                          LogLevel.ERROR);
-                      throw e;
-                    }
+                    log.info(
+                        "Error in completing the Execution of Task for {}, Launch Id::: {}, retrying task in 5 minutes, Exception {}",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId(),
+                        e);
+
+                    ApplicationUtils.handleException(
+                        e,
+                        "Error in completing the Execution, retry in 5 minutes.",
+                        LogLevel.ERROR);
+
+                    throw e;
 
                   } finally {
                     MDC.clear();
