@@ -77,9 +77,9 @@ public class WorkflowService {
   @Autowired TaskConfiguration taskConfiguration;
 
   private static TaskConfiguration staticTaskConfiguration;
-  
+
   @Autowired SchedulerService schedulerService;
-  
+
   private static SchedulerService staticSchedulerService;
 
   @Value("${schematron.file.location}")
@@ -300,46 +300,44 @@ public class WorkflowService {
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
 
-	  Boolean timerAlreadyExists = false;
-	  CommandLineRunner task = null;
-	  
-	  if(staticSchedulerService != null) {
-		  
-		  List<ScheduledTasks> tasks = staticSchedulerService.getScheduledTasks(actionType.toString(), String.valueOf(launchDetailsId));
-		  
-		  if(tasks != null && !tasks.isEmpty())
-		  {
-			  logger.info(" Timer already exsits, so do not create new ones ");
-			  timerAlreadyExists = true;
-		  }
-		  else 
-			  logger.info(" Timer does not exist, hence will be creating new ");
-	  }
-	  
-	  if(!timerAlreadyExists)
-	  {
-    
-    logger.info("Scheduling one time task to execute at {}", t);
+    Boolean timerAlreadyExists = false;
+    CommandLineRunner task = null;
 
-    task = ignored -> logger.info("Scheduling one time task to after!");
-    staticScheduler.schedule(
-        staticTaskConfiguration
-            .sampleOneTimeTask()
-            .instance(
-                actionType.toString()
-                    + "_"
-                    + String.valueOf(launchDetailsId)
-                    + "_"
-                    + java.util.UUID.randomUUID().toString(),
-                new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
-        t);
+    if (staticSchedulerService != null) {
 
-    logger.debug("task  ::: {}", task);
-	  }
-	  else {
-		  logger.info(" Timer already exists, so no need to create a new timer for the same patient and encounter ");
-	  }
-	  
+      List<ScheduledTasks> tasks =
+          staticSchedulerService.getScheduledTasks(
+              actionType.toString(), String.valueOf(launchDetailsId));
+
+      if (tasks != null && !tasks.isEmpty()) {
+        logger.info(" Timer already exsits, so do not create new ones ");
+        timerAlreadyExists = true;
+      } else logger.info(" Timer does not exist, hence will be creating new ");
+    }
+
+    if (!timerAlreadyExists) {
+
+      logger.info("Scheduling one time task to execute at {}", t);
+
+      task = ignored -> logger.info("Scheduling one time task to after!");
+      staticScheduler.schedule(
+          staticTaskConfiguration
+              .sampleOneTimeTask()
+              .instance(
+                  actionType.toString()
+                      + "_"
+                      + String.valueOf(launchDetailsId)
+                      + "_"
+                      + java.util.UUID.randomUUID().toString(),
+                  new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
+          t);
+
+      logger.debug("task  ::: {}", task);
+    } else {
+      logger.info(
+          " Timer already exists, so no need to create a new timer for the same patient and encounter ");
+    }
+
     return task;
   }
 

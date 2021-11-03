@@ -25,7 +25,7 @@ public class TaskConfiguration {
 
   @Autowired RestTemplate restTemplate;
 
-  @Value("${timer.retries}")
+  @Value("${timer.retries:10}")
   private Integer timerRetries;
 
   @Value("${workflow.endpoint}")
@@ -75,18 +75,20 @@ public class TaskConfiguration {
 
                   } catch (Exception e) {
 
-                    log.info(
-                        "Error in completing the Execution of Task for {}, Launch Id::: {}, retrying task in 5 minutes, Exception {}",
-                        inst.getTaskAndInstance(),
-                        inst.getData().getLaunchDetailsId(),
-                        e);
-
-                    ApplicationUtils.handleException(
-                        e,
-                        "Error in completing the Execution, retry in 5 minutes.",
-                        LogLevel.ERROR);
-
-                    throw e;
+                    if (ctx.getExecution().consecutiveFailures >= timerRetries) {
+                      log.error(
+                          "Error in completing the Execution of Task for {}, Launch Id {}, removing the timer after {} retries",
+                          inst.getTaskAndInstance(),
+                          inst.getData().getLaunchDetailsId(),
+                          ctx.getExecution().consecutiveFailures,
+                          e);
+                    } else {
+                      ApplicationUtils.handleException(
+                          e,
+                          "Error in completing the Execution, retry in 5 minutes.",
+                          LogLevel.ERROR);
+                      throw e;
+                    }
 
                   } finally {
                     MDC.clear();
