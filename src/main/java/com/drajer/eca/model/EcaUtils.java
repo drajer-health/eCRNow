@@ -340,7 +340,7 @@ public class EcaUtils {
 
           logger.info(
               " Encounter status is not null and is closed with a status value of {}",
-              enc.getStatus().toString());
+              enc.getStatus());
           retVal = true;
         }
 

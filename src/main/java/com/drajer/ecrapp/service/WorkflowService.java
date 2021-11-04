@@ -310,9 +310,9 @@ public class WorkflowService {
               actionType.toString(), String.valueOf(launchDetailsId));
 
       if (tasks != null && !tasks.isEmpty()) {
-        logger.info(" Timer already exsits, so do not create new ones ");
+        logger.info(" Timer already exists, so do not create new ones ");
         timerAlreadyExists = true;
-      } else logger.info(" Timer does not exist, hence will be creating new ");
+      } else logger.info(" Timer does not exists, hence will be creating new ");
     }
 
     if (!timerAlreadyExists) {
