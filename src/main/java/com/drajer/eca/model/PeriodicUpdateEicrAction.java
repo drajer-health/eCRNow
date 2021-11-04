@@ -9,6 +9,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +39,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       // Handle Conditions
       Boolean conditionsMet = true;
       conditionsMet = matchCondition(details);
+      boolean encounterClosed = EcaUtils.checkEncounterClose(details);
+      logger.info(" Encounter is closed = {}", encounterClosed);
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet) {
+      if (conditionsMet && !encounterClosed) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -140,6 +143,9 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
+              logger.info(
+                  " Created Eicr successfully for Periodic Update Eicr Action with DocId {}",
+                  ecr.getEicrDocId());
 
               status.setEicrUpdated(true);
               status.seteICRId(ecr.getId().toString());
@@ -196,6 +202,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
           logger.info(" Related Actions are not completed, hence EICR will not be created. ");
         }
 
+      } else if (encounterClosed) {
+
+        logger.info(" Encounter is closed, hence EICR will not be created. ");
+        state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
+        EcaUtils.updateDetailStatus(details, state);
       } else {
 
         logger.info(" Conditions not met, hence EICR will not be created. ");
@@ -204,10 +215,10 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
       String msg =
           "Invalid Object passed to Execute method, Launch Details expected, found : "
-              + obj.getClass().getName();
+              + (obj != null ? obj.getClass().getName() : null);
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
 
     logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");

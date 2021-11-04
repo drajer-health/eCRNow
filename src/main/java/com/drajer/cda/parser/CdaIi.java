@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class CdaIi extends CdaDataElement {
 
-  private final Logger logger = LoggerFactory.getLogger(CdaDataElement.class);
+  private final Logger logger = LoggerFactory.getLogger(CdaIi.class);
 
   private String rootValue;
   private String extValue;

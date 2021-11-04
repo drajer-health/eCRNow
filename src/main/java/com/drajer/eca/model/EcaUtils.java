@@ -27,6 +27,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Encounter.EncounterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -329,7 +330,19 @@ public class EcaUtils {
       }
 
       if (enc != null) {
+
         logger.info(" Found Encounter for checking encounter closure ");
+
+        if (enc.getStatus() != null
+            && (enc.getStatus() == EncounterStatus.CANCELLED
+                || enc.getStatus() == EncounterStatus.FINISHED
+                || enc.getStatus() == EncounterStatus.ENTEREDINERROR)) {
+
+          logger.info(
+              " Encounter status is not null and is closed with a status value of {}",
+              enc.getStatus());
+          retVal = true;
+        }
 
         if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
           logger.info(
