@@ -189,10 +189,9 @@ public class LaunchController {
         for (int i = 0; i < innerExtension.length(); i++) {
           JSONObject urlExtension = innerExtension.getJSONObject(i);
           if (urlExtension.getString("url").equals("token")) {
-            logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
-            if ((clientDetails.getIsUserAccountLaunch() && clientDetails.getTokenURL() == null)
-                || clientDetails.getIsSystem()) {
+            if (clientDetails.getTokenURL() == null || clientDetails.getTokenURL().isEmpty()) {
+            	logger.info("Token URL not found in ClientDetails. So reading the Token URL from Metadata::::: {}", urlExtension.getString(VALUE_URI));
               clientDetails.setTokenURL(tokenEndpoint);
             }
           }
