@@ -115,8 +115,14 @@ public class LaunchDetails {
   @Column(name = "direct_pwd", nullable = true) // SMTP Pwd
   private String directPwd;
 
+  @Column(name = "smtp_url", nullable = true)
+  private String smtpUrl;
+
   @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
+
+  @Column(name = "imap_url", nullable = true)
+  private String imapUrl;
 
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
@@ -467,12 +473,28 @@ public class LaunchDetails {
     this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
   public String getSmtpPort() {
     return smtpPort;
   }
 
   public void setSmtpPort(String smtpPort) {
     this.smtpPort = smtpPort;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
   }
 
   public String getImapPort() {

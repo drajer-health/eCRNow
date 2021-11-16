@@ -46,9 +46,10 @@ public class DirectEicrSender extends EicrSender {
         logger.info(
             " Sending Mail from {} to {}", details.getDirectUser(), details.getDirectRecipient());
         sendMail(
-            details.getDirectHost(),
+            details.getDirectHost() != null ? details.getDirectHost() : details.getSmtpUrl(),
             details.getDirectUser(),
             details.getDirectPwd(),
+            details.getSmtpPort(),
             details.getDirectRecipient(),
             is,
             DirectEicrSender.FILE_NAME);
@@ -67,6 +68,7 @@ public class DirectEicrSender extends EicrSender {
       String host,
       String username,
       String password,
+      String port,
       String receipientAddr,
       InputStream is,
       String filename)
@@ -101,7 +103,7 @@ public class DirectEicrSender extends EicrSender {
 
     logger.info(" Completed constructing the Message ");
     Transport transport = session.getTransport("smtp");
-    transport.connect(host, 25, username, password);
+    transport.connect(host, Integer.parseInt(port), username, password);
     transport.sendMessage(message, message.getAllRecipients());
     transport.close();
 

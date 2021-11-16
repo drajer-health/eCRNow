@@ -191,7 +191,9 @@ public class LaunchController {
           if (urlExtension.getString("url").equals("token")) {
             tokenEndpoint = urlExtension.getString(VALUE_URI);
             if (clientDetails.getTokenURL() == null || clientDetails.getTokenURL().isEmpty()) {
-            	logger.info("Token URL not found in ClientDetails. So reading the Token URL from Metadata::::: {}", urlExtension.getString(VALUE_URI));
+              logger.info(
+                  "Token URL not found in ClientDetails. So reading the Token URL from Metadata::::: {}",
+                  urlExtension.getString(VALUE_URI));
               clientDetails.setTokenURL(tokenEndpoint);
             }
           }
@@ -216,7 +218,9 @@ public class LaunchController {
             launchDetails.setScope(clientDetails.getScopes());
             launchDetails.setDirectHost(clientDetails.getDirectHost());
             launchDetails.setDirectPwd(clientDetails.getDirectPwd());
+            launchDetails.setSmtpUrl(clientDetails.getSmtpUrl());
             launchDetails.setSmtpPort(clientDetails.getSmtpPort());
+            launchDetails.setImapUrl(clientDetails.getImapUrl());
             launchDetails.setImapPort(clientDetails.getImapPort());
             launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
             launchDetails.setDirectUser(clientDetails.getDirectUser());

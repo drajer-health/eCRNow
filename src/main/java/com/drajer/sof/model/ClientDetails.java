@@ -74,8 +74,14 @@ public class ClientDetails {
   @Column(name = "direct_pwd", nullable = true)
   private String directPwd;
 
+  @Column(name = "smtp_url", nullable = true)
+  private String smtpUrl;
+
   @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
+
+  @Column(name = "imap_url", nullable = true)
+  private String imapUrl;
 
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
@@ -256,6 +262,22 @@ public class ClientDetails {
 
   public String getSmtpPort() {
     return smtpPort;
+  }
+
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
   }
 
   public void setSmtpPort(String smtpPort) {
