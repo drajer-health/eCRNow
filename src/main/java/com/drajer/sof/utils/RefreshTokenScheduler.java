@@ -40,6 +40,7 @@ public class RefreshTokenScheduler {
   private static final String ACCESS_TOKEN_CAMEL_CASE = "accessToken";
   private static final String EXPIRES_IN = "expires_in";
   private static final String EXPIRES_IN_CAMEL_CASE = "expiresIn";
+  private static final String PROVIDER_UUID = "uuid";
 
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info(
@@ -154,6 +155,7 @@ public class RefreshTokenScheduler {
         logger.trace("Updating the AccessToken value in LaunchDetails table");
         existingAuthDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
         existingAuthDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
+        existingAuthDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
         existingAuthDetails.setLastUpdated(new Date());
         long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);

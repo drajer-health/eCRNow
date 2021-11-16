@@ -240,7 +240,7 @@ public class EicrServiceImpl implements EicrRRService {
         && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
             || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
-          data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
+          data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId(), ecr.getProviderUUID());
     } else return null;
   }
 

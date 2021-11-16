@@ -71,6 +71,9 @@ public class Eicr {
   @Column(name = "encounter_id", nullable = true, columnDefinition = "TEXT")
   private String encounterId;
 
+  @Column(name = "provider_uuid", nullable = true, columnDefinition = "TEXT")
+  private String providerUUID;
+
   @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
   private String ehrDocRefId;
 
@@ -197,6 +200,14 @@ public class Eicr {
 
   public void setEncounterId(String encounterId) {
     this.encounterId = encounterId;
+  }
+
+  public String getProviderUUID() {
+    return providerUUID;
+  }
+
+  public void setProviderUUID(String providerUUID) {
+    this.providerUUID = providerUUID;
   }
 
   public String getSetId() {

@@ -59,6 +59,7 @@ public class LaunchController {
   private static final String PATIENT = "patient";
   private static final String ENCOUNTER = "encounter";
   private static final String EXTENSION = "extension";
+  private static final String PROVIDER_UUID = "uuid";
 
   @Autowired LaunchService authDetailsService;
 
@@ -226,6 +227,7 @@ public class LaunchController {
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
+            launchDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());

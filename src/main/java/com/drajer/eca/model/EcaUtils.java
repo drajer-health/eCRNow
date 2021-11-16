@@ -178,6 +178,7 @@ public class EcaUtils {
       if (eICR != null && !eICR.isEmpty()) {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
+        ecr.setProviderUUID(details.getProviderUUID());
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
         logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
       } else {

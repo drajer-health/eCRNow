@@ -91,6 +91,9 @@ public class LaunchDetails {
   @Column(name = "encounter_id", nullable = true)
   private String encounterId;
 
+  @Column(name = "provider_uuid", nullable = true)
+  private String providerUUID;
+
   @Column(
       name = "status",
       nullable = true,
@@ -391,6 +394,14 @@ public class LaunchDetails {
 
   public void setEncounterId(String encounterId) {
     this.encounterId = encounterId;
+  }
+
+  public String getProviderUUID() {
+    return providerUUID;
+  }
+
+  public void setProviderUUID(String providerUUID) {
+    this.providerUUID = providerUUID;
   }
 
   public void setStatus(String stat) {
