@@ -99,14 +99,15 @@ public class LaunchController {
     logger.info("Scheduling refresh token job ");
     tokenScheduler.scheduleJob(launchDetails);
 
+    String taskInstanceId = "";
     // Kick off the Launch Event Processing
-    scheduleJob(launchDetails);
+    scheduleJob(launchDetails, taskInstanceId);
 
     return launchDetails;
   }
 
-  private void scheduleJob(LaunchDetails launchDetails) {
-    // TODO Auto-generated method stub
+  private void scheduleJob(LaunchDetails launchDetails, String taskInstanceId) {
+
     try {
       if (launchDetails.getEncounterId() != null && launchDetails.getStartDate() != null) {
         logger.info("Scheduling the job based on Encounter period.start time:::::");
@@ -118,7 +119,8 @@ public class LaunchController {
         launchDetails.setStatus(mapper.writeValueAsString(state));
         authDetailsService.saveOrUpdate(launchDetails);
         Instant t = launchDetails.getStartDate().toInstant();
-        workflowService.invokeScheduler(launchDetails.getId(), EcrActionTypes.MATCH_TRIGGER, t);
+        workflowService.invokeScheduler(
+            launchDetails.getId(), EcrActionTypes.MATCH_TRIGGER, t, taskInstanceId);
       } else {
         logger.info("Invoking SOF Launch workflow event handler ");
         workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);

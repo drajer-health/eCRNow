@@ -134,8 +134,9 @@ public class WorkflowService {
 
       logger.info("State = " + details.getStatus());
 
+      String taskInstanceId = "";
       // Use Action Repo to get the events that we need to fire.
-      executeEicrWorkflow(details, WorkflowEvent.SOF_LAUNCH);
+      executeEicrWorkflow(details, WorkflowEvent.SOF_LAUNCH, taskInstanceId);
 
     } else if (type == WorkflowEvent.SUBSCRIPTION_NOTIFICATION) {
 
@@ -144,7 +145,8 @@ public class WorkflowService {
     }
   }
 
-  public void executeEicrWorkflow(LaunchDetails details, WorkflowEvent launchType) {
+  public void executeEicrWorkflow(
+      LaunchDetails details, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" ***** START EXECUTING EICR WORKFLOW ***** ");
 
@@ -163,13 +165,13 @@ public class WorkflowService {
 
     if (state.getMatchTriggerStatus().getJobStatus() != JobStatus.COMPLETED) {
       logger.info("Execute Match Trigger Action");
-      executeActionsForType(details, EcrActionTypes.MATCH_TRIGGER, launchType);
+      executeActionsForType(details, EcrActionTypes.MATCH_TRIGGER, launchType, taskInstanceId);
     }
 
     if (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED
         && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
       logger.info("Execute Create Eicr Action");
-      executeActionsForType(details, EcrActionTypes.CREATE_EICR, launchType);
+      executeActionsForType(details, EcrActionTypes.CREATE_EICR, launchType, taskInstanceId);
     } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
       logger.info("Stopping Create Action");
       state.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
@@ -178,7 +180,8 @@ public class WorkflowService {
     if (state.getPeriodicUpdateJobStatus() == JobStatus.NOT_STARTED
         && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
       logger.info("Execute Periodic Update Action");
-      executeActionsForType(details, EcrActionTypes.PERIODIC_UPDATE_EICR, launchType);
+      executeActionsForType(
+          details, EcrActionTypes.PERIODIC_UPDATE_EICR, launchType, taskInstanceId);
     } else if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.COMPLETED) {
       logger.info("Stopping Periodic Update Action");
       state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
@@ -186,28 +189,31 @@ public class WorkflowService {
 
     if (state.getCloseOutEicrStatus().getJobStatus() == JobStatus.NOT_STARTED) {
       logger.info("Execute Close Out Action");
-      executeActionsForType(details, EcrActionTypes.CLOSE_OUT_EICR, launchType);
+      executeActionsForType(details, EcrActionTypes.CLOSE_OUT_EICR, launchType, taskInstanceId);
     }
 
     logger.info("Execute Validate Eicr Action");
-    executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType);
+    executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType, taskInstanceId);
 
     if (!details.getValidationMode()) {
       logger.info("Execute Submit Eicr Action");
-      executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType);
+      executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType, taskInstanceId);
     }
     logger.info("Execute RR Check Action");
-    executeActionsForType(details, EcrActionTypes.RR_CHECK, launchType);
+    executeActionsForType(details, EcrActionTypes.RR_CHECK, launchType, taskInstanceId);
 
     logger.info("***** END EXECUTING EICR WORKFLOW *****");
   }
 
   public void executeActions(
-      LaunchDetails details, Set<AbstractAction> actions, WorkflowEvent launchType) {
+      LaunchDetails details,
+      Set<AbstractAction> actions,
+      WorkflowEvent launchType,
+      String taskInstanceId) {
 
     for (AbstractAction act : actions) {
       // Execute the event.
-      act.execute(details, launchType);
+      act.execute(details, launchType, taskInstanceId);
     }
 
     // Update state for next action
@@ -215,19 +221,22 @@ public class WorkflowService {
   }
 
   public void executeActionsForType(
-      LaunchDetails details, EcrActionTypes type, WorkflowEvent launchType) {
+      LaunchDetails details, EcrActionTypes type, WorkflowEvent launchType, String taskInstanceId) {
 
     ActionRepo repo = ActionRepo.getInstance();
 
     // Get Actions for Trigger Matching.
     if (repo.getActions() != null && repo.getActions().containsKey(type)) {
 
-      executeActions(details, repo.getActions().get(type), launchType);
+      executeActions(details, repo.getActions().get(type), launchType, taskInstanceId);
     }
   }
 
   public void executeScheduledAction(
-      Integer launchDetailsId, EcrActionTypes actionType, WorkflowEvent launchType) {
+      Integer launchDetailsId,
+      EcrActionTypes actionType,
+      WorkflowEvent launchType,
+      String taskInstanceId) {
 
     logger.info(
         "Get Launch Details from Database for Id  : {} for Action Type {} and start execution ",
@@ -237,11 +246,11 @@ public class WorkflowService {
     LaunchDetails launchDetails =
         ActionRepo.getInstance().getLaunchService().getAuthDetailsById(launchDetailsId);
 
-    executeActionsForType(launchDetails, actionType, launchType);
+    executeActionsForType(launchDetails, actionType, launchType, taskInstanceId);
 
     // Execute the Eicr Workflow since a job executtion can unlock other dependencies and execute
     // other jobs.
-    executeEicrWorkflow(launchDetails, WorkflowEvent.DEPENDENT_EVENT_COMPLETION);
+    executeEicrWorkflow(launchDetails, WorkflowEvent.DEPENDENT_EVENT_COMPLETION, taskInstanceId);
   }
 
   public class EicrActionExecuteJob implements Runnable {
@@ -266,7 +275,9 @@ public class WorkflowService {
       try {
         MDC.setContextMap(this.loggingDiagnosticContext);
         logger.info("Starting the Thread");
-        executeScheduledAction(launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB);
+        String taskInstanceId = "";
+        executeScheduledAction(
+            launchDetailsId, actionType, WorkflowEvent.SCHEDULED_JOB, taskInstanceId);
       } catch (Exception e) {
         logger.error("Error in Getting Data=====>", e);
       } finally {
@@ -276,29 +287,37 @@ public class WorkflowService {
   }
 
   public static void scheduleJob(
-      Integer launchDetailsId, TimingSchedule ts, EcrActionTypes actionType, Date timeRef) {
+      Integer launchDetailsId,
+      TimingSchedule ts,
+      EcrActionTypes actionType,
+      Date timeRef,
+      String taskInstanceId) {
 
     Instant t = ApplicationUtils.convertTimingScheduleToInstant(ts, timeRef);
 
-    invokeScheduler(launchDetailsId, actionType, t);
+    invokeScheduler(launchDetailsId, actionType, t, taskInstanceId);
 
     String timing = t.toString();
     logger.info("Job Scheduled for Action to execute for : {} at time : {}", actionType, timing);
   }
 
   public static void scheduleJob(
-      Integer launchDetailsId, Duration d, EcrActionTypes actionType, Date timeRef) {
+      Integer launchDetailsId,
+      Duration d,
+      EcrActionTypes actionType,
+      Date timeRef,
+      String taskInstanceId) {
 
     Instant t = ApplicationUtils.convertDurationToInstant(d);
 
-    invokeScheduler(launchDetailsId, actionType, t);
+    invokeScheduler(launchDetailsId, actionType, t, taskInstanceId);
 
     String timing = t.toString();
     logger.info("Job Scheduled for Action {} to execute at time {}", actionType, timing);
   }
 
   public static CommandLineRunner invokeScheduler(
-      Integer launchDetailsId, EcrActionTypes actionType, Instant t) {
+      Integer launchDetailsId, EcrActionTypes actionType, Instant t, String taskInstanceId) {
 
     Boolean timerAlreadyExists = false;
     CommandLineRunner task = null;
@@ -309,7 +328,7 @@ public class WorkflowService {
           staticSchedulerService.getScheduledTasks(
               actionType.toString(), String.valueOf(launchDetailsId));
 
-      if (tasks != null && !tasks.isEmpty()) {
+      if (checkIfTasksExists(tasks, taskInstanceId)) {
         logger.info(" Timer already exsits, so do not create new ones ");
         timerAlreadyExists = true;
       } else logger.info(" Timer does not exist, hence will be creating new ");
@@ -339,6 +358,33 @@ public class WorkflowService {
     }
 
     return task;
+  }
+
+  public static Boolean checkIfTasksExists(List<ScheduledTasks> tasks, String taskInstanceId) {
+
+    Boolean retVal = false;
+    int numOfTasksExisting = 0;
+    if (tasks != null && !tasks.isEmpty()) {
+
+      for (ScheduledTasks t : tasks) {
+
+        if (t.getTask_instance().equals(taskInstanceId)) {
+          logger.info(" Found a Task with the same task Instance Id {}", taskInstanceId);
+          numOfTasksExisting++;
+        } else {
+
+          logger.info(
+              " Task with Instance Id {} does not match passed in taskInstanceId {}",
+              t.getTask_instance(),
+              taskInstanceId);
+        }
+      }
+    } else {
+      logger.info(" No tasks exist, so return false ");
+    }
+
+    if (numOfTasksExisting > 1) return true;
+    else return false;
   }
 
   public static void cancelAllScheduledTasksForLaunch(

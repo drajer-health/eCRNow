@@ -77,8 +77,9 @@ public class CloseOutEicrActionTest {
 
       setupMockData();
 
+      String taskInstanceId = "";
       // Test
-      closeOutEicrAction.execute(mockDetails, launchType);
+      closeOutEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
@@ -107,15 +108,21 @@ public class CloseOutEicrActionTest {
 
       when(mockRelActn.getDuration()).thenReturn(null);
 
+      String taskInstanceId = "";
       // Test
-      closeOutEicrAction.execute(mockDetails, launchType);
+      closeOutEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(1)).getDuration();
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
+
       WorkflowService.scheduleJob(
-          eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CLOSE_OUT_EICR), any(Date.class));
+          eq(1),
+          any(TimingSchedule.class),
+          eq(EcrActionTypes.CLOSE_OUT_EICR),
+          any(Date.class),
+          any(String.class));
 
       assertEquals(JobStatus.SCHEDULED, closeOutEicrStatus.getJobStatus());
 
@@ -153,8 +160,9 @@ public class CloseOutEicrActionTest {
       when(mockEicr.getId()).thenReturn(10);
       when(mockEicr.getEicrData()).thenReturn("**** Printing Eicr from CLOSE OUT EICR ACTION ****");
 
+      String taskInstanceId = "";
       // Test
-      closeOutEicrAction.execute(mockDetails, launchType);
+      closeOutEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
@@ -190,8 +198,9 @@ public class CloseOutEicrActionTest {
       when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
       when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
 
+      String taskInstanceId = "";
       // Test
-      closeOutEicrAction.execute(mockDetails, launchType);
+      closeOutEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(EcaUtils.class, times(0));

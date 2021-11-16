@@ -22,7 +22,7 @@ public class CreateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(CreateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" **** START Executing Create Eicr Action **** ");
 
@@ -86,7 +86,8 @@ public class CreateEicrAction extends AbstractAction {
                         details.getId(),
                         act.getDuration(),
                         EcrActionTypes.CREATE_EICR,
-                        details.getStartDate());
+                        details.getStartDate(),
+                        taskInstanceId);
                     state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
                     EcaUtils.updateDetailStatus(details, state);
 
@@ -131,7 +132,11 @@ public class CreateEicrAction extends AbstractAction {
                   // TBD : Setup job using TS Timing after testing so that we can test faster.
                   // For now setup a default job with 10 seconds.
                   WorkflowService.scheduleJob(
-                      details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate());
+                      details.getId(),
+                      ts,
+                      EcrActionTypes.CREATE_EICR,
+                      details.getStartDate(),
+                      taskInstanceId);
                   state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
                   EcaUtils.updateDetailStatus(details, state);
                   // No need to continue as the job will take over execution.
