@@ -16,7 +16,7 @@ public class ReportabilityResponseAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info("**** START Executing RR Check Eicr Action ****");
 

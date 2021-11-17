@@ -20,7 +20,7 @@ public class SubmitEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info("**** START Executing Submit Eicr Action ****");
 

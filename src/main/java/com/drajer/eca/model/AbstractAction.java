@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractAction {
 
-  public abstract void execute(Object obj, WorkflowEvent launchType);
+  public abstract void execute(Object obj, WorkflowEvent launchType, String taskInstanceId);
 
   private String actionId;
 

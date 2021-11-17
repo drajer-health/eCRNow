@@ -74,8 +74,9 @@ public class PeriodicUpdateEicrActionTest {
 
       setupMockData();
 
+      String taskInstanceId = "";
       // Test
-      periodicUpdateEicrAction.execute(mockDetails, launchType);
+      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
@@ -102,15 +103,20 @@ public class PeriodicUpdateEicrActionTest {
       Duration duration = new Duration();
       when(mockRelActn.getDuration()).thenReturn(duration);
 
+      String taskInstanceId = "";
       // Test
-      periodicUpdateEicrAction.execute(mockDetails, launchType);
+      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(2)).getDuration();
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
       WorkflowService.scheduleJob(
-          eq(1), any(Duration.class), eq(EcrActionTypes.PERIODIC_UPDATE_EICR), any(Date.class));
+          eq(1),
+          any(Duration.class),
+          eq(EcrActionTypes.PERIODIC_UPDATE_EICR),
+          any(Date.class),
+          any(String.class));
 
     } catch (Exception e) {
 
@@ -132,7 +138,8 @@ public class PeriodicUpdateEicrActionTest {
 
       setupMockData();
 
-      periodicUpdateEicrAction.execute(mockDetails, launchType);
+      String taskInstanceId = "";
+      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
@@ -142,7 +149,8 @@ public class PeriodicUpdateEicrActionTest {
           eq(1),
           any(TimingSchedule.class),
           eq(EcrActionTypes.PERIODIC_UPDATE_EICR),
-          any(Date.class));
+          any(Date.class),
+          any(String.class));
 
       verify(mockState, times(1)).hasActionCompleted("123");
 
@@ -193,8 +201,9 @@ public class PeriodicUpdateEicrActionTest {
       when(mockEicr.getId()).thenReturn(10);
       when(mockEicr.getEicrData()).thenReturn("This is periodic EICR");
 
+      String taskInstanceId = "";
       // Test
-      periodicUpdateEicrAction.execute(mockDetails, launchType);
+      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
@@ -238,8 +247,9 @@ public class PeriodicUpdateEicrActionTest {
       when(mockState.getMatchTriggerStatus()).thenReturn(mockTriggerStatus);
       when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
 
+      String taskInstanceId = "";
       // Test
-      periodicUpdateEicrAction.execute(mockDetails, launchType);
+      periodicUpdateEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
@@ -247,7 +257,8 @@ public class PeriodicUpdateEicrActionTest {
           eq(1),
           any(TimingSchedule.class),
           eq(EcrActionTypes.PERIODIC_UPDATE_EICR),
-          any(Date.class));
+          any(Date.class),
+          any(String.class));
 
       verify(mockState, times(1)).hasActionCompleted("123");
 
@@ -266,7 +277,9 @@ public class PeriodicUpdateEicrActionTest {
     ObjectMapper mapper = new ObjectMapper();
     WorkflowEvent launchType = WorkflowEvent.SCHEDULED_JOB;
     PeriodicUpdateEicrAction periodicUpdateEicrAction = new PeriodicUpdateEicrAction();
-    periodicUpdateEicrAction.execute(mapper, launchType);
+
+    String taskInstanceId = "";
+    periodicUpdateEicrAction.execute(mapper, launchType, taskInstanceId);
   }
 
   private void setupMockData() {
