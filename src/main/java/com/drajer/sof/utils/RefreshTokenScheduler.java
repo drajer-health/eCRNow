@@ -155,7 +155,9 @@ public class RefreshTokenScheduler {
         logger.trace("Updating the AccessToken value in LaunchDetails table");
         existingAuthDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
         existingAuthDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
-        existingAuthDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+        if (tokenResponse.has(PROVIDER_UUID)) {
+          existingAuthDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+        }
         existingAuthDetails.setLastUpdated(new Date());
         long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);

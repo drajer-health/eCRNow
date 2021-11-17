@@ -227,7 +227,9 @@ public class LaunchController {
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
-            launchDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+            if (tokenResponse.has(PROVIDER_UUID)) {
+              launchDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+            }
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());

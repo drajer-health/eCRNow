@@ -45,14 +45,27 @@ public class DirectEicrSender extends EicrSender {
 
         logger.info(
             " Sending Mail from {} to {}", details.getDirectUser(), details.getDirectRecipient());
-        sendMail(
-            details.getDirectHost() != null ? details.getDirectHost() : details.getSmtpUrl(),
-            details.getDirectUser(),
-            details.getDirectPwd(),
-            details.getSmtpPort(),
-            details.getDirectRecipient(),
-            is,
-            DirectEicrSender.FILE_NAME);
+        if (details.getSmtpUrl() != null) {
+          logger.info("Using SMTP URL to send:::::{}", details.getSmtpUrl());
+          sendMail(
+              details.getSmtpUrl(),
+              details.getDirectUser(),
+              details.getDirectPwd(),
+              details.getSmtpPort(),
+              details.getDirectRecipient(),
+              is,
+              DirectEicrSender.FILE_NAME);
+        } else {
+          logger.info("Using Direct Host to send:::::{}", details.getDirectHost());
+          sendMail(
+              details.getDirectHost(),
+              details.getDirectUser(),
+              details.getDirectPwd(),
+              details.getSmtpPort(),
+              details.getDirectRecipient(),
+              is,
+              DirectEicrSender.FILE_NAME);
+        }
 
       } catch (Exception e) {
 
