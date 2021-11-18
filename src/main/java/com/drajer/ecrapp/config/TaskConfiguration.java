@@ -58,7 +58,8 @@ public class TaskConfiguration {
                         .executeScheduledAction(
                             workflowTask.getLaunchId(),
                             workflowTask.getActionType(),
-                            workflowTask.getWorkflowEvent());
+                            workflowTask.getWorkflowEvent(),
+                            inst.getTaskAndInstance());
 
                     log.info(
                         "Successfully Completed Executing Task for {}, Launch Id::: {}",

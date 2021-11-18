@@ -21,7 +21,7 @@ public class CloseOutEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(CloseOutEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" **** START Executing Close Out Eicr Action **** ");
 
@@ -77,7 +77,7 @@ public class CloseOutEicrAction extends AbstractAction {
                   // duration.
                   logger.info(" Schedule the job for Close Out EICR Action based on the duration.");
 
-                  scheduleJob(details, state, ract, mapper);
+                  scheduleJob(details, state, ract, mapper, taskInstanceId);
                   // No need to continue as the job will take over execution.
 
                   logger.info(" **** END Executing Close Out Eicr Action **** ");
@@ -116,7 +116,11 @@ public class CloseOutEicrAction extends AbstractAction {
               for (TimingSchedule ts : tsjobs) {
 
                 WorkflowService.scheduleJob(
-                    details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
+                    details.getId(),
+                    ts,
+                    EcrActionTypes.CLOSE_OUT_EICR,
+                    details.getStartDate(),
+                    taskInstanceId);
                 state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);
                 EcaUtils.updateDetailStatus(details, state);
 
@@ -195,7 +199,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
           if (ract.getRelationship() == ActionRelationshipType.AFTER) {
             logger.info(" Scheduling the job using related actions ");
-            scheduleJob(details, state, ract, mapper);
+            scheduleJob(details, state, ract, mapper, taskInstanceId);
           }
         }
       } else {
@@ -213,7 +217,11 @@ public class CloseOutEicrAction extends AbstractAction {
   }
 
   public void scheduleJob(
-      LaunchDetails details, PatientExecutionState state, RelatedAction ract, ObjectMapper mapper) {
+      LaunchDetails details,
+      PatientExecutionState state,
+      RelatedAction ract,
+      ObjectMapper mapper,
+      String taskInstanceId) {
 
     try {
       logger.info(" **** Start Scheduling Close Out Eicr Action Job **** ");
@@ -226,14 +234,19 @@ public class CloseOutEicrAction extends AbstractAction {
           // For now setup a default job with 10 seconds.
 
           WorkflowService.scheduleJob(
-              details.getId(), ts, EcrActionTypes.CLOSE_OUT_EICR, details.getStartDate());
+              details.getId(),
+              ts,
+              EcrActionTypes.CLOSE_OUT_EICR,
+              details.getStartDate(),
+              taskInstanceId);
         }
       } else {
         WorkflowService.scheduleJob(
             details.getId(),
             ract.getDuration(),
             EcrActionTypes.CLOSE_OUT_EICR,
-            details.getStartDate());
+            details.getStartDate(),
+            taskInstanceId);
       }
 
       state.getCloseOutEicrStatus().setJobStatus(JobStatus.SCHEDULED);

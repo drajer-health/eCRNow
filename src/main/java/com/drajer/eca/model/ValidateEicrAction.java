@@ -19,7 +19,7 @@ public class ValidateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(ValidateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info("**** START Executing Validate Eicr Action ****");
 

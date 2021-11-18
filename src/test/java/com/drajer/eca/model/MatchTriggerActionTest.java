@@ -91,7 +91,8 @@ public class MatchTriggerActionTest {
         .thenReturn(true);
     when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
-    matchTriggerAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    matchTriggerAction.execute(mockDetails, launchType, taskInstanceId);
 
     assertNotNull(mockDstu2Data);
     assertEquals(JobStatus.COMPLETED, matchTriggerStatus.getJobStatus());
@@ -117,7 +118,8 @@ public class MatchTriggerActionTest {
         .thenReturn(true);
     when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
 
-    matchTriggerAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    matchTriggerAction.execute(mockDetails, launchType, taskInstanceId);
 
     assertNotNull(mockR4Data);
     assertEquals(JobStatus.COMPLETED, matchTriggerStatus.getJobStatus());
@@ -138,13 +140,15 @@ public class MatchTriggerActionTest {
     codePaths = new ArrayList<>();
     codePaths.add(actionData);
 
-    matchTriggerAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    matchTriggerAction.execute(mockDetails, launchType, taskInstanceId);
   }
 
   @Test(expected = RuntimeException.class)
   public void testExecute_DetailObjIsInvalid() throws Exception {
 
+    String taskInstanceId = "";
     // Test
-    matchTriggerAction.execute(null, launchType);
+    matchTriggerAction.execute(null, launchType, taskInstanceId);
   }
 }

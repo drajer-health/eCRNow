@@ -19,7 +19,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" **** START Executing Periodic Update Eicr Action **** ");
 
@@ -81,7 +81,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                       details.getId(),
                       actn.getDuration(),
                       EcrActionTypes.PERIODIC_UPDATE_EICR,
-                      details.getStartDate());
+                      details.getStartDate(),
+                      taskInstanceId);
                   state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 
                   EcaUtils.updateDetailStatus(details, state);
@@ -118,7 +119,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
             if (getTimingData() != null && !getTimingData().isEmpty()) {
 
               logger.info(" Timing Data is present , so create a job based on timing data.");
-              scheduleJob(details, state);
+              scheduleJob(details, state, taskInstanceId);
               return;
             } else {
               logger.info(" No job to schedule since there is no timing data ");
@@ -175,7 +176,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               if (getTimingData() != null && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state);
+                scheduleJob(details, state, taskInstanceId);
               }
 
             } // Check if Trigger Code Match found
@@ -190,7 +191,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                   && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state);
+                scheduleJob(details, state, taskInstanceId);
                 return;
               }
             }
@@ -221,10 +222,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
 
-    logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
+    logger.info(
+        " **** END Executing Periodic Update Eicr Action after completing normal execution. **** ");
   }
 
-  private void scheduleJob(LaunchDetails details, PatientExecutionState state) {
+  private void scheduleJob(
+      LaunchDetails details, PatientExecutionState state, String taskInstanceId) {
 
     List<TimingSchedule> tsjobs = getTimingData();
 
@@ -233,7 +236,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       // TBD : Setup job using TS Timing after testing so that we can test faster.
       // For now setup a default job with 10 seconds.
       WorkflowService.scheduleJob(
-          details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());
+          details.getId(),
+          ts,
+          EcrActionTypes.PERIODIC_UPDATE_EICR,
+          details.getStartDate(),
+          taskInstanceId);
 
       state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 

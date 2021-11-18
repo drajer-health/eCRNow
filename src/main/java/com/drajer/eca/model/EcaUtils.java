@@ -220,8 +220,9 @@ public class EcaUtils {
 
     Set<AbstractAction> acts =
         ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
+    String taskInstanceId = "";
     for (AbstractAction act : acts) {
-      act.execute(details, launchType);
+      act.execute(details, launchType, taskInstanceId);
       ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
     }
 

@@ -119,19 +119,24 @@ public class EicrServiceImpl implements EicrRRService {
       logger.debug("Reportability Response: {}, saveToEhr: {}", data.getRrXml(), saveToEhr);
 
       final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      final CdaIi docId = rrModel.getRrDocId();
+      final CdaIi rrDocId = rrModel.getRrDocId();
+      final CdaIi eicrDocId = rrModel.getEicrDocId();
 
-      if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
-        throw new IllegalArgumentException("Reportability response is missing Doc Id");
+      if (rrDocId == null || StringUtils.isBlank(rrDocId.getRootValue())) {
+        throw new IllegalArgumentException("Reportability response is missing RR_Doc_Id");
       }
 
-      final Eicr ecr = eicrDao.getEicrByDocId(rrModel.getEicrDocId().getRootValue());
+      if (eicrDocId == null || StringUtils.isBlank(eicrDocId.getRootValue())) {
+        throw new IllegalArgumentException("Reportability response is missing EICR_Doc_Id");
+      }
+
+      final Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
 
       if (ecr != null) {
 
-        logger.info(" Found the ecr for doc Id = {}", docId.getRootValue());
+        logger.info(" Found the ecr for doc Id = {}", rrDocId.getRootValue());
         ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
-        ecr.setResponseDocId(docId.getRootValue());
+        ecr.setResponseDocId(rrDocId.getRootValue());
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
 
@@ -169,7 +174,7 @@ public class EicrServiceImpl implements EicrRRService {
         saveOrUpdate(ecr);
 
       } else {
-        String errorMsg = "Unable to find Eicr for Doc Id: {} " + docId.getRootValue();
+        String errorMsg = "Unable to find Eicr for Doc Id: {} " + rrDocId.getRootValue();
         logger.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }

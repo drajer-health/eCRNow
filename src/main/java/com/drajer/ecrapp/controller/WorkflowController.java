@@ -29,12 +29,14 @@ public class WorkflowController {
       logger.info("Received LaunchId::::: {}", workflowTask.getLaunchId());
       logger.info("Received EcrActionTypes::::: {}", workflowTask.getActionType());
       logger.info("Received WorkflowEvent::::: {}", workflowTask.getWorkflowEvent());
+      String taskInstanceId = "";
       ActionRepo.getInstance()
           .getWorkflowService()
           .executeScheduledAction(
               workflowTask.getLaunchId(),
               workflowTask.getActionType(),
-              workflowTask.getWorkflowEvent());
+              workflowTask.getWorkflowEvent(),
+              taskInstanceId);
 
     } catch (Exception e) {
       logger.error("Error in Processing the request", e);

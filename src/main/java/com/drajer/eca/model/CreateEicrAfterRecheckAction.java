@@ -17,7 +17,7 @@ public class CreateEicrAfterRecheckAction extends AbstractAction {
   }
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" Executing Periodic Update Action ");
   }
