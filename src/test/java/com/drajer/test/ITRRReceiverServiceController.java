@@ -160,7 +160,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
@@ -175,7 +175,18 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
-  public void testReSubmitRR() {
+  public void testReSubmitRR_Success() {
+
+    ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
+
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  public void testReSubmitRR_Failure() {
     // Mock FHIR Document Reference to return failure.
     wireMockServer.stubFor(
         post(urlPathEqualTo(
@@ -191,7 +202,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     // Mock FHIR called.
     wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
