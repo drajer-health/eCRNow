@@ -199,6 +199,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     getLaunchDetailAndStatus();
     validateActionStatus(state.getPeriodicUpdateStatus().size());
 
+    String docRef = TestUtils.getFileContentAsString("R4/DocumentReference/DocumentReference.json");
+
     // mock DocumentReference FHIR call.
     wireMockServer.stubFor(
         post(urlPathEqualTo(
@@ -207,7 +209,15 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
             .willReturn(
                 aResponse()
                     .withStatus(201)
-                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")
+                    .withBody(docRef)
+                    .withHeader(
+                        "location",
+                        "http://localhost:"
+                            + wireMockHttpPort
+                            + "/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
+                    .withHeader("x-request-id", "32034a8e-07ff-4bfb-a686-de8a956fbda9")
+                    .withHeader("Cache-Control", "no-cache")));
 
     Eicr eicr = getEICRDocument(state.getCreateEicrStatus().geteICRId());
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
