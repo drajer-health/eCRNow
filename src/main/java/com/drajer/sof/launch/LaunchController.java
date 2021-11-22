@@ -167,6 +167,12 @@ public class LaunchController {
       HttpServletRequest request,
       HttpServletResponse response)
       throws IOException {
+
+    logger.info(
+        "System launch request received for patientId: {} and encounterId: {}",
+        systemLaunch.getPatientId(),
+        systemLaunch.getEncounterId());
+
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
     String requestIdHeadervalue = request.getHeader("X-Request-ID");
@@ -251,6 +257,12 @@ public class LaunchController {
             saveLaunchDetails(launchDetails);
 
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
+
+            logger.info(
+                "System launch was successful for patientId: {} and encounterId: {} with launchId: {}",
+                launchDetails.getLaunchPatientId(),
+                launchDetails.getEncounterId(),
+                launchDetails.getId());
           } else {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT,
