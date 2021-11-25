@@ -228,7 +228,12 @@ public class EicrServiceImpl implements EicrRRService {
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 
       if (outcome != null && outcome.getCreated()) {
-        logger.info("Successfully sent RR to fhir");
+        logger.info(
+            "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",
+            ecr.getResponseDocId(),
+            ecr.getEicrDocId(),
+            ecr.getDocVersion(),
+            outcome.getId().getIdPart());
         // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
         ecr.setEhrDocRefId(outcome.getId().getIdPart());
         saveOrUpdate(ecr);

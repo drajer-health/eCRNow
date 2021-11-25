@@ -181,7 +181,10 @@ public class EcaUtils {
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
         MDCUtils.addEicrDocId(ecr.getEicrDocId());
-        logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
+        logger.info(
+            "EICR created successfully with eICRDocID: {} version: {}",
+            ecr.getEicrDocId(),
+            ecr.getDocVersion());
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);

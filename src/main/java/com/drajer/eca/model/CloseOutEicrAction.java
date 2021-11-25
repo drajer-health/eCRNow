@@ -146,8 +146,10 @@ public class CloseOutEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
               logger.info(
-                  " Eicr created successfully for close out action with Doc Id {}",
-                  ecr.getEicrDocId());
+                  " EICR created successfully for {} with eICRDocID: {} version: {}",
+                  EcrActionTypes.CLOSE_OUT_EICR,
+                  ecr.getEicrDocId(),
+                  ecr.getDocVersion());
 
               newState.getCloseOutEicrStatus().setEicrClosed(true);
               newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());

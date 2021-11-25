@@ -35,7 +35,7 @@ public class RRReceiverController {
     try {
 
       logger.info(
-          " X-Correlation-ID of {} and X-Request-ID of {} received on RR API ",
+          " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
           xCorrelationIdHttpHeaderValue,
           xRequestIdHttpHeaderValue);
 

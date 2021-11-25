@@ -44,16 +44,13 @@ public class RestApiSender {
 
       // Add X-Request-ID and X-Correlation-ID
       String newXReqId = java.util.UUID.randomUUID().toString();
-      logger.info(
-          " Launch Req Id: {}, X-Request-ID for Eicr Submission: {}",
-          ecr.getxRequestId(),
-          newXReqId);
       headers.add("X-Request-ID", newXReqId);
-
       headers.add("X-Correlation-ID", ecr.getxCorrelationId());
+
       logger.info(
-          " Launch Req Id: {}, X-Correlation-ID for Eicr Submission: {}",
+          " Launch ReqId: {} X-Request-ID for Eicr Submission: {} X-Correlation-ID for Eicr Submission: {}",
           ecr.getxRequestId(),
+          newXReqId,
           ecr.getxCorrelationId());
 
       final String json = constructJson(eicrXml, ecr);
