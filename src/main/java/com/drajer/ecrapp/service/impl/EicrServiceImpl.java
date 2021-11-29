@@ -30,7 +30,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -201,6 +203,10 @@ public class EicrServiceImpl implements EicrRRService {
       logger.info(" Found the Ehr Server Url ");
 
       JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      if (tokenResponse == null) {
+        throw new ResponseStatusException(
+            HttpStatus.UNAUTHORIZED, "Error in getting Authorization");
+      }
       String accessToken = tokenResponse.getString(ACCESS_TOKEN);
 
       String fhirVersion = "";
