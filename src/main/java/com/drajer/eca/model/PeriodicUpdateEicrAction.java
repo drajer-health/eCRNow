@@ -145,8 +145,10 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
               logger.info(
-                  " Created Eicr successfully for Periodic Update Eicr Action with DocId {}",
-                  ecr.getEicrDocId());
+                  " EICR created successfully for {} with eICRDocID: {} version: {}",
+                  EcrActionTypes.PERIODIC_UPDATE_EICR,
+                  ecr.getEicrDocId(),
+                  ecr.getDocVersion());
 
               status.setEicrUpdated(true);
               status.seteICRId(ecr.getId().toString());
@@ -222,7 +224,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
 
-    logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
+    logger.info(
+        " **** END Executing Periodic Update Eicr Action after completing normal execution. **** ");
   }
 
   private void scheduleJob(

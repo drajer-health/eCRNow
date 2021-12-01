@@ -30,7 +30,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -119,19 +121,24 @@ public class EicrServiceImpl implements EicrRRService {
       logger.debug("Reportability Response: {}, saveToEhr: {}", data.getRrXml(), saveToEhr);
 
       final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      final CdaIi docId = rrModel.getRrDocId();
+      final CdaIi rrDocId = rrModel.getRrDocId();
+      final CdaIi eicrDocId = rrModel.getEicrDocId();
 
-      if (docId == null || StringUtils.isBlank(docId.getRootValue())) {
-        throw new IllegalArgumentException("Reportability response is missing Doc Id");
+      if (rrDocId == null || StringUtils.isBlank(rrDocId.getRootValue())) {
+        throw new IllegalArgumentException("Reportability response is missing RR_Doc_Id");
       }
 
-      final Eicr ecr = eicrDao.getEicrByDocId(rrModel.getEicrDocId().getRootValue());
+      if (eicrDocId == null || StringUtils.isBlank(eicrDocId.getRootValue())) {
+        throw new IllegalArgumentException("Reportability response is missing EICR_Doc_Id");
+      }
+
+      final Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
 
       if (ecr != null) {
 
-        logger.info(" Found the ecr for doc Id = {}", docId.getRootValue());
+        logger.info(" Found the ecr for doc Id = {}", rrDocId.getRootValue());
         ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
-        ecr.setResponseDocId(docId.getRootValue());
+        ecr.setResponseDocId(rrDocId.getRootValue());
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
 
@@ -160,16 +167,18 @@ public class EicrServiceImpl implements EicrRRService {
 
           } catch (Exception e) {
 
-            logger.error(" Error in the submission of the Doc Reference to the EHR due to ", e);
+            logger.error(
+                " Error submitting Document Reference to EHR due to exception: {}", e.getMessage());
             // Save the fact that we could not submit the message to the EHR.
             ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
+            throw e;
           }
         }
 
         saveOrUpdate(ecr);
 
       } else {
-        String errorMsg = "Unable to find Eicr for Doc Id: {} " + docId.getRootValue();
+        String errorMsg = "Unable to find Eicr for Doc Id: {} " + rrDocId.getRootValue();
         logger.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -194,6 +203,10 @@ public class EicrServiceImpl implements EicrRRService {
       logger.info(" Found the Ehr Server Url ");
 
       JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      if (tokenResponse == null) {
+        throw new ResponseStatusException(
+            HttpStatus.UNAUTHORIZED, "Error in getting Authorization");
+      }
       String accessToken = tokenResponse.getString(ACCESS_TOKEN);
 
       String fhirVersion = "";
@@ -221,7 +234,12 @@ public class EicrServiceImpl implements EicrRRService {
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 
       if (outcome != null && outcome.getCreated()) {
-        logger.info("Successfully sent RR to fhir");
+        logger.info(
+            "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",
+            ecr.getResponseDocId(),
+            ecr.getEicrDocId(),
+            ecr.getDocVersion(),
+            outcome.getId().getIdPart());
         // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
         ecr.setEhrDocRefId(outcome.getId().getIdPart());
         saveOrUpdate(ecr);

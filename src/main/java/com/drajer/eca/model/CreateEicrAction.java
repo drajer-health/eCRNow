@@ -164,8 +164,10 @@ public class CreateEicrAction extends AbstractAction {
                 // Call the Loading Queries and create eICR.
                 Eicr ecr = EcaUtils.createEicr(details);
                 logger.info(
-                    " Created Eicr successfully for Create Eicr Action with DocId {}",
-                    ecr.getEicrDocId());
+                    " EICR created successfully for {} with eICRDocID: {} version: {}",
+                    EcrActionTypes.CREATE_EICR,
+                    ecr.getEicrDocId(),
+                    ecr.getDocVersion());
 
                 newState.getCreateEicrStatus().setEicrCreated(true);
                 newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());

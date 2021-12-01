@@ -239,8 +239,8 @@ public class ValueSetSingleton {
       logger.debug("Found the grouper value set for {} with size {}", path, grouperValueSet.size());
       for (ValueSet g : grouperValueSet) {
         grouperId = g.getId();
-        if (grouperId != null && getGrouperToCovidValueSetMap() != null) {
-          Set<ValueSet> valueSets = getGrouperToCovidValueSetMap().get(grouperId);
+        if (grouperId != null && getGrouperToValueSetMap() != null) {
+          Set<ValueSet> valueSets = getGrouperToValueSetMap().get(grouperId);
           if (valueSets != null && !valueSets.isEmpty()) {
             logger.debug("Found {} Value Sets for grouper {}", valueSets.size(), grouperId);
             retVal = ApplicationUtils.convertValueSetsToString(valueSets);

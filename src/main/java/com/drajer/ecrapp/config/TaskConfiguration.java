@@ -69,7 +69,7 @@ public class TaskConfiguration {
                   } catch (ObjectDeletedException deletedException) {
 
                     log.info(
-                        "Error in completing the Execution of Task for {}, Launch Id::: {}, finishing task without retries, Exception {}",
+                        "Error in completing the Execution of Task for {}, Launch Id::: {}, finishing task without retries",
                         inst.getTaskAndInstance(),
                         inst.getData().getLaunchDetailsId(),
                         deletedException);

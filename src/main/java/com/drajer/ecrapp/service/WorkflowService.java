@@ -328,15 +328,24 @@ public class WorkflowService {
           staticSchedulerService.getScheduledTasks(
               actionType.toString(), String.valueOf(launchDetailsId));
 
-      if (checkIfTasksExists(tasks, taskInstanceId)) {
-        logger.info(" Timer already exsits, so do not create new ones ");
+
+      if (tasks != null && tasks.size() > 1) {
+        logger.info(
+            " {} Timer already exists for launch {}, so do not create new one ",
+            actionType,
+            launchDetailsId);
         timerAlreadyExists = true;
-      } else logger.info(" Timer does not exist, hence will be creating new ");
+      } else {
+        logger.info(
+            " {} Timer does not exists for launch {}, hence will be creating new ",
+            actionType,
+            launchDetailsId);
+      }
     }
 
-    if (!timerAlreadyExists) {
+    if (Boolean.FALSE.equals(timerAlreadyExists)) {
 
-      logger.info("Scheduling one time task to execute at {}", t);
+      logger.info("Scheduling {} task to execute at {}", actionType, t);
 
       task = ignored -> logger.info("Scheduling one time task to after!");
       staticScheduler.schedule(
@@ -352,9 +361,6 @@ public class WorkflowService {
           t);
 
       logger.debug("task  ::: {}", task);
-    } else {
-      logger.info(
-          " Timer already exists, so no need to create a new timer for the same patient and encounter ");
     }
 
     return task;

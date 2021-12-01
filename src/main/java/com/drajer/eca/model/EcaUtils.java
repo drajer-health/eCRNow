@@ -181,7 +181,10 @@ public class EcaUtils {
         ecr.setEicrData(eICR);
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
         MDCUtils.addEicrDocId(ecr.getEicrDocId());
-        logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
+        logger.info(
+            "EICR created successfully with eICRDocID: {} version: {}",
+            ecr.getEicrDocId(),
+            ecr.getDocVersion());
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
@@ -341,7 +344,7 @@ public class EcaUtils {
 
           logger.info(
               " Encounter status is not null and is closed with a status value of {}",
-              enc.getStatus().toString());
+              enc.getStatus());
           retVal = true;
         }
 
