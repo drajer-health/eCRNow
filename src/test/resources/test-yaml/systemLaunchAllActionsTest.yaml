@@ -7,21 +7,21 @@ testCase:
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

@@ -8,51 +8,51 @@ testCase:
       EndDate: "20201030"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_97953900.json"
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_97953900.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
-      - params: "4122622"
-        responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
-      - params: "11938004"
-        responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
-      - params: "4122625"
-        responseFilePath: "R4/Practitioner/Practitioner_4122625.json"
-      - params: "607928"
-        responseFilePath: "R4/Practitioner/Practitioner_607928.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "4122622"
+          responseFilePath: "R4/Practitioner/Practitioner_4122622.json"
+        - params: "11938004"
+          responseFilePath: "R4/Practitioner/Practitioner_11938004.json"
+        - params: "4122625"
+          responseFilePath: "R4/Practitioner/Practitioner_4122625.json"
+        - params: "607928"
+          responseFilePath: "R4/Practitioner/Practitioner_607928.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
       Observation:
-      - params:
-          patient: "12742571"
-          category: "laboratory"
-        responseFilePath: "R4/Observation/ObservationWithMultipleEntries.json"
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+          responseFilePath: "R4/Observation/ObservationWithMultipleEntries.json"
       ServiceRequest:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/ServiceRequest/ServiceRequestWithoutLOINC.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequestWithoutLOINC.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - Observation: 26
-      Condition: 2
-      Organization: 1
-      Practitioner: 5
-      ServiceRequest: 2
+      - Observation: 26
+        Condition: 2
+        Organization: 1
+        Practitioner: 5
+        ServiceRequest: 2
   eCR-R4-TriggerQuery-FilterByDtTm:
     testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
@@ -60,32 +60,32 @@ testCase:
       EndDate: "20201030"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
         - params: "97953900"
           responseFilePath: "R4/Misc/InsufficientScopeResponse.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/Condition_FilterByDtTm.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/Condition_FilterByDtTm.json"
       Observation:
-      - params:
-          patient: "12742571"
-          category: "laboratory"
-        responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+          responseFilePath: "R4/Observation/Observation_FilterByDtTm.json"
       ServiceRequest:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_FilterByDtTm.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - Observation: 3
-      Condition: 1
-      ServiceRequest: 2
+      - Observation: 3
+        Condition: 1
+        ServiceRequest: 2
   eCR-R4-Encounter-FetchByPatientId:
     testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails_Without_Encounter.json"
@@ -93,18 +93,18 @@ testCase:
       EndDate: "20201030"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - Encounter: 1
+      - Encounter: 1
   eCR-R4-Observation-MultiplePagingQuery-2Pages:
     testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
@@ -115,8 +115,8 @@ testCase:
         - params: "12742571"
           responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_97953900.json"
       Observation:
         - params:
             patient: "12742571"
