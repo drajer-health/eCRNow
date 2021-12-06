@@ -132,11 +132,16 @@ public class EicrServiceImpl implements EicrRRService {
         throw new IllegalArgumentException("Reportability response is missing EICR_Doc_Id");
       }
 
+      logger.info(
+          "Processing RR_DOC_ID {} of type {} for EICR_DOC_ID {}",
+          rrDocId.getRootValue(),
+          rrModel.getReportableType(),
+          eicrDocId.getRootValue());
       final Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
 
       if (ecr != null) {
 
-        logger.info(" Found the ecr for doc Id = {}", rrDocId.getRootValue());
+        logger.info(" Found the ecr for doc Id = {}", eicrDocId.getRootValue());
         ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
         ecr.setResponseDocId(rrDocId.getRootValue());
         ecr.setResponseXRequestId(xRequestId);
@@ -171,6 +176,7 @@ public class EicrServiceImpl implements EicrRRService {
                 " Error submitting Document Reference to EHR due to exception: {}", e.getMessage());
             // Save the fact that we could not submit the message to the EHR.
             ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
+            saveOrUpdate(ecr);
             throw e;
           }
         }

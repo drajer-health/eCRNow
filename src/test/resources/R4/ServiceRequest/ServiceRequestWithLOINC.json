@@ -1,739 +1,739 @@
 {
-    "resourceType": "Bundle",
-    "id": "842e1d4c-815d-4dc3-b7c4-e051be9cec37",
-    "type": "searchset",
-    "link": [
-        {
-            "relation": "self",
-            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest?patient=12742571"
+  "resourceType": "Bundle",
+  "id": "842e1d4c-815d-4dc3-b7c4-e051be9cec37",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest?patient=12742571"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477653",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477653",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: High Flow Nasal Cannula</p><p><b>Occurrence</b>: every 2 hr</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: SpO2 goal 90% or greater</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "636078",
+                "display": "Respiratory Therapy",
+                "userSelected": true
+              }
+            ],
+            "text": "Respiratory Therapy"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "38201539",
+              "userSelected": true
+            }
+          ],
+          "text": "High Flow Nasal Cannula"
+        },
+        "orderDetail": [
+          {
+            "text": "SpO2 goal 90% or greater"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceTiming": {
+          "repeat": {
+            "boundsPeriod": {
+              "start": "2020-04-28T14:50:00.000-05:00"
+            }
+          },
+          "code": {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                "code": "696541",
+                "display": "every 2 hr",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                "code": "Q2H",
+                "display": "every 2 hours",
+                "userSelected": false
+              }
+            ],
+            "text": "every 2 hr"
+          }
+        },
+        "authoredOn": "2020-04-28T14:50:19.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
         }
-    ],
-    "entry": [
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477653",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477653",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: High Flow Nasal Cannula</p><p><b>Occurrence</b>: every 2 hr</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: SpO2 goal 90% or greater</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "636078",
-                                "display": "Respiratory Therapy",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Respiratory Therapy"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "38201539",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "High Flow Nasal Cannula"
-                },
-                "orderDetail": [
-                    {
-                        "text": "SpO2 goal 90% or greater"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceTiming": {
-                    "repeat": {
-                        "boundsPeriod": {
-                            "start": "2020-04-28T14:50:00.000-05:00"
-                        }
-                    },
-                    "code": {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
-                                "code": "696541",
-                                "display": "every 2 hr",
-                                "userSelected": true
-                            },
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
-                                "code": "Q2H",
-                                "display": "every 2 hours",
-                                "userSelected": false
-                            }
-                        ],
-                        "text": "every 2 hr"
-                    }
-                },
-                "authoredOn": "2020-04-28T14:50:19.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                }
-            }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/321544061",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "321544061",
+        "meta": {
+          "versionId": "0",
+          "lastUpdated": "2020-12-23T19:04:29.000Z"
         },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/321544061",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "321544061",
-                "meta": {
-                    "versionId": "0",
-                    "lastUpdated": "2020-12-23T19:04:29.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Immunizations Quality Measures</p><p><b>Occurrence</b>: Dec 23, 2020  7:04 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2515",
-                                "display": "Patient Care",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Patient Care"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "22337316",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Immunizations Quality Measures"
-                },
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-12-23T13:04:29.000-06:00",
-                "authoredOn": "2020-12-23T13:04:29.000-06:00",
-                "requester": {
-                    "reference": "Practitioner/1",
-                    "display": "SYSTEM, SYSTEM Cerner"
-                }
-            }
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Immunizations Quality Measures</p><p><b>Occurrence</b>: Dec 23, 2020  7:04 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p></div>"
         },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477651",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477651",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Oxygen Therapy</p><p><b>Occurrence</b>: BID</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Routine, SpO2 goal 90% or greater</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "636078",
-                                "display": "Respiratory Therapy",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Respiratory Therapy"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "3883398",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Oxygen Therapy"
-                },
-                "orderDetail": [
-                    {
-                        "text": "Routine, SpO2 goal 90% or greater"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceTiming": {
-                    "repeat": {
-                        "boundsPeriod": {
-                            "start": "2020-04-28T14:50:00.000-05:00"
-                        }
-                    },
-                    "code": {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
-                                "code": "696528",
-                                "display": "BID",
-                                "userSelected": true
-                            },
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
-                                "code": "BID",
-                                "display": "BID",
-                                "userSelected": false
-                            }
-                        ],
-                        "text": "BID"
-                    }
-                },
-                "authoredOn": "2020-04-28T14:50:19.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                }
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2515",
+                "display": "Patient Care",
+                "userSelected": true
+              }
+            ],
+            "text": "Patient Care"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "22337316",
+              "userSelected": true
             }
+          ],
+          "text": "Immunizations Quality Measures"
         },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477767",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477767",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Patient Isolation</p><p><b>Occurrence</b>: Apr 28, 2020  7:54 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>suspected covid-19</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 04/28/20 14:54:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2515",
-                                "display": "Patient Care",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Patient Care"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "3976772",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Patient Isolation"
-                },
-                "orderDetail": [
-                    {
-                        "text": "04/28/20 14:54:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-04-28T14:54:00.000-05:00",
-                "authoredOn": "2020-04-28T14:54:43.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                },
-                "reasonCode": [
-                    {
-                        "text": "suspected covid-19"
-                    }
-                ]
-            }
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
         },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/315890729",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "315890729",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-09-24T01:00:36.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Resuscitation Status</p><p><b>Occurrence</b>: Sep  9, 2020  3:42 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 09/09/20 10:42:00 CDT, All but Chest Compressions</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2515",
-                                "display": "Patient Care",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Patient Care"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "2958523",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Resuscitation Status"
-                },
-                "orderDetail": [
-                    {
-                        "text": "09/09/20 10:42:00 CDT, All but Chest Compressions"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-09-09T10:42:00.000-05:00",
-                "authoredOn": "2020-09-09T10:42:37.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                }
-            }
+        "encounter": {
+          "reference": "Encounter/97953900"
         },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311447079",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311447079",
-                "meta": {
-                    "versionId": "0",
-                    "lastUpdated": "2020-04-27T16:55:27.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: VTE Quality Measures</p><p><b>Occurrence</b>: Apr 27, 2020  4:55 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2515",
-                                "display": "Patient Care",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Patient Care"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "21278203",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "VTE Quality Measures"
-                },
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-04-27T11:55:27.000-05:00",
-                "authoredOn": "2020-04-27T11:55:27.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/1",
-                    "display": "SYSTEM, SYSTEM Cerner"
-                }
-            }
-        },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311539773",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311539773",
-                "meta": {
-                    "versionId": "3",
-                    "lastUpdated": "2020-04-30T20:29:23.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Coronavirus Panel</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Sputum, AM Draw (Inpatient Only) Collect, 05/01/20 3:30:00 CDT, Once, Nurse collect</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2513",
-                                "display": "Laboratory",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Laboratory"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "2572357979",
-                            "userSelected": true
-                        },
-                        {
-                            "system": "http://loinc.org",
-                            "code": "94531-1",
-                            "userSelected": false
-                        }
-                    ],
-                    "text": "Coronavirus Panel"
-                },
-                "orderDetail": [
-                    {
-                        "text": "Sputum, AM Draw (Inpatient Only) Collect, 05/01/20 3:30:00 CDT, Once, Nurse collect"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceTiming": {
-                    "repeat": {
-                        "boundsPeriod": {
-                            "start": "2020-04-30T03:15:00.000-05:00",
-                            "end": "2020-04-30T15:29:23.000-05:00"
-                        }
-                    },
-                    "code": {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
-                                "code": "696531",
-                                "display": "Once",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Once"
-                    }
-                },
-                "authoredOn": "2020-04-30T15:15:01.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                }
-            }
-        },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477659",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477659",
-                "meta": {
-                    "versionId": "2",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Isolation</p><p><b>Occurrence Starts</b>: Apr 28, 2020  7:51 P.M. UTC</p><p><b>Occurrence Ends</b>: Apr 28, 2020  7:55 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>suspected covid-19</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 04/28/20 14:51:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19</p></div>"
-                },
-                "status": "revoked",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2515",
-                                "display": "Patient Care",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Patient Care"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "2571969733",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Isolation"
-                },
-                "orderDetail": [
-                    {
-                        "text": "04/28/20 14:51:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrencePeriod": {
-                    "start": "2020-04-28T14:51:00.000-05:00",
-                    "end": "2020-04-28T14:55:00.000-05:00"
-                },
-                "authoredOn": "2020-04-28T14:51:29.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                },
-                "reasonCode": [
-                    {
-                        "text": "suspected covid-19"
-                    }
-                ]
-            }
-        },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477655",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477655",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Extubation</p><p><b>Occurrence</b>: Apr 28, 2020  7:50 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "636078",
-                                "display": "Respiratory Therapy",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Respiratory Therapy"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "3883383",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Extubation"
-                },
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-04-28T14:50:00.000-05:00",
-                "authoredOn": "2020-04-28T14:50:20.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                }
-            }
-        },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477657",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477657",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Suction Activity</p><p><b>Occurrence</b>: Apr 28, 2020  7:50 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 04/28/20 14:50:00 CDT, Mini-Bronchoalveolar Lavage, Stop date 04/28/20 14:50:00 CDT</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "2515",
-                                "display": "Patient Care",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Patient Care"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "21849116",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Suction Activity"
-                },
-                "orderDetail": [
-                    {
-                        "text": "04/28/20 14:50:00 CDT, Mini-Bronchoalveolar Lavage, Stop date 04/28/20 14:50:00 CDT"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-04-28T14:50:00.000-05:00",
-                "authoredOn": "2020-04-28T14:50:20.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/4122622",
-                    "display": "Cerner Test, Physician - Hospitalist Cerner"
-                }
-            }
-        },
-        {
-            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477629",
-            "resource": {
-                "resourceType": "ServiceRequest",
-                "id": "311477629",
-                "meta": {
-                    "versionId": "1",
-                    "lastUpdated": "2020-05-13T01:00:41.000Z"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Consult to Social Services</p><p><b>Occurrence</b>: Apr 28, 2020  7:37 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Review language needs with patient</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p><p><b>Order Detail</b>: 04/28/20 14:37:32 CDT, Review language needs with patient</p></div>"
-                },
-                "status": "active",
-                "intent": "order",
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
-                                "code": "636063",
-                                "display": "Consults",
-                                "userSelected": true
-                            }
-                        ],
-                        "text": "Consults"
-                    }
-                ],
-                "priority": "routine",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
-                            "code": "2780798",
-                            "userSelected": true
-                        }
-                    ],
-                    "text": "Consult to Social Services"
-                },
-                "orderDetail": [
-                    {
-                        "text": "04/28/20 14:37:32 CDT, Review language needs with patient"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/12742571",
-                    "display": "FHIRTest, COVIDONE"
-                },
-                "encounter": {
-                    "reference": "Encounter/97953900"
-                },
-                "occurrenceDateTime": "2020-04-28T14:37:32.000-05:00",
-                "authoredOn": "2020-04-28T14:37:32.000-05:00",
-                "requester": {
-                    "reference": "Practitioner/1",
-                    "display": "SYSTEM, SYSTEM Cerner"
-                },
-                "reasonCode": [
-                    {
-                        "text": "Review language needs with patient"
-                    }
-                ],
-                "note": [
-                    {
-                        "text": "April 28, 2020 14:37:32 CDT - Order system generated Patient/Caregiver preferred spoken languages (Spanish/No Qualifying Data)."
-                    }
-                ]
-            }
+        "occurrenceDateTime": "2020-12-23T13:04:29.000-06:00",
+        "authoredOn": "2020-12-23T13:04:29.000-06:00",
+        "requester": {
+          "reference": "Practitioner/1",
+          "display": "SYSTEM, SYSTEM Cerner"
         }
-    ]
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477651",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477651",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Oxygen Therapy</p><p><b>Occurrence</b>: BID</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Routine, SpO2 goal 90% or greater</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "636078",
+                "display": "Respiratory Therapy",
+                "userSelected": true
+              }
+            ],
+            "text": "Respiratory Therapy"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "3883398",
+              "userSelected": true
+            }
+          ],
+          "text": "Oxygen Therapy"
+        },
+        "orderDetail": [
+          {
+            "text": "Routine, SpO2 goal 90% or greater"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceTiming": {
+          "repeat": {
+            "boundsPeriod": {
+              "start": "2020-04-28T14:50:00.000-05:00"
+            }
+          },
+          "code": {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                "code": "696528",
+                "display": "BID",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-GTSAbbreviation",
+                "code": "BID",
+                "display": "BID",
+                "userSelected": false
+              }
+            ],
+            "text": "BID"
+          }
+        },
+        "authoredOn": "2020-04-28T14:50:19.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477767",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477767",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Patient Isolation</p><p><b>Occurrence</b>: Apr 28, 2020  7:54 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>suspected covid-19</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 04/28/20 14:54:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2515",
+                "display": "Patient Care",
+                "userSelected": true
+              }
+            ],
+            "text": "Patient Care"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "3976772",
+              "userSelected": true
+            }
+          ],
+          "text": "Patient Isolation"
+        },
+        "orderDetail": [
+          {
+            "text": "04/28/20 14:54:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceDateTime": "2020-04-28T14:54:00.000-05:00",
+        "authoredOn": "2020-04-28T14:54:43.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        },
+        "reasonCode": [
+          {
+            "text": "suspected covid-19"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/315890729",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "315890729",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-09-24T01:00:36.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Resuscitation Status</p><p><b>Occurrence</b>: Sep  9, 2020  3:42 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 09/09/20 10:42:00 CDT, All but Chest Compressions</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2515",
+                "display": "Patient Care",
+                "userSelected": true
+              }
+            ],
+            "text": "Patient Care"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "2958523",
+              "userSelected": true
+            }
+          ],
+          "text": "Resuscitation Status"
+        },
+        "orderDetail": [
+          {
+            "text": "09/09/20 10:42:00 CDT, All but Chest Compressions"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceDateTime": "2020-09-09T10:42:00.000-05:00",
+        "authoredOn": "2020-09-09T10:42:37.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311447079",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311447079",
+        "meta": {
+          "versionId": "0",
+          "lastUpdated": "2020-04-27T16:55:27.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: VTE Quality Measures</p><p><b>Occurrence</b>: Apr 27, 2020  4:55 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2515",
+                "display": "Patient Care",
+                "userSelected": true
+              }
+            ],
+            "text": "Patient Care"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "21278203",
+              "userSelected": true
+            }
+          ],
+          "text": "VTE Quality Measures"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceDateTime": "2020-04-27T11:55:27.000-05:00",
+        "authoredOn": "2020-04-27T11:55:27.000-05:00",
+        "requester": {
+          "reference": "Practitioner/1",
+          "display": "SYSTEM, SYSTEM Cerner"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311539773",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311539773",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2020-04-30T20:29:23.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Coronavirus Panel</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Sputum, AM Draw (Inpatient Only) Collect, 05/01/20 3:30:00 CDT, Once, Nurse collect</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2513",
+                "display": "Laboratory",
+                "userSelected": true
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "2572357979",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "94531-1",
+              "userSelected": false
+            }
+          ],
+          "text": "Coronavirus Panel"
+        },
+        "orderDetail": [
+          {
+            "text": "Sputum, AM Draw (Inpatient Only) Collect, 05/01/20 3:30:00 CDT, Once, Nurse collect"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceTiming": {
+          "repeat": {
+            "boundsPeriod": {
+              "start": "2020-04-30T03:15:00.000-05:00",
+              "end": "2020-04-30T15:29:23.000-05:00"
+            }
+          },
+          "code": {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                "code": "696531",
+                "display": "Once",
+                "userSelected": true
+              }
+            ],
+            "text": "Once"
+          }
+        },
+        "authoredOn": "2020-04-30T15:15:01.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477659",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477659",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Isolation</p><p><b>Occurrence Starts</b>: Apr 28, 2020  7:51 P.M. UTC</p><p><b>Occurrence Ends</b>: Apr 28, 2020  7:55 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>suspected covid-19</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 04/28/20 14:51:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19</p></div>"
+        },
+        "status": "revoked",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2515",
+                "display": "Patient Care",
+                "userSelected": true
+              }
+            ],
+            "text": "Patient Care"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "2571969733",
+              "userSelected": true
+            }
+          ],
+          "text": "Isolation"
+        },
+        "orderDetail": [
+          {
+            "text": "04/28/20 14:51:00 CDT, Other (see Special Instructions), Contact Droplet and Airborne Precautions, suspected covid-19"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrencePeriod": {
+          "start": "2020-04-28T14:51:00.000-05:00",
+          "end": "2020-04-28T14:55:00.000-05:00"
+        },
+        "authoredOn": "2020-04-28T14:51:29.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        },
+        "reasonCode": [
+          {
+            "text": "suspected covid-19"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477655",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477655",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Extubation</p><p><b>Occurrence</b>: Apr 28, 2020  7:50 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "636078",
+                "display": "Respiratory Therapy",
+                "userSelected": true
+              }
+            ],
+            "text": "Respiratory Therapy"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "3883383",
+              "userSelected": true
+            }
+          ],
+          "text": "Extubation"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceDateTime": "2020-04-28T14:50:00.000-05:00",
+        "authoredOn": "2020-04-28T14:50:20.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477657",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477657",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Suction Activity</p><p><b>Occurrence</b>: Apr 28, 2020  7:50 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: 04/28/20 14:50:00 CDT, Mini-Bronchoalveolar Lavage, Stop date 04/28/20 14:50:00 CDT</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "2515",
+                "display": "Patient Care",
+                "userSelected": true
+              }
+            ],
+            "text": "Patient Care"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "21849116",
+              "userSelected": true
+            }
+          ],
+          "text": "Suction Activity"
+        },
+        "orderDetail": [
+          {
+            "text": "04/28/20 14:50:00 CDT, Mini-Bronchoalveolar Lavage, Stop date 04/28/20 14:50:00 CDT"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceDateTime": "2020-04-28T14:50:00.000-05:00",
+        "authoredOn": "2020-04-28T14:50:20.000-05:00",
+        "requester": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/311477629",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "311477629",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-05-13T01:00:41.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Code</b>: Consult to Social Services</p><p><b>Occurrence</b>: Apr 28, 2020  7:37 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Review language needs with patient</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p><p><b>Order Detail</b>: 04/28/20 14:37:32 CDT, Review language needs with patient</p></div>"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                "code": "636063",
+                "display": "Consults",
+                "userSelected": true
+              }
+            ],
+            "text": "Consults"
+          }
+        ],
+        "priority": "routine",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+              "code": "2780798",
+              "userSelected": true
+            }
+          ],
+          "text": "Consult to Social Services"
+        },
+        "orderDetail": [
+          {
+            "text": "04/28/20 14:37:32 CDT, Review language needs with patient"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "occurrenceDateTime": "2020-04-28T14:37:32.000-05:00",
+        "authoredOn": "2020-04-28T14:37:32.000-05:00",
+        "requester": {
+          "reference": "Practitioner/1",
+          "display": "SYSTEM, SYSTEM Cerner"
+        },
+        "reasonCode": [
+          {
+            "text": "Review language needs with patient"
+          }
+        ],
+        "note": [
+          {
+            "text": "April 28, 2020 14:37:32 CDT - Order system generated Patient/Caregiver preferred spoken languages (Spanish/No Qualifying Data)."
+          }
+        ]
+      }
+    }
+  ]
 }
