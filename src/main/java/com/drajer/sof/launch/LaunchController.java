@@ -469,6 +469,7 @@ public class LaunchController {
     String fhirVersion = launchDetails.getFhirVersion();
     String encounterId = launchDetails.getEncounterId();
     IBaseResource encounterResource = null;
+    String EncounterError = "Error in getting Encounter resource by Id: " + encounterId;
 
     logger.info("Getting Encounter data by ID {}", encounterId);
 
@@ -524,15 +525,16 @@ public class LaunchController {
           return encounterResource;
         }
       }
-
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving Encounter");
+      logger.info(EncounterError);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
 
     } catch (ResourceNotFoundException notFoundException) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Encounter is not found");
+      logger.info(EncounterError, notFoundException);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, EncounterError, notFoundException);
+
     } catch (Exception e) {
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving Encounter");
+      logger.info(EncounterError, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError, e);
     }
   }
 
