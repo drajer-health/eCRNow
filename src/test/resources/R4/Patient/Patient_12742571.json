@@ -10,7 +10,7 @@
     "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: FHIRTest, COVIDONE</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Jan  2, 1970</p><p><b>Birth Sex</b>: Male</p><p><b>Administrative Gender</b>: Male</p><p><b>Marital Status</b>: Single</p></div>"
   },
   "extension": [
-  	{
+    {
       "valueCode": "M",
       "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
     },
@@ -68,7 +68,7 @@
             "code": "MR",
             "display": "Medical record number",
             "userSelected": false
-          }          
+          }
         ],
         "text": "MRN"
       },
@@ -86,9 +86,7 @@
       "use": "official",
       "text": "FHIRTest, COVIDONE",
       "family": "FHIRTest",
-      "given": [
-        "COVIDONE"
-      ],
+      "given": ["COVIDONE"],
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
       }
@@ -98,9 +96,7 @@
       "use": "usual",
       "text": "HARRIS, JEFF",
       "family": "FHIRTest",
-      "given": [
-        "JEFF"
-      ],
+      "given": ["JEFF"],
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
       }
@@ -192,9 +188,7 @@
         "use": "official",
         "text": "HARRIS, DANA",
         "family": "HARRIS",
-        "given": [
-          "DANA"
-        ]
+        "given": ["DANA"]
       },
       "telecom": [
         {
@@ -220,9 +214,7 @@
         "id": "CI-24326634-0",
         "use": "home",
         "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-        "line": [
-          "2802 ROCK CREEK PKWY"
-        ],
+        "line": ["2802 ROCK CREEK PKWY"],
         "city": "KANSAS CITY",
         "state": "MO",
         "postalCode": "64117",
@@ -254,9 +246,7 @@
         "use": "official",
         "text": "HARRIS, DANA",
         "family": "HARRIS",
-        "given": [
-          "DANA"
-        ]
+        "given": ["DANA"]
       },
       "telecom": [
         {
@@ -282,9 +272,7 @@
         "id": "CI-24326634-0",
         "use": "home",
         "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-        "line": [
-          "2802 ROCK CREEK PKWY"
-        ],
+        "line": ["2802 ROCK CREEK PKWY"],
         "city": "KANSAS CITY",
         "state": "MO",
         "postalCode": "64117",

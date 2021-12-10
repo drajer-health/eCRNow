@@ -74,7 +74,7 @@
             "code": "MR",
             "display": "Medical record number",
             "userSelected": false
-          }          
+          }
         ],
         "text": "MRN"
       },
@@ -92,9 +92,7 @@
       "use": "official",
       "text": "FHIRTest, COVIDONE",
       "family": "FHIRTest",
-      "given": [
-        "COVIDONE"
-      ],
+      "given": ["COVIDONE"],
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
       }
@@ -104,9 +102,7 @@
       "use": "usual",
       "text": "HARRIS, JEFF",
       "family": "FHIRTest",
-      "given": [
-        "JEFF"
-      ],
+      "given": ["JEFF"],
       "period": {
         "start": "2020-05-12T13:40:56.000Z"
       }
@@ -132,9 +128,7 @@
       "id": "CI-24326634-0",
       "use": "home",
       "text": "2801 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-      "line": [
-        "2801 ROCK CREEK PKWY"
-      ],
+      "line": ["2801 ROCK CREEK PKWY"],
       "city": "KANSAS CITY",
       "state": "MO",
       "postalCode": "64117",
@@ -187,9 +181,7 @@
         "use": "official",
         "text": "HARRIS, DANA",
         "family": "HARRIS",
-        "given": [
-          "DANA"
-        ]
+        "given": ["DANA"]
       },
       "telecom": [
         {
@@ -242,9 +234,7 @@
         "use": "official",
         "text": "HARRIS, DANA",
         "family": "HARRIS",
-        "given": [
-          "DANA"
-        ]
+        "given": ["DANA"]
       },
       "telecom": [
         {
