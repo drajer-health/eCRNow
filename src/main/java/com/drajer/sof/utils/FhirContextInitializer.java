@@ -3,7 +3,6 @@ package com.drajer.sof.utils;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
-import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
@@ -66,7 +65,7 @@ public class FhirContextInitializer {
     FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
     context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
-    client.setEncoding(EncodingEnum.JSON);
+    // client.setEncoding(EncodingEnum.JSON);
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
