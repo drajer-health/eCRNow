@@ -112,6 +112,21 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
 
+  @Column(name = "rrprocessing_createdocRef", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isCreateDocRef;
+
+  @Column(name = "rrprocessing_invokerestapi", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isInvokeRestAPI;
+
+  @Column(name = "rrprocessing_both", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isBoth;
+
+  @Column(name = "rr_rest_api_url", nullable = true)
+  private String rrRestAPIUrl;
+
   @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr;
@@ -346,6 +361,38 @@ public class ClientDetails {
 
   public void setIsFullEcr(Boolean isFullEcr) {
     this.isFullEcr = isFullEcr;
+  }
+
+  public Boolean getIsCreateDocRef() {
+    return isCreateDocRef;
+  }
+
+  public void setIsCreateDocRef(Boolean isCreateDocRef) {
+    this.isCreateDocRef = isCreateDocRef;
+  }
+
+  public Boolean getIsInvokeRestAPI() {
+    return isInvokeRestAPI;
+  }
+
+  public void setIsInvokeRestAPI(Boolean isInvokeRestAPI) {
+    this.isInvokeRestAPI = isInvokeRestAPI;
+  }
+
+  public Boolean getIsBoth() {
+    return isBoth;
+  }
+
+  public void setIsBoth(Boolean isBoth) {
+    this.isBoth = isBoth;
+  }
+
+  public String getRrRestAPIUrl() {
+    return rrRestAPIUrl;
+  }
+
+  public void setRrRestAPIUrl(String rrRestAPIUrl) {
+    this.rrRestAPIUrl = rrRestAPIUrl;
   }
 
   public Boolean getDebugFhirQueryAndEicr() {

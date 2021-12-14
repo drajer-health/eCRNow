@@ -242,6 +242,10 @@ public class LaunchController {
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
+            launchDetails.setIsCreateDocRef(clientDetails.getIsCreateDocRef());
+            launchDetails.setIsInvokeRestAPI(clientDetails.getIsInvokeRestAPI());
+            launchDetails.setIsBoth(clientDetails.getIsBoth());
+            launchDetails.setRrRestAPIUrl(clientDetails.getRrRestAPIUrl());
             launchDetails.setxRequestId(requestIdHeadervalue);
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
