@@ -74,8 +74,9 @@ public class CreateEicrActionTest {
       when(mockState.hasActionCompleted(any())).thenReturn(false);
       setupMockData();
 
+      String taskInstanceId = "";
       // Test
-      createtEicrAction.execute(mockDetails, launchType);
+      createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
@@ -104,15 +105,20 @@ public class CreateEicrActionTest {
       Duration duration = new Duration();
       when(mockRelActn.getDuration()).thenReturn(duration);
 
+      String taskInstanceId = "";
       // Test
-      createtEicrAction.execute(mockDetails, launchType);
+      createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(2)).getDuration();
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
       WorkflowService.scheduleJob(
-          eq(1), any(Duration.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
+          eq(1),
+          any(Duration.class),
+          eq(EcrActionTypes.CREATE_EICR),
+          any(Date.class),
+          any(String.class));
 
       assertEquals(JobStatus.SCHEDULED, createEicrStatus.getJobStatus());
 
@@ -140,14 +146,20 @@ public class CreateEicrActionTest {
       setupMockData();
 
       // Test
-      createtEicrAction.execute(mockDetails, launchType);
+      createtEicrAction.execute(mockDetails, launchType, "");
 
       // Validate
       verify(mockState, times(1)).hasActionCompleted("123");
       verify(mockRelActn, times(1)).getDuration();
+
       PowerMockito.verifyStatic(WorkflowService.class, times(1));
+
       WorkflowService.scheduleJob(
-          eq(1), any(TimingSchedule.class), eq(EcrActionTypes.CREATE_EICR), any(Date.class));
+          eq(1),
+          any(TimingSchedule.class),
+          eq(EcrActionTypes.CREATE_EICR),
+          any(Date.class),
+          any(String.class));
 
       assertEquals(JobStatus.SCHEDULED, createEicrStatus.getJobStatus());
 
@@ -186,8 +198,9 @@ public class CreateEicrActionTest {
       when(mockEicr.getId()).thenReturn(10);
       when(mockEicr.getEicrData()).thenReturn("This is Eicr Document");
 
+      String taskInstanceId = "";
       // Test
-      createtEicrAction.execute(mockDetails, launchType);
+      createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(ApplicationUtils.class, times(1));
@@ -222,8 +235,9 @@ public class CreateEicrActionTest {
       when(EcaUtils.recheckTriggerCodes(mockDetails, launchType)).thenReturn(mockState);
       when(mockTriggerStatus.getTriggerMatchStatus()).thenReturn(true);
 
+      String taskInstanceId = "";
       // Test
-      createtEicrAction.execute(mockDetails, launchType);
+      createtEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
       // Validate
       PowerMockito.verifyStatic(EcaUtils.class, times(0));
@@ -241,8 +255,9 @@ public class CreateEicrActionTest {
   @Test(expected = RuntimeException.class)
   public void testExecute_DetailObjIsInvalid() throws Exception {
 
+    String taskInstanceId = "";
     // Test
-    createtEicrAction.execute(null, launchType);
+    createtEicrAction.execute(null, launchType, taskInstanceId);
   }
 
   @Test()

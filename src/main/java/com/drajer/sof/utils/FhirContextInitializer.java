@@ -57,18 +57,21 @@ public class FhirContextInitializer {
    *
    * @param url the base URL of the FHIR server to connect to
    * @param accessToken the name of the key to use to generate the token
+   * @param requestId the prefix for all X-Request-ID values used with this new client
    * @return a Generic Client
    */
-  public IGenericClient createClient(FhirContext context, String url, String accessToken) {
+  public IGenericClient createClient(
+      FhirContext context, String url, String accessToken, String requestId) {
     logger.trace("Initializing the Client");
-    IGenericClient client = context.newRestfulGenericClient(url);
-    context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+    FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
+    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
     client.setEncoding(EncodingEnum.JSON);
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
-    logger.trace("Initialized the Client");
+    logger.trace(
+        "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
     return client;
   }
 
@@ -108,10 +111,10 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Id: {}", resourceName, resourceId, responseException);
     } catch (Exception e) {
-      logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
+      logger.info("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
     }
     return resource;
   }
@@ -227,13 +230,13 @@ public class FhirContextInitializer {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
           responseException);
     } catch (Exception e) {
-      logger.error(
+      logger.info(
           "Error in getting {} resource by Patient Id: {}",
           resourceName,
           authDetails.getLaunchPatientId(),
@@ -248,7 +251,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.hasEntry()) {
       List<BundleEntryComponent> entriesList = bundle.getEntry();
       if (bundle.hasLink() && bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.debug(
+        logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
             genericClient.loadPage().next(bundle).execute();
@@ -266,7 +269,7 @@ public class FhirContextInitializer {
     if (bundle != null && bundle.getEntry() != null) {
       List<Entry> entriesList = bundle.getEntry();
       if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
-        logger.debug(
+        logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
         if (nextPageBundleResults != null) {

@@ -8,7 +8,6 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
-import java.util.Map;
 import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +25,25 @@ public class TaskConfiguration {
 
   @Autowired RestTemplate restTemplate;
 
-  @Value("${workflow.endpoint:}")
+  @Value("${timer.retries:10}")
+  private Integer timerRetries;
+
+  @Value("${workflow.endpoint}")
   private String workflowEndpoint;
 
   /** Define a one-time task which have to be manually scheduled. */
   @Bean
   public Task<TaskTimer> sampleOneTimeTask() {
     log.info("Initializing the One time task");
-    final Map<String, String> loggingDiagnosticContext = MDC.getCopyOfContextMap();
     OneTimeTask<TaskTimer> myTask =
         Tasks.oneTime("EICRTask", TaskTimer.class)
             .onFailureRetryLater()
             .execute(
                 (inst, ctx) -> {
                   try {
-                    MDC.setContextMap(loggingDiagnosticContext);
+                    if (inst.getData().getMdcContext() != null) {
+                      MDC.setContextMap(inst.getData().getMdcContext());
+                    }
                     log.info(
                         "Executing Task for {}, Launch Id::: {}",
                         inst.getTaskAndInstance(),
@@ -55,13 +58,39 @@ public class TaskConfiguration {
                         .executeScheduledAction(
                             workflowTask.getLaunchId(),
                             workflowTask.getActionType(),
-                            workflowTask.getWorkflowEvent());
+                            workflowTask.getWorkflowEvent(),
+                            inst.getTaskAndInstance());
+
+                    log.info(
+                        "Successfully Completed Executing Task for {}, Launch Id::: {}",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId());
 
                   } catch (ObjectDeletedException deletedException) {
-                    log.info("Error in completing the Execution:::::", deletedException);
+
+                    log.info(
+                        "Error in completing the Execution of Task for {}, Launch Id::: {}, finishing task without retries",
+                        inst.getTaskAndInstance(),
+                        inst.getData().getLaunchDetailsId(),
+                        deletedException);
+
                   } catch (Exception e) {
-                    ApplicationUtils.handleException(
-                        e, "Error in completing the Execution:::::", LogLevel.ERROR);
+
+                    if (ctx.getExecution().consecutiveFailures >= timerRetries) {
+                      log.error(
+                          "Error in completing the Execution of Task for {}, Launch Id {}, removing the timer after {} retries",
+                          inst.getTaskAndInstance(),
+                          inst.getData().getLaunchDetailsId(),
+                          ctx.getExecution().consecutiveFailures,
+                          e);
+                    } else {
+                      ApplicationUtils.handleException(
+                          e,
+                          "Error in completing the Execution, retry in 5 minutes.",
+                          LogLevel.ERROR);
+                      throw e;
+                    }
+
                   } finally {
                     MDC.clear();
                   }

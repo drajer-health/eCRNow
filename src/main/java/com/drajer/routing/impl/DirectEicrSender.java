@@ -117,10 +117,10 @@ public class DirectEicrSender extends EicrSender {
     logger.info(" Completed constructing the Message ");
     Transport transport = session.getTransport("smtp");
     transport.connect(host, Integer.parseInt(port), username, password);
-    
+
     logger.info(" Connection successful to the direct host {}", host);
     transport.sendMessage(message, message.getAllRecipients());
-    
+
     logger.info("Finished sending Direct message successfully, closing connection ");
     transport.close();
 

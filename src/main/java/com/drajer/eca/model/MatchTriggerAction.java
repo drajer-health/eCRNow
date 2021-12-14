@@ -16,7 +16,7 @@ public class MatchTriggerAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(MatchTriggerAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" Executing Match Trigger Action ");
 

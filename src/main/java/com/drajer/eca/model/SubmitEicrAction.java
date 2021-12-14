@@ -4,7 +4,6 @@ import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +20,7 @@ public class SubmitEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info("**** START Executing Submit Eicr Action ****");
 
@@ -93,34 +92,28 @@ public class SubmitEicrAction extends AbstractAction {
 
         logger.info("Found eICR with Id {} to submit", id);
 
-        try {
-          MDCUtils.addCorrelationId(ecr.getxCorrelationId());
+        String data = ecr.getEicrData();
 
-          String data = ecr.getEicrData();
-
-          if (!StringUtils.isBlank(details.getRestAPIURL())) {
-            ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
-          } else if (!StringUtils.isBlank(details.getDirectHost())
-              || !StringUtils.isBlank(details.getSmtpUrl())) {
-            ActionRepo.getInstance().getDirectTransport().sendData(details, data);
-          } else {
-            String msg = "No Transport method specified to submit EICR.";
-            logger.error(msg);
-
-            throw new RuntimeException(msg);
-          }
-
-          // Add a submission object every time.
-          SubmitEicrStatus submitState = new SubmitEicrStatus();
-          submitState.setActionId(getActionId());
-          submitState.seteICRId(id.toString());
-          submitState.setEicrSubmitted(true);
-          submitState.setJobStatus(JobStatus.COMPLETED);
-          submitState.setSubmittedTime(new Date());
-          state.getSubmitEicrStatus().add(submitState);
-        } finally {
-          MDCUtils.removeCorrelationId();
+        if (!StringUtils.isBlank(details.getRestAPIURL())) {
+          ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
+        } else if (!StringUtils.isBlank(details.getDirectHost())
+            || !StringUtils.isBlank(details.getSmtpUrl())) {
+          ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+        } else {
+          String msg = "No Transport method specified to submit EICR.";
+          logger.error(msg);
+          throw new RuntimeException(msg);
         }
+
+        // Add a submission object every time.
+        SubmitEicrStatus submitState = new SubmitEicrStatus();
+        submitState.setActionId(getActionId());
+        submitState.seteICRId(id.toString());
+        submitState.setEicrSubmitted(true);
+        submitState.setJobStatus(JobStatus.COMPLETED);
+        submitState.setSubmittedTime(new Date());
+        state.getSubmitEicrStatus().add(submitState);
+
       } else {
         String msg = "No Eicr found for submission, Id = " + Integer.toString(id);
         logger.error(msg);

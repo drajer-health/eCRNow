@@ -6,10 +6,10 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class CreateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(CreateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" **** START Executing Create Eicr Action **** ");
 
@@ -86,7 +86,8 @@ public class CreateEicrAction extends AbstractAction {
                         details.getId(),
                         act.getDuration(),
                         EcrActionTypes.CREATE_EICR,
-                        details.getStartDate());
+                        details.getStartDate(),
+                        taskInstanceId);
                     state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
                     EcaUtils.updateDetailStatus(details, state);
 
@@ -131,15 +132,20 @@ public class CreateEicrAction extends AbstractAction {
                   // TBD : Setup job using TS Timing after testing so that we can test faster.
                   // For now setup a default job with 10 seconds.
                   WorkflowService.scheduleJob(
-                      details.getId(), ts, EcrActionTypes.CREATE_EICR, details.getStartDate());
+                      details.getId(),
+                      ts,
+                      EcrActionTypes.CREATE_EICR,
+                      details.getStartDate(),
+                      taskInstanceId);
                   state.getCreateEicrStatus().setJobStatus(JobStatus.SCHEDULED);
                   EcaUtils.updateDetailStatus(details, state);
                   // No need to continue as the job will take over execution.
                   logger.info(" **** End Executing Create Eicr Action **** ");
                 }
+              } else {
+                logger.info(" No job to schedule since there is no timing data ");
               }
 
-              logger.info(" No job to schedule since there is no timing data ");
             } else if ((state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
                     && launchType == WorkflowEvent.SCHEDULED_JOB)
                 || validationMode) {
@@ -157,33 +163,32 @@ public class CreateEicrAction extends AbstractAction {
                 // Since the job has started, Execute the job.
                 // Call the Loading Queries and create eICR.
                 Eicr ecr = EcaUtils.createEicr(details);
+                logger.info(
+                    " EICR created successfully for {} with eICRDocID: {} version: {}",
+                    EcrActionTypes.CREATE_EICR,
+                    ecr.getEicrDocId(),
+                    ecr.getDocVersion());
 
-                try {
-                  MDCUtils.addCorrelationId(ecr.getxCorrelationId());
+                newState.getCreateEicrStatus().setEicrCreated(true);
+                newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
+                newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
 
-                  newState.getCreateEicrStatus().setEicrCreated(true);
-                  newState.getCreateEicrStatus().seteICRId(ecr.getId().toString());
-                  newState.getCreateEicrStatus().setJobStatus(JobStatus.COMPLETED);
+                EcaUtils.updateDetailStatus(details, newState);
 
-                  EcaUtils.updateDetailStatus(details, newState);
+                logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
 
-                  logger.debug(" **** Printing Eicr from CREATE EICR ACTION **** ");
+                String fileName =
+                    ActionRepo.getInstance().getLogFileDirectory()
+                        + "/"
+                        + details.getLaunchPatientId()
+                        + "_CreateEicrAction"
+                        + LocalDateTime.now().getHour()
+                        + LocalDateTime.now().getMinute()
+                        + LocalDateTime.now().getSecond()
+                        + ".xml";
+                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                  String fileName =
-                      ActionRepo.getInstance().getLogFileDirectory()
-                          + "/"
-                          + details.getLaunchPatientId()
-                          + "_CreateEicrAction"
-                          + LocalDateTime.now().getHour()
-                          + LocalDateTime.now().getMinute()
-                          + LocalDateTime.now().getSecond()
-                          + ".xml";
-                  ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
-
-                  logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
-                } finally {
-                  MDCUtils.removeCorrelationId();
-                }
+                logger.debug(" **** End Printing Eicr from CREATE EICR ACTION **** ");
               } // Check if Trigger Code Match found
               else {
 
@@ -233,10 +238,10 @@ public class CreateEicrAction extends AbstractAction {
 
       String msg =
           "Invalid Object passed to Execute method, Launch Details expected, found : "
-              + obj.getClass().getName();
+              + (obj != null ? obj.getClass().getName() : null);
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
 
     logger.info("**** END Executing Create Eicr Action after completing normal execution. ****");

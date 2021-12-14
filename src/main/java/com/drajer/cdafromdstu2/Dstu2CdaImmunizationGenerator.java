@@ -129,8 +129,8 @@ public class Dstu2CdaImmunizationGenerator {
 
         // Set up Effective Time for start and End time.
         sb.append(
-            CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.EFF_TIME_EL_NAME, imm.getDate()));
+            Dstu2CdaFhirUtilities.getDateTimeTypeXml(
+                imm.getDateElement(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
 
         // add the consumable presentation.
         sb.append(

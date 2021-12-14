@@ -21,12 +21,12 @@
   "assigningAuthorityId": "2.16.840.1.113883.1.1.1.1",
   "encounterStartThreshold": "3",
   "encounterEndThreshold": "30",
-  "isCovid": true,
-  "isFullEcr": false,
+  "isCovid": false,
+  "isFullEcr": true,
   "isCreateDocRef": false,
   "isInvokeRestAPI": false,
   "isBoth":true,
   "rrRestAPIUrl":"http://localhost:port/rrRestAPI",
   "debugFhirQueryAndEicr": false,
-  "lastUpdated": "2020-07-21T04:30:00.167+0000" 
+  "lastUpdated": "2020-07-21T04:30:00.167+0000"
 }

@@ -5,7 +5,6 @@ import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +19,7 @@ public class ValidateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(ValidateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info("**** START Executing Validate Eicr Action ****");
 
@@ -87,28 +86,22 @@ public class ValidateEicrAction extends AbstractAction {
         Eicr eicr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
         String eicrData = eicr.getEicrData();
 
-        try {
-          MDCUtils.addCorrelationId(eicr.getxCorrelationId());
-
-          // Validate incoming XML
-          if (StringUtils.isNotEmpty(eicrData)) {
-            CdaValidatorUtil.validateEicrXMLData(eicrData);
-            CdaValidatorUtil.validateEicrToSchematron(eicrData);
-          } else {
-            logger.info("**** Skipping Eicr XML Validation: eICR is null****");
-          }
-
-          // Add a validate object every time.
-          ValidateEicrStatus validate = new ValidateEicrStatus();
-          validate.setActionId(getActionId());
-          validate.seteICRId(id.toString());
-          validate.setEicrValidated(true);
-          validate.setJobStatus(JobStatus.COMPLETED);
-          validate.setValidationTime(new Date());
-          state.getValidateEicrStatus().add(validate);
-        } finally {
-          MDCUtils.removeCorrelationId();
+        // Validate incoming XML
+        if (StringUtils.isNotEmpty(eicrData)) {
+          CdaValidatorUtil.validateEicrXMLData(eicrData);
+          CdaValidatorUtil.validateEicrToSchematron(eicrData);
+        } else {
+          logger.info("**** Skipping Eicr XML Validation: eICR is null****");
         }
+
+        // Add a validate object every time.
+        ValidateEicrStatus validate = new ValidateEicrStatus();
+        validate.setActionId(getActionId());
+        validate.seteICRId(id.toString());
+        validate.setEicrValidated(true);
+        validate.setJobStatus(JobStatus.COMPLETED);
+        validate.setValidationTime(new Date());
+        state.getValidateEicrStatus().add(validate);
       }
     }
   }

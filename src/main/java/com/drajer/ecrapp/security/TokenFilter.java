@@ -32,7 +32,9 @@ public class TokenFilter extends OncePerRequestFilter {
       ServletContext servletContext = request.getServletContext();
       WebApplicationContext webApplicationContext =
           WebApplicationContextUtils.getWebApplicationContext(servletContext);
-      clientDetailsService = webApplicationContext.getBean(ClientDetailsService.class);
+      if (webApplicationContext != null) {
+        clientDetailsService = webApplicationContext.getBean(ClientDetailsService.class);
+      }
     }
     logger.info("Received Authorization Header========> {}", request.getHeader("Authorization"));
 
@@ -47,16 +49,18 @@ public class TokenFilter extends OncePerRequestFilter {
 
     logger.info(requestBodyObj.getString("fhirServerURL"));
 
-    ClientDetails clientDetails =
-        clientDetailsService.getClientDetailsByUrl(requestBodyObj.getString("fhirServerURL"));
+    if (clientDetailsService != null) {
+      ClientDetails clientDetails =
+          clientDetailsService.getClientDetailsByUrl(requestBodyObj.getString("fhirServerURL"));
 
-    // Read the Token Instrospection URL, Client Id and Client Secret from Client Details
-    // String tokenIntrospectionURL = clientDetails.getTokenIntrospectionURL();
-    String clientId = clientDetails.getClientId();
-    String clientSecret = clientDetails.getClientSecret();
+      // Read the Token Instrospection URL, Client Id and Client Secret from Client Details
+      // String tokenIntrospectionURL = clientDetails.getTokenIntrospectionURL();
+      String clientId = clientDetails.getClientId();
+      String clientSecret = clientDetails.getClientSecret();
 
-    if (validateAccessToken(clientId, clientSecret)) {
-      chain.doFilter(request, response);
+      if (validateAccessToken(clientId, clientSecret)) {
+        chain.doFilter(request, response);
+      }
     }
   }
 

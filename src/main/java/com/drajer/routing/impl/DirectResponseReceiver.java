@@ -50,7 +50,7 @@ public class DirectResponseReceiver extends RRReceiver {
     try {
 
       String mId;
-
+      logger.info("Reading mail..");
       // Properties for Javamail
       Properties props = new Properties();
       Session session = Session.getInstance(props, null);
@@ -115,7 +115,7 @@ public class DirectResponseReceiver extends RRReceiver {
   }
 
   public void deleteMail(String host, String username, String password) throws Exception {
-
+    logger.info("Deleting mail..");
     Properties props = new Properties();
     Session session = Session.getInstance(props, null);
 

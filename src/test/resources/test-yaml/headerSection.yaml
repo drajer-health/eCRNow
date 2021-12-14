@@ -8,87 +8,87 @@ testCase:
       BaseXPath: "/ClinicalDocument/recordTarget/patientRole/"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "id"
-      count: 1
-    - xPath: "addr"
-      count: 1
-    - xPath: "addr/streetAddressLine"
-      count: 4
-    - xPath: "telecom"
-      count: 2
-    - xPath: ""
-      'id/@root': "2.16.840.1.113883.6.1000"
-      'id/@extension': "490056856"
-      'addr/streetAddressLine[1]': "2801 ROCK CREEK PKWY"
-      'addr/streetAddressLine[2]': "Downtown"
-      'addr/streetAddressLine[3]': "Old street road"
-      'addr/streetAddressLine[4]': "near walmart"    
-      'addr/city': "KANSAS CITY"
-      'addr/state': "MO"
-      'addr/postalCode': "64117"
-      'addr/country': "US"
-      'telecom[1]/@value': "tel:(212)555-5554"
-      'telecom[1]/@use': "MC"
-      'telecom[2]/@value': "mailto:coviddonefhir@gmail.com"
-    - xPath: "patient/name"
-      count: 1
-    - xPath: "patient/languageCommunication"
-      count: 1
-    - xPath: "patient/"
-      'administrativeGenderCode/@code': "M"
-      'administrativeGenderCode/@codeSystem': "2.16.840.1.113883.5.1"
-      'name/given': "COVIDONE"
-      'name/family': "FHIRTest"
-      'birthTime/@value': "19700102000000"
-      'deceasedInd/@value': "false"
-      'raceCode/@code': "2054-5"
-      'raceCode/@codeSystem': "2.16.840.1.113883.6.238"
-      'raceCode/@codeSystemName': "Race & Ethnicity - CDC"
-      'raceCode/@displayName': "Black or African American"
-      'ethnicGroupCode/@code': "2186-5"
-      'ethnicGroupCode/@codeSystem': "2.16.840.1.113883.6.238"
-      'ethnicGroupCode/@codeSystemName': "Race & Ethnicity - CDC"
-      'ethnicGroupCode/@displayName': "Not Hispanic or Latino"
-      'languageCommunication/languageCode/@code': "en"
-    - xPath: "patient/guardian"
-      count: 1
-    - xPath: "patient/guardian/addr"
-      count: 1
-    - xPath: "patient/guardian/telecom"
-      count: 2
-    - xPath: "patient/guardian/guardianPerson/name"
-      count: 1
-    - xPath: "patient/guardian/"
-      'addr/streetAddressLine': "2802 ROCK CREEK PKWY"
-      'addr/city': "KANSAS CITY"
-      'addr/state': "MO"
-      'addr/postalCode': "64117"
-      'addr/country': "US"
-      'telecom[1]/@value': "tel:(212)555-5553"
-      #'telecom[1]/@use': "HP"
-      'telecom[2]/@value': "mailto:dharris@gmail.com"
-      'guardianPerson/name/given': "DANA"
-      'guardianPerson/name/family': "HARRIS"
+      - xPath: "id"
+        count: 1
+      - xPath: "addr"
+        count: 1
+      - xPath: "addr/streetAddressLine"
+        count: 4
+      - xPath: "telecom"
+        count: 2
+      - xPath: ""
+        "id/@root": "2.16.840.1.113883.6.1000"
+        "id/@extension": "490056856"
+        "addr/streetAddressLine[1]": "2801 ROCK CREEK PKWY"
+        "addr/streetAddressLine[2]": "Downtown"
+        "addr/streetAddressLine[3]": "Old street road"
+        "addr/streetAddressLine[4]": "near walmart"
+        "addr/city": "KANSAS CITY"
+        "addr/state": "MO"
+        "addr/postalCode": "64117"
+        "addr/country": "US"
+        "telecom[1]/@value": "tel:(212)555-5554"
+        "telecom[1]/@use": "MC"
+        "telecom[2]/@value": "mailto:coviddonefhir@gmail.com"
+      - xPath: "patient/name"
+        count: 1
+      - xPath: "patient/languageCommunication"
+        count: 1
+      - xPath: "patient/"
+        "administrativeGenderCode/@code": "M"
+        "administrativeGenderCode/@codeSystem": "2.16.840.1.113883.5.1"
+        "name/given": "COVIDONE"
+        "name/family": "FHIRTest"
+        "birthTime/@value": "19700102"
+        "deceasedInd/@value": "false"
+        "raceCode/@code": "2054-5"
+        "raceCode/@codeSystem": "2.16.840.1.113883.6.238"
+        "raceCode/@codeSystemName": "Race & Ethnicity - CDC"
+        "raceCode/@displayName": "Black or African American"
+        "ethnicGroupCode/@code": "2186-5"
+        "ethnicGroupCode/@codeSystem": "2.16.840.1.113883.6.238"
+        "ethnicGroupCode/@codeSystemName": "Race & Ethnicity - CDC"
+        "ethnicGroupCode/@displayName": "Not Hispanic or Latino"
+        "languageCommunication/languageCode/@code": "en"
+      - xPath: "patient/guardian"
+        count: 1
+      - xPath: "patient/guardian/addr"
+        count: 1
+      - xPath: "patient/guardian/telecom"
+        count: 2
+      - xPath: "patient/guardian/guardianPerson/name"
+        count: 1
+      - xPath: "patient/guardian/"
+        "addr/streetAddressLine": "2802 ROCK CREEK PKWY"
+        "addr/city": "KANSAS CITY"
+        "addr/state": "MO"
+        "addr/postalCode": "64117"
+        "addr/country": "US"
+        "telecom[1]/@value": "tel:(212)555-5553"
+        #'telecom[1]/@use': "HP"
+        "telecom[2]/@value": "mailto:dharris@gmail.com"
+        "guardianPerson/name/given": "DANA"
+        "guardianPerson/name/family": "HARRIS"
   eCR-patient-deceased:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -96,29 +96,29 @@ testCase:
       BaseXPath: "/ClinicalDocument/recordTarget/patientRole/"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Pat_Deceased.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Pat_Deceased.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "patient/"
-      'deceasedTime/@value': "20201013000000"
-      'deceasedInd/@value': "true"
+      - xPath: "patient/"
+        "deceasedTime/@value": "20201013192945+0000"
+        "deceasedInd/@value": "true"
   eCR-header-author:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -126,54 +126,54 @@ testCase:
       BaseXPath: "/ClinicalDocument/"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_97953900.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "author"
-      count: 1
-   # - xPath: "author/"
-   #   'time/@value': "20200512"
-    - xPath: "author/assignedAuthor/id"
-      count: 1
-    - xPath: "author/assignedAuthor/addr"
-      count: 1
-    - xPath: "author/assignedAuthor/telecom"
-      count: 1
-    - xPath: "author/assignedAuthor/"
-      'id/@root': "2.16.840.1.113883.4.6"
-      'id/@extension': "123456789"
-      'addr/streetAddressLine': "1234 Main St"
-      'addr/city': "Kansas City"
-      'addr/state/@nullFlavor': "NI"
-      'addr/postalCode': "64113"
-      'addr/country': "US"
-      'telecom/@value': "tel:(212)212-2211"
-      'telecom/@use': "WP"
-    - xPath: "author/assignedAuthor/assignedPerson/name"
-      count: 1
-    - xPath: "author/assignedAuthor/assignedPerson/name/given"
-      count: 2
-    - xPath: "author/assignedAuthor/assignedPerson/"
-      'name/given[1]': "Kristin"
-      'name/given[2]': "Cerner"
-      'name/family': "Carter"
+      - xPath: "author"
+        count: 1
+      # - xPath: "author/"
+      #   'time/@value': "20200512"
+      - xPath: "author/assignedAuthor/id"
+        count: 1
+      - xPath: "author/assignedAuthor/addr"
+        count: 1
+      - xPath: "author/assignedAuthor/telecom"
+        count: 1
+      - xPath: "author/assignedAuthor/"
+        "id/@root": "2.16.840.1.113883.4.6"
+        "id/@extension": "123456789"
+        "addr/streetAddressLine": "1234 Main St"
+        "addr/city": "Kansas City"
+        "addr/state/@nullFlavor": "NI"
+        "addr/postalCode": "64113"
+        "addr/country": "US"
+        "telecom/@value": "tel:(212)212-2211"
+        "telecom/@use": "WP"
+      - xPath: "author/assignedAuthor/assignedPerson/name"
+        count: 1
+      - xPath: "author/assignedAuthor/assignedPerson/name/given"
+        count: 2
+      - xPath: "author/assignedAuthor/assignedPerson/"
+        "name/given[1]": "Kristin"
+        "name/given[2]": "Cerner"
+        "name/family": "Carter"
   eCR-header-author-NoValidPractitioner:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -206,25 +206,25 @@ testCase:
       # - xPath: "author/"
       #   'time/@value': "20200512"
       - xPath: "author/assignedAuthor/"
-        'id/@root': "2.16.840.1.113883.4.6"
-        'addr/streetAddressLine/@nullFlavor': "NI"
-        'addr/city/@nullFlavor': "NI"
-        'addr/state/@nullFlavor': "NI"
-        'addr/postalCode/@nullFlavor': "NI"
-        'addr/country/@nullFlavor': "NI"
-        'telecom/@nullFlavor': "NI"
-        'assignedPerson/name/given/@nullFlavor': "NI"
-        'assignedPerson/name/family/@nullFlavor': "NI"
+        "id/@root": "2.16.840.1.113883.4.6"
+        "addr/streetAddressLine/@nullFlavor": "NI"
+        "addr/city/@nullFlavor": "NI"
+        "addr/state/@nullFlavor": "NI"
+        "addr/postalCode/@nullFlavor": "NI"
+        "addr/country/@nullFlavor": "NI"
+        "telecom/@nullFlavor": "NI"
+        "assignedPerson/name/given/@nullFlavor": "NI"
+        "assignedPerson/name/family/@nullFlavor": "NI"
       - xPath: "componentOf/encompassingEncounter/responsibleParty/assignedEntity/"
-        'id/@root': "2.16.840.1.113883.4.6"
-        'addr/streetAddressLine/@nullFlavor': "NI"
-        'addr/city/@nullFlavor': "NI"
-        'addr/state/@nullFlavor': "NI"
-        'addr/postalCode/@nullFlavor': "NI"
-        'addr/country/@nullFlavor': "NI"
-        'telecom/@nullFlavor': "NI"
-        'assignedPerson/name/given/@nullFlavor': "NI"
-        'assignedPerson/name/family/@nullFlavor': "NI"
+        "id/@root": "2.16.840.1.113883.4.6"
+        "addr/streetAddressLine/@nullFlavor": "NI"
+        "addr/city/@nullFlavor": "NI"
+        "addr/state/@nullFlavor": "NI"
+        "addr/postalCode/@nullFlavor": "NI"
+        "addr/country/@nullFlavor": "NI"
+        "telecom/@nullFlavor": "NI"
+        "assignedPerson/name/given/@nullFlavor": "NI"
+        "assignedPerson/name/family/@nullFlavor": "NI"
   eCR-header-custodian:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -232,43 +232,43 @@ testCase:
       BaseXPath: "/ClinicalDocument/custodian/assignedCustodian/"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "representedCustodianOrganization/id"
-      count: 1
-    - xPath: "representedCustodianOrganization/addr"
-      count: 1
-    - xPath: "representedCustodianOrganization/telecom"
-      count: 1
-    - xPath: "representedCustodianOrganization/"
-      'id/@root': "2.16.840.1.113883.4.4"
-      'id/@extension': "123456785"
-      'name': "Model Hospital"
-      'addr/streetAddressLine': "6276 Rockriver Drive"
-      'addr/city': "Kansas City"
-      'addr/state': "MO"
-      'addr/postalCode': "64117"
-      'addr/country': "US"
-      'telecom/@value': "tel:(555)555-0013"
-      'telecom/@use': "WP"
+      - xPath: "representedCustodianOrganization/id"
+        count: 1
+      - xPath: "representedCustodianOrganization/addr"
+        count: 1
+      - xPath: "representedCustodianOrganization/telecom"
+        count: 1
+      - xPath: "representedCustodianOrganization/"
+        "id/@root": "2.16.840.1.113883.4.4"
+        "id/@extension": "123456785"
+        "name": "Model Hospital"
+        "addr/streetAddressLine": "6276 Rockriver Drive"
+        "addr/city": "Kansas City"
+        "addr/state": "MO"
+        "addr/postalCode": "64117"
+        "addr/country": "US"
+        "telecom/@value": "tel:(555)555-0013"
+        "telecom/@use": "WP"
   eCR-header-encompassingEncounter:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
@@ -276,111 +276,111 @@ testCase:
       BaseXPath: "/ClinicalDocument/componentOf/encompassingEncounter/"
     resourceMappingData:
       Patient:
-      - params: "12742571"
-        responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
-      - params: "97953900"
-        responseFilePath: "R4/Encounter/Encounter_97953900.json"
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_97953900.json"
       Practitioner:
-      - params: "11817978"
-        responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
       Organization:
-      - params: "675844"
-        responseFilePath: "R4/Organization/Organization.json"
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
       Condition:
-      - params:
-          patient: "12742571"
-        responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-    - xPath: "id"
-      count: 2
-    - xPath: ""
-      'id[1]/@root': "2.16.840.1.113883.1.1.1.1"
-#      'id[1]/@extension': "97953900"
-      'id[2]/@root': "2.16.840.1.113883.4.4"
-      'id[2]/@extension': "98314717"
-      'code/@code': "IMP"
-      'code/@codeSystem': "2.16.840.1.113883.5.4"
-      'code/@codeSystemName': "v3-ActCode"
-      'code/@displayName': "inpatient encounter"
-#      'effectiveTime/low/@value': "20200512"
-      'effectiveTime/high/@nullFlavor': "NI"
-    - xPath: "responsibleParty/assignedEntity/id"
-      count: 1
-    - xPath: "responsibleParty/assignedEntity/addr"
-      count: 1
-    - xPath: "responsibleParty/assignedEntity/telecom"
-      count: 1
-    - xPath: "responsibleParty/assignedEntity/"
-      'id/@root': "2.16.840.1.113883.4.6"
-      'id/@extension': "123456789"
-      'addr/streetAddressLine': "1234 Main St"
-      'addr/city': "Kansas City"
-      'addr/state/@nullFlavor': "NI"
-      'addr/postalCode': "64113"
-      'addr/country': "US"
-      'telecom/@value': "tel:(212)212-2211"
-      'telecom/@use': "WP"
-    - xPath: "responsibleParty/assignedEntity/assignedPerson/name"
-      count: 1
-    - xPath: "responsibleParty/assignedEntity/assignedPerson/name/given"
-      count: 2
-    - xPath: "responsibleParty/assignedEntity/assignedPerson/"
-      'name/given[1]': "Kristin"
-      'name/given[2]': "Cerner"
-      'name/family': "Carter"
-    - xPath: "responsibleParty/assignedEntity/representedOrganization/id"
-      count: 1
-    - xPath: "responsibleParty/assignedEntity/representedOrganization/addr"
-      count: 1
-    - xPath: "responsibleParty/assignedEntity/representedOrganization/telecom"
-      count: 2
-    - xPath: "responsibleParty/assignedEntity/representedOrganization/"
-      'id/@root': "2.16.840.1.113883.4.4"
-      'id/@extension': "123456785"
-      'name': "Model Hospital"
-      'addr/streetAddressLine': "6276 Rockriver Drive"
-      'addr/city': "Kansas City"
-      'addr/state': "MO"
-      'addr/postalCode': "64117"
-      'addr/country': "US"
-      'telecom[1]/@value': "tel:(555)555-0013"
-      'telecom[1]/@use': "WP"
-      'telecom[2]/@value': "tel:(555)555-0013"
-      'telecom[2]/@use': "WP"
-    - xPath: "location/healthCareFacility/id"
-      count: 1
-    - xPath: "location/healthCareFacility/"
-      'id/@root': "2.16.840.1.113883.1.1.1.1"
-#      'id/@extension': "675844"
-      'code/@code': "prov"
-      'code/@codeSystem': "2.16.840.1.113883.4.642.3.414"
-      'code/@codeSystemName': "organization-type"
-      'code/@displayName': "Healthcare Provider"
-    - xPath: "location/healthCareFacility/location/addr"
-      count: 1
-    - xPath: "location/healthCareFacility/location/"
-      'addr/streetAddressLine': "6276 Rockriver Drive"
-      'addr/city': "Kansas City"
-      'addr/state': "MO"
-      'addr/postalCode': "64117"
-      'addr/country': "US"
-    - xPath: "location/healthCareFacility/serviceProviderOrganization/id"
-      count: 1
-    - xPath: "location/healthCareFacility/serviceProviderOrganization/addr"
-      count: 1
-    - xPath: "location/healthCareFacility/serviceProviderOrganization/"
-      'id/@root': "2.16.840.1.113883.4.4"
-      'id/@extension': "123456785"
-      'name': "Model Hospital"
-      'addr/streetAddressLine': "6276 Rockriver Drive"
-      'addr/city': "Kansas City"
-      'addr/state': "MO"
-      'addr/postalCode': "64117"
-      'addr/country': "US"
-      'telecom/@value': "tel:(555)555-0013"
-      'telecom/@use': "WP"
+      - xPath: "id"
+        count: 2
+      - xPath: ""
+        "id[1]/@root": "2.16.840.1.113883.1.1.1.1"
+        #      'id[1]/@extension': "97953900"
+        "id[2]/@root": "2.16.840.1.113883.4.4"
+        "id[2]/@extension": "98314717"
+        "code/@code": "IMP"
+        "code/@codeSystem": "2.16.840.1.113883.5.4"
+        "code/@codeSystemName": "v3-ActCode"
+        "code/@displayName": "inpatient encounter"
+        #      'effectiveTime/low/@value': "20200512"
+        "effectiveTime/high/@nullFlavor": "NI"
+      - xPath: "responsibleParty/assignedEntity/id"
+        count: 1
+      - xPath: "responsibleParty/assignedEntity/addr"
+        count: 1
+      - xPath: "responsibleParty/assignedEntity/telecom"
+        count: 1
+      - xPath: "responsibleParty/assignedEntity/"
+        "id/@root": "2.16.840.1.113883.4.6"
+        "id/@extension": "123456789"
+        "addr/streetAddressLine": "1234 Main St"
+        "addr/city": "Kansas City"
+        "addr/state/@nullFlavor": "NI"
+        "addr/postalCode": "64113"
+        "addr/country": "US"
+        "telecom/@value": "tel:(212)212-2211"
+        "telecom/@use": "WP"
+      - xPath: "responsibleParty/assignedEntity/assignedPerson/name"
+        count: 1
+      - xPath: "responsibleParty/assignedEntity/assignedPerson/name/given"
+        count: 2
+      - xPath: "responsibleParty/assignedEntity/assignedPerson/"
+        "name/given[1]": "Kristin"
+        "name/given[2]": "Cerner"
+        "name/family": "Carter"
+      - xPath: "responsibleParty/assignedEntity/representedOrganization/id"
+        count: 1
+      - xPath: "responsibleParty/assignedEntity/representedOrganization/addr"
+        count: 1
+      - xPath: "responsibleParty/assignedEntity/representedOrganization/telecom"
+        count: 2
+      - xPath: "responsibleParty/assignedEntity/representedOrganization/"
+        "id/@root": "2.16.840.1.113883.4.4"
+        "id/@extension": "123456785"
+        "name": "Model Hospital"
+        "addr/streetAddressLine": "6276 Rockriver Drive"
+        "addr/city": "Kansas City"
+        "addr/state": "MO"
+        "addr/postalCode": "64117"
+        "addr/country": "US"
+        "telecom[1]/@value": "tel:(555)555-0013"
+        "telecom[1]/@use": "WP"
+        "telecom[2]/@value": "tel:(555)555-0013"
+        "telecom[2]/@use": "WP"
+      - xPath: "location/healthCareFacility/id"
+        count: 1
+      - xPath: "location/healthCareFacility/"
+        "id/@root": "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "675844"
+        "code/@code": "prov"
+        "code/@codeSystem": "2.16.840.1.113883.4.642.3.414"
+        "code/@codeSystemName": "organization-type"
+        "code/@displayName": "Healthcare Provider"
+      - xPath: "location/healthCareFacility/location/addr"
+        count: 1
+      - xPath: "location/healthCareFacility/location/"
+        "addr/streetAddressLine": "6276 Rockriver Drive"
+        "addr/city": "Kansas City"
+        "addr/state": "MO"
+        "addr/postalCode": "64117"
+        "addr/country": "US"
+      - xPath: "location/healthCareFacility/serviceProviderOrganization/id"
+        count: 1
+      - xPath: "location/healthCareFacility/serviceProviderOrganization/addr"
+        count: 1
+      - xPath: "location/healthCareFacility/serviceProviderOrganization/"
+        "id/@root": "2.16.840.1.113883.4.4"
+        "id/@extension": "123456785"
+        "name": "Model Hospital"
+        "addr/streetAddressLine": "6276 Rockriver Drive"
+        "addr/city": "Kansas City"
+        "addr/state": "MO"
+        "addr/postalCode": "64117"
+        "addr/country": "US"
+        "telecom/@value": "tel:(555)555-0013"
+        "telecom/@use": "WP"

@@ -27,6 +27,7 @@ import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ParticipantTypeEnum;
 import ca.uhn.fhir.model.primitive.BoundCodeDt;
 import ca.uhn.fhir.model.primitive.CodeDt;
+import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
@@ -603,6 +604,36 @@ public class Dstu2CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getDateTimeTypeXml(DateTimeDt dt, String elName) {
+
+    if (dt != null) {
+
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, dt.getValue(), dt.getTimeZone());
+    } else {
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, null, null);
+    }
+  }
+
+  public static String getDateTypeXml(DateDt dt, String elName) {
+
+    if (dt != null) {
+
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, dt.getValue(), null);
+    } else {
+      return CdaGeneratorUtils.getXmlForEffectiveTime(elName, null, null);
+    }
+  }
+
+  public static String getDisplayStringForDateTimeType(DateTimeDt dt) {
+
+    if (dt != null) {
+
+      return CdaGeneratorUtils.getStringForDateTime(dt.getValue(), dt.getTimeZone());
+    } else {
+      return CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+  }
+
   public static String getPeriodXml(PeriodDt period, String elName) {
 
     StringBuilder sb = new StringBuilder(200);
@@ -611,11 +642,11 @@ public class Dstu2CdaFhirUtilities {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(elName));
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_LOW_EL_NAME, period.getStart()));
+          Dstu2CdaFhirUtilities.getDateTimeTypeXml(
+              period.getStartElement(), CdaGeneratorConstants.TIME_LOW_EL_NAME));
       sb.append(
-          CdaGeneratorUtils.getXmlForEffectiveTime(
-              CdaGeneratorConstants.TIME_HIGH_EL_NAME, period.getEnd()));
+          Dstu2CdaFhirUtilities.getDateTimeTypeXml(
+              period.getEndElement(), CdaGeneratorConstants.TIME_HIGH_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
 
     } else {
@@ -859,7 +890,7 @@ public class Dstu2CdaFhirUtilities {
 
         DateTimeDt d = (DateTimeDt) dt;
 
-        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue());
+        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
 
       } else if (dt instanceof PeriodDt) {
         PeriodDt pt = (PeriodDt) dt;

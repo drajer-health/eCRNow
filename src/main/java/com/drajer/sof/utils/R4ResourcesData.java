@@ -16,10 +16,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -563,8 +565,9 @@ public class R4ResourcesData {
               (MedicationAdministration) entry.getResource();
           // Checking If Effective Date is present in MedicationAdministration resource
           if (medAdministration.getEffective() != null) {
-            Date effDate = CdaFhirUtilities.getActualDate(medAdministration.getEffective());
-            if (isResourceWithinDateTime(start, end, effDate)) {
+            Pair<Date, TimeZone> effDate =
+                CdaFhirUtilities.getActualDate(medAdministration.getEffective());
+            if (isResourceWithinDateTime(start, end, effDate.getValue0())) {
               medAdministrations.add(medAdministration);
               medicationCodes.addAll(findMedicationCodes(medAdministration));
             }
@@ -1059,7 +1062,7 @@ public class R4ResourcesData {
             r4FhirData.setPractitionersList(practitionerList);
           }
         }
-        if (encounter.hasServiceProvider()) {
+        if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
           Reference organizationReference = encounter.getServiceProvider();
           if (organizationReference.hasReferenceElement()) {
             Organization organization =
@@ -1078,7 +1081,7 @@ public class R4ResourcesData {
             }
           }
         }
-        if (encounter.getLocation() != null) {
+        if (Boolean.TRUE.equals(encounter.hasLocation())) {
           List<Location> locationList = new ArrayList<>();
           List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
           for (EncounterLocationComponent location : enocunterLocations) {
@@ -1315,11 +1318,13 @@ public class R4ResourcesData {
     documentReference.setSubject(patientReference);
 
     // Set Author
-    List<Reference> authorRefList = new ArrayList<>();
-    Reference providerReference = new Reference();
-    providerReference.setReference("Practitioner/" + providerUUID);
-    authorRefList.add(providerReference);
-    documentReference.setAuthor(authorRefList);
+    if (providerUUID != null) {
+      List<Reference> authorRefList = new ArrayList<>();
+      Reference providerReference = new Reference();
+      providerReference.setReference("Practitioner/" + providerUUID);
+      authorRefList.add(providerReference);
+      documentReference.setAuthor(authorRefList);
+    }
 
     // Set Doc Ref Content
     List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();

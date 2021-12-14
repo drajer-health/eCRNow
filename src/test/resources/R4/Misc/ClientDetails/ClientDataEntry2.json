@@ -28,5 +28,5 @@
   "isBoth":true,
   "rrRestAPIUrl":"http://localhost:port/rrRestAPI",
   "debugFhirQueryAndEicr": false,
-  "lastUpdated": "2020-07-21T04:30:00.167+0000" 
+  "lastUpdated": "2020-07-21T04:30:00.167+0000"
 }

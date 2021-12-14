@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.codesystems.ConditionClinical;
@@ -168,9 +169,13 @@ public class CdaProblemGenerator {
                   CdaGeneratorConstants.COMPLETED_STATUS));
         }
 
-        Date onset = CdaFhirUtilities.getActualDate(pr.getOnset());
-        Date abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
-        Date recordedDate = pr.getRecordedDate();
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
+        Pair<Date, TimeZone> recordedDate = null;
+        if (pr.getRecordedDateElement() != null) {
+          recordedDate =
+              new Pair<>(pr.getRecordedDate(), pr.getRecordedDateElement().getTimeZone());
+        }
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
@@ -264,7 +269,10 @@ public class CdaProblemGenerator {
   }
 
   public static String addTriggerCodes(
-      LaunchDetails details, Condition cond, Date onset, Date abatement) {
+      LaunchDetails details,
+      Condition cond,
+      Pair<Date, TimeZone> onset,
+      Pair<Date, TimeZone> abatement) {
 
     StringBuilder sb = new StringBuilder();
 

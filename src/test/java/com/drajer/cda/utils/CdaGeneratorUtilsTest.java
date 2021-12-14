@@ -1,11 +1,86 @@
 package com.drajer.cda.utils;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.TimeZone;
+import org.javatuples.Pair;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorUtilsTest {
+
+  public static final Logger logger = LoggerFactory.getLogger(CdaGeneratorUtilsTest.class);
+
+  @Before
+  public void setUp() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  }
+
+  @Test
+  public void testGetCurrentDateTime() {
+
+    String formattedTime = CdaGeneratorUtils.getCurrentDateTime();
+    logger.info(" Formatted Time {}", formattedTime);
+    assertTrue(formattedTime.contains("+0000"));
+    assertEquals(19, formattedTime.length());
+  }
+
+  @Test
+  public void testGetStringForDateTime() {
+
+    LocalDate anotherSummerDay = LocalDate.of(2016, 8, 23);
+    LocalTime anotherTime = LocalTime.of(13, 12, 45);
+    ZonedDateTime zonedDateTime =
+        ZonedDateTime.of(anotherSummerDay, anotherTime, ZoneId.of("America/New_York"));
+
+    Date d = Date.from(zonedDateTime.toInstant());
+
+    String formattedTime =
+        CdaGeneratorUtils.getStringForDateTime(d, TimeZone.getTimeZone(zonedDateTime.getZone()));
+    logger.info(" Formatted Time {}", formattedTime);
+    assertTrue(formattedTime.contains("20160823131245"));
+    assertTrue(formattedTime.contains("-0400") || formattedTime.contains("-0500"));
+
+    String nullZoneDate =
+        CdaGeneratorUtils.getStringForDateTime(
+            Date.from(anotherSummerDay.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+            null);
+
+    assertEquals(8, nullZoneDate.length());
+    assertTrue(nullZoneDate.equalsIgnoreCase("20160823"));
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+    SimpleDateFormat formatter1 = new SimpleDateFormat("yyyyMM");
+
+    String dateInString = "2013";
+    try {
+      Date d2 = formatter.parse(dateInString);
+      String d2String = CdaGeneratorUtils.getStringForDateTime(d2, null);
+
+      assertEquals(8, d2String.length());
+      assertTrue(d2String.equalsIgnoreCase("20130101"));
+
+      dateInString = "201904";
+      Date d3 = formatter1.parse(dateInString);
+      String d3String = CdaGeneratorUtils.getStringForDateTime(d3, null);
+
+      assertEquals(8, d3String.length());
+      assertTrue(d3String.equalsIgnoreCase("20190401"));
+
+    } catch (ParseException e) {
+      logger.error("Error executing test testGetStringForDateTime", e);
+    }
+  }
 
   @Test
   public void getXmlForTableBodyContentTest() {
@@ -69,7 +144,7 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getStringForDate_nullDate() {
     String expectedResult = "Unknown";
-    String result = CdaGeneratorUtils.getStringForDate(null);
+    String result = CdaGeneratorUtils.getStringForDateTime(null, null);
     assertEquals(expectedResult, result);
   }
 
@@ -541,7 +616,7 @@ public class CdaGeneratorUtilsTest {
 
   @Test
   public void getXmlForIVLWithNullTSTest() {
-    Date date = null;
+    Pair<Date, TimeZone> date = null;
     String expectedResult = "<EL nullFlavor=\"NI\"/>\n";
     String result = CdaGeneratorUtils.getXmlForIVLWithTS("EL", date, date, false);
     assertEquals(expectedResult, result);

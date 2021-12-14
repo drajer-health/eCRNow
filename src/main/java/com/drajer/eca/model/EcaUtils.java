@@ -13,6 +13,7 @@ import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -27,6 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Encounter.EncounterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,9 +180,15 @@ public class EcaUtils {
       if (eICR != null && !eICR.isEmpty()) {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
-        ecr.setProviderUUID(details.getProviderUUID());
+        if (details.getProviderUUID() != null) {
+          ecr.setProviderUUID(details.getProviderUUID());
+        }
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-        logger.info("EICR created successfully with eICRDocID {}", ecr.getEicrDocId());
+        MDCUtils.addEicrDocId(ecr.getEicrDocId());
+        logger.info(
+            "EICR created successfully with eICRDocID: {} version: {}",
+            ecr.getEicrDocId(),
+            ecr.getDocVersion());
       } else {
         String msg = "No Fhir Data retrieved to CREATE EICR.";
         logger.error(msg);
@@ -219,8 +227,9 @@ public class EcaUtils {
 
     Set<AbstractAction> acts =
         ActionRepo.getInstance().getActions().get(EcrActionTypes.MATCH_TRIGGER);
+    String taskInstanceId = "";
     for (AbstractAction act : acts) {
-      act.execute(details, launchType);
+      act.execute(details, launchType, taskInstanceId);
       ActionRepo.getInstance().getLaunchService().saveOrUpdate(details);
     }
 
@@ -312,7 +321,8 @@ public class EcaUtils {
       FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
 
       IGenericClient client =
-          ci.createClient(ctx, details.getEhrServerURL(), details.getAccessToken());
+          ci.createClient(
+              ctx, details.getEhrServerURL(), details.getAccessToken(), details.getxRequestId());
 
       Encounter r4Encounter = null;
       ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
@@ -345,6 +355,16 @@ public class EcaUtils {
               r4Encounter.getPeriod().getEnd());
           retVal = true;
         }
+        if (r4Encounter.getStatus() != null
+            && (r4Encounter.getStatus() == EncounterStatus.CANCELLED
+                || r4Encounter.getStatus() == EncounterStatus.FINISHED
+                || r4Encounter.getStatus() == EncounterStatus.ENTEREDINERROR)) {
+
+          logger.info(
+              " Encounter status is not null and is closed with a status value of {}",
+              r4Encounter.getStatus());
+          retVal = true;
+        }
       }
 
       if (dstu2Encounter != null) {
@@ -354,6 +374,15 @@ public class EcaUtils {
           logger.info(
               " Encounter has an end date so it is considered closed {}",
               dstu2Encounter.getPeriod().getEnd());
+          retVal = true;
+        }
+        if (dstu2Encounter.getStatus() != null
+            && (dstu2Encounter.getStatus() == EncounterStatus.CANCELLED.toString()
+                || dstu2Encounter.getStatus() == EncounterStatus.FINISHED.toString()
+                || dstu2Encounter.getStatus() == EncounterStatus.ENTEREDINERROR.toString())) {
+          logger.info(
+              " Encounter status is not null and is closed with a status value of {}",
+              dstu2Encounter.getStatus());
           retVal = true;
         }
       }
