@@ -327,12 +327,12 @@ public class EcaUtils {
       Encounter r4Encounter = null;
       ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
       try {
-        if (details.getFhirVersion().equals(FhirVersionEnum.R4)) {
+        if (details.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
           r4Encounter =
               (Encounter)
                   client.read().resource("Encounter").withId(details.getEncounterId()).execute();
         }
-        if (details.getFhirVersion().equals(FhirVersionEnum.DSTU2)) {
+        if (details.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
           dstu2Encounter =
               (ca.uhn.fhir.model.dstu2.resource.Encounter)
                   client.read().resource("Encounter").withId(details.getEncounterId()).execute();
