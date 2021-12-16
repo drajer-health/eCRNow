@@ -180,6 +180,8 @@ public class EcaUtils {
       if (eICR != null && !eICR.isEmpty()) {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
+        ecr.setLaunchDetailsId(details.getId());
+        ;
         if (details.getProviderUUID() != null) {
           ecr.setProviderUUID(details.getProviderUUID());
         }
