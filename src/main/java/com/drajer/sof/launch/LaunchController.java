@@ -258,6 +258,7 @@ public class LaunchController {
             launchDetails.setIsInvokeRestAPI(clientDetails.getIsInvokeRestAPI());
             launchDetails.setIsBoth(clientDetails.getIsBoth());
             launchDetails.setRrRestAPIUrl(clientDetails.getRrRestAPIUrl());
+            launchDetails.setRrDocRefMimeType(clientDetails.getRrDocRefMimeType());
             launchDetails.setxRequestId(requestIdHeadervalue);
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());

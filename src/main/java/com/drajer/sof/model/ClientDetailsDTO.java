@@ -71,6 +71,8 @@ public class ClientDetailsDTO {
 
   private String rrRestAPIUrl;
 
+  private String rrDocRefMimeType;
+
   private Boolean debugFhirQueryAndEicr;
 
   private Boolean requireAud = false;
@@ -331,6 +333,14 @@ public class ClientDetailsDTO {
 
   public void setRrRestAPIUrl(String rrRestAPIUrl) {
     this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
   }
 
   public Boolean getDebugFhirQueryAndEicr() {

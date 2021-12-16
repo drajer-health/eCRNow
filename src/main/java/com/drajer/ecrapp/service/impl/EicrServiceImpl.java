@@ -175,7 +175,8 @@ public class EicrServiceImpl implements EicrRRService {
             || Boolean.TRUE.equals(launchDetails.getIsBoth())) {
           try {
             logger.info(" RR Xml and eCR is present hence create a document reference ");
-            DocumentReference docRef = constructDocumentReference(data, ecr);
+            DocumentReference docRef =
+                constructDocumentReference(data, ecr, launchDetails.getRrDocRefMimeType());
 
             if (docRef != null) {
 
@@ -312,13 +313,18 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
+  public DocumentReference constructDocumentReference(
+      ReportabilityResponse data, Eicr ecr, String rrDocRefMimeType) {
 
     if (ecr.getResponseType() != null
         && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
             || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
-          data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId(), ecr.getProviderUUID());
+          data.getRrXml(),
+          ecr.getLaunchPatientId(),
+          ecr.getEncounterId(),
+          ecr.getProviderUUID(),
+          rrDocRefMimeType);
     } else {
       logger.info("Not posting RR to EHR as it is of type {}", ecr.getResponseType());
       return null;

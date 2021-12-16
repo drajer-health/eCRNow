@@ -156,6 +156,9 @@ public class LaunchDetails {
   @Column(name = "rr_rest_api_url", nullable = true)
   private String rrRestAPIUrl;
 
+  @Column(name = "rr_doc_ref_mime_type", nullable = true)
+  private String rrDocRefMimeType;
+
   @Column(name = "launch_id", nullable = true)
   private String launchId;
 
@@ -522,6 +525,14 @@ public class LaunchDetails {
 
   public void setRrRestAPIUrl(String rrRestAPIUrl) {
     this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
   }
 
   public Boolean getIsUserAccountLaunch() {

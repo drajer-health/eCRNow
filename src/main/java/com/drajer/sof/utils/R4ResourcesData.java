@@ -1293,7 +1293,11 @@ public class R4ResourcesData {
   }
 
   public DocumentReference constructR4DocumentReference(
-      String rrXml, String patientId, String encounterID, String providerUUID) {
+      String rrXml,
+      String patientId,
+      String encounterID,
+      String providerUUID,
+      String rrDocRefMimeType) {
     DocumentReference documentReference = new DocumentReference();
 
     // Set Doc Ref Status
@@ -1332,7 +1336,7 @@ public class R4ResourcesData {
         new DocumentReference.DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
     attachment.setTitle("EICR Reportability Response");
-    attachment.setContentType(ATTACHMENT_CONTENT_TYPE);
+    attachment.setContentType(rrDocRefMimeType);
 
     if (rrXml != null && !rrXml.isEmpty()) {
       attachment.setData(rrXml.getBytes());
