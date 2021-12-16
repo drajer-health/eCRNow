@@ -203,6 +203,7 @@ public class ApplicationUtils {
         valueSetExpansionContainsComponentList = valueSetExpansionComponent.getContains();
         for (ValueSetExpansionContainsComponent vscomp : valueSetExpansionContainsComponentList) {
           if (vscomp.getSystem() != null && vscomp.getCode() != null) {
+            logger.debug(" Code = {}", vscomp.getCode());
             retVal.add(vscomp.getSystem() + "|" + vscomp.getCode());
           }
         }
