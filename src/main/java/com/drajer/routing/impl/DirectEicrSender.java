@@ -18,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -90,18 +91,29 @@ public class DirectEicrSender extends EicrSender {
     Properties props = new Properties();
 
     props.put("mail.smtp.auth", "true");
-    props.put("mail.smtp.auth.mechanisms", "PLAIN");
+    //   props.put("mail.smtp.auth.mechanisms", "PLAIN");
     props.setProperty("mail.smtp.ssl.trust", "*");
+    //  props.setProperty("mail.smtp.starttls.enable","true");
+    props.setProperty("mail.smtp.ssl.enable", "true");
 
     Session session = Session.getInstance(props, null);
 
     logger.info(" Retrieve Session instance for sending Direct mail ");
 
     Message message = new MimeMessage(session);
+
+    logger.info("Setting From Address {}", username);
     message.setFrom(new InternetAddress(username));
-    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receipientAddr));
+
+    String toAddr = StringUtils.deleteWhitespace(receipientAddr);
+    logger.info("Setting recipients {}, length : {}", toAddr, toAddr.length());
+    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddr));
+    logger.info("Finished setting recipients {}", toAddr);
+
     message.setSubject("eICR Report ");
     message.setText(FILE_NAME);
+
+    logger.info("Creating Message Body Part ");
     BodyPart messageBodyPart = new MimeBodyPart();
     Multipart multipart = new MimeMultipart();
     DataSource source = new ByteArrayDataSource(is, "application/xml; charset=UTF-8");
