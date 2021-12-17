@@ -75,6 +75,36 @@ public class RefreshTokenScheduler {
     }
   }
 
+  /*
+   * public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
+   * JSONObject tokenResponse = null;
+   * logger.info("Getting AccessToken for Client: " +
+   * clientDetails.getClientId()); try { RestTemplate resTemplate = new
+   * RestTemplate(); HttpHeaders headers = new HttpHeaders();
+   * headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+   * headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); String authValues =
+   * clientDetails.getClientId() + ":" + clientDetails.getClientSecret(); String
+   * base64EncodedString =
+   * Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+   * headers.add("Authorization", "Basic " + base64EncodedString);
+   * MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+   * map.add(GRANT_TYPE, "client_credentials"); map.add("scope",
+   * clientDetails.getScopes()); if (clientDetails.getRequireAud()) {
+   * logger.info("Adding Aud Parameter while getting Accesstoken"); map.add("aud",
+   * clientDetails.getFhirServerBaseURL()); } HttpEntity<MultiValueMap<String,
+   * String>> entity = new HttpEntity<>(map, headers);
+   *
+   * ResponseEntity<?> response = resTemplate.exchange(
+   * clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
+   * tokenResponse = new JSONObject(response.getBody());
+   * logger.info("Received AccessToken for Client: {}",
+   * clientDetails.getClientId()); logger.info("Received AccessToken: {}",
+   * tokenResponse);
+   *
+   * } catch (Exception e) { logger.error(
+   * "Error in Getting the AccessToken for the client: {} ",
+   * clientDetails.getClientId(), e); } return tokenResponse; }
+   */
   public JSONObject getAccessTokenUsingLaunchDetails(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
     logger.trace("Getting AccessToken for Client: {}", authDetails.getClientId());
@@ -170,6 +200,36 @@ public class RefreshTokenScheduler {
     }
   }
 
+  /*
+   * public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
+   * JSONObject tokenResponse = null;
+   * logger.info("Getting AccessToken for Client: " +
+   * clientDetails.getClientId()); try { RestTemplate resTemplate = new
+   * RestTemplate(); HttpHeaders headers = new HttpHeaders();
+   * headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+   * headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); String authValues =
+   * clientDetails.getClientId() + ":" + clientDetails.getClientSecret(); String
+   * base64EncodedString =
+   * Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+   * headers.add("Authorization", "Basic " + base64EncodedString);
+   * MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+   * map.add(GRANT_TYPE, "client_credentials"); map.add("scope",
+   * clientDetails.getScopes()); if (clientDetails.getRequireAud()) {
+   * logger.info("Adding Aud Parameter while getting Accesstoken"); map.add("aud",
+   * clientDetails.getFhirServerBaseURL()); } HttpEntity<MultiValueMap<String,
+   * String>> entity = new HttpEntity<>(map, headers);
+   *
+   * ResponseEntity<?> response = resTemplate.exchange(
+   * clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
+   * tokenResponse = new JSONObject(response.getBody());
+   * logger.info("Received AccessToken for Client: {}",
+   * clientDetails.getClientId()); logger.info("Received AccessToken: {}",
+   * tokenResponse);
+   *
+   * } catch (Exception e) { logger.error(
+   * "Error in Getting the AccessToken for the client: {} ",
+   * clientDetails.getClientId(), e); } return tokenResponse; }
+   */
   public JSONObject getAccessTokenUsingClientDetails(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
     logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());

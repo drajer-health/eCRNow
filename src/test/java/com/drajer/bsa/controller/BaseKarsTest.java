@@ -264,11 +264,14 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected void deleteOutputFiles() {
     File rootFile = new File("target/output");
-    File[] files = rootFile.listFiles((FilenameFilter) new WildcardFileFilter("kars*.json"));
 
-    for (File f : files) {
-      if (f.exists()) {
-        f.delete();
+    if (rootFile.exists()) {
+      File[] files = rootFile.listFiles((FilenameFilter) new WildcardFileFilter("kars*.json"));
+
+      for (File f : files) {
+        if (f.exists()) {
+          f.delete();
+        }
       }
     }
   }

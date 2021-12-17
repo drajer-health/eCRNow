@@ -258,7 +258,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // Observations
-      } else {
+      } else if (bundle != null) {
         bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
         for (BundleEntryComponent entry : bundle.getEntry()) {
           Observation observation = (Observation) entry.getResource();
@@ -559,7 +559,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // MedicationAdministrations
-      } else {
+      } else if (bundle != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           MedicationAdministration medAdministration =
               (MedicationAdministration) entry.getResource();
@@ -635,7 +635,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // MedicationAdministrations
-      } else {
+      } else if (bundle != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           MedicationRequest medRequest = (MedicationRequest) entry.getResource();
           // Checking If Effective Date is present in MedicationAdministration resource
@@ -709,7 +709,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // MedicationStatement
-      } else {
+      } else if (bundle != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           MedicationStatement medStatement = (MedicationStatement) entry.getResource();
           // Checking If Effective Date is present in MedicationStatement resource
@@ -777,7 +777,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // DiagnosticOrders
-      } else {
+      } else if (bundle != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
           // Checking If Issued Date is present in Observation resource
@@ -851,7 +851,7 @@ public class R4ResourcesData {
         }
         // If Encounter Id is not present using start and end dates to filter
         // Immunizations
-      } else {
+      } else if (bundle != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           Immunization immunization = (Immunization) entry.getResource();
           // Checking If Immunization DateTime is present in Immunization
