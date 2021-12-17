@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -179,6 +180,11 @@ public class EcaUtils {
       if (eICR != null && !eICR.isEmpty()) {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
+        ecr.setLaunchDetailsId(details.getId());
+        ;
+        if (details.getProviderUUID() != null) {
+          ecr.setProviderUUID(details.getProviderUUID());
+        }
         ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
         MDCUtils.addEicrDocId(ecr.getEicrDocId());
         logger.info(
@@ -320,11 +326,20 @@ public class EcaUtils {
           ci.createClient(
               ctx, details.getEhrServerURL(), details.getAccessToken(), details.getxRequestId());
 
-      Encounter enc = null;
+      Encounter r4Encounter = null;
+      ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;
       try {
-        enc =
-            (Encounter)
-                client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+        if (details.getFhirVersion().equals(FhirVersionEnum.R4.toString())) {
+          r4Encounter =
+              (Encounter)
+                  client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+        }
+        if (details.getFhirVersion().equals(FhirVersionEnum.DSTU2.toString())) {
+          dstu2Encounter =
+              (ca.uhn.fhir.model.dstu2.resource.Encounter)
+                  client.read().resource("Encounter").withId(details.getEncounterId()).execute();
+        }
+
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
@@ -333,24 +348,43 @@ public class EcaUtils {
         WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
       }
 
-      if (enc != null) {
-
+      if (r4Encounter != null) {
         logger.info(" Found Encounter for checking encounter closure ");
 
-        if (enc.getStatus() != null
-            && (enc.getStatus() == EncounterStatus.CANCELLED
-                || enc.getStatus() == EncounterStatus.FINISHED
-                || enc.getStatus() == EncounterStatus.ENTEREDINERROR)) {
+        if (r4Encounter.getPeriod() != null && r4Encounter.getPeriod().getEnd() != null) {
+          logger.info(
+              " Encounter has an end date so it is considered closed {}",
+              r4Encounter.getPeriod().getEnd());
+          retVal = true;
+        }
+        if (r4Encounter.getStatus() != null
+            && (r4Encounter.getStatus() == EncounterStatus.CANCELLED
+                || r4Encounter.getStatus() == EncounterStatus.FINISHED
+                || r4Encounter.getStatus() == EncounterStatus.ENTEREDINERROR)) {
 
           logger.info(
               " Encounter status is not null and is closed with a status value of {}",
-              enc.getStatus());
+              r4Encounter.getStatus());
           retVal = true;
         }
+      }
 
-        if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
+      if (dstu2Encounter != null) {
+        logger.info(" Found Encounter for checking encounter closure ");
+
+        if (dstu2Encounter.getPeriod() != null && dstu2Encounter.getPeriod().getEnd() != null) {
           logger.info(
-              " Encounter has an end date so it is considered closed {}", enc.getPeriod().getEnd());
+              " Encounter has an end date so it is considered closed {}",
+              dstu2Encounter.getPeriod().getEnd());
+          retVal = true;
+        }
+        if (dstu2Encounter.getStatus() != null
+            && (dstu2Encounter.getStatus() == EncounterStatus.CANCELLED.toString()
+                || dstu2Encounter.getStatus() == EncounterStatus.FINISHED.toString()
+                || dstu2Encounter.getStatus() == EncounterStatus.ENTEREDINERROR.toString())) {
+          logger.info(
+              " Encounter status is not null and is closed with a status value of {}",
+              dstu2Encounter.getStatus());
           retVal = true;
         }
       }

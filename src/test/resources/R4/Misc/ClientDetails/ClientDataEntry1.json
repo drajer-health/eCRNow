@@ -1,6 +1,7 @@
 {
   "isProvider": false,
   "isSystem": true,
+  "isUserAccountLaunch": false,
   "clientId": "5943d69c-660a-4ef3-8938-11802fa4d230",
   "clientSecret": "YuRW4sX6uTtreKTl1n82DRhhxPlAYTnI",
   "fhirServerBaseURL": "http://localhost:port/FHIR",
@@ -22,6 +23,10 @@
   "encounterEndThreshold": "30",
   "isCovid": false,
   "isFullEcr": true,
+  "isCreateDocRef": true,
+  "isInvokeRestAPI": false,
+  "isBoth": false,
+  "rrRestAPIUrl":"http://localhost:port/rrRestAPI",
   "debugFhirQueryAndEicr": false,
   "lastUpdated": "2020-07-21T04:30:00.167+0000"
 }

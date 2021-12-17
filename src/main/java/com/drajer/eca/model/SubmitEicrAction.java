@@ -96,12 +96,12 @@ public class SubmitEicrAction extends AbstractAction {
 
         if (!StringUtils.isBlank(details.getRestAPIURL())) {
           ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
-        } else if (!StringUtils.isBlank(details.getDirectHost())) {
+        } else if (!StringUtils.isBlank(details.getDirectHost())
+            || !StringUtils.isBlank(details.getSmtpUrl())) {
           ActionRepo.getInstance().getDirectTransport().sendData(details, data);
         } else {
           String msg = "No Transport method specified to submit EICR.";
           logger.error(msg);
-
           throw new RuntimeException(msg);
         }
 

@@ -63,6 +63,7 @@ public class LaunchController {
   private static final String PATIENT = "patient";
   private static final String ENCOUNTER = "encounter";
   private static final String EXTENSION = "extension";
+  private static final String PROVIDER_UUID = "uuid";
 
   @Autowired LaunchService authDetailsService;
 
@@ -191,7 +192,7 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).equals("1.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
         if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
@@ -201,14 +202,19 @@ public class LaunchController {
         for (int i = 0; i < innerExtension.length(); i++) {
           JSONObject urlExtension = innerExtension.getJSONObject(i);
           if (urlExtension.getString("url").equals("token")) {
-            logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
-            clientDetails.setTokenURL(tokenEndpoint);
+            if (clientDetails.getTokenURL() == null || clientDetails.getTokenURL().isEmpty()) {
+              logger.info(
+                  "Token URL not found in ClientDetails. So reading the Token URL from Metadata::::: {}",
+                  urlExtension.getString(VALUE_URI));
+              clientDetails.setTokenURL(tokenEndpoint);
+            }
           }
         }
       }
 
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
@@ -218,19 +224,24 @@ public class LaunchController {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
             launchDetails.setClientId(clientDetails.getClientId());
             launchDetails.setClientSecret(clientDetails.getClientSecret());
             launchDetails.setScope(clientDetails.getScopes());
             launchDetails.setDirectHost(clientDetails.getDirectHost());
             launchDetails.setDirectPwd(clientDetails.getDirectPwd());
+            launchDetails.setSmtpUrl(clientDetails.getSmtpUrl());
             launchDetails.setSmtpPort(clientDetails.getSmtpPort());
+            launchDetails.setImapUrl(clientDetails.getImapUrl());
             launchDetails.setImapPort(clientDetails.getImapPort());
             launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
-            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
+            if (tokenResponse.has(PROVIDER_UUID)) {
+              launchDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+            }
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
@@ -239,15 +250,21 @@ public class LaunchController {
                 systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsUserAccountLaunch(clientDetails.getIsUserAccountLaunch());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
+            launchDetails.setIsCreateDocRef(clientDetails.getIsCreateDocRef());
+            launchDetails.setIsInvokeRestAPI(clientDetails.getIsInvokeRestAPI());
+            launchDetails.setIsBoth(clientDetails.getIsBoth());
+            launchDetails.setRrRestAPIUrl(clientDetails.getRrRestAPIUrl());
+            launchDetails.setRrDocRefMimeType(clientDetails.getRrDocRefMimeType());
             launchDetails.setxRequestId(requestIdHeadervalue);
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
             if (tokenResponse.get(EXPIRES_IN) != null) {
-              Integer expiresInSec = (Integer) tokenResponse.get(EXPIRES_IN);
+              Integer expiresInSec = tokenResponse.getInt(EXPIRES_IN);
               Instant expireInstantTime =
                   new Date().toInstant().plusSeconds(new Long(expiresInSec));
               launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));

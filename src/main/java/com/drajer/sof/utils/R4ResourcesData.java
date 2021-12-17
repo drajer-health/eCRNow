@@ -46,6 +46,8 @@ public class R4ResourcesData {
   private static final String ENCOUNTER_DIAGNOSIS_CONDITION = "encounter-diagnosis";
   private static final String PROBLEM_LIST_CONDITION = "problem-list-item";
 
+  private static final String ATTACHMENT_CONTENT_TYPE = "text/xml";
+
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<>();
     if (encounter != null && encounter.getType() != null) {
@@ -1062,19 +1064,21 @@ public class R4ResourcesData {
         }
         if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
           Reference organizationReference = encounter.getServiceProvider();
-          Organization organization =
-              (Organization)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Organization",
-                      organizationReference.getReferenceElement().getIdPart());
-          if (organization != null) {
-            BundleEntryComponent organizationEntry =
-                new BundleEntryComponent().setResource(organization);
-            bundle.addEntry(organizationEntry);
-            r4FhirData.setOrganization(organization);
+          if (organizationReference.hasReferenceElement()) {
+            Organization organization =
+                (Organization)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Organization",
+                        organizationReference.getReferenceElement().getIdPart());
+            if (organization != null) {
+              BundleEntryComponent organizationEntry =
+                  new BundleEntryComponent().setResource(organization);
+              bundle.addEntry(organizationEntry);
+              r4FhirData.setOrganization(organization);
+            }
           }
         }
         if (Boolean.TRUE.equals(encounter.hasLocation())) {
@@ -1289,7 +1293,11 @@ public class R4ResourcesData {
   }
 
   public DocumentReference constructR4DocumentReference(
-      String rrXml, String patientId, String encounterID) {
+      String rrXml,
+      String patientId,
+      String encounterID,
+      String providerUUID,
+      String rrDocRefMimeType) {
     DocumentReference documentReference = new DocumentReference();
 
     // Set Doc Ref Status
@@ -1313,12 +1321,22 @@ public class R4ResourcesData {
     patientReference.setReference("Patient/" + patientId);
     documentReference.setSubject(patientReference);
 
+    // Set Author
+    if (providerUUID != null) {
+      List<Reference> authorRefList = new ArrayList<>();
+      Reference providerReference = new Reference();
+      providerReference.setReference("Practitioner/" + providerUUID);
+      authorRefList.add(providerReference);
+      documentReference.setAuthor(authorRefList);
+    }
+
     // Set Doc Ref Content
     List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
     DocumentReference.DocumentReferenceContentComponent contentComp =
         new DocumentReference.DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
-    attachment.setContentType(CdaParserConstants.RR_DOC_CONTENT_TYPE);
+    attachment.setTitle("EICR Reportability Response");
+    attachment.setContentType(rrDocRefMimeType);
 
     if (rrXml != null && !rrXml.isEmpty()) {
       attachment.setData(rrXml.getBytes());

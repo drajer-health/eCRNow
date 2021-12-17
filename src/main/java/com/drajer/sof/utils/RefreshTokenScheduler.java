@@ -33,6 +33,14 @@ public class RefreshTokenScheduler {
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
   private static final String GRANT_TYPE = "grant_type";
+  private static final String SCOPE = "scope";
+  private static final String CLIENT_CREDENTIALS = "client_credentials";
+  private static final String ACCEPT_HEADER = "Accept";
+  private static final String ACCESS_TOKEN = "access_token";
+  private static final String ACCESS_TOKEN_CAMEL_CASE = "accessToken";
+  private static final String EXPIRES_IN = "expires_in";
+  private static final String EXPIRES_IN_CAMEL_CASE = "expiresIn";
+  private static final String PROVIDER_UUID = "uuid";
 
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info(
@@ -59,7 +67,7 @@ public class RefreshTokenScheduler {
     @Override
     public void run() {
       try {
-        getAccessToken(this.authDetails);
+        getAccessTokenUsingLaunchDetails(this.authDetails);
         Thread.currentThread().interrupt();
       } catch (Exception e) {
         logger.info("Error in Getting AccessToken=====>", e);
@@ -67,13 +75,14 @@ public class RefreshTokenScheduler {
     }
   }
 
-  public JSONObject getAccessToken(LaunchDetails authDetails) {
+  public JSONObject getAccessTokenUsingLaunchDetails(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
     logger.trace("Getting AccessToken for Client: {}", authDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
-      if (Boolean.FALSE.equals(authDetails.getIsSystem())) {
+      if (Boolean.FALSE.equals(authDetails.getIsSystem())
+          && Boolean.FALSE.equals(authDetails.getIsUserAccountLaunch())) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "refresh_token");
@@ -83,9 +92,9 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else {
+      } else if (authDetails.getIsSystem()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+        headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
         String base64EncodedString =
             Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
@@ -93,7 +102,7 @@ public class RefreshTokenScheduler {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", authDetails.getScope());
-        if (Boolean.TRUE.equals(authDetails.getRequireAud())) {
+        if (Boolean.TRUE.equals(authDetails.getRequireAud()) && authDetails.getIsSystem()) {
           logger.debug("Adding Aud Parameter while getting AccessToken");
           map.add("aud", authDetails.getEhrServerURL());
         }
@@ -102,6 +111,31 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
+      } else if (authDetails.getIsUserAccountLaunch()) {
+        headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
+
+        String tokenUrl =
+            authDetails.getTokenUrl()
+                + "?"
+                + GRANT_TYPE
+                + "="
+                + CLIENT_CREDENTIALS
+                + "&"
+                + SCOPE
+                + "="
+                + authDetails.getScope();
+
+        HttpEntity entity = new HttpEntity(headers);
+
+        ResponseEntity<?> response =
+            resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
+        String responseBody =
+            response
+                .getBody()
+                .toString()
+                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+        tokenResponse = new JSONObject(responseBody);
       }
       logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
       updateAccessToken(authDetails, tokenResponse);
@@ -119,10 +153,13 @@ public class RefreshTokenScheduler {
           ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
       if (existingAuthDetails != null) {
         logger.trace("Updating the AccessToken value in LaunchDetails table");
-        existingAuthDetails.setAccessToken(tokenResponse.getString("access_token"));
-        existingAuthDetails.setExpiry(tokenResponse.getInt("expires_in"));
+        existingAuthDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+        existingAuthDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
+        if (tokenResponse.has(PROVIDER_UUID)) {
+          existingAuthDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+        }
         existingAuthDetails.setLastUpdated(new Date());
-        long expiresInSec = tokenResponse.getLong("expires_in");
+        long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
         existingAuthDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
         ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
@@ -133,31 +170,60 @@ public class RefreshTokenScheduler {
     }
   }
 
-  public JSONObject getSystemAccessToken(ClientDetails clientDetails) {
+  public JSONObject getAccessTokenUsingClientDetails(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
     logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-      headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-      String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
-      String base64EncodedString =
-          Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
-      headers.add("Authorization", "Basic " + base64EncodedString);
-      MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-      map.add(GRANT_TYPE, "client_credentials");
-      map.add("scope", clientDetails.getScopes());
-      if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
-        logger.debug("Adding Aud Parameter while getting Access token");
-        map.add("aud", clientDetails.getFhirServerBaseURL());
-      }
-      HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+      if (clientDetails.getIsSystem()) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+        String authValues = clientDetails.getClientId() + ":" + clientDetails.getClientSecret();
+        String base64EncodedString =
+            Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
+        headers.add("Authorization", "Basic " + base64EncodedString);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add(GRANT_TYPE, "client_credentials");
+        map.add("scope", clientDetails.getScopes());
+        if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
+          logger.debug("Adding Aud Parameter while getting Access token");
+          map.add("aud", clientDetails.getFhirServerBaseURL());
+        }
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
-      ResponseEntity<?> response =
-          resTemplate.exchange(
-              clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
-      tokenResponse = new JSONObject(response.getBody());
+        ResponseEntity<?> response =
+            resTemplate.exchange(
+                clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
+        tokenResponse = new JSONObject(response.getBody());
+      } else if (clientDetails.getIsUserAccountLaunch()) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(clientDetails.getClientId(), clientDetails.getClientSecret());
+
+        String tokenUrl =
+            clientDetails.getTokenURL()
+                + "?"
+                + GRANT_TYPE
+                + "="
+                + CLIENT_CREDENTIALS
+                + "&"
+                + SCOPE
+                + "="
+                + clientDetails.getScopes();
+
+        HttpEntity entity = new HttpEntity(headers);
+
+        ResponseEntity<?> response =
+            resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
+        String responseBody =
+            response
+                .getBody()
+                .toString()
+                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+        tokenResponse = new JSONObject(responseBody);
+      }
+
       logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
 
     } catch (Exception e) {

@@ -35,6 +35,10 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem;
 
+  @Column(name = "is_user_account_launch", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isUserAccountLaunch;
+
   @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
   private String clientId;
 
@@ -71,8 +75,14 @@ public class ClientDetails {
   @Column(name = "direct_pwd", nullable = true)
   private String directPwd;
 
+  @Column(name = "smtp_url", nullable = true)
+  private String smtpUrl;
+
   @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
+
+  @Column(name = "imap_url", nullable = true)
+  private String imapUrl;
 
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
@@ -102,6 +112,24 @@ public class ClientDetails {
   @Column(name = "is_full_ecr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
+
+  @Column(name = "rrprocessing_createdocRef", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isCreateDocRef;
+
+  @Column(name = "rrprocessing_invokerestapi", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isInvokeRestAPI;
+
+  @Column(name = "rrprocessing_both", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isBoth;
+
+  @Column(name = "rr_rest_api_url", nullable = true)
+  private String rrRestAPIUrl;
+
+  @Column(name = "rr_doc_ref_mime_type", nullable = true)
+  private String rrDocRefMimeType;
 
   @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -137,6 +165,14 @@ public class ClientDetails {
 
   public void setIsSystem(Boolean isSystem) {
     this.isSystem = isSystem;
+  }
+
+  public Boolean getIsUserAccountLaunch() {
+    return isUserAccountLaunch;
+  }
+
+  public void setIsUserAccountLaunch(Boolean isUserAccountLaunch) {
+    this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
   public String getClientId() {
@@ -247,6 +283,22 @@ public class ClientDetails {
     return smtpPort;
   }
 
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
+  }
+
   public void setSmtpPort(String smtpPort) {
     this.smtpPort = smtpPort;
   }
@@ -313,6 +365,46 @@ public class ClientDetails {
 
   public void setIsFullEcr(Boolean isFullEcr) {
     this.isFullEcr = isFullEcr;
+  }
+
+  public Boolean getIsCreateDocRef() {
+    return isCreateDocRef;
+  }
+
+  public void setIsCreateDocRef(Boolean isCreateDocRef) {
+    this.isCreateDocRef = isCreateDocRef;
+  }
+
+  public Boolean getIsInvokeRestAPI() {
+    return isInvokeRestAPI;
+  }
+
+  public void setIsInvokeRestAPI(Boolean isInvokeRestAPI) {
+    this.isInvokeRestAPI = isInvokeRestAPI;
+  }
+
+  public Boolean getIsBoth() {
+    return isBoth;
+  }
+
+  public void setIsBoth(Boolean isBoth) {
+    this.isBoth = isBoth;
+  }
+
+  public String getRrRestAPIUrl() {
+    return rrRestAPIUrl;
+  }
+
+  public void setRrRestAPIUrl(String rrRestAPIUrl) {
+    this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
   }
 
   public Boolean getDebugFhirQueryAndEicr() {

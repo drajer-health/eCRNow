@@ -15,6 +15,8 @@ public class ClientDetailsDTO {
 
   private Boolean isSystem;
 
+  private Boolean isUserAccountLaunch;
+
   private String clientId;
 
   private String clientSecret;
@@ -37,7 +39,11 @@ public class ClientDetailsDTO {
 
   private String directPwd;
 
+  private String smtpUrl;
+
   private String smtpPort;
+
+  private String imapUrl;
 
   private String imapPort;
 
@@ -56,6 +62,16 @@ public class ClientDetailsDTO {
   private Boolean isCovid;
 
   private Boolean isFullEcr;
+
+  private Boolean isCreateDocRef;
+
+  private Boolean isInvokeRestAPI;
+
+  private Boolean isBoth;
+
+  private String rrRestAPIUrl;
+
+  private String rrDocRefMimeType;
 
   private Boolean debugFhirQueryAndEicr;
 
@@ -105,6 +121,14 @@ public class ClientDetailsDTO {
 
   public void setClientSecret(String clientSecret) {
     if (clientSecret != null) this.clientSecret = AESEncryption.encrypt(clientSecret);
+  }
+
+  public Boolean getIsUserAccountLaunch() {
+    return isUserAccountLaunch;
+  }
+
+  public void setIsUserAccountLaunch(Boolean isUserAccountLaunch) {
+    this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
   public String getFhirServerBaseURL() {
@@ -199,6 +223,22 @@ public class ClientDetailsDTO {
     this.smtpPort = smtpPort;
   }
 
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
+  }
+
   public String getImapPort() {
     return imapPort;
   }
@@ -261,6 +301,46 @@ public class ClientDetailsDTO {
 
   public void setIsFullEcr(Boolean isFullEcr) {
     this.isFullEcr = isFullEcr;
+  }
+
+  public Boolean getIsCreateDocRef() {
+    return isCreateDocRef;
+  }
+
+  public void setIsCreateDocRef(Boolean isCreateDocRef) {
+    this.isCreateDocRef = isCreateDocRef;
+  }
+
+  public Boolean getIsInvokeRestAPI() {
+    return isInvokeRestAPI;
+  }
+
+  public void setIsInvokeRestAPI(Boolean isInvokeRestAPI) {
+    this.isInvokeRestAPI = isInvokeRestAPI;
+  }
+
+  public Boolean getIsBoth() {
+    return isBoth;
+  }
+
+  public void setIsBoth(Boolean isBoth) {
+    this.isBoth = isBoth;
+  }
+
+  public String getRrRestAPIUrl() {
+    return rrRestAPIUrl;
+  }
+
+  public void setRrRestAPIUrl(String rrRestAPIUrl) {
+    this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
   }
 
   public Boolean getDebugFhirQueryAndEicr() {
