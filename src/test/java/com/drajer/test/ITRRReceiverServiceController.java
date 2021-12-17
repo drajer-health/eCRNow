@@ -82,6 +82,8 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
                             + "/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
                     .withHeader("x-request-id", "32034a8e-07ff-4bfb-a686-de8a956fbda9")
                     .withHeader("Cache-Control", "no-cache")));
+
+    // Thread.sleep(10000);
   }
 
   @Test
@@ -99,6 +101,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertEquals("197477086", eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -116,6 +119,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertEquals("197477086", eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -134,6 +138,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertNull(eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -152,6 +157,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertNull(eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -170,6 +176,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -182,6 +189,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -193,6 +201,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -213,6 +222,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -226,6 +236,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
       assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+    wireMockServer.resetAll();
   }
 
   @Test
