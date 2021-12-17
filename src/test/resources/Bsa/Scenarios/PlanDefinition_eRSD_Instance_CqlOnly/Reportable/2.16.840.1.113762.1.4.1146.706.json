@@ -1,0 +1,261 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.706",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.706",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.706"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionTestsforChlamydiaspeciesNucleicAcid",
+  "title": "Chlamydia trachomatis Infection (Tests for Chlamydia species Nucleic Acid)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection (Tests for Chlamydia species Nucleic Acid)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "concept": [
+          {
+            "code": "32774-2",
+            "display": "Chlamydia sp DNA [Presence] in Genital specimen by NAA with probe detection"
+          },
+          {
+            "code": "34708-8",
+            "display": "Chlamydia sp DNA [Presence] in Urine by NAA with probe detection"
+          },
+          {
+            "code": "35412-6",
+            "display": "Chlamydia sp DNA [Presence] in Nose by NAA with probe detection"
+          },
+          {
+            "code": "35710-3",
+            "display": "Chlamydia sp DNA [Presence] in Conjunctival specimen by NAA with probe detection"
+          },
+          {
+            "code": "35711-1",
+            "display": "Chlamydia sp DNA [Presence] in Anal by NAA with probe detection"
+          },
+          {
+            "code": "35712-9",
+            "display": "Chlamydia sp rRNA [Presence] in Conjunctival specimen by Probe"
+          },
+          {
+            "code": "35713-7",
+            "display": "Chlamydia sp DNA [Presence] in Cervix by NAA with probe detection"
+          },
+          {
+            "code": "35714-5",
+            "display": "Chlamydia sp rRNA [Presence] in Cervix by Probe"
+          },
+          {
+            "code": "35715-2",
+            "display": "Chlamydia sp rRNA [Presence] in Genital specimen by Probe"
+          },
+          {
+            "code": "35716-0",
+            "display": "Chlamydia sp DNA [Presence] in Vaginal fluid by NAA with probe detection"
+          },
+          {
+            "code": "35717-8",
+            "display": "Chlamydia sp rRNA [Presence] in Vaginal fluid by Probe"
+          },
+          {
+            "code": "35718-6",
+            "display": "Chlamydia sp rRNA [Presence] in Nose by Probe"
+          },
+          {
+            "code": "35721-0",
+            "display": "Chlamydia sp rRNA [Presence] in Anal by Probe"
+          },
+          {
+            "code": "35722-8",
+            "display": "Chlamydia sp DNA [Presence] in Serum by NAA with probe detection"
+          },
+          {
+            "code": "35723-6",
+            "display": "Chlamydia sp rRNA [Presence] in Serum by Probe"
+          },
+          {
+            "code": "35724-4",
+            "display": "Chlamydia sp DNA [Presence] in Throat by NAA with probe detection"
+          },
+          {
+            "code": "35725-1",
+            "display": "Chlamydia sp rRNA [Presence] in Throat by Probe"
+          },
+          {
+            "code": "35726-9",
+            "display": "Chlamydia sp rRNA [Presence] in Urine by Probe"
+          },
+          {
+            "code": "35727-7",
+            "display": "Chlamydia sp DNA [Presence] in Urethra by NAA with probe detection"
+          },
+          {
+            "code": "35728-5",
+            "display": "Chlamydia sp rRNA [Presence] in Urethra by Probe"
+          },
+          {
+            "code": "35729-3",
+            "display": "Chlamydia sp DNA [Presence] in Unspecified specimen by NAA with probe detection"
+          },
+          {
+            "code": "35730-1",
+            "display": "Chlamydia sp rRNA [Presence] in Unspecified specimen by Probe"
+          },
+          {
+            "code": "35736-8",
+            "display": "Chlamydia sp rRNA [Presence] in Nasopharynx by Probe"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "code": "32774-2",
+        "display": "Chlamydia sp DNA [Presence] in Genital specimen by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "34708-8",
+        "display": "Chlamydia sp DNA [Presence] in Urine by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35412-6",
+        "display": "Chlamydia sp DNA [Presence] in Nose by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35710-3",
+        "display": "Chlamydia sp DNA [Presence] in Conjunctival specimen by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35711-1",
+        "display": "Chlamydia sp DNA [Presence] in Anal by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35712-9",
+        "display": "Chlamydia sp rRNA [Presence] in Conjunctival specimen by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35713-7",
+        "display": "Chlamydia sp DNA [Presence] in Cervix by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35714-5",
+        "display": "Chlamydia sp rRNA [Presence] in Cervix by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35715-2",
+        "display": "Chlamydia sp rRNA [Presence] in Genital specimen by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35716-0",
+        "display": "Chlamydia sp DNA [Presence] in Vaginal fluid by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35717-8",
+        "display": "Chlamydia sp rRNA [Presence] in Vaginal fluid by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35718-6",
+        "display": "Chlamydia sp rRNA [Presence] in Nose by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35721-0",
+        "display": "Chlamydia sp rRNA [Presence] in Anal by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35722-8",
+        "display": "Chlamydia sp DNA [Presence] in Serum by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35723-6",
+        "display": "Chlamydia sp rRNA [Presence] in Serum by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35724-4",
+        "display": "Chlamydia sp DNA [Presence] in Throat by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35725-1",
+        "display": "Chlamydia sp rRNA [Presence] in Throat by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35726-9",
+        "display": "Chlamydia sp rRNA [Presence] in Urine by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35727-7",
+        "display": "Chlamydia sp DNA [Presence] in Urethra by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35728-5",
+        "display": "Chlamydia sp rRNA [Presence] in Urethra by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35729-3",
+        "display": "Chlamydia sp DNA [Presence] in Unspecified specimen by NAA with probe detection"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35730-1",
+        "display": "Chlamydia sp rRNA [Presence] in Unspecified specimen by Probe"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "35736-8",
+        "display": "Chlamydia sp rRNA [Presence] in Nasopharynx by Probe"
+      }
+    ]
+  }
+}

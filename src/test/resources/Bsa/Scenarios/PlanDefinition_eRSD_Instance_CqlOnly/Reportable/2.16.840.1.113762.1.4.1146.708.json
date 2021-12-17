@@ -1,0 +1,351 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.708",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.708",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.708"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionTestsforChlamydiaspeciesAntigen",
+  "title": "Chlamydia trachomatis Infection (Tests for Chlamydia species Antigen)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection (Tests for Chlamydia species Antigen)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "concept": [
+          {
+            "code": "16593-6",
+            "display": "Chlamydia sp Ag [Presence] in Urine"
+          },
+          {
+            "code": "20755-5",
+            "display": "Chlamydia sp Ag [Presence] in Body fluid by Immunoassay"
+          },
+          {
+            "code": "20756-3",
+            "display": "Chlamydia sp Ag [Presence] in Stool by Immunoassay"
+          },
+          {
+            "code": "20757-1",
+            "display": "Chlamydia sp Ag [Presence] in Tissue by Immunofluorescence"
+          },
+          {
+            "code": "31763-6",
+            "display": "Chlamydia sp Ag [Presence] in Conjunctival specimen"
+          },
+          {
+            "code": "31764-4",
+            "display": "Chlamydia sp Ag [Presence] in Body fluid"
+          },
+          {
+            "code": "31765-1",
+            "display": "Chlamydia sp Ag [Presence] in Genital specimen"
+          },
+          {
+            "code": "31766-9",
+            "display": "Chlamydia sp Ag [Presence] in Stool"
+          },
+          {
+            "code": "31767-7",
+            "display": "Chlamydia sp Ag [Presence] in Unspecified specimen"
+          },
+          {
+            "code": "32001-0",
+            "display": "Chlamydia sp Ag [Presence] in Vaginal fluid by Immunoassay"
+          },
+          {
+            "code": "32003-6",
+            "display": "Chlamydia sp Ag [Presence] in Peritoneal fluid by Immunoassay"
+          },
+          {
+            "code": "32004-4",
+            "display": "Chlamydia sp Ag [Presence] in Urine by Immunoassay"
+          },
+          {
+            "code": "32671-0",
+            "display": "Chlamydia sp Ag [Presence] in Vaginal fluid"
+          },
+          {
+            "code": "45103-9",
+            "display": "Chlamydia sp Ag [Presence] in Anal by Immunofluorescence"
+          },
+          {
+            "code": "45104-7",
+            "display": "Chlamydia sp Ag [Presence] in Anal by Immunoassay"
+          },
+          {
+            "code": "45105-4",
+            "display": "Chlamydia sp Ag [Presence] in Anal"
+          },
+          {
+            "code": "45106-2",
+            "display": "Chlamydia sp Ag [Presence] in Cervix by Immunoassay"
+          },
+          {
+            "code": "45107-0",
+            "display": "Chlamydia sp Ag [Presence] in Cervix"
+          },
+          {
+            "code": "45108-8",
+            "display": "Chlamydia sp Ag [Presence] in Cervix by Immunofluorescence"
+          },
+          {
+            "code": "45109-6",
+            "display": "Chlamydia sp Ag [Presence] in Body fluid by Immunofluorescence"
+          },
+          {
+            "code": "45112-0",
+            "display": "Chlamydia sp Ag [Presence] in Urine by Immunofluorescence"
+          },
+          {
+            "code": "45113-8",
+            "display": "Chlamydia sp Ag [Presence] in Urethra by Immunoassay"
+          },
+          {
+            "code": "45114-6",
+            "display": "Chlamydia sp Ag [Presence] in Urethra"
+          },
+          {
+            "code": "45115-3",
+            "display": "Chlamydia sp Ag [Presence] in Urethra by Immunofluorescence"
+          },
+          {
+            "code": "45131-0",
+            "display": "Chlamydia sp Ag [Presence] in Nasopharynx by Immunofluorescence"
+          },
+          {
+            "code": "45132-8",
+            "display": "Chlamydia sp Ag [Presence] in Nasopharynx by Immunoassay"
+          },
+          {
+            "code": "45133-6",
+            "display": "Chlamydia sp Ag [Presence] in Nasopharynx"
+          },
+          {
+            "code": "561-1",
+            "display": "Chlamydia sp Ag [Presence] in Unspecified specimen by Immunofluorescence"
+          },
+          {
+            "code": "6343-8",
+            "display": "Chlamydia sp Ag [Presence] in Conjunctival specimen by Immunoassay"
+          },
+          {
+            "code": "6344-6",
+            "display": "Chlamydia sp Ag [Presence] in Conjunctival specimen by Immunofluorescence"
+          },
+          {
+            "code": "6345-3",
+            "display": "Chlamydia sp Ag [Presence] in Genital specimen by Immunoassay"
+          },
+          {
+            "code": "6346-1",
+            "display": "Chlamydia sp Ag [Presence] in Genital specimen by Immunofluorescence"
+          },
+          {
+            "code": "6347-9",
+            "display": "Chlamydia sp Ag [Presence] in Unspecified specimen by Immunoassay"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "code": "16593-6",
+        "display": "Chlamydia sp Ag [Presence] in Urine"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "20755-5",
+        "display": "Chlamydia sp Ag [Presence] in Body fluid by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "20756-3",
+        "display": "Chlamydia sp Ag [Presence] in Stool by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "20757-1",
+        "display": "Chlamydia sp Ag [Presence] in Tissue by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31763-6",
+        "display": "Chlamydia sp Ag [Presence] in Conjunctival specimen"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31764-4",
+        "display": "Chlamydia sp Ag [Presence] in Body fluid"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31765-1",
+        "display": "Chlamydia sp Ag [Presence] in Genital specimen"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31766-9",
+        "display": "Chlamydia sp Ag [Presence] in Stool"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "31767-7",
+        "display": "Chlamydia sp Ag [Presence] in Unspecified specimen"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "32001-0",
+        "display": "Chlamydia sp Ag [Presence] in Vaginal fluid by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "32003-6",
+        "display": "Chlamydia sp Ag [Presence] in Peritoneal fluid by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "32004-4",
+        "display": "Chlamydia sp Ag [Presence] in Urine by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "32671-0",
+        "display": "Chlamydia sp Ag [Presence] in Vaginal fluid"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45103-9",
+        "display": "Chlamydia sp Ag [Presence] in Anal by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45104-7",
+        "display": "Chlamydia sp Ag [Presence] in Anal by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45105-4",
+        "display": "Chlamydia sp Ag [Presence] in Anal"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45106-2",
+        "display": "Chlamydia sp Ag [Presence] in Cervix by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45107-0",
+        "display": "Chlamydia sp Ag [Presence] in Cervix"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45108-8",
+        "display": "Chlamydia sp Ag [Presence] in Cervix by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45109-6",
+        "display": "Chlamydia sp Ag [Presence] in Body fluid by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45112-0",
+        "display": "Chlamydia sp Ag [Presence] in Urine by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45113-8",
+        "display": "Chlamydia sp Ag [Presence] in Urethra by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45114-6",
+        "display": "Chlamydia sp Ag [Presence] in Urethra"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45115-3",
+        "display": "Chlamydia sp Ag [Presence] in Urethra by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45131-0",
+        "display": "Chlamydia sp Ag [Presence] in Nasopharynx by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45132-8",
+        "display": "Chlamydia sp Ag [Presence] in Nasopharynx by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "45133-6",
+        "display": "Chlamydia sp Ag [Presence] in Nasopharynx"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "561-1",
+        "display": "Chlamydia sp Ag [Presence] in Unspecified specimen by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6343-8",
+        "display": "Chlamydia sp Ag [Presence] in Conjunctival specimen by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6344-6",
+        "display": "Chlamydia sp Ag [Presence] in Conjunctival specimen by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6345-3",
+        "display": "Chlamydia sp Ag [Presence] in Genital specimen by Immunoassay"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6346-1",
+        "display": "Chlamydia sp Ag [Presence] in Genital specimen by Immunofluorescence"
+      },
+      {
+        "system": "http://loinc.org",
+        "code": "6347-9",
+        "display": "Chlamydia sp Ag [Presence] in Unspecified specimen by Immunoassay"
+      }
+    ]
+  }
+}

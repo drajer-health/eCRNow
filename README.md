@@ -94,6 +94,9 @@ Change the logfile location to reflect where you want to log the data.
 
 The security.key is something that you can configure in the environment or your container approach and is used for encrypting sensitive information such as clientids, client secrets and direct transport account information in the database.
 
+NOTE: If you are using Windows system to run the application, then use the command formatted like below.
+```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" -jar .\target\ecr-now.war```
+
 6. **App configuration for EHR server:** 
 
 Once the App is up and running, you can access the App configuration screen by building the eCRNowUI project and then following the instructions in that project for bringing up the UI.

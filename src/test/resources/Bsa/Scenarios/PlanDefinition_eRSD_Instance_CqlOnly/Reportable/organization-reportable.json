@@ -1,0 +1,15 @@
+{
+  "resourceType": "Organization",
+  "id": "organization-notreportable",
+  "name": "Example Health Clinic",
+  "address": [
+    {
+      "line": [
+        "12345 Main"
+      ],
+      "city": "Houston",
+      "state": "TX",
+      "postalCode": "77011"
+    }
+  ]
+}

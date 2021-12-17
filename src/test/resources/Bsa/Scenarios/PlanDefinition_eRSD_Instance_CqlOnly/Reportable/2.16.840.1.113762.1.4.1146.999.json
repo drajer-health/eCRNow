@@ -1,0 +1,162 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.999",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.999",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.999"
+    }
+  ],
+  "name": "ChlamydiaspeciesOrganismorSubstanceinLabResults",
+  "title": "Chlamydia species (Organism or Substance in Lab Results)",
+  "status": "active",
+  "description": "Chlamydia species (Organism or Substance in Lab Results)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "concept": [
+          {
+            "code": "103514009",
+            "display": "Chlamydophila pneumoniae (organism)"
+          },
+          {
+            "code": "114231004",
+            "display": "Chlamydophila pecorum (organism)"
+          },
+          {
+            "code": "114247002",
+            "display": "Class Chlamydiae (organism)"
+          },
+          {
+            "code": "121014004",
+            "display": "Chlamydia pneumoniae antigen (substance)"
+          },
+          {
+            "code": "121018001",
+            "display": "Chlamydia species antigen (substance)"
+          },
+          {
+            "code": "121191006",
+            "display": "Ribonucleic acid of Chlamydia pneumoniae (substance)"
+          },
+          {
+            "code": "16241000",
+            "display": "Genus Chlamydia (organism)"
+          },
+          {
+            "code": "407003002",
+            "display": "Deoxyribonucleic acid of Chlamydia (substance)"
+          },
+          {
+            "code": "413818008",
+            "display": "Chlamydia muridarum (organism)"
+          },
+          {
+            "code": "413819000",
+            "display": "Chlamydia suis (organism)"
+          },
+          {
+            "code": "415099003",
+            "display": "Phylum Chlamydiae (organism)"
+          },
+          {
+            "code": "707635007",
+            "display": "Ribosomal ribonucleic acid of Chlamydia (substance)"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "103514009",
+        "display": "Chlamydophila pneumoniae (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "114231004",
+        "display": "Chlamydophila pecorum (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "114247002",
+        "display": "Class Chlamydiae (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121014004",
+        "display": "Chlamydia pneumoniae antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121018001",
+        "display": "Chlamydia species antigen (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "121191006",
+        "display": "Ribonucleic acid of Chlamydia pneumoniae (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "16241000",
+        "display": "Genus Chlamydia (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "407003002",
+        "display": "Deoxyribonucleic acid of Chlamydia (substance)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "413818008",
+        "display": "Chlamydia muridarum (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "413819000",
+        "display": "Chlamydia suis (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "415099003",
+        "display": "Phylum Chlamydiae (organism)"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "707635007",
+        "display": "Ribosomal ribonucleic acid of Chlamydia (substance)"
+      }
+    ]
+  }
+}

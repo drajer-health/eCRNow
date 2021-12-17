@@ -15,12 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
@@ -32,17 +27,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
-  private String testCaseId;
-  private Map<String, String> testData;
-  private Map<String, ?> allResourceMapping;
-  private Map<String, ?> allOtherMapping;
-  private List<Map<String, String>> fieldsToValidate;
+  protected String testCaseId;
+  protected Map<String, String> testData;
+  protected Map<String, ?> allResourceMapping;
+  protected Map<String, ?> allOtherMapping;
+  protected List<Map<String, String>> fieldsToValidate;
 
   public ITValidateEicrDoc(
       String testCaseId,
@@ -63,23 +56,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   private LaunchDetails launchDetails;
   private PatientExecutionState state;
   WireMockHelper stubHelper;
-
-  @Before
-  public void launchTestSetUp() throws Throwable {
-    logger.info("Executing Test: {}", testCaseId);
-    tx = session.beginTransaction();
-
-    // Data Setup
-    createClientDetails(testData.get("ClientDataToBeSaved"));
-    systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
-    session.flush();
-    tx.commit();
-
-    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
-    logger.info("Creating WireMock stubs..");
-    stubHelper.stubResources(allResourceMapping);
-    stubHelper.stubAuthAndMetadata(allOtherMapping);
-  }
 
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -117,6 +93,23 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       }
     }
     return Arrays.asList(data);
+  }
+
+  @Before
+  public void launchTestSetUp() throws Throwable {
+    logger.info("Executing Test: {}", testCaseId);
+    tx = session.beginTransaction();
+
+    // Data Setup
+    createClientDetails(testData.get("ClientDataToBeSaved"));
+    systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
+    session.flush();
+    tx.commit();
+
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    logger.info("Creating WireMock stubs..");
+    stubHelper.stubResources(allResourceMapping);
+    stubHelper.stubAuthAndMetadata(allOtherMapping);
   }
 
   @Test
@@ -196,50 +189,5 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       fail("Something went wrong retrieving EICR, check the log");
     }
     return null;
-  }
-
-  private void validateXml(Document eicrXml) {
-
-    final XPath xPath = XPathFactory.newInstance().newXPath();
-    final String baseXPath = testData.get("BaseXPath");
-
-    if (fieldsToValidate != null) {
-      for (Map<String, String> field : fieldsToValidate) {
-        try {
-          String xPathExp = baseXPath + field.get("xPath");
-          if (field.containsKey("count")) {
-            try {
-              NodeList nodeList =
-                  (NodeList) xPath.compile(xPathExp).evaluate(eicrXml, XPathConstants.NODESET);
-              assertEquals(xPathExp, Integer.parseInt(field.get("count")), nodeList.getLength());
-            } catch (XPathExpressionException e) {
-              logger.error("Exception validating field:", e);
-              fail(e.getMessage() + ": Failed to evaluate field " + xPathExp);
-            }
-          } else {
-            for (Entry<String, String> set : field.entrySet()) {
-              if (!set.getKey().equalsIgnoreCase("xPath")) {
-                String xPathFullExp = xPathExp + set.getKey();
-                try {
-                  String fieldValue =
-                      (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);
-                  assertEquals(xPathFullExp, set.getValue(), fieldValue);
-                } catch (XPathExpressionException e) {
-                  logger.error("Exception validating field:", e);
-                  fail(e.getMessage() + ": Failed to evaluate field " + xPathExp);
-                }
-              }
-            }
-          }
-
-        } catch (Exception e) {
-          logger.error("Exception validating field:", e);
-          fail(e.getMessage() + ": This exception is not expected fix the test");
-        }
-      }
-
-    } else {
-      fail("validate field is not configured in the test");
-    }
   }
 }
