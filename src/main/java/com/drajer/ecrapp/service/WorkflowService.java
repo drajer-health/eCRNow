@@ -328,7 +328,6 @@ public class WorkflowService {
           staticSchedulerService.getScheduledTasks(
               actionType.toString(), String.valueOf(launchDetailsId));
 
-
       if (tasks != null && tasks.size() > 1) {
         logger.info(
             " {} Timer already exists for launch {}, so do not create new one ",
