@@ -43,12 +43,12 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
 
-    return Arrays.asList();
+    return Arrays.asList(
 
-    /* return Arrays.asList(
+        // return Arrays.asList(
 
-    new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "Reportable", REPORTED),
-    new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "NotTriggered", NOT_TRIGGERED),
-    new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "Triggered", TRIGGERED_ONLY)); */
+        // new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "Reportable", REPORTED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "NotTriggered", NOT_TRIGGERED),
+        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly", "Triggered", TRIGGERED_ONLY));
   }
 }
