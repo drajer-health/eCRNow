@@ -328,6 +328,7 @@ public class WorkflowService {
           staticSchedulerService.getScheduledTasks(
               actionType.toString(), String.valueOf(launchDetailsId));
 
+
       if (tasks != null && tasks.size() > 1) {
         logger.info(
             " {} Timer already exists for launch {}, so do not create new one ",
@@ -363,6 +364,33 @@ public class WorkflowService {
     }
 
     return task;
+  }
+
+  public static Boolean checkIfTasksExists(List<ScheduledTasks> tasks, String taskInstanceId) {
+
+    Boolean retVal = false;
+    int numOfTasksExisting = 0;
+    if (tasks != null && !tasks.isEmpty()) {
+
+      for (ScheduledTasks t : tasks) {
+
+        if (t.getTask_instance().equals(taskInstanceId)) {
+          logger.info(" Found a Task with the same task Instance Id {}", taskInstanceId);
+          numOfTasksExisting++;
+        } else {
+
+          logger.info(
+              " Task with Instance Id {} does not match passed in taskInstanceId {}",
+              t.getTask_instance(),
+              taskInstanceId);
+        }
+      }
+    } else {
+      logger.info(" No tasks exist, so return false ");
+    }
+
+    if (numOfTasksExisting > 1) return true;
+    else return false;
   }
 
   public static void cancelAllScheduledTasksForLaunch(

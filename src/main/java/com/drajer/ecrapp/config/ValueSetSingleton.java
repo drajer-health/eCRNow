@@ -243,7 +243,7 @@ public class ValueSetSingleton {
           Set<ValueSet> valueSets = getGrouperToValueSetMap().get(grouperId);
           if (valueSets != null && !valueSets.isEmpty()) {
             logger.debug("Found {} Value Sets for grouper {}", valueSets.size(), grouperId);
-            retVal = ApplicationUtils.convertValueSetsToString(valueSets);
+            retVal.addAll(ApplicationUtils.convertValueSetsToString(valueSets));
           } else {
             logger.debug("Didn't find value sets for grouper {}", grouperId);
           }
