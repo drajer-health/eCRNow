@@ -2,6 +2,7 @@ package com.drajer.bsa.controller;
 
 public class TestCaseInfo {
 
+  private String planDefUrl;
   private String planDef;
   private String name;
   private ExpectedOutcome expectedOutcome;
@@ -10,26 +11,26 @@ public class TestCaseInfo {
   private Integer denomExclusion;
   private Integer numerator;
 
-  public TestCaseInfo(String planDef, String name, ExpectedOutcome expectedOutcome) {
-    this(planDef, name, expectedOutcome, null, null, null, null);
+  public TestCaseInfo(String planDef, String planDefUrl, String name, ExpectedOutcome expectedOutcome) {
+    this(planDef, planDefUrl, name, expectedOutcome, null, null, null, null);
   }
 
   public TestCaseInfo(
-      String planDef, String name, ExpectedOutcome expectedOutcome, Integer initialPopulation) {
-    this(planDef, name, expectedOutcome, initialPopulation, null, null, null);
+      String planDef, String planDefUrl, String name, ExpectedOutcome expectedOutcome, Integer initialPopulation) {
+    this(planDef, planDefUrl, name, expectedOutcome, initialPopulation, null, null, null);
   }
 
   public TestCaseInfo(
-      String planDef,
+      String planDef, String planDefUrl,
       String name,
       ExpectedOutcome expectedOutcome,
       Integer initialPopulation,
       Integer denominator) {
-    this(planDef, name, expectedOutcome, initialPopulation, denominator, null, null);
+    this(planDef, planDefUrl, name, expectedOutcome, initialPopulation, denominator, null, null);
   }
 
   public TestCaseInfo(
-      String planDef,
+      String planDef, String planDefUrl,
       String name,
       ExpectedOutcome expectedOutcome,
       Integer initialPopulation,
@@ -37,6 +38,7 @@ public class TestCaseInfo {
       Integer denomExclusion,
       Integer numerator) {
     this.planDef = planDef;
+    this.planDefUrl = planDefUrl;
     this.name = name;
     this.initialPopulation = initialPopulation;
     this.denominator = denominator;
@@ -47,6 +49,10 @@ public class TestCaseInfo {
 
   public String getPlanDef() {
     return this.planDef;
+  }
+
+  public String getPlanDefUrl() {
+    return this.planDefUrl;
   }
 
   public String getName() {

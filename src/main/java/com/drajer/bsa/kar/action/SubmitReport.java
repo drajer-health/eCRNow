@@ -101,6 +101,7 @@ public class SubmitReport extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
+    data.addActionStatus(getActionId(), actStatus);
 
     return actStatus;
   }
@@ -111,31 +112,5 @@ public class SubmitReport extends BsaAction {
 
   public void setSubmissionEndpoint(String submissionEndpoint) {
     this.submissionEndpoint = submissionEndpoint;
-  }
-
-  private static int count = 1;
-
-  public void saveResourceToFile(Resource res) {
-
-    String fileName =
-        "target//output//kars"
-            + res.getResourceType().toString()
-            + "_"
-            + res.getId()
-            + "_"
-            + count
-            + ".json";
-
-    String data = context.newJsonParser().encodeResourceToString(res);
-
-    try (DataOutputStream outStream =
-        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
-
-      logger.info(" Writing data to file: {}", fileName);
-      outStream.writeBytes(data);
-      count++;
-    } catch (IOException e) {
-      logger.debug(" Unable to write data to file: {}", fileName, e);
-    }
   }
 }
