@@ -6,10 +6,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,6 +97,7 @@ public class SubmitReport extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
+    data.addActionStatus(getActionId(), actStatus);
 
     return actStatus;
   }
@@ -111,31 +108,5 @@ public class SubmitReport extends BsaAction {
 
   public void setSubmissionEndpoint(String submissionEndpoint) {
     this.submissionEndpoint = submissionEndpoint;
-  }
-
-  private static int count = 1;
-
-  public void saveResourceToFile(Resource res) {
-
-    String fileName =
-        "target//output//kars"
-            + res.getResourceType().toString()
-            + "_"
-            + res.getId()
-            + "_"
-            + count
-            + ".json";
-
-    String data = context.newJsonParser().encodeResourceToString(res);
-
-    try (DataOutputStream outStream =
-        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
-
-      logger.info(" Writing data to file: {}", fileName);
-      outStream.writeBytes(data);
-      count++;
-    } catch (IOException e) {
-      logger.debug(" Unable to write data to file: {}", fileName, e);
-    }
   }
 }

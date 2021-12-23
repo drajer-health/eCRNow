@@ -440,16 +440,6 @@ public class KarParserImpl implements KarParser {
     for (PlanDefinitionActionConditionComponent con : conds) {
 
       if (con.getExpression() != null
-          && (fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-          && fhirpathEnabled) {
-
-        logger.info(" Found a FHIR Path Expression ");
-        BsaFhirPathCondition bc = new BsaFhirPathCondition();
-        bc.setLogicExpression(con.getExpression());
-        bc.setExpressionEvaluator(expressionEvaluator);
-        action.addCondition(bc);
-      } else if (con.getExpression() != null
           // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
           // so using
           // local fromCode for now
@@ -476,15 +466,6 @@ public class KarParserImpl implements KarParser {
         Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
         Expression exp = (Expression) ext.getValue();
         if (exp != null
-            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-            && fhirpathEnabled) {
-
-          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
-          BsaFhirPathCondition bc = new BsaFhirPathCondition();
-          bc.setLogicExpression(exp);
-          bc.setExpressionEvaluator(expressionEvaluator);
-          action.addCondition(bc);
-        } else if (exp != null
             // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
             // so using
             // local fromCode for now
@@ -505,9 +486,28 @@ public class KarParserImpl implements KarParser {
           bc.setLogicExpression(exp);
           bc.setLibraryProcessor(libraryProcessor);
           action.addCondition(bc);
+        } else if (exp != null
+            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+            && fhirpathEnabled) {
+
+          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
+          BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          bc.setLogicExpression(exp);
+          bc.setExpressionEvaluator(expressionEvaluator);
+          action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
         }
+      } else if (con.getExpression() != null
+          && (fromCode(con.getExpression().getLanguage())
+              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+          && fhirpathEnabled) {
+
+        logger.info(" Found a FHIR Path Expression ");
+        BsaFhirPathCondition bc = new BsaFhirPathCondition();
+        bc.setLogicExpression(con.getExpression());
+        bc.setExpressionEvaluator(expressionEvaluator);
+        action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
       }

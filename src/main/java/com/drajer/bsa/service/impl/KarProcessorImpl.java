@@ -91,6 +91,10 @@ public class KarProcessorImpl implements KarProcessor {
 
       data.addActionStatus(action.getActionId(), status);
 
+      if (data.getActionStatus() != null && !data.getActionStatus().isEmpty()) {
+        serviceUtils.saveActionStatusState(data.getActionStatus());
+      }
+
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }
 

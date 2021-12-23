@@ -177,6 +177,24 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.ValueSet) {
+          if (resources.get(res.fhirType()) != null) {
+            resources.get(res.fhirType()).add(res);
+          } else {
+            Set<Resource> resources2 = new HashSet<Resource>();
+            resources2.add(res);
+            resources.put(res.fhirType(), resources2);
+          }
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.CodeSystem) {
+          if (resources.get(res.fhirType()) != null) {
+            resources.get(res.fhirType()).add(res);
+          } else {
+            Set<Resource> resources2 = new HashSet<Resource>();
+            resources2.add(res);
+            resources.put(res.fhirType(), resources2);
+          }
         }
       }
     }

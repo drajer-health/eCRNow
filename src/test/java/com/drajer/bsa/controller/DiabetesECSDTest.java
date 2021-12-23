@@ -30,26 +30,73 @@ public class DiabetesECSDTest extends BaseKarsTest {
   // Comment out lines that don't work to temporarily disable test cases.
   // for eCSD tests the main points are
   // 1. Whether or not a reporting Bundle is generated (i.e. initial-pop = true)
-  // 2. The Bundle contains a Measure report (TODO: validate that the other resources are present)
+  // 2. The Bundle contains a Measure report (TODO: validate that the other
+  // resources are present)
   // 3. The MeasureReport has the correct info for the test case
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        /*    new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-denom-exc-in", REPORTED, 1, 1, 1, 0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-ip-in", REPORTED, 1, 1, 0, 0),
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-report-denom-exc-in",
+            REPORTED,
+            1,
+            1,
+            1,
+            0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-ip-out", TRIGGERED_ONLY, 0),
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-report-ip-in",
+            REPORTED,
+            1,
+            1,
+            0,
+            0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-report-numer-in", REPORTED, 1, 1, 0, 1),
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-report-ip-out",
+            TRIGGERED_ONLY,
+            0),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-in", REPORTED, 1, 1, 0, 1),
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-report-numer-in",
+            REPORTED,
+            1,
+            1,
+            0,
+            1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-missing", NOT_TRIGGERED),
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-trigger-condition-in",
+            REPORTED,
+            1,
+            1,
+            0,
+            1),
         new TestCaseInfo(
-            "ChronicDSDiabetesPoorControl", "diabetes-trigger-condition-out", NOT_TRIGGERED),
-        new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-trigger-in", TRIGGERED_ONLY),*/
-        new TestCaseInfo("ChronicDSDiabetesPoorControl", "diabetes-trigger-out", NOT_TRIGGERED));
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-trigger-condition-missing",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-trigger-condition-out",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-trigger-in",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "ChronicDSDiabetesPoorControl",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
+            "diabetes-trigger-out",
+            NOT_TRIGGERED));
   }
 }
