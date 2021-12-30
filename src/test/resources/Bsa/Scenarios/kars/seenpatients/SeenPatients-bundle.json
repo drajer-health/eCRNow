@@ -1933,7 +1933,7 @@
           } ]
         }, {
           "id": "submit-eicr",
-          "description": "This action represents the validation of the eICR.",
+          "description": "This action represents the submition of the eICR.",
           "textEquivalent": "Submit eICR",
           "code": [ {
             "coding": [ {
