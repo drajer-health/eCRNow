@@ -122,7 +122,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (authDetails.getIsSystem()) {
+      } else if (Boolean.TRUE.equals(authDetails.getIsSystem())) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
@@ -141,7 +141,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (authDetails.getIsUserAccountLaunch()) {
+      } else if (Boolean.TRUE.equals(authDetails.getIsUserAccountLaunch())) {
         headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
 
         String tokenUrl =
@@ -159,13 +159,15 @@ public class RefreshTokenScheduler {
 
         ResponseEntity<?> response =
             resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
-        String responseBody =
-            response
-                .getBody()
-                .toString()
-                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
-                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
-        tokenResponse = new JSONObject(responseBody);
+        if (response.getStatusCode().is2xxSuccessful()) {
+          String responseBody =
+              response
+                  .getBody()
+                  .toString()
+                  .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                  .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+          tokenResponse = new JSONObject(responseBody);
+        }
       }
       logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
       updateAccessToken(authDetails, tokenResponse);
@@ -275,13 +277,15 @@ public class RefreshTokenScheduler {
 
         ResponseEntity<?> response =
             resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
-        String responseBody =
-            response
-                .getBody()
-                .toString()
-                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
-                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
-        tokenResponse = new JSONObject(responseBody);
+        if (response.getStatusCode().is2xxSuccessful()) {
+          String responseBody =
+              response
+                  .getBody()
+                  .toString()
+                  .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                  .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+          tokenResponse = new JSONObject(responseBody);
+        }
       }
 
       logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
