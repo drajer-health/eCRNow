@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -77,6 +78,8 @@ public class KarParserImpl implements KarParser {
 
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
+
+  @Autowired AutowireCapableBeanFactory beanFactory;
 
   @Value("${kar.directory}")
   String karDirectory;
@@ -150,6 +153,9 @@ public class KarParserImpl implements KarParser {
     if (actionClasses != null && actionClasses.containsKey(actionId)) {
       try {
         instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
+        // AUTOWIRE_BY_TYPE = 2
+        // AUTOWIRE_NO = 0
+        beanFactory.autowireBean(instance);
       } catch (InstantiationException e) {
         logger.error(" Error instantiating the object {}", e);
       } catch (IllegalAccessException e) {

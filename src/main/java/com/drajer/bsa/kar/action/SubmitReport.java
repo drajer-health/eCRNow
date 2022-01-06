@@ -6,10 +6,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +15,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +26,8 @@ public class SubmitReport extends BsaAction {
   private String submissionEndpoint;
 
   private static final FhirContext context = FhirContext.forR4();
+
+  @Autowired BsaServiceUtils bsaServiceUtils;
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -92,6 +92,7 @@ public class SubmitReport extends BsaAction {
           executeRelatedActions(data, ehrService);
         }
 
+        bsaServiceUtils.saveEicrState(bundleToSubmit.getIdElement().getIdPart(), bundleToSubmit);
         actStatus.setActionStatus(BsaActionStatusType.Completed);
       } // for all resources to be submitted
     } else {

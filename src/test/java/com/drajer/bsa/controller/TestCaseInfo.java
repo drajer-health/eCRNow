@@ -11,17 +11,23 @@ public class TestCaseInfo {
   private Integer denomExclusion;
   private Integer numerator;
 
-  public TestCaseInfo(String planDef, String planDefUrl, String name, ExpectedOutcome expectedOutcome) {
+  public TestCaseInfo(
+      String planDef, String planDefUrl, String name, ExpectedOutcome expectedOutcome) {
     this(planDef, planDefUrl, name, expectedOutcome, null, null, null, null);
   }
 
   public TestCaseInfo(
-      String planDef, String planDefUrl, String name, ExpectedOutcome expectedOutcome, Integer initialPopulation) {
+      String planDef,
+      String planDefUrl,
+      String name,
+      ExpectedOutcome expectedOutcome,
+      Integer initialPopulation) {
     this(planDef, planDefUrl, name, expectedOutcome, initialPopulation, null, null, null);
   }
 
   public TestCaseInfo(
-      String planDef, String planDefUrl,
+      String planDef,
+      String planDefUrl,
       String name,
       ExpectedOutcome expectedOutcome,
       Integer initialPopulation,
@@ -30,7 +36,8 @@ public class TestCaseInfo {
   }
 
   public TestCaseInfo(
-      String planDef, String planDefUrl,
+      String planDef,
+      String planDefUrl,
       String name,
       ExpectedOutcome expectedOutcome,
       Integer initialPopulation,

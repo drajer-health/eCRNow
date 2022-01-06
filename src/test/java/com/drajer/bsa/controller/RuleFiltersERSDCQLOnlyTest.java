@@ -16,10 +16,11 @@ import org.springframework.test.context.TestPropertySource;
 // This test disables FhirPAth processing to ensure CQL functions as expected
 // IOW, CQL alternative expressions should be selected and evaluated.
 @RunWith(Parameterized.class)
-@TestPropertySource(properties = {
-    "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefiltersCqlOnly",
-    "fhirpath.enabled=false"
-})
+@TestPropertySource(
+    properties = {
+      "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefiltersCqlOnly",
+      "fhirpath.enabled=false"
+    })
 public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 
@@ -42,13 +43,20 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example", "Reportable", REPORTED),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example", "NotTriggered",
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_CqlOnly",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "Reportable",
+            REPORTED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_CqlOnly",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "NotTriggered",
             NOT_TRIGGERED),
-        new TestCaseInfo("PlanDefinition_eRSD_Instance_CqlOnly",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example", "Triggered",
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_CqlOnly",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "Triggered",
             TRIGGERED_ONLY));
   }
 }
