@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
@@ -66,20 +67,31 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   private static Logger logger = LoggerFactory.getLogger(BaseKarsTest.class);
 
-  @Autowired protected SubscriptionNotificationReceiver notificationReceiver;
+  protected SubscriptionNotificationReceiver notificationReceiver;
 
-  @Autowired protected ApplicationUtils ap;
+  protected ApplicationUtils ap;
 
-  @Autowired protected HealthcareSettingsDao hsDao;
+  protected HealthcareSettingsDao hsDao;
 
-  @Autowired protected Map<String, BsaTypes.BsaActionStatusType> actions;
+  protected Map<String, BsaTypes.BsaActionStatusType> actions;
+
+  @Autowired ApplicationContext applicationContext;
+
+  protected Map<String, Bundle> eicrBundles;
 
   protected ClassLoader classLoader = getClass().getClassLoader();
 
   protected WireMockHelper stubHelper;
 
+  @SuppressWarnings("unchecked")
   @Before
   public void setupNotificationMocking() throws IOException {
+    this.eicrBundles = (Map<String, Bundle>) applicationContext.getBean("eicrBundles");
+    this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
+    this.ap = applicationContext.getBean(ApplicationUtils.class);
+    this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
+    this.actions =
+        (Map<String, BsaTypes.BsaActionStatusType>) applicationContext.getBean("actions");
     this.wireMockServer.resetAll();
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
@@ -184,14 +196,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
   }
 
   Bundle getEicrBundle(String planDef) {
-    File eICRReport = new File("target/output/karsBundle_eicr-report-" + planDef + ".json");
+    Bundle eicrBundle = eicrBundles.get("eicr-report-" + planDef);
 
-    if (eICRReport.exists()) {
-      try (FileInputStream fis = new FileInputStream(eICRReport)) {
-        return (Bundle) this.fhirContext.newJsonParser().parseResource(fis);
-      } catch (Exception e) {
-        return null;
-      }
+    if (eicrBundle != null) {
+      return eicrBundle;
     } else {
       String processMessageUrl = "/fhir/$process-message";
       List<LoggedRequest> requests =
