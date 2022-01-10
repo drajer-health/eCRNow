@@ -3,6 +3,7 @@ package com.drajer.bsa.scheduler;
 import com.drajer.bsa.model.BsaTypes;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,14 @@ public class BsaScheduler {
 
   @Autowired Scheduler scheduler;
 
-  public void scheduleJob(Integer karExecId, String actionId, BsaTypes.ActionType type, Instant t) {
+  public void scheduleJob(UUID karExecId, String actionId, BsaTypes.ActionType type, Instant t) {
 
     String jobId =
         actionId
             + "_"
             + type.toString()
             + "_"
-            + Integer.toString(karExecId)
+            + karExecId.toString()
             + "_"
             + java.util.UUID.randomUUID().toString();
 

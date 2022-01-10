@@ -2,6 +2,7 @@ package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.KarExecutionState;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -30,7 +31,7 @@ public interface KarExecutionStateService {
    * @param id The unique id for the KarExecutionState from the DB.
    * @return
    */
-  public KarExecutionState getKarExecutionStateById(Integer id);
+  public KarExecutionState getKarExecutionStateById(UUID id);
 
   /**
    * Method to to retrieve all Kars

@@ -1,6 +1,7 @@
 package com.drajer.bsa.dao;
 
 import com.drajer.bsa.model.NotificationContext;
+import java.util.UUID;
 
 /**
  *
@@ -29,7 +30,7 @@ public interface NotificationContextDao {
    * @param id The NotificationContext details to be retrieved based on the id.
    * @return Returns the NotificationContext for the provided id.
    */
-  public NotificationContext getNotificationContextById(Integer id);
+  public NotificationContext getNotificationContextById(UUID id);
 
   /**
    * Method to retrieve a NotificationContext by Url.

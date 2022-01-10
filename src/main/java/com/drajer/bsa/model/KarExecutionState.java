@@ -1,9 +1,9 @@
 package com.drajer.bsa.model;
 
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -41,14 +41,12 @@ public class KarExecutionState {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(KarExecutionState.class);
 
-  /** The attribute represents the primary key for the table and is auto incremented. */
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+  /** The attribute represents the primary key for the table and is auto generated. */
+  @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the key to retrieve the notification context for executing the Kar */
-  @Column(name = "nc_id", nullable = false, columnDefinition = "INTEGER")
-  private Integer ncId;
+  @Column(name = "nc_id", nullable = false, columnDefinition = "uuid")
+  private UUID ncId;
 
   /**
    * The attribute represents the key to retrieve the health care setting information for executing
@@ -66,19 +64,19 @@ public class KarExecutionState {
 
   KarExecutionState() {}
 
-  public Integer getId() {
+  public UUID getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(UUID id) {
     this.id = id;
   }
 
-  public Integer getNcId() {
+  public UUID getNcId() {
     return ncId;
   }
 
-  public void setNcId(Integer ncId) {
+  public void setNcId(UUID ncId) {
     this.ncId = ncId;
   }
 
