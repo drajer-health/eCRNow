@@ -20,7 +20,7 @@
 		<java.version>1.8</java.version>
 		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
-		<cql-evaluator.version>1.3.1-SNAPSHOT</cql-evaluator.version>
+		<cql-evaluator.version>1.4.1</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 	
