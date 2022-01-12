@@ -51,8 +51,16 @@ public class SubmitReport extends BsaAction {
 
         for (DataRequirement dr : input) {
           Set<Resource> resources = data.getOutputDataById(dr.getId());
-          resourcesToSubmit.addAll(resources);
+          if (resources != null && !resources.isEmpty()) {
+            resourcesToSubmit.addAll(resources);
+          }
         }
+      }
+
+      if (resourcesToSubmit.isEmpty()) {
+        logger.info(" No resources to submit");
+      } else {
+        logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
       }
 
       for (Resource r : resourcesToSubmit) {
