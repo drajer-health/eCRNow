@@ -153,8 +153,6 @@ public class KarParserImpl implements KarParser {
     if (actionClasses != null && actionClasses.containsKey(actionId)) {
       try {
         instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
-        // AUTOWIRE_BY_TYPE = 2
-        // AUTOWIRE_NO = 0
         beanFactory.autowireBean(instance);
       } catch (InstantiationException e) {
         logger.error(" Error instantiating the object {}", e);
