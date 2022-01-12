@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +62,17 @@ public class SubmitReport extends BsaAction {
 
         // All submissions are expected to be bundles
         Bundle bundleToSubmit = (Bundle) r;
+        logger.info(
+            "Submit Bundle:::::{}", context.newJsonParser().encodeResourceToString(bundleToSubmit));
 
         Bundle responseBundle =
             (Bundle)
                 client
                     .operation()
-                    .processMessage()
-                    .setMessageBundle(bundleToSubmit)
-                    .encodedJson()
+                    .onServer()
+                    .named("process-message-bundle")
+                    .withParameter(Parameters.class, "content", bundleToSubmit)
+                    .returnResourceType(Bundle.class)
                     .execute();
 
         if (responseBundle != null) {
