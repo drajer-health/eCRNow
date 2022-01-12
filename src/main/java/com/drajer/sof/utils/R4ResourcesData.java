@@ -2,8 +2,11 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
+import com.drajer.ecrapp.service.WorkflowService;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -13,13 +16,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,9 +46,11 @@ public class R4ResourcesData {
   private static final String ENCOUNTER_DIAGNOSIS_CONDITION = "encounter-diagnosis";
   private static final String PROBLEM_LIST_CONDITION = "problem-list-item";
 
+  private static final String ATTACHMENT_CONTENT_TYPE = "text/xml";
+
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<>();
-    if (encounter.getType() != null) {
+    if (encounter != null && encounter.getType() != null) {
       encounterCodes = encounter.getType();
     }
     return encounterCodes;
@@ -55,41 +63,55 @@ public class R4ResourcesData {
       R4FhirData r4FhirData,
       Date start,
       Date end) {
-    Encounter encounter;
+    Encounter encounter = null;
+    String encounterID = launchDetails.getEncounterId();
     // If Encounter Id is present in Launch Details
-    if (launchDetails.getEncounterId() != null) {
-      encounter =
-          (Encounter)
-              resourceData.getResouceById(
-                  launchDetails, client, context, "Encounter", launchDetails.getEncounterId());
-      r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
+    if (encounterID != null) {
+      try {
+        logger.info("Getting Encounter data by ID {}", encounterID);
+        encounter = (Encounter) client.read().resource("Encounter").withId(encounterID).execute();
+      } catch (ResourceNotFoundException resourceNotFoundException) {
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            encounterID,
+            resourceNotFoundException);
+        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+      } catch (Exception e) {
+        logger.error("Error in getting Encounter resource by Id: {}", encounterID, e);
+      }
+      if (encounter != null) {
+        r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
+      }
+
     } else {
       // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
       // and Find the latest Encounter
       Bundle bundle =
           (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Encounter");
       Map<Encounter, Date> encounterMap = new HashMap<>();
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Encounter encounterEntry = (Encounter) entry.getResource();
-        // Checking if Period element exists in Encounter. If Exists compare period is
-        // falling in between Start and End Date
-        if (!encounterEntry.getPeriod().isEmpty()) {
-          Period period = encounterEntry.getPeriod();
-          if (period.getStart().after(start)
-              || (period.getEnd() != null && period.getEnd().before(end))) {
-            encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
-          }
-          // If period is not present using LastUpdatedDate in meta information to filter
-          // the Encounter
-        } else {
-          Date lastUpdatedDateTime = encounterEntry.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+      if (bundle != null && bundle.getEntry() != null) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Encounter encounterEntry = (Encounter) entry.getResource();
+          // Checking if Period element exists in Encounter. If Exists compare period is
+          // falling in between Start and End Date
+          if (!encounterEntry.getPeriod().isEmpty()) {
+            Period period = encounterEntry.getPeriod();
+            if (period.getStart().after(start)
+                || (period.getEnd() != null && period.getEnd().before(end))) {
+              encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+            }
+            // If period is not present using LastUpdatedDate in meta information to filter
+            // the Encounter
+          } else {
+            Date lastUpdatedDateTime = encounterEntry.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              encounterMap.put(encounterEntry, encounterEntry.getMeta().getLastUpdated());
+            }
           }
         }
+        encounter = Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+        r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
       }
-      encounter = Collections.max(encounterMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-      r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));
     }
     return encounter;
   }
@@ -110,78 +132,87 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+
+    logger.trace("Getting Conditions Data");
     Bundle bundle =
         (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, CONDITION);
     List<Condition> allConditions = new ArrayList<>();
     List<Condition> problemConditions = new ArrayList<>();
     List<CodeableConcept> conditionCodes = new ArrayList<>();
-
+    int conditionInError = 0;
+    int conditionMissingAbatement = 0;
     List<Condition> encounterDiagnosisConditions = new ArrayList<>();
-    for (BundleEntryComponent entry : bundle.getEntry()) {
-      Condition condition = (Condition) entry.getResource();
 
-      if ((condition.getVerificationStatus() == null)
-          || (condition.getVerificationStatus() != null
-              && condition.getVerificationStatus().getCodingFirstRep() != null
-              && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
-              && !condition
-                  .getVerificationStatus()
-                  .getCodingFirstRep()
-                  .getCode()
-                  .equals(ENTERED_IN_ERROR))) {
+    if (bundle != null && bundle.getEntry() != null) {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        Condition condition = (Condition) entry.getResource();
 
-        logger.info(" Condition Verification Status is not entered in error ");
+        if ((condition.getVerificationStatus() == null)
+            || (condition.getVerificationStatus() != null
+                && condition.getVerificationStatus().getCodingFirstRep() != null
+                && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
+                && !condition
+                    .getVerificationStatus()
+                    .getCodingFirstRep()
+                    .getCode()
+                    .equals(ENTERED_IN_ERROR))) {
 
-        if (condition.getAbatement() == null && condition.hasCategory()) {
-          List<CodeableConcept> conditionCategory = condition.getCategory();
-          for (CodeableConcept categoryCodeableConcept : conditionCategory) {
-            List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
-            for (Coding categoryCoding : categoryCodingList) {
-              boolean foundPregnancyCondition =
-                  condition
-                      .getCode()
-                      .getCoding()
-                      .stream()
-                      .anyMatch(
-                          coding ->
-                              Arrays.stream(QueryConstants.getPregnancySmtCodes())
-                                  .anyMatch(coding.getCode()::equals));
-              if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
-                  && !foundPregnancyCondition) {
-                logger.info("Added condition to problem list {}", condition.getId());
-                problemConditions.add(condition);
-                conditionCodes.addAll(findConditionCodes(condition));
-              } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
-                  && condition.hasEncounter()
-                  && !foundPregnancyCondition) {
-
-                if (condition
-                    .getEncounter()
-                    .getReference()
-                    .equals("Encounter/" + launchDetails.getEncounterId())) {
-                  logger.info("Added condition to Encounter Diagnosis list {}", condition.getId());
-                  encounterDiagnosisConditions.add(condition);
+          if (condition.getAbatement() == null && condition.hasCategory()) {
+            List<CodeableConcept> conditionCategory = condition.getCategory();
+            for (CodeableConcept categoryCodeableConcept : conditionCategory) {
+              List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
+              for (Coding categoryCoding : categoryCodingList) {
+                boolean foundPregnancyCondition =
+                    condition
+                        .getCode()
+                        .getCoding()
+                        .stream()
+                        .anyMatch(
+                            coding ->
+                                Arrays.stream(QueryConstants.getPregnancySmtCodes())
+                                    .anyMatch(coding.getCode()::equals));
+                if (categoryCoding.getCode().equals(PROBLEM_LIST_CONDITION)
+                    && !foundPregnancyCondition) {
+                  logger.debug("Added condition to problem list {}", condition.getId());
+                  problemConditions.add(condition);
                   conditionCodes.addAll(findConditionCodes(condition));
+                } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
+                    && condition.hasEncounter()
+                    && !foundPregnancyCondition) {
+
+                  if (condition
+                      .getEncounter()
+                      .getReference()
+                      .equals("Encounter/" + launchDetails.getEncounterId())) {
+                    logger.debug(
+                        "Added condition to Encounter Diagnosis list {}", condition.getId());
+                    encounterDiagnosisConditions.add(condition);
+                    conditionCodes.addAll(findConditionCodes(condition));
+                  }
                 }
               }
             }
+          } else {
+            conditionMissingAbatement++;
           }
         } else {
-          logger.info("Condition Abatement is not present. So condition is not added to Bundle");
+          conditionInError++;
         }
-      } else {
-        logger.info("Condition Verification status prevents condition from adding to the Bundle ");
       }
+      allConditions.addAll(problemConditions);
+      allConditions.addAll(encounterDiagnosisConditions);
+      r4FhirData.setConditions(problemConditions);
+      r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
+      r4FhirData.setR4ConditionCodes(conditionCodes);
+      logger.info(
+          "Total Conditions:{} Filtered Problem:{} Filtered Encounter Diagnosis:{} Entered InError:{} Missing Abatement:{}",
+          bundle.getEntry().size(),
+          problemConditions.size(),
+          encounterDiagnosisConditions.size(),
+          conditionInError,
+          conditionMissingAbatement);
     }
-    allConditions.addAll(problemConditions);
-    allConditions.addAll(encounterDiagnosisConditions);
-    r4FhirData.setConditions(problemConditions);
-    logger.info("Filtered Problem List Condition=====> {}", problemConditions.size());
-    r4FhirData.setEncounterDiagnosisConditions(encounterDiagnosisConditions);
-    logger.info(
-        "Filtered Encounter Diagnosis Condition List=====> {}",
-        encounterDiagnosisConditions.size());
-    r4FhirData.setR4ConditionCodes(conditionCodes);
+    logger.info("Filtered ConditionsList ----> {}", allConditions.size());
     return allConditions;
   }
 
@@ -202,58 +233,62 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Observation Data");
     Bundle bundle =
         (Bundle)
             resourceData.getObservationByPatientId(
                 launchDetails, client, context, OBSERVATION, "laboratory");
     List<Observation> observations = new ArrayList<>();
     List<CodeableConcept> observationCodes = new ArrayList<>();
-    // Filter Observations based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
-      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Observation observation = (Observation) entry.getResource();
-        if (!observation.getEncounter().isEmpty()
-            && observation
-                .getEncounter()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          observations.add(observation);
-          observationCodes.addAll(findLaboratoryCodes(observation));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // Observations
-    } else if (bundle != null) {
-      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Observation observation = (Observation) entry.getResource();
-        // Checking If Issued Date is present in Observation resource
-        if (observation.getIssued() != null) {
-          if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
-            observations.add(observation);
-            observationCodes.addAll(findLaboratoryCodes(observation));
-          }
-          // If Issued date is not present, Checking for Effective Date
-        } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
-          Type effectiveDate = observation.getEffectiveDateTimeType();
-          Date effDate = effectiveDate.dateTimeValue().getValue();
-          if (effDate.after(start) && effDate.before(end)) {
-            observations.add(observation);
-            observationCodes.addAll(findLaboratoryCodes(observation));
-          }
-          // If Issued and Effective Date are not present looking for LastUpdatedDate
-        } else {
-          Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter Observations based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Observation observation = (Observation) entry.getResource();
+          if (!observation.getEncounter().isEmpty()
+              && observation
+                  .getEncounter()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
           }
         }
+        // If Encounter Id is not present using start and end dates to filter
+        // Observations
+      } else if (bundle != null) {
+        bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Observation observation = (Observation) entry.getResource();
+          // Checking If Issued Date is present in Observation resource
+          if (observation.getIssued() != null) {
+            if (isResourceWithinDateTime(start, end, observation.getIssued())) {
+              observations.add(observation);
+              observationCodes.addAll(findLaboratoryCodes(observation));
+            }
+            // If Issued date is not present, Checking for Effective Date
+          } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
+            Type effectiveDate = observation.getEffectiveDateTimeType();
+            Date effDate = effectiveDate.dateTimeValue().getValue();
+            if (isResourceWithinDateTime(start, end, effDate)) {
+              observations.add(observation);
+              observationCodes.addAll(findLaboratoryCodes(observation));
+            }
+            // If Issued and Effective Date are not present looking for LastUpdatedDate
+          } else {
+            Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              observations.add(observation);
+              observationCodes.addAll(findLaboratoryCodes(observation));
+            }
+          }
+        }
       }
+      r4FhirData.setR4LabResultCodes(observationCodes);
     }
-    r4FhirData.setR4LabResultCodes(observationCodes);
+    logger.info("Filtered Observations ----> {}", observations.size());
     return observations;
   }
 
@@ -265,6 +300,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Pregnancy Observation Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientIdAndCode(
@@ -278,6 +314,7 @@ public class R4ResourcesData {
     if (bundle != null) {
       bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
       observations = filterObservation(bundle, encounter, start, end);
+      logger.info("Filtered Pregnancy Observations ----> {}", observations.size());
     }
     return observations;
   }
@@ -290,6 +327,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Travel Observation Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientIdAndCode(
@@ -329,12 +367,13 @@ public class R4ResourcesData {
         observations.addAll(travelobs);
       }
     }
-
+    logger.info("Filtered Travel Observations ----> {}", observations.size());
     return observations;
   }
 
   private Bundle filterObservationByStatus(Bundle bundle, String observationStatus) {
     Bundle filteredBundle = new Bundle();
+    int observationInError = 0;
     List<BundleEntryComponent> filteredEntryComponents = new ArrayList<>();
     for (BundleEntryComponent entryComp : bundle.getEntry()) {
       Observation observation = (Observation) entryComp.getResource();
@@ -342,11 +381,11 @@ public class R4ResourcesData {
         if (!observation.getStatus().toCode().equals(observationStatus)) {
           filteredEntryComponents.add(new BundleEntryComponent().setResource(observation));
         } else {
-          logger.info(
-              "Received Observation with Status entered-in-error::: So Skipping the Observation");
+          observationInError++;
         }
       }
     }
+    logger.info("Skipped {} Observation with status entered-in-error", observationInError);
     filteredBundle.setEntry(filteredEntryComponents);
     return filteredBundle;
   }
@@ -383,6 +422,7 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
     for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
       Bundle occupationCodesbundle =
@@ -420,6 +460,7 @@ public class R4ResourcesData {
         }
       }
     }
+    logger.info("Filtered Social History Occupation Observations ----> {}", observations.size());
     return observations;
   }
 
@@ -431,8 +472,8 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Pregnancy Conditions");
     List<Condition> conditions = new ArrayList<>();
-
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
       Bundle pregnancyCodesbundle =
           (Bundle)
@@ -456,6 +497,7 @@ public class R4ResourcesData {
         }
       }
     }
+    logger.info("Filtered Pregnancy Conditions ----> {}", conditions.size());
     return conditions;
   }
 
@@ -492,50 +534,57 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get MedicationAdministration Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
                 launchDetails, client, context, "MedicationAdministration");
     List<MedicationAdministration> medAdministrations = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
-    // Filter MedicationAdministrations based on Encounter Reference
-    if (bundle != null && encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
-        if (!medAdministration.getContext().isEmpty()
-            && medAdministration
-                .getContext()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          medAdministrations.add(medAdministration);
-          medicationCodes.addAll(findMedicationCodes(medAdministration));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // MedicationAdministrations
-    } else if (bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        MedicationAdministration medAdministration = (MedicationAdministration) entry.getResource();
-        // Checking If Effective Date is present in MedicationAdministration resource
-        if (medAdministration.getEffective() != null) {
-          Date effDate = CdaFhirUtilities.getActualDate(medAdministration.getEffective());
-          if (effDate.after(start) && effDate.before(end)) {
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter MedicationAdministrations based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          MedicationAdministration medAdministration =
+              (MedicationAdministration) entry.getResource();
+          if (!medAdministration.getContext().isEmpty()
+              && medAdministration
+                  .getContext()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             medAdministrations.add(medAdministration);
             medicationCodes.addAll(findMedicationCodes(medAdministration));
           }
         }
-        // If Effective Date is not present looking for LastUpdatedDate
-        else {
-          Date lastUpdatedDateTime = medAdministration.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            medAdministrations.add(medAdministration);
-            medicationCodes.addAll(findMedicationCodes(medAdministration));
+        // If Encounter Id is not present using start and end dates to filter
+        // MedicationAdministrations
+      } else if (bundle != null) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          MedicationAdministration medAdministration =
+              (MedicationAdministration) entry.getResource();
+          // Checking If Effective Date is present in MedicationAdministration resource
+          if (medAdministration.getEffective() != null) {
+            Pair<Date, TimeZone> effDate =
+                CdaFhirUtilities.getActualDate(medAdministration.getEffective());
+            if (isResourceWithinDateTime(start, end, effDate.getValue0())) {
+              medAdministrations.add(medAdministration);
+              medicationCodes.addAll(findMedicationCodes(medAdministration));
+            }
+          }
+          // If Effective Date is not present looking for LastUpdatedDate
+          else {
+            Date lastUpdatedDateTime = medAdministration.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              medAdministrations.add(medAdministration);
+              medicationCodes.addAll(findMedicationCodes(medAdministration));
+            }
           }
         }
       }
+      r4FhirData.setR4MedicationCodes(medicationCodes);
     }
-    r4FhirData.setR4MedicationCodes(medicationCodes);
+    logger.info("Filtered MedicationAdministration -----------> {}", medAdministrations.size());
     return medAdministrations;
   }
 
@@ -562,51 +611,54 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
-
+    logger.trace("Get MedicationRequest Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
                 launchDetails, client, context, "MedicationRequest");
     List<MedicationRequest> medRequests = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
-    // Filter MedicationAdministrations based on Encounter Reference
-    if (bundle != null && encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        MedicationRequest medRequest = (MedicationRequest) entry.getResource();
-        if (!medRequest.getEncounter().isEmpty()
-            && medRequest
-                .getEncounter()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          medRequests.add(medRequest);
-          medicationCodes.addAll(findMedicationRequestCodes(medRequest));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // MedicationAdministrations
-    } else if (bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        MedicationRequest medRequest = (MedicationRequest) entry.getResource();
-        // Checking If Effective Date is present in MedicationAdministration resource
-        if (medRequest.getAuthoredOn() != null) {
-          Date effDate = medRequest.getAuthoredOn();
-          if (effDate.after(start) && effDate.before(end)) {
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter MedicationAdministrations based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          MedicationRequest medRequest = (MedicationRequest) entry.getResource();
+          if (!medRequest.getEncounter().isEmpty()
+              && medRequest
+                  .getEncounter()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             medRequests.add(medRequest);
             medicationCodes.addAll(findMedicationRequestCodes(medRequest));
           }
         }
-        // If Effective Date is not present looking for LastUpdatedDate
-        else {
-          Date lastUpdatedDateTime = medRequest.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            medRequests.add(medRequest);
-            medicationCodes.addAll(findMedicationRequestCodes(medRequest));
+        // If Encounter Id is not present using start and end dates to filter
+        // MedicationAdministrations
+      } else if (bundle != null) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          MedicationRequest medRequest = (MedicationRequest) entry.getResource();
+          // Checking If Effective Date is present in MedicationAdministration resource
+          if (medRequest.getAuthoredOn() != null) {
+            Date effDate = medRequest.getAuthoredOn();
+            if (isResourceWithinDateTime(start, end, effDate)) {
+              medRequests.add(medRequest);
+              medicationCodes.addAll(findMedicationRequestCodes(medRequest));
+            }
+          }
+          // If Effective Date is not present looking for LastUpdatedDate
+          else {
+            Date lastUpdatedDateTime = medRequest.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              medRequests.add(medRequest);
+              medicationCodes.addAll(findMedicationRequestCodes(medRequest));
+            }
           }
         }
       }
+      r4FhirData.setR4MedicationCodes(medicationCodes);
     }
-    r4FhirData.setR4MedicationCodes(medicationCodes);
+    logger.info("Filtered MedicationRequests -----------> {} ", medRequests.size());
     return medRequests;
   }
 
@@ -633,51 +685,55 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get MedicationStatement Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
                 launchDetails, client, context, "MedicationStatement");
     List<MedicationStatement> medStatements = new ArrayList<>();
     List<CodeableConcept> medicationCodes = new ArrayList<>();
-    // Filter MedicationStatement based on Encounter Reference
-    if (bundle != null && encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        MedicationStatement medStatement = (MedicationStatement) entry.getResource();
-        if (!medStatement.getContext().isEmpty()
-            && medStatement
-                .getContext()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          medStatements.add(medStatement);
-          medicationCodes.addAll(findMedicationStatementCodes(medStatement));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // MedicationStatement
-    } else if (bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        MedicationStatement medStatement = (MedicationStatement) entry.getResource();
-        // Checking If Effective Date is present in MedicationStatement resource
-        if (medStatement.hasEffectiveDateTimeType()) {
-          Type effectiveDateTime = medStatement.getEffectiveDateTimeType();
-          Date effDate = effectiveDateTime.dateTimeValue().getValue();
-          if (effDate.after(start) && effDate.before(end)) {
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter MedicationStatement based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          MedicationStatement medStatement = (MedicationStatement) entry.getResource();
+          if (!medStatement.getContext().isEmpty()
+              && medStatement
+                  .getContext()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             medStatements.add(medStatement);
             medicationCodes.addAll(findMedicationStatementCodes(medStatement));
           }
         }
-        // If Effective Date is not present looking for LastUpdatedDate
-        else {
-          Date lastUpdatedDateTime = medStatement.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            medStatements.add(medStatement);
-            medicationCodes.addAll(findMedicationStatementCodes(medStatement));
+        // If Encounter Id is not present using start and end dates to filter
+        // MedicationStatement
+      } else if (bundle != null) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          MedicationStatement medStatement = (MedicationStatement) entry.getResource();
+          // Checking If Effective Date is present in MedicationStatement resource
+          if (medStatement.hasEffectiveDateTimeType()) {
+            Type effectiveDateTime = medStatement.getEffectiveDateTimeType();
+            Date effDate = effectiveDateTime.dateTimeValue().getValue();
+            if (isResourceWithinDateTime(start, end, effDate)) {
+              medStatements.add(medStatement);
+              medicationCodes.addAll(findMedicationStatementCodes(medStatement));
+            }
+          }
+          // If Effective Date is not present looking for LastUpdatedDate
+          else {
+            Date lastUpdatedDateTime = medStatement.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              medStatements.add(medStatement);
+              medicationCodes.addAll(findMedicationStatementCodes(medStatement));
+            }
           }
         }
       }
+      r4FhirData.setR4MedicationCodes(medicationCodes);
     }
-    r4FhirData.setR4MedicationCodes(medicationCodes);
+    logger.info("Filtered MedicationStatement -----------> {}", medStatements.size());
     return medStatements;
   }
 
@@ -698,56 +754,59 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get DiagnosticReport Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "DiagnosticReport");
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
     List<CodeableConcept> diagnosticReportCodes = new ArrayList<>();
-    // Filter DiagnosticReports based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
-        if (!diagnosticReport.getEncounter().isEmpty()
-            && diagnosticReport
-                .getEncounter()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          diagnosticReports.add(diagnosticReport);
-          diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // DiagnosticOrders
-    } else if (bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
-        // Checking If Issued Date is present in Observation resource
-        if (diagnosticReport.getIssued() != null) {
-          if (diagnosticReport.getIssued().after(start)
-              && diagnosticReport.getIssued().before(end)) {
-            diagnosticReports.add(diagnosticReport);
-            diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
-          }
-          // If Issued date is not present, Checking for Effective Date
-        } else if (!diagnosticReport.getEffective().isEmpty()) {
-          Type effectiveDate = diagnosticReport.getEffective();
-          Date effDate = effectiveDate.dateTimeValue().getValue();
-          if (effDate.after(start) && effDate.before(end)) {
-            diagnosticReports.add(diagnosticReport);
-            diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
-          }
-          // If Issued and Effective Date are not present looking for LastUpdatedDate
-        } else {
-          Date lastUpdatedDateTime = diagnosticReport.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter DiagnosticReports based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
+          if (!diagnosticReport.getEncounter().isEmpty()
+              && diagnosticReport
+                  .getEncounter()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             diagnosticReports.add(diagnosticReport);
             diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
           }
         }
+        // If Encounter Id is not present using start and end dates to filter
+        // DiagnosticOrders
+      } else if (bundle != null) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
+          // Checking If Issued Date is present in Observation resource
+          if (diagnosticReport.getIssued() != null) {
+            if (isResourceWithinDateTime(start, end, diagnosticReport.getIssued())) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
+            // If Issued date is not present, Checking for Effective Date
+          } else if (!diagnosticReport.getEffective().isEmpty()) {
+            Type effectiveDate = diagnosticReport.getEffective();
+            Date effDate = effectiveDate.dateTimeValue().getValue();
+            if (isResourceWithinDateTime(start, end, effDate)) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
+            // If Issued and Effective Date are not present looking for LastUpdatedDate
+          } else {
+            Date lastUpdatedDateTime = diagnosticReport.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
+          }
+        }
       }
+      r4FhirData.setR4DiagnosticReportCodes(diagnosticReportCodes);
     }
-    r4FhirData.setR4DiagnosticReportCodes(diagnosticReportCodes);
+    logger.info("Filtered DiagnosticReports -----------> {}", diagnosticReports.size());
     return diagnosticReports;
   }
 
@@ -769,51 +828,55 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get Immunization Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "Immunization");
     List<Immunization> immunizations = new ArrayList<>();
     List<CodeableConcept> immunizationCodes = new ArrayList<>();
-    // Filter Immunizations based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Immunization immunization = (Immunization) entry.getResource();
-        if (!immunization.getEncounter().isEmpty()
-            && immunization
-                .getEncounter()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          immunizations.add(immunization);
-          immunizationCodes.addAll(findImmunizationCodes(immunization));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // Immunizations
-    } else if (bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Immunization immunization = (Immunization) entry.getResource();
-        // Checking If Immunization DateTime is present in Immunization
-        // resource
-        if (immunization.getOccurrence().isDateTime()
-            && immunization.getOccurrenceDateTimeType() != null) {
-          if (immunization.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
-              && immunization.getOccurrenceDateTimeType().dateTimeValue().getValue().before(end)) {
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter Immunizations based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Immunization immunization = (Immunization) entry.getResource();
+          if (!immunization.getEncounter().isEmpty()
+              && immunization
+                  .getEncounter()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             immunizations.add(immunization);
             immunizationCodes.addAll(findImmunizationCodes(immunization));
           }
         }
-        // If Immunization Date is not present looking for LastUpdatedDate
-        else {
-          Date lastUpdatedDateTime = immunization.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            immunizations.add(immunization);
-            immunizationCodes.addAll(findImmunizationCodes(immunization));
+        // If Encounter Id is not present using start and end dates to filter
+        // Immunizations
+      } else if (bundle != null) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Immunization immunization = (Immunization) entry.getResource();
+          // Checking If Immunization DateTime is present in Immunization
+          // resource
+          if (immunization.getOccurrence().isDateTime()
+              && immunization.getOccurrenceDateTimeType() != null) {
+            if (isResourceWithinDateTime(
+                start, end, immunization.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
+              immunizations.add(immunization);
+              immunizationCodes.addAll(findImmunizationCodes(immunization));
+            }
+          }
+          // If Immunization Date is not present looking for LastUpdatedDate
+          else {
+            Date lastUpdatedDateTime = immunization.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              immunizations.add(immunization);
+              immunizationCodes.addAll(findImmunizationCodes(immunization));
+            }
           }
         }
       }
+      r4FhirData.setR4ImmunizationCodes(immunizationCodes);
     }
-    r4FhirData.setR4ImmunizationCodes(immunizationCodes);
+    logger.info("Filtered Immunizations -----------> {}", immunizations.size());
     return immunizations;
   }
 
@@ -833,60 +896,63 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.trace("Get ServiceRequest Data");
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(launchDetails, client, context, "ServiceRequest");
     List<ServiceRequest> serviceRequests = new ArrayList<>();
     List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
-    // Filter ServiceRequests based on Encounter Reference
-    if (encounter != null && !encounter.getIdElement().getValue().isEmpty() && bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
+    if (bundle != null && bundle.getEntry() != null) {
+      // Filter ServiceRequests based on Encounter Reference
+      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
-        if (!serviceRequest.getEncounter().isEmpty()
-            && serviceRequest
-                .getEncounter()
-                .getReferenceElement()
-                .getIdPart()
-                .equals(encounter.getIdElement().getIdPart())) {
-          serviceRequests.add(serviceRequest);
-          serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
-        }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // ServiceRequests
-    } else if (bundle != null) {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
-        // Checking If ServiceRequest DateTime is present in ServiceRequest
-        // resource
-        if (serviceRequest.getOccurrence() != null && serviceRequest.getOccurrence().isDateTime()) {
-          if (serviceRequest.getOccurrenceDateTimeType() != null
-              && serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue().after(start)
+          if (!serviceRequest.getEncounter().isEmpty()
               && serviceRequest
-                  .getOccurrenceDateTimeType()
-                  .dateTimeValue()
-                  .getValue()
-                  .before(end)) {
+                  .getEncounter()
+                  .getReferenceElement()
+                  .getIdPart()
+                  .equals(encounter.getIdElement().getIdPart())) {
             serviceRequests.add(serviceRequest);
             serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
           }
         }
-        // If ServiceRequest Date is not present looking for LastUpdatedDate
-        else {
-          Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            serviceRequests.add(serviceRequest);
-            serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+        // If Encounter Id is not present using start and end dates to filter
+        // ServiceRequests
+      } else {
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
+          // Checking If ServiceRequest DateTime is present in ServiceRequest
+          // resource
+          if (serviceRequest.getOccurrence() != null
+              && serviceRequest.getOccurrence().isDateTime()) {
+            if (serviceRequest.getOccurrenceDateTimeType() != null
+                && isResourceWithinDateTime(
+                    start,
+                    end,
+                    serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
+              serviceRequests.add(serviceRequest);
+              serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+            }
+          }
+          // If ServiceRequest Date is not present looking for LastUpdatedDate
+          else {
+            Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              serviceRequests.add(serviceRequest);
+              serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
+            }
           }
         }
       }
+      r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
     }
-    r4FhirData.setR4ServiceRequestCodes(serviceRequestCodes);
+    logger.info("Filtered ServiceRequests -----------> {}", serviceRequests.size());
     return serviceRequests;
   }
 
-  public static List<Observation> filterObservation(
+  public List<Observation> filterObservation(
       Bundle bundle, Encounter encounter, Date start, Date end) {
 
     List<Observation> observations = new ArrayList<>();
@@ -910,20 +976,20 @@ public class R4ResourcesData {
         Observation observation = (Observation) entry.getResource();
         // Checking If Issued Date is present in Observation resource
         if (observation.getIssued() != null) {
-          if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
+          if (isResourceWithinDateTime(start, end, observation.getIssued())) {
             observations.add(observation);
           }
           // If Issued date is not present, Checking for Effective Date
         } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
           Type effectiveDate = observation.getEffectiveDateTimeType();
           Date effDate = effectiveDate.dateTimeValue().getValue();
-          if (effDate.after(start) && effDate.before(end)) {
+          if (isResourceWithinDateTime(start, end, effDate)) {
             observations.add(observation);
           }
           // If Issued and Effective Date are not present looking for LastUpdatedDate
         } else {
           Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+          if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
             observations.add(observation);
           }
         }
@@ -943,15 +1009,16 @@ public class R4ResourcesData {
     Bundle bundle = new Bundle();
     // GET Patient Details and Add to Bundle
     try {
-      logger.info("Get Patient Data");
       Patient patient =
           (Patient)
               fhirContextInitializer.getResouceById(
                   launchDetails, client, context, "Patient", launchDetails.getLaunchPatientId());
-      r4FhirData.setPatient(patient);
-      BundleEntryComponent patientEntry = new BundleEntryComponent();
-      patientEntry.setResource(patient);
-      bundle.addEntry(patientEntry);
+      if (patient != null) {
+        r4FhirData.setPatient(patient);
+        BundleEntryComponent patientEntry = new BundleEntryComponent();
+        patientEntry.setResource(patient);
+        bundle.addEntry(patientEntry);
+      }
     } catch (Exception e) {
       logger.error("Error in getting Patient Data", e);
     }
@@ -964,81 +1031,85 @@ public class R4ResourcesData {
     // also to the list of encounterCodes.
     Encounter encounter = null;
     try {
-      logger.info("Get Encounter Data");
       encounter = getEncounterData(context, client, launchDetails, r4FhirData, start, end);
-      r4FhirData.setEncounter(encounter);
-      if (encounter.getParticipant() != null) {
-        List<Practitioner> practitionerList = new ArrayList<>();
-        Map<String, String> practitionerMap = new HashMap<>();
-        List<EncounterParticipantComponent> participants = encounter.getParticipant();
-        for (EncounterParticipantComponent participant : participants) {
-          if (participant.getIndividual() != null) {
-            Reference practitionerReference = participant.getIndividual();
-            String practitionerID = practitionerReference.getReferenceElement().getIdPart();
-            if (!practitionerMap.containsKey(practitionerID)) {
-              Practitioner practitioner =
-                  (Practitioner)
-                      fhirContextInitializer.getResouceById(
-                          launchDetails, client, context, "Practitioner", practitionerID);
-              if (practitioner != null) {
-                practitionerList.add(practitioner);
-                practitionerMap.put(practitionerID, practitioner.getResourceType().name());
-                BundleEntryComponent practitionerEntry =
-                    new BundleEntryComponent().setResource(practitioner);
-                bundle.addEntry(practitionerEntry);
+
+      if (encounter != null) {
+        r4FhirData.setEncounter(encounter);
+        if (encounter.getParticipant() != null) {
+          List<Practitioner> practitionerList = new ArrayList<>();
+          Map<String, String> practitionerMap = new HashMap<>();
+          List<EncounterParticipantComponent> participants = encounter.getParticipant();
+          for (EncounterParticipantComponent participant : participants) {
+            if (participant.getIndividual() != null) {
+              Reference practitionerReference = participant.getIndividual();
+              String practitionerID = practitionerReference.getReferenceElement().getIdPart();
+              if (!practitionerMap.containsKey(practitionerID)) {
+                Practitioner practitioner =
+                    (Practitioner)
+                        fhirContextInitializer.getResouceById(
+                            launchDetails, client, context, "Practitioner", practitionerID);
+                if (practitioner != null) {
+                  practitionerList.add(practitioner);
+                  practitionerMap.put(practitionerID, practitioner.getResourceType().name());
+                  BundleEntryComponent practitionerEntry =
+                      new BundleEntryComponent().setResource(practitioner);
+                  bundle.addEntry(practitionerEntry);
+                }
               }
             }
           }
-        }
-        if (!practitionerList.isEmpty()) {
-          r4FhirData.setPractitionersList(practitionerList);
-        }
-      }
-      if (encounter.getServiceProvider() != null) {
-        Reference organizationReference = encounter.getServiceProvider();
-        if (organizationReference.hasReferenceElement()) {
-          Organization organization =
-              (Organization)
-                  fhirContextInitializer.getResouceById(
-                      launchDetails,
-                      client,
-                      context,
-                      "Organization",
-                      organizationReference.getReferenceElement().getIdPart());
-          if (organization != null) {
-            BundleEntryComponent organizationEntry =
-                new BundleEntryComponent().setResource(organization);
-            bundle.addEntry(organizationEntry);
-            r4FhirData.setOrganization(organization);
+          if (!practitionerList.isEmpty()) {
+            r4FhirData.setPractitionersList(practitionerList);
           }
         }
-      }
-      if (encounter.getLocation() != null) {
-        List<Location> locationList = new ArrayList<>();
-        List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
-        for (EncounterLocationComponent location : enocunterLocations) {
-          if (location.getLocation() != null) {
-            Reference locationReference = location.getLocation();
-            Location locationResource =
-                (Location)
+        if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
+          Reference organizationReference = encounter.getServiceProvider();
+          if (organizationReference.hasReferenceElement()) {
+            Organization organization =
+                (Organization)
                     fhirContextInitializer.getResouceById(
                         launchDetails,
                         client,
                         context,
-                        "Location",
-                        locationReference.getReferenceElement().getIdPart());
-            locationList.add(locationResource);
-            BundleEntryComponent locationEntry =
-                new BundleEntryComponent().setResource(locationResource);
-            bundle.addEntry(locationEntry);
+                        "Organization",
+                        organizationReference.getReferenceElement().getIdPart());
+            if (organization != null) {
+              BundleEntryComponent organizationEntry =
+                  new BundleEntryComponent().setResource(organization);
+              bundle.addEntry(organizationEntry);
+              r4FhirData.setOrganization(organization);
+            }
           }
         }
-        r4FhirData.setLocationList(locationList);
+        if (Boolean.TRUE.equals(encounter.hasLocation())) {
+          List<Location> locationList = new ArrayList<>();
+          List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
+          for (EncounterLocationComponent location : enocunterLocations) {
+            if (location.getLocation() != null) {
+              Reference locationReference = location.getLocation();
+              Location locationResource =
+                  (Location)
+                      fhirContextInitializer.getResouceById(
+                          launchDetails,
+                          client,
+                          context,
+                          "Location",
+                          locationReference.getReferenceElement().getIdPart());
+              if (locationResource != null) {
+                locationList.add(locationResource);
+                BundleEntryComponent locationEntry =
+                    new BundleEntryComponent().setResource(locationResource);
+                bundle.addEntry(locationEntry);
+              }
+            }
+          }
+          r4FhirData.setLocationList(locationList);
+        }
+        BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
+        bundle.addEntry(encounterEntry);
       }
-      BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
-      bundle.addEntry(encounterEntry);
     } catch (Exception e) {
-      logger.error("Error in getting Encounter Data", e);
+      ApplicationUtils.handleException(e, "Error in getting Encounter Data", LogLevel.ERROR);
     }
 
     // Step 2: Get Conditions for Patient (Write a method)
@@ -1050,17 +1121,14 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of ConditionCodes.
     try {
-      logger.info("Get Condition Data");
       List<Condition> conditionsList =
           getConditionData(context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered ConditionsList----> {}", conditionsList.size());
-      }
-
-      // Already sorted and set in the getConditionData method
-      for (Condition condition : conditionsList) {
-        BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
-        bundle.addEntry(conditionsEntry);
+      if (conditionsList != null && !conditionsList.isEmpty()) {
+        // Already sorted and set in the getConditionData method
+        for (Condition condition : conditionsList) {
+          BundleEntryComponent conditionsEntry = new BundleEntryComponent().setResource(condition);
+          bundle.addEntry(conditionsEntry);
+        }
       }
     } catch (Exception e) {
       logger.error("Error in getting Condition Data", e);
@@ -1074,17 +1142,15 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of labResultCodes.
     try {
-      logger.info("Get Observation Data");
       List<Observation> observationList =
           getObservationData(context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered Observations----> {}", observationList.size());
-      }
-      r4FhirData.setLabResults(observationList);
-      for (Observation observation : observationList) {
-        BundleEntryComponent observationsEntry =
-            new BundleEntryComponent().setResource(observation);
-        bundle.addEntry(observationsEntry);
+      if (observationList != null && !observationList.isEmpty()) {
+        r4FhirData.setLabResults(observationList);
+        for (Observation observation : observationList) {
+          BundleEntryComponent observationsEntry =
+              new BundleEntryComponent().setResource(observation);
+          bundle.addEntry(observationsEntry);
+        }
       }
     } catch (Exception e) {
       logger.error("Error in getting Observation Data", e);
@@ -1101,89 +1167,88 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of medicationCodes.
     try {
-      logger.info("Get MedicationAdministration Data");
       List<MedicationAdministration> medAdministrationsList =
           getMedicationAdministrationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            "Filtered MedicationAdministration-----------> {}", medAdministrationsList.size());
-      }
-      List<Medication> medicationList = r4FhirData.getMedicationList();
-      r4FhirData.setMedicationAdministrations(medAdministrationsList);
-      for (MedicationAdministration medAdministration : medAdministrationsList) {
-        if (medAdministration.getMedication() != null
-            && !medAdministration.getMedication().isEmpty()
-            && medAdministration.getMedication() instanceof Reference) {
-          Reference medRef = (Reference) medAdministration.getMedication();
-          String medReference = medRef.getReferenceElement().getValue();
-          if (medReference.startsWith("#")) {
-            List<Resource> medAdministrationContained = medAdministration.getContained();
-            if (medAdministrationContained
-                .stream()
-                .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
-              logger.info(
-                  "Medication Resource exists in MedicationAdministration.contained. So no need to add again in Bundle.");
-            }
-          } else {
-            logger.info("Medication Reference Found=============>");
-            Medication medication =
-                getMedicationData(context, client, launchDetails, r4FhirData, medReference);
-            BundleEntryComponent medicationEntry =
-                new BundleEntryComponent().setResource(medication);
-            bundle.addEntry(medicationEntry);
-            if (medication != null) {
-              medicationList.add(medication);
+      if (medAdministrationsList != null && !medAdministrationsList.isEmpty()) {
+        List<Medication> medicationList = r4FhirData.getMedicationList();
+        r4FhirData.setMedicationAdministrations(medAdministrationsList);
+        for (MedicationAdministration medAdministration : medAdministrationsList) {
+          if (medAdministration.getMedication() != null
+              && !medAdministration.getMedication().isEmpty()
+              && medAdministration.getMedication() instanceof Reference) {
+            Reference medRef = (Reference) medAdministration.getMedication();
+            String medReference = medRef.getReferenceElement().getValue();
+            if (medReference.startsWith("#")) {
+              List<Resource> medAdministrationContained = medAdministration.getContained();
+              if (medAdministrationContained
+                  .stream()
+                  .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+                logger.debug(
+                    "Medication Resource {} exists in MedicationAdministration.contained, So no need to add again in Bundle.",
+                    medReference);
+              }
+            } else {
+              logger.debug("Medication Reference Found=============> {}", medReference);
+              Medication medication =
+                  getMedicationData(context, client, launchDetails, r4FhirData, medReference);
+              if (medication != null) {
+                BundleEntryComponent medicationEntry =
+                    new BundleEntryComponent().setResource(medication);
+                bundle.addEntry(medicationEntry);
+                medicationList.add(medication);
+              }
             }
           }
+          BundleEntryComponent medAdministrationEntry =
+              new BundleEntryComponent().setResource(medAdministration);
+          bundle.addEntry(medAdministrationEntry);
         }
-        BundleEntryComponent medAdministrationEntry =
-            new BundleEntryComponent().setResource(medAdministration);
-        bundle.addEntry(medAdministrationEntry);
+        r4FhirData.setMedicationList(medicationList);
       }
-      r4FhirData.setMedicationList(medicationList);
     } catch (Exception e) {
       logger.error("Error in getting the MedicationAdministration Data", e);
     }
 
     try {
-      logger.info("Get MedicationRequest Data");
       List<MedicationRequest> medRequestsList =
           getMedicationRequestData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      logger.info("Filtered MedicationRequests-----------> {} ", medRequestsList.size());
-      List<Medication> medicationList = r4FhirData.getMedicationList();
-      r4FhirData.setMedicationRequests(medRequestsList);
-      for (MedicationRequest medRequest : medRequestsList) {
-        if (medRequest.getMedication() != null
-            && !medRequest.getMedication().isEmpty()
-            && medRequest.getMedication() instanceof Reference) {
-          Reference medRef = (Reference) medRequest.getMedication();
-          String medReference = medRef.getReferenceElement().getValue();
-          if (medReference.startsWith("#")) {
-            List<Resource> medRequestContained = medRequest.getContained();
-            if (medRequestContained
-                .stream()
-                .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
-              logger.info(
-                  "Medication Resource exists in MedicationRequest.contained. So no need to add again in Bundle.");
-            }
-          } else {
-            logger.info("Medication Reference Found=============>");
-            Medication medication =
-                getMedicationData(context, client, launchDetails, r4FhirData, medReference);
-            BundleEntryComponent medicationEntry =
-                new BundleEntryComponent().setResource(medication);
-            bundle.addEntry(medicationEntry);
-            if (medication != null) {
-              medicationList.add(medication);
+      if (medRequestsList != null && !medRequestsList.isEmpty()) {
+        List<Medication> medicationList = r4FhirData.getMedicationList();
+        r4FhirData.setMedicationRequests(medRequestsList);
+        for (MedicationRequest medRequest : medRequestsList) {
+          if (medRequest.getMedication() != null
+              && !medRequest.getMedication().isEmpty()
+              && medRequest.getMedication() instanceof Reference) {
+            Reference medRef = (Reference) medRequest.getMedication();
+            String medReference = medRef.getReferenceElement().getValue();
+            if (medReference.startsWith("#")) {
+              List<Resource> medRequestContained = medRequest.getContained();
+              if (medRequestContained
+                  .stream()
+                  .anyMatch(resource -> resource.getIdElement().getValue().equals(medReference))) {
+                logger.debug(
+                    "Medication Resource {} exists in MedicationRequest.contained, So no need to add again in Bundle.",
+                    medReference);
+              }
+            } else {
+              logger.debug("Medication Reference Found=============> {}", medReference);
+              Medication medication =
+                  getMedicationData(context, client, launchDetails, r4FhirData, medReference);
+              if (medication != null) {
+                BundleEntryComponent medicationEntry =
+                    new BundleEntryComponent().setResource(medication);
+                bundle.addEntry(medicationEntry);
+                medicationList.add(medication);
+              }
             }
           }
+          BundleEntryComponent medRequestEntry = new BundleEntryComponent().setResource(medRequest);
+          bundle.addEntry(medRequestEntry);
         }
-        BundleEntryComponent medRequestEntry = new BundleEntryComponent().setResource(medRequest);
-        bundle.addEntry(medRequestEntry);
+        r4FhirData.setMedicationList(medicationList);
       }
-      r4FhirData.setMedicationList(medicationList);
     } catch (Exception e) {
       logger.error("Error in getting the MedicationRequest Data", e);
     }
@@ -1198,17 +1263,15 @@ public class R4ResourcesData {
     // also to the list of ServiceRequestCodes.
 
     try {
-      logger.info("Get ServiceRequest Data");
       List<ServiceRequest> serviceRequestsList =
           getServiceRequestData(context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered ServiceRequests-----------> {}", serviceRequestsList.size());
-      }
-      r4FhirData.setServiceRequests(serviceRequestsList);
-      for (ServiceRequest serviceRequest : serviceRequestsList) {
-        BundleEntryComponent serviceRequestEntry =
-            new BundleEntryComponent().setResource(serviceRequest);
-        bundle.addEntry(serviceRequestEntry);
+      if (serviceRequestsList != null && !serviceRequestsList.isEmpty()) {
+        r4FhirData.setServiceRequests(serviceRequestsList);
+        for (ServiceRequest serviceRequest : serviceRequestsList) {
+          BundleEntryComponent serviceRequestEntry =
+              new BundleEntryComponent().setResource(serviceRequest);
+          bundle.addEntry(serviceRequestEntry);
+        }
       }
     } catch (Exception e) {
       logger.error("Error in getting the ServiceRequest Data", e);
@@ -1230,7 +1293,11 @@ public class R4ResourcesData {
   }
 
   public DocumentReference constructR4DocumentReference(
-      String rrXml, String patientId, String encounterID) {
+      String rrXml,
+      String patientId,
+      String encounterID,
+      String providerUUID,
+      String rrDocRefMimeType) {
     DocumentReference documentReference = new DocumentReference();
 
     // Set Doc Ref Status
@@ -1254,12 +1321,22 @@ public class R4ResourcesData {
     patientReference.setReference("Patient/" + patientId);
     documentReference.setSubject(patientReference);
 
+    // Set Author
+    if (providerUUID != null) {
+      List<Reference> authorRefList = new ArrayList<>();
+      Reference providerReference = new Reference();
+      providerReference.setReference("Practitioner/" + providerUUID);
+      authorRefList.add(providerReference);
+      documentReference.setAuthor(authorRefList);
+    }
+
     // Set Doc Ref Content
     List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
     DocumentReference.DocumentReferenceContentComponent contentComp =
         new DocumentReference.DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
-    attachment.setContentType(CdaParserConstants.RR_DOC_CONTENT_TYPE);
+    attachment.setTitle("EICR Reportability Response");
+    attachment.setContentType(rrDocRefMimeType);
 
     if (rrXml != null && !rrXml.isEmpty()) {
       attachment.setData(rrXml.getBytes());
@@ -1288,5 +1365,17 @@ public class R4ResourcesData {
     logger.debug("DocumentReference Object===========> {}", docReference);
 
     return documentReference;
+  }
+
+  public boolean isResourceWithinDateTime(Date start, Date end, Date resourceDate) {
+    boolean withinDateTime = false;
+    if (start != null
+        && end != null
+        && resourceDate != null
+        && resourceDate.after(start)
+        && resourceDate.before(end)) {
+      withinDateTime = true;
+    }
+    return withinDateTime;
   }
 }

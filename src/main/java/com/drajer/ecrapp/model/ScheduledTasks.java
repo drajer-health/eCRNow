@@ -42,7 +42,7 @@ public class ScheduledTasks implements Serializable {
   private Date last_failure;
 
   @Column(name = "consecutive_failures")
-  private int consecutive_failures;
+  private Integer consecutive_failures;
 
   @Column(name = "last_heartbeat")
   private Date last_heartbeat;
@@ -98,11 +98,11 @@ public class ScheduledTasks implements Serializable {
     this.last_failure = last_failure;
   }
 
-  public int getConsecutive_failures() {
+  public Integer getConsecutive_failures() {
     return consecutive_failures;
   }
 
-  public void setConsecutive_failures(int consecutive_failures) {
+  public void setConsecutive_failures(Integer consecutive_failures) {
     this.consecutive_failures = consecutive_failures;
   }
 

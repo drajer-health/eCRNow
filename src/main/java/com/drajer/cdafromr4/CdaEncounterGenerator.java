@@ -9,12 +9,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Identifier;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,7 @@ public class CdaEncounterGenerator {
 
     if (encounter != null) {
 
-      logger.info(" Generating Encounter section ");
+      logger.debug("Generating Encounter section");
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -75,20 +77,26 @@ public class CdaEncounterGenerator {
       if (encounter.getClass_() != null
           && encounter.getClass_().getCode() != null
           && !StringUtils.isEmpty(encounter.getClass_().getDisplay())) {
-        logger.info("Found Encounter Class value, so using it for display");
+        logger.debug("Found Encounter Class value, so using it for display");
         actDisplayName = encounter.getClass_().getDisplay();
       } else if (encounter.getTypeFirstRep() != null
           && encounter.getTypeFirstRep().getCodingFirstRep() != null
           && !StringUtils.isEmpty(encounter.getTypeFirstRep().getCodingFirstRep().getDisplay())) {
 
-        logger.info("Did not find Encounter class, but Found Encounter Type value, so using it ");
+        logger.debug("Did not find Encounter class, but Found Encounter Type value, so using it");
         actDisplayName = encounter.getTypeFirstRep().getCodingFirstRep().getDisplay();
       }
 
       String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-      if (encounter.getPeriod() != null && encounter.getPeriod().getStart() != null) {
+      if (encounter.getPeriod() != null && encounter.getPeriod().getStartElement() != null) {
 
-        dt = CdaGeneratorUtils.getStringForDate(encounter.getPeriod().getStart());
+        dt =
+            CdaFhirUtilities.getDisplayStringForDateTimeType(
+                encounter.getPeriod().getStartElement());
+
+      } else {
+        logger.error(
+            " Period is either null or the Period.DateTime has a null value or null timezone value ");
       }
 
       Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -148,7 +156,7 @@ public class CdaEncounterGenerator {
 
       if (encDiagXml != null && !encDiagXml.isEmpty()) {
 
-        logger.info(" Adding Encounter Diagnosis to the Encounter Section ");
+        logger.debug("Adding Encounter Diagnosis to the Encounter Section");
         sb.append(encDiagXml);
       }
 
@@ -248,8 +256,8 @@ public class CdaEncounterGenerator {
             CdaGeneratorUtils.getXmlForCD(
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-        Date onset = CdaFhirUtilities.getActualDate(c.getOnset());
-        Date abatement = CdaFhirUtilities.getActualDate(c.getAbatement());
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(c.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(c.getAbatement());
 
         sb.append(
             CdaGeneratorUtils.getXmlForIVLWithTS(
@@ -345,7 +353,7 @@ public class CdaEncounterGenerator {
       }
 
       if (!codeXml.isEmpty()) {
-        logger.info("Found Encounter class information, so use it ");
+        logger.debug("Found Encounter class information, so use it ");
         return codeXml;
       } else {
 
@@ -361,7 +369,7 @@ public class CdaEncounterGenerator {
                 true);
 
         if (!codeXml.isEmpty()) {
-          logger.info("Found Encounter Information using CPT, so using it ");
+          logger.debug("Found Encounter Information using CPT, so using it ");
           return codeXml;
         } else {
           codeXml =
@@ -373,7 +381,7 @@ public class CdaEncounterGenerator {
                   true);
 
           if (!codeXml.isEmpty()) {
-            logger.info("Found Encounter Information using ICD10, so using it ");
+            logger.debug("Found Encounter Information using ICD10, so using it ");
             return codeXml;
           } else {
 
@@ -386,10 +394,10 @@ public class CdaEncounterGenerator {
                     true);
 
             if (!codeXml.isEmpty()) {
-              logger.info("Found Encounter Information using SNOMED, so using it ");
+              logger.debug("Found Encounter Information using SNOMED, so using it ");
               return codeXml;
             } else {
-              logger.info(
+              logger.debug(
                   "Append Encounter Information using other code systems if found or append null");
               codeXml =
                   CdaFhirUtilities.getCodeableConceptXml(

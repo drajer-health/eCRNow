@@ -2,16 +2,25 @@ package com.drajer.test;
 
 import static org.junit.Assert.*;
 
+import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
@@ -23,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 @RunWith(Parameterized.class)
 public class ITValidateEicrDoc extends BaseIntegrationTest {
@@ -57,6 +68,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public static Collection<Object[]> data() {
 
     List<TestDataGenerator> testDataGenerator = new ArrayList<>();
+
     testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
@@ -118,7 +130,35 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
 
-    EicrValidation.validateEicrCDA(createEicr.getEicrData(), testData, fieldsToValidate);
+    if (createEicr != null) {
+      String eICRXml = createEicr.getEicrData();
+      assertNotNull(eICRXml);
+      assertFalse(eICRXml.isEmpty());
+      getLaunchDetailAndStatus();
+      assertTrue(
+          "Schema Validation Failed, check the logs",
+          CdaValidatorUtil.validateEicrXMLData(eICRXml));
+      assertTrue(
+          "Schematron Validation Failed, check the logs",
+          CdaValidatorUtil.validateEicrToSchematron(eICRXml));
+
+      Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
+
+      String fileName =
+          ActionRepo.getInstance().getLogFileDirectory()
+              + "/"
+              + testCaseId
+              + "_"
+              + LocalDateTime.now().getHour()
+              + LocalDateTime.now().getMinute()
+              + LocalDateTime.now().getSecond()
+              + ".xml";
+      ApplicationUtils.saveDataToFile(eICRXml, fileName);
+
+      validateXml(eicrXmlDoc);
+    } else {
+      fail("Eicr Not found");
+    }
   }
 
   private void getLaunchDetailAndStatus() {
@@ -156,5 +196,50 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       fail("Something went wrong retrieving EICR, check the log");
     }
     return null;
+  }
+
+  private void validateXml(Document eicrXml) {
+
+    final XPath xPath = XPathFactory.newInstance().newXPath();
+    final String baseXPath = testData.get("BaseXPath");
+
+    if (fieldsToValidate != null) {
+      for (Map<String, String> field : fieldsToValidate) {
+        try {
+          String xPathExp = baseXPath + field.get("xPath");
+          if (field.containsKey("count")) {
+            try {
+              NodeList nodeList =
+                  (NodeList) xPath.compile(xPathExp).evaluate(eicrXml, XPathConstants.NODESET);
+              assertEquals(xPathExp, Integer.parseInt(field.get("count")), nodeList.getLength());
+            } catch (XPathExpressionException e) {
+              logger.error("Exception validating field:", e);
+              fail(e.getMessage() + ": Failed to evaluate field " + xPathExp);
+            }
+          } else {
+            for (Entry<String, String> set : field.entrySet()) {
+              if (!set.getKey().equalsIgnoreCase("xPath")) {
+                String xPathFullExp = xPathExp + set.getKey();
+                try {
+                  String fieldValue =
+                      (String) xPath.compile(xPathFullExp).evaluate(eicrXml, XPathConstants.STRING);
+                  assertEquals(xPathFullExp, set.getValue(), fieldValue);
+                } catch (XPathExpressionException e) {
+                  logger.error("Exception validating field:", e);
+                  fail(e.getMessage() + ": Failed to evaluate field " + xPathExp);
+                }
+              }
+            }
+          }
+
+        } catch (Exception e) {
+          logger.error("Exception validating field:", e);
+          fail(e.getMessage() + ": This exception is not expected fix the test");
+        }
+      }
+
+    } else {
+      fail("validate field is not configured in the test");
+    }
   }
 }

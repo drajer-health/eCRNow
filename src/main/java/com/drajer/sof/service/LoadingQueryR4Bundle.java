@@ -34,12 +34,15 @@ public class LoadingQueryR4Bundle {
 
   public Bundle createR4Bundle(
       LaunchDetails launchDetails, R4FhirData r4FhirData, Date start, Date end) {
-    logger.info("Initializing FHIR Context for Version::::" + launchDetails.getFhirVersion());
+
+    logger.trace("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
-    logger.info("Initializing Client");
     IGenericClient client =
         fhirContextInitializer.createClient(
-            context, launchDetails.getEhrServerURL(), launchDetails.getAccessToken());
+            context,
+            launchDetails.getEhrServerURL(),
+            launchDetails.getAccessToken(),
+            launchDetails.getxRequestId());
 
     Bundle bundle =
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);
@@ -49,13 +52,9 @@ public class LoadingQueryR4Bundle {
 
     // Get Pregnancy Observations
     try {
-      logger.info("Get Pregnancy Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered Observations----> {}", observationList.size());
-      }
       r4FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -68,13 +67,9 @@ public class LoadingQueryR4Bundle {
 
     // Get Travel Observations
     try {
-      logger.info("Get Travel Observation Data");
       List<Observation> observationList =
           r4ResourcesData.getTravelObservationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered Observations----> {}", observationList.size());
-      }
       r4FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -87,13 +82,9 @@ public class LoadingQueryR4Bundle {
 
     // Get Social History Observations (Occupation)
     try {
-      logger.info("Get Social History Observation Data (Occupation)");
       List<Observation> observationList =
           r4ResourcesData.getSocialHistoryObservationDataOccupation(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered Social Hx Occupation Observations----> {}", observationList.size());
-      }
       r4FhirData.setOccupationObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -106,13 +97,9 @@ public class LoadingQueryR4Bundle {
 
     // Get Pregnancy Conditions
     try {
-      logger.info("Get Pregnancy Conditions");
       List<Condition> conditionList =
           r4ResourcesData.getPregnancyConditions(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered Pregnancy Conditions----> {}", conditionList.size());
-      }
       r4FhirData.setPregnancyConditions(conditionList);
       for (Condition condition : conditionList) {
         BundleEntryComponent conditionEntry = new BundleEntryComponent().setResource(condition);
@@ -123,13 +110,9 @@ public class LoadingQueryR4Bundle {
     }
 
     try {
-      logger.info("Get MedicationStatement Data");
       List<MedicationStatement> medStatementsList =
           r4ResourcesData.getMedicationStatementData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered MedicationStatement-----------> {}", medStatementsList.size());
-      }
       r4FhirData.setMedications(medStatementsList);
       for (MedicationStatement medStatement : medStatementsList) {
         BundleEntryComponent medStatementEntry =
@@ -150,9 +133,6 @@ public class LoadingQueryR4Bundle {
       List<Immunization> immunizationsList =
           r4ResourcesData.getImmunizationData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered Immunizations-----------> {}", immunizationsList.size());
-      }
       r4FhirData.setImmunizations(immunizationsList);
       for (Immunization immunization : immunizationsList) {
         BundleEntryComponent immunizationEntry =
@@ -173,9 +153,6 @@ public class LoadingQueryR4Bundle {
       List<DiagnosticReport> diagnosticReportList =
           r4ResourcesData.getDiagnosticReportData(
               context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (logger.isInfoEnabled()) {
-        logger.info("Filtered DiagnosticReports-----------> {}", diagnosticReportList.size());
-      }
       r4FhirData.setDiagReports(diagnosticReportList);
       for (DiagnosticReport diagnosticReport : diagnosticReportList) {
         BundleEntryComponent diagnosticReportEntry =
@@ -187,17 +164,23 @@ public class LoadingQueryR4Bundle {
     }
 
     // Setting bundle to FHIR Data
-    if (logger.isInfoEnabled()) {
-      logger.info(
-          "------------------------------CodeableConcept Codes------------------------------");
-      logger.info("Encounter Codes Size=====> {}", r4FhirData.getR4EncounterCodes().size());
-      logger.info("Conditions Codes Size=====> {}", r4FhirData.getR4ConditionCodes().size());
-      logger.info("Observation Codes Size=====> {}", r4FhirData.getR4LabResultCodes().size());
-      logger.info("Medication Codes Size=====> {}", r4FhirData.getR4MedicationCodes().size());
-      logger.info("Immunization Codes Size=====> {}", r4FhirData.getR4ImmunizationCodes().size());
-      logger.info(
-          "DiagnosticReport Codes Size=====> {}", r4FhirData.getR4DiagnosticReportCodes().size());
-    }
+    logger.info(
+        "------------------------------CodeableConcept Codes------------------------------\n"
+            + "Encounter Codes Size=====> {} \n"
+            + "Conditions Codes Size=====> {} \n"
+            + "Observation Codes Size=====> {}\n"
+            + "Medication Codes Size=====> {}\n"
+            + "Immunization Codes Size=====> {}\n"
+            + "DiagnosticReport Codes Size=====> {}\n"
+            + "ServiceRequests Codes Size=====> {}",
+        r4FhirData.getR4EncounterCodes().size(),
+        r4FhirData.getR4ConditionCodes().size(),
+        r4FhirData.getR4LabResultCodes().size(),
+        r4FhirData.getR4MedicationCodes().size(),
+        r4FhirData.getR4ImmunizationCodes().size(),
+        r4FhirData.getR4DiagnosticReportCodes().size(),
+        r4FhirData.getR4ServiceRequestCodes().size());
+
     String fileName =
         ActionRepo.getInstance().getLogFileDirectory()
             + "/LoadingQueryR4Bundle-"

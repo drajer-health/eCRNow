@@ -553,45 +553,47 @@ public class Dstu2ResourcesData {
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
     List<CodeableConceptDt> diagnosticReportCodes = new ArrayList<>();
     // Filter DiagnosticReports based on Encounter Reference
-    if (encounter != null && !encounter.getId().getValue().isEmpty()) {
-      for (Entry entry : bundle.getEntry()) {
-        DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
-        if (!diagnosticReport.getEncounter().isEmpty()) {
-          if (diagnosticReport
-              .getEncounter()
-              .getReference()
-              .getIdPart()
-              .equals(encounter.getIdElement().getIdPart())) {
-            diagnosticReports.add(diagnosticReport);
-            diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+    if (bundle != null && bundle.getEntry() != null) {
+      if (encounter != null && !encounter.getId().getValue().isEmpty()) {
+        for (Entry entry : bundle.getEntry()) {
+          DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
+          if (!diagnosticReport.getEncounter().isEmpty()) {
+            if (diagnosticReport
+                .getEncounter()
+                .getReference()
+                .getIdPart()
+                .equals(encounter.getIdElement().getIdPart())) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
           }
         }
-      }
-      // If Encounter Id is not present using start and end dates to filter
-      // DiagnosticReports
-    } else {
-      for (Entry entry : bundle.getEntry()) {
-        DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
-        // Checking If Issued Date is present in DiagnosticReport resource
-        if (diagnosticReport.getIssued() != null) {
-          if (diagnosticReport.getIssued().after(start)
-              && diagnosticReport.getIssued().before(end)) {
-            diagnosticReports.add(diagnosticReport);
-            diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
-          }
-          // If Issued date is not present, Checking for Effective Date
-        } else if (!diagnosticReport.getEffective().isEmpty()) {
-          Date effectiveDate = (Date) diagnosticReport.getEffective();
-          if (effectiveDate.after(start) && effectiveDate.before(end)) {
-            diagnosticReports.add(diagnosticReport);
-            diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
-          }
-          // If Issued and Effective Date are not present looking for LastUpdatedDate
-        } else {
-          Date lastUpdatedDateTime = diagnosticReport.getMeta().getLastUpdated();
-          if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
-            diagnosticReports.add(diagnosticReport);
-            diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+        // If Encounter Id is not present using start and end dates to filter
+        // DiagnosticReports
+      } else {
+        for (Entry entry : bundle.getEntry()) {
+          DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
+          // Checking If Issued Date is present in DiagnosticReport resource
+          if (diagnosticReport.getIssued() != null) {
+            if (diagnosticReport.getIssued().after(start)
+                && diagnosticReport.getIssued().before(end)) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
+            // If Issued date is not present, Checking for Effective Date
+          } else if (!diagnosticReport.getEffective().isEmpty()) {
+            Date effectiveDate = (Date) diagnosticReport.getEffective();
+            if (effectiveDate.after(start) && effectiveDate.before(end)) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
+            // If Issued and Effective Date are not present looking for LastUpdatedDate
+          } else {
+            Date lastUpdatedDateTime = diagnosticReport.getMeta().getLastUpdated();
+            if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+              diagnosticReports.add(diagnosticReport);
+              diagnosticReportCodes.addAll(findDiagnosticReportCodes(diagnosticReport));
+            }
           }
         }
       }

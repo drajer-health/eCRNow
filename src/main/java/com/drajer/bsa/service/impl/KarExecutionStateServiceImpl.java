@@ -4,6 +4,7 @@ import com.drajer.bsa.dao.KarExecutionStateDao;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.service.KarExecutionStateService;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +45,7 @@ public class KarExecutionStateServiceImpl implements KarExecutionStateService {
    * @return
    */
   @Override
-  public KarExecutionState getKarExecutionStateById(Integer id) {
+  public KarExecutionState getKarExecutionStateById(UUID id) {
     return karExecutionStateDao.getKarExecutionStateById(id);
   }
 

@@ -4,6 +4,7 @@ import com.drajer.bsa.dao.KarExecutionStateDao;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
+import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
   }
 
   @Override
-  public KarExecutionState getKarExecutionStateById(Integer id) {
+  public KarExecutionState getKarExecutionStateById(UUID id) {
     KarExecutionState kar = getSession().get(KarExecutionState.class, id);
     return kar;
   }

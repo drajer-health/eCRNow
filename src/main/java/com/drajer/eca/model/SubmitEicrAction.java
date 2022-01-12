@@ -20,24 +20,20 @@ public class SubmitEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
-    logger.info(" **** START Executing Submit Eicr Action **** ");
+    logger.info("**** START Executing Submit Eicr Action ****");
 
     if (obj instanceof LaunchDetails) {
 
-      logger.info(" Obtained Launch Details ");
       LaunchDetails details = (LaunchDetails) obj;
-      PatientExecutionState state = null;
-
-      state = ApplicationUtils.getDetailStatus(details);
-
+      PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
       logger.info(
-          " Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());
+          "Executing Submit Eicr Action , Prior Execution State : = {}", details.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
-        logger.info(" Related Actions exist, so check dependencies ");
+        logger.info("Related Actions exist, so check dependencies");
 
         List<RelatedAction> racts = getRelatedActions();
 
@@ -50,7 +46,7 @@ public class SubmitEicrAction extends AbstractAction {
 
             if (!state.hasActionCompleted(actionId)) {
 
-              logger.info(" Action {} is not completed , hence this action has to wait ", actionId);
+              logger.info("Action {} is not completed , hence this action has to wait", actionId);
             } else {
 
               // Get the eICR for the Action Completed after which validation has to be run.
@@ -60,14 +56,14 @@ public class SubmitEicrAction extends AbstractAction {
             }
           } else {
             logger.info(
-                " This action is not dependent on the action relationship : {}, Action Id = {}",
+                "This action is not dependent on the action relationship : {}, Action Id = {}",
                 actn.getRelationship(),
                 actn.getRelatedAction().getActionId());
           }
         }
       } else {
 
-        logger.info(" No related actions, so submit all Eicrs that are ready for submission ");
+        logger.info("No related actions, so submit all Eicrs that are ready for submission");
 
         Set<Integer> ids = state.getEicrsReadyForSubmission();
 
@@ -90,22 +86,22 @@ public class SubmitEicrAction extends AbstractAction {
 
     for (Integer id : ids) {
 
-      logger.info(" Found eICR with Id {} to submit ", id);
-
       Eicr ecr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
 
       if (ecr != null) {
+
+        logger.info("Found eICR with Id {} to submit", id);
 
         String data = ecr.getEicrData();
 
         if (!StringUtils.isBlank(details.getRestAPIURL())) {
           ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
-        } else if (!StringUtils.isBlank(details.getDirectHost())) {
+        } else if (!StringUtils.isBlank(details.getDirectHost())
+            || !StringUtils.isBlank(details.getSmtpUrl())) {
           ActionRepo.getInstance().getDirectTransport().sendData(details, data);
         } else {
           String msg = "No Transport method specified to submit EICR.";
           logger.error(msg);
-
           throw new RuntimeException(msg);
         }
 
@@ -117,6 +113,7 @@ public class SubmitEicrAction extends AbstractAction {
         submitState.setJobStatus(JobStatus.COMPLETED);
         submitState.setSubmittedTime(new Date());
         state.getSubmitEicrStatus().add(submitState);
+
       } else {
         String msg = "No Eicr found for submission, Id = " + Integer.toString(id);
         logger.error(msg);

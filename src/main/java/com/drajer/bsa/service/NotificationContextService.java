@@ -1,6 +1,7 @@
 package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.NotificationContext;
+import java.util.UUID;
 
 /**
  *
@@ -29,5 +30,5 @@ public interface NotificationContextService {
    * @param id The unique id for the NotificationContext in the DB.
    * @return
    */
-  public NotificationContext getNotificationContext(Integer id);
+  public NotificationContext getNotificationContext(UUID id);
 }

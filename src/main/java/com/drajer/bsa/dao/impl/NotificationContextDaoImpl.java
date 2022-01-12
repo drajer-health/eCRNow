@@ -3,6 +3,7 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
+import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -42,7 +43,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
    * @return Returns the NotificationContext for the provided id.
    */
   @Override
-  public NotificationContext getNotificationContextById(Integer id) {
+  public NotificationContext getNotificationContextById(UUID id) {
     return getSession().get(NotificationContext.class, id);
   }
 

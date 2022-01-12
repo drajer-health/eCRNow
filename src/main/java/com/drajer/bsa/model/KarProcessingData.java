@@ -107,6 +107,12 @@ public class KarProcessingData {
   /** The Service Helper that will help us save the ExecutionState */
   EhrQueryService ehrQueryService;
 
+  /** The X-Request ID header from the incoming request */
+  String xRequestId;
+
+  /** The X-Correlation ID header from the incoming request */
+  String xCorrelationId;
+
   public void addActionOutput(String actionId, Resource res) {
 
     if (actionOutputData.containsKey(actionId)) {
@@ -397,5 +403,37 @@ public class KarProcessingData {
   public void setNotificationContextResources(
       HashMap<String, Resource> notificationContextResources) {
     this.notificationContextResources = notificationContextResources;
+  }
+
+  public KnowledgeArtifactStatus getKarStatus() {
+    return karStatus;
+  }
+
+  public void setKarStatus(KnowledgeArtifactStatus karStatus) {
+    this.karStatus = karStatus;
+  }
+
+  public HashMap<String, Set<Resource>> getActionOutputDataById() {
+    return actionOutputDataById;
+  }
+
+  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
+    this.actionOutputDataById = actionOutputDataById;
+  }
+
+  public String getxRequestId() {
+    return xRequestId;
+  }
+
+  public void setxRequestId(String xRequestId) {
+    this.xRequestId = xRequestId;
+  }
+
+  public String getxCorrelationId() {
+    return xCorrelationId;
+  }
+
+  public void setxCorrelationId(String xCorrelationId) {
+    this.xCorrelationId = xCorrelationId;
   }
 }

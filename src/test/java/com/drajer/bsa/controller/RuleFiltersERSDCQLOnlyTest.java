@@ -42,6 +42,7 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   // 3. The MeasureReport has the correct info for the test case
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
+
     return Arrays.asList(
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_CqlOnly",

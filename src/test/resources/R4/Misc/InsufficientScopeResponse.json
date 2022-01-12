@@ -1,0 +1,11 @@
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "error",
+      "code": "forbidden",
+      "diagnostics": "Bearer realm=\"fhir-ehr-code.cerner.com\", error=\"insufficient_scope\"",
+      "expression": ["http.Authorization"]
+    }
+  ]
+}

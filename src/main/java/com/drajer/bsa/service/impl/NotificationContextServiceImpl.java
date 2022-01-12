@@ -3,6 +3,7 @@ package com.drajer.bsa.service.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.NotificationContextService;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class NotificationContextServiceImpl implements NotificationContextServic
    * @return
    */
   @Override
-  public NotificationContext getNotificationContext(Integer id) {
+  public NotificationContext getNotificationContext(UUID id) {
     return ncDao.getNotificationContextById(id);
   }
 }

@@ -2,6 +2,7 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -90,6 +92,9 @@ public class LaunchDetails {
   @Column(name = "encounter_id", nullable = true)
   private String encounterId;
 
+  @Column(name = "provider_uuid", nullable = true)
+  private String providerUUID;
+
   @Column(
       name = "status",
       nullable = true,
@@ -114,8 +119,14 @@ public class LaunchDetails {
   @Column(name = "direct_pwd", nullable = true) // SMTP Pwd
   private String directPwd;
 
+  @Column(name = "smtp_url", nullable = true)
+  private String smtpUrl;
+
   @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
+
+  @Column(name = "imap_url", nullable = true)
+  private String imapUrl;
 
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
@@ -129,6 +140,24 @@ public class LaunchDetails {
   @Column(name = "is_covid19", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid = true;
+
+  @Column(name = "rrprocessing_createdocRef", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isCreateDocRef;
+
+  @Column(name = "rrprocessing_invokerestapi", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isInvokeRestAPI;
+
+  @Column(name = "rrprocessing_both", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isBoth;
+
+  @Column(name = "rr_rest_api_url", nullable = true)
+  private String rrRestAPIUrl;
+
+  @Column(name = "rr_doc_ref_mime_type", nullable = true)
+  private String rrDocRefMimeType;
 
   @Column(name = "launch_id", nullable = true)
   private String launchId;
@@ -270,12 +299,16 @@ public class LaunchDetails {
 
   public String getAccessToken() {
     if (this.getTokenExpiryDateTime() != null) {
-      Date currentDate = new Date();
-      Date tokenExpirtyDate = this.getTokenExpiryDateTime();
-      int value = currentDate.compareTo(tokenExpirtyDate);
+      // Retrieve Access token 3 minutes before it expires.
+      // 3 minutes is enough buffer for Trigger or Loading query to complete.
+      Instant currentInstant = new Date().toInstant().plusSeconds(180);
+      Date currentDate = Date.from(currentInstant);
+      Date tokenExpiryTime = this.getTokenExpiryDateTime();
+      int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
         logger.info("AccessToken is Expired. Getting new AccessToken");
-        JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
+        JSONObject accessTokenObj =
+            new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
         logger.info("AccessToken is Valid. No need to get new AccessToken");
@@ -382,6 +415,14 @@ public class LaunchDetails {
     this.encounterId = encounterId;
   }
 
+  public String getProviderUUID() {
+    return providerUUID;
+  }
+
+  public void setProviderUUID(String providerUUID) {
+    this.providerUUID = providerUUID;
+  }
+
   public void setStatus(String stat) {
     this.status = stat;
   }
@@ -395,7 +436,7 @@ public class LaunchDetails {
   }
 
   public String getDirectPwd() {
-    if (directPwd != null) {
+    if (directPwd != null && !StringUtils.isEmpty(directPwd)) {
       return AESEncryption.decrypt(directPwd);
     } else {
       return null;
@@ -454,6 +495,46 @@ public class LaunchDetails {
     this.isSystem = isSystem;
   }
 
+  public Boolean getIsCreateDocRef() {
+    return isCreateDocRef;
+  }
+
+  public void setIsCreateDocRef(Boolean isCreateDocRef) {
+    this.isCreateDocRef = isCreateDocRef;
+  }
+
+  public Boolean getIsInvokeRestAPI() {
+    return isInvokeRestAPI;
+  }
+
+  public void setIsInvokeRestAPI(Boolean isInvokeRestAPI) {
+    this.isInvokeRestAPI = isInvokeRestAPI;
+  }
+
+  public Boolean getIsBoth() {
+    return isBoth;
+  }
+
+  public void setIsBoth(Boolean isBoth) {
+    this.isBoth = isBoth;
+  }
+
+  public String getRrRestAPIUrl() {
+    return rrRestAPIUrl;
+  }
+
+  public void setRrRestAPIUrl(String rrRestAPIUrl) {
+    this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
+  }
+
   public Boolean getIsUserAccountLaunch() {
     return isUserAccountLaunch;
   }
@@ -462,12 +543,28 @@ public class LaunchDetails {
     this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
   public String getSmtpPort() {
     return smtpPort;
   }
 
   public void setSmtpPort(String smtpPort) {
     this.smtpPort = smtpPort;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
   }
 
   public String getImapPort() {

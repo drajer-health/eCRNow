@@ -78,10 +78,7 @@
       "use": "usual",
       "text": "Carter, Kristin Cerner",
       "family": "Carter",
-      "given": [
-        "Kristin",
-        "Cerner"
-      ],
+      "given": ["Kristin", "Cerner"],
       "period": {
         "start": "2017-01-24T15:37:42.000Z"
       }
@@ -108,9 +105,7 @@
     {
       "use": "work",
       "text": "1234 Main St\nKansas City, 64113\nUS",
-      "line": [
-        "1234 Main St"
-      ],
+      "line": ["1234 Main St"],
       "city": "Kansas City",
       "postalCode": "64113",
       "country": "US"

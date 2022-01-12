@@ -34,7 +34,7 @@ public class RRReceiverController {
     try {
 
       logger.info(
-          " X-Correlation-ID of {} and X-Request-ID of {} received on RR API ",
+          " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
           xCorrelationIdHttpHeaderValue,
           xRequestIdHttpHeaderValue);
 
@@ -54,7 +54,7 @@ public class RRReceiverController {
       } else {
         logger.info(" Received RR as expected on the RR API ");
 
-        // For MDN, no other data will be present.
+        // Handle RR and optionally save to EHR.
         rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
       }
 
@@ -70,30 +70,34 @@ public class RRReceiverController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/reSubmitRR", method = RequestMethod.GET)
+  @RequestMapping(
+      value = "/api/reSubmitRR",
+      method = {RequestMethod.POST})
   public ResponseEntity<String> reSubmitRR(
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
     try {
       logger.info("Received EicrId:: {}, EicrDocId:: {} in the request", eicrId, eicrDocId);
       Eicr eicr = null;
-      if (eicrId == null && eicrDocId == null) {
+      if (eicrId != null) {
+        eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));
+      } else if (eicrDocId != null) {
+        eicr = rrReceieverService.getEicrByDocId(eicrDocId);
+      } else {
         logger.error("EicrId and EicrDocId is not present in the request");
         throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, "EicrId or EicrDocId is not present in the request");
-      } else {
-        if (eicrId != null) {
-          eicr = rrReceieverService.getEicrById(Integer.parseInt(eicrId));
-        } else if (eicrDocId != null) {
-          eicr = rrReceieverService.getEicrByDocId(eicrDocId);
-        }
-        if (eicr != null) {
-          ReportabilityResponse rr = new ReportabilityResponse();
-          rr.setRrXml(eicr.getResponseData());
-          rr.setResponseType(eicr.getResponseType());
-          rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
-        }
       }
+
+      if (eicr != null) {
+        ReportabilityResponse rr = new ReportabilityResponse();
+        rr.setRrXml(eicr.getResponseData());
+        rr.setResponseType(eicr.getResponseType());
+
+        // Always save it to the EHR.
+        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
+      }
+
     } catch (IllegalArgumentException e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

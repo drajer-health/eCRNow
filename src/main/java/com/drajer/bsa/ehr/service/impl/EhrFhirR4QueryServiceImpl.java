@@ -84,7 +84,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         fhirContextInitializer.createClient(
             context,
             kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken());
+            kd.getNotificationContext().getEhrAccessToken(),
+            kd.getxRequestId());
 
     // Get Patient by Id always
     Resource res =

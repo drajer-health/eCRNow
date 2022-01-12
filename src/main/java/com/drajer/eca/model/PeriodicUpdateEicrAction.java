@@ -9,6 +9,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
     logger.info(" **** START Executing Periodic Update Eicr Action **** ");
 
@@ -38,10 +39,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       // Handle Conditions
       Boolean conditionsMet = true;
       conditionsMet = matchCondition(details);
+      boolean encounterClosed = EcaUtils.checkEncounterClose(details);
+      logger.info(" Encounter is closed = {}", encounterClosed);
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet) {
+      if (conditionsMet && !encounterClosed) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -78,7 +81,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                       details.getId(),
                       actn.getDuration(),
                       EcrActionTypes.PERIODIC_UPDATE_EICR,
-                      details.getStartDate());
+                      details.getStartDate(),
+                      taskInstanceId);
                   state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 
                   EcaUtils.updateDetailStatus(details, state);
@@ -115,11 +119,12 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
             if (getTimingData() != null && !getTimingData().isEmpty()) {
 
               logger.info(" Timing Data is present , so create a job based on timing data.");
-              scheduleJob(details, state);
+              scheduleJob(details, state, taskInstanceId);
               return;
+            } else {
+              logger.info(" No job to schedule since there is no timing data ");
             }
 
-            logger.info(" No job to schedule since there is no timing data ");
           } else if (state.getPeriodicUpdateJobStatus() == JobStatus.SCHEDULED
               // && !state.getCreateEicrStatus().getEicrCreated()
               && state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED) {
@@ -139,39 +144,41 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
+              logger.info(
+                  " EICR created successfully for {} with eICRDocID: {} version: {}",
+                  EcrActionTypes.PERIODIC_UPDATE_EICR,
+                  ecr.getEicrDocId(),
+                  ecr.getDocVersion());
 
-              if (ecr != null) {
+              status.setEicrUpdated(true);
+              status.seteICRId(ecr.getId().toString());
+              status.setJobStatus(JobStatus.COMPLETED);
 
-                status.setEicrUpdated(true);
-                status.seteICRId(ecr.getId().toString());
-                status.setJobStatus(JobStatus.COMPLETED);
+              state.getPeriodicUpdateStatus().add(status);
+              state.setMatchTriggerStatus(newState.getMatchTriggerStatus());
 
-                state.getPeriodicUpdateStatus().add(status);
-                state.setMatchTriggerStatus(newState.getMatchTriggerStatus());
+              EcaUtils.updateDetailStatus(details, state);
 
-                EcaUtils.updateDetailStatus(details, state);
+              logger.debug(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
 
-                logger.info(" **** Printing Eicr from Periodic Update EICR ACTION **** ");
+              String fileName =
+                  ActionRepo.getInstance().getLogFileDirectory()
+                      + "/"
+                      + details.getLaunchPatientId()
+                      + "_PeriodicUpdateEicrAction"
+                      + LocalDateTime.now().getHour()
+                      + LocalDateTime.now().getMinute()
+                      + LocalDateTime.now().getSecond()
+                      + ".xml";
+              ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
 
-                String fileName =
-                    ActionRepo.getInstance().getLogFileDirectory()
-                        + "/"
-                        + details.getLaunchPatientId()
-                        + "_PeriodicUpdateEicrAction"
-                        + LocalDateTime.now().getHour()
-                        + LocalDateTime.now().getMinute()
-                        + LocalDateTime.now().getSecond()
-                        + ".xml";
-                ApplicationUtils.saveDataToFile(ecr.getEicrData(), fileName);
-
-                logger.info(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
-              }
+              logger.debug(" **** End Printing Eicr from Periodic Update EICR ACTION **** ");
 
               // Schedule job again.
               if (getTimingData() != null && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state);
+                scheduleJob(details, state, taskInstanceId);
               }
 
             } // Check if Trigger Code Match found
@@ -186,7 +193,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                   && !getTimingData().isEmpty()) {
 
                 logger.info(" Timing Data is present , so create a job based on timing data.");
-                scheduleJob(details, state);
+                scheduleJob(details, state, taskInstanceId);
                 return;
               }
             }
@@ -198,6 +205,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
           logger.info(" Related Actions are not completed, hence EICR will not be created. ");
         }
 
+      } else if (encounterClosed) {
+
+        logger.info(" Encounter is closed, hence EICR will not be created. ");
+        state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
+        EcaUtils.updateDetailStatus(details, state);
       } else {
 
         logger.info(" Conditions not met, hence EICR will not be created. ");
@@ -206,16 +218,18 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
       String msg =
           "Invalid Object passed to Execute method, Launch Details expected, found : "
-              + obj.getClass().getName();
+              + (obj != null ? obj.getClass().getName() : null);
       logger.error(msg);
 
-      throw new RuntimeException(msg);
+      throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
 
-    logger.info(" **** END Executing Create Eicr Action after completing normal execution. **** ");
+    logger.info(
+        " **** END Executing Periodic Update Eicr Action after completing normal execution. **** ");
   }
 
-  private void scheduleJob(LaunchDetails details, PatientExecutionState state) {
+  private void scheduleJob(
+      LaunchDetails details, PatientExecutionState state, String taskInstanceId) {
 
     List<TimingSchedule> tsjobs = getTimingData();
 
@@ -224,7 +238,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       // TBD : Setup job using TS Timing after testing so that we can test faster.
       // For now setup a default job with 10 seconds.
       WorkflowService.scheduleJob(
-          details.getId(), ts, EcrActionTypes.PERIODIC_UPDATE_EICR, details.getStartDate());
+          details.getId(),
+          ts,
+          EcrActionTypes.PERIODIC_UPDATE_EICR,
+          details.getStartDate(),
+          taskInstanceId);
 
       state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 

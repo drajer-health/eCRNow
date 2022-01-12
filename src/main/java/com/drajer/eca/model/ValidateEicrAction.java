@@ -3,6 +3,7 @@ package com.drajer.eca.model;
 import com.drajer.cda.utils.CdaValidatorUtil;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
@@ -18,36 +19,29 @@ public class ValidateEicrAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(ValidateEicrAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
-    logger.info(" **** START Executing Validate Eicr Action **** ");
+    logger.info("**** START Executing Validate Eicr Action ****");
 
     if (obj instanceof LaunchDetails) {
-
-      LaunchDetails details = (LaunchDetails) obj;
-      PatientExecutionState state = null;
-
-      state = ApplicationUtils.getDetailStatus(details);
-
+      LaunchDetails launchDetails = (LaunchDetails) obj;
+      PatientExecutionState state = ApplicationUtils.getDetailStatus(launchDetails);
       logger.info(
-          " Executing Validate Eicr Action , Prior Execution State : = {}", details.getStatus());
+          "Executing Validate Eicr Action , Prior Execution State : = {}",
+          launchDetails.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
-
-        logger.info(" Validation actions to be performed based on other related actions. ");
+        logger.info("Validation actions to be performed based on other related actions.");
 
         List<RelatedAction> racts = getRelatedActions();
-
         for (RelatedAction ract : racts) {
-
           if (ract.getRelationship() == ActionRelationshipType.AFTER) {
-
             // check if the action is completed.
             String actionId = ract.getRelatedAction().getActionId();
 
             if (!state.hasActionCompleted(actionId)) {
 
-              logger.info(" Action {} is not completed , hence this action has to wait ", actionId);
+              logger.info("Action {} is not completed , hence this action has to wait", actionId);
             } else {
 
               // Get the eICR for the Action Completed after which validation has to be run.
@@ -57,21 +51,21 @@ public class ValidateEicrAction extends AbstractAction {
             }
           } else {
             logger.info(
-                " This action is not dependent on the action relationship : {}, Action Id = {}",
+                "This action is not dependent on the action relationship : {}, Action Id = {}",
                 ract.getRelationship(),
                 ract.getRelatedAction().getActionId());
           }
         }
       } else {
 
-        logger.info(" No related actions, so validate all Eicrs that are ready for validation ");
+        logger.info("No related actions, so validate all Eicrs that are ready for validation ");
 
         Set<Integer> ids = state.getEicrsReadyForValidation();
 
         validateEicrs(state, ids);
       }
 
-      EcaUtils.updateDetailStatus(details, state);
+      EcaUtils.updateDetailStatus(launchDetails, state);
     }
   }
 
@@ -88,23 +82,17 @@ public class ValidateEicrAction extends AbstractAction {
     for (Integer id : ids) {
 
       if (id != 0) {
-        logger.info(" Found eICR with Id {} to validate ", id);
-        String eICR = ActionRepo.getInstance().getEicrRRService().getEicrById(id).getEicrData();
+        logger.info("Found eICR with Id {} to validate", id);
+        Eicr eicr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
+        String eicrData = eicr.getEicrData();
 
         // Validate incoming XML
-        if (StringUtils.isNotEmpty(eICR)) {
-
-          boolean validationResultSchema = CdaValidatorUtil.validateEicrXMLData(eICR);
-
-          logger.info(" Validation Result from Schema Validation = {}", validationResultSchema);
-
+        if (StringUtils.isNotEmpty(eicrData)) {
+          CdaValidatorUtil.validateEicrXMLData(eicrData);
+          CdaValidatorUtil.validateEicrToSchematron(eicrData);
         } else {
-          logger.info(" **** Skipping Eicr XML Validation: eICR is null**** ");
+          logger.info("**** Skipping Eicr XML Validation: eICR is null****");
         }
-
-        boolean validationResultSchematron = CdaValidatorUtil.validateEicrToSchematron(eICR);
-
-        logger.info(" Validation Result from Schema Validation = {}", validationResultSchematron);
 
         // Add a validate object every time.
         ValidateEicrStatus validate = new ValidateEicrStatus();

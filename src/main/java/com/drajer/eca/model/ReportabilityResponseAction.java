@@ -16,25 +16,24 @@ public class ReportabilityResponseAction extends AbstractAction {
   private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseAction.class);
 
   @Override
-  public void execute(Object obj, WorkflowEvent launchType) {
+  public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
-    logger.info(" **** START Executing RR Check Eicr Action **** ");
+    logger.info("**** START Executing RR Check Eicr Action ****");
 
     if (obj instanceof LaunchDetails) {
 
-      logger.info(" Obtained Launch Details ");
       LaunchDetails launchDetails = (LaunchDetails) obj;
       PatientExecutionState state = null;
 
       state = ApplicationUtils.getDetailStatus(launchDetails);
 
       logger.info(
-          " Executing RR Check Eicr Action , Prior Execution State : = {}",
+          "Executing RR Check Eicr Action , Prior Execution State : = {}",
           launchDetails.getStatus());
 
       if (getRelatedActions() != null && !getRelatedActions().isEmpty()) {
 
-        logger.info(" Related Actions exist, so check dependencies ");
+        logger.info("Related Actions exist, so check dependencies");
 
         List<RelatedAction> rrRelActs = getRelatedActions();
 
@@ -47,10 +46,10 @@ public class ReportabilityResponseAction extends AbstractAction {
 
             if (!state.hasActionCompleted(actionId)) {
 
-              logger.info(" Action {} is not completed , hence this action has to wait ", actionId);
+              logger.info("Action {} is not completed , hence this action has to wait", actionId);
             } else {
 
-              logger.info(" No related actions, so check all Eicrs that have been submitted ");
+              logger.info("No related actions, so check all Eicrs that have been submitted");
 
               Set<Integer> ids = state.getEicrsForRRCheck();
 
@@ -58,14 +57,14 @@ public class ReportabilityResponseAction extends AbstractAction {
             }
           } else {
             logger.info(
-                " This action is not dependent on the action relationship : {}, Action Id = {}",
+                "This action is not dependent on the action relationship : {}, Action Id = {}",
                 rrRelAct.getRelationship(),
                 rrRelAct.getRelatedAction().getActionId());
           }
         }
       } else {
 
-        logger.info(" No related actions, so check all Eicrs that have been submitted ");
+        logger.info("No related actions, so check all Eicrs that have been submitted");
 
         Set<Integer> ids = state.getEicrsForRRCheck();
 
@@ -88,7 +87,7 @@ public class ReportabilityResponseAction extends AbstractAction {
 
     for (Integer id : ids) {
 
-      logger.info(" Found eICR with Id {} to check for RR ", id);
+      logger.info("Found eICR with Id {} to check for RR", id);
 
       // Add a submission object every time.
       RRStatus submitState = new RRStatus();

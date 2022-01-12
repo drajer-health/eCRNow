@@ -1,10 +1,10 @@
 package com.drajer.bsa.model;
 
 import java.util.Date;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -30,9 +30,7 @@ public class PublicHealthMessages {
   @Transient private final Logger logger = LoggerFactory.getLogger(NotificationContext.class);
 
   /** The attribute represents the primary key for the table and is auto incremented. */
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+  @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the base FHIR Server URL from which the notification was received. */
   @Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT")
@@ -69,11 +67,11 @@ public class PublicHealthMessages {
 
   public PublicHealthMessages() {}
 
-  public Integer getId() {
+  public UUID getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(UUID id) {
     this.id = id;
   }
 

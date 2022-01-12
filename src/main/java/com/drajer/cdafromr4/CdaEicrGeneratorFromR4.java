@@ -20,18 +20,16 @@ public class CdaEicrGeneratorFromR4 {
 
     if (data != null) {
 
-      logger.info(" Preparing Jurisdiction data");
+      logger.info("Preparing Jurisdiction data");
       data.prepareJurisdicationData();
 
       if (data.hasRequiredDataForEicr()) {
-        logger.info(" Bundle has required data for Eicr ");
+        logger.info("Bundle has required data for Eicr");
         eICR.append(CdaHeaderGenerator.createCdaHeader(data, details, ecr));
         eICR.append(CdaBodyGenerator.generateCdaBody(data, details));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
 
-        if (logger.isDebugEnabled()) {
-          logger.debug("Created new eICR {}", eICR);
-        }
+        logger.debug("Created new eICR {}", eICR);
 
       } else {
         String msg = "Fhir Data not ready/missing to be used for creating a CDA Document";
@@ -41,7 +39,7 @@ public class CdaEicrGeneratorFromR4 {
 
     } else {
 
-      logger.error(" No Fhir Bundle Available to create CDA Documents ");
+      logger.error("No Fhir Bundle Available to create CDA Documents");
     }
 
     return eICR.toString();

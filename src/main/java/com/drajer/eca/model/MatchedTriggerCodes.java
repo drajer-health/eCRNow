@@ -78,8 +78,8 @@ public class MatchedTriggerCodes {
 
       Set<String> codes = ApplicationUtils.convertR4CodeableConceptsToString(cds);
 
-      logger.info(
-          " Size of Matched Codes is {}, and size of passed in codes is {}",
+      logger.debug(
+          "Size of Matched Codes is {}, and size of passed in codes is {}",
           matchedCodes.size(),
           codes.size());
 
@@ -87,13 +87,13 @@ public class MatchedTriggerCodes {
 
       if (intersection != null && !intersection.isEmpty()) {
 
-        logger.info(" Number of Matched Codes = {}", intersection.size());
+        logger.debug("Number of Matched Codes = {}", intersection.size());
 
         retval = intersection;
 
       } else {
 
-        logger.info(" No Matched codes found for Codeable Concepts passed ");
+        logger.debug("No Matched codes found for Codeable Concepts passed");
       }
     }
 

@@ -2,6 +2,7 @@ package com.drajer.bsa.dao;
 
 import com.drajer.bsa.model.KarExecutionState;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -16,7 +17,7 @@ public interface KarExecutionStateDao {
 
   public KarExecutionState saveOrUpdate(KarExecutionState kar);
 
-  public KarExecutionState getKarExecutionStateById(Integer id);
+  public KarExecutionState getKarExecutionStateById(UUID id);
 
   public List<KarExecutionState> getAllKarExecutionStates();
 }

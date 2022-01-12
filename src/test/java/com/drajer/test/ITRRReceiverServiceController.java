@@ -3,10 +3,12 @@ package com.drajer.test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
+import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,10 +27,16 @@ import org.springframework.http.*;
 
 public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
+  private static final String FHIR_DOCREF_URL = "/FHIR/DocumentReference?_pretty=true";
+
   private static final Logger logger = LoggerFactory.getLogger(ITRRReceiverServiceController.class);
   WireMockHelper stubHelper;
   private Eicr eicr;
   private Eicr eicrReSubmit;
+  private Eicr eicrNoSaveToEHR;
+
+  private LaunchDetails launchDetails;
+  private LaunchDetails launchDetailsWithRRProcessingType;
 
   @Before
   public void setUp() throws Throwable {
@@ -36,7 +44,11 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       super.setUp();
       tx = session.beginTransaction();
       createClientDetails("R4/Misc/ClientDetails/ClientDataEntry1.json");
+      createLaunchDetails("R4/Misc/LaunchDetails/LaunchDetails.json");
+      createLaunchDetailsWithCreateDocRefFalse(
+          "R4/Misc/LaunchDetails/LaunchDetails_With_CreateDocRef_False.json");
       eicr = createEicr();
+      eicrNoSaveToEHR = createEicrWithNoSaveToEHR();
       eicrReSubmit = createEicrForReSubmit();
       session.flush();
       tx.commit();
@@ -52,14 +64,26 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     stubHelper.stubAuthAndMetadata(map);
 
+    String response =
+        TestUtils.getFileContentAsString("R4/DocumentReference/DocumentReference.json");
+
     wireMockServer.stubFor(
-        post(urlPathEqualTo(
-                getURLPath(clientDetails.getFhirServerBaseURL()) + "/DocumentReference"))
+        post(urlEqualTo(FHIR_DOCREF_URL))
             .atPriority(1)
             .willReturn(
                 aResponse()
                     .withStatus(201)
-                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")));
+                    .withBody(response)
+                    .withHeader("Content-Type", "application/json+fhir; charset=utf-8")
+                    .withHeader(
+                        "location",
+                        "http://localhost:"
+                            + wireMockHttpPort
+                            + "/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/DocumentReference/197477086")
+                    .withHeader("x-request-id", "32034a8e-07ff-4bfb-a686-de8a956fbda9")
+                    .withHeader("Cache-Control", "no-cache")));
+
+    // Thread.sleep(10000);
   }
 
   @Test
@@ -69,10 +93,71 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertEquals("197477086", eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
+  }
+
+  @Test
+  public void testRRReceiver_WithRRVS2_Success() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("RRVS2", eicr != null ? eicr.getResponseType() : null);
+    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+    assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertEquals("197477086", eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
+  }
+
+  @Test
+  public void testRRReceiver_WithRRVS3() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    rr.setRrXml(rr.getRrXml().replace("RRVS2", "RRVS3"));
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Mock FHIR not called (not reportable condition).
+    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("RRVS3", eicr != null ? eicr.getResponseType() : null);
+    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+    assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertNull(eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
+  }
+
+  @Test
+  public void testRRReceiver_WithRRVS4() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    rr.setRrXml(rr.getRrXml().replace("RRVS2", "RRVS4"));
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+
+    // Mock FHIR not called (not reportable condition).
+    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    eicr = getEICRDocument(eicr.getId().toString());
+    assertEquals("RRVS4", eicr != null ? eicr.getResponseType() : null);
+    assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
+    assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
+    assertNull(eicr.getEhrDocRefId());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -90,11 +175,37 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    wireMockServer.resetAll();
   }
 
   @Test
-  public void testReSubmitRR() {
+  public void testRRReceiver_WithRR_NoSaveToEHR() {
+    ReportabilityResponse rr =
+        getReportabilityResponse("R4/Misc/rrTest_With_CreateDocRef_False.json");
+    ResponseEntity<String> response = postReportabilityResponse(rr, eicrNoSaveToEHR, false);
+
+    // Mock FHIR not called (reportable condition, but saveToEhr = false).
+    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    wireMockServer.resetAll();
+  }
+
+  @Test
+  public void testReSubmitRR_Success() {
+
+    ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
+
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    wireMockServer.resetAll();
+  }
+
+  @Test
+  public void testReSubmitRR_Failure() {
     // Mock FHIR Document Reference to return failure.
     wireMockServer.stubFor(
         post(urlPathEqualTo(
@@ -107,7 +218,11 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
     ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    // Mock FHIR called.
+    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -121,6 +236,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
       assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+    wireMockServer.resetAll();
   }
 
   @Test
@@ -194,10 +310,55 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     eicr.setxCorrelationId("RR-TEST-XCORRELATIONID");
     eicr.setEicrDocId("69550923-8b72-475c-b64b-5f7c44a78e4f");
     eicr.setEicrData("This is a dummy EICR for test");
+    if (launchDetails != null) {
+      eicr.setLaunchDetailsId(launchDetails.getId());
+    }
 
     session.saveOrUpdate(eicr);
 
     return eicr;
+  }
+
+  private Eicr createEicrWithNoSaveToEHR() {
+    eicrNoSaveToEHR = new Eicr();
+    eicrNoSaveToEHR.setFhirServerUrl(clientDetails.getFhirServerBaseURL());
+    eicrNoSaveToEHR.setLaunchPatientId("12345");
+    eicrNoSaveToEHR.setEncounterId("67890");
+    eicrNoSaveToEHR.setDocVersion(1);
+    eicrNoSaveToEHR.setxRequestId("RRTESTXREQUESTID");
+    eicrNoSaveToEHR.setSetId("12345|67890");
+    eicrNoSaveToEHR.setxCorrelationId("RR-TEST-XCORRELATIONIDS");
+    eicrNoSaveToEHR.setEicrDocId("69550923-8b72-475c-b64b-5f7c44a78e4f3");
+    eicrNoSaveToEHR.setEicrData("This is a dummy EICR for test");
+    if (launchDetailsWithRRProcessingType != null) {
+      eicrNoSaveToEHR.setLaunchDetailsId(launchDetailsWithRRProcessingType.getId());
+    }
+
+    session.saveOrUpdate(eicrNoSaveToEHR);
+
+    return eicrNoSaveToEHR;
+  }
+
+  private LaunchDetails createLaunchDetails(String launchDetailsFile) {
+    String launchDetailString = TestUtils.getFileContentAsString(launchDetailsFile);
+    try {
+      launchDetails = mapper.readValue(launchDetailString, LaunchDetails.class);
+      session.saveOrUpdate(launchDetails);
+    } catch (JsonProcessingException e) {
+      fail("This exception is not expected, fix the test");
+    }
+    return launchDetails;
+  }
+
+  private LaunchDetails createLaunchDetailsWithCreateDocRefFalse(String launchDetailsFile) {
+    String launchDetailString = TestUtils.getFileContentAsString(launchDetailsFile);
+    try {
+      launchDetailsWithRRProcessingType = mapper.readValue(launchDetailString, LaunchDetails.class);
+      session.saveOrUpdate(launchDetailsWithRRProcessingType);
+    } catch (JsonProcessingException e) {
+      fail("This exception is not expected, fix the test");
+    }
+    return launchDetails;
   }
 
   private Eicr createEicrForReSubmit() {
@@ -214,6 +375,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     eicrReSubmit.setEicrData("This is a dummy EICR for test");
     eicrReSubmit.setResponseData(rr != null ? rr.getRrXml() : "");
     eicrReSubmit.setResponseType(rr != null ? rr.getResponseType() : "");
+    if (launchDetails != null) {
+      eicr.setLaunchDetailsId(launchDetails.getId());
+    }
 
     session.saveOrUpdate(eicrReSubmit);
     return eicrReSubmit;
@@ -246,6 +410,11 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   private ResponseEntity<String> postReportabilityResponse(ReportabilityResponse rr, Eicr eicr) {
+    return postReportabilityResponse(rr, eicr, true);
+  }
+
+  private ResponseEntity<String> postReportabilityResponse(
+      ReportabilityResponse rr, Eicr eicr, boolean saveToEhr) {
 
     headers.clear();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -255,6 +424,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     URIBuilder ub;
     try {
       ub = new URIBuilder(createURLWithPort("/api/rrReceiver"));
+      // ub.addParameter("saveToEhr", Boolean.toString(saveToEhr));
 
       HttpEntity<ReportabilityResponse> entity = new HttpEntity<>(rr, headers);
       return restTemplate.exchange(ub.toString(), HttpMethod.POST, entity, String.class);
@@ -276,7 +446,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ub.addParameter("eicrId", String.valueOf(eicr.getId()));
       ub.addParameter("eicrDocId", eicr.getEicrDocId());
       logger.info("Constructed URL:::::" + ub.toString());
-      return restTemplate.getForEntity(ub.toString(), String.class);
+      return restTemplate.postForEntity(ub.toString(), null, String.class);
 
     } catch (URISyntaxException e) {
       logger.error("Error building the URL", e);

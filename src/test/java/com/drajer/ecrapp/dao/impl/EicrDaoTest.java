@@ -2,6 +2,7 @@ package com.drajer.ecrapp.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
@@ -57,6 +58,21 @@ public class EicrDaoTest {
   }
 
   @Test
+  public void deleteEicr() {
+
+    Eicr eicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
+    assertNotNull(eicr);
+    String eicrDocId = eicr.getEicrDocId();
+
+    Eicr eicrSaved = eicrDaoImpl.getEicrByDocId(eicrDocId);
+    assertNotNull(eicrSaved);
+
+    eicrDaoImpl.deleteEicr(eicrSaved);
+    eicrSaved = eicrDaoImpl.getEicrByDocId(eicrDocId);
+    assertNull(eicrSaved);
+  }
+
+  @Test
   public void saveOrUpdateEicr() {
 
     Eicr actualEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
@@ -70,6 +86,16 @@ public class EicrDaoTest {
 
     Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
     Eicr actualEicr = eicrDaoImpl.getEicrById(savedEicr.getId());
+
+    assertNotNull(actualEicr);
+    assertEicr(expectedEicr, actualEicr);
+  }
+
+  @Test
+  public void getEicrByDocId() {
+
+    Eicr savedEicr = eicrDaoImpl.saveOrUpdate(expectedEicr);
+    Eicr actualEicr = eicrDaoImpl.getEicrByDocId(savedEicr.getEicrDocId());
 
     assertNotNull(actualEicr);
     assertEicr(expectedEicr, actualEicr);

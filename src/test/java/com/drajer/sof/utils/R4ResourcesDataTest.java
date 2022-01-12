@@ -12,7 +12,9 @@ public class R4ResourcesDataTest {
   public void constructR4DocumentReferenceTest() {
     R4ResourcesData dataObject = new R4ResourcesData();
     String rrXml = TestUtils.getFileContentAsString("R4/Misc/TestRRXml.xml");
-    DocumentReference result = dataObject.constructR4DocumentReference(rrXml, "P123456", "E98765");
+    DocumentReference result =
+        dataObject.constructR4DocumentReference(
+            rrXml, "P123456", "E98765", "1225652472001060", "text/xml");
     assertNotNull(result);
   }
 }

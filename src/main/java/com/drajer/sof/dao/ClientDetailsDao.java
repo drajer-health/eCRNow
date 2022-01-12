@@ -12,4 +12,6 @@ public interface ClientDetailsDao {
   ClientDetails getClientDetailsByUrl(String url);
 
   List<ClientDetails> getAllClientDetails();
+
+  void delete(ClientDetails clientDetails);
 }

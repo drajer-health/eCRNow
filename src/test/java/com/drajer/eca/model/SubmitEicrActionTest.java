@@ -68,8 +68,9 @@ public class SubmitEicrActionTest {
     when(mockRelActn.getRelatedAction()).thenReturn(submitEicrAction);
     when(mockState.hasActionCompleted(any())).thenReturn(false);
 
+    String taskInstanceId = "";
     // Test
-    submitEicrAction.execute(mockDetails, launchType);
+    submitEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
     // Validate
     verify(mockState, times(1)).hasActionCompleted("123");
@@ -87,8 +88,9 @@ public class SubmitEicrActionTest {
     when(mockRelActn.getRelatedAction()).thenReturn(submitEicrAction);
     when(mockState.hasActionCompleted(any())).thenReturn(true);
 
+    String taskInstanceId = "";
     // Test
-    submitEicrAction.execute(mockDetails, launchType);
+    submitEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
     // validate
     assertNotNull(mockState.getEicrIdForCompletedActions("123"));
@@ -102,7 +104,8 @@ public class SubmitEicrActionTest {
 
     when(mockRelActn.getRelatedAction()).thenReturn(null);
 
-    submitEicrAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    submitEicrAction.execute(mockDetails, launchType, taskInstanceId);
 
     // validate
     assertNotNull(mockState.getEicrIdForCompletedActions("123"));

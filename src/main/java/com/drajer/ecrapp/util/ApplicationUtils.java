@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -40,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -59,33 +61,33 @@ public class ApplicationUtils {
 
     for (ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
 
-      logger.info(" Looking for grouper value set for {}", grouperId);
+      logger.debug("Looking for grouper value set for {}", grouperId);
 
       if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
 
-        logger.info(" Found Grouper Value Set for {}", grouperId);
+        logger.debug("Found Grouper Value Set for {}", grouperId);
 
         if (valueset.getCompose() != null && valueset.getCompose().getInclude() != null) {
 
-          logger.info(" Value Set is composed of other value sets ");
+          logger.debug("Value Set is composed of other value sets ");
           List<ConceptSetComponent> csc = valueset.getCompose().getInclude();
 
           for (ConceptSetComponent conceptSetComponent : csc) {
 
-            logger.info(" Adding Value Set Ids to the list ");
+            logger.debug("Adding Value Set Ids to the list ");
 
             valueSetIdList = conceptSetComponent.getValueSet();
           }
 
           if (valueSetIdList != null && !valueSetIdList.isEmpty()) {
-            logger.info(" Value Set Id List Size = {}", valueSetIdList.size());
+            logger.debug("Value Set Id List Size = {}", valueSetIdList.size());
           } else {
-            logger.info(" Value Set Id List is NULL");
+            logger.debug("Value Set Id List is NULL");
           }
         }
         break;
       } else {
-        logger.info(" Value Set Id {}  does not match grouper Id ", valueset.getId());
+        logger.debug("Value Set Id {}  does not match grouper Id ", valueset.getId());
       }
     }
     return valueSetIdList;
@@ -99,7 +101,7 @@ public class ApplicationUtils {
 
       if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
 
-        logger.info(" Grouper Id {}", grouperId);
+        logger.debug("Grouper Id {}", grouperId);
         valueSetGrouper = valueset;
       }
     }
@@ -112,7 +114,7 @@ public class ApplicationUtils {
 
     if (Optional.ofNullable(valueSetIdList).isPresent()) {
 
-      logger.info(" Value Set id List is not null ");
+      logger.debug("Value Set id List is not null");
 
       for (CanonicalType canonicalType : valueSetIdList) {
 
@@ -148,20 +150,20 @@ public class ApplicationUtils {
 
       for (CanonicalType canonicalType : valueSetIdList) {
 
-        logger.info(" Checking Value set {}", canonicalType.getValueAsString());
+        logger.debug("Checking Value set {}", canonicalType.getValueAsString());
 
         for (ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
 
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
               && isACovidValueSet(valueSet)) {
-            logger.info(" Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
+            logger.debug("Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           } else if ((valueSet.getUrl() != null)
               && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))
               && isACovidValueSet(valueSet)) {
 
-            logger.info("Urls Matched for a Covid Value Set {}", valueSet.getId());
+            logger.debug("Urls Matched for a Covid Value Set {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           }
@@ -172,13 +174,13 @@ public class ApplicationUtils {
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
               && isACovidValueSet(valueSet)) {
 
-            logger.info(" Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
+            logger.debug("Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           } else if ((valueSet.getUrl() != null)
               && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))
               && isACovidValueSet(valueSet)) {
-            logger.info("Urls Matched for a Covid Value Set {}", valueSet.getId());
+            logger.debug("Urls Matched for a Covid Value Set {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           }
@@ -196,23 +198,18 @@ public class ApplicationUtils {
     List<ValueSetExpansionContainsComponent> valueSetExpansionContainsComponentList;
 
     if (valuesets != null && !valuesets.isEmpty()) {
-
       for (ValueSet vs : valuesets) {
-
-        logger.info(" Value Set Id = {}", vs.getId());
+        logger.debug("Value Set Id = {}", vs.getId());
         valueSetExpansionComponent = vs.getExpansion();
         valueSetExpansionContainsComponentList = valueSetExpansionComponent.getContains();
-
         for (ValueSetExpansionContainsComponent vscomp : valueSetExpansionContainsComponentList) {
-
           if (vscomp.getSystem() != null && vscomp.getCode() != null) {
-
+            logger.debug(" Code = {}", vscomp.getCode());
             retVal.add(vscomp.getSystem() + "|" + vscomp.getCode());
           }
         }
       }
     }
-
     return retVal;
   }
 
@@ -299,13 +296,13 @@ public class ApplicationUtils {
     Instant t = null;
     String unit = "";
 
-    if (d.getCode() != null) {
-      unit = d.getCode();
-    } else if (d.getUnit() != null) {
-      unit = d.getUnit();
-    }
-
     if (d != null) {
+
+      if (d.getCode() != null) {
+        unit = d.getCode();
+      } else if (d.getUnit() != null) {
+        unit = d.getUnit();
+      }
 
       if (unit.equalsIgnoreCase("a")) {
 
@@ -356,10 +353,10 @@ public class ApplicationUtils {
     try (DataOutputStream outStream =
         new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
 
-      logger.info(" Writing data to file: {}", fileName);
+      logger.debug("Writing data to file: {}", fileName);
       outStream.writeBytes(data);
     } catch (IOException e) {
-      logger.debug(" Unable to write data to file: {}", fileName, e);
+      logger.debug("Unable to write data to file: {}", fileName, e);
     }
   }
 
@@ -369,7 +366,7 @@ public class ApplicationUtils {
 
     if (v != null) {
 
-      logger.info(" Checking Value Set Id {}", v.getId());
+      logger.debug("Checking Value Set Id {}", v.getId());
 
       if (v.getUseContextFirstRep() != null) {
 
@@ -384,7 +381,7 @@ public class ApplicationUtils {
                   && cc.getCodingFirstRep()
                       .getCode()
                       .contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE))) {
-            logger.info(" Found COVID VALUE SET = {}", v.getId());
+            logger.debug("Found COVID VALUE SET = {}", v.getId());
             retVal = true;
           }
         }
@@ -402,13 +399,13 @@ public class ApplicationUtils {
 
       if (v.getUseContextFirstRep() != null) {
 
-        logger.info(" Found Use Context ");
+        logger.debug("Found Use Context ");
 
         UsageContext uc = v.getUseContextFirstRep();
 
         if (uc.getValue() != null && (uc.getValue() instanceof Reference)) {
 
-          logger.info(" Found Use Context Reference ");
+          logger.debug("Found Use Context Reference ");
 
           Reference rr = (Reference) uc.getValue();
 
@@ -418,7 +415,7 @@ public class ApplicationUtils {
                   || rr.getReference()
                       .contains(PlanDefinitionProcessor.GROUPER_VALUE_SET_REFERENCE_2))) {
 
-            logger.info(" Found Grouper VALUE SET = {}", v.getId());
+            logger.debug("Found Grouper VALUE SET = {}", v.getId());
             retVal = true;
           }
         }
@@ -459,6 +456,23 @@ public class ApplicationUtils {
       logger.error("Exception Reading File", e);
     }
     return bundle;
+  }
+
+  public static void handleException(Exception e, String expMsg, LogLevel loglevel) {
+
+    if (e instanceof ObjectDeletedException) {
+      throw (ObjectDeletedException) e;
+    }
+
+    if (loglevel == LogLevel.INFO) {
+      logger.info(expMsg, e);
+    } else if (loglevel == LogLevel.WARN) {
+      logger.warn(expMsg, e);
+    } else if (loglevel == LogLevel.ERROR) {
+      logger.error(expMsg, e);
+    } else if (loglevel == LogLevel.DEBUG) {
+      logger.debug(expMsg, e);
+    }
   }
 
   public IBaseResource readResourceFromFile(String filename) {

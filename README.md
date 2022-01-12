@@ -32,9 +32,13 @@ The HL7 CDA Generator module is a very simple set of transforms to create a eICR
 ## 2.5 Routing Module: ##
 The routing module is used to submit/transmit the eICR created to the public health agencies. Currently the Direct Transport is integrated into the app. Future versions will add other modes of submission which may include IHE XDR, HL7 FHIR among others. 
 
-# 3. Build and Deploy #
+# 3. eCRNow-UI Project and its relationship to eCRNow:
+The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.
 
-## 3.1 Pre-Requisites: ##
+
+# 4. Build and Deploy #
+
+## 4.1 Pre-Requisites: ##
 The following technologies should have been installed on your machine where you will build, test and deploy your applications.
 
 * Java 8 or higher.
@@ -43,7 +47,7 @@ The following technologies should have been installed on your machine where you 
 * Maven 3.3.x or higher.
 * git tool.
 
-## 3.2 Steps to Build and Run the App: ##
+## 4.2 Steps to Build and Run the App: ##
 
 1. Clone the repository
 
@@ -107,7 +111,7 @@ The app supports three different launch mechanisms.
 2. Regular SMART on FHIR ehr launch with no UI (Headless launch) that can be configured with the backend launch and redirect URIs in the controllers.
 3. API based launch along with System Account access which can be used to integrate with systems which generate patient/encounter lists throughout the day and can report on these patients/encounters at the end of the day. Once such integration uses the ADT feeds. 
 
-## 3.3 Verification Steps: ##
+## 4.3 Verification Steps: ##
 To check if you have downloaded the app properly and are being able to run it, follow the steps below.
 
 1. When the Spring Boot App starts up, it parses the eRSD File definition, and the hibernate process will create the following tables in the database, verify that these tables are present in the database.
@@ -127,7 +131,7 @@ You can verify that the eICR is produced by checking the eICR table in the datab
 
 **Note:** For testing purposes, we are allowing the same patient and encounter to be used multiple times to help debug, similarly the timing schedules are shortened to about 10 seconds, and the trigger code matching logic will allow the next step (Creating an eICR for testing purposes) to execute even if the test data does not match the value sets.
 
-# 4. Production Deployment Considerations:
+# 5. Production Deployment Considerations:
 Organizations implementing in production settings should consider the following:
 1. Properly securing the app user interface if it is used within the enterprise and protecting access.
 2. Implement organization policies around database settings (ports), schemas, encryption.

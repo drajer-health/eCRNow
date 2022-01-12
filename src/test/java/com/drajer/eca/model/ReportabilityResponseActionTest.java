@@ -58,7 +58,8 @@ public class ReportabilityResponseActionTest {
     when(mockRelActn.getRelatedAction()).thenReturn(reportabilityResponseAction);
     when(mockState.hasActionCompleted(any())).thenReturn(false);
 
-    reportabilityResponseAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    reportabilityResponseAction.execute(mockDetails, launchType, taskInstanceId);
 
     // Validate
     verify(mockState, times(1)).hasActionCompleted("123");
@@ -80,7 +81,8 @@ public class ReportabilityResponseActionTest {
     when(mockState.getEicrsForRRCheck()).thenReturn(id);
     when(mockState.hasActionCompleted(any())).thenReturn(true);
 
-    reportabilityResponseAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    reportabilityResponseAction.execute(mockDetails, launchType, taskInstanceId);
 
     // Validate
     verify(mockState, times(1)).hasActionCompleted("123");
@@ -101,7 +103,8 @@ public class ReportabilityResponseActionTest {
     when(ApplicationUtils.getDetailStatus(mockDetails)).thenReturn(mockState);
     when(mockState.getEicrsForRRCheck()).thenReturn(ids);
 
-    reportabilityResponseAction.execute(mockDetails, launchType);
+    String taskInstanceId = "";
+    reportabilityResponseAction.execute(mockDetails, launchType, taskInstanceId);
 
     verify(mockRelActn, times(0)).getDuration();
 
