@@ -158,7 +158,10 @@ public class KarParserImpl implements KarParser {
         try {
           instanceBean = beanFactory.getBean(instance.getClass());
         } catch (NoSuchBeanDefinitionException e) {
-          logger.debug(String.format("No such bean definition found for action %s, so creating a new instance", actionId));
+          logger.debug(
+              String.format(
+                  "No such bean definition found for action %s, so creating a new instance",
+                  actionId));
         }
         if (instanceBean != null) {
           beanFactory.destroyBean(beanFactory.getBean(instance.getClass()));
