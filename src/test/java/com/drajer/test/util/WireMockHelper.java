@@ -207,7 +207,7 @@ public class WireMockHelper {
   }
 
   public void mockProcessMessageBundle(IBaseBundle bundle) {
-    String path = "/fhir/$process-message";
+    String path = "/fhir/$process-message-bundle";
     MappingBuilder builder = post(urlEqualTo(path));
     wireMockServer.stubFor(
         builder.willReturn(

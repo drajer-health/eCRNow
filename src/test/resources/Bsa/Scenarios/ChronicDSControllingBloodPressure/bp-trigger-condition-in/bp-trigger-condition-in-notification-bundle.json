@@ -59,10 +59,10 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/bp-trigger-condition-in",
+        "fullUrl" : "http://localhost:9010/fhir/Encounter/bp-trigger-condition-in-e",
         "resource" : {
           "resourceType": "Encounter",
-          "id": "bp-trigger-condition-in",
+          "id": "bp-trigger-condition-in-e",
           "meta": {
             "profile": [
               "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-encounter"
@@ -78,11 +78,11 @@
             {
               "coding": [
                 {
-                  "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "99234"
+                  "system": "http://snomed.info/sct",
+                  "code": "444971000124105",
+                  "display": "Annual wellness visit (procedure)"
                 }
-              ],
-              "text": "Under Observation or Inpatient Care Services (Including Admission and Discharge Services)"
+              ]
             }
           ],
           "subject": {

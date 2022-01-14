@@ -41,6 +41,8 @@ import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,6 +187,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
   }
 
   protected Boolean reportBundleGenerated(String patientId, String planDefUrl) {
+    actions.entrySet();
     String submittedActionId = String.format("%s-PlanDefinition/%s", "submit-eicr", planDefUrl);
     Boolean submitted =
         validateActionStatus(submittedActionId, BsaTypes.BsaActionStatusType.Completed);
@@ -201,7 +204,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     if (eicrBundle != null) {
       return eicrBundle;
     } else {
-      String processMessageUrl = "/fhir/$process-message";
+      String processMessageUrl = "/fhir/$process-message-bundle";
       List<LoggedRequest> requests =
           wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
@@ -211,14 +214,28 @@ public class BaseKarsTest extends BaseIntegrationTest {
               FhirContext.forCached(FhirVersionEnum.R4)
                   .newJsonParser()
                   .parseResource(requests.get(0).getBodyAsString());
-          if (resource instanceof Bundle) {
+          if (resource instanceof Parameters) {
+            Parameters params = (Parameters) resource;
+            for (ParametersParameterComponent parameter : params.getParameter()) {
+              if (parameter.getName().equals("content")) {
+                if (parameter.getResource() != null
+                    && parameter.getResource().fhirType().equals("Bundle")) {
+                  return (Bundle) parameter.getResource();
+                }
+              }
+            }
+          } else if (resource instanceof Bundle) {
             return (Bundle) resource;
           }
 
         } catch (Exception e) {
           logger.error("Error parsing $process-message request body");
+          System.out.println("Error parsing $process-message request body");
           return null;
         }
+      } else {
+        logger.debug("No $process-message-bundle request found.");
+        System.out.println("No $process-message-bundle request found.");
       }
     }
 

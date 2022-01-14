@@ -55,6 +55,7 @@ import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -153,6 +154,15 @@ public class KarParserImpl implements KarParser {
     if (actionClasses != null && actionClasses.containsKey(actionId)) {
       try {
         instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
+        BsaAction instanceBean = null;
+        try {
+          instanceBean = beanFactory.getBean(instance.getClass());
+        } catch (NoSuchBeanDefinitionException e) {
+          logger.debug(String.format("No such bean definition found for action %s, so creating a new instance", actionId));
+        }
+        if (instanceBean != null) {
+          beanFactory.destroyBean(beanFactory.getBean(instance.getClass()));
+        }
         beanFactory.autowireBean(instance);
       } catch (InstantiationException e) {
         logger.error(" Error instantiating the object {}", e);
