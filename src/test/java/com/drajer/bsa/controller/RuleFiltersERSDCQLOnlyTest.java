@@ -48,16 +48,16 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
             "PlanDefinition_eRSD_Instance_CqlOnly",
             "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
             "Reportable",
-            REPORTED) /*,
-                      new TestCaseInfo(
-                          "PlanDefinition_eRSD_Instance_CqlOnly",
-                          "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-                          "NotTriggered",
-                          NOT_TRIGGERED),
-                      new TestCaseInfo(
-                          "PlanDefinition_eRSD_Instance_CqlOnly",
-                          "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-                          "Triggered",
-                          TRIGGERED_ONLY)*/);
+            REPORTED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_CqlOnly",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "NotTriggered",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_CqlOnly",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "Triggered",
+            TRIGGERED_ONLY));
   }
 }

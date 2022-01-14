@@ -37,11 +37,11 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        // new TestCaseInfo(
-        //     "ChronicDSSeenPatients",
-        //     "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
-        //     "seen-patients-no-trigger-in",
-        //     NOT_TRIGGERED),
+        new TestCaseInfo(
+            "ChronicDSSeenPatients",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
+            "seen-patients-no-trigger-in",
+            NOT_TRIGGERED),
         new TestCaseInfo(
             "ChronicDSSeenPatients",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
