@@ -1,6 +1,9 @@
 {
   "resourceType": "Bundle",
   "id": "ChronicDSDiabetesPoorControl-bundle",
+  "meta": {
+    "versionId": "1.0.0"
+  },
   "type": "collection",
   "entry": [ {
     "resource": {

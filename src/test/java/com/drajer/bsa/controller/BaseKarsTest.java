@@ -187,7 +187,6 @@ public class BaseKarsTest extends BaseIntegrationTest {
   }
 
   protected Boolean reportBundleGenerated(String patientId, String planDefUrl) {
-    actions.entrySet();
     String submittedActionId = String.format("%s-PlanDefinition/%s", "submit-eicr", planDefUrl);
     Boolean submitted =
         validateActionStatus(submittedActionId, BsaTypes.BsaActionStatusType.Completed);
@@ -230,12 +229,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
         } catch (Exception e) {
           logger.error("Error parsing $process-message request body");
-          System.out.println("Error parsing $process-message request body");
           return null;
         }
       } else {
         logger.debug("No $process-message-bundle request found.");
-        System.out.println("No $process-message-bundle request found.");
       }
     }
 

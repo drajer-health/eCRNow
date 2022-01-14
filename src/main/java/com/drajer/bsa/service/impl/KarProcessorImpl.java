@@ -95,7 +95,6 @@ public class KarProcessorImpl implements KarProcessor {
         serviceUtils.saveActionStatusState(data.getActionStatus());
       } else {
         logger.debug("Action status whas either null or empty");
-        System.out.println("Action status whas either null or empty");
       }
 
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
