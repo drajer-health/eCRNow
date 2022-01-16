@@ -203,7 +203,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     if (eicrBundle != null) {
       return eicrBundle;
     } else {
-      String processMessageUrl = "/fhir/$process-message-bundle";
+      String processMessageUrl = "/fhir/$process-message";
       List<LoggedRequest> requests =
           wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
@@ -232,7 +232,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
           return null;
         }
       } else {
-        logger.debug("No $process-message-bundle request found.");
+        logger.debug("No $process-message request found.");
       }
     }
 

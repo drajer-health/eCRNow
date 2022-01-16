@@ -63,30 +63,34 @@ public class SubmitReport extends BsaAction {
         logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
       }
 
+      context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+
       for (Resource r : resourcesToSubmit) {
         IGenericClient client = context.newRestfulGenericClient(submissionEndpoint);
 
-        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
-
         // All submissions are expected to be bundles
         Bundle bundleToSubmit = (Bundle) r;
-        logger.info(
-            "Submit Bundle:::::{}", context.newJsonParser().encodeResourceToString(bundleToSubmit));
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              " Submit Bundle:::::{}",
+              context.newJsonParser().encodeResourceToString(bundleToSubmit));
+        }
 
         Bundle responseBundle =
-            (Bundle)
-                client
-                    .operation()
-                    .onServer()
-                    .named("process-message-bundle")
-                    .withParameter(Parameters.class, "content", bundleToSubmit)
-                    .returnResourceType(Bundle.class)
-                    .execute();
+            client
+                .operation()
+                .onServer()
+                .named(this.getSubmissionOperation())
+                .withParameter(Parameters.class, "content", bundleToSubmit)
+                .returnResourceType(Bundle.class)
+                .execute();
 
         if (responseBundle != null) {
-          logger.info(
-              "Response Bundle:::::{}",
-              context.newJsonParser().encodeResourceToString(responseBundle));
+          if (logger.isInfoEnabled()) {
+            logger.info(
+                "Response Bundle:::::{}",
+                context.newJsonParser().encodeResourceToString(responseBundle));
+          }
 
           data.addActionOutput(actionId, responseBundle);
 
@@ -117,6 +121,18 @@ public class SubmitReport extends BsaAction {
     data.addActionStatus(getActionId(), actStatus);
 
     return actStatus;
+  }
+
+  protected String getSubmissionOperation() {
+    String endpoint = this.getSubmissionEndpoint();
+    // Default operation for message bundles in the case that
+    // one isn't specified in the configuration
+    if (endpoint == null || !endpoint.contains("$")) {
+      return "process-message";
+    }
+
+    // Otherwise, parse the operation name
+    return endpoint.substring(endpoint.indexOf("$") + 1);
   }
 
   public String getSubmissionEndpoint() {
