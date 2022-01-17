@@ -525,6 +525,7 @@ public class LaunchController {
           return encounterResource;
         }
       }
+
       logger.info(EncounterError);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
 
