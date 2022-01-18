@@ -530,7 +530,8 @@ public class LaunchController {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
 
     } catch (ResourceNotFoundException notFoundException) {
-      logger.info(EncounterError, notFoundException);
+      // logger.info(EncounterError, notFoundException);
+      logger.error(EncounterError, notFoundException);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, EncounterError, notFoundException);
 
     } catch (Exception e) {
