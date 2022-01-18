@@ -525,6 +525,8 @@ public class LaunchController {
           return encounterResource;
         }
       }
+      
+      //testing purpose
 
       // logger.info(EncounterError);
       logger.error(EncounterError);
