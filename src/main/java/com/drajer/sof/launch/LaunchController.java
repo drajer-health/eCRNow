@@ -526,7 +526,8 @@ public class LaunchController {
         }
       }
 
-      logger.info(EncounterError);
+      // logger.info(EncounterError);
+      logger.error(EncounterError);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
 
     } catch (ResourceNotFoundException notFoundException) {
@@ -534,7 +535,8 @@ public class LaunchController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, EncounterError, notFoundException);
 
     } catch (Exception e) {
-      logger.info(EncounterError, e);
+      // logger.info(EncounterError, e);
+      logger.error(EncounterError, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError, e);
     }
   }
