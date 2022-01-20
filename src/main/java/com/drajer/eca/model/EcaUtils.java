@@ -326,6 +326,9 @@ public class EcaUtils {
             details.getEncounterId(),
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+      } catch (Exception e) {
+        logger.error("Error in getting Encounter resource by Id: {}", details.getEncounterId(), e);
+        throw e;
       }
 
       if (enc != null) {
