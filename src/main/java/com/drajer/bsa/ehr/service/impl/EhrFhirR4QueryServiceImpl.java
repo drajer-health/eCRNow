@@ -110,7 +110,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       // Always true...
       if (entry.getValue() != ResourceType.Patient
-      && entry.getValue() != ResourceType.Encounter
+          && entry.getValue() != ResourceType.Encounter
           && entry.getValue() != ResourceType.MeasureReport) {
         String url =
             kd.getNotificationContext().getFhirServerBaseUrl()
