@@ -317,6 +317,7 @@ public class EcaUtils {
 
       Encounter enc = null;
       try {
+        logger.info("Getting Encounter data by ID {}", details.getEncounterId());
         enc =
             (Encounter)
                 client.read().resource("Encounter").withId(details.getEncounterId()).execute();
