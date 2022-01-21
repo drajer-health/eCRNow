@@ -434,7 +434,9 @@ public class KarParserImpl implements KarParser {
           BsaAction subAction = getAction(cd.getCode());
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
-          action.setIgnoreTimers(ignoreTimers);
+          subAction.setJsonParser(jsonParser);
+          subAction.setRestTemplate(restTemplate);
+          subAction.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
 
           populateAction(plan, act, subAction, karBundleFile);

@@ -1,6 +1,7 @@
 package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -39,15 +40,15 @@ public class FhirContextInitializer {
   public FhirContext getFhirContext(String fhirVersion) {
     switch (fhirVersion) {
       case DSTU2:
-        return FhirContext.forDstu2();
+        return FhirContext.forCached(FhirVersionEnum.DSTU2);
       case DSTU2_1:
-        return FhirContext.forDstu2_1();
+        return FhirContext.forCached(FhirVersionEnum.DSTU2_1);
       case DSTU3:
-        return FhirContext.forDstu3();
+        return FhirContext.forCached(FhirVersionEnum.DSTU3);
       case R4:
-        return FhirContext.forR4();
+        return FhirContext.forCached(FhirVersionEnum.R4);
       default:
-        return FhirContext.forDstu2();
+        return FhirContext.forCached(FhirVersionEnum.DSTU2);
     }
   }
 

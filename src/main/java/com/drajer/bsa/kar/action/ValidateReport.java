@@ -58,6 +58,9 @@ public class ValidateReport extends BsaAction {
 
           logger.info(" Data to be validated : {}", request);
 
+          // For now, go ahead and add the output as being valid.
+          addValidatedOutputById(data, r);
+
           if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
             ResponseEntity<String> response =
                 restTemplate.postForEntity(validatorEndpoint, request, String.class);
