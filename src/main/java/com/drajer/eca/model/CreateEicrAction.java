@@ -160,6 +160,9 @@ public class CreateEicrAction extends AbstractAction {
                   && newState.getMatchTriggerStatus().getMatchedCodes() != null
                   && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
 
+                logger.info(
+                    "Creating the EICR for {} action as new trigger code is matched",
+                    EcrActionTypes.CREATE_EICR);
                 // Since the job has started, Execute the job.
                 // Call the Loading Queries and create eICR.
                 Eicr ecr = EcaUtils.createEicr(details);

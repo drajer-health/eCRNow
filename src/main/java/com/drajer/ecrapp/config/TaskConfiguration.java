@@ -5,6 +5,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.ecrapp.model.WorkflowTask;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
@@ -43,6 +44,7 @@ public class TaskConfiguration {
                   try {
                     if (inst.getData().getMdcContext() != null) {
                       MDC.setContextMap(inst.getData().getMdcContext());
+                      MDCUtils.removeEicrDocId();
                     }
                     log.info(
                         "Executing Task for {}, Launch Id::: {}",
