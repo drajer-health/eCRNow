@@ -1,7 +1,7 @@
 package com.drajer.bsa.controller;
 
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
-import com.drajer.bsa.model.KnowledgeArtifiactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.service.KarService;
 import java.util.List;
 import org.json.JSONObject;
@@ -47,7 +47,7 @@ public class KnowledgeArtifactRepositoryController {
    */
   @CrossOrigin
   @RequestMapping("/api/kar/{karId}")
-  public KnowledgeArtifiactRepository getKnowledgeArtifactById(
+  public KnowledgeArtifactRepository getKnowledgeArtifactById(
       @PathVariable("karId") Integer karId) {
     return karService.getKARById(karId);
   }
@@ -60,9 +60,9 @@ public class KnowledgeArtifactRepositoryController {
    */
   @CrossOrigin
   @RequestMapping(value = "/api/kar", method = RequestMethod.POST)
-  public ResponseEntity<?> createKARs(@RequestBody KnowledgeArtifiactRepository kar) {
-    KnowledgeArtifiactRepository existingKar = karService.getKARByUrl(kar.getFhirServerURL());
-    if (existingKar == null || (existingKar.getId().equals(existingKar.getId()))) {
+  public ResponseEntity<?> createKARs(@RequestBody KnowledgeArtifactRepository kar) {
+    KnowledgeArtifactRepository existingKar = karService.getKARByUrl(kar.getFhirServerURL());
+    if (existingKar == null || (existingKar.getId().equals(kar.getId()))) {
       logger.info("Saving the KAR Details");
       karService.saveOrUpdate(kar);
       return new ResponseEntity<>(kar, HttpStatus.OK);
@@ -74,8 +74,8 @@ public class KnowledgeArtifactRepositoryController {
       responseObject.put("status", "error");
       responseObject.put(
           "message",
-          "Healthcare Setting is already registered with a different Id, contact developer. ");
-      return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+          "Knowledge Artifact Repository is already registered with a different Id, contact developer. ");
+      return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -87,7 +87,7 @@ public class KnowledgeArtifactRepositoryController {
    */
   @CrossOrigin
   @RequestMapping("/api/kars")
-  public KnowledgeArtifiactRepository getKARByUrl(@RequestParam(value = "url") String url) {
+  public KnowledgeArtifactRepository getKARByUrl(@RequestParam(value = "url") String url) {
     return karService.getKARByUrl(url);
   }
 
@@ -98,7 +98,7 @@ public class KnowledgeArtifactRepositoryController {
    */
   @CrossOrigin
   @RequestMapping("/api/kars/")
-  public List<KnowledgeArtifiactRepository> getAllKARs() {
+  public List<KnowledgeArtifactRepository> getAllKARs() {
     return karService.getAllKARs();
   }
 

@@ -84,7 +84,6 @@ public class CheckTriggerCodes extends BsaAction {
         }
       }
 
-      actStatus.log();
       data.addActionStatus(getActionId(), actStatus);
 
       if (conditionsMet(data)) {

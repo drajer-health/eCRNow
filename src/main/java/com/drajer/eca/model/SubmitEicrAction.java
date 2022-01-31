@@ -1,14 +1,17 @@
 package com.drajer.eca.model;
 
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +55,7 @@ public class SubmitEicrAction extends AbstractAction {
               // Get the eICR for the Action Completed after which validation has to be run.
               Set<Integer> ids = state.getEicrsReadyForSubmission();
 
-              submitEicrs(details, state, ids);
+              submitEicrs(details, state, ids, taskInstanceId);
             }
           } else {
             logger.info(
@@ -67,7 +70,7 @@ public class SubmitEicrAction extends AbstractAction {
 
         Set<Integer> ids = state.getEicrsReadyForSubmission();
 
-        submitEicrs(details, state, ids);
+        submitEicrs(details, state, ids, taskInstanceId);
       }
 
       EcaUtils.updateDetailStatus(details, state);
@@ -82,15 +85,17 @@ public class SubmitEicrAction extends AbstractAction {
     logger.info(" **** End Printing SubmitEicrAction **** ");
   }
 
-  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
 
+	Boolean rrCheckScheduled = false;
+	
     for (Integer id : ids) {
 
       Eicr ecr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
 
       if (ecr != null) {
 
-        logger.info("Found eICR with Id {} to submit", id);
+        logger.info("Found eICR with Id {} to submit, correlation Id for Direct Message Id {}", id, ecr.getxCorrelationId());
 
         String data = ecr.getEicrData();
 
@@ -98,7 +103,21 @@ public class SubmitEicrAction extends AbstractAction {
           ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
         } else if (!StringUtils.isBlank(details.getDirectHost())
             || !StringUtils.isBlank(details.getSmtpUrl())) {
-          ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+          ActionRepo.getInstance().getDirectTransport().sendData(details, data, ecr.getxCorrelationId());
+          
+          // Schedule a RR check since it is direct transport.
+          logger.info(" Schedule the job for RR Check after 5 minutes.");
+          Duration d = new Duration();
+          d.setValue(5);
+          d.setUnit("min");
+
+          WorkflowService.scheduleJob(
+              details.getId(),
+              d,
+              EcrActionTypes.RR_CHECK,
+              details.getStartDate(),
+              taskInstanceId);
+          
         } else {
           String msg = "No Transport method specified to submit EICR.";
           logger.error(msg);
@@ -113,6 +132,7 @@ public class SubmitEicrAction extends AbstractAction {
         submitState.setJobStatus(JobStatus.COMPLETED);
         submitState.setSubmittedTime(new Date());
         state.getSubmitEicrStatus().add(submitState);
+     
 
       } else {
         String msg = "No Eicr found for submission, Id = " + Integer.toString(id);
@@ -120,6 +140,6 @@ public class SubmitEicrAction extends AbstractAction {
 
         throw new RuntimeException(msg);
       }
-    }
+    }// for all eICRs
   }
 }

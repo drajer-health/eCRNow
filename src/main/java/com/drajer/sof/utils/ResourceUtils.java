@@ -30,7 +30,8 @@ public class ResourceUtils {
                             Comparator.comparingInt(
                                 y ->
                                     y.getMeta() != null && y.getMeta().getVersionId() != null
-                                        ? Integer.parseInt(y.getMeta().getVersionId())
+                                        ? Integer.parseInt(
+                                            y.getMeta().getVersionId().substring(0, 1))
                                         : 0))
                         .get())
             .collect(Collectors.toList());

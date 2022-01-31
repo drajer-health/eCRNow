@@ -12,23 +12,27 @@ import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
+import com.drajer.bsa.service.KarService;
 import com.drajer.bsa.utils.BsaConstants;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -110,6 +114,11 @@ public class KarParserImpl implements KarParser {
   // Autowired to pass to FhirPathProcessors.
   @Autowired LibraryProcessor libraryProcessor;
 
+  // Autowired to update Persistent Kar Repos
+  @Autowired KarService karService;
+  HashMap<String, Set<KnowledgeArtifact>> localKars;
+  HashMap<String, String> localKarRepoUrlToName;
+
   // Autowired to pass to actions
   @Autowired
   @Qualifier("jsonParser")
@@ -127,6 +136,9 @@ public class KarParserImpl implements KarParser {
   private static String JSON_KAR_EXT = "json";
   private static String RECEIVER_ADDRESS_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
+
+  private static String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
+  private static String LOCAL_HOST_REPO_NAME = "local-repo";
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
   // Load the Topic to Named Event Map.
@@ -144,6 +156,13 @@ public class KarParserImpl implements KarParser {
     }
   }
 
+  /**
+   * The method is used to find the specific Action class for an action id present in the
+   * PlanDefinition instance in accordance with the IG.
+   *
+   * @param actionId
+   * @return Action class for the specific type of action defined in the IG.
+   */
   public BsaAction getAction(String actionId) {
 
     BsaAction instance = null;
@@ -164,39 +183,75 @@ public class KarParserImpl implements KarParser {
 
   @PostConstruct
   public void initializeRepository() {
+    localKarRepoUrlToName = new HashMap<String, String>();
+    localKars = new HashMap<String, Set<KnowledgeArtifact>>();
     loadKars();
   }
 
   @Override
   public void loadKars() {
-    loadKarsFromDirectory(karDirectory);
+    loadKarsFromDirectory(karDirectory, LOCAL_HOST_REPO_BASE_URL, LOCAL_HOST_REPO_NAME);
+    persistLocalKars();
   }
 
-  public void loadKarsFromDirectory(String dirName) {
+  public void persistLocalKars() {
+
+    logger.info(" Persisting Kars for each Repo ");
+
+    for (Map.Entry<String, String> entry : localKarRepoUrlToName.entrySet()) {
+
+      logger.info("Adding entry for Url {} and Name {}", entry.getKey(), entry.getValue());
+
+      KnowledgeArtifactRepository repo = karService.getKARByUrl(entry.getKey());
+
+      if (repo != null) {
+        logger.info(" Adding Artifacts to existing repo {}", entry.getKey());
+        repo.addKars(localKars.get(entry.getKey()));
+      } else {
+
+        logger.info(" Repository for Url {} does not exist ", entry.getKey());
+        repo = new KnowledgeArtifactRepository();
+        repo.setFhirServerURL(entry.getKey());
+        repo.setRepoName(entry.getValue());
+        repo.addKars(localKars.get(entry.getKey()));
+      }
+
+      // Save the repo.
+      karService.saveOrUpdate(repo);
+    }
+  }
+
+  public void loadKarsFromDirectory(String dirName, String repoUrl, String repoName) {
 
     // Load each of the Knowledge Artifact Bundles.
     File folder = new File(dirName);
-    List<File> kars = (List<File>) FileUtils.listFiles(folder, null, false);
 
-    for (File kar : kars) {
+    File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
+
+    for (File kar : files) {
 
       if (kar.isFile() && JSON_KAR_EXT.contentEquals(FilenameUtils.getExtension(kar.getName()))) {
 
-        processKar(kar);
-
+        logger.info(" Processing KAR {}", kar.getName());
+        processKar(kar, repoUrl, repoName);
       } // For a File
-      else if (kar.isDirectory()) {
+    }
 
-        logger.info(" About to process directory : {}", kar.getName());
-        loadKarsFromDirectory(kar.getName());
-      } else {
+    // Recursively process the directories also.
+    File[] dirs = folder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
 
-        logger.info(" Ignoring File {} as it is not the right extension", kar.getName());
-      }
-    } // For
+    for (File dir : dirs) {
+
+      logger.info(" About to process directory : {}", dir.getName());
+      String url = repoUrl + "/" + dir.getName();
+      String name = repoName + "-" + dir.getName();
+
+      loadKarsFromDirectory(dir.getPath(), url, name);
+    }
   }
 
-  private void processKar(File kar) {
+  private void processKar(File kar, String repoUrl, String repoName) {
+
     logger.info(" Processing File : {}", kar);
 
     Bundle karBundle = utils.readKarFromFile(kar.getPath());
@@ -237,6 +292,7 @@ public class KarParserImpl implements KarParser {
         }
       }
 
+      addArtifactForPersistence(art, repoUrl, repoName);
       KnowledgeArtifactRepositorySystem.getInstance().add(art);
       art.printKarSummary();
 
@@ -248,9 +304,44 @@ public class KarParserImpl implements KarParser {
     }
   }
 
+  private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {
+
+    if (localKars == null) {
+      localKars = new HashMap<String, Set<KnowledgeArtifact>>();
+    }
+
+    if (localKars.containsKey(repoUrl)) {
+
+      Set<KnowledgeArtifact> arts = localKars.get(repoUrl);
+
+      if (arts != null) {
+        arts.add(art);
+      } else {
+        arts = new HashSet<KnowledgeArtifact>();
+        arts.add(art);
+      }
+
+      localKars.put(repoUrl, arts);
+    } else {
+      Set<KnowledgeArtifact> arts = new HashSet<KnowledgeArtifact>();
+      arts.add(art);
+      localKars.put(repoUrl, arts);
+    }
+
+    if (localKarRepoUrlToName != null) {
+
+      localKarRepoUrlToName.put(repoUrl, repoName);
+    } else {
+      localKarRepoUrlToName = new HashMap<String, String>();
+      localKarRepoUrlToName.put(repoUrl, repoName);
+    }
+  }
+
   private void processPlanDefinition(
       PlanDefinition plan, KnowledgeArtifact art, File karBundleFile) {
 
+    art.setKarName(plan.getName());
+    art.setKarPublisher(plan.getPublisher());
     processExtensions(plan, art);
     List<PlanDefinitionActionComponent> actions = plan.getAction();
 

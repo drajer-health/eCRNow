@@ -56,12 +56,12 @@ public class ValidateReport extends BsaAction {
 
           String request = jsonParser.encodeResourceToString(r);
 
-          logger.info(" Data to be validated : {}", request);
+          logger.debug(" Data to be validated : {}", request);
 
           if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
             ResponseEntity<String> response =
                 restTemplate.postForEntity(validatorEndpoint, request, String.class);
-            logger.info(response.getBody());
+            logger.debug(response.getBody());
             outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
           } else {
             logger.warn("No validation endpoint set. Skipping validation");

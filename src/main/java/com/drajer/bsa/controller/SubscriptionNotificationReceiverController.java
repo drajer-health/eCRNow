@@ -41,7 +41,11 @@ public class SubscriptionNotificationReceiverController {
    *
    * @param hsDetails The HealthcareSettings details passed as part of the Request Body.
    * @return This returns the HTTP Response Entity containing the JSON representation of the
-   *     HealthcareSetting when successful, else returns appropriate error.
+   *     HealthcareSetting when successful, else returns appropriate error. Upon success a HTTP
+   *     Status code of 200 is sent back. The following HTTP Errors will be sent back - 400 (BAD
+   *     Request) - When the request body is not a notification FHIR R4 Bundle. - 401 (UnAuthorized)
+   *     - When the incoming request does not have the security token required by the authorization
+   *     server
    */
   @CrossOrigin
   @RequestMapping(value = "/api/receive-notification", method = RequestMethod.POST)
@@ -69,27 +73,27 @@ public class SubscriptionNotificationReceiverController {
       } else {
 
         logger.error(
-            "Unable to parse Incoming Param as bundle, hence the notification processing cannot proceed.");
+            "Unable to parse Incoming Param as bundle (Has to be a Notification FHIR Bundle), hence the notification processing cannot proceed.");
 
         JSONObject responseObject = new JSONObject();
         responseObject.put("status", "error");
         responseObject.put(
             "message",
-            "Unable to parse Incoming Param as bundle, hence the notification processing cannot proceed.");
-        return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+            "Unable to parse Incoming Param as bundle (Has to be a Notification FHIR R4 Bundle), hence the notification processing cannot proceed.");
+        return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
       }
 
     } else {
 
       logger.error(
-          "Unable to parse Resource Param, hence the notification processing cannot proceed.");
+          "Unable to parse Resource Param (Has to be a Notification FHIR Bundle), hence the notification processing cannot proceed.");
 
       JSONObject responseObject = new JSONObject();
       responseObject.put("status", "error");
       responseObject.put(
           "message",
-          "Unable to parse Resource Param, hence the notification processing cannot proceed.");
-      return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+          "Unable to parse Resource Param in request body (Has to be a Notification FHIR R4 Bundle), hence the notification processing cannot proceed.");
+      return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
     }
   }
 }

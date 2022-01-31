@@ -198,7 +198,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           resMapById = new HashMap<>();
           for (BundleEntryComponent comp : bc) {
 
-            logger.info(" Adding Resource Id : {}", comp.getResource().getId());
+            logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
             resources.add(comp.getResource());
           }
           Set<Resource> uniqueResources =

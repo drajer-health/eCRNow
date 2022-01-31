@@ -88,7 +88,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Condition) {
 
-          logger.info(" Found Condition Resource {}", res.getId());
+          logger.debug(" Found Condition Resource {}", res.getId());
           Condition cond = (Condition) res;
           CodeableConcept cc = cond.getCode();
 
@@ -97,7 +97,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Observation) {
 
-          logger.info(" Found Observation Resource {}", res.getId());
+          logger.debug(" Found Observation Resource {}", res.getId());
           Observation obs = (Observation) res;
           CodeableConcept cc = obs.getCode();
 
@@ -112,7 +112,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.ServiceRequest) {
 
-          logger.info(" Found ServiceRequest Resource {}", res.getId());
+          logger.debug(" Found ServiceRequest Resource {}", res.getId());
           ServiceRequest sr = (ServiceRequest) res;
           CodeableConcept cc = sr.getCode();
 
@@ -120,7 +120,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MedicationRequest) {
 
-          logger.info(" Found MedicationRequest Resource {}", res.getId());
+          logger.debug(" Found MedicationRequest Resource {}", res.getId());
           MedicationRequest mr = (MedicationRequest) res;
           Type med = mr.getMedication();
 
@@ -133,7 +133,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MedicationAdministration) {
 
-          logger.info(" Found MedicationAdministration Resource {}", res.getId());
+          logger.debug(" Found MedicationAdministration Resource {}", res.getId());
           MedicationAdministration mr = (MedicationAdministration) res;
           Type med = mr.getMedication();
 
@@ -146,7 +146,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Procedure) {
 
-          logger.info(" Found Procedure Resource {}", res.getId());
+          logger.debug(" Found Procedure Resource {}", res.getId());
           Procedure pr = (Procedure) res;
 
           CodeableConcept cc = pr.getCode();
@@ -155,7 +155,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Immunization) {
 
-          logger.info(" Found Immunization Resource {}", res.getId());
+          logger.debug(" Found Immunization Resource {}", res.getId());
           Immunization immz = (Immunization) res;
 
           CodeableConcept cc = immz.getVaccineCode();
@@ -163,7 +163,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.Encounter) {
 
-          logger.info(" Found Encounter Resource {}", res.getId());
+          logger.debug(" Found Encounter Resource {}", res.getId());
           Encounter enc = (Encounter) res;
 
           CodeableConcept cc = enc.getReasonCodeFirstRep();
@@ -208,7 +208,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               kd.getKar().getDependentResource(ResourceType.ValueSet, drcf.getValueSet());
 
           if (vsr != null) {
-            logger.info(" Found Value Set {} to compare codes.", vsr.getId());
+            logger.debug(" Found Value Set {} to compare codes.", vsr.getId());
 
             ValueSet vs = (ValueSet) vsr;
             String matchPath = dr.getType() + "." + drcf.getPath();
@@ -230,7 +230,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 res.put(resourceMatched.fhirType(), resources);
               }
             } else {
-              logger.info(" No match found for code ");
+              logger.debug(" No match found for code ");
             }
           } else {
             logger.error(" Value Set not found for id {}", drcf.getValueSet());

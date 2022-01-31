@@ -65,8 +65,9 @@ public class DataRoutingTest {
 
       when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
 
+      String correlationId = "1234";
       // Test
-      directEicrSender.sendData(launchDetails, data);
+      directEicrSender.sendData(launchDetails, data, correlationId);
 
       // Validate
       verify(mockTransport, times(1)).sendMessage(any(Message.class), any());

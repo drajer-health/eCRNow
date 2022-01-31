@@ -72,7 +72,7 @@ public class SubmitReport extends BsaAction {
                     .execute();
 
         if (responseBundle != null) {
-          logger.info(
+          logger.debug(
               "Response Bundle:::::{}",
               context.newJsonParser().encodeResourceToString(responseBundle));
 

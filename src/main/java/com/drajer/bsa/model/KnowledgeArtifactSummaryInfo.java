@@ -41,6 +41,10 @@ public class KnowledgeArtifactSummaryInfo {
   @Column(name = "kar_version", nullable = false, columnDefinition = "TEXT")
   private String karVersion;
 
+  public String getVersionUniqueId() {
+    return this.karId + "|" + this.getKarVersion();
+  }
+
   public Integer getId() {
     return id;
   }

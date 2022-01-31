@@ -46,7 +46,8 @@ public class SubscriptionUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(SubscriptionUtils.class);
 
-  // Load the Topic to Named Event Map.
+  // Load the Topic to Named Event Map. This is a map of the topic urls to the named events in the
+  // MedMorph IGs.
   static {
     try (InputStream input =
         SubscriptionUtils.class
@@ -63,7 +64,8 @@ public class SubscriptionUtils {
     }
   }
 
-  // Load the Named Event to Resource Map.
+  // Load the Named Event to Resource Map indicates which Resource is expected to be received as
+  // part of the notification.
   static {
     try (InputStream input =
         SubscriptionUtils.class
