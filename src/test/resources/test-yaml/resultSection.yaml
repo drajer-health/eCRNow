@@ -261,3 +261,102 @@ testCase:
         "interpretationCode/@codeSystem": "2.16.840.1.113883.5.83"
         "interpretationCode/@codeSystemName": "v3-ObservationInterpretation"
         "interpretationCode/@displayName": "Abnormal"
+  eCR-result-withNonCOVID19TriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[3]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
+      Observation:
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+          responseFilePath: "R4/Observation/ObservationWithNonCovidTriggers.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: "templateId"
+        count: 2
+      - xPath: ""
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.3.1"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.3.1"
+        "templateId[2]/@extension": "2015-08-01"
+        "code/@code": "30954-2"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "RESULTS"
+        "title": "RESULTS"
+      - xPath: "text/table/thead/tr/th"
+        count: 3
+      - xPath: "text/table/tbody/tr"
+        count: 14
+      - xPath: "text/table/"
+        "thead/tr/th[1]": "Lab Test Name"
+        "thead/tr/th[2]": "Lab Test Result Value"
+        "thead/tr/th[3]": "Lab Test Result Date"
+        "tbody/tr[1]/td[1]/content": "Mumps, IgG"
+        "tbody/tr[1]/td[2]/content": "Detected"
+      #      'tbody/tr[1]/td[3]/content': "2021-10-15T17:03:00.000Z"
+        "tbody/tr[2]/td[1]/content": "Streptococcus Pneumonia Antigen"
+        "tbody/tr[2]/td[2]/content": "Detected"
+      #      'tbody/tr[1]/td[3]/content': "2021-10-15T17:03:00.000Z"
+      - xPath: "entry"
+        count: 14
+      - xPath: "entry[1]/"
+        "@typeCode": "DRIV"
+      - xPath: "entry[1]/organizer/templateId"
+        count: 2
+      - xPath: "entry[1]/organizer/id"
+        count: 1
+      - xPath: "entry[1]/organizer/"
+        "@classCode": "CLUSTER"
+        "@moodCode": "EVN"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.1"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.1"
+        "templateId[2]/@extension": "2015-08-01"
+        #      'id[1]/@root': ""
+        "code/@code": "25418-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "loinc.org"
+        "statusCode/@code": "completed"
+      - xPath: "entry[1]/organizer/component"
+        count: 1
+      - xPath: "entry[1]/organizer/component[1]/"
+        "observation/@classCode": "OBS"
+        "observation/@moodCode": "EVN"
+      - xPath: "entry[1]/organizer/component[1]/observation/templateId"
+        count: 3
+      - xPath: "entry[1]/organizer/component[1]/observation/id"
+        count: 1
+      - xPath: "entry[1]/organizer/component[1]/observation/"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.2"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.2"
+        "templateId[2]/@extension": "2015-08-01"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.2"
+        "templateId[3]/@extension": "2016-12-01"
+        "id[1]/@root": "2.16.840.1.113883.1.1.1.1"
+        "code/@code": "25418-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "Mumps, IgG"
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "code/originalText/reference/@value": "#labTestName1"
+        "statusCode/@code": "completed"
+        #      'effectiveTime/@value': "20211015170300+0000"
+        "value/@type": "ST"
+        "value": "Detected"
