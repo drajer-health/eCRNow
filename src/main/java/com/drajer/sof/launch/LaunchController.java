@@ -14,6 +14,7 @@ import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.LaunchDetails.ProcessingStatus;
 import com.drajer.sof.model.SystemLaunch;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
@@ -243,6 +244,7 @@ public class LaunchController {
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
             launchDetails.setxRequestId(requestIdHeadervalue);
+            launchDetails.setProcessingState(LaunchDetails.getString(ProcessingStatus.In_Progress));
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
