@@ -108,8 +108,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info(" Fetching Resource of type {}", entry.getValue());
 
-      // Always true...
-      if (entry.getValue() != ResourceType.Patient || entry.getValue() != ResourceType.Encounter) {
+      if (entry.getValue() != ResourceType.Patient && entry.getValue() != ResourceType.Encounter) {
         String url =
             kd.getNotificationContext().getFhirServerBaseUrl()
                 + "/"
@@ -127,6 +126,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             kd,
             entry.getValue(),
             entry.getKey());
+      }
+      else if(entry.getValue() == ResourceType.Encounter){
+    	  
+    	  logger.info(" Getting data for location, practitioner, organization from the encounter resource ");
+    	  
+    	 // loadPractitionersLocationAndOrganization(
+    //		  client, context, kd, kd.getNotificationContext()
+    	  
       }
     }
 
