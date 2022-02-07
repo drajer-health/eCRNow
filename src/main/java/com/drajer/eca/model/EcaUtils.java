@@ -143,64 +143,59 @@ public class EcaUtils {
 
   public static Eicr createEicr(LaunchDetails details) {
 
-    Eicr ecr = new Eicr();
+    try {
+      Eicr ecr = new Eicr();
+      String errorMsg = null;
 
-    if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+      if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
-      logger.info("Getting necessary data from Loading Queries");
-      FhirData data =
-          ActionRepo.getInstance()
-              .getLoadingQueryService()
-              .getData(details, details.getStartDate(), details.getEndDate());
+        logger.info("Getting necessary data from Loading Queries");
+        FhirData data =
+            ActionRepo.getInstance()
+                .getLoadingQueryService()
+                .getData(details, details.getStartDate(), details.getEndDate());
 
-      String eICR = null;
+        String eICR = null;
 
-      if (data instanceof Dstu2FhirData) {
+        if (data instanceof Dstu2FhirData) {
 
-        logger.info("Creating eICR based on FHIR DSTU2");
-        Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-        eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
+          logger.info("Creating eICR based on FHIR DSTU2");
+          Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
+          eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
 
-      } else if (data instanceof R4FhirData) {
+        } else if (data instanceof R4FhirData) {
 
-        logger.info("Creating eICR based on FHIR R4");
-        R4FhirData r4Data = (R4FhirData) data;
+          logger.info("Creating eICR based on FHIR R4");
+          R4FhirData r4Data = (R4FhirData) data;
+          eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
+        }
 
-        eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
+        if (eICR != null && !eICR.isEmpty()) {
+          // Create the object for persistence.
+          ecr.setEicrData(eICR);
+          ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+          MDCUtils.addEicrDocId(ecr.getEicrDocId());
+          logger.info(
+              "EICR created successfully with eICRDocID: {} version: {}",
+              ecr.getEicrDocId(),
+              ecr.getDocVersion());
+          return ecr;
+        } else {
+          errorMsg = "Failed to create EICR due to error";
+        }
 
       } else {
-
-        String msg = "No Fhir Data retrieved to CREATE EICR.";
-        logger.error(msg);
-
-        throw new RuntimeException(msg);
+        errorMsg =
+            "Failed to create EICR due to System Startup Issue, Spring Injection not functioning properly, loading service is null.";
       }
 
-      if (eICR != null && !eICR.isEmpty()) {
-        // Create the object for persistence.
-        ecr.setEicrData(eICR);
-        ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-        MDCUtils.addEicrDocId(ecr.getEicrDocId());
-        logger.info(
-            "EICR created successfully with eICRDocID: {} version: {}",
-            ecr.getEicrDocId(),
-            ecr.getDocVersion());
-      } else {
-        String msg = "No Fhir Data retrieved to CREATE EICR.";
-        logger.error(msg);
-        throw new RuntimeException(msg);
-      }
+      logger.error(errorMsg);
+      throw new RuntimeException(errorMsg);
 
-    } else {
-
-      String msg =
-          "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
-      logger.error(msg);
-
-      throw new RuntimeException(msg);
+    } catch (Exception e) {
+      logger.error("Failed to create EICR due to exception");
+      throw e;
     }
-
-    return ecr;
   }
 
   public static void updateDetailStatus(LaunchDetails details, PatientExecutionState state) {
@@ -322,6 +317,7 @@ public class EcaUtils {
 
       Encounter enc = null;
       try {
+        logger.info("Getting Encounter data by ID {}", details.getEncounterId());
         enc =
             (Encounter)
                 client.read().resource("Encounter").withId(details.getEncounterId()).execute();
@@ -331,6 +327,9 @@ public class EcaUtils {
             details.getEncounterId(),
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+      } catch (Exception e) {
+        logger.error("Error in getting Encounter resource by Id: {}", details.getEncounterId(), e);
+        throw e;
       }
 
       if (enc != null) {
