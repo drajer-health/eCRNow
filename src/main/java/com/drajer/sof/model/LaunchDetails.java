@@ -33,6 +33,12 @@ public class LaunchDetails {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(LaunchDetails.class);
 
+  public enum ProcessingStatus {
+    In_Progress,
+    Completed,
+    Errors
+  }
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
@@ -165,6 +171,9 @@ public class LaunchDetails {
 
   @Column(name = "launch_type", nullable = true)
   private String launchType;
+
+  @Column(name = "processing_status", nullable = true)
+  private String processingState;
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -509,5 +518,39 @@ public class LaunchDetails {
 
   public void setLaunchType(String launchType) {
     this.launchType = launchType;
+  }
+
+  public String getProcessingState() {
+    return processingState;
+  }
+
+  public void setProcessingState(String processingState) {
+    this.processingState = processingState;
+  }
+
+  public static String getString(ProcessingStatus status) {
+
+    if (status == ProcessingStatus.In_Progress) {
+      return "In_Progress";
+    } else if (status == ProcessingStatus.Completed) {
+      return "Completed";
+    } else if (status == ProcessingStatus.Errors) {
+      return "Errors";
+    } else {
+      return "Unknown";
+    }
+  }
+
+  public static ProcessingStatus getProcessingStatus(String status) {
+
+    if (status.contentEquals("In_Progress")) {
+      return ProcessingStatus.In_Progress;
+    } else if (status.contentEquals("Completed")) {
+      return ProcessingStatus.Completed;
+    } else if (status.contentEquals("Errors")) {
+      return ProcessingStatus.Errors;
+    } else {
+      return null;
+    }
   }
 }
