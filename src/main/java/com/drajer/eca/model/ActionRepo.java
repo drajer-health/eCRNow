@@ -5,6 +5,7 @@ import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
+import com.drajer.routing.impl.DirectResponseReceiver;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -52,6 +53,8 @@ public class ActionRepo {
   DirectEicrSender directTransport;
 
   RestApiSender restTransport;
+  
+  DirectResponseReceiver directReceiver;
 
   String schematronFileLocation;
 
@@ -196,8 +199,18 @@ public class ActionRepo {
   public void setActions(Map<EcrActionTypes, Set<AbstractAction>> actions) {
     this.actions = actions;
   }
+  
+  
 
-  public void setupTriggerBasedActions() {
+  public DirectResponseReceiver getDirectReceiver() {
+	return directReceiver;
+}
+
+public void setDirectReceiver(DirectResponseReceiver directReceiver) {
+	this.directReceiver = directReceiver;
+}
+
+public void setupTriggerBasedActions() {
 
     if (actions != null) {
 

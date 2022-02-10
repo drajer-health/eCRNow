@@ -1,14 +1,17 @@
 package com.drajer.eca.model;
 
+import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,9 @@ import org.springframework.stereotype.Service;
 public class SubmitEicrAction extends AbstractAction {
 
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
+  
+  public static int RR_TIMER_CHECK_DURATION = 5;
+  public static String RR_TIMER_CHECK_UNITS = "min"; 
 
   @Override
   public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
@@ -52,7 +58,7 @@ public class SubmitEicrAction extends AbstractAction {
               // Get the eICR for the Action Completed after which validation has to be run.
               Set<Integer> ids = state.getEicrsReadyForSubmission();
 
-              submitEicrs(details, state, ids);
+              submitEicrs(details, state, ids, taskInstanceId);
             }
           } else {
             logger.info(
@@ -67,7 +73,7 @@ public class SubmitEicrAction extends AbstractAction {
 
         Set<Integer> ids = state.getEicrsReadyForSubmission();
 
-        submitEicrs(details, state, ids);
+        submitEicrs(details, state, ids, taskInstanceId);
       }
 
       EcaUtils.updateDetailStatus(details, state);
@@ -82,8 +88,10 @@ public class SubmitEicrAction extends AbstractAction {
     logger.info(" **** End Printing SubmitEicrAction **** ");
   }
 
-  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
 
+	boolean rrCheckTimerScheduled = false;
+	  
     for (Integer id : ids) {
 
       Eicr ecr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
@@ -113,6 +121,16 @@ public class SubmitEicrAction extends AbstractAction {
         submitState.setJobStatus(JobStatus.COMPLETED);
         submitState.setSubmittedTime(new Date());
         state.getSubmitEicrStatus().add(submitState);
+        
+        if(!rrCheckTimerScheduled) {
+        	
+        	Duration d = new Duration();
+        	d.setValue(RR_TIMER_CHECK_DURATION);
+        	d.setUnit(RR_TIMER_CHECK_UNITS);
+        	
+        	WorkflowService.scheduleJob(
+        			details.getId(), d, EcrActionTypes.RR_CHECK, details.getStartDate(), taskInstanceId);
+        }
 
       } else {
         String msg = "No Eicr found for submission, Id = " + Integer.toString(id);
