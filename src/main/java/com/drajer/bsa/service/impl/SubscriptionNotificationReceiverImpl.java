@@ -84,7 +84,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
             HealthcareSettingOperationalKnowledgeArtifacts arfts = hs.getKars();
 
             logger.info(
-                " Processing HealthcareSetting Operational Knowledg Artifact Status Id : {}",
+                " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
                 arfts.getId());
 
             Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
@@ -97,7 +97,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
 
                 KnowledgeArtifact kar =
-                    KnowledgeArtifactRepositorySystem.getIntance()
+                    KnowledgeArtifactRepositorySystem.getInstance()
                         .getById(ks.getVersionUniqueKarId());
 
                 if (kar != null) {
@@ -111,6 +111,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   kd.setKar(kar);
                   kd.setNotificationBundle(notificationBundle);
                   kd.setScheduledJobData(null);
+                  kd.setKarStatus(ks);
 
                   if (nc.getNotifiedResource() != null) {
                     logger.info("Adding notified resource to the set of inputs ");

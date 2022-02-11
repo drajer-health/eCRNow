@@ -179,7 +179,7 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).equals("1.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
         if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
@@ -191,12 +191,15 @@ public class LaunchController {
           if (urlExtension.getString("url").equals("token")) {
             logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
-            clientDetails.setTokenURL(tokenEndpoint);
+            if (clientDetails.getTokenURL() == null) {
+              clientDetails.setTokenURL(tokenEndpoint);
+            }
           }
         }
       }
 
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
           if (!checkWithExistingPatientAndEncounter(
@@ -206,6 +209,7 @@ public class LaunchController {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
             launchDetails.setClientId(clientDetails.getClientId());
             launchDetails.setClientSecret(clientDetails.getClientSecret());
@@ -218,7 +222,6 @@ public class LaunchController {
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
-            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
@@ -227,6 +230,7 @@ public class LaunchController {
                 systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsUserAccountLaunch(clientDetails.getIsUserAccountLaunch());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());

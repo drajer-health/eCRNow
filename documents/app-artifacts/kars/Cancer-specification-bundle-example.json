@@ -111,7 +111,7 @@
             ],
             "trigger": [
               {
-                "id": "encounter-end",
+                "id": "encounter-close",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
@@ -119,7 +119,7 @@
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
-                          "code": "encounter-end",
+                          "code": "encounter-close",
                           "display": "Indicates the close of an encounter"
                         }
                       ]
@@ -128,6 +128,101 @@
                 ],
                 "type": "named-event",
                 "name": "encounter-close"
+              },
+              {
+                "id": "changed-diagnosis",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                          "code": "diagnosis-change",
+                          "display": "Indicates the change in diagnosis"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "type": "named-event",
+                "name": "diagnosis-change"
+              },
+              {
+                "id": "changed-medication",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                          "code": "medication-change",
+                          "display": "Indicates the change in medications"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "type": "named-event",
+                "name": "medication-change"
+              },
+              {
+                "id": "changed-labresult",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                          "code": "labresult-change",
+                          "display": "Indicates the change in labresults"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "type": "named-event",
+                "name": "labresult-change"
+              },
+              {
+                "id": "changed-procedure",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                          "code": "procedure-change",
+                          "display": "Indicates the change in procedure"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "type": "named-event",
+                "name": "procedure-change"
+              },
+              {
+                "id": "changed-order",
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                          "code": "medication-change",
+                          "display": "Indicates the change in order"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "type": "named-event",
+                "name": "order-change"
               }
             ],
             "relatedAction": [
@@ -135,7 +230,7 @@
                 "actionId": "check-trigger-codes",
                 "relationship": "before-start",
                 "offsetDuration": {
-                  "value": 2,
+                  "value": 3,
                   "system": "http://unitsofmeasure.org",
                   "code": "min"
                 }
@@ -227,11 +322,65 @@
                     ]
               },
               {
+                    "id":"labs",
+                    "type": "Observation",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab"
+                      
+                    ]
+              },
+              {
+                    "id":"diagnosticreport-notes",
+                    "type": "DiagnosticReport",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-note"
+                      
+                    ]
+              },
+              {
+                    "id":"diagnosticreport-lab",
+                    "type": "DiagnosticReport",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-lab"
+                      
+                    ]
+              },
+              {
+                    "id":"clinicalnotes",
+                    "type": "DocumentReference",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference"
+                      
+                    ]
+              },
+              {
+                    "id":"labs",
+                    "type": "Observation",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab"
+                      
+                    ]
+              },
+              {
                     "id":"mr",
                     "type": "MedicationRequest",
                     "profile": [
                       
                         "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest"
+                      
+                    ]
+              },
+              {
+                    "id":"practitioners",
+                    "type": "Practitioner",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
                       
                     ]
               },
@@ -247,7 +396,7 @@
             ],
             "output": [
               {
-                    "id":"us-ph-report",
+                    "id":"cancer-report",
                     "type": "Bundle",
                     "profile": [
                       

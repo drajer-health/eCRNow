@@ -4,8 +4,10 @@ import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -142,7 +144,36 @@ public class KarProcessorImpl implements KarProcessor {
     // Setup Processing data
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-    kd.setKar(KnowledgeArtifactRepositorySystem.getIntance().getById(state.getKarUniqueId()));
+    kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
+
+    // Setup the Kar Status for the specific job.
+    if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {
+
+      // Get the Active Kars and process it.
+      HealthcareSettingOperationalKnowledgeArtifacts arfts = kd.getHealthcareSetting().getKars();
+
+      logger.info(
+          " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
+          arfts.getId());
+
+      Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+
+      for (KnowledgeArtifactStatus ks : stat) {
+
+        if (ks.getIsActive() && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+
+          logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
+          kd.setKarStatus(ks);
+        }
+      }
+
+      if (kd.getKarStatus() == null) {
+
+        logger.error("Cannot process job properly as KarStatus would be invalid.");
+      }
+    } else {
+      logger.error("Cannot process job properly as KarStatus would be invalid.");
+    }
 
     // Setup Notification Data
     Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());

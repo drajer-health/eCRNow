@@ -996,18 +996,22 @@ public class R4ResourcesData {
       }
       if (encounter.getServiceProvider() != null) {
         Reference organizationReference = encounter.getServiceProvider();
-        Organization organization =
-            (Organization)
-                fhirContextInitializer.getResouceById(
-                    launchDetails,
-                    client,
-                    context,
-                    "Organization",
-                    organizationReference.getReferenceElement().getIdPart());
-        BundleEntryComponent organizationEntry =
-            new BundleEntryComponent().setResource(organization);
-        bundle.addEntry(organizationEntry);
-        r4FhirData.setOrganization(organization);
+        if (organizationReference.hasReferenceElement()) {
+          Organization organization =
+              (Organization)
+                  fhirContextInitializer.getResouceById(
+                      launchDetails,
+                      client,
+                      context,
+                      "Organization",
+                      organizationReference.getReferenceElement().getIdPart());
+          if (organization != null) {
+            BundleEntryComponent organizationEntry =
+                new BundleEntryComponent().setResource(organization);
+            bundle.addEntry(organizationEntry);
+            r4FhirData.setOrganization(organization);
+          }
+        }
       }
       if (encounter.getLocation() != null) {
         List<Location> locationList = new ArrayList<>();

@@ -1,0 +1,216 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.634",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "CSTE Author"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-steward",
+      "valueContactDetail": {
+        "name": "CSTE Steward"
+      }
+    }
+  ],
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.634",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "urn:oid:2.16.840.1.113762.1.4.1146.634"
+    }
+  ],
+  "name": "ChlamydiatrachomatisInfectionSecondarySitesComplicationsDisordersICD10CM",
+  "title": "Chlamydia trachomatis Infection [Secondary Sites Complications] (Disorders) (ICD10CM)",
+  "status": "active",
+  "description": "Chlamydia trachomatis Infection [Secondary Sites Complications] (Disorders) (ICD10CM)",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+        "code": "focus"
+      },
+      "valueCodeableConcept": {
+        "text": "Chlamydia"
+      }
+    }
+  ],
+  "compose": {
+    "include": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "concept": [
+          {
+            "code": "A56",
+            "display": "Other sexually transmitted chlamydial diseases"
+          },
+          {
+            "code": "A56.0",
+            "display": "Chlamydial infection of lower genitourinary tract"
+          },
+          {
+            "code": "A56.00",
+            "display": "Chlamydial infection of lower genitourinary tract, unspecified"
+          },
+          {
+            "code": "A56.02",
+            "display": "Chlamydial vulvovaginitis"
+          },
+          {
+            "code": "A56.1",
+            "display": "Chlamydial infection of pelviperitoneum and other genitourinary organs"
+          },
+          {
+            "code": "A56.11",
+            "display": "Chlamydial female pelvic inflammatory disease"
+          },
+          {
+            "code": "A56.19",
+            "display": "Other chlamydial genitourinary infection"
+          },
+          {
+            "code": "A56.2",
+            "display": "Chlamydial infection of genitourinary tract, unspecified"
+          },
+          {
+            "code": "A56.3",
+            "display": "Chlamydial infection of anus and rectum"
+          },
+          {
+            "code": "A56.4",
+            "display": "Chlamydial infection of pharynx"
+          },
+          {
+            "code": "A56.8",
+            "display": "Sexually transmitted chlamydial infection of other sites"
+          },
+          {
+            "code": "A74",
+            "display": "Other diseases caused by chlamydiae"
+          },
+          {
+            "code": "A74.8",
+            "display": "Other chlamydial diseases"
+          },
+          {
+            "code": "A74.81",
+            "display": "Chlamydial peritonitis"
+          },
+          {
+            "code": "A74.89",
+            "display": "Other chlamydial diseases"
+          },
+          {
+            "code": "A74.9",
+            "display": "Chlamydial infection, unspecified"
+          },
+          {
+            "code": "J16.0",
+            "display": "Chlamydial pneumonia"
+          },
+          {
+            "code": "P23.1",
+            "display": "Congenital pneumonia due to Chlamydia"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-04-23T17:14:06-04:00",
+    "contains": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56",
+        "display": "Other sexually transmitted chlamydial diseases"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.0",
+        "display": "Chlamydial infection of lower genitourinary tract"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.00",
+        "display": "Chlamydial infection of lower genitourinary tract, unspecified"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.02",
+        "display": "Chlamydial vulvovaginitis"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.1",
+        "display": "Chlamydial infection of pelviperitoneum and other genitourinary organs"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.11",
+        "display": "Chlamydial female pelvic inflammatory disease"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.19",
+        "display": "Other chlamydial genitourinary infection"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.2",
+        "display": "Chlamydial infection of genitourinary tract, unspecified"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.3",
+        "display": "Chlamydial infection of anus and rectum"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.4",
+        "display": "Chlamydial infection of pharynx"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A56.8",
+        "display": "Sexually transmitted chlamydial infection of other sites"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A74",
+        "display": "Other diseases caused by chlamydiae"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A74.8",
+        "display": "Other chlamydial diseases"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A74.81",
+        "display": "Chlamydial peritonitis"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A74.89",
+        "display": "Other chlamydial diseases"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "A74.9",
+        "display": "Chlamydial infection, unspecified"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "J16.0",
+        "display": "Chlamydial pneumonia"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "P23.1",
+        "display": "Congenital pneumonia due to Chlamydia"
+      }
+    ]
+  }
+}

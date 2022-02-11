@@ -8,6 +8,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.DynamicUpdate;
 
+/**
+ *
+ *
+ * <h1>KnowledgeArtifactSummaryInfo</h1>
+ *
+ * This entity is used to store convenient information to display Knowledge Artifacts available from
+ * a Knowledge Artifact Repository. Health Care settings may activate, deactivate and setup other
+ * information related to teh processing of the KnowledgeArtifact.
+ *
+ * @author nbashyam
+ * @since 2021-04-15
+ */
 @Entity
 @Table(name = "kar_info")
 @DynamicUpdate
@@ -17,17 +29,17 @@ public class KnowledgeArtifactSummaryInfo {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @Column(name = "plan_definition_id", nullable = false, columnDefinition = "TEXT")
-  private String planDefinitionId;
+  @Column(name = "kar_id", nullable = false, columnDefinition = "TEXT")
+  private String karId;
 
-  @Column(name = "plan_definition_name", nullable = false, columnDefinition = "TEXT")
-  private String planDefinitionName;
+  @Column(name = "kar_name", nullable = false, columnDefinition = "TEXT")
+  private String karName;
 
-  @Column(name = "plan_definition_publisher", nullable = false, columnDefinition = "TEXT")
-  private String planDefinitionPublisher;
+  @Column(name = "kar_publisher", nullable = false, columnDefinition = "TEXT")
+  private String karPublisher;
 
-  @Column(name = "plan_definition_version", nullable = false, columnDefinition = "TEXT")
-  private String planDefinitionVersion;
+  @Column(name = "kar_version", nullable = false, columnDefinition = "TEXT")
+  private String karVersion;
 
   public Integer getId() {
     return id;
@@ -37,35 +49,35 @@ public class KnowledgeArtifactSummaryInfo {
     this.id = id;
   }
 
-  public String getPlanDefinitionId() {
-    return planDefinitionId;
+  public String getKarId() {
+    return karId;
   }
 
-  public void setPlanDefinitionId(String planDefinitionId) {
-    this.planDefinitionId = planDefinitionId;
+  public void setKarId(String karId) {
+    this.karId = karId;
   }
 
-  public String getPlanDefinitionName() {
-    return planDefinitionName;
+  public String getKarName() {
+    return karName;
   }
 
-  public void setPlanDefinitionName(String planDefinitionName) {
-    this.planDefinitionName = planDefinitionName;
+  public void setKarName(String karName) {
+    this.karName = karName;
   }
 
-  public String getPlanDefinitionPublisher() {
-    return planDefinitionPublisher;
+  public String getKarPublisher() {
+    return karPublisher;
   }
 
-  public void setPlanDefinitionPublisher(String planDefinitionPublisher) {
-    this.planDefinitionPublisher = planDefinitionPublisher;
+  public void setKarPublisher(String karPublisher) {
+    this.karPublisher = karPublisher;
   }
 
-  public String getPlanDefinitionVersion() {
-    return planDefinitionVersion;
+  public String getKarVersion() {
+    return karVersion;
   }
 
-  public void setPlanDefinitionVersion(String planDefinitionVersion) {
-    this.planDefinitionVersion = planDefinitionVersion;
+  public void setKarVersion(String karVersion) {
+    this.karVersion = karVersion;
   }
 }

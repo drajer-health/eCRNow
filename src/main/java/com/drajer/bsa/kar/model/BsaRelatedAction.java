@@ -54,8 +54,9 @@ public class BsaRelatedAction {
     return relatedActionId;
   }
 
-  public void setRelatedActionId(String relatedActionId) {
-    this.relatedActionId = relatedActionId;
+  public void setRelatedActionId(String relatedActionId, String planDefinitionContext) {
+    this.relatedActionId =
+        String.format("%s-PlanDefinition/%s", relatedActionId, planDefinitionContext);
   }
 
   public void log() {

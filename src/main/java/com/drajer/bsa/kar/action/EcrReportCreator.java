@@ -2,6 +2,7 @@ package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.drajer.fhirecr.FhirGeneratorUtils;
@@ -21,6 +22,7 @@ import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
+import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Immunization;
@@ -75,6 +77,86 @@ public class EcrReportCreator extends ReportCreator {
   public Resource createReport(
       KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
 
+    if (kd.getKarStatus().getOutputFormat() == OutputContentType.FHIR) {
+
+      logger.info(" Creating a FHIR Eicr Report ");
+      return getFhirReport(kd, ehrService, id, profile);
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R11) {
+
+      logger.info(" Creating a CDA R11 Eicr Report ");
+      return getFhirReport(kd, ehrService, id, profile);
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30) {
+
+      logger.info(" Creating a CDA R30 Eicr Report ");
+      return getCdaR11Report(kd, ehrService, id, profile);
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.Both) {
+
+      logger.info(" Creating an Eicr for each of the above formats ");
+      return getAllReports(kd, ehrService, id, profile);
+    } else return null;
+  }
+
+  public Resource getAllReports(
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+
+    // Create the report as needed by the Ecr FHIR IG
+    Bundle returnBundle = new Bundle();
+    returnBundle.setId(id);
+    returnBundle.setType(BundleType.DOCUMENT);
+    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
+    returnBundle.setTimestamp(Date.from(Instant.now()));
+
+    returnBundle.addEntry(
+        new BundleEntryComponent().setResource(getCdaR11Report(kd, ehrService, id, profile)));
+    returnBundle.addEntry(
+        new BundleEntryComponent().setResource(getFhirReport(kd, ehrService, id, profile)));
+    return returnBundle;
+  }
+
+  public Resource getCdaR11Report(
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+
+    // Create the report as needed by the Ecr FHIR IG
+    Bundle returnBundle = new Bundle();
+    returnBundle.setId(id);
+    returnBundle.setType(BundleType.DOCUMENT);
+    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
+    returnBundle.setTimestamp(Date.from(Instant.now()));
+
+    Resource fhirRep = getFhirReport(kd, ehrService, id, profile);
+    returnBundle.addEntry(new BundleEntryComponent().setResource(fhirRep));
+
+    Resource cdaR11Rep = getCdaR11Report(kd, ehrService, id, profile);
+    returnBundle.addEntry(new BundleEntryComponent().setResource(cdaR11Rep));
+
+    Resource cdaR30Rep = getCdaR11Report(kd, ehrService, id, profile);
+    returnBundle.addEntry(new BundleEntryComponent().setResource(cdaR30Rep));
+
+    return returnBundle;
+  }
+
+  public Resource getCdaR30Report(
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+
+    // Create the report as needed by the Ecr FHIR IG
+    Bundle returnBundle = new Bundle();
+    returnBundle.setId(id);
+    returnBundle.setType(BundleType.DOCUMENT);
+    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
+    returnBundle.setTimestamp(Date.from(Instant.now()));
+
+    logger.info(" Creating Document Reference Resource ");
+    Set<Resource> resourcesTobeAdded = new HashSet<>();
+    DocumentReference docref = new DocumentReference();
+
+    returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
+
+    return returnBundle;
+  }
+
+  public Resource getFhirReport(
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
     returnBundle.setId(id);
@@ -90,7 +172,16 @@ public class EcrReportCreator extends ReportCreator {
 
     for (Resource res : resourcesTobeAdded) {
 
-      returnBundle.addEntry(new BundleEntryComponent().setResource(res));
+      BundleEntryComponent bec = new BundleEntryComponent();
+      bec.setResource(res);
+      bec.setFullUrl(
+          kd.getNotificationContext().getFhirServerBaseUrl()
+              + "/"
+              + res.getResourceType().toString()
+              + "/"
+              + res.getIdElement().getIdPart());
+
+      returnBundle.addEntry(bec);
     }
 
     return returnBundle;
@@ -397,18 +488,20 @@ public class EcrReportCreator extends ReportCreator {
     Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
     Set<Resource> res = null;
 
-    if (rt == ResourceType.Observation && isResultsSection(sc)) {
+    if (resourcesByType != null && rt == ResourceType.Observation && isResultsSection(sc)) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
-    } else if (rt == ResourceType.Observation && isVitalsSection(sc)) {
+    } else if (resourcesByType != null && rt == ResourceType.Observation && isVitalsSection(sc)) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
-    } else if (rt == ResourceType.Observation && isSocialHistorySection(sc)) {
+    } else if (resourcesByType != null
+        && rt == ResourceType.Observation
+        && isSocialHistorySection(sc)) {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
     } else res = resourcesByType;
 
     if (res != null && res.size() >= 1) {
 
-      logger.info(" Addding resources of type {}", rt.toString());
+      logger.info(" Adding resources of type {}", rt.toString());
 
       for (Resource r : res) {
 

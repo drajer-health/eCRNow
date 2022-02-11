@@ -7,10 +7,13 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
+import com.drajer.sof.utils.ResourceUtils;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
@@ -182,9 +185,13 @@ public class KarProcessingData {
       logger.info(" Resource Sizes : {}", res.size());
       for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
 
-        if (fhirInputDataByType.containsKey(entry.getKey()))
-          fhirInputDataByType.get(entry.getKey()).addAll(entry.getValue());
-        else fhirInputDataByType.put(entry.getKey(), entry.getValue());
+        if (fhirInputDataByType.containsKey(entry.getKey())) {
+          Set<Resource> resources = fhirInputDataByType.get(entry.getKey());
+          resources.addAll(entry.getValue());
+          Set<Resource> uniqueResources =
+              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+          fhirInputDataByType.put(entry.getKey(), uniqueResources);
+        } else fhirInputDataByType.put(entry.getKey(), entry.getValue());
       }
     }
   }
@@ -196,9 +203,13 @@ public class KarProcessingData {
       logger.info(" Resource Sizes : {}", res.size());
       for (Map.Entry<String, Set<Resource>> entry : res.entrySet()) {
 
-        if (fhirInputDataById.containsKey(entry.getKey()))
-          fhirInputDataById.get(entry.getKey()).addAll(entry.getValue());
-        else fhirInputDataById.put(entry.getKey(), entry.getValue());
+        if (fhirInputDataById.containsKey(entry.getKey())) {
+          Set<Resource> resources = fhirInputDataById.get(entry.getKey());
+          resources.addAll(entry.getValue());
+          Set<Resource> uniqueResources =
+              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+          fhirInputDataById.put(entry.getKey(), uniqueResources);
+        } else fhirInputDataById.put(entry.getKey(), entry.getValue());
       }
     }
   }
@@ -211,7 +222,6 @@ public class KarProcessingData {
       for (Map.Entry<String, Set<Resource>> entry : res.entrySet()) {
 
         if (fhirInputDataById.containsKey(entry.getKey())) {
-          fhirInputDataById.get(entry.getKey()).clear();
           fhirInputDataById.put(entry.getKey(), entry.getValue());
         } else fhirInputDataById.put(entry.getKey(), entry.getValue());
       }
@@ -257,7 +267,9 @@ public class KarProcessingData {
 
         Set<Resource> res = entry.getValue();
 
-        for (Resource r : res) {
+        List<Resource> uniqueResources = ResourceUtils.deduplicate(res);
+
+        for (Resource r : uniqueResources) {
           bund.addEntry(new BundleEntryComponent().setResource(r));
         }
       }
@@ -393,5 +405,13 @@ public class KarProcessingData {
   public void setNotificationContextResources(
       HashMap<String, Resource> notificationContextResources) {
     this.notificationContextResources = notificationContextResources;
+  }
+
+  public HashMap<String, Set<Resource>> getActionOutputDataById() {
+    return actionOutputDataById;
+  }
+
+  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
+    this.actionOutputDataById = actionOutputDataById;
   }
 }

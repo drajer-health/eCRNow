@@ -102,21 +102,27 @@ public final class BsaTypes {
 
   public enum OutputContentType {
     FHIR,
-    CDA,
+    CDA_R11,
+    CDA_R30,
+    Both,
     Unknown
   }
 
   public static String getOutputContentType(OutputContentType t) {
 
     if (t == OutputContentType.FHIR) return "FHIR";
-    else if (t == OutputContentType.CDA) return "CDA";
+    else if (t == OutputContentType.CDA_R11) return "CDA_R11";
+    else if (t == OutputContentType.CDA_R30) return "CDA_R30";
+    else if (t == OutputContentType.Both) return "Both";
     else return "Unknown";
   }
 
   public static OutputContentType getOutputContentType(String code) {
 
     if (code.equalsIgnoreCase("FHIR")) return OutputContentType.FHIR;
-    else if (code.equalsIgnoreCase("CDA")) return OutputContentType.CDA;
+    else if (code.equalsIgnoreCase("CDA_R11")) return OutputContentType.CDA_R11;
+    else if (code.equalsIgnoreCase("CDA_R30")) return OutputContentType.CDA_R30;
+    else if (code.equalsIgnoreCase("Both")) return OutputContentType.Both;
     else return OutputContentType.Unknown;
   }
 }

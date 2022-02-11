@@ -1,0 +1,42 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1146.1035",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1146.1035",
+  "title": "Indeterminate or Equivocal Lab Result Value",
+  "status": "active",
+  "publisher": "Council of State and Territorial Epidemiologists Steward",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-09",
+        "concept": [
+          {
+            "code": "280414007",
+            "display": "Equivocal result (qualifier value)"
+          },
+          {
+            "code": "280416009",
+            "display": "Indeterminate result (qualifier value)"
+          },
+          {
+            "code": "419984006",
+            "display": "Inconclusive (qualifier value)"
+          },
+          {
+            "code": "42425007",
+            "display": "Equivocal (qualifier value)"
+          },
+          {
+            "code": "64957009",
+            "display": "Uncertain (qualifier value)"
+          },
+          {
+            "code": "82334004",
+            "display": "Indeterminate (qualifier value)"
+          }
+        ]
+      }
+    ]
+  }
+}
