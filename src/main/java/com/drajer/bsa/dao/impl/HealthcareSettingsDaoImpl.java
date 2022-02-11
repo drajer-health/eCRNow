@@ -100,7 +100,6 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
   /**
    * Method to retrieve all existing HealthcareSettings.
    *
-   * @param none
    * @return Returns the list of existing HealthcareSettings.
    */
   @Override

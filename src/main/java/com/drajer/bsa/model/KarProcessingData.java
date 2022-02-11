@@ -374,6 +374,14 @@ public class KarProcessingData {
     this.karExecutionStateService = karExecutionStateService;
   }
 
+  public KnowledgeArtifactStatus getKarStatus() {
+    return karStatus;
+  }
+
+  public void setKarStatus(KnowledgeArtifactStatus karStatus) {
+    this.karStatus = karStatus;
+  }
+
   public EhrQueryService getEhrQueryService() {
     return ehrQueryService;
   }
@@ -397,14 +405,6 @@ public class KarProcessingData {
   public void setNotificationContextResources(
       HashMap<String, Resource> notificationContextResources) {
     this.notificationContextResources = notificationContextResources;
-  }
-
-  public KnowledgeArtifactStatus getKarStatus() {
-    return karStatus;
-  }
-
-  public void setKarStatus(KnowledgeArtifactStatus karStatus) {
-    this.karStatus = karStatus;
   }
 
   public HashMap<String, Set<Resource>> getActionOutputDataById() {

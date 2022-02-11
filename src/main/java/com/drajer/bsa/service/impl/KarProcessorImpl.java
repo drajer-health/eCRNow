@@ -73,7 +73,6 @@ public class KarProcessorImpl implements KarProcessor {
     String namedEvent = nc.getTriggerEvent();
     data.setEhrQueryService(ehrInterface);
     data.setKarExecutionStateService(karExecutionStateService);
-
     logger.info(" *** START Executing Trigger Actions *** ");
     Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
 

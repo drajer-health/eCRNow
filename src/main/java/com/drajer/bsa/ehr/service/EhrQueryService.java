@@ -24,6 +24,10 @@ public interface EhrQueryService {
    *     previous data etc.
    * @return The Map of Resources to its type.
    */
-  public HashMap<ResourceType, Set<Resource>> getFilteredData(
+  HashMap<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, HashMap<String, ResourceType> resTypes);
+
+  void createResource(KarProcessingData kd, Resource resource);
+
+  void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
 }
