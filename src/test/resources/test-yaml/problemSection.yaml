@@ -575,8 +575,6 @@ testCase:
         "@code": "840539006"
         "@codeSystem": "2.16.840.1.113883.6.96"
         "@codeSystemName": "sct"
-        
-     #Itr-3 
   eCR-problem-FullECR-withNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -1283,4 +1281,3 @@ testCase:
         "@codeSystem": "2.16.840.1.113883.6.96"
         "@codeSystemName": "sct"
         "@displayName": "Accidental poisoning by heroin (disorder)"
-  

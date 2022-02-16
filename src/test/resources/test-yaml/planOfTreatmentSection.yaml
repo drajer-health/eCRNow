@@ -118,7 +118,6 @@ testCase:
         "code/@displayName": "Treatment Plan"
         "title": "Plan of Treatment"
         "text": "No Plan Of Treatment Information"
-        #ITR-3
   eCR-LabOrder-FullECR-WithNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"

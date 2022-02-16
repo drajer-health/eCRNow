@@ -976,7 +976,6 @@ testCase:
         "interpretationCode/@codeSystem": "2.16.840.1.113883.5.83"
         "interpretationCode/@codeSystemName": "v3-ObservationInterpretation"
         "interpretationCode/@displayName": "High"
-        #ITR-3 Full eCR test case 2
   eCR-result-FullECR-WithNonCOVIDSNOMEDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
