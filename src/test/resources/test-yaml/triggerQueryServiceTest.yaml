@@ -19,7 +19,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
       Observation:
         - params:
             patient: "12742571"

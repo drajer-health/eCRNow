@@ -30,7 +30,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
         - params:
             patient: "12742571"
             code: "http%3A//snomed.info/sct%7C77386006"

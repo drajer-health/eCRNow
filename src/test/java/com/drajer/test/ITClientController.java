@@ -22,7 +22,7 @@ public class ITClientController extends BaseIntegrationTest {
   @BeforeClass
   public static void clientSetUp() throws IOException {
     clientDetailPayload =
-        TestUtils.getFileContentAsString("R4/Misc/ClientDetails/ClientDataEntry1.json");
+        TestUtils.getFileContentAsString("R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json");
     expectedClientDetails = mapper.readValue(clientDetailPayload, ClientDetails.class);
   }
 

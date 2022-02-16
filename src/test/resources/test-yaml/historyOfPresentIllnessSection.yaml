@@ -3,7 +3,7 @@ testName: "HistoryOfPresentIllnessSectionTest"
 testCase:
   eCR-historyOfPresentIllness-withOnlyTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[8]/section/"
     resourceMappingData:
@@ -22,7 +22,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -48,7 +48,7 @@ testCase:
         "tbody/tr[1]/td[1]/content": "Unknown History of Present Illness"
   eCR-historyOfPresentIllness-withTwoTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[8]/section/"
     resourceMappingData:
@@ -67,7 +67,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -94,7 +94,7 @@ testCase:
   #'tbody/tr[5]/td[1]/content': "Disease caused by 2019 novel coronavirus"
   eCR-historyOfPresentIllness-withAndWithoutTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[8]/section/"
     resourceMappingData:
@@ -118,7 +118,7 @@ testCase:
         - params:
             patient: "12742571"
             category: "laboratory"
-          responseFilePath: "R4/Observation/ObservationLaboratory.json"
+          responseFilePath: "R4/Observation/ObservationWithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

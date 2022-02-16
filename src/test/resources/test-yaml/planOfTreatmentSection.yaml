@@ -3,7 +3,7 @@ testName: "PlanOfTreatmentSectionTest"
 testCase:
   eCR-POT-withActiveTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
     resourceMappingData:
@@ -22,7 +22,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
       ServiceRequest:
         - params:
             patient: "12742571"
@@ -78,7 +78,7 @@ testCase:
   #      'effectiveTime/@value': "20200501014501"
   eCR-POT-withOutTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
     resourceMappingData:
@@ -97,7 +97,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
       ServiceRequest:
         - params:
             patient: "12742571"
@@ -118,3 +118,640 @@ testCase:
         "code/@displayName": "Treatment Plan"
         "title": "Plan of Treatment"
         "text": "No Plan Of Treatment Information"
+  eCR-LabOrder-FullECR-WithNonCOVIDTriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"     
+      ServiceRequest:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_WithNonCovidTriggerCode.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: ""
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@extension": "2014-06-09"
+        "code/@code": "18776-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "Treatment Plan"
+        "title": "Plan of Treatment"
+      - xPath: "text/table/thead/tr/th"
+        count: 2
+      - xPath: "text/table/tbody/tr"
+        count: 1
+      - xPath: "text/table/tbody/tr[1]/td"
+        count: 2
+      - xPath: "text/table/"
+        "thead/tr/th[1]": "Planned Observation"
+        "thead/tr/th[2]": "Planned Observation Date"
+        "tbody/tr[1]/td[1]/content": "Bordetella Pertussis Culture"
+        
+      #      'tbody/tr[1]/td[2]/content': "20200501014501"
+      - xPath: "entry"
+        count: 1
+        #entry-1
+      - xPath: "entry[1]/observation/templateId"
+        count: 3
+      - xPath: "entry[1]/observation/id"
+        count: 1
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "11585-7"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+  eCR-LabOrder-FullECR-WithCOVIDTriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"     
+      ServiceRequest:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_WithCovidTriggerCode.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: ""
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@extension": "2014-06-09"
+        "code/@code": "18776-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "Treatment Plan"
+        "title": "Plan of Treatment"
+      - xPath: "text/table/thead/tr/th"
+        count: 2
+      - xPath: "text/table/tbody/tr"
+        count: 4
+      - xPath: "text/table/tbody/tr[1]/td"
+        count: 2
+      - xPath: "text/table/"
+        "thead/tr/th[1]": "Planned Observation"
+        "thead/tr/th[2]": "Planned Observation Date"
+        "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Coronavirus (COVID-19) Screen"
+        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+    #      'tbody/tr[1]/td[2]/content': "20200501014501"
+        
+      #      'tbody/tr[1]/td[2]/content': "20200501014501"
+      - xPath: "entry"
+        count: 4
+        #entry-1
+      - xPath: "entry[1]/observation/templateId"
+        count: 3
+      - xPath: "entry[1]/observation/id"
+        count: 1
+      - xPath: "entry[1]/observation/"
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+   #entry-2
+      - xPath: "entry[2]/observation/templateId"
+        count: 3
+      - xPath: "entry[2]/observation/id"
+        count: 1
+      - xPath: "entry[2]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94500-6"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+  #entry-3
+      - xPath: "entry[3]/observation/templateId"
+        count: 3
+      - xPath: "entry[3]/observation/id"
+        count: 1
+      - xPath: "entry[3]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+    #entry-4
+      - xPath: "entry[4]/observation/templateId"
+        count: 3
+      - xPath: "entry[4]/observation/id"
+        count: 1
+      - xPath: "entry[4]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+  eCR-LabOrder-COVID-WithCOVIDTriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"     
+      ServiceRequest:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_WithCovidTriggerCode.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: ""
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@extension": "2014-06-09"
+        "code/@code": "18776-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "Treatment Plan"
+        "title": "Plan of Treatment"
+      - xPath: "text/table/thead/tr/th"
+        count: 2
+      - xPath: "text/table/tbody/tr"
+        count: 4
+      - xPath: "text/table/tbody/tr[1]/td"
+        count: 2
+      - xPath: "text/table/"
+        "thead/tr/th[1]": "Planned Observation"
+        "thead/tr/th[2]": "Planned Observation Date"
+        "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Coronavirus (COVID-19) Screen"
+        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+    #      'tbody/tr[1]/td[2]/content': "20200501014501"
+        
+      #      'tbody/tr[1]/td[2]/content': "20200501014501"
+      - xPath: "entry"
+        count: 4
+        #entry-1
+      - xPath: "entry[1]/observation/templateId"
+        count: 3
+      - xPath: "entry[1]/observation/id"
+        count: 1
+      - xPath: "entry[1]/observation/"
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+   #entry-2
+      - xPath: "entry[2]/observation/templateId"
+        count: 3
+      - xPath: "entry[2]/observation/id"
+        count: 1
+      - xPath: "entry[2]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94500-6"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+  #entry-3
+      - xPath: "entry[3]/observation/templateId"
+        count: 3
+      - xPath: "entry[3]/observation/id"
+        count: 1
+      - xPath: "entry[3]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+    #entry-4
+      - xPath: "entry[4]/observation/templateId"
+        count: 3
+      - xPath: "entry[4]/observation/id"
+        count: 1
+      - xPath: "entry[4]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+  eCR-LabOrder-COVID-WithCovidAndNonCOVIDTriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"     
+      ServiceRequest:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_WithCovidAndNonCovidTriggerCode.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: ""
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@extension": "2014-06-09"
+        "code/@code": "18776-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "Treatment Plan"
+        "title": "Plan of Treatment"
+      - xPath: "text/table/thead/tr/th"
+        count: 2
+      - xPath: "text/table/tbody/tr"
+        count: 4
+      - xPath: "text/table/tbody/tr[1]/td"
+        count: 2
+      - xPath: "text/table/"
+        "thead/tr/th[1]": "Planned Observation"
+        "thead/tr/th[2]": "Planned Observation Date"
+        "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Bordetella Pertussis Culture"
+        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+    #      'tbody/tr[1]/td[2]/content': "20200501014501"
+        
+      #      'tbody/tr[1]/td[2]/content': "20200501014501"
+      - xPath: "entry"
+        count: 4
+        #entry-1
+      - xPath: "entry[1]/observation/templateId"
+        count: 3
+      - xPath: "entry[1]/observation/id"
+        count: 1
+      - xPath: "entry[1]/observation/"
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+   #entry-2
+      - xPath: "entry[2]/observation/templateId"
+        count: 2
+      - xPath: "entry[2]/observation/id"
+        count: 1
+      - xPath: "entry[2]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"        
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "11585-7"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "loinc.org"    
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+  #entry-3
+      - xPath: "entry[3]/observation/templateId"
+        count: 3
+      - xPath: "entry[3]/observation/id"
+        count: 1
+      - xPath: "entry[3]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+    #entry-4
+      - xPath: "entry[4]/observation/templateId"
+        count: 3
+      - xPath: "entry[4]/observation/id"
+        count: 1
+      - xPath: "entry[4]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+ #      'effectiveTime/@value': "20200501014501"
+  eCR-LabOrder-FullECR-WithCovidAndNonCOVIDTriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"     
+      ServiceRequest:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_WithCovidAndNonCovidTriggerCode.json"
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"
+    validate:
+      - xPath: ""
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.2.10"
+        "templateId[2]/@extension": "2014-06-09"
+        "code/@code": "18776-5"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"
+        "code/@displayName": "Treatment Plan"
+        "title": "Plan of Treatment"
+      - xPath: "text/table/thead/tr/th"
+        count: 2
+      - xPath: "text/table/tbody/tr"
+        count: 4
+      - xPath: "text/table/tbody/tr[1]/td"
+        count: 2
+      - xPath: "text/table/"
+        "thead/tr/th[1]": "Planned Observation"
+        "thead/tr/th[2]": "Planned Observation Date"
+        "tbody/tr[1]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[2]/td[1]/content": "Bordetella Pertussis Culture"
+        "tbody/tr[3]/td[1]/content": "Coronavirus Panel"
+        "tbody/tr[4]/td[1]/content": "Coronavirus Panel"
+    #      'tbody/tr[1]/td[2]/content': "20200501014501"
+        
+      #      'tbody/tr[1]/td[2]/content': "20200501014501"
+      - xPath: "entry"
+        count: 4
+        #entry-1
+      - xPath: "entry[1]/observation/templateId"
+        count: 3
+      - xPath: "entry[1]/observation/id"
+        count: 1
+      - xPath: "entry[1]/observation/"
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+   #entry-2
+      - xPath: "entry[2]/observation/templateId"
+        count: 3
+      - xPath: "entry[2]/observation/id"
+        count: 1
+      - xPath: "entry[2]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"        
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "11585-7"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC" 
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508" 
+        "code/@valueSetVersion": "2020-07-09"  
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501" 
+  #entry-3
+      - xPath: "entry[3]/observation/templateId"
+        count: 3
+      - xPath: "entry[3]/observation/id"
+        count: 1
+      - xPath: "entry[3]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+    #entry-4
+      - xPath: "entry[4]/observation/templateId"
+        count: 3
+      - xPath: "entry[4]/observation/id"
+        count: 1
+      - xPath: "entry[4]/observation/"  
+        "@classCode": "OBS"
+        "@moodCode": "RQO"
+        "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.44"
+        "templateId[2]/@extension": "2014-06-09"
+        "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.4"
+        "templateId[3]/@extension": "2016-12-01"
+        #      'id/@root': "2.16.840.1.113883.1.1.1.1"
+        #      'id/@extension': "311539773"
+        "code/@code": "94531-1"
+        "code/@codeSystem": "2.16.840.1.113883.6.1"
+        "code/@codeSystemName": "LOINC"      
+        "code/@valueSet": "2.16.840.1.114222.4.11.7508"
+        "code/@valueSetVersion": "2020-07-09"
+        "statusCode/@code": "active"
+  #      'effectiveTime/@value': "20200501014501"
+  
+         
