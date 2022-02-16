@@ -53,7 +53,7 @@ public class LaunchControllerTest {
     clientDetails =
         (ClientDetails)
             TestUtils.getResourceAsObject(
-                "R4/Misc/ClientDetails/ClientDataEntry1.json", ClientDetails.class);
+                "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json", ClientDetails.class);
   }
 
   @Test

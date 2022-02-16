@@ -3,8 +3,8 @@ testName: "TestSystemLaunchAllActions"
 testCase:
   eCR-VR-EicrActions-AllActions:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
-      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest_WithOutValidation.json"
     resourceMappingData:
       Patient:
         - params: "12742571"
@@ -21,7 +21,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

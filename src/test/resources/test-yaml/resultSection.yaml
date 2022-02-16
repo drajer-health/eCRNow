@@ -1,9 +1,9 @@
 ---
 testName: "ResultSectionTest"
 testCase:
-  eCR-result-withAndWithoutTriggerCode:
+  eCR-result-FullEcr-WithCovidTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[3]/section/"
     resourceMappingData:
@@ -19,15 +19,11 @@ testCase:
       Organization:
         - params: "675844"
           responseFilePath: "R4/Organization/Organization.json"
-      Condition:
-        - params:
-            patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
       Observation:
         - params:
             patient: "12742571"
             category: "laboratory"
-          responseFilePath: "R4/Observation/ObservationLaboratory.json"
+          responseFilePath: "R4/Observation/ObservationWithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -113,7 +109,7 @@ testCase:
         "interpretationCode/@displayName": "Abnormal"
   eCR-result-withNoObservations:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[3]/section/"
     resourceMappingData:
@@ -132,7 +128,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -153,7 +149,7 @@ testCase:
         "text": "No Lab Results Information"
   eCR-result-withMultiplePageObservations:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[3]/section/"
     resourceMappingData:
@@ -172,7 +168,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
       Observation:
         - params:
             patient: "12742571"
@@ -261,7 +257,6 @@ testCase:
         "interpretationCode/@codeSystem": "2.16.840.1.113883.5.83"
         "interpretationCode/@codeSystemName": "v3-ObservationInterpretation"
         "interpretationCode/@displayName": "Abnormal"
- 
   eCR-result-FullECR-WithNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -1701,8 +1696,6 @@ testCase:
         "interpretationCode/@codeSystem": "2.16.840.1.113883.5.83"
         "interpretationCode/@codeSystemName": "v3-ObservationInterpretation"
         "interpretationCode/@displayName": "Normal"
-        
-#ITR-3 
   eCR-result-FullECR-CovidAndNonCovidTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -2025,15 +2018,11 @@ testCase:
       Organization:
         - params: "675844"
           responseFilePath: "R4/Organization/Organization.json"
-      Condition:
-        - params:
-            patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
       Observation:
         - params:
             patient: "12742571"
             category: "laboratory"
-          responseFilePath: "R4/Observation/ObservationLaboratory.json"
+          responseFilePath: "R4/Observation/ObservationWithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

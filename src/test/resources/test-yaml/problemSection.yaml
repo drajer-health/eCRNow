@@ -1,9 +1,9 @@
 ---
 testName: "ProblemSectionTest"
 testCase:
-  eCR-problem-withOnlyTriggerCode:
+  eCR-Problem-FullEcr-WithCovidTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
@@ -22,7 +22,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -144,7 +144,7 @@ testCase:
   #      '@valueSetVersion': "2020-07-09"
   eCR-problem-withTwoTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
@@ -163,7 +163,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -310,7 +310,7 @@ testCase:
         #'translation/@displayName': "Contact with and (suspected) exposure to other viral communicable diseases"
   eCR-problem-withAndWithoutTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
@@ -334,7 +334,7 @@ testCase:
         - params:
             patient: "12742571"
             category: "laboratory"
-          responseFilePath: "R4/Observation/ObservationLaboratory.json"
+          responseFilePath: "R4/Observation/ObservationWithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -410,7 +410,7 @@ testCase:
         "translation/@displayName": "Contact with and (suspected) exposure to other viral communicable diseases"
   eCR-problem-emptySection:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
@@ -430,7 +430,7 @@ testCase:
         - params:
             patient: "12742571"
             category: "laboratory"
-          responseFilePath: "R4/Observation/ObservationLaboratory.json"
+          responseFilePath: "R4/Observation/ObservationWithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -449,7 +449,7 @@ testCase:
         "text": "No Problem Information"
   eCR-problem-personLevel:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[1]/section/"
     resourceMappingData:
@@ -598,7 +598,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/Condition_WithNonCOVIDTriggerCode.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithNonCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -735,7 +735,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
@@ -855,8 +855,8 @@ testCase:
   #      '@displayName': "Disease caused by 2019-nCoV"
   #      '@valueSet': "2.16.840.1.114222.4.11.7508"
   #      '@valueSetVersion': "2020-07-09" 
-  
-  eCR-problem-COVID-WithAndWithoutCovidTriggerCode:
+
+  eCR-problem-COVID-WithCovidAndNonCovidTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
@@ -877,7 +877,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionWithTwoTriggerCodes.json"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

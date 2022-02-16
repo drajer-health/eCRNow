@@ -3,7 +3,7 @@ testName: "PlanOfTreatmentSectionTest"
 testCase:
   eCR-POT-withActiveTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
     resourceMappingData:
@@ -22,7 +22,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
       ServiceRequest:
         - params:
             patient: "12742571"
@@ -78,7 +78,7 @@ testCase:
   #      'effectiveTime/@value': "20200501014501"
   eCR-POT-withOutTriggerCode:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[7]/section/"
     resourceMappingData:
@@ -97,7 +97,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
       ServiceRequest:
         - params:
             patient: "12742571"
@@ -190,7 +190,6 @@ testCase:
         "code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
-  
   eCR-LabOrder-FullECR-WithCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -475,7 +474,6 @@ testCase:
         "code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
-  
   eCR-LabOrder-COVID-WithCovidAndNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
