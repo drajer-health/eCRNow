@@ -1,0 +1,1637 @@
+{
+    "resourceType": "Bundle",
+    "id": "10e3aa88-70b2-41ee-b50f-06ace300aecf",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest?patient=12742571"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384615",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384615",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-02-14T06:15:50Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Cervicalgia</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Stat, 02/10/22 23:36:00 CST, Once, Cervicalgia</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 02/10/22 23:36:00 CST, Once, Cervicalgia"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T05:37:00Z",
+                            "end": "2022-02-14T06:15:50Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T05:36:34Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "M54.2",
+                                "display": "Cervicalgia",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Cervicalgia"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384623",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384623",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-02-14T06:15:50Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Streptococcus Pneumoniae Antigen</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Cervicalgia</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Stat, 02/10/22 23:42:00 CST, Once, Cervicalgia</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31719357",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Streptococcus Pneumoniae Antigen"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 02/10/22 23:42:00 CST, Once, Cervicalgia"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T05:44:00Z",
+                            "end": "2022-02-14T06:15:50Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T05:42:19Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "M54.2",
+                                "display": "Cervicalgia",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Cervicalgia"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384583",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384583",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-02-14T06:15:48Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Cervicalgia</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Stat, 02/10/22 23:25:00 CST, Once, Cervicalgia</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 02/10/22 23:25:00 CST, Once, Cervicalgia"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T05:27:00Z",
+                            "end": "2022-02-14T06:15:48Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T05:25:05Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "M54.2",
+                                "display": "Cervicalgia",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Cervicalgia"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347268617",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347268617",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-02-13T06:15:07Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Respiratory Culture</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Morning headache</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Infectious Disease Cerner</p><p><b>Order Detail</b>: Sputum, Routine collect, 02/09/22 8:32:00 CST, Once, Morning headache, Nurse collect</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31713945",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Respiratory Culture"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Sputum, Routine collect, 02/09/22 8:32:00 CST, Once, Morning headache, Nurse collect"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968840"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T14:35:00Z",
+                            "end": "2022-02-13T06:15:07Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T14:32:31Z",
+                "requester": {
+                    "reference": "Practitioner/3215927",
+                    "display": "Cerner Test, Physician - Infectious Disease Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "R51.9",
+                                "display": "Headache, unspecified",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Morning headache"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384609",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384609",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-11T05:27:30Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: PPD Reading</p><p><b>Occurrence</b>: Feb 13, 2022  5:25 A.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p><p><b>Order Detail</b>: 02/12/22 23:25:00 CST, Stop date 02/12/22 23:25:00 CST</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2515",
+                                "display": "Patient Care",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Patient Care"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "22162949",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "PPD Reading"
+                },
+                "orderDetail": [
+                    {
+                        "text": "02/12/22 23:25:00 CST, Stop date 02/12/22 23:25:00 CST"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97953900"
+                },
+                "occurrenceDateTime": "2022-02-13T05:25:00Z",
+                "authoredOn": "2022-02-11T05:27:30Z",
+                "requester": {
+                    "reference": "Practitioner/1",
+                    "display": "SYSTEM, SYSTEM Cerner"
+                },
+                "note": [
+                    {
+                        "text": "Order placed due to tuberculin purified protein derivative administration."
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384569",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384569",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-11T05:11:31Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: PPD Reading</p><p><b>Occurrence</b>: Feb 13, 2022  5:10 A.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p><p><b>Order Detail</b>: 02/12/22 23:10:00 CST, Stop date 02/12/22 23:10:00 CST</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2515",
+                                "display": "Patient Care",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Patient Care"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "22162949",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "PPD Reading"
+                },
+                "orderDetail": [
+                    {
+                        "text": "02/12/22 23:10:00 CST, Stop date 02/12/22 23:10:00 CST"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968840"
+                },
+                "occurrenceDateTime": "2022-02-13T05:10:00Z",
+                "authoredOn": "2022-02-11T05:11:31Z",
+                "requester": {
+                    "reference": "Practitioner/1",
+                    "display": "SYSTEM, SYSTEM Cerner"
+                },
+                "note": [
+                    {
+                        "text": "Order placed due to tuberculin purified protein derivative administration."
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384707",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384707",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-11T07:43:19Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Clostridium difficile Toxin</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Carter, Kristin Cerner</p><p><b>Order Detail</b>: Stool, AD Collect, 02/11/22 1:43:00 CST, Once by GENLABSUPER, Nurse collect</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2553380517",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Clostridium difficile Toxin"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Stool, AD Collect, 02/11/22 1:43:00 CST, Once by GENLABSUPER, Nurse collect"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968988"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T07:43:00Z",
+                            "end": "2022-02-11T07:43:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T07:42:00Z",
+                "requester": {
+                    "reference": "Practitioner/11817978",
+                    "display": "Carter, Kristin Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384675",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384675",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-11T06:19:26Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Bordetella Pertussis Culture</p><p><b>Occurrence</b>: Feb 11, 2022  6:19 A.M. UTC</p><p><b>Priority</b>: STAT</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Nasal Wash, Stat collect, 02/11/22 0:18:00 CST, Nurse collect</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2922007",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Bordetella Pertussis Culture"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Nasal Wash, Stat collect, 02/11/22 0:18:00 CST, Nurse collect"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968988"
+                },
+                "occurrenceDateTime": "2022-02-11T06:19:00Z",
+                "authoredOn": "2022-02-11T06:18:17Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384667",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384667",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-11T06:12:45Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Streptococcus Pneumoniae Antigen</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Routine, 02/11/22 0:12:00 CST, Once</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31719357",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Streptococcus Pneumoniae Antigen"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Routine, 02/11/22 0:12:00 CST, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968988"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T06:12:00Z",
+                            "end": "2022-02-11T06:12:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T06:12:06Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384631",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384631",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-11T06:01:56Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Stat, 02/11/22 0:01:00 CST, Once</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 02/11/22 0:01:00 CST, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968988"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T06:01:00Z",
+                            "end": "2022-02-11T06:01:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T06:01:23Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347384547",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347384547",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-02-11T05:15:37Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Morning headache</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Stat, 02/10/22 23:06:00 CST, Once, Morning headache</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 02/10/22 23:06:00 CST, Once, Morning headache"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968840"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-11T05:11:00Z",
+                            "end": "2022-02-11T05:15:37Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-11T05:06:42Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "R51.9",
+                                "display": "Headache, unspecified",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Morning headache"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347268621",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347268621",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T14:36:00Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Influenza POC</p><p><b>Occurrence</b>: Feb  9, 2022  2:35 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Morning headache</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Infectious Disease Cerner</p><p><b>Order Detail</b>: 02/09/22 8:35:00 CST, Morning headache</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "20454826",
+                                "display": "Ambulatory POC",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Ambulatory POC"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "20454844",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Influenza POC"
+                },
+                "orderDetail": [
+                    {
+                        "text": "02/09/22 8:35:00 CST, Morning headache"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968840"
+                },
+                "occurrenceDateTime": "2022-02-09T14:35:00Z",
+                "authoredOn": "2022-02-09T14:35:01Z",
+                "requester": {
+                    "reference": "Practitioner/3215927",
+                    "display": "Cerner Test, Physician - Infectious Disease Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "R51.9",
+                                "display": "Headache, unspecified",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Morning headache"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347268619",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347268619",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T14:35:59Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Influenza Screening</p><p><b>Occurrence</b>: Feb  9, 2022  2:34 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Morning headache</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Infectious Disease Cerner</p><p><b>Order Detail</b>: 02/09/22 8:34:00 CST</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2515",
+                                "display": "Patient Care",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Patient Care"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "22937744",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Influenza Screening"
+                },
+                "orderDetail": [
+                    {
+                        "text": "02/09/22 8:34:00 CST"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968840"
+                },
+                "occurrenceDateTime": "2022-02-09T14:34:00Z",
+                "authoredOn": "2022-02-09T14:34:46Z",
+                "requester": {
+                    "reference": "Practitioner/3215927",
+                    "display": "Cerner Test, Physician - Infectious Disease Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "R51.9",
+                                "display": "Headache, unspecified",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Morning headache"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347268589",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347268589",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T14:18:29Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Notify Provider of Possible Zika Virus Risk</p><p><b>Occurrence</b>: Feb  9, 2022  2:13 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Infectious Disease Cerner</p><p><b>Order Detail</b>: 02/09/22 8:13:00 CST</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2515",
+                                "display": "Patient Care",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Patient Care"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2550131971",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Notify Provider of Possible Zika Virus Risk"
+                },
+                "orderDetail": [
+                    {
+                        "text": "02/09/22 8:13:00 CST"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968840"
+                },
+                "occurrenceDateTime": "2022-02-09T14:13:00Z",
+                "authoredOn": "2022-02-09T14:13:57Z",
+                "requester": {
+                    "reference": "Practitioner/3215927",
+                    "display": "Cerner Test, Physician - Infectious Disease Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339360085",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339360085",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-10-30T01:00:04Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Urine Legionella Antigen</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Heart attack</li></ul><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Urine, Stat Collect, 10/15/21 12:00:00 CDT, Once, Nurse collect, Heart attack</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2921626",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Urine Legionella Antigen"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Urine, Stat Collect, 10/15/21 12:00:00 CDT, Once, Nurse collect, Heart attack"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963320"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-15T17:03:00Z",
+                            "end": "2021-10-15T17:07:02Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-15T17:00:03Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I23.8",
+                                "display": "Other current complications following acute myocardial infarction",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Heart attack"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339360087",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339360087",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-10-30T01:00:04Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Streptococcus Pneumoniae Antigen</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Heart attack</li></ul><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Blood, Stat, 10/15/21 12:00:00 CDT, Once, Heart attack</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31719357",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Streptococcus Pneumoniae Antigen"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 10/15/21 12:00:00 CDT, Once, Heart attack"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963320"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-15T17:03:00Z",
+                            "end": "2021-10-15T17:05:38Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-15T17:00:03Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I23.8",
+                                "display": "Other current complications following acute myocardial infarction",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Heart attack"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339360083",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339360083",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-10-30T01:00:04Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Heart attack</li></ul><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Blood, Stat, 10/15/21 12:00:00 CDT, Once, Heart attack</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 10/15/21 12:00:00 CDT, Once, Heart attack"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963320"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-15T17:03:00Z",
+                            "end": "2021-10-15T17:05:37Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-15T17:00:03Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I23.8",
+                                "display": "Other current complications following acute myocardial infarction",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Heart attack"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339346757",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339346757",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-10-30T01:00:04Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: Blood Culture</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Body Site</b>:</p><ul><li>Abdomen</li></ul><p><b>Reason</b>:</p><ul><li>Heart attack</li></ul><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Test, ASD Physcian 3</p><p><b>Order Detail</b>: Blood, Abdomen, Stat collect, 10/15/21 9:19:00 CDT, Once, Heart attack, Not Required</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31713873",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Blood Culture"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Abdomen, Stat collect, 10/15/21 9:19:00 CDT, Once, Heart attack, Not Required"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963320"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-15T14:26:00Z",
+                            "end": "2021-10-15T14:56:27Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-15T14:19:21Z",
+                "requester": {
+                    "reference": "Practitioner/12744819",
+                    "display": "Test, ASD Physcian 3"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I23.8",
+                                "display": "Other current complications following acute myocardial infarction",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Heart attack"
+                    }
+                ],
+                "bodySite": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/1028",
+                                "code": "309342",
+                                "display": "Abdomen",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "113345001",
+                                "display": "Abdominopelvic structure (body structure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Abdomen"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339346749",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339346749",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-10-30T01:00:04Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, ONE</p><p><b>Code</b>: CBC w/o Diff</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Heart attack</li></ul><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Test, ASD Physcian 3</p><p><b>Order Detail</b>: Blood, Stat, 10/15/21 9:17:00 CDT, Once, Heart attack</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "32413911",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "CBC w/o Diff"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 10/15/21 9:17:00 CDT, Once, Heart attack"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12742571",
+                    "display": "ECRTEST, ONE"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963320"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-15T14:29:00Z",
+                            "end": "2021-10-15T14:36:09Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-15T14:10:21Z",
+                "requester": {
+                    "reference": "Practitioner/12744819",
+                    "display": "Test, ASD Physcian 3"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I23.8",
+                                "display": "Other current complications following acute myocardial infarction",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Heart attack"
+                    }
+                ]
+            }
+        }
+    ]
+}
