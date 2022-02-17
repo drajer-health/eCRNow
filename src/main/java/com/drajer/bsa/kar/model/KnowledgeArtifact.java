@@ -50,6 +50,12 @@ public class KnowledgeArtifact {
    */
   private String karVersion;
 
+  /** The human friendly name of the KnowledgeArtifact */
+  private String karName;
+
+  /** The publisher name of the KnowledgeArtifact */
+  private String karPublisher;
+
   /**
    * The Map of actions present in the KnowledgeArtifact. The string(Key) is the Action id present
    * in the Knowledge Artifact.
@@ -304,6 +310,22 @@ public class KnowledgeArtifact {
 
   public void setKarPath(String karPath) {
     this.karPath = karPath;
+  }
+
+  public String getKarName() {
+    return karName;
+  }
+
+  public void setKarName(String karName) {
+    this.karName = karName;
+  }
+
+  public String getKarPublisher() {
+    return karPublisher;
+  }
+
+  public void setKarPublisher(String karPublisher) {
+    this.karPublisher = karPublisher;
   }
 
   public void printKarSummary() {

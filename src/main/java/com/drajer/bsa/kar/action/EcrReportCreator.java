@@ -4,8 +4,13 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
+import com.drajer.bsa.utils.ReportGenerationUtils;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.drajer.fhirecr.FhirGeneratorUtils;
+import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,7 +89,7 @@ public class EcrReportCreator extends ReportCreator {
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R11) {
 
       logger.info(" Creating a CDA R11 Eicr Report ");
-      return getFhirReport(kd, ehrService, id, profile);
+      return getCdaR11Report(kd, ehrService, id, profile);
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30) {
 
       logger.info(" Creating a CDA R30 Eicr Report ");
@@ -126,11 +131,14 @@ public class EcrReportCreator extends ReportCreator {
     Resource fhirRep = getFhirReport(kd, ehrService, id, profile);
     returnBundle.addEntry(new BundleEntryComponent().setResource(fhirRep));
 
-    Resource cdaR11Rep = getCdaR11Report(kd, ehrService, id, profile);
-    returnBundle.addEntry(new BundleEntryComponent().setResource(cdaR11Rep));
+    Eicr ecr = new Eicr();
+    Pair<R4FhirData, LaunchDetails> data =
+        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
+    //  String eicr = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(data.getValue0(),
+    // data.getValue1(), ecr);
 
-    Resource cdaR30Rep = getCdaR11Report(kd, ehrService, id, profile);
-    returnBundle.addEntry(new BundleEntryComponent().setResource(cdaR30Rep));
+    String fileName = "Cda_eicr.xml";
+    // ApplicationUtils.saveDataToFile(eicr, fileName);
 
     return returnBundle;
   }
@@ -528,11 +536,10 @@ public class EcrReportCreator extends ReportCreator {
     if (status != null) {
 
       CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) (status);
-      ctcs.log();
 
       if (ctcs.containsMatches(rt)) {
 
-        logger.info(" Trigger codes have been found for resource {}", rt.toString());
+        logger.debug(" Trigger codes have been found for resource {}", rt.toString());
 
         // Check to see if the resource being added has the same codes, if so add the extension.
         Pair<Boolean, ReportableMatchedTriggerCode> matchCode = resourceHasMatchedCode(res, ctcs);
@@ -571,7 +578,7 @@ public class EcrReportCreator extends ReportCreator {
 
         } else {
 
-          logger.info(" Resource {} does not match any trigger code or value.", res.getId());
+          logger.debug(" Resource {} does not match any trigger code or value.", res.getId());
         }
 
       } else {
@@ -673,25 +680,6 @@ public class EcrReportCreator extends ReportCreator {
 
   public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
 
-    Set<Resource> returnVal = new HashSet<Resource>();
-    for (Resource r : res) {
-
-      Observation obs = (Observation) (r);
-
-      if (obs.getCategoryFirstRep() != null
-          && obs.getCategoryFirstRep().getCodingFirstRep() != null
-          && obs.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
-          && obs.getCategoryFirstRep()
-              .getCodingFirstRep()
-              .getSystem()
-              .contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
-          && obs.getCategoryFirstRep().getCodingFirstRep().getCode() != null
-          && obs.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals(category)) {
-
-        returnVal.add(r);
-      }
-    }
-
-    return returnVal;
+    return ReportGenerationUtils.filterObservationsByCategory(res, category);
   }
 }

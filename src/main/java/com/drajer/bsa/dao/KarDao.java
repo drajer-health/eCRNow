@@ -1,7 +1,7 @@
 package com.drajer.bsa.dao;
 
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
-import com.drajer.bsa.model.KnowledgeArtifiactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import java.util.List;
 
 /**
@@ -15,13 +15,13 @@ import java.util.List;
  */
 public interface KarDao {
 
-  public KnowledgeArtifiactRepository saveOrUpdate(KnowledgeArtifiactRepository kar);
+  public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar);
 
-  public KnowledgeArtifiactRepository getKARById(Integer id);
+  public KnowledgeArtifactRepository getKARById(Integer id);
 
-  public KnowledgeArtifiactRepository getKARByUrl(String url);
+  public KnowledgeArtifactRepository getKARByUrl(String url);
 
-  public List<KnowledgeArtifiactRepository> getAllKARs();
+  public List<KnowledgeArtifactRepository> getAllKARs();
 
   public KnowledgeArtifactStatus saveOrUpdateKARStatus(KnowledgeArtifactStatus karStatus);
 

@@ -2,7 +2,7 @@ package com.drajer.bsa.service.impl;
 
 import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
-import com.drajer.bsa.model.KnowledgeArtifiactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.service.KarService;
 import java.util.Date;
 import java.util.List;
@@ -17,23 +17,23 @@ public class KarServiceImpl implements KarService {
   @Autowired KarDao karDao;
 
   @Override
-  public KnowledgeArtifiactRepository saveOrUpdate(KnowledgeArtifiactRepository kar) {
+  public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {
     karDao.saveOrUpdate(kar);
     return kar;
   }
 
   @Override
-  public KnowledgeArtifiactRepository getKARById(Integer id) {
+  public KnowledgeArtifactRepository getKARById(Integer id) {
     return karDao.getKARById(id);
   }
 
   @Override
-  public KnowledgeArtifiactRepository getKARByUrl(String url) {
+  public KnowledgeArtifactRepository getKARByUrl(String url) {
     return karDao.getKARByUrl(url);
   }
 
   @Override
-  public List<KnowledgeArtifiactRepository> getAllKARs() {
+  public List<KnowledgeArtifactRepository> getAllKARs() {
     return karDao.getAllKARs();
   }
 

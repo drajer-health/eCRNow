@@ -86,11 +86,9 @@ public class SubmitReport extends BsaAction {
                 .execute();
 
         if (responseBundle != null) {
-          if (logger.isInfoEnabled()) {
-            logger.info(
-                "Response Bundle:::::{}",
-                context.newJsonParser().encodeResourceToString(responseBundle));
-          }
+          logger.debug(
+              "Response Bundle:::::{}",
+              context.newJsonParser().encodeResourceToString(responseBundle));
 
           data.addActionOutput(actionId, responseBundle);
 

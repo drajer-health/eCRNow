@@ -2,7 +2,7 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
-import com.drajer.bsa.model.KnowledgeArtifiactRepository;
+import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
 import org.hibernate.Criteria;
@@ -20,28 +20,28 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
 
   @Override
-  public KnowledgeArtifiactRepository saveOrUpdate(KnowledgeArtifiactRepository kar) {
+  public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {
     getSession().saveOrUpdate(kar);
     return kar;
   }
 
   @Override
-  public KnowledgeArtifiactRepository getKARById(Integer id) {
-    KnowledgeArtifiactRepository kar = getSession().get(KnowledgeArtifiactRepository.class, id);
+  public KnowledgeArtifactRepository getKARById(Integer id) {
+    KnowledgeArtifactRepository kar = getSession().get(KnowledgeArtifactRepository.class, id);
     return kar;
   }
 
   @Override
-  public KnowledgeArtifiactRepository getKARByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifiactRepository.class);
+  public KnowledgeArtifactRepository getKARByUrl(String url) {
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
     criteria.add(Restrictions.eq("fhirServerURL", url));
-    KnowledgeArtifiactRepository kar = (KnowledgeArtifiactRepository) criteria.uniqueResult();
+    KnowledgeArtifactRepository kar = (KnowledgeArtifactRepository) criteria.uniqueResult();
     return kar;
   }
 
   @Override
-  public List<KnowledgeArtifiactRepository> getAllKARs() {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifiactRepository.class);
+  public List<KnowledgeArtifactRepository> getAllKARs() {
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
     return criteria.addOrder(Order.desc("id")).list();
   }
 

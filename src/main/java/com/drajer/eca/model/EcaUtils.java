@@ -168,7 +168,6 @@ public class EcaUtils {
         R4FhirData r4Data = (R4FhirData) data;
 
         eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
-        System.out.println(eICR);
 
       } else {
 

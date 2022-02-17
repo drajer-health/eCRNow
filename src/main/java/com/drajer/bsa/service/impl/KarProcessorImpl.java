@@ -86,8 +86,12 @@ public class KarProcessorImpl implements KarProcessor {
 
       // Get necessary data to process.
       HashMap<ResourceType, Set<Resource>> res = ehrInterface.getFilteredData(data, resourceTypes);
-
-      BsaActionStatus status = action.process(data, ehrInterface);
+      BsaActionStatus status = null;
+      try {
+        status = action.process(data, ehrInterface);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
 
       data.addActionStatus(action.getActionId(), status);
 
