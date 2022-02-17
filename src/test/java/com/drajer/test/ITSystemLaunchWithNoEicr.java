@@ -11,12 +11,9 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,15 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 
-/**
- * Description: This test class is created for testing all the actions. ersd.json for this test is
- * modified with actions as below. MatchTrigger - Will execute without any dependency. Create_EICR -
- * Will execute after 2 seconds of MatchTrigger action. Periodic_EICR - will execute after 20
- * seconds of MatchTrigger action. with frequency 1 with interval of 20 seconds. CloseOut_EICR -
- * will execute immediately after CreateEicr action is completed. with frequency 1 with interval of
- * 10 seconds. Validate_EICR - will execute immediately after each EICR created with above action.
- * Submit_EICR - will execute immediately after ValidateEICR.
- */
 @RunWith(Parameterized.class)
 public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
 
@@ -78,8 +66,6 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
-    mockRestApiUrl();
-    mockRestApiAuthUrl();
   }
 
   @Parameters(name = "{0}")
@@ -105,12 +91,6 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
 
   @Test
   public void testNoEicrWhenNoTriggerCode() {
-
-    wireMockServer.resetMappings();
-    Map<String, ?> modifiedMapping = new HashMap<>(allResourceMapping);
-    // modifiedMapping.remove("Condition");
-    stubHelper.stubResources(modifiedMapping);
-    stubHelper.stubAuthAndMetadata(allOtherMapping);
 
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
@@ -208,70 +188,5 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
       logger.warn("Issue with thread sleep", e);
       Thread.currentThread().interrupt();
     }
-  }
-
-  private void mockRestApiUrl() {
-    JSONObject jsonObject = new JSONObject(systemLaunchPayload);
-
-    StringBuilder sb1 = new StringBuilder(200);
-    sb1.append("{\"fhirServerURL\":\"");
-    sb1.append(clientDetails.getFhirServerBaseURL());
-    sb1.append("\",\"patientId\":\"");
-    sb1.append(jsonObject.get("patientId"));
-    sb1.append("\",\"encounterId\":\"");
-    sb1.append(jsonObject.get("encounterId"));
-    sb1.append("\",\"eicrSetId\":\"");
-    sb1.append(testCaseId);
-    sb1.append("\",\"eicrXml\":\"");
-    sb1.append("This is Eicr Document");
-    sb1.append("\"}");
-
-    String restResponse = "{\"status\":\"success\"}";
-
-    wireMockServer.stubFor(
-        post(urlPathEqualTo(getURLPath(clientDetails.getRestAPIURL())))
-            // .withRequestBody(equalToJson(sb1.toString()))
-            .atPriority(10)
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withBody(restResponse)
-                    .withHeader("Content-Type", "application/json; charset=utf-8")));
-  }
-
-  private void mockRestApiAuthUrl() {
-
-    String accesstoken =
-        "{\"access_token\":\"eyJraWQiOiIy\",\"scope\":\"system\\/MedicationRequest.read\",\"token_type\":\"Bearer\",\"expires_in\":570}";
-    StringBuilder sb = new StringBuilder(200);
-    sb.append("{\"client_id\":\"");
-    sb.append(clientDetails.getClientId());
-    sb.append("\",\"client_secret\":\"");
-    sb.append(clientDetails.getClientSecret());
-    sb.append("\"}");
-
-    wireMockServer.stubFor(
-        post(urlPathEqualTo(getURLPath(clientDetails.getRestAPIURL())))
-            // .withRequestBody(equalToJson(sb.toString()))
-            .atPriority(1)
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withBody(accesstoken)
-                    .withHeader("Content-Type", "application/json; charset=utf-8")));
-  }
-
-  private String getURLPath(String url) {
-    URL fullUrl = null;
-
-    try {
-      fullUrl = new URL(url);
-      if (fullUrl != null) {
-        return fullUrl.getPath();
-      }
-    } catch (MalformedURLException e) {
-      fail(e.getMessage() + " This exception is not expected fix the test.");
-    }
-    return null;
   }
 }
