@@ -1,10 +1,10 @@
 ---
-testName: "TestSystemLaunchAllActions"
+testName: "TestSystemLaunchWithNoECR"
 testCase:
   eCR-FullECR-WithNonTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
-      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest_WithOutValidation.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
     resourceMappingData:
       Patient:
         - params: "12742571"
@@ -39,7 +39,7 @@ testCase:
   eCR-COVID-WithNonTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
-      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest_WithOutValidation.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
     resourceMappingData:
       Patient:
         - params: "12742571"
@@ -70,4 +70,38 @@ testCase:
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
-      default: "R4/Misc/NoDataFound_Default.json"      
+      default: "R4/Misc/NoDataFound_Default.json"  
+  eCR-COVID-WithNonCovidTriggerCode:
+    testData:
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
+      SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
+    resourceMappingData:
+      Patient:
+        - params: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
+      Encounter:
+        - params: "97953900"
+          responseFilePath: "R4/Encounter/Encounter_withOneParticipant.json"
+      Practitioner:
+        - params: "11817978"
+          responseFilePath: "R4/Practitioner/Practitioner_11817978.json"
+      Organization:
+        - params: "675844"
+          responseFilePath: "R4/Organization/Organization.json"
+      Condition:
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithNonCovidTriggerCode.json"
+      Observation:
+        - params:
+            patient: "12742571"
+            category: "laboratory"
+          responseFilePath: "R4/Observation/ObservationWithNonCovidTriggers.json"
+      ServiceRequest:
+        - params:
+           patient: "12742571"
+          responseFilePath: "R4/ServiceRequest/ServiceRequest_WithNonCovidTriggerCode.json" 
+    otherMappingData:
+      metadata: "R4/Misc/MetaData_r4.json"
+      token: "R4/Misc/AccessToken.json"
+      default: "R4/Misc/NoDataFound_Default.json"    
