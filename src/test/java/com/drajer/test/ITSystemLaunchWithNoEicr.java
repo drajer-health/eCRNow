@@ -123,14 +123,14 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
 
   private void validateNoMatchedTriggerStatus(JobStatus status) {
     MatchTriggerStatus matchTriggerStatus = state.getMatchTriggerStatus();
-    //  assertEquals(status, matchTriggerStatus.getJobStatus());
+
     assertNotNull(matchTriggerStatus.getMatchedCodes());
     assertTrue(matchTriggerStatus.getMatchedCodes().size() == 0);
   }
 
   private void validateCreateEICR(JobStatus status, Boolean validateEICR) {
     CreateEicrStatus createEicrStatus = state.getCreateEicrStatus();
-    // assertEquals(status, createEicrStatus.getJobStatus());
+
     if (validateEICR) {
       assertTrue(createEicrStatus.getEicrCreated());
       validateEICR(createEicrStatus.geteICRId());
