@@ -91,6 +91,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     Resource res =
         getResourceById(
             client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
+    
     if (res != null) {
 
       logger.info(

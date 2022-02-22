@@ -72,7 +72,7 @@ public class KarProcessingData {
   HashMap<String, Set<Resource>> fhirInputDataById;
 
   /**
-   * These are the resources that are received by notification, stored by he FHIR Path context
+   * These are the resources that are received by notification, stored by the FHIR Path context
    * variables. (For e.g an encounter received via Subscription notification would be called
    * %encounter)
    */
