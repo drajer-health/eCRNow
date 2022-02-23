@@ -55,24 +55,30 @@ public class DirectResponseReceiver extends RRReceiver {
       logger.info("Reading mail..");
       // Properties for Javamail
       Properties props = new Properties();
-      
+
       props.put("mail.smtp.auth", "true");
       props.setProperty("mail.imap.ssl.trust", "*");
       props.setProperty("mail.imap.ssl.enable", "true");
-      
+
       Session session = Session.getInstance(props, null);
 
       Store store = session.getStore("imap");
       int port = Integer.parseUnsignedInt(details.getImapPort());
-      
+
       logger.info("Connecting to IMAP Inbox ");
-      if(details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
-    	  logger.info("Connecting to IMAP Inbox using the imap url {} and port {}", details.getDirectHost(), port);
-    	  store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
-      }
-      else {
-    	  logger.info("Connecting to IMAP Inbox using imap url {} and port {}", details.getDirectHost(), port);
-    	  store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
+      if (details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
+        logger.info(
+            "Connecting to IMAP Inbox using the imap url {} and port {}",
+            details.getDirectHost(),
+            port);
+        store.connect(
+            details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
+      } else {
+        logger.info(
+            "Connecting to IMAP Inbox using imap url {} and port {}",
+            details.getDirectHost(),
+            port);
+        store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
       }
 
       Folder inbox = store.getFolder(INBOX);
@@ -131,26 +137,29 @@ public class DirectResponseReceiver extends RRReceiver {
   }
 
   public void deleteMail(LaunchDetails details, String username, String password) throws Exception {
-    
-	  logger.info("Deleting mail..");
-    
+
+    logger.info("Deleting mail..");
+
     Properties props = new Properties();
-    
+
     // props.put("mail.imap.auth", "true");
     props.setProperty("mail.imap.ssl.trust", "*");
     props.setProperty("mail.imap.ssl.enable", "true");
     Session session = Session.getInstance(props, null);
-    
+
     Store store = session.getStore("imap");
     int port = Integer.parseUnsignedInt(details.getImapPort());
-    
-    if(details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
-    	logger.info("Connecting to IMAP Inbox using the imap url {} and port {}", details.getDirectHost(), port);
-  	  store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
-    }
-    else {
-    	logger.info("Connecting to IMAP Inbox using imap url {} and port {}", details.getDirectHost(), port);
-  	  store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
+
+    if (details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
+      logger.info(
+          "Connecting to IMAP Inbox using the imap url {} and port {}",
+          details.getDirectHost(),
+          port);
+      store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
+    } else {
+      logger.info(
+          "Connecting to IMAP Inbox using imap url {} and port {}", details.getDirectHost(), port);
+      store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
     }
 
     Folder inbox = store.getFolder(INBOX);

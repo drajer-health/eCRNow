@@ -175,6 +175,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
+  @Column(name = "is_multi_tenant_system_launch", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isMultiTenantSystemLaunch;
+
   @Column(name = "is_user_account_launch", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch;
@@ -533,6 +537,14 @@ public class LaunchDetails {
 
   public void setRrDocRefMimeType(String rrDocRefMimeType) {
     this.rrDocRefMimeType = rrDocRefMimeType;
+  }
+
+  public Boolean getIsMultiTenantSystemLaunch() {
+    return isMultiTenantSystemLaunch;
+  }
+
+  public void setIsMultiTenantSystemLaunch(Boolean isMultiTenantSystemLaunch) {
+    this.isMultiTenantSystemLaunch = isMultiTenantSystemLaunch;
   }
 
   public Boolean getIsUserAccountLaunch() {

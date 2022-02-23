@@ -213,7 +213,26 @@ public class LaunchController {
         }
       }
 
-      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+      JSONObject tokenResponse = null;
+      if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())
+          && clientDetails.getTokenExpiryDateTime() != null && clientDetails.getAccessToken() != null) {
+        // Retrieve Access token 3 minutes before it expires.
+        Instant currentInstant = new Date().toInstant().plusSeconds(180);
+        Date currentDate = Date.from(currentInstant);
+        Date tokenExpiryTime = clientDetails.getTokenExpiryDateTime();
+        int value = currentDate.compareTo(tokenExpiryTime);
+        if (value > 0) {
+          logger.info("AccessToken is Expired. Getting new AccessToken");
+          tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+        } else {
+          logger.info("AccessToken is Valid. No need to get new AccessToken");
+          tokenResponse = new JSONObject();
+          tokenResponse.put(ACCESS_TOKEN, clientDetails.getAccessToken());
+          tokenResponse.put(EXPIRES_IN, clientDetails.getTokenExpiry());
+        }
+      } else {
+        tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+      }
 
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
@@ -250,6 +269,8 @@ public class LaunchController {
                 systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsMultiTenantSystemLaunch(
+                clientDetails.getIsMultiTenantSystemLaunch());
             launchDetails.setIsUserAccountLaunch(clientDetails.getIsUserAccountLaunch());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());

@@ -53,7 +53,7 @@ public class ActionRepo {
   DirectEicrSender directTransport;
 
   RestApiSender restTransport;
-  
+
   DirectResponseReceiver directReceiver;
 
   String schematronFileLocation;
@@ -199,18 +199,16 @@ public class ActionRepo {
   public void setActions(Map<EcrActionTypes, Set<AbstractAction>> actions) {
     this.actions = actions;
   }
-  
-  
 
   public DirectResponseReceiver getDirectReceiver() {
-	return directReceiver;
-}
+    return directReceiver;
+  }
 
-public void setDirectReceiver(DirectResponseReceiver directReceiver) {
-	this.directReceiver = directReceiver;
-}
+  public void setDirectReceiver(DirectResponseReceiver directReceiver) {
+    this.directReceiver = directReceiver;
+  }
 
-public void setupTriggerBasedActions() {
+  public void setupTriggerBasedActions() {
 
     if (actions != null) {
 

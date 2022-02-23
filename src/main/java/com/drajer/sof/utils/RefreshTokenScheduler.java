@@ -4,6 +4,7 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
+import com.drajer.sof.service.ClientDetailsService;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -29,6 +30,8 @@ import org.springframework.web.client.RestTemplate;
 public class RefreshTokenScheduler {
 
   @Autowired ThreadPoolTaskScheduler taskScheduler;
+
+  @Autowired ClientDetailsService clientDetailsService;
 
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
@@ -82,7 +85,8 @@ public class RefreshTokenScheduler {
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       if (Boolean.FALSE.equals(authDetails.getIsSystem())
-          && Boolean.FALSE.equals(authDetails.getIsUserAccountLaunch())) {
+          && Boolean.FALSE.equals(authDetails.getIsUserAccountLaunch())
+          && Boolean.FALSE.equals(authDetails.getIsMultiTenantSystemLaunch())) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "refresh_token");
@@ -92,7 +96,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (authDetails.getIsSystem()) {
+      } else if (authDetails.getIsSystem() || authDetails.getIsMultiTenantSystemLaunch()) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
@@ -138,6 +142,11 @@ public class RefreshTokenScheduler {
         tokenResponse = new JSONObject(responseBody);
       }
       logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
+      if (authDetails.getIsMultiTenantSystemLaunch()) {
+        ClientDetails clientDetails =
+            clientDetailsService.getClientDetailsByUrl(authDetails.getEhrServerURL());
+        updateAccessTokenInClientDetails(clientDetails, tokenResponse);
+      }
       updateAccessToken(authDetails, tokenResponse);
 
     } catch (Exception e) {
@@ -175,7 +184,7 @@ public class RefreshTokenScheduler {
     logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
-      if (clientDetails.getIsSystem()) {
+      if (clientDetails.getIsSystem() || clientDetails.getIsMultiTenantSystemLaunch()) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
@@ -225,11 +234,37 @@ public class RefreshTokenScheduler {
       }
 
       logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
-
+      updateAccessTokenInClientDetails(clientDetails, tokenResponse);
     } catch (Exception e) {
       logger.error(
           "Error in Getting the AccessToken for the client: {}", clientDetails.getClientId(), e);
     }
     return tokenResponse;
+  }
+
+  private void updateAccessTokenInClientDetails(
+      ClientDetails clientDetails, JSONObject tokenResponse) {
+    try {
+      logger.info("ClientDetailsId:::::{}", clientDetails.getId());
+      logger.info("ClientDetailsService" + clientDetailsService);
+      logger.info(
+          "ClientDetailsGetById"
+              + clientDetailsService.getClientDetailsById(clientDetails.getId()));
+      ClientDetails existingClientDetails =
+          clientDetailsService.getClientDetailsById(clientDetails.getId());
+      if (existingClientDetails != null) {
+        logger.trace("Updating the AccessToken value in ClientDetails table");
+        existingClientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+        existingClientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+        existingClientDetails.setLastUpdated(new Date());
+        long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
+        Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+        existingClientDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+        clientDetailsService.saveOrUpdate(existingClientDetails);
+        logger.trace("Successfully updated AccessToken value in ClientDetails table");
+      }
+    } catch (Exception e) {
+      logger.error("Error in Updating the AccessToken value into ClientDetails: ", e);
+    }
   }
 }

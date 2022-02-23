@@ -1,6 +1,8 @@
 package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
+import com.drajer.sof.utils.RefreshTokenScheduler;
+import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,11 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +40,10 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem;
 
+  @Column(name = "is_multi_tenant_system_launch", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isMultiTenantSystemLaunch;
+
   @Column(name = "is_user_account_launch", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch;
@@ -53,6 +62,16 @@ public class ClientDetails {
 
   @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
   private String scopes;
+
+  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
+  private String accessToken;
+
+  @Column(name = "token_expiry", nullable = true)
+  private int tokenExpiry;
+
+  @Column(name = "token_expiry_date", nullable = true)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date tokenExpiryDateTime;
 
   @Column(name = "is_direct", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -175,6 +194,14 @@ public class ClientDetails {
     this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
+  public Boolean getIsMultiTenantSystemLaunch() {
+    return isMultiTenantSystemLaunch;
+  }
+
+  public void setIsMultiTenantSystemLaunch(Boolean isMultiTenantSystemLaunch) {
+    this.isMultiTenantSystemLaunch = isMultiTenantSystemLaunch;
+  }
+
   public String getClientId() {
     return clientId;
   }
@@ -217,6 +244,48 @@ public class ClientDetails {
 
   public void setScopes(String scopes) {
     this.scopes = scopes;
+  }
+
+  public String getAccessToken() {
+    if (this.getTokenExpiryDateTime() != null) {
+      // Retrieve Access token 3 minutes before it expires.
+      // 3 minutes is enough buffer for Trigger or Loading query to complete.
+      Instant currentInstant = new Date().toInstant().plusSeconds(180);
+      Date currentDate = Date.from(currentInstant);
+      Date tokenExpiryTime = this.getTokenExpiryDateTime();
+      int value = currentDate.compareTo(tokenExpiryTime);
+      if (value > 0) {
+        logger.info("AccessToken is Expired. Getting new AccessToken");
+        JSONObject accessTokenObj =
+            new RefreshTokenScheduler().getAccessTokenUsingClientDetails(this);
+        return accessTokenObj.getString("access_token");
+      } else {
+        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        return accessToken;
+      }
+    } else {
+      return accessToken;
+    }
+  }
+
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public int getTokenExpiry() {
+    return tokenExpiry;
+  }
+
+  public void setTokenExpiry(int tokenExpiry) {
+    this.tokenExpiry = tokenExpiry;
+  }
+
+  public Date getTokenExpiryDateTime() {
+    return tokenExpiryDateTime;
+  }
+
+  public void setTokenExpiryDateTime(Date tokenExpiryDateTime) {
+    this.tokenExpiryDateTime = tokenExpiryDateTime;
   }
 
   public Boolean getIsDirect() {

@@ -35,6 +35,7 @@
   "redirectURI": "https://unittest/luanchdetial/dao/redirect",
   "authorizationCode": "234567",
   "isSystem": false,
+  "isMultiTenantSystemLaunch": false,
   "isUserAccountLaunch": false,
   "debugFhirQueryAndEicr": false,
   "xRequestId": "launchdetialunittestdao",

@@ -26,6 +26,7 @@
   "isCreateDocRef": false,
   "isInvokeRestAPI": false,
   "isBoth": true,
+  "isMultiTenantSystemLaunch": false,
   "rrRestAPIUrl":"http://localhost:port/rrRestAPI",
   "launchId": null,
   "launchState": 0,

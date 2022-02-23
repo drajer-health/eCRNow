@@ -1,6 +1,5 @@
 package com.drajer.eca.model;
 
-import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -8,9 +7,7 @@ import com.drajer.sof.model.LaunchDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,13 +84,14 @@ public class ReportabilityResponseAction extends AbstractAction {
     logger.info(" **** End Printing SubmitEicrAction **** ");
   }
 
-  public void checkRRForEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
+  public void checkRRForEicrs(
+      LaunchDetails details, PatientExecutionState state, Set<Integer> ids) {
 
-	  if (!StringUtils.isBlank(details.getDirectHost())
-	            || !StringUtils.isBlank(details.getImapUrl())) {
-	          ActionRepo.getInstance().getDirectReceiver().receiveRespone(details);
-	 } 
-	  
+    if (!StringUtils.isBlank(details.getDirectHost())
+        || !StringUtils.isBlank(details.getImapUrl())) {
+      ActionRepo.getInstance().getDirectReceiver().receiveRespone(details);
+    }
+
     for (Integer id : ids) {
 
       logger.info("Found eICR with Id {} to check for RR", id);

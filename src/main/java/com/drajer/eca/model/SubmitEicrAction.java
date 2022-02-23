@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 public class SubmitEicrAction extends AbstractAction {
 
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
-  
+
   public static int RR_TIMER_CHECK_DURATION = 5;
-  public static String RR_TIMER_CHECK_UNITS = "min"; 
+  public static String RR_TIMER_CHECK_UNITS = "min";
 
   @Override
   public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
@@ -88,10 +88,11 @@ public class SubmitEicrAction extends AbstractAction {
     logger.info(" **** End Printing SubmitEicrAction **** ");
   }
 
-  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
+  public void submitEicrs(
+      LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
 
-	boolean rrCheckTimerScheduled = false;
-	  
+    boolean rrCheckTimerScheduled = false;
+
     for (Integer id : ids) {
 
       Eicr ecr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
@@ -121,15 +122,15 @@ public class SubmitEicrAction extends AbstractAction {
         submitState.setJobStatus(JobStatus.COMPLETED);
         submitState.setSubmittedTime(new Date());
         state.getSubmitEicrStatus().add(submitState);
-        
-        if(!rrCheckTimerScheduled) {
-        	
-        	Duration d = new Duration();
-        	d.setValue(RR_TIMER_CHECK_DURATION);
-        	d.setUnit(RR_TIMER_CHECK_UNITS);
-        	
-        	WorkflowService.scheduleJob(
-        			details.getId(), d, EcrActionTypes.RR_CHECK, details.getStartDate(), taskInstanceId);
+
+        if (!rrCheckTimerScheduled) {
+
+          Duration d = new Duration();
+          d.setValue(RR_TIMER_CHECK_DURATION);
+          d.setUnit(RR_TIMER_CHECK_UNITS);
+
+          WorkflowService.scheduleJob(
+              details.getId(), d, EcrActionTypes.RR_CHECK, details.getStartDate(), taskInstanceId);
         }
 
       } else {

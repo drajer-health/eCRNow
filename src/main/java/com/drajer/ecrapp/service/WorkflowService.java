@@ -68,7 +68,7 @@ public class WorkflowService {
   @Autowired DirectEicrSender directTansport;
 
   @Autowired RestApiSender restApiTransport;
-  
+
   @Autowired DirectResponseReceiver directReceiver;
 
   @Autowired ObjectMapper mapper;
