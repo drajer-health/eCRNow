@@ -14,6 +14,7 @@ import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.LaunchDetails.ProcessingStatus;
 import com.drajer.sof.model.SystemLaunch;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
@@ -281,6 +282,7 @@ public class LaunchController {
             launchDetails.setRrRestAPIUrl(clientDetails.getRrRestAPIUrl());
             launchDetails.setRrDocRefMimeType(clientDetails.getRrDocRefMimeType());
             launchDetails.setxRequestId(requestIdHeadervalue);
+            launchDetails.setProcessingState(LaunchDetails.getString(ProcessingStatus.In_Progress));
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
@@ -563,15 +565,18 @@ public class LaunchController {
           return encounterResource;
         }
       }
-      logger.info(EncounterError);
+
+      logger.error(EncounterError);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
 
     } catch (ResourceNotFoundException notFoundException) {
-      logger.info(EncounterError, notFoundException);
+
+      logger.error(EncounterError, notFoundException);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, EncounterError, notFoundException);
 
     } catch (Exception e) {
-      logger.info(EncounterError, e);
+
+      logger.error(EncounterError, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError, e);
     }
   }
