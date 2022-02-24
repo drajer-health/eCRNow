@@ -216,7 +216,8 @@ public class LaunchController {
 
       JSONObject tokenResponse = null;
       if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())
-          && clientDetails.getTokenExpiryDateTime() != null && clientDetails.getAccessToken() != null) {
+          && clientDetails.getTokenExpiryDateTime() != null
+          && clientDetails.getAccessToken() != null) {
         // Retrieve Access token 3 minutes before it expires.
         Instant currentInstant = new Date().toInstant().plusSeconds(180);
         Date currentDate = Date.from(currentInstant);

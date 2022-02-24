@@ -1277,7 +1277,7 @@ public class R4ResourcesData {
         }
       }
 
-      // Load Location
+      // Add Organization
       if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()) {
@@ -1297,6 +1297,8 @@ public class R4ResourcesData {
           }
         }
       }
+
+      // Add Locations
       if (Boolean.TRUE.equals(encounter.hasLocation())) {
         List<Location> locationList = new ArrayList<>();
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
@@ -1320,6 +1322,10 @@ public class R4ResourcesData {
           }
         }
         r4FhirData.setLocationList(locationList);
+
+        if (locationList.size() > 0) {
+          r4FhirData.setLocation(locationList.get(0));
+        }
       }
     } else {
       logger.debug("Encounter is null, cannot fetch Practitioners");
