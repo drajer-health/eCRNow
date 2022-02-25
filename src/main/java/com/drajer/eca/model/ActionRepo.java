@@ -6,6 +6,7 @@ import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.routing.impl.DirectResponseReceiver;
+import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -41,6 +42,8 @@ public class ActionRepo {
   TriggerQueryService triggerQueryService;
 
   LoadingQueryService loadingQueryService;
+
+  ClientDetailsService clientDetailsService;
 
   LaunchService launchService;
 
@@ -158,6 +161,14 @@ public class ActionRepo {
 
   public void setLaunchService(LaunchService launchService) {
     this.launchService = launchService;
+  }
+
+  public ClientDetailsService getClientDetailsService() {
+    return clientDetailsService;
+  }
+
+  public void setClientDetailsService(ClientDetailsService clientDetailsService) {
+    this.clientDetailsService = clientDetailsService;
   }
 
   public WorkflowService getWorkflowService() {

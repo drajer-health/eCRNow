@@ -16,6 +16,7 @@ import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.routing.impl.DirectResponseReceiver;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -61,6 +62,8 @@ public class WorkflowService {
 
   @Autowired LaunchService launchService;
 
+  @Autowired ClientDetailsService clientDetailService;
+
   @Autowired ThreadPoolTaskScheduler taskScheduler;
 
   @Autowired EicrRRService eicrRRService;
@@ -99,6 +102,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
     ActionRepo.getInstance().setTriggerQueryService(triggerQueryService);
     ActionRepo.getInstance().setLaunchService(launchService);
+    ActionRepo.getInstance().setClientDetailsService(clientDetailService);
     ActionRepo.getInstance().setTaskScheduler(taskScheduler);
     ActionRepo.getInstance().setEicrRRService(eicrRRService);
     ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
