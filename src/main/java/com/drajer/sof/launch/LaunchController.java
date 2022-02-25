@@ -102,8 +102,10 @@ public class LaunchController {
     logger.info(" Saving Launch Context: {}", launchDetails);
     authDetailsService.saveOrUpdate(launchDetails);
 
-    logger.info("Scheduling refresh token job ");
-    tokenScheduler.scheduleJob(launchDetails);
+    if(Boolean.FALSE.equals(launchDetails.getIsMultiTenantSystemLaunch())) {
+    	logger.info("Scheduling refresh token job ");
+        tokenScheduler.scheduleJob(launchDetails);	
+    }
 
     String taskInstanceId = "";
     // Kick off the Launch Event Processing
