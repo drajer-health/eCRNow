@@ -1,6 +1,8 @@
 package com.drajer.bsa.utils;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -9,8 +11,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -50,6 +55,12 @@ public class BsaServiceUtils {
 
   @Value("${bsa.output.directory}")
   String debugDirectory;
+
+  @Autowired(required = false)
+  Map<String, BsaTypes.BsaActionStatusType> actions;
+
+  @Autowired(required = false)
+  Map<String, Bundle> eicrBundles;
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
 
@@ -234,6 +245,31 @@ public class BsaServiceUtils {
       outStream.writeBytes(data);
     } catch (IOException e) {
       logger.debug(" Unable to write data to file: {}", fileName, e);
+    }
+  }
+
+  // public static final Map<String, Bundle> eicrBundles = new HashMap<String, Bundle>();
+  public void saveEicrState(String url, Resource res) {
+    if (eicrBundles != null) {
+      logger.info("Found actions map saving eicr bundle state....");
+      if (res instanceof Bundle) {
+        logger.info("Eicr bundle found...");
+        Bundle eicrBundle = (Bundle) res;
+        eicrBundles.put(url, eicrBundle);
+      }
+    } else {
+      logger.info("No action map found skipping eicr bundle state save....");
+    }
+  }
+
+  public void saveActionStatusState(HashMap<String, BsaActionStatus> actionStatus) {
+    if (actions != null) {
+      logger.info("Found actions map saving action state....");
+      for (Entry<String, BsaActionStatus> entry : actionStatus.entrySet()) {
+        actions.put(entry.getValue().getActionId(), entry.getValue().getActionStatus());
+      }
+    } else {
+      logger.info("No action map found skipping action state save....");
     }
   }
 }

@@ -1,6 +1,9 @@
 {
   "resourceType": "Bundle",
-  "id": "eRSD-RuleFilter",
+  "meta": {
+    "versionId": "1.0.0"
+  },
+  "id": "eRSD-RuleFilter-CqlOnly",
   "type": "collection",
   "entry": [ {
     "resource": {

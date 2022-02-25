@@ -30,24 +30,24 @@ public class DirectEicrSender extends EicrSender {
   private static final Logger logger = LoggerFactory.getLogger(DirectEicrSender.class);
 
   private static final String FILE_NAME = "eICR Report";
-  
+
   public class DirectMimeMessage extends MimeMessage {
-	  
-	  Session session;
-	  String  messageId;
-	  String  domain;
-	  
-	  public DirectMimeMessage(Session sess, String id, String domainName) {
-		  super(sess);
-		  session = sess;
-		  messageId = id;
-		  domain = domainName;
-	  }
-	  
-	  @Override
-	  protected void updateMessageID() throws MessagingException {
-		    setHeader("Message-ID", "<" + messageId + "@" + domain + ">");
-	  }
+
+    Session session;
+    String messageId;
+    String domain;
+
+    public DirectMimeMessage(Session sess, String id, String domainName) {
+      super(sess);
+      session = sess;
+      messageId = id;
+      domain = domainName;
+    }
+
+    @Override
+    protected void updateMessageID() throws MessagingException {
+      setHeader("Message-ID", "<" + messageId + "@" + domain + ">");
+    }
   }
 
   @Override
@@ -123,7 +123,7 @@ public class DirectEicrSender extends EicrSender {
 
     logger.info(" Retrieve Session instance for sending Direct mail ");
 
-    DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host );
+    DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host);
 
     logger.info("Setting From Address {}", username);
     message.setFrom(new InternetAddress(username));

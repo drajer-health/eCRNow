@@ -1,6 +1,9 @@
 {
   "resourceType": "Bundle",
   "id": "SeenPatients-bundle",
+  "meta": {
+    "versionId": "1.0.0"
+  },
   "type": "collection",
   "entry": [ {
     "resource": {
@@ -1933,7 +1936,7 @@
           } ]
         }, {
           "id": "submit-eicr",
-          "description": "This action represents the validation of the eICR.",
+          "description": "This action represents the submition of the eICR.",
           "textEquivalent": "Submit eICR",
           "code": [ {
             "coding": [ {

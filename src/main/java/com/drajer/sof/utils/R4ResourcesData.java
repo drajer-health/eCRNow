@@ -1035,7 +1035,7 @@ public class R4ResourcesData {
 
       if (encounter != null) {
         r4FhirData.setEncounter(encounter);
-     /*   if (encounter.getParticipant() != null) {
+        /*   if (encounter.getParticipant() != null) {
           List<Practitioner> practitionerList = new ArrayList<>();
           Map<String, String> practitionerMap = new HashMap<>();
           List<EncounterParticipantComponent> participants = encounter.getParticipant();
@@ -1061,7 +1061,7 @@ public class R4ResourcesData {
           if (!practitionerList.isEmpty()) {
             r4FhirData.setPractitionersList(practitionerList);
           }
-        } 
+        }
         if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
           Reference organizationReference = encounter.getServiceProvider();
           if (organizationReference.hasReferenceElement()) {
@@ -1291,100 +1291,98 @@ public class R4ResourcesData {
     }
     return null;
   }
-  
+
   public void loadPractitionersLocationAndOrganization(
-		  FhirContext context,
-	      IGenericClient client,
-	      LaunchDetails launchDetails,
-	      R4FhirData r4FhirData,
-	      Encounter encounter,
-	      Bundle bundle,
-	      Date start,
-	      Date end) 
-  {
-	  if (encounter != null) {
-		  
-		  // Load Practitioners
-		  if (encounter.getParticipant() != null) {
-	      
-			  List<Practitioner> practitionerList = new ArrayList<>();
-	          
-			  Map<String, String> practitionerMap = new HashMap<>();
-	          
-			  List<EncounterParticipantComponent> participants = encounter.getParticipant();
-	          
-			  for (EncounterParticipantComponent participant : participants) {
-	            if (participant.getIndividual() != null) {
-	              Reference practitionerReference = participant.getIndividual();
-	              String practitionerID = practitionerReference.getReferenceElement().getIdPart();
-	              if (!practitionerMap.containsKey(practitionerID)) {
-	                Practitioner practitioner =
-	                    (Practitioner)
-	                        fhirContextInitializer.getResouceById(
-	                            launchDetails, client, context, "Practitioner", practitionerID);
-	                if (practitioner != null) {
-	                  practitionerList.add(practitioner);
-	                  practitionerMap.put(practitionerID, practitioner.getResourceType().name());
-	                  BundleEntryComponent practitionerEntry =
-	                      new BundleEntryComponent().setResource(practitioner);
-	                  bundle.addEntry(practitionerEntry);
-	                }
-	              }
-	            }
-	          }
-	          if (!practitionerList.isEmpty()) {
-	            r4FhirData.setPractitionersList(practitionerList);
-	          }
-	        }
-		  
-		    // Load Location
-		  if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
-	          Reference organizationReference = encounter.getServiceProvider();
-	          if (organizationReference.hasReferenceElement()) {
-	            Organization organization =
-	                (Organization)
-	                    fhirContextInitializer.getResouceById(
-	                        launchDetails,
-	                        client,
-	                        context,
-	                        "Organization",
-	                        organizationReference.getReferenceElement().getIdPart());
-	            if (organization != null) {
-	              BundleEntryComponent organizationEntry =
-	                  new BundleEntryComponent().setResource(organization);
-	              bundle.addEntry(organizationEntry);
-	              r4FhirData.setOrganization(organization);
-	            }
-	          }
-	        }
-	        if (Boolean.TRUE.equals(encounter.hasLocation())) {
-	          List<Location> locationList = new ArrayList<>();
-	          List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
-	          for (EncounterLocationComponent location : enocunterLocations) {
-	            if (location.getLocation() != null) {
-	              Reference locationReference = location.getLocation();
-	              Location locationResource =
-	                  (Location)
-	                      fhirContextInitializer.getResouceById(
-	                          launchDetails,
-	                          client,
-	                          context,
-	                          "Location",
-	                          locationReference.getReferenceElement().getIdPart());
-	              if (locationResource != null) {
-	                locationList.add(locationResource);
-	                BundleEntryComponent locationEntry =
-	                    new BundleEntryComponent().setResource(locationResource);
-	                bundle.addEntry(locationEntry);
-	              }
-	            }
-	          }
-	          r4FhirData.setLocationList(locationList);
-	        }
-	  }
-	  else {
-		  logger.debug("Encounter is null, cannot fetch Practitioners");
-	  }  
+      FhirContext context,
+      IGenericClient client,
+      LaunchDetails launchDetails,
+      R4FhirData r4FhirData,
+      Encounter encounter,
+      Bundle bundle,
+      Date start,
+      Date end) {
+    if (encounter != null) {
+
+      // Load Practitioners
+      if (encounter.getParticipant() != null) {
+
+        List<Practitioner> practitionerList = new ArrayList<>();
+
+        Map<String, String> practitionerMap = new HashMap<>();
+
+        List<EncounterParticipantComponent> participants = encounter.getParticipant();
+
+        for (EncounterParticipantComponent participant : participants) {
+          if (participant.getIndividual() != null) {
+            Reference practitionerReference = participant.getIndividual();
+            String practitionerID = practitionerReference.getReferenceElement().getIdPart();
+            if (!practitionerMap.containsKey(practitionerID)) {
+              Practitioner practitioner =
+                  (Practitioner)
+                      fhirContextInitializer.getResouceById(
+                          launchDetails, client, context, "Practitioner", practitionerID);
+              if (practitioner != null) {
+                practitionerList.add(practitioner);
+                practitionerMap.put(practitionerID, practitioner.getResourceType().name());
+                BundleEntryComponent practitionerEntry =
+                    new BundleEntryComponent().setResource(practitioner);
+                bundle.addEntry(practitionerEntry);
+              }
+            }
+          }
+        }
+        if (!practitionerList.isEmpty()) {
+          r4FhirData.setPractitionersList(practitionerList);
+        }
+      }
+
+      // Load Location
+      if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
+        Reference organizationReference = encounter.getServiceProvider();
+        if (organizationReference.hasReferenceElement()) {
+          Organization organization =
+              (Organization)
+                  fhirContextInitializer.getResouceById(
+                      launchDetails,
+                      client,
+                      context,
+                      "Organization",
+                      organizationReference.getReferenceElement().getIdPart());
+          if (organization != null) {
+            BundleEntryComponent organizationEntry =
+                new BundleEntryComponent().setResource(organization);
+            bundle.addEntry(organizationEntry);
+            r4FhirData.setOrganization(organization);
+          }
+        }
+      }
+      if (Boolean.TRUE.equals(encounter.hasLocation())) {
+        List<Location> locationList = new ArrayList<>();
+        List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
+        for (EncounterLocationComponent location : enocunterLocations) {
+          if (location.getLocation() != null) {
+            Reference locationReference = location.getLocation();
+            Location locationResource =
+                (Location)
+                    fhirContextInitializer.getResouceById(
+                        launchDetails,
+                        client,
+                        context,
+                        "Location",
+                        locationReference.getReferenceElement().getIdPart());
+            if (locationResource != null) {
+              locationList.add(locationResource);
+              BundleEntryComponent locationEntry =
+                  new BundleEntryComponent().setResource(locationResource);
+              bundle.addEntry(locationEntry);
+            }
+          }
+        }
+        r4FhirData.setLocationList(locationList);
+      }
+    } else {
+      logger.debug("Encounter is null, cannot fetch Practitioners");
+    }
   }
 
   public DocumentReference constructR4DocumentReference(

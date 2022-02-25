@@ -85,17 +85,21 @@ public class SubmitEicrAction extends AbstractAction {
     logger.info(" **** End Printing SubmitEicrAction **** ");
   }
 
-  public void submitEicrs(LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
+  public void submitEicrs(
+      LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
 
-	Boolean rrCheckScheduled = false;
-	
+    Boolean rrCheckScheduled = false;
+
     for (Integer id : ids) {
 
       Eicr ecr = ActionRepo.getInstance().getEicrRRService().getEicrById(id);
 
       if (ecr != null) {
 
-        logger.info("Found eICR with Id {} to submit, correlation Id for Direct Message Id {}", id, ecr.getxCorrelationId());
+        logger.info(
+            "Found eICR with Id {} to submit, correlation Id for Direct Message Id {}",
+            id,
+            ecr.getxCorrelationId());
 
         String data = ecr.getEicrData();
 
@@ -103,8 +107,10 @@ public class SubmitEicrAction extends AbstractAction {
           ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
         } else if (!StringUtils.isBlank(details.getDirectHost())
             || !StringUtils.isBlank(details.getSmtpUrl())) {
-          ActionRepo.getInstance().getDirectTransport().sendData(details, data, ecr.getxCorrelationId());
-          
+          ActionRepo.getInstance()
+              .getDirectTransport()
+              .sendData(details, data, ecr.getxCorrelationId());
+
           // Schedule a RR check since it is direct transport.
           logger.info(" Schedule the job for RR Check after 5 minutes.");
           Duration d = new Duration();
@@ -112,12 +118,8 @@ public class SubmitEicrAction extends AbstractAction {
           d.setUnit("min");
 
           WorkflowService.scheduleJob(
-              details.getId(),
-              d,
-              EcrActionTypes.RR_CHECK,
-              details.getStartDate(),
-              taskInstanceId);
-          
+              details.getId(), d, EcrActionTypes.RR_CHECK, details.getStartDate(), taskInstanceId);
+
         } else {
           String msg = "No Transport method specified to submit EICR.";
           logger.error(msg);
@@ -132,7 +134,6 @@ public class SubmitEicrAction extends AbstractAction {
         submitState.setJobStatus(JobStatus.COMPLETED);
         submitState.setSubmittedTime(new Date());
         state.getSubmitEicrStatus().add(submitState);
-     
 
       } else {
         String msg = "No Eicr found for submission, Id = " + Integer.toString(id);
@@ -140,6 +141,6 @@ public class SubmitEicrAction extends AbstractAction {
 
         throw new RuntimeException(msg);
       }
-    }// for all eICRs
+    } // for all eICRs
   }
 }

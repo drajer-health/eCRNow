@@ -59,9 +59,11 @@ import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -81,6 +83,8 @@ public class KarParserImpl implements KarParser {
 
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
+
+  @Autowired AutowireCapableBeanFactory beanFactory;
 
   @Value("${kar.directory}")
   String karDirectory;
@@ -169,6 +173,19 @@ public class KarParserImpl implements KarParser {
     if (actionClasses != null && actionClasses.containsKey(actionId)) {
       try {
         instance = (BsaAction) (Class.forName(actionClasses.get(actionId)).newInstance());
+        BsaAction instanceBean = null;
+        try {
+          instanceBean = beanFactory.getBean(instance.getClass());
+        } catch (NoSuchBeanDefinitionException e) {
+          logger.debug(
+              String.format(
+                  "No such bean definition found for action %s, so creating a new instance",
+                  actionId));
+        }
+        if (instanceBean != null) {
+          beanFactory.destroyBean(beanFactory.getBean(instance.getClass()));
+        }
+        beanFactory.autowireBean(instance);
       } catch (InstantiationException e) {
         logger.error(" Error instantiating the object {}", e);
       } catch (IllegalAccessException e) {
@@ -508,7 +525,9 @@ public class KarParserImpl implements KarParser {
           BsaAction subAction = getAction(cd.getCode());
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
-          action.setIgnoreTimers(ignoreTimers);
+          subAction.setJsonParser(jsonParser);
+          subAction.setRestTemplate(restTemplate);
+          subAction.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
 
           populateAction(plan, act, subAction, karBundleFile);
@@ -531,16 +550,6 @@ public class KarParserImpl implements KarParser {
     for (PlanDefinitionActionConditionComponent con : conds) {
 
       if (con.getExpression() != null
-          && (fromCode(con.getExpression().getLanguage())
-              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-          && fhirpathEnabled) {
-
-        logger.info(" Found a FHIR Path Expression ");
-        BsaFhirPathCondition bc = new BsaFhirPathCondition();
-        bc.setLogicExpression(con.getExpression());
-        bc.setExpressionEvaluator(expressionEvaluator);
-        action.addCondition(bc);
-      } else if (con.getExpression() != null
           // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
           // so using
           // local fromCode for now
@@ -567,15 +576,6 @@ public class KarParserImpl implements KarParser {
         Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
         Expression exp = (Expression) ext.getValue();
         if (exp != null
-            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
-            && fhirpathEnabled) {
-
-          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
-          BsaFhirPathCondition bc = new BsaFhirPathCondition();
-          bc.setLogicExpression(exp);
-          bc.setExpressionEvaluator(expressionEvaluator);
-          action.addCondition(bc);
-        } else if (exp != null
             // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
             // so using
             // local fromCode for now
@@ -596,9 +596,28 @@ public class KarParserImpl implements KarParser {
           bc.setLogicExpression(exp);
           bc.setLibraryProcessor(libraryProcessor);
           action.addCondition(bc);
+        } else if (exp != null
+            && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+            && fhirpathEnabled) {
+
+          logger.info(" Found a FHIR Path Expression from an alternative expression extension");
+          BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          bc.setLogicExpression(exp);
+          bc.setExpressionEvaluator(expressionEvaluator);
+          action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
         }
+      } else if (con.getExpression() != null
+          && (fromCode(con.getExpression().getLanguage())
+              .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+          && fhirpathEnabled) {
+
+        logger.info(" Found a FHIR Path Expression ");
+        BsaFhirPathCondition bc = new BsaFhirPathCondition();
+        bc.setLogicExpression(con.getExpression());
+        bc.setExpressionEvaluator(expressionEvaluator);
+        action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
       }
