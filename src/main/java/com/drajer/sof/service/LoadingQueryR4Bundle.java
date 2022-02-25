@@ -49,8 +49,9 @@ public class LoadingQueryR4Bundle {
 
     Encounter encounter =
         (Encounter) r4ResourcesData.getResourceFromBundle(bundle, Encounter.class);
-    
-    r4ResourcesData.loadPractitionersLocationAndOrganization(context, client, launchDetails, r4FhirData, encounter, bundle, start, end);
+
+    r4ResourcesData.loadPractitionersLocationAndOrganization(
+        context, client, launchDetails, r4FhirData, encounter, bundle, start, end);
 
     // Get Pregnancy Observations
     try {

@@ -29,27 +29,76 @@ public class ChronicBPECSDTest extends BaseKarsTest {
 
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
-
     return Arrays.asList(
-
-        // return Arrays.asList(
-        /* new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-report-denom-exc-in", REPORTED, 1, 1, 1, 0),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-report-ip-in", REPORTED, 1, 1, 0, 0),
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-report-denom-exc-in",
+            REPORTED,
+            1,
+            1,
+            1,
+            0),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-report-ip-out", TRIGGERED_ONLY, 0, 0),
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-report-ip-in",
+            REPORTED,
+            1,
+            1,
+            0,
+            0),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-report-numer-in", REPORTED, 1, 1, 0, 1),
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-report-ip-out",
+            TRIGGERED_ONLY,
+            0,
+            0),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-report-numer-out", REPORTED, 1, 1, 0, 0),
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-report-numer-in",
+            REPORTED,
+            1,
+            1,
+            0,
+            1),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-in", REPORTED, 1, 1),*/
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-report-numer-out",
+            REPORTED,
+            1,
+            1,
+            0,
+            0),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-missing", NOT_TRIGGERED),
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-trigger-condition-in",
+            REPORTED,
+            1,
+            1),
         new TestCaseInfo(
-            "ChronicDSControllingBloodPressure", "bp-trigger-condition-out", NOT_TRIGGERED),
-        new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-in", TRIGGERED_ONLY),
-        new TestCaseInfo("ChronicDSControllingBloodPressure", "bp-trigger-out", NOT_TRIGGERED));
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-trigger-condition-missing",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-trigger-condition-out",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-trigger-in",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "ChronicDSControllingBloodPressure",
+            "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
+            "bp-trigger-out",
+            NOT_TRIGGERED));
   }
 }

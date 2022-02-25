@@ -1,6 +1,6 @@
 {
   "resourceType": "Observation",
-  "id": "bp-report-numer-in",
+  "id": "bp-trigger-condition-in-systolic",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/StructureDefinition/vitalsigns"
@@ -28,11 +28,11 @@
     ]
   },
   "subject": {
-    "reference": "Patient/bp-report-numer-in"
+    "reference": "Patient/bp-trigger-condition-in"
   },
   "effectiveDateTime": "2019-01-17T12:30:00",
   "encounter": {
-    "reference": "Encounter/bp-report-numer-in"
+    "reference": "Encounter/bp-trigger-condition-in-e"
   },
   "interpretation": [
     {
@@ -52,13 +52,13 @@
         "coding": [
           {
             "system": "http://loinc.org",
-            "code": "8462-4",
-            "display": "Diastolic blood pressure"
+            "code": "8480-6",
+            "display": "Systolic blood pressure"
           }
         ]
       },
       "valueQuantity": {
-        "value": 80,
+        "value": 120,
         "unit": "mm[Hg]",
         "system": "http://unitsofmeasure.org",
         "code": "mm[Hg]"

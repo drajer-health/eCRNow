@@ -86,10 +86,20 @@ public class KarProcessorImpl implements KarProcessor {
 
       // Get necessary data to process.
       HashMap<ResourceType, Set<Resource>> res = ehrInterface.getFilteredData(data, resourceTypes);
-
-      BsaActionStatus status = action.process(data, ehrInterface);
+      BsaActionStatus status = null;
+      try {
+        status = action.process(data, ehrInterface);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
 
       data.addActionStatus(action.getActionId(), status);
+
+      if (data.getActionStatus() != null && !data.getActionStatus().isEmpty()) {
+        serviceUtils.saveActionStatusState(data.getActionStatus());
+      } else {
+        logger.debug("Action status whas either null or empty");
+      }
 
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }

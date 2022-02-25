@@ -16,21 +16,23 @@ public class ReportGenerationUtils {
 
     logger.info(" Getting observations for category {}", category);
     Set<Resource> returnVal = new HashSet<Resource>();
-    for (Resource r : res) {
+    if (res != null) {
+      for (Resource r : res) {
 
-      Observation obs = (Observation) (r);
+        Observation obs = (Observation) (r);
 
-      if (obs.getCategoryFirstRep() != null
-          && obs.getCategoryFirstRep().getCodingFirstRep() != null
-          && obs.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
-          && obs.getCategoryFirstRep()
-              .getCodingFirstRep()
-              .getSystem()
-              .contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
-          && obs.getCategoryFirstRep().getCodingFirstRep().getCode() != null
-          && obs.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals(category)) {
+        if (obs.getCategoryFirstRep() != null
+            && obs.getCategoryFirstRep().getCodingFirstRep() != null
+            && obs.getCategoryFirstRep().getCodingFirstRep().getSystem() != null
+            && obs.getCategoryFirstRep()
+                .getCodingFirstRep()
+                .getSystem()
+                .contentEquals(FhirGeneratorConstants.HL7_OBSERVATION_CATEGORY)
+            && obs.getCategoryFirstRep().getCodingFirstRep().getCode() != null
+            && obs.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals(category)) {
 
-        returnVal.add(r);
+          returnVal.add(r);
+        }
       }
     }
 

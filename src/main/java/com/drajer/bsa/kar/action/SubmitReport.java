@@ -6,18 +6,17 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +27,8 @@ public class SubmitReport extends BsaAction {
   private String submissionEndpoint;
 
   private static final FhirContext context = FhirContext.forR4();
+
+  @Autowired BsaServiceUtils bsaServiceUtils;
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -50,26 +51,39 @@ public class SubmitReport extends BsaAction {
 
         for (DataRequirement dr : input) {
           Set<Resource> resources = data.getOutputDataById(dr.getId());
-          resourcesToSubmit.addAll(resources);
+          if (resources != null && !resources.isEmpty()) {
+            resourcesToSubmit.addAll(resources);
+          }
         }
       }
+
+      if (resourcesToSubmit.isEmpty()) {
+        logger.info(" No resources to submit");
+      } else {
+        logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
+      }
+
+      context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
 
       for (Resource r : resourcesToSubmit) {
         IGenericClient client = context.newRestfulGenericClient(submissionEndpoint);
 
-        context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
-
         // All submissions are expected to be bundles
         Bundle bundleToSubmit = (Bundle) r;
+        if (logger.isInfoEnabled()) {
+          logger.info(
+              " Submit Bundle:::::{}",
+              context.newJsonParser().encodeResourceToString(bundleToSubmit));
+        }
 
         Bundle responseBundle =
-            (Bundle)
-                client
-                    .operation()
-                    .processMessage()
-                    .setMessageBundle(bundleToSubmit)
-                    .encodedJson()
-                    .execute();
+            client
+                .operation()
+                .onServer()
+                .named(this.getSubmissionOperation())
+                .withParameter(Parameters.class, "content", bundleToSubmit)
+                .returnResourceType(Bundle.class)
+                .execute();
 
         if (responseBundle != null) {
           logger.debug(
@@ -92,6 +106,7 @@ public class SubmitReport extends BsaAction {
           executeRelatedActions(data, ehrService);
         }
 
+        bsaServiceUtils.saveEicrState(bundleToSubmit.getIdElement().getIdPart(), bundleToSubmit);
         actStatus.setActionStatus(BsaActionStatusType.Completed);
       } // for all resources to be submitted
     } else {
@@ -101,8 +116,21 @@ public class SubmitReport extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
+    data.addActionStatus(getActionId(), actStatus);
 
     return actStatus;
+  }
+
+  protected String getSubmissionOperation() {
+    String endpoint = this.getSubmissionEndpoint();
+    // Default operation for message bundles in the case that
+    // one isn't specified in the configuration
+    if (endpoint == null || !endpoint.contains("$")) {
+      return "process-message";
+    }
+
+    // Otherwise, parse the operation name
+    return endpoint.substring(endpoint.indexOf("$") + 1);
   }
 
   public String getSubmissionEndpoint() {
@@ -111,31 +139,5 @@ public class SubmitReport extends BsaAction {
 
   public void setSubmissionEndpoint(String submissionEndpoint) {
     this.submissionEndpoint = submissionEndpoint;
-  }
-
-  private static int count = 1;
-
-  public void saveResourceToFile(Resource res) {
-
-    String fileName =
-        "target//output//kars"
-            + res.getResourceType().toString()
-            + "_"
-            + res.getId()
-            + "_"
-            + count
-            + ".json";
-
-    String data = context.newJsonParser().encodeResourceToString(res);
-
-    try (DataOutputStream outStream =
-        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
-
-      logger.info(" Writing data to file: {}", fileName);
-      outStream.writeBytes(data);
-      count++;
-    } catch (IOException e) {
-      logger.debug(" Unable to write data to file: {}", fileName, e);
-    }
   }
 }

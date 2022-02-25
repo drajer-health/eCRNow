@@ -127,14 +127,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             kd,
             entry.getValue(),
             entry.getKey());
-      }
-      else if(entry.getValue() == ResourceType.Encounter){
-    	  
-    	  logger.info(" Getting data for location, practitioner, organization from the encounter resource ");
-    	  
-    	 // loadPractitionersLocationAndOrganization(
-    //		  client, context, kd, kd.getNotificationContext()
-    	  
+      } else if (entry.getValue() == ResourceType.Encounter) {
+
+        logger.info(
+            " Getting data for location, practitioner, organization from the encounter resource ");
+
+        // loadPractitionersLocationAndOrganization(
+        //		  client, context, kd, kd.getNotificationContext()
+
       }
     }
 

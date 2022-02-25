@@ -151,6 +151,7 @@ public class EvaluateMeasure extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
+    data.addActionStatus(getActionId(), actStatus);
 
     return actStatus;
   }

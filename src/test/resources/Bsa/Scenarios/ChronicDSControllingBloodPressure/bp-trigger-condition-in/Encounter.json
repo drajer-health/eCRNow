@@ -1,6 +1,6 @@
 {
   "resourceType": "Encounter",
-  "id": "bp-trigger-condition-in",
+  "id": "bp-trigger-condition-in-e",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-encounter"
