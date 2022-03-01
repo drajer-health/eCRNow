@@ -4,7 +4,6 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.Response;
-import com.drajer.sof.service.ClientDetailsService;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -30,8 +29,6 @@ import org.springframework.web.client.RestTemplate;
 public class RefreshTokenScheduler {
 
   @Autowired ThreadPoolTaskScheduler taskScheduler;
-
-  @Autowired ClientDetailsService clientDetailsService;
 
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
@@ -144,7 +141,9 @@ public class RefreshTokenScheduler {
       logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
       if (authDetails.getIsMultiTenantSystemLaunch()) {
         ClientDetails clientDetails =
-            clientDetailsService.getClientDetailsByUrl(authDetails.getEhrServerURL());
+            ActionRepo.getInstance()
+                .getClientDetailsService()
+                .getClientDetailsByUrl(authDetails.getEhrServerURL());
         updateAccessTokenInClientDetails(clientDetails, tokenResponse);
       }
       updateAccessToken(authDetails, tokenResponse);
@@ -181,7 +180,7 @@ public class RefreshTokenScheduler {
 
   public JSONObject getAccessTokenUsingClientDetails(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
-    logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
+    logger.info("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       if (clientDetails.getIsSystem() || clientDetails.getIsMultiTenantSystemLaunch()) {
@@ -245,13 +244,10 @@ public class RefreshTokenScheduler {
   private void updateAccessTokenInClientDetails(
       ClientDetails clientDetails, JSONObject tokenResponse) {
     try {
-      logger.info("ClientDetailsId:::::{}", clientDetails.getId());
-      logger.info("ClientDetailsService" + clientDetailsService);
-      logger.info(
-          "ClientDetailsGetById"
-              + clientDetailsService.getClientDetailsById(clientDetails.getId()));
       ClientDetails existingClientDetails =
-          clientDetailsService.getClientDetailsById(clientDetails.getId());
+          ActionRepo.getInstance()
+              .getClientDetailsService()
+              .getClientDetailsById(clientDetails.getId());
       if (existingClientDetails != null) {
         logger.trace("Updating the AccessToken value in ClientDetails table");
         existingClientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
@@ -260,7 +256,8 @@ public class RefreshTokenScheduler {
         long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
         existingClientDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
-        clientDetailsService.saveOrUpdate(existingClientDetails);
+        logger.info("Existing Client Details::::::{}", existingClientDetails.getAccessToken());
+        ActionRepo.getInstance().getClientDetailsService().saveOrUpdate(existingClientDetails);
         logger.trace("Successfully updated AccessToken value in ClientDetails table");
       }
     } catch (Exception e) {
