@@ -294,15 +294,19 @@ public class LaunchController {
               Instant expireInstantTime =
                   new Date().toInstant().plusSeconds(new Long(expiresInSec));
               launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
-              clientDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+              if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+                clientDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+              }
             }
             launchDetails.setLaunchType("SystemLaunch");
 
             IBaseResource encounter = getEncounterById(launchDetails);
             setStartAndEndDates(clientDetails, launchDetails, encounter);
 
-            clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
-            clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+            if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+              clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+              clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+            }
 
             clientDetailsService.saveOrUpdate(clientDetails);
 
