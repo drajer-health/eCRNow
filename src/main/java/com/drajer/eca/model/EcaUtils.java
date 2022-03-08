@@ -32,7 +32,6 @@ import org.hl7.fhir.r4.model.Encounter.EncounterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class EcaUtils {
 
   private EcaUtils() {
