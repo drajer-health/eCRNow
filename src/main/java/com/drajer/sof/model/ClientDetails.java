@@ -247,7 +247,7 @@ public class ClientDetails {
   }
 
   public String getAccessToken() {
-    if (this.getTokenExpiryDateTime() != null) {
+    if (this.getTokenExpiryDateTime() != null && this.getIsMultiTenantSystemLaunch()) {
       // Retrieve Access token 3 minutes before it expires.
       // 3 minutes is enough buffer for Trigger or Loading query to complete.
       Instant currentInstant = new Date().toInstant().plusSeconds(180);

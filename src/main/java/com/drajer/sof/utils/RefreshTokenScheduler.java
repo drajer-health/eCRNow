@@ -256,7 +256,6 @@ public class RefreshTokenScheduler {
         long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
         existingClientDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
-        logger.info("Existing Client Details::::::{}", existingClientDetails.getAccessToken());
         ActionRepo.getInstance().getClientDetailsService().saveOrUpdate(existingClientDetails);
         logger.trace("Successfully updated AccessToken value in ClientDetails table");
       }
