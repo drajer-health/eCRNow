@@ -1,11 +1,14 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.bsa.utils.ReportGenerationUtils;
+import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.drajer.fhirecr.FhirGeneratorUtils;
@@ -18,9 +21,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
@@ -28,18 +33,24 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
 import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.MessageHeader;
+import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
+import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -56,6 +67,18 @@ public class EcrReportCreator extends ReportCreator {
   private static final String TRIGGER_CODE_VALUESET_EXT_URL = "triggerCodeValueSet";
   private static final String TRIGGER_CODE_VALUESET_VERSION_EXT_URL = "triggerCodeValueSetVersion";
   private static final String TRIGGER_CODE_VALUE_EXT_URL = "triggerCode";
+
+  private static final String EICR_REPORT_LOINC_CODE = "55751-2";
+  private static final String EICR_REPORT_LOINC_CODE_SYSTEM = "http://loinc.org";
+  public static final String EICR_REPORT_LOINC_CODE_DISPLAY_NAME = "Public Health Case Report";
+  public static final String EICR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
+  public static String BUNDLE_REL_URL = "Bundle/";
+  public static String MESSAGE_HEADER_PROFILE =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
+  public static String MESSAGE_TYPE_URL =
+      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
+  public static String NAMED_EVENT_URL =
+      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
 
   private final Logger logger = LoggerFactory.getLogger(EcrReportCreator.class);
 
@@ -80,89 +103,264 @@ public class EcrReportCreator extends ReportCreator {
 
   @Override
   public Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+
+    Bundle reportingBundle = null;
 
     if (kd.getKarStatus().getOutputFormat() == OutputContentType.FHIR) {
 
       logger.info(" Creating a FHIR Eicr Report ");
-      return getFhirReport(kd, ehrService, id, profile);
+      reportingBundle = createReportingBundle(profile);
+      Bundle contentBundle = getFhirReport(kd, ehrService, dataRequirementId, profile);
+      MessageHeader mh = createMessageHeader(kd, true, contentBundle);
+
+      // Add the Message Header Resource
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+
+      // Add the Content Bundle.
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R11) {
 
       logger.info(" Creating a CDA R11 Eicr Report ");
-      return getCdaR11Report(kd, ehrService, id, profile);
+
+      reportingBundle = createReportingBundle(profile);
+      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      MessageHeader mh = createMessageHeader(kd, true, contentBundle);
+
+      // Add the Message Header Resource
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+
+      // Add the Content Bundle.
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30) {
 
       logger.info(" Creating a CDA R30 Eicr Report ");
-      return getCdaR11Report(kd, ehrService, id, profile);
+      reportingBundle = createReportingBundle(profile);
+      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      MessageHeader mh = createMessageHeader(kd, true, contentBundle);
+
+      // Add the Message Header Resource
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+
+      // Add the Content Bundle.
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
+
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.Both) {
 
       logger.info(" Creating an Eicr for each of the above formats ");
-      return getAllReports(kd, ehrService, id, profile);
-    } else return null;
+
+      reportingBundle = createReportingBundle(profile);
+      Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle2 = getFhirReport(kd, ehrService, dataRequirementId, profile);
+      MessageHeader mh = createMessageHeader(kd, true, contentBundle1);
+
+      // Add the Message Header Resource
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+
+      // Add the Content Bundle.
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle1));
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle2));
+    }
+
+    return reportingBundle;
   }
 
-  public Resource getAllReports(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+  public MessageHeader createMessageHeader(
+      KarProcessingData kd, Boolean cdaFlag, Bundle contentBundle) {
 
-    // Create the report as needed by the Ecr FHIR IG
+    MessageHeader header = new MessageHeader();
+
+    header.setId(UUID.randomUUID().toString());
+    header.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, MESSAGE_HEADER_PROFILE));
+
+    // Set message type.
+    Coding c = new Coding();
+    c.setSystem(MESSAGE_TYPE_URL);
+    if (cdaFlag) c.setCode(BsaTypes.getMessageTypeString(MessageType.CdaEicrMessage));
+    else c.setCode(BsaTypes.getMessageTypeString(MessageType.FhirEicrMessage));
+
+    header.setEvent(c);
+
+    // set destination
+    Set<UriType> dests = kd.getKar().getReceiverAddresses();
+    List<MessageDestinationComponent> mdcs = new ArrayList<MessageDestinationComponent>();
+    for (UriType i : dests) {
+      MessageDestinationComponent mdc = new MessageDestinationComponent();
+      mdc.setEndpoint(i.asStringValue());
+      mdcs.add(mdc);
+    }
+    header.setDestination(mdcs);
+
+    // Set source.
+    MessageSourceComponent msc = new MessageSourceComponent();
+    msc.setEndpoint(kd.getHealthcareSetting().getFhirServerBaseURL());
+    header.setSource(msc);
+
+    // Set Reason.
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem(NAMED_EVENT_URL);
+    coding.setCode(kd.getNotificationContext().getTriggerEvent());
+    cd.addCoding(coding);
+    header.setReason(cd);
+
+    // Setup Message Header to Content Bundle Linkage.
+    Reference ref = new Reference();
+    ref.setReference(BUNDLE_REL_URL + contentBundle.getId());
+    List<Reference> refs = new ArrayList<Reference>();
+    refs.add(ref);
+    header.setFocus(refs);
+
+    return header;
+  }
+
+  public Bundle createReportingBundle(String profile) {
+
     Bundle returnBundle = new Bundle();
-    returnBundle.setId(id);
-    returnBundle.setType(BundleType.DOCUMENT);
+
+    returnBundle.setId(UUID.randomUUID().toString());
+    returnBundle.setType(BundleType.MESSAGE);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    returnBundle.addEntry(
-        new BundleEntryComponent().setResource(getCdaR11Report(kd, ehrService, id, profile)));
-    returnBundle.addEntry(
-        new BundleEntryComponent().setResource(getFhirReport(kd, ehrService, id, profile)));
     return returnBundle;
   }
 
-  public Resource getCdaR11Report(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+  public Resource getAllReports(
+      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
-    returnBundle.setId(id);
+    returnBundle.setId(UUID.randomUUID().toString());
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    Resource fhirRep = getFhirReport(kd, ehrService, id, profile);
-    returnBundle.addEntry(new BundleEntryComponent().setResource(fhirRep));
+    returnBundle.addEntry(
+        new BundleEntryComponent()
+            .setResource(getCdaR11Report(kd, ehrService, dataRequirementId, profile)));
+    returnBundle.addEntry(
+        new BundleEntryComponent()
+            .setResource(getFhirReport(kd, ehrService, dataRequirementId, profile)));
+    return returnBundle;
+  }
+
+  public Bundle getCdaR11Report(
+      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+
+    // Create the report as needed by the Ecr FHIR IG
+    Bundle returnBundle = new Bundle();
+    returnBundle.setId(UUID.randomUUID().toString());
+    returnBundle.setType(BundleType.DOCUMENT);
+    returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
+    returnBundle.setTimestamp(Date.from(Instant.now()));
 
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
-    //  String eicr = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(data.getValue0(),
-    // data.getValue1(), ecr);
+    String eicr =
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            data.getValue0(), data.getValue1(), ecr);
 
-    String fileName = "Cda_eicr.xml";
-    // ApplicationUtils.saveDataToFile(eicr, fileName);
+    DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
+    returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
 
     return returnBundle;
   }
 
   public Resource getCdaR30Report(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
-    returnBundle.setId(id);
+    returnBundle.setId(UUID.randomUUID().toString());
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
     logger.info(" Creating Document Reference Resource ");
-    Set<Resource> resourcesTobeAdded = new HashSet<>();
-    DocumentReference docref = new DocumentReference();
+    Eicr ecr = new Eicr();
+    Pair<R4FhirData, LaunchDetails> data =
+        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
+    String eicr =
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
+            data.getValue0(), data.getValue1(), ecr);
+
+    DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
 
     returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
 
     return returnBundle;
   }
 
-  public Resource getFhirReport(
+  public DocumentReference createR4DocumentReference(
+      KarProcessingData kd, String xmlPayload, Eicr ecr, String dataRequirementId) {
+
+    DocumentReference documentReference = new DocumentReference();
+    documentReference.setId(ecr.getEicrDocId());
+
+    // Set Doc Ref Status
+    documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
+    documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
+
+    // Set Doc Ref Type
+    CodeableConcept typeCode = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding typeCoding = new Coding();
+    typeCoding.setSystem(EICR_REPORT_LOINC_CODE_SYSTEM);
+    typeCoding.setCode(EICR_REPORT_LOINC_CODE);
+    typeCoding.setDisplay(EICR_REPORT_LOINC_CODE_DISPLAY_NAME);
+    codingList.add(typeCoding);
+    typeCode.setCoding(codingList);
+    typeCode.setText(EICR_REPORT_LOINC_CODE_DISPLAY_NAME);
+    documentReference.setType(typeCode);
+
+    // Set Subject
+    Reference patientReference = new Reference();
+    patientReference.setReference("Patient/" + kd.getNotificationContext().getPatientId());
+    documentReference.setSubject(patientReference);
+
+    // Set Doc Ref Content
+    List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
+    DocumentReference.DocumentReferenceContentComponent contentComp =
+        new DocumentReference.DocumentReferenceContentComponent();
+    Attachment attachment = new Attachment();
+    attachment.setTitle("Initial Public Health Case Report");
+    attachment.setContentType(EICR_DOC_CONTENT_TYPE);
+
+    if (xmlPayload != null && !xmlPayload.isEmpty()) {
+      attachment.setData(xmlPayload.getBytes());
+    }
+    contentComp.setAttachment(attachment);
+    contentList.add(contentComp);
+    documentReference.setContent(contentList);
+
+    // Set Doc Ref Context
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
+      DocumentReference.DocumentReferenceContextComponent docContextComp =
+          new DocumentReference.DocumentReferenceContextComponent();
+      List<Reference> encounterRefList = new ArrayList<>();
+      Reference encounterReference = new Reference();
+      encounterReference.setReference(
+          "Encounter/" + kd.getNotificationContext().getNotificationResourceId());
+      encounterRefList.add(encounterReference);
+      docContextComp.setEncounter(encounterRefList);
+
+      Period period = new Period();
+      period.setStart(new Date());
+      period.setEnd(new Date());
+      docContextComp.setPeriod(period);
+      documentReference.setContext(docContextComp);
+    }
+
+    logger.debug("DocumentReference Object created successfully ");
+
+    return documentReference;
+  }
+
+  public Bundle getFhirReport(
       KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
 
     // Create the report as needed by the Ecr FHIR IG

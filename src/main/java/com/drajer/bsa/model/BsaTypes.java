@@ -60,7 +60,11 @@ public final class BsaTypes {
     CancerReportMessage,
     HepCReportMessage,
     HealthcareSurveyReportMessage,
-    MessageReport
+    CdaEicrMessage,
+    FhirEicrMessage,
+    CdaReportabilityResponseMessage,
+    FhirReportabilityResponseMessage,
+    MessageReport,
   }
 
   public static String getMessageTypeString(MessageType t) {
@@ -69,6 +73,12 @@ public final class BsaTypes {
     else if (t == MessageType.HepCReportMessage) return "hepc-report-message";
     else if (t == MessageType.HealthcareSurveyReportMessage)
       return "healthcare-survey-report-message";
+    else if (t == MessageType.CdaEicrMessage) return "CdaEicrMessage";
+    else if (t == MessageType.FhirEicrMessage) return "FhirEicrMessage";
+    else if (t == MessageType.CdaReportabilityResponseMessage)
+      return "CdaReportabilityResponseMessage";
+    else if (t == MessageType.FhirReportabilityResponseMessage)
+      return "FhirReportabilityResponseMessage";
     else return "message-report";
   }
 
@@ -98,6 +108,29 @@ public final class BsaTypes {
       return ActionType.TerminateReportingWorkflow;
     else if (code.equalsIgnoreCase("cancel-report")) return ActionType.CancelReport;
     else return ActionType.Unknown;
+  }
+
+  public static String getActionString(ActionType type) {
+
+    if (type == ActionType.InitiateReportingWorkflow) return "initiate-reporting-workflow";
+    else if (type == ActionType.ExecuteReportingWorkflow) return "execute-reporting-workflow";
+    else if (type == ActionType.CheckTriggerCodes) return "check-trigger-codes";
+    else if (type == ActionType.CheckParticipantRegistration)
+      return "check-participant-registration";
+    else if (type == ActionType.EvaluateCondition) return "evaluate-condition";
+    else if (type == ActionType.EvaluateMeasure) return "evaluate-measure";
+    else if (type == ActionType.CreateReport) return "create-report";
+    else if (type == ActionType.ValidateReport) return "validate-report";
+    else if (type == ActionType.SubmitReport) return "submit-report";
+    else if (type == ActionType.DeIdentifyReport) return "deidentify-report";
+    else if (type == ActionType.PsuedonymizeReport) return "psuedonymize-report";
+    else if (type == ActionType.EncryptReport) return "encrypt-report";
+    else if (type == ActionType.CompleteReporting) return "complete-reporting";
+    else if (type == ActionType.ExtractResearchData) return "extract-research-data";
+    else if (type == ActionType.ExecuteResearchQuery) return "execute-research-query";
+    else if (type == ActionType.TerminateReportingWorkflow) return "terminate-reporting-workflow";
+    else if (type == ActionType.CancelReport) return "cancel-report";
+    else return "unknown";
   }
 
   public enum OutputContentType {

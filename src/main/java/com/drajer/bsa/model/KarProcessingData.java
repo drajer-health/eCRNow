@@ -92,8 +92,11 @@ public class KarProcessingData {
    */
   HashMap<String, Set<Resource>> actionOutputDataById;
 
-  /** The status of each Action after its execution. */
+  /** The current status of each Action after its execution. */
   HashMap<String, BsaActionStatus> actionStatus;
+
+  /** The previous status of the actions that can be used for comparison */
+  KarExecutionState previousState;
 
   /** The data actually submitted to the TTP/PHA. */
   String submittedData;

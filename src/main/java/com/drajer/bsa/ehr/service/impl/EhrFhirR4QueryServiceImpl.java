@@ -8,6 +8,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,13 @@ import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
+import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -104,6 +112,35 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       kd.addResourcesByType(resMap);
     }
 
+    if (kd.getNotificationContext()
+        .getNotificationResourceType()
+        .equals(ResourceType.Encounter.toString())) {
+
+      logger.info(
+          " Fetch Encounter resource for Id : {} ",
+          kd.getNotificationContext().getNotificationResourceId());
+
+      Resource enc =
+          getResourceById(
+              client,
+              context,
+              ResourceType.Encounter.toString(),
+              kd.getNotificationContext().getNotificationResourceId());
+
+      if (enc != null) {
+
+        logger.info(
+            " Found Encounter resource for Id : {}",
+            kd.getNotificationContext().getNotificationResourceId());
+
+        Set<Resource> resources = new HashSet<Resource>();
+        resources.add(enc);
+        HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+        resMap.put(enc.getResourceType(), resources);
+        kd.addResourcesByType(resMap);
+      }
+    }
+
     // Fetch Resources by Patient Id.
     for (Map.Entry<String, ResourceType> entry : resTypes.entrySet()) {
 
@@ -127,19 +164,153 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             kd,
             entry.getValue(),
             entry.getKey());
-      } else if (entry.getValue() == ResourceType.Encounter) {
-
-        logger.info(
-            " Getting data for location, practitioner, organization from the encounter resource ");
-
-        // loadPractitionersLocationAndOrganization(
-        //		  client, context, kd, kd.getNotificationContext()
-
       }
     }
 
     // Get other resources for Patient
     return kd.getFhirInputData();
+  }
+
+  public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd) {
+
+    String secret = kd.getHealthcareSetting().getClientSecret();
+    if (secret == null || secret.isEmpty()) {
+      backendAuthorizationService.getAuthorizationToken(kd);
+    } else {
+      ehrAuthorizationService.getAuthorizationToken(kd);
+    }
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info("Initializing FHIR Client");
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context,
+            kd.getHealthcareSetting().getFhirServerBaseURL(),
+            kd.getNotificationContext().getEhrAccessToken(),
+            kd.getxRequestId());
+
+    // Retrieve the encounter
+    Set<Resource> res = kd.getResourcesByType(ResourceType.Encounter.toString());
+
+    Set<Resource> practitioners = new HashSet<Resource>();
+    Set<Resource> locations = new HashSet<Resource>();
+    Set<Resource> organizations = new HashSet<Resource>();
+    Map<String, String> practitionerMap = new HashMap<>();
+
+    for (Resource r : res) {
+
+      Encounter encounter = (Encounter) r;
+
+      // Load Practitioners
+      if (encounter.getParticipant() != null) {
+
+        List<EncounterParticipantComponent> participants = encounter.getParticipant();
+
+        for (EncounterParticipantComponent participant : participants) {
+          if (participant.getIndividual() != null) {
+            Reference practitionerReference = participant.getIndividual();
+            String practitionerID = practitionerReference.getReferenceElement().getIdPart();
+            if (!practitionerMap.containsKey(practitionerID)) {
+              Practitioner practitioner =
+                  (Practitioner)
+                      getResourceById(
+                          client, context, ResourceType.Practitioner.toString(), practitionerID);
+              if (practitioner != null && !practitionerMap.containsKey(practitionerID)) {
+                practitioners.add(practitioner);
+                practitionerMap.put(practitionerID, ResourceType.Practitioner.toString());
+              }
+            }
+          } // Individual != null
+        } // For all participants
+      } // For participant != null
+
+      // Load Organizations
+      if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
+        Reference organizationReference = encounter.getServiceProvider();
+        if (organizationReference.hasReferenceElement()) {
+          Organization organization =
+              (Organization)
+                  getResourceById(
+                      client,
+                      context,
+                      "Organization",
+                      organizationReference.getReferenceElement().getIdPart());
+          if (organization != null) {
+            organizations.add(organization);
+          }
+        }
+      }
+
+      // Load Locations
+      if (Boolean.TRUE.equals(encounter.hasLocation())) {
+        List<Location> locationList = new ArrayList<>();
+        List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
+        for (EncounterLocationComponent location : enocunterLocations) {
+          if (location.getLocation() != null) {
+            Reference locationReference = location.getLocation();
+            Location locationResource =
+                (Location)
+                    getResourceById(
+                        client,
+                        context,
+                        "Location",
+                        locationReference.getReferenceElement().getIdPart());
+            if (locationResource != null) {
+              locations.add(locationResource);
+            }
+          }
+        }
+      }
+    } // for all encounters
+
+    if (practitioners.size() > 0) {
+
+      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      resMap.put(ResourceType.Practitioner, practitioners);
+      kd.addResourcesByType(resMap);
+    }
+
+    if (locations.size() > 0) {
+
+      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      resMap.put(ResourceType.Location, locations);
+      kd.addResourcesByType(resMap);
+    }
+
+    if (organizations.size() > 0) {
+
+      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      resMap.put(ResourceType.Organization, organizations);
+      kd.addResourcesByType(resMap);
+    }
+
+    return kd.getFhirInputData();
+  }
+
+  @Override
+  public Resource getResourceById(KarProcessingData kd, String resourceName, String resourceId) {
+
+    String secret = kd.getHealthcareSetting().getClientSecret();
+    if (secret == null || secret.isEmpty()) {
+      backendAuthorizationService.getAuthorizationToken(kd);
+    } else {
+      ehrAuthorizationService.getAuthorizationToken(kd);
+    }
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info("Initializing FHIR Client");
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context,
+            kd.getHealthcareSetting().getFhirServerBaseURL(),
+            kd.getNotificationContext().getEhrAccessToken(),
+            kd.getxRequestId());
+
+    return getResourceById(client, context, resourceName, resourceId);
   }
 
   public Resource getResourceById(

@@ -3,6 +3,7 @@ package com.drajer.bsa.utils;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -11,16 +12,24 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
+import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
@@ -231,6 +240,100 @@ public class BsaServiceUtils {
     return retVal;
   }
 
+  /**
+   * Find all document references in the bundle.
+   *
+   * @param res
+   * @param docs
+   */
+  public static void findDocumentReferences(Resource res, List<DocumentReference> docs) {
+
+    if (res.getResourceType() == ResourceType.Bundle) {
+
+      Bundle b = (Bundle) res;
+
+      List<BundleEntryComponent> becs = b.getEntry();
+
+      for (BundleEntryComponent bec : becs) {
+
+        if (bec.getResource().getResourceType() == ResourceType.DocumentReference) {
+
+          docs.add((DocumentReference) (bec.getResource()));
+
+        } // if it is a doc ref
+        else if (bec.getResource().getResourceType() == ResourceType.Bundle) {
+
+          findDocumentReferences(bec.getResource(), docs);
+        }
+      } // For entries
+    } // if res is a bundle
+  }
+
+  /**
+   * The method takes a FHIR Resource and checks to see if the Document Bundle contains a Document
+   * Reference resource When a Document Reference resource is found, it saves the attachment part of
+   * the DocumentReference in an XML file. The attachment is expected to be a CDA document.
+   *
+   * @param res
+   */
+  public static void saveCdaDocumentFromDocumentBundleToFile(
+      String logDirectory, String actionType, Resource res) {
+
+    List<DocumentReference> docs = new ArrayList<DocumentReference>();
+
+    findDocumentReferences(res, docs);
+
+    for (DocumentReference docRef : docs) {
+
+      logger.info(" Found a document reference that needs to be saved ");
+      String fileName =
+          logDirectory
+              + actionType
+              + "_"
+              + docRef.getSubject().getReferenceElement().getIdPart()
+              + "_"
+              + docRef.getId()
+              + ".xml";
+
+      if (docRef.getContent().size() > 0) {
+
+        DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
+
+        if (drcc.getAttachment() != null) {
+          Attachment att = drcc.getAttachment();
+
+          String payload = new String(att.getData());
+
+          logger.debug("Saving data to file {}", fileName);
+          saveDataToFile(payload, fileName);
+        } // attachment not null
+      } // DocRef has content
+    } // For all document referneces.
+  }
+
+  /**
+   * The method saves the provided data to a file.
+   *
+   * @param data -- The data to be saved.
+   * @param filename -- The filename to be used for saving the data.
+   */
+  public static void saveDataToFile(String data, String filename) {
+
+    try (DataOutputStream outStream =
+        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
+
+      logger.info(" Writing data to file: {}", filename);
+      outStream.writeBytes(data);
+    } catch (IOException e) {
+      logger.debug(" Unable to write data to file: {}", filename, e);
+    }
+  }
+
+  /**
+   * The method can save the resource to a file as a JSON object.
+   *
+   * @param res
+   */
   public void saveResourceToFile(Resource res) {
 
     String fileName =
@@ -238,14 +341,7 @@ public class BsaServiceUtils {
 
     String data = jsonParser.encodeResourceToString(res);
 
-    try (DataOutputStream outStream =
-        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)))) {
-
-      logger.info(" Writing data to file: {}", fileName);
-      outStream.writeBytes(data);
-    } catch (IOException e) {
-      logger.debug(" Unable to write data to file: {}", fileName, e);
-    }
+    saveDataToFile(data, fileName);
   }
 
   // public static final Map<String, Bundle> eicrBundles = new HashMap<String, Bundle>();
@@ -271,5 +367,40 @@ public class BsaServiceUtils {
     } else {
       logger.info("No action map found skipping action state save....");
     }
+  }
+
+  /**
+   * Checks the data provided in the bundle to examine if it is a message type bundle and if it
+   * contains data related to a CDA document.
+   *
+   * @param res - Bundle to be examined.
+   * @return
+   */
+  public static Boolean hasCdaData(Resource res) {
+
+    if (res.getResourceType() == ResourceType.Bundle) {
+
+      Bundle b = (Bundle) res;
+
+      if (b.getType() == BundleType.MESSAGE && b.getEntry().size() > 1) {
+
+        BundleEntryComponent bec = b.getEntryFirstRep();
+
+        if (bec.getResource().getResourceType() == ResourceType.MessageHeader) {
+
+          MessageHeader mh = (MessageHeader) bec.getResource();
+
+          if (mh.getEventCoding() != null
+              && mh.getEventCoding()
+                  .getCode()
+                  .equals(BsaTypes.getMessageTypeString(MessageType.CdaEicrMessage))) {
+
+            return true;
+          } // If Message Type
+        } // MEssage Header
+      } // Message Type
+    } // Bundle
+
+    return false;
   }
 }

@@ -1,9 +1,20 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
+import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.eca.model.EventTypes.JobStatus;
+import com.drajer.eca.model.MatchTriggerStatus;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -26,17 +37,30 @@ import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The class is used to convert from Release3.0 data structures to Release2.0 data structures so
+ * that common code such as CDA generation, validation and routing can be reused from Release2.0.
+ *
+ * @author nbashyam
+ */
 public class R3ToR2DataConverterUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(R3ToR2DataConverterUtils.class);
 
+  /**
+   * The method creates the Release2.0 R4FhirData and LaunchDetails data structures from
+   * KarProcessingData.
+   *
+   * @param kd
+   * @return
+   */
   public static Pair<R4FhirData, LaunchDetails> convertKarProcessingDataForCdaGeneration(
       KarProcessingData kd) {
 
     R4FhirData r4FhirData = new R4FhirData();
-    ;
     LaunchDetails details = new LaunchDetails();
     Bundle data = new Bundle();
+    setPatientStateInLaunchDetails(kd, details);
 
     if (kd != null) {
 
@@ -198,10 +222,67 @@ public class R3ToR2DataConverterUtils {
         }
       }
 
+      r4FhirData.setData(data);
+
     } else {
       logger.error(" Cannot convert Null Kar Processing Data For Cda Generation ");
     }
 
     return new Pair<R4FhirData, LaunchDetails>(r4FhirData, details);
+  }
+
+  /**
+   * The method updates the LaunchDetails.status field with the right PatientExecutionState which is
+   * setup from KarProcessingData.actionStatus field.
+   *
+   * @param data
+   * @param details
+   */
+  private static void setPatientStateInLaunchDetails(
+      KarProcessingData data, LaunchDetails details) {
+
+    PatientExecutionState state = new PatientExecutionState();
+
+    // Set Trigger codes.
+    HashMap<String, BsaActionStatus> statuses = data.getActionStatus();
+
+    for (Map.Entry<String, BsaActionStatus> entry : statuses.entrySet()) {
+
+      if (entry.getValue().getActionType() == ActionType.CheckTriggerCodes) {
+
+        CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) entry.getValue();
+        MatchTriggerStatus mts = new MatchTriggerStatus();
+
+        mts.setActionId(ctcs.getActionId());
+        mts.setJobStatus(getJobStatusForActionStatus(ctcs.getActionStatus()));
+        mts.setTriggerMatchStatus(ctcs.getTriggerMatchStatus());
+        mts.setMatchedCodes(ctcs.getMatchedCodes());
+        state.setMatchTriggerStatus(mts);
+      }
+    }
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+
+      details.setStatus(mapper.writeValueAsString(state));
+
+    } catch (JsonProcessingException e) {
+
+      String msg = "Unable to update execution state";
+      logger.error(msg, e);
+      throw new RuntimeException(msg, e);
+    }
+  }
+
+  private static JobStatus getJobStatusForActionStatus(BsaActionStatusType status) {
+
+    if (status == BsaActionStatusType.Completed) return JobStatus.COMPLETED;
+    else if (status == BsaActionStatusType.Aborted) return JobStatus.ABORTED;
+    else if (status == BsaActionStatusType.Failed) return JobStatus.ABORTED;
+    else if (status == BsaActionStatusType.InProgress) return JobStatus.IN_PROGRESS;
+    else if (status == BsaActionStatusType.NotStarted) return JobStatus.NOT_STARTED;
+    else if (status == BsaActionStatusType.Scheduled) return JobStatus.SCHEDULED;
+    else return JobStatus.ABORTED;
   }
 }

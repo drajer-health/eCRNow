@@ -104,6 +104,9 @@ public class KarParserImpl implements KarParser {
   @Value("${fhirpath.enabled:true}")
   Boolean fhirpathEnabled;
 
+  @Value("${bsa.output.directory}")
+  String logDirectory;
+
   @Autowired BsaServiceUtils utils;
 
   // Autowired to pass to action processors.
@@ -375,6 +378,7 @@ public class KarParserImpl implements KarParser {
         action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
+        action.setLogDirectory(logDirectory);
 
         populateAction(plan, act, action, karBundleFile);
 
@@ -529,6 +533,7 @@ public class KarParserImpl implements KarParser {
           subAction.setRestTemplate(restTemplate);
           subAction.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
+          subAction.setLogDirectory(logDirectory);
 
           populateAction(plan, act, subAction, karBundleFile);
 

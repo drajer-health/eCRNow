@@ -93,6 +93,9 @@ public abstract class BsaAction {
   /** Attribute that can be set to ignore timers for testing through the same code paths */
   protected Boolean ignoreTimers;
 
+  /** The directory for the output to be written */
+  protected String logDirectory;
+
   /** The method that all actions have to implement to process data. */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
 
@@ -348,6 +351,18 @@ public abstract class BsaAction {
 
   public void setJsonParser(IParser jsonParser) {
     this.jsonParser = jsonParser;
+  }
+
+  public String getLogDirectory() {
+    return logDirectory;
+  }
+
+  public void setLogDirectory(String logDirectory) {
+    this.logDirectory = logDirectory;
+  }
+
+  public void setActionId(String actionId) {
+    this.actionId = actionId;
   }
 
   public void addRelatedAction(BsaRelatedAction ract) {

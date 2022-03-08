@@ -2,8 +2,10 @@ package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +41,8 @@ public class CreateReport extends BsaAction {
       // Get necessary data to process.
       HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
+      HashMap<ResourceType, Set<Resource>> finalRes = ehrService.loadJurisdicationData(data);
+
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {
 
@@ -65,6 +69,10 @@ public class CreateReport extends BsaAction {
                 logger.info(" Adding Report to output using id {}", dr.getId());
 
                 data.addActionOutputById(dr.getId(), output);
+
+                if (BsaServiceUtils.hasCdaData(output))
+                  BsaServiceUtils.saveCdaDocumentFromDocumentBundleToFile(
+                      getLogDirectory(), BsaTypes.getActionString(type), output);
               }
             }
           }

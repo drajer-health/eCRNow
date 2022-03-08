@@ -1,5 +1,7 @@
 package com.drajer.bsa.model;
 
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,6 +63,19 @@ public class KarExecutionState {
    */
   @Column(name = "kar_unique_id", nullable = false, columnDefinition = "TEXT")
   private String karUniqueId;
+
+  /**
+   * The attribute represents the state of the execution for the various actions that have been
+   * completed during a single execution either due to a timer or due to a notification.
+   */
+  @Column(name = "action_status", nullable = true, columnDefinition = "TEXT")
+  private String actionStatus;
+
+  /**
+   * This attribute used for convenience to exchange the information as objects. The data itself
+   * gets stored in the actionStatus attribute in the database.
+   */
+  @Transient private List<BsaActionStatus> actionStatuses;
 
   KarExecutionState() {}
 

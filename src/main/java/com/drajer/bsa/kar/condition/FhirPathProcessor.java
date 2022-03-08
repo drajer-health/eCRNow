@@ -58,7 +58,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
       DataRequirement dr, KarProcessingData kd) {
 
-    // This will have to be changed once we plugin a real FhirPath Engine.
     CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
     Map<String, Set<Resource>> resources = new HashMap<String, Set<Resource>>();
     Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal =
@@ -72,7 +71,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       candidates.addAll(inputCandidates);
     }
 
-    // TODO: Should this be alligned based on action id or datarequirements name or something?
     for (Map.Entry<String, HashMap<String, Resource>> entry : kd.getActionOutputData().entrySet()) {
       for (Map.Entry<String, Resource> innerEntry : entry.getValue().entrySet()) {
         if (innerEntry.getValue().fhirType().equals(dr.getType())) {

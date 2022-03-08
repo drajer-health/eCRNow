@@ -104,8 +104,6 @@ public class KarProcessorImpl implements KarProcessor {
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }
 
-    saveDataForDebug(data);
-
     logger.info(" *** END Executing Trigger Actions *** ");
   }
 
