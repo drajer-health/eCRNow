@@ -64,7 +64,28 @@ public class FhirContextInitializer {
     logger.trace("Initializing the Client");
     FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
     context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
+    if (logger.isDebugEnabled()) {
+      client.registerInterceptor(new LoggingInterceptor(true));
+    }
+    logger.trace(
+        "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
+    return client;
+  }
+
+  public IGenericClient createClient(FhirContext context, LaunchDetails launchDetails) {
+    logger.trace("Initializing the Client");
+    FhirClient client =
+        new FhirClient(
+            context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
+            launchDetails.getxRequestId());
+    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+
+    BearerTokenAuthInterceptor bearerTokenAuthInterceptor =
+        new EcrOAuthBearerTokenInterceptor(launchDetails);
+    client.registerInterceptor(bearerTokenAuthInterceptor);
+
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
