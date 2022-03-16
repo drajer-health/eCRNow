@@ -25,23 +25,49 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+// TODO: Auto-generated Javadoc
+/** The Class RefreshTokenScheduler. */
 @Component
 public class RefreshTokenScheduler {
 
+  /** The task scheduler. */
   @Autowired ThreadPoolTaskScheduler taskScheduler;
 
+  /** The logger. */
   private final Logger logger = LoggerFactory.getLogger(RefreshTokenScheduler.class);
 
+  /** The Constant GRANT_TYPE. */
   private static final String GRANT_TYPE = "grant_type";
+
+  /** The Constant SCOPE. */
   private static final String SCOPE = "scope";
+
+  /** The Constant CLIENT_CREDENTIALS. */
   private static final String CLIENT_CREDENTIALS = "client_credentials";
+
+  /** The Constant ACCEPT_HEADER. */
   private static final String ACCEPT_HEADER = "Accept";
+
+  /** The Constant ACCESS_TOKEN. */
   private static final String ACCESS_TOKEN = "access_token";
+
+  /** The Constant ACCESS_TOKEN_CAMEL_CASE. */
   private static final String ACCESS_TOKEN_CAMEL_CASE = "accessToken";
+
+  /** The Constant EXPIRES_IN. */
   private static final String EXPIRES_IN = "expires_in";
+
+  /** The Constant EXPIRES_IN_CAMEL_CASE. */
   private static final String EXPIRES_IN_CAMEL_CASE = "expiresIn";
+
+  /** The Constant PROVIDER_UUID. */
   private static final String PROVIDER_UUID = "uuid";
 
+  /**
+   * Schedule job.
+   *
+   * @param authDetails the auth details
+   */
   public void scheduleJob(LaunchDetails authDetails) {
     logger.info(
         "Scheduling Cron Job to Get AccessToken which expires every {} seconds",
@@ -56,14 +82,22 @@ public class RefreshTokenScheduler {
         authDetails.getClientId());
   }
 
+  /** The Class RunnableTask. */
   class RunnableTask implements Runnable {
 
+    /** The auth details. */
     private LaunchDetails authDetails;
 
+    /**
+     * Instantiates a new runnable task.
+     *
+     * @param authDetails the auth details
+     */
     public RunnableTask(LaunchDetails authDetails) {
       this.authDetails = authDetails;
     }
 
+    /** Run. */
     @Override
     public void run() {
       try {
@@ -75,6 +109,12 @@ public class RefreshTokenScheduler {
     }
   }
 
+  /**
+   * Gets the access token using launch details.
+   *
+   * @param authDetails the auth details
+   * @return the access token using launch details
+   */
   public JSONObject getAccessTokenUsingLaunchDetails(LaunchDetails authDetails) {
     JSONObject tokenResponse = null;
     logger.trace("Getting AccessToken for Client: {}", authDetails.getClientId());
@@ -146,7 +186,9 @@ public class RefreshTokenScheduler {
                 .getClientDetailsByUrl(authDetails.getEhrServerURL());
         updateAccessTokenInClientDetails(clientDetails, tokenResponse);
       }
-      updateAccessToken(authDetails, tokenResponse);
+      LaunchDetails existingAuthDetails =
+          ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
+      updateAccessToken(existingAuthDetails, tokenResponse);
 
     } catch (Exception e) {
       logger.error(
@@ -155,10 +197,14 @@ public class RefreshTokenScheduler {
     return tokenResponse;
   }
 
-  private void updateAccessToken(LaunchDetails authDetails, JSONObject tokenResponse) {
+  /**
+   * Update access token.
+   *
+   * @param existingAuthDetails the existing auth details
+   * @param tokenResponse the token response
+   */
+  private void updateAccessToken(LaunchDetails existingAuthDetails, JSONObject tokenResponse) {
     try {
-      LaunchDetails existingAuthDetails =
-          ActionRepo.getInstance().getLaunchService().getAuthDetailsById(authDetails.getId());
       if (existingAuthDetails != null) {
         logger.trace("Updating the AccessToken value in LaunchDetails table");
         existingAuthDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
@@ -169,7 +215,7 @@ public class RefreshTokenScheduler {
         existingAuthDetails.setLastUpdated(new Date());
         long expiresInSec = tokenResponse.getLong(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
-        existingAuthDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+        existingAuthDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
         ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
         logger.trace("Successfully updated AccessToken value in LaunchDetails table");
       }
@@ -178,9 +224,50 @@ public class RefreshTokenScheduler {
     }
   }
 
+  /**
+   * Gets the access token for multi tenant launch. And updates the AccessToken in ClientDetails and
+   * LaunchDetails tables.
+   *
+   * @param launchDetails the launch details
+   * @return the access token for multi tenant launch
+   */
+  public JSONObject getAccessTokenForMultiTenantLaunch(LaunchDetails launchDetails) {
+    JSONObject tokenResponse = null;
+    try {
+      ClientDetails clientDetails =
+          ActionRepo.getInstance()
+              .getClientDetailsService()
+              .getClientDetailsByUrl(launchDetails.getEhrServerURL());
+
+      Instant currentInstant = new Date().toInstant().plusSeconds(180);
+      Date currentDate = Date.from(currentInstant);
+      Date tokenExpiryTime = clientDetails.getTokenExpiryDateTime();
+      int value = currentDate.compareTo(tokenExpiryTime);
+      if (value > 0) {
+        logger.info("AccessToken is Expired. Getting new AccessToken");
+        tokenResponse = getAccessTokenUsingClientDetails(clientDetails);
+      } else {
+        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        tokenResponse = new JSONObject();
+        tokenResponse.put(ACCESS_TOKEN, clientDetails.getAccessToken());
+        tokenResponse.put(EXPIRES_IN, clientDetails.getTokenExpiry());
+      }
+    } catch (Exception e) {
+      logger.error(
+          "Error in Getting the AccessToken for the client: {}", launchDetails.getClientId(), e);
+    }
+    return tokenResponse;
+  }
+
+  /**
+   * Gets the access token using client details.
+   *
+   * @param clientDetails the client details
+   * @return the access token using client details
+   */
   public JSONObject getAccessTokenUsingClientDetails(ClientDetails clientDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: {}", clientDetails.getClientId());
+    logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
       if (clientDetails.getIsSystem() || clientDetails.getIsMultiTenantSystemLaunch()) {
@@ -204,7 +291,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (clientDetails.getIsUserAccountLaunch()) {
+      } else if (Boolean.TRUE.equals(clientDetails.getIsUserAccountLaunch())) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientDetails.getClientId(), clientDetails.getClientSecret());
 
@@ -233,7 +320,13 @@ public class RefreshTokenScheduler {
       }
 
       logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());
-      updateAccessTokenInClientDetails(clientDetails, tokenResponse);
+      ClientDetails existingClientDetails =
+          ActionRepo.getInstance()
+              .getClientDetailsService()
+              .getClientDetailsById(clientDetails.getId());
+      if (Boolean.TRUE.equals(existingClientDetails.getIsMultiTenantSystemLaunch())) {
+        updateAccessTokenInClientDetails(existingClientDetails, tokenResponse);
+      }
     } catch (Exception e) {
       logger.error(
           "Error in Getting the AccessToken for the client: {}", clientDetails.getClientId(), e);
@@ -241,15 +334,17 @@ public class RefreshTokenScheduler {
     return tokenResponse;
   }
 
+  /**
+   * Update access token in client details.
+   *
+   * @param existingClientDetails the existing client details
+   * @param tokenResponse the token response
+   */
   private void updateAccessTokenInClientDetails(
-      ClientDetails clientDetails, JSONObject tokenResponse) {
+      ClientDetails existingClientDetails, JSONObject tokenResponse) {
     try {
-      ClientDetails existingClientDetails =
-          ActionRepo.getInstance()
-              .getClientDetailsService()
-              .getClientDetailsById(clientDetails.getId());
       if (existingClientDetails != null) {
-        logger.trace("Updating the AccessToken value in ClientDetails table");
+        logger.info("Updating the AccessToken value in ClientDetails table");
         existingClientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
         existingClientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
         existingClientDetails.setLastUpdated(new Date());
@@ -257,7 +352,7 @@ public class RefreshTokenScheduler {
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
         existingClientDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
         ActionRepo.getInstance().getClientDetailsService().saveOrUpdate(existingClientDetails);
-        logger.trace("Successfully updated AccessToken value in ClientDetails table");
+        logger.info("Successfully updated AccessToken value in ClientDetails table");
       }
     } catch (Exception e) {
       logger.error("Error in Updating the AccessToken value into ClientDetails: ", e);

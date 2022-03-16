@@ -311,7 +311,11 @@ public class LaunchDetails {
   }
 
   public String getAccessToken() {
-    if (this.getTokenExpiryDateTime() != null) {
+    if (Boolean.TRUE.equals(this.isMultiTenantSystemLaunch)) {
+      JSONObject accessTokenObj =
+          new RefreshTokenScheduler().getAccessTokenForMultiTenantLaunch(this);
+      return accessTokenObj.getString("access_token");
+    } else if (this.getTokenExpiryDateTime() != null) {
       // Retrieve Access token 3 minutes before it expires.
       // 3 minutes is enough buffer for Trigger or Loading query to complete.
       Instant currentInstant = new Date().toInstant().plusSeconds(180);
@@ -327,6 +331,7 @@ public class LaunchDetails {
         logger.info("AccessToken is Valid. No need to get new AccessToken");
         return accessToken;
       }
+
     } else {
       return accessToken;
     }

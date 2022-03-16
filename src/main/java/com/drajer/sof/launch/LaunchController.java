@@ -228,22 +228,33 @@ public class LaunchController {
         if (value > 0) {
           logger.info("AccessToken is Expired. Getting new AccessToken");
           tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+          if (tokenResponse != null) {
+            clientDetails.setTokenExpiryDateTime(
+                getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+          }
         } else {
           logger.info("AccessToken is Valid. No need to get new AccessToken");
           tokenResponse = new JSONObject();
           tokenResponse.put(ACCESS_TOKEN, clientDetails.getAccessToken());
           tokenResponse.put(EXPIRES_IN, clientDetails.getTokenExpiry());
+          // clientDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
         }
       } else {
         tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+        if (tokenResponse != null
+            && Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+          clientDetails.setTokenExpiryDateTime(
+              getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+        }
       }
 
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
-          if (!checkWithExistingPatientAndEncounter(
-              systemLaunch.getPatientId(),
-              systemLaunch.getEncounterId(),
-              systemLaunch.getFhirServerURL())) {
+          if (Boolean.FALSE.equals(
+              checkWithExistingPatientAndEncounter(
+                  systemLaunch.getPatientId(),
+                  systemLaunch.getEncounterId(),
+                  systemLaunch.getFhirServerURL()))) {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
@@ -289,13 +300,16 @@ public class LaunchController {
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
+            if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {}
+
             if (tokenResponse.get(EXPIRES_IN) != null) {
-              Integer expiresInSec = tokenResponse.getInt(EXPIRES_IN);
-              Instant expireInstantTime =
-                  new Date().toInstant().plusSeconds(new Long(expiresInSec));
-              launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
               if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
-                clientDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+                clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+                clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+                launchDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
+              } else {
+                launchDetails.setTokenExpiryDateTime(
+                    getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
               }
             }
             launchDetails.setLaunchType("SystemLaunch");
@@ -303,10 +317,11 @@ public class LaunchController {
             IBaseResource encounter = getEncounterById(launchDetails);
             setStartAndEndDates(clientDetails, launchDetails, encounter);
 
-            if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
-              clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
-              clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
-            }
+            /*
+             * if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+             * clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+             * clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN)); }
+             */
 
             clientDetailsService.saveOrUpdate(clientDetails);
 
@@ -644,6 +659,11 @@ public class LaunchController {
 
   private static Date getDate(String thresholdValue) {
     return DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
+  }
+
+  private Date getTokenExpirationDateTime(Integer expiresIn) {
+    Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresIn));
+    return new Date().from(expireInstantTime);
   }
 
   @CrossOrigin
