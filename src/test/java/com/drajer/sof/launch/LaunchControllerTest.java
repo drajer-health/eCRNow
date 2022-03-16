@@ -195,12 +195,7 @@ public class LaunchControllerTest {
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
         .thenReturn(context);
 
-    when(fhirContextInitializer.createClient(
-            context,
-            currentStateDetails.getEhrServerURL(),
-            currentStateDetails.getAccessToken(),
-            currentStateDetails.getxRequestId()))
-        .thenReturn(client);
+    when(fhirContextInitializer.createClient(context, currentStateDetails)).thenReturn(client);
 
     when(client.read()).thenReturn(read);
     when(read.resource("Encounter")).thenReturn(readType);
