@@ -68,7 +68,7 @@ public class Eicr {
   @Column(name = "launch_patient_id", nullable = true, columnDefinition = "TEXT")
   private String launchPatientId;
 
-  @Column(name = "launch_details_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "launch_details_id", nullable = true, columnDefinition = "INTEGER")
   private Integer launchDetailsId;
 
   @Column(name = "encounter_id", nullable = true, columnDefinition = "TEXT")
