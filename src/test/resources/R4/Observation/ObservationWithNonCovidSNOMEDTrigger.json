@@ -1307,17 +1307,17 @@
                         "coding": [
                             {
                                 "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
-                                "code": "211",
-                                "display": "LOW",
+                                "code": "209",
+                                "display": "<LLOW",
                                 "userSelected": true
                             },
                             {
                                 "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
-                                "code": "L",
-                                "display": "Low"
+                                "code": "<",
+                                "display": "Off scale low"
                             }
                         ],
-                        "text": "LOW"
+                        "text": "<LLOW"
                     }
                 ],
                 "referenceRange": [

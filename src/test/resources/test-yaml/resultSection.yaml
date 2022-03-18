@@ -1421,10 +1421,10 @@ testCase:
         "value/@type": "PQ"
         "value/@value": "11.0" 
         "value/@unit": "g/dL"        
-        "interpretationCode/@code": "L"
+        "interpretationCode/@code": "<"
         "interpretationCode/@codeSystem": "2.16.840.1.113883.5.83"
         "interpretationCode/@codeSystemName": "v3-ObservationInterpretation"
-        "interpretationCode/@displayName": "Low"
+        "interpretationCode/@displayName": "Off scale low"
         #entry-9
       - xPath: "entry[9]/"
         "@typeCode": "DRIV"
