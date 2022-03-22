@@ -98,7 +98,10 @@ testCase:
         "tbody/tr/td[1]/content": "inpatient encounter"
       #      'tbody/tr/td[2]/content': "20200512191056"
       - xPath: "entry/encounter/"
-        "code/@nullFlavor": "NI"
+        "code/@code": "O"
+        "code/@codeSystem": "2.16.840.1.113883.18.5"
+        "code/@codeSystemName": "v2-0004"
+        "code/@displayName": "Outpatient"
   eCR-encounterDiagnosis-FullECR-WithNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"

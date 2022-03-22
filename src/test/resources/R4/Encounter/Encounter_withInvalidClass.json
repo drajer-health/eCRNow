@@ -48,18 +48,18 @@
       "coding": [
         {
           "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/71",
-          "code": "309308",
-          "display": "Inpatient",
+          "code": "309309",
+          "display": "Outpatient",
           "userSelected": true
         },
         {
           "system": "http://terminology.hl7.org/CodeSystem/v2-0004",
-          "code": "I",
-          "display": "Inpatient",
+          "code": "O",
+          "display": "Outpatient",
           "userSelected": false
         }
       ],
-      "text": "Inpatient"
+      "text": "Outpatient"
     }
   ],
   "serviceType": {
