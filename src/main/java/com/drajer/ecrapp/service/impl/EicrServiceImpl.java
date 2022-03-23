@@ -184,7 +184,7 @@ public class EicrServiceImpl implements EicrRRService {
         saveOrUpdate(ecr);
 
       } else {
-        String errorMsg = "Unable to find Eicr for Doc Id: {} " + rrDocId.getRootValue();
+        String errorMsg = "Unable to find Eicr for EICR_DOC_ID: " + eicrDocId.getRootValue();
         logger.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
