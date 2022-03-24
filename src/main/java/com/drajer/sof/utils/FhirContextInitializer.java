@@ -95,7 +95,7 @@ public class FhirContextInitializer {
   }
 
   public MethodOutcome submitResource(IGenericClient genericClient, Resource resource) {
-    MethodOutcome outcome = new MethodOutcome();
+    MethodOutcome outcome = null;
     try {
       outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
     } catch (Exception e) {
