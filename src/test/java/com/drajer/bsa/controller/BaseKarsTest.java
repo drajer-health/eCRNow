@@ -10,7 +10,10 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.util.BundleUtil;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.EvaluateMeasureStatus;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.scheduler.ScheduleJobConfiguration;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
@@ -30,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +79,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected HealthcareSettingsDao hsDao;
 
-  protected Map<String, BsaTypes.BsaActionStatusType> actions;
+  protected Map<String, BsaActionStatus> actions;
 
   @Autowired ApplicationContext applicationContext;
 
@@ -92,8 +96,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
     this.ap = applicationContext.getBean(ApplicationUtils.class);
     this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
-    this.actions =
-        (Map<String, BsaTypes.BsaActionStatusType>) applicationContext.getBean("actions");
+    this.actions = (Map<String, BsaActionStatus>) applicationContext.getBean("actions");
     this.wireMockServer.resetAll();
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
@@ -247,6 +250,19 @@ public class BaseKarsTest extends BaseIntegrationTest {
         return (MeasureReport) this.fhirContext.newJsonParser().parseResource(fis);
       } catch (Exception e) {
         return null;
+      }
+    } else {
+      if (actions != null && (!actions.isEmpty())) {
+        for (Entry<String, BsaActionStatus> entry : actions.entrySet()) {
+          if (entry.getKey().startsWith("evaluate-measure")
+              && entry.getValue().getActionStatus() != null
+              && entry.getValue().getActionStatus().equals(BsaActionStatusType.Completed)) {
+            EvaluateMeasureStatus evaluateMeasureStatus = (EvaluateMeasureStatus) entry.getValue();
+            if (evaluateMeasureStatus.getReport() != null) {
+              return evaluateMeasureStatus.getReport();
+            }
+          }
+        }
       }
     }
 
@@ -418,11 +434,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
     }
   }
 
-  protected Boolean validateActionStatus(
-      String actionId, BsaTypes.BsaActionStatusType actionStatus) {
+  protected Boolean validateActionStatus(String actionId, BsaActionStatusType actionStatus) {
     if (actions != null) {
-      if (actions.get(actionId) != null) {
-        return actions.get(actionId).equals(actionStatus);
+      if (actions.get(actionId) != null && actions.get(actionId).getActionStatus() != null) {
+        return actions.get(actionId).getActionStatus().equals(actionStatus);
       } else return false;
     } else return false;
   }

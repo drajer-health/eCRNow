@@ -127,6 +127,7 @@ public class EvaluateMeasure extends BsaAction {
 
       if (result != null) {
 
+        actStatus.setReport(result);
         data.addActionOutput(this.getActionId(), result);
 
         if (measureReportId != null && measureReportId.length() > 0)

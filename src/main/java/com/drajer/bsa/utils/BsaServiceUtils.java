@@ -66,7 +66,7 @@ public class BsaServiceUtils {
   String debugDirectory;
 
   @Autowired(required = false)
-  Map<String, BsaTypes.BsaActionStatusType> actions;
+  Map<String, BsaActionStatus> actions;
 
   @Autowired(required = false)
   Map<String, Bundle> eicrBundles;
@@ -362,7 +362,7 @@ public class BsaServiceUtils {
     if (actions != null) {
       logger.info("Found actions map saving action state....");
       for (Entry<String, BsaActionStatus> entry : actionStatus.entrySet()) {
-        actions.put(entry.getValue().getActionId(), entry.getValue().getActionStatus());
+        actions.put(entry.getValue().getActionId(), entry.getValue());
       }
     } else {
       logger.info("No action map found skipping action state save....");

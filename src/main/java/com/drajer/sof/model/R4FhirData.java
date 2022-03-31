@@ -50,6 +50,7 @@ public class R4FhirData extends FhirData {
   private List<ServiceRequest> serviceRequests;
 
   private Address jurisdiction;
+  private List<Address> jurisdictions;
 
   public void prepareJurisdicationData() {
 
@@ -60,6 +61,11 @@ public class R4FhirData extends FhirData {
       logger.info(
           " Using Organization information from Encounter.serviceProvider as Jurisdiction ");
       jurisdiction = organization.getAddressFirstRep();
+    } else if (patient != null && patient.getAddress() != null) {
+      logger.info(
+          " Using Patient address information for Jurisdiction assuming first entry of list.");
+      jurisdictions = patient.getAddress();
+      jurisdiction = patient.getAddressFirstRep();
     }
   }
 
