@@ -1,6 +1,10 @@
 {
     "resourceType": "Bundle",
     "id": "ErsdV2Bundle2",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2022-03-30T18:30:31.000+00:00"
+    },
     "type": "collection",
     "entry": [ {
         "fullUrl": "http://hl7.org/fhir/us/ecr/Library/ersd-supplemental-library",
