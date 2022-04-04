@@ -125,6 +125,8 @@ public class RefreshTokenScheduler {
         long expiresInSec = tokenResponse.getLong("expires_in");
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
         existingAuthDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+        authDetails.setTokenExpiryDateTime(Date.from(expireInstantTime));
+        authDetails.setAccessToken(tokenResponse.getString("access_token"));
         ActionRepo.getInstance().getLaunchService().saveOrUpdate(existingAuthDetails);
         logger.trace("Successfully updated AccessToken value in LaunchDetails table");
       }
