@@ -135,7 +135,7 @@ public class KarProcessingData {
 
       if (actionOutputDataById.containsKey(id)) actionOutputDataById.get(id).add(res);
       else {
-        Set<Resource> resources = new HashSet<Resource>();
+        Set<Resource> resources = new HashSet<>();
         resources.add(res);
         actionOutputDataById.put(id, resources);
       }

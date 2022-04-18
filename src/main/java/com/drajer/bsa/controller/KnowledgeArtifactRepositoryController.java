@@ -40,7 +40,7 @@ public class KnowledgeArtifactRepositoryController {
   @Autowired KarService karService;
 
   /**
-   * Method to retrieve the Knowledge Artifact Repsoitory by Id
+   * Method to retrieve the Knowledge Artifact Repository by Id
    *
    * @param karId - Id of the Knowledge Artifact Repository
    * @return - The Knowledge Artifact Repository object for the id provided
