@@ -5,9 +5,9 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.ecrapp.model.WorkflowTask;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
-import com.drajer.ecrapp.util.MDCUtils;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
@@ -33,9 +33,8 @@ public class TaskConfiguration {
 
   @Value("${workflow.endpoint}")
   private String workflowEndpoint;
-  
-  @Autowired
-  LaunchDetailsDao launchDetailsDao;
+
+  @Autowired LaunchDetailsDao launchDetailsDao;
 
   /** Define a one-time task which have to be manually scheduled. */
   @Bean
@@ -90,12 +89,13 @@ public class TaskConfiguration {
                           inst.getData().getLaunchDetailsId(),
                           ctx.getExecution().consecutiveFailures,
                           e);
-                      
-                      LaunchDetails details = 
-                    		  launchDetailsDao.getAuthDetailsById(inst.getData().getLaunchDetailsId());
-                      details.setProcessingState(LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
+
+                      LaunchDetails details =
+                          launchDetailsDao.getAuthDetailsById(inst.getData().getLaunchDetailsId());
+                      details.setProcessingState(
+                          LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
                       launchDetailsDao.saveOrUpdate(details);
-                      
+
                     } else {
                       ApplicationUtils.handleException(
                           e,

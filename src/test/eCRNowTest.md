@@ -45,7 +45,7 @@ section as below. These section contains tha data as Key/Value pair and retrieve
 tests you can define your own Key name for existing test use the same Key values across all tests.
 ```
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
 ``` 
 
@@ -120,7 +120,7 @@ of yaml file as below.
 In example below for SocialHistory section, first set the BaseXPath of the section in testData.
 ``` 
 testData:
-ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
 SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
 BaseXPath: "/ClinicalDocument/component/structuredBody/component[6]/section/"
 ``` 

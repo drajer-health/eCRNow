@@ -1,0 +1,2343 @@
+{
+  "resourceType": "Bundle",
+  "id": "073d6052-7365-4036-9562-1d5bfbe2596b",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742571&category=laboratory"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549577",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549577",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T17:05:38.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Interp: Mumps IgG</p><p><b>Result</b>: None Detected</p><p><b>Interpretation</b>: NA</p><p><b>Effective Date</b>: Oct 15, 2021  5:03 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549577-2021101517053800"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339360083"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "51243181",
+              "display": "Interp: Mumps IgG",
+              "userSelected": true
+            }
+          ],
+          "text": "Interp: Mumps IgG"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T17:03:00.000Z",
+        "issued": "2021-10-15T17:05:37.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/591924"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/11786042"
+          }
+        ],
+        "valueString": "None Detected",
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "212",
+                "display": "NA",
+                "userSelected": true
+              }
+            ],
+            "text": "NA"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549579",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549579",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T17:05:38.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Mumps, IgG</p><p><b>Result</b>: Detected</p><p><b>Interpretation</b>: NA</p><p><b>Effective Date</b>: Oct 15, 2021  5:03 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549579-2021101517053800"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339360083"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "41433877",
+              "display": "Mumps, IgG",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "25418-5"
+            }
+          ],
+          "text": "Mumps, IgG"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T17:03:00.000Z",
+        "issued": "2021-10-15T17:05:37.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/591924"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/11786042"
+          }
+        ],
+        "valueString": "Detected",
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "212",
+                "display": "NA",
+                "userSelected": true
+              }
+            ],
+            "text": "NA"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549583",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549583",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T17:05:39.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Streptococcus Pneumonia Antigen</p><p><b>Result</b>: Detected</p><p><b>Interpretation</b>: NA</p><p><b>Effective Date</b>: Oct 15, 2021  5:03 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549583-2021101517053900"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339360087"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "41433691",
+              "display": "Streptococcus Pneumonia Antigen",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "31969-9"
+            }
+          ],
+          "text": "Streptococcus Pneumonia Antigen"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T17:03:00.000Z",
+        "issued": "2021-10-15T17:05:37.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/591924"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/11786042"
+          }
+        ],
+        "valueString": "Detected",
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "212",
+                "display": "NA",
+                "userSelected": true
+              }
+            ],
+            "text": "NA"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549587",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549587",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T17:07:02.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Legionella Ag Ur</p><p><b>Result</b>: 110</p><p><b>Interpretation</b>: NA</p><p><b>Effective Date</b>: Oct 15, 2021  5:03 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549587-2021101517070200"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339360085"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21704984",
+              "display": "Legionella Ag Ur",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "32781-7"
+            }
+          ],
+          "text": "Legionella Ag Ur"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T17:03:00.000Z",
+        "issued": "2021-10-15T17:07:02.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/591924"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/11786042"
+          }
+        ],
+        "valueQuantity": {
+          "value": 110
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "212",
+                "display": "NA",
+                "userSelected": true
+              }
+            ],
+            "text": "NA"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549553",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549553",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: RDW</p><p><b>Result</b>: 12.0 %</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 11.8-14.5 %</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549553-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705768",
+              "display": "RDW",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "788-0"
+            }
+          ],
+          "text": "RDW"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 12.0,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 11.8,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 14.5,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549557",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549557",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Platelets</p><p><b>Result</b>: 200 x10^9/L</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 135-317 x10^9/L</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549557-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705568",
+              "display": "Platelets",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "777-3"
+            }
+          ],
+          "text": "Platelets"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 200,
+          "unit": "x10^9/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*9/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 135,
+              "unit": "x10^9/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*9/L"
+            },
+            "high": {
+              "value": 317,
+              "unit": "x10^9/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*9/L"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549537",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549537",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Instr WBC</p><p><b>Result</b>: 4.0 x10^9/L</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 3.4-9.6 x10^9/L</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549537-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705504",
+              "display": "Instr WBC",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "6690-2"
+            }
+          ],
+          "text": "Instr WBC"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 4.0,
+          "unit": "x10^9/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*9/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 3.4,
+              "unit": "x10^9/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*9/L"
+            },
+            "high": {
+              "value": 9.6,
+              "unit": "x10^9/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*9/L"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549555",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549555",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: MPV</p><p><b>Result</b>: 11.0 fL</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 9.4-12.4 fL</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549555-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705444",
+              "display": "MPV",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "32623-1"
+            }
+          ],
+          "text": "MPV"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 11.0,
+          "unit": "fL",
+          "system": "http://unitsofmeasure.org",
+          "code": "fL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 9.4,
+              "unit": "fL",
+              "system": "http://unitsofmeasure.org",
+              "code": "fL"
+            },
+            "high": {
+              "value": 12.4,
+              "unit": "fL",
+              "system": "http://unitsofmeasure.org",
+              "code": "fL"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549543",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549543",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Hgb</p><p><b>Result</b>: 9.0 g/dL</p><p><b>Interpretation</b>: LOW</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 13.2-16.6 g/dL</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549543-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705368",
+              "display": "Hgb",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "718-7"
+            }
+          ],
+          "text": "Hgb"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 9.0,
+          "unit": "g/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "g/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "211",
+                "display": "LOW",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ],
+            "text": "LOW"
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 13.2,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "high": {
+              "value": 16.6,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549549",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549549",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: MCH</p><p><b>Result</b>: 32.0 pg</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 27.0-33.0 pg</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549549-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705336",
+              "display": "MCH",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "785-6"
+            }
+          ],
+          "text": "MCH"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 32.0,
+          "unit": "pg",
+          "system": "http://unitsofmeasure.org",
+          "code": "pg"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 27.0,
+              "unit": "pg",
+              "system": "http://unitsofmeasure.org",
+              "code": "pg"
+            },
+            "high": {
+              "value": 33.0,
+              "unit": "pg",
+              "system": "http://unitsofmeasure.org",
+              "code": "pg"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549545",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549545",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: Hct</p><p><b>Result</b>: 40.0 %</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 38.3-48.6 %</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549545-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705168",
+              "display": "Hct",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "4544-3"
+            }
+          ],
+          "text": "Hct"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 40.0,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 38.3,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 48.6,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549551",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549551",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: MCHC</p><p><b>Result</b>: 33.0 g/dL</p><p><b>Interpretation</b>: Normal</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 33.0-36.0 g/dL</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549551-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21705010",
+              "display": "MCHC",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "786-4"
+            }
+          ],
+          "text": "MCHC"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 33.0,
+          "unit": "g/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "g/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "214",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 33.0,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "high": {
+              "value": 36.0,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549547",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549547",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: MCV</p><p><b>Result</b>: 30.0 fL</p><p><b>Interpretation</b>: LOW</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 78.2-97.9 fL</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549547-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "21704942",
+              "display": "MCV",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "787-2"
+            }
+          ],
+          "text": "MCV"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 30.0,
+          "unit": "fL",
+          "system": "http://unitsofmeasure.org",
+          "code": "fL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "211",
+                "display": "LOW",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ],
+            "text": "LOW"
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 78.2,
+              "unit": "fL",
+              "system": "http://unitsofmeasure.org",
+              "code": "fL"
+            },
+            "high": {
+              "value": 97.9,
+              "unit": "fL",
+              "system": "http://unitsofmeasure.org",
+              "code": "fL"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549541",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549541",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: RBC</p><p><b>Result</b>: 12.00 x10^12/L</p><p><b>Interpretation</b>: HI</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 4.35-5.65 x10^12/L</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549541-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "20136428",
+              "display": "RBC",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "789-8"
+            }
+          ],
+          "text": "RBC"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 12.00,
+          "unit": "x10^12/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*12/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "207",
+                "display": "HI",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "H",
+                "display": "High"
+              }
+            ],
+            "text": "HI"
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 4.35,
+              "unit": "x10^12/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*12/L"
+            },
+            "high": {
+              "value": 5.65,
+              "unit": "x10^12/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*12/L"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/M-197549539",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "M-197549539",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2021-10-15T14:36:09.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Laboratory</p><p><b>Code</b>: WBC</p><p><b>Result</b>: 22.0 x10^9/L</p><p><b>Interpretation</b>: HI</p><p><b>Effective Date</b>: Oct 15, 2021  2:29 P.M. UTC</p><p><b>Reference Range</b>: 3.4-9.6 x10^9/L</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197549539-2021101514361100"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/339346749"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ],
+            "text": "Laboratory"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "20136426",
+              "display": "WBC",
+              "userSelected": true
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "6690-2"
+            }
+          ],
+          "text": "WBC"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-10-15T14:29:00.000Z",
+        "issued": "2021-10-15T14:36:06.000Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0912",
+                      "code": "OP",
+                      "display": "Ordering Provider"
+                    }
+                  ],
+                  "text": "Ordering Provider"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12744819"
+          },
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "LA",
+                      "display": "legal authenticator"
+                    }
+                  ],
+                  "text": "legal authenticator"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              },
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12743472"
+          }
+        ],
+        "valueQuantity": {
+          "value": 22.0,
+          "unit": "x10^9/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "10*9/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/52",
+                "code": "207",
+                "display": "HI",
+                "userSelected": true
+              },
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "H",
+                "display": "High"
+              }
+            ],
+            "text": "HI"
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 3.4,
+              "unit": "x10^9/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*9/L"
+            },
+            "high": {
+              "value": 9.6,
+              "unit": "x10^9/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "10*9/L"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/referencerange-meaning",
+                  "code": "normal",
+                  "display": "Normal Range"
+                }
+              ],
+              "text": "Normal Range"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

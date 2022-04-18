@@ -210,7 +210,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -235,7 +235,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -259,7 +259,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -284,7 +284,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -306,7 +306,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.CODE_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
-        + code
+        + StringEscapeUtils.escapeXml10(code)
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -322,7 +322,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.CODE_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
-        + code
+        + StringEscapeUtils.escapeXml10(code)
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
@@ -1013,7 +1013,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1043,7 +1043,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1072,7 +1072,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1102,7 +1102,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1131,7 +1131,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1166,7 +1166,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1196,7 +1196,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1232,7 +1232,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1273,7 +1273,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1308,7 +1308,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1338,7 +1338,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1368,7 +1368,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1457,7 +1457,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1585,7 +1585,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1626,7 +1626,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1661,7 +1661,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1691,7 +1691,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODE_WITH_EQUAL
           + CdaGeneratorConstants.DOUBLE_QUOTE
-          + code
+          + StringEscapeUtils.escapeXml10(code)
           + CdaGeneratorConstants.DOUBLE_QUOTE
           + CdaGeneratorConstants.SPACE
           + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1725,7 +1725,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.CODE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + code
+              + StringEscapeUtils.escapeXml10(code)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL
@@ -1875,7 +1875,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.CODE_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
-        + code
+        + StringEscapeUtils.escapeXml10(code)
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.CODESYSTEM_WITH_EQUAL

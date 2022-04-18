@@ -38,7 +38,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     try {
       super.setUp();
       tx = session.beginTransaction();
-      createClientDetails("R4/Misc/ClientDetails/ClientDataEntry1.json");
+      createClientDetails("R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json");
       eicr = createEicr();
       eicrReSubmit = createEicrForReSubmit();
       session.flush();
