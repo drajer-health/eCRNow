@@ -27,6 +27,8 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,12 +90,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info("Initializing FHIR Client");
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken(),
-            kd.getxRequestId());
+    IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always
     Resource res =
@@ -169,6 +166,56 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     // Get other resources for Patient
     return kd.getFhirInputData();
+  }
+  
+  /**
+   * @param kd The data object for getting the healthcareSetting and notification context from
+   * @param context The HAPI FHIR context for making a FHIR client with
+   * @return
+   */
+  public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
+    String secret = kd.getHealthcareSetting().getClientSecret();
+    if (secret == null || secret.isEmpty()) {
+      backendAuthorizationService.getAuthorizationToken(kd);
+    } else {
+      ehrAuthorizationService.getAuthorizationToken(kd);
+    }
+
+    return fhirContextInitializer.createClient(
+        context,
+        kd.getHealthcareSetting().getFhirServerBaseURL(),
+        kd.getNotificationContext().getEhrAccessToken(),
+        kd.getNotificationContext().getxRequestId());
+  }
+
+  /**
+   * @param kd The KarProcessingData includes data about the fhir server to create a resource on
+   * @param resource the resource to create on the fhir server
+   */
+  public void createResource(KarProcessingData kd, Resource resource) {
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info("Initializing FHIR Client");
+    IGenericClient client = getClient(kd, context);
+    client.create().resource(resource).execute();
+  }
+
+  /**
+   * @param kd The KarProcessingData which contains information about the fhir server
+   * @param resourceType The resource type of the resource to be deleted
+   * @param id The logical ID of the resource to be deleted
+   */
+  public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id) {
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    IIdType iIdType = new IdType(id);
+    logger.info("Initializing FHIR Client");
+    IGenericClient client = getClient(kd, context);
+    client.delete().resourceById(resourceType.toString(), id).execute();
   }
 
   public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd) {

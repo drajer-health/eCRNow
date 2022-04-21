@@ -13,8 +13,7 @@ import com.drajer.sof.model.R4FhirData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -244,21 +243,18 @@ public class R3ToR2DataConverterUtils {
     PatientExecutionState state = new PatientExecutionState();
 
     // Set Trigger codes.
-    HashMap<String, BsaActionStatus> statuses = data.getActionStatus();
+    List<BsaActionStatus> statuses = data.getActionStatusByType(ActionType.CheckTriggerCodes);
 
-    for (Map.Entry<String, BsaActionStatus> entry : statuses.entrySet()) {
+    for (BsaActionStatus entry : statuses) {
 
-      if (entry.getValue().getActionType() == ActionType.CheckTriggerCodes) {
+      CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) entry;
+      MatchTriggerStatus mts = new MatchTriggerStatus();
 
-        CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) entry.getValue();
-        MatchTriggerStatus mts = new MatchTriggerStatus();
-
-        mts.setActionId(ctcs.getActionId());
-        mts.setJobStatus(getJobStatusForActionStatus(ctcs.getActionStatus()));
-        mts.setTriggerMatchStatus(ctcs.getTriggerMatchStatus());
-        mts.setMatchedCodes(ctcs.getMatchedCodes());
-        state.setMatchTriggerStatus(mts);
-      }
+      mts.setActionId(ctcs.getActionId());
+      mts.setJobStatus(getJobStatusForActionStatus(ctcs.getActionStatus()));
+      mts.setTriggerMatchStatus(ctcs.getTriggerMatchStatus());
+      mts.setMatchedCodes(ctcs.getMatchedCodes());
+      state.setMatchTriggerStatus(mts);
     }
 
     ObjectMapper mapper = new ObjectMapper();

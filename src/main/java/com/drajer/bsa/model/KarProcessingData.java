@@ -8,6 +8,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.sof.utils.ResourceUtils;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -93,7 +94,7 @@ public class KarProcessingData {
   HashMap<String, Set<Resource>> actionOutputDataById;
 
   /** The current status of each Action after its execution. */
-  HashMap<String, BsaActionStatus> actionStatus;
+  HashMap<String, List<BsaActionStatus>> actionStatus;
 
   /** The previous status of the actions that can be used for comparison */
   KarExecutionState previousState;
@@ -116,6 +117,12 @@ public class KarProcessingData {
   /** The X-Correlation ID header from the incoming request */
   String xCorrelationId;
 
+  /**
+   * The attribute helps to track the execution sequence of all the action statuses based on the
+   * type of notification and indicates the NotificaitonContext Id or the Schedule Job Id.
+   */
+  private String executionSequenceId;
+
   public void addActionOutput(String actionId, Resource res) {
 
     if (actionOutputData.containsKey(actionId)) {
@@ -135,7 +142,7 @@ public class KarProcessingData {
 
       if (actionOutputDataById.containsKey(id)) actionOutputDataById.get(id).add(res);
       else {
-        Set<Resource> resources = new HashSet<>();
+        Set<Resource> resources = new HashSet<Resource>();
         resources.add(res);
         actionOutputDataById.put(id, resources);
       }
@@ -167,24 +174,32 @@ public class KarProcessingData {
 
     if (actionStatus.containsKey(id)) {
 
-      logger.error(" Should not have the same action already ");
+      actionStatus.get(id).add(status);
     } else {
 
-      actionStatus.put(id, status);
+      List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
+      statuses.add(status);
+      actionStatus.put(id, statuses);
     }
   }
 
-  public BsaActionStatus getActionStatusByType(ActionType type) {
+  public List<BsaActionStatus> getActionStatusByType(ActionType type) {
 
-    for (Map.Entry<String, BsaActionStatus> entry : actionStatus.entrySet()) {
+    List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
+    for (Map.Entry<String, List<BsaActionStatus>> entry : actionStatus.entrySet()) {
 
-      if (entry.getValue().getActionType() == ActionType.CheckTriggerCodes) {
+      List<BsaActionStatus> statusValues = entry.getValue();
 
-        return entry.getValue();
+      for (BsaActionStatus stat : statusValues) {
+
+        if (stat.getActionType() == type) {
+
+          statuses.add(stat);
+        }
       }
     }
 
-    return null;
+    return statuses;
   }
 
   public void addResourcesByType(HashMap<ResourceType, Set<Resource>> res) {
@@ -311,11 +326,11 @@ public class KarProcessingData {
     this.actionOutputData = actionOutputData;
   }
 
-  public HashMap<String, BsaActionStatus> getActionStatus() {
+  public HashMap<String, List<BsaActionStatus>> getActionStatus() {
     return actionStatus;
   }
 
-  public void setActionStatus(HashMap<String, BsaActionStatus> actionStatus) {
+  public void setActionStatus(HashMap<String, List<BsaActionStatus>> actionStatus) {
     this.actionStatus = actionStatus;
   }
 
@@ -400,7 +415,7 @@ public class KarProcessingData {
   }
 
   public HashMap<String, Resource> getNotificationContextResources() {
-    return notificationContextResources;
+    return this.notificationContextResources;
   }
 
   public void setNotificationContextResources(
@@ -438,5 +453,21 @@ public class KarProcessingData {
 
   public void setxCorrelationId(String xCorrelationId) {
     this.xCorrelationId = xCorrelationId;
+  }
+
+  public KarExecutionState getPreviousState() {
+    return previousState;
+  }
+
+  public void setPreviousState(KarExecutionState previousState) {
+    this.previousState = previousState;
+  }
+
+  public String getExecutionSequenceId() {
+    return executionSequenceId;
+  }
+
+  public void setExecutionSequenceId(String executionSequenceId) {
+    this.executionSequenceId = executionSequenceId;
   }
 }
