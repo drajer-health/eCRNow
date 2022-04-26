@@ -73,7 +73,7 @@ testCase:
         "code/@codeSystemName": "LOINC"
         #      'code/@displayName': "Coronavirus Panel"
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
   eCR-POT-withOutTriggerCode:
@@ -186,7 +186,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
   eCR-LabOrder-FullECR-WithCOVIDTriggerCode:
@@ -262,7 +262,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
@@ -284,7 +284,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
@@ -306,7 +306,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
     #entry-4
@@ -328,7 +328,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
   eCR-LabOrder-COVID-WithCOVIDTriggerCode:
@@ -404,7 +404,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
@@ -426,7 +426,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
@@ -448,7 +448,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
     #entry-4
@@ -470,7 +470,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
   eCR-LabOrder-COVID-WithCovidAndNonCOVIDTriggerCode:
@@ -546,7 +546,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
@@ -586,7 +586,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
     #entry-4
@@ -608,7 +608,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
  #      'effectiveTime/@value': "20200501014501"
   eCR-LabOrder-FullECR-WithCovidAndNonCOVIDTriggerCode:
@@ -684,7 +684,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
    #entry-2
@@ -706,7 +706,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC" 
         "code/@valueSet": "2.16.840.1.114222.4.11.7508" 
-        "code/@valueSetVersion": "2020-07-09"  
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3
@@ -728,7 +728,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
     #entry-4
@@ -750,7 +750,7 @@ testCase:
         "code/@codeSystem": "2.16.840.1.113883.6.1"
         "code/@codeSystemName": "LOINC"      
         "code/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "code/@valueSetVersion": "2020-07-09"
+        #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
   
