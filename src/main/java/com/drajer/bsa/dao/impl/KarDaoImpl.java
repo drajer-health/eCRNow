@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class KarDaoImpl extends AbstractDao implements KarDao {
 
-  private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(KarDaoImpl.class);
 
   @Override
   public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {
@@ -27,16 +27,14 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactRepository getKARById(Integer id) {
-    KnowledgeArtifactRepository kar = getSession().get(KnowledgeArtifactRepository.class, id);
-    return kar;
+    return getSession().get(KnowledgeArtifactRepository.class, id);
   }
 
   @Override
   public KnowledgeArtifactRepository getKARByUrl(String url) {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
     criteria.add(Restrictions.eq("fhirServerURL", url));
-    KnowledgeArtifactRepository kar = (KnowledgeArtifactRepository) criteria.uniqueResult();
-    return kar;
+    return (KnowledgeArtifactRepository) criteria.uniqueResult();
   }
 
   @Override
@@ -56,6 +54,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
     criteria.add(Restrictions.eq("hsId", hsId));
     List<KnowledgeArtifactStatus> kars = criteria.list();
+    logger.info("Getting KAR Status by hsId. ");
     return kars;
   }
 
@@ -64,6 +63,8 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
     criteria.add(Restrictions.eq("versionUniqueKarId", karId + "|" + karVersion));
     KnowledgeArtifactStatus kars = (KnowledgeArtifactStatus) criteria.uniqueResult();
+    logger.info("Getting KAR Status by using karId and karVersion. ");
+
     return kars;
   }
 }

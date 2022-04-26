@@ -12,9 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,8 +59,8 @@ public class KnowledgeArtifactRepositoryController {
    * @return - Entity that is created.
    */
   @CrossOrigin
-  @RequestMapping(value = "/api/kar", method = RequestMethod.POST)
-  public ResponseEntity<?> createKARs(@RequestBody KnowledgeArtifactRepository kar) {
+  @PostMapping(value = "/api/kar")
+  public ResponseEntity<Object> createKARs(@RequestBody KnowledgeArtifactRepository kar) {
     KnowledgeArtifactRepository existingKar = karService.getKARByUrl(kar.getFhirServerURL());
     if (existingKar == null || (existingKar.getId().equals(kar.getId()))) {
       logger.info("Saving the KAR Details");
@@ -112,8 +112,9 @@ public class KnowledgeArtifactRepositoryController {
    * @return - The KARStatus Object that is created.
    */
   @CrossOrigin
-  @RequestMapping(value = "/api/addKARStatus/", method = RequestMethod.POST)
-  public ResponseEntity<?> addKARStatus(@RequestBody List<KnowledgeArtifactStatus> karStatuses) {
+  @PostMapping(value = "/api/addKARStatus/")
+  public ResponseEntity<List<KnowledgeArtifactStatus>> addKARStatus(
+      @RequestBody List<KnowledgeArtifactStatus> karStatuses) {
     for (KnowledgeArtifactStatus karStatus : karStatuses) {
       KnowledgeArtifactStatus existingKarStatus =
           karService.getKarStatusByKarIdAndKarVersion(
