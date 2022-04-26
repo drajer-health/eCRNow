@@ -818,7 +818,7 @@ testCase:
       - xPath: "/entry/encounter/templateId"
         count: 2
       - xPath: "/entry/encounter/"
-        "@classCode": "ENC" 
+        "@classCode": "ENC"
         "@moodCode": "EVN"
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.49"
         "templateId[2]/@root": "2.16.840.1.113883.10.20.22.4.49"
@@ -1002,8 +1002,7 @@ testCase:
         "value/translation/@codeSystem": "2.16.840.1.113883.6.90"
         "value/translation/@codeSystemName": "icd-10-cm"
         "value/translation/@displayName": "Acute paralytic poliomyelitis, unspecified"
-
-  eCR-encounterDiagnosis-WithFullEICRTriggerCode:
+  eCR-EncounterDiagnosis-In-Condition-WithICD10TriggerCode-M30.3:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
@@ -1024,7 +1023,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/Condition-Diagnosis-WithFullEICRTriggerCode.json"
+          responseFilePath: "R4/Condition/Condition-Diagnosis-WithICD10TriggerCode-M30.3.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
