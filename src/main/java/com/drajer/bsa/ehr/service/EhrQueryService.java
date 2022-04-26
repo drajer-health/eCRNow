@@ -2,9 +2,11 @@ package com.drajer.bsa.ehr.service;
 
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.json.JSONObject;
@@ -27,18 +29,32 @@ public interface EhrQueryService {
    *     previous data etc.
    * @return The Map of Resources to its type.
    */
-  public Map<ResourceType, Set<Resource>> getFilteredData(
+
+  Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, Map<String, ResourceType> resTypes);
 
-  public Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
+  /**
+   * The method is used to retrieve data from the Ehr.
+   *
+   * @param kd The processing context which contains information such as patient, encounter,
+   *     previous data etc.
+   * @param dRequirements The list of data requirements to get the data for.
+   * @return The Map of Resources to its type.
+   */
+  Map<ResourceType, Set<Resource>> getFilteredData(
+          KarProcessingData kd, List<DataRequirement> dRequirements);
 
-  public void createResource(KarProcessingData kd, Resource resource);
+  Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
 
-  public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
+  void createResource(KarProcessingData kd, Resource resource);
 
-  public Resource getResourceById(KarProcessingData data, String resourceName, String id);
+  void updateResource(KarProcessingData kd, Resource resource);
 
-  public DocumentReference constructR4DocumentReference(
+  void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
+
+  Resource getResourceById(KarProcessingData data, String resourceName, String id);
+
+  DocumentReference constructR4DocumentReference(
       String payload,
       String patientId,
       String encounterID,
@@ -49,5 +65,6 @@ public interface EhrQueryService {
       String docDisplayName,
       String docCodeSystem);
 
-  public JSONObject getAuthorizationToken(HealthcareSetting hs);
+  JSONObject getAuthorizationToken(HealthcareSetting hs);
+
 }

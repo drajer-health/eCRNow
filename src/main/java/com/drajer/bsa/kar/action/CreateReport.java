@@ -8,9 +8,9 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.utils.BsaServiceUtils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.*;
+
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -51,13 +51,13 @@ public class CreateReport extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
+      List<DataRequirement> inputRequirements = getInputData();
       // Get necessary data to process.
-      ehrService.getFilteredData(data, resourceTypes);
+      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, inputRequirements);
+      Set<Resource> resources = new HashSet<>();
+      inputRequirements.forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
+      Map<ResourceType, Set<Resource>> finalRes = ehrService.loadJurisdicationData(data);
 
-      ehrService.loadJurisdicationData(data);
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {
@@ -74,7 +74,8 @@ public class CreateReport extends BsaAction {
             if (rc != null) {
 
               logger.info("Start creating report");
-              Resource output = rc.createReport(data, ehrService, dr.getId(), ct.asStringValue());
+              Resource output =
+                      rc.createReport(data, ehrService, resources, dr.getId(), ct.asStringValue());
               logger.info("Finished creating report");
 
               if (output != null) {
