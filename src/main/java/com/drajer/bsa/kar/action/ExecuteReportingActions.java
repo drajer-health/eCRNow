@@ -30,7 +30,7 @@ public class ExecuteReportingActions extends BsaAction {
     HashMap<ResourceType, Set<Resource>> res = ehrservice.getFilteredData(data, resourceTypes);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled && conditionsMet(data)) {
+    if (status != BsaActionStatusType.Scheduled && Boolean.TRUE.equals(conditionsMet(data))) {
 
       logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
 

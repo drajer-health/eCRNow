@@ -1,6 +1,12 @@
 package com.drajer.bsa.kar.action;
 
-public class SubmitReportStatus extends BsaActionStatus {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  public SubmitReportStatus() {}
+public class SubmitReportStatus extends BsaActionStatus {
+  private final Logger logger = LoggerFactory.getLogger(SubmitReportStatus.class);
+
+  public SubmitReportStatus() {
+    logger.info("SubmitReportStatus default constructor call");
+  }
 }

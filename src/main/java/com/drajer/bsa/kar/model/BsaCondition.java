@@ -26,7 +26,7 @@ public abstract class BsaCondition {
 
   private BsaConditionProcessor conditionProcessor;
 
-  public BsaCondition() {}
+  protected BsaCondition() {}
 
   public BsaConditionProcessor getConditionProcessor() {
     return conditionProcessor;

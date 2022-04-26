@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CheckTriggerCodeStatus extends BsaActionStatus {
 
-  private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodes.class);
+  private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodeStatus.class);
 
   private Boolean triggerMatchStatus; // Did anything match or not
   private List<MatchedTriggerCodes> matchedCodes;
@@ -39,13 +39,14 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
       Set<String> codesToMatch = mtc.getMatchedCodes();
       Set<String> matches = SetUtils.intersection(codes, codesToMatch);
 
-      if (matches != null && matches.size() > 0) {
+      if (matches != null && !matches.isEmpty()) {
 
         ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
         rc.setValueSet(mtc.getValueSet());
         rc.setValueSetVersion(mtc.getValueSetVersion());
 
         String rcode = matches.stream().findFirst().get();
+
         String[] rcodes = rcode.split("\\|");
 
         rc.setCode(rcodes[1]);
@@ -59,7 +60,7 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
         matches = SetUtils.intersection(codes, mtc.getMatchedValues());
 
-        if (matches != null && matches.size() > 0) {
+        if (matches != null && !matches.isEmpty()) {
           ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
           rc.setValueSet(mtc.getValueSet());
           rc.setValueSetVersion(mtc.getValueSetVersion());
@@ -99,7 +100,7 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
     for (MatchedTriggerCodes mtc : matchedCodes) {
 
-      if (mtc.containsMatch(rt)) return true;
+      if (Boolean.TRUE.equals(mtc.containsMatch(rt))) return true;
     }
 
     return false;
@@ -155,13 +156,10 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
   public void copyFrom(CheckTriggerCodeStatus ctc) {
 
-    // this.triggerMatchStatus = ctc.triggerMatchStatus;
-
     for (MatchedTriggerCodes mtc : ctc.getMatchedCodes()) {
 
       matchedCodes.add(mtc);
     }
-    // this.matchedCodes.addAll(ctc.getMatchedCodes());
   }
 
   public void log() {

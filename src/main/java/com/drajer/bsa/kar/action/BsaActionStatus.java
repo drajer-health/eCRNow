@@ -28,7 +28,7 @@ public abstract class BsaActionStatus {
   /** The set of outputs produced identified using the Ids of the output objects. */
   Set<String> outputProduced;
 
-  public BsaActionStatus() {
+  protected BsaActionStatus() {
     actionId = "";
     actionType = ActionType.Unknown;
     actionStatus = BsaActionStatusType.NotStarted;

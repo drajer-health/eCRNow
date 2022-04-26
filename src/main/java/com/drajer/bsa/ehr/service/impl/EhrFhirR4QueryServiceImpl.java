@@ -8,7 +8,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,8 +59,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
-  private static final String PATIENT_CONTEXT = "patientContext";
   private static final String PATIENT_ID_SEARCH_PARAM = "?patient=";
+  private static final String FHIRCONTEXT = "Getting FHIR Context for R4";
+  private static final String FHIRCLIENT = "Initializing FHIR Client";
 
   /** The FHIR Context Initializer necessary to retrieve FHIR resources */
   @Autowired FhirContextInitializer fhirContextInitializer;
@@ -84,10 +84,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
-    logger.info(" Getting FHIR Context for R4");
+    logger.info(FHIRCONTEXT);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info("Initializing FHIR Client");
+    logger.info(FHIRCLIENT);
     IGenericClient client =
         fhirContextInitializer.createClient(
             context,
@@ -105,7 +105,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       logger.info(
           " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
 
-      Set<Resource> resources = new HashSet<Resource>();
+      Set<Resource> resources = new HashSet<>();
       resources.add(res);
       HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
       resMap.put(res.getResourceType(), resources);
@@ -133,7 +133,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             " Found Encounter resource for Id : {}",
             kd.getNotificationContext().getNotificationResourceId());
 
-        Set<Resource> resources = new HashSet<Resource>();
+        Set<Resource> resources = new HashSet<>();
         resources.add(enc);
         HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
         resMap.put(enc.getResourceType(), resources);
@@ -180,10 +180,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
-    logger.info(" Getting FHIR Context for R4");
+    logger.info(FHIRCONTEXT);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info("Initializing FHIR Client");
+    logger.info(FHIRCLIENT);
     IGenericClient client =
         fhirContextInitializer.createClient(
             context,
@@ -194,9 +194,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     // Retrieve the encounter
     Set<Resource> res = kd.getResourcesByType(ResourceType.Encounter.toString());
 
-    Set<Resource> practitioners = new HashSet<Resource>();
-    Set<Resource> locations = new HashSet<Resource>();
-    Set<Resource> organizations = new HashSet<Resource>();
+    Set<Resource> practitioners = new HashSet<>();
+    Set<Resource> locations = new HashSet<>();
+    Set<Resource> organizations = new HashSet<>();
     Map<String, String> practitionerMap = new HashMap<>();
 
     for (Resource r : res) {
@@ -245,7 +245,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       // Load Locations
       if (Boolean.TRUE.equals(encounter.hasLocation())) {
-        List<Location> locationList = new ArrayList<>();
+
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.getLocation() != null) {
@@ -265,21 +265,21 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
     } // for all encounters
 
-    if (practitioners.size() > 0) {
+    if (!practitioners.isEmpty()) {
 
       HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
       resMap.put(ResourceType.Practitioner, practitioners);
       kd.addResourcesByType(resMap);
     }
 
-    if (locations.size() > 0) {
+    if (!locations.isEmpty()) {
 
       HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
       resMap.put(ResourceType.Location, locations);
       kd.addResourcesByType(resMap);
     }
 
-    if (organizations.size() > 0) {
+    if (!organizations.isEmpty()) {
 
       HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
       resMap.put(ResourceType.Organization, organizations);
@@ -299,10 +299,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
-    logger.info(" Getting FHIR Context for R4");
+    logger.info(FHIRCONTEXT);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info("Initializing FHIR Client");
+    logger.info(FHIRCLIENT);
     IGenericClient client =
         fhirContextInitializer.createClient(
             context,
@@ -364,7 +364,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
 
-      if (bundle != null) {
+      if (!bundle.isEmpty()) {
         logger.info(
             "Total No of Entries {} retrieved : {}", resourceName, bundle.getEntry().size());
 
@@ -372,7 +372,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         if (bc != null) {
 
-          resources = new HashSet<Resource>();
+          resources = new HashSet<>();
           resMap = new HashMap<>();
           resMapById = new HashMap<>();
           for (BundleEntryComponent comp : bc) {

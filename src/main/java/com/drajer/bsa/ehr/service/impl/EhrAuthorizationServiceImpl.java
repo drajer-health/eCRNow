@@ -75,7 +75,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", kd.getHealthcareSetting().getScopes());
 
-        if (kd.getHealthcareSetting().getRequireAud())
+        if (Boolean.TRUE.equals(kd.getHealthcareSetting().getRequireAud()))
           map.add("aud", kd.getHealthcareSetting().getFhirServerBaseURL());
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
@@ -91,9 +91,8 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
             .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
 
         Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-        Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
-        kd.getNotificationContext()
-            .setEhrAccessTokenExpirationTime(new Date().from(expireInstantTime));
+        Instant expireInstantTime = new Date().toInstant().plusSeconds((expiresInSec));
+        kd.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expireInstantTime));
       }
 
     } catch (Exception e) {

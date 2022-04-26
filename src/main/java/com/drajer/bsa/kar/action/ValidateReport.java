@@ -41,7 +41,7 @@ public class ValidateReport extends BsaAction {
 
         List<DataRequirement> input = getInputData();
 
-        Set<Resource> resourcesToValidate = new HashSet<Resource>();
+        Set<Resource> resourcesToValidate = new HashSet<>();
 
         if (input != null) {
 
@@ -70,7 +70,7 @@ public class ValidateReport extends BsaAction {
             logger.warn("No validation endpoint set. Skipping validation");
           }
 
-          if (ActionUtils.operationOutcomeHasErrors(outcome)) {
+          if (Boolean.TRUE.equals(ActionUtils.operationOutcomeHasErrors(outcome))) {
 
             logger.error(
                 " Total # of issues found in the Operation Outcome {}", outcome.getIssue().size());
@@ -87,7 +87,7 @@ public class ValidateReport extends BsaAction {
           }
         } // for
 
-        if (conditionsMet(data)) {
+        if (Boolean.TRUE.equals(conditionsMet(data))) {
 
           // Execute sub Actions
           executeSubActions(data, ehrService);
@@ -127,7 +127,7 @@ public class ValidateReport extends BsaAction {
     // If the validation passed, add the Resources to Validated List
     List<DataRequirement> output = getOutputData();
 
-    if (output != null && output.size() > 0) {
+    if (output != null && !output.isEmpty()) {
 
       for (DataRequirement dr : output) {
 

@@ -21,7 +21,7 @@ public class CqlProcessor implements BsaConditionProcessor {
     Set<String> expressions = new HashSet<>();
     expressions.add(cond.getLogicExpression().getExpression());
     if (!(cond instanceof BsaCqlCondition)) {
-      logger.error("Expected a BsaCqlCondition, but found: " + cond);
+      logger.error("Expected a BsaCqlCondition, but found:{} ", cond);
     }
     BsaCqlCondition cqlCondition = (BsaCqlCondition) cond;
     Parameters result =

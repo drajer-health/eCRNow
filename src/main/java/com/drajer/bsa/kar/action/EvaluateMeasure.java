@@ -133,7 +133,7 @@ public class EvaluateMeasure extends BsaAction {
           data.addActionOutputById(measureReportId, result);
       }
 
-      if (conditionsMet(data)) {
+      if (Boolean.TRUE.equals(conditionsMet(data))) {
 
         // Execute sub Actions
         executeSubActions(data, ehrService);

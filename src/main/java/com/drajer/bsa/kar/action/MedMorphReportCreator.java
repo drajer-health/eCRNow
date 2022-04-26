@@ -62,7 +62,7 @@ public class MedMorphReportCreator extends ReportCreator {
     // Setup Message Header to Content Bundle Linkage.
     Reference ref = new Reference();
     ref.setReference(BUNDLE_REL_URL + contentBundle.getId());
-    List<Reference> refs = new ArrayList<Reference>();
+    List<Reference> refs = new ArrayList<>();
     refs.add(ref);
     header.setFocus(refs);
 
@@ -90,7 +90,7 @@ public class MedMorphReportCreator extends ReportCreator {
 
     // set destination
     Set<UriType> dests = kd.getKar().getReceiverAddresses();
-    List<MessageDestinationComponent> mdcs = new ArrayList<MessageDestinationComponent>();
+    List<MessageDestinationComponent> mdcs = new ArrayList<>();
     for (UriType i : dests) {
       MessageDestinationComponent mdc = new MessageDestinationComponent();
       mdc.setEndpoint(i.asStringValue());
@@ -123,7 +123,7 @@ public class MedMorphReportCreator extends ReportCreator {
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, CONTENT_BUNDLE_PROFILE));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    List<BundleEntryComponent> becs = new ArrayList<BundleEntryComponent>();
+    List<BundleEntryComponent> becs = new ArrayList<>();
     populateBundleEntries(becs, kd);
     returnBundle.setEntry(becs);
 

@@ -45,7 +45,7 @@ public class SubmitReport extends BsaAction {
 
       List<DataRequirement> input = getInputData();
 
-      Set<Resource> resourcesToSubmit = new HashSet<Resource>();
+      Set<Resource> resourcesToSubmit = new HashSet<>();
 
       if (input != null) {
 
@@ -97,7 +97,7 @@ public class SubmitReport extends BsaAction {
           data.addActionOutputById(responseBundle.getId(), responseBundle);
         }
 
-        if (conditionsMet(data)) {
+        if (Boolean.TRUE.equals(conditionsMet(data))) {
 
           // Execute sub Actions
           executeSubActions(data, ehrService);

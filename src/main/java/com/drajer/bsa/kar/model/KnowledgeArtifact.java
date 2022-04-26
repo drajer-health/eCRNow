@@ -92,9 +92,9 @@ public class KnowledgeArtifact {
 
   public Resource getDependentResource(ResourceType rt, String url) {
 
-    if (dependencies.containsKey(rt)) {
+    if (dependencies.containsKey(rt) && dependencies.get(rt).containsKey(url)) {
 
-      if (dependencies.get(rt).containsKey(url)) return dependencies.get(rt).get(url);
+      return dependencies.get(rt).get(url);
     }
 
     return null;
@@ -107,7 +107,7 @@ public class KnowledgeArtifact {
       // Dependency to be added.
       HashMap<String, Resource> resources = dependencies.get(res.getResourceType());
 
-      if (resources != null && resources.containsKey(res.getUrl())) {
+      if (!resources.isEmpty() && resources.containsKey(res.getUrl())) {
         logger.info(" Value Set already present ");
       } else if (res.getUrl() != null) {
         resources.put(res.getUrl(), res);
@@ -161,7 +161,7 @@ public class KnowledgeArtifact {
 
   public void addTriggerEvent(String event, BsaAction act) {
     if (!triggerEventActionMap.containsKey(event)) {
-      Set<BsaAction> acts = new HashSet<BsaAction>();
+      Set<BsaAction> acts = new HashSet<>();
       acts.add(act);
       triggerEventActionMap.put(event, acts);
     } else {
@@ -176,7 +176,7 @@ public class KnowledgeArtifact {
    */
   public List<String> getOuputVariableIdsForResourceType(ResourceType type) {
 
-    List<String> retVal = new ArrayList<String>();
+    List<String> retVal = new ArrayList<>();
 
     for (Map.Entry<String, BsaAction> entry : actionMap.entrySet()) {
 
@@ -201,11 +201,11 @@ public class KnowledgeArtifact {
     karPath = "";
     karId = "";
     karVersion = "";
-    actionMap = new HashMap<String, BsaAction>();
-    triggerEventActionMap = new HashMap<String, Set<BsaAction>>();
-    dependencies = new HashMap<ResourceType, HashMap<String, Resource>>();
-    receiverAddresses = new HashSet<UriType>();
-    firstLevelActions = new ArrayList<BsaAction>();
+    actionMap = new HashMap<>();
+    triggerEventActionMap = new HashMap<>();
+    dependencies = new HashMap<>();
+    receiverAddresses = new HashSet<>();
+    firstLevelActions = new ArrayList<>();
   }
 
   public String getKarId() {
@@ -232,7 +232,7 @@ public class KnowledgeArtifact {
     this.karVersion = karVersion;
   }
 
-  public HashMap<String, BsaAction> getActionMap() {
+  public Map<String, BsaAction> getActionMap() {
     return actionMap;
   }
 
@@ -240,7 +240,7 @@ public class KnowledgeArtifact {
     this.actionMap = actionMap;
   }
 
-  public HashMap<String, Set<BsaAction>> getTriggerEventActionMap() {
+  public Map<String, Set<BsaAction>> getTriggerEventActionMap() {
     return triggerEventActionMap;
   }
 
@@ -248,7 +248,7 @@ public class KnowledgeArtifact {
     this.triggerEventActionMap = triggerEventActionMap;
   }
 
-  public HashMap<ResourceType, HashMap<String, Resource>> getDependencies() {
+  public Map<ResourceType, HashMap<String, Resource>> getDependencies() {
     return dependencies;
   }
 
@@ -264,7 +264,7 @@ public class KnowledgeArtifact {
 
     if (triggerEventActionMap != null && triggerEventActionMap.containsKey(event))
       return triggerEventActionMap.get(event);
-    else return new HashSet<BsaAction>();
+    else return new HashSet<>();
   }
 
   public void addAction(BsaAction act) {
@@ -335,7 +335,7 @@ public class KnowledgeArtifact {
     logger.info(" KAR Id : {}", karId);
     logger.info(" Kar Version : {} ", karVersion);
 
-    firstLevelActions.forEach(act -> act.printSummary());
+    firstLevelActions.forEach(BsaAction::printSummary);
 
     logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
   }

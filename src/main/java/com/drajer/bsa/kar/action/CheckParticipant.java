@@ -48,7 +48,6 @@ public class CheckParticipant extends BsaAction {
 
       data.addActionStatus(getActionId(), actStatus);
 
-      // if (conditionsMet(data)) {
       if (true) { // Assume participants have matched
 
         // Execute sub Actions

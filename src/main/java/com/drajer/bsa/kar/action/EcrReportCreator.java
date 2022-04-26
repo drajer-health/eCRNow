@@ -450,7 +450,7 @@ public class EcrReportCreator extends ReportCreator {
     // Set Author
     comp.getAuthorFirstRep().setResource(getDeviceAuthor());
 
-    List<SectionComponent> scs = new ArrayList<SectionComponent>();
+    List<SectionComponent> scs = new ArrayList<>();
 
     // Add chief complaint section.
     SectionComponent sc = getSection(SectionTypeEnum.CHIEF_COMPLAINT, kd);
@@ -663,7 +663,7 @@ public class EcrReportCreator extends ReportCreator {
     StringType st = new StringType();
     st.setValue(DEFAULT_VERSION);
     ext.setValue(st);
-    List<Extension> exts = new ArrayList<Extension>();
+    List<Extension> exts = new ArrayList<>();
     exts.add(ext);
 
     return exts;
@@ -674,7 +674,7 @@ public class EcrReportCreator extends ReportCreator {
     Device dev = new Device();
     DeviceDeviceNameComponent dnc = new DeviceDeviceNameComponent();
     dnc.setName(DEVICE_NAME);
-    List<DeviceDeviceNameComponent> dncs = new ArrayList<DeviceDeviceNameComponent>();
+    List<DeviceDeviceNameComponent> dncs = new ArrayList<>();
     dncs.add(dnc);
     dev.setDeviceName(dncs);
 
@@ -707,7 +707,7 @@ public class EcrReportCreator extends ReportCreator {
 
     if (res != null && res.size() >= 1) {
 
-      logger.info(" Adding resources of type {}", rt.toString());
+      logger.info(" Adding resources of type {}", rt);
 
       for (Resource r : res) {
 
@@ -735,9 +735,9 @@ public class EcrReportCreator extends ReportCreator {
 
       CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) (status);
 
-      if (ctcs.containsMatches(rt)) {
+      if (Boolean.TRUE.equals(ctcs.containsMatches(rt))) {
 
-        logger.debug(" Trigger codes have been found for resource {}", rt.toString());
+        logger.debug(" Trigger codes have been found for resource {}", rt);
 
         // Check to see if the resource being added has the same codes, if so add the extension.
         Pair<Boolean, ReportableMatchedTriggerCode> matchCode = resourceHasMatchedCode(res, ctcs);
