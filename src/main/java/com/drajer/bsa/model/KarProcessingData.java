@@ -213,12 +213,8 @@ public class KarProcessingData {
   public void addResourcesByType(Map<ResourceType, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
-<<<<<<< HEAD
-
       logger.info(RESOURCE_SIZES, res.size());
-=======
-      logger.info(" Resource Sizes : {}", res.size());
->>>>>>> [WIP] implmenting ability to filter data by data input rerequirements while creating reports
+
       for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
         addResourcesByType(entry.getKey(),entry.getValue());
       }

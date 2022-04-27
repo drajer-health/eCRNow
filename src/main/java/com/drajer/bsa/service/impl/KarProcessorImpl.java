@@ -17,9 +17,11 @@ import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.NotificationContextService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +81,6 @@ public class KarProcessorImpl implements KarProcessor {
     for (BsaAction action : actions) {
 
       logger.info(" **** Executing Action Id {} **** ", action.getActionId());
-
       try {
         action.process(data, ehrInterface);
       } catch (Exception e) {
