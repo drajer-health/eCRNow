@@ -1031,7 +1031,7 @@ testCase:
     validate:
       - xPath: "entry/encounter/entryRelationship/"
         "@typeCode": "RSON"
-      - xPath: "entry/encounter/entryRelationship/act/templateId"
+      - xPath: "entry/encounter/entryRelationship[2]/act/templateId"
         count: 2
       - xPath: "entry/encounter/entryRelationship/act/"
         "@classCode": "ACT"
@@ -1046,11 +1046,11 @@ testCase:
         "statusCode/@code": "active"
       - xPath: "entry/encounter/entryRelationship/act/entryRelationship/"
         "@typeCode": "SUBJ"
-      - xPath: "entry/encounter/entryRelationship/act/entryRelationship/observation/id"
+      - xPath: "entry/encounter/entryRelationship[2]/act/entryRelationship/observation/id"
         count: 1
-      - xPath: "entry/encounter/entryRelationship/act/entryRelationship/observation/templateId"
+      - xPath: "entry/encounter/entryRelationship[2]/act/entryRelationship/observation/templateId"
         count: 2
-      - xPath: "entry/encounter/entryRelationship/act/entryRelationship/observation/"
+      - xPath: "entry/encounter/entryRelationship[2]/act/entryRelationship/observation/"
         "@classCode": "OBS"
         "@moodCode": "EVN"
         "templateId[1]/@root": "2.16.840.1.113883.10.20.22.4.4"
@@ -1089,7 +1089,7 @@ testCase:
         "templateId[2]/@extension": "2015-08-01"
         "templateId[3]/@root": "2.16.840.1.113883.10.20.15.2.3.3"
         "templateId[3]/@extension": "2016-12-01"
-        "id/@root": "2.16.840.1.113883"
+        "id/@root": "2.16.840.1.113883.1.1.1.1"
         "id/@extension": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574511075/_history/2574511075"
         "code/@code": "282291009"
         "code/@codeSystem": "2.16.840.1.113883.6.96"
