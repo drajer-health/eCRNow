@@ -711,7 +711,7 @@ testCase:
         "@codeSystemName": "sct"
   #      '@displayName': "Disease caused by 2019-nCoV"
         '@valueSet': "2.16.840.1.114222.4.11.7508"
-        '@valueSetVersion': "2020-07-09" 
+        #'@valueSetVersion': "2020-07-09"
   eCR-problem-COVID-WithCovidOnlyTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
@@ -998,7 +998,7 @@ testCase:
         "@codeSystemName": "icd-10-cm"
   #      '@displayName': "Disease caused by 2019-nCoV"
         '@valueSet': "2.16.840.1.114222.4.11.7508"
-        '@valueSetVersion': "2020-07-09" 
+        #'@valueSetVersion': "2020-07-09"
       - xPath: "entry[2]/"
         "@typeCode": "DRIV"
       - xPath: "entry[2]/act/templateId"
@@ -1086,7 +1086,7 @@ testCase:
         "@codeSystemName": "sct"
   #      '@displayName': "Disease caused by 2019-nCoV"
         '@valueSet': "2.16.840.1.114222.4.11.7508"
-        '@valueSetVersion': "2020-07-09"         
+        #'@valueSetVersion': "2020-07-09"
   eCR-problem-COVID-WithCovidAndNonCovidTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
@@ -1229,7 +1229,7 @@ testCase:
         "@codeSystemName": "icd-10-cm"
   #      '@displayName': "Disease caused by 2019-nCoV"
         '@valueSet': "2.16.840.1.114222.4.11.7508"
-        '@valueSetVersion': "2020-07-09" 
+        #'@valueSetVersion': "2020-07-09"
       - xPath: "entry[2]/"
         "@typeCode": "DRIV"
       - xPath: "entry[2]/act/templateId"
