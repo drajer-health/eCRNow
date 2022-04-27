@@ -207,7 +207,7 @@ testCase:
         "value/@codeSystem": "2.16.840.1.113883.6.90"
         "value/@codeSystemName": "icd-10-cm"
         "value/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "value/@valueSetVersion": "2020-07-09"
+        #"value/@valueSetVersion": "2020-07-09"
   eCR-encounterDiagnosis-FullECR-WithCovidAndNonCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -394,7 +394,7 @@ testCase:
         "value/@codeSystem": "2.16.840.1.113883.6.90"
         "value/@codeSystemName": "icd-10-cm"
         "value/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "value/@valueSetVersion": "2020-07-09"
+        #"value/@valueSetVersion": "2020-07-09"
       - xPath: "entry/encounter/entryRelationship[3]/"
         "@typeCode": "RSON"
       - xPath: "entry/encounter/entryRelationship[3]/act/templateId"
@@ -476,7 +476,7 @@ testCase:
         "value/@codeSystem": "2.16.840.1.113883.6.96"
         "value/@codeSystemName": "sct"
         "value/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "value/@valueSetVersion": "2020-07-09"
+        #"value/@valueSetVersion": "2020-07-09"
   eCR-encounterDiagnosis-FullECR-WithCOVIDTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
@@ -620,7 +620,7 @@ testCase:
         "value/@codeSystem": "2.16.840.1.113883.6.90"
         "value/@codeSystemName": "icd-10-cm"
         "value/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "value/@valueSetVersion": "2020-07-09"
+        #"value/@valueSetVersion": "2020-07-09"
   eCR-encounterDiagnosis-COVID-WithCOVIDOnlyTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
@@ -764,7 +764,7 @@ testCase:
         "value/@codeSystem": "2.16.840.1.113883.6.90"
         "value/@codeSystemName": "icd-10-cm"
         "value/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "value/@valueSetVersion": "2020-07-09"
+        #"value/@valueSetVersion": "2020-07-09"
   eCR-encounterDiagnosis-COVID-WithCovidAndNonCovidTriggerCode:
     testData:
       ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_COVID.json"
@@ -953,7 +953,7 @@ testCase:
         "value/@codeSystem": "2.16.840.1.113883.6.90"
         "value/@codeSystemName": "icd-10-cm"
         "value/@valueSet": "2.16.840.1.114222.4.11.7508"
-        "value/@valueSetVersion": "2020-07-09"
+        #"value/@valueSetVersion": "2020-07-09"
       - xPath: "entry/encounter/entryRelationship[3]/"
         "@typeCode": "RSON"
       - xPath: "entry/encounter/entryRelationship[3]/act/templateId"
