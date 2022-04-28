@@ -71,6 +71,7 @@ public class KarProcessorImpl implements KarProcessor {
     KnowledgeArtifact kar = data.getKar();
     NotificationContext nc = data.getNotificationContext();
     String namedEvent = nc.getTriggerEvent();
+    data.setExecutionSequenceId(nc.getId().toString());
     data.setEhrQueryService(ehrInterface);
     data.setKarExecutionStateService(karExecutionStateService);
 
@@ -90,16 +91,16 @@ public class KarProcessorImpl implements KarProcessor {
       try {
         status = action.process(data, ehrInterface);
       } catch (Exception e) {
-        System.out.println(e.getMessage());
+        logger.error(e.getMessage());
+        throw e;
       }
 
-      data.addActionStatus(action.getActionId(), status);
-
+      /*
       if (data.getActionStatus() != null && !data.getActionStatus().isEmpty()) {
         serviceUtils.saveActionStatusState(data.getActionStatus());
       } else {
         logger.debug("Action status whas either null or empty");
-      }
+      } */
 
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }
@@ -151,6 +152,7 @@ public class KarProcessorImpl implements KarProcessor {
     NotificationContext nc = ncService.getNotificationContext(state.getNcId());
 
     // Setup Processing data
+    kd.setExecutionSequenceId(data.getJobId());
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
     kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
@@ -195,16 +197,25 @@ public class KarProcessorImpl implements KarProcessor {
 
     // Get the action that needs to be executed.
     BsaAction action = kd.getKar().getAction(data.getActionId());
+    BsaActionStatus status = null;
 
     if (action != null) {
       logger.info(
           " **** START Executing Action with id {} based on scheduled job notification. **** ",
           action.getActionId());
-      action.process(kd, ehrInterface);
-      saveDataForDebug(kd);
-      logger.info(
-          " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
-          action.getActionId());
+
+      try {
+        status = action.process(kd, ehrInterface);
+
+        saveDataForDebug(kd);
+        logger.info(
+            " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
+            action.getActionId());
+      } catch (Exception e) {
+
+        logger.error("Exception encountered during processing of the scheduled job ");
+        throw e;
+      }
     } else {
       logger.error(
           " Cannot apply KAR for the scheduled job notification because action with id {} does not exist ",

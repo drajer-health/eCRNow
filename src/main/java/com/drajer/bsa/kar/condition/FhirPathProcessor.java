@@ -46,6 +46,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
+	  
     Parameters params = resolveInputParameters(act.getInputData(), kd);
     Parameters result =
         (Parameters)
@@ -263,12 +264,16 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     if (dataRequirements == null || dataRequirements.isEmpty()) {
       return null;
     }
+    
     Parameters params = new Parameters();
     for (DataRequirement req : dataRequirements) {
+    	
       String name = req.getId();
       String fhirType = req.getType();
       String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
+      
       Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources = filterResources(req, kd);
+      
       if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
         ParametersParameterComponent parameter =
             new ParametersParameterComponent().setName("%" + String.format("%s", name));

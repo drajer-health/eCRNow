@@ -102,6 +102,7 @@ public class CheckTriggerCodes extends BsaAction {
       actStatus.setActionStatus(status);
     }
 
+    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     return actStatus;
   }
 }

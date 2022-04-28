@@ -42,6 +42,7 @@ public class CdaHeaderGenerator {
 
     StringBuilder eICRHeader = new StringBuilder();
 
+
     if (data != null) {
 
       eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
