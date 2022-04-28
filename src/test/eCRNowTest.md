@@ -180,3 +180,11 @@ Resource names should match below list.
 * OccupationObservation
 * Immunization
 * ServiceRequest
+
+*Note*: Timers in the src/test/resources/AppData/ersd.json is changed as below to make the test run faster. 
+So, whenever the new ersd is available replace it in src/test/resources/AppData/ersd.json and change the timers accordingly.
+
+* create-eicr offsetDuration value from 1 hour to 2 seconds.
+* periodic-update-eicr timingTiming & offsetDuration from 6 hours to 20 seconds.
+* close-out-eicr timingTiming from 24 hours to 10 seconds.
+

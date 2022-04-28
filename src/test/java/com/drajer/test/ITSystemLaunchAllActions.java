@@ -43,7 +43,6 @@ import org.springframework.test.context.TestPropertySource;
  * Submit_EICR - will execute immediately after ValidateEICR.
  */
 @RunWith(Parameterized.class)
-@TestPropertySource(properties = "ersd.file.location=src/test/resources/AppData/ersd.json")
 public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   private String testCaseId;
