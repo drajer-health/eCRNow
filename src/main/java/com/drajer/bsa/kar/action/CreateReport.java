@@ -182,11 +182,11 @@ public class CreateReport extends BsaAction {
           phDao.saveOrUpdate(msg);
         } // attachment not null
         else {
-        	logger.info(" Document Reference attachement is empty, nothing to save ");
+          logger.info(" Document Reference attachement is empty, nothing to save ");
         }
       } // DocRef has content
       else {
-    	  logger.info(" Document Reference does not have any CDA content ");
+        logger.info(" Document Reference does not have any CDA content ");
       }
     } // For all document references.
   }

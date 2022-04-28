@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 @DynamicUpdate
 public class PublicHealthMessage {
 
-  @Transient private final Logger logger = LoggerFactory.getLogger(NotificationContext.class);
+  @Transient private final Logger logger = LoggerFactory.getLogger(PublicHealthMessage.class);
 
   /** The attribute represents the primary key for the table and is auto incremented. */
   @Id @GeneratedValue private UUID id;

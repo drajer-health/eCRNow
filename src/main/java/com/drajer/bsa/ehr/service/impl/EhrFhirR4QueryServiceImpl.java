@@ -16,19 +16,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,7 +167,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     // Get other resources for Patient
     return kd.getFhirInputData();
   }
-  
+
   /**
    * @param kd The data object for getting the healthcareSetting and notification context from
    * @param context The HAPI FHIR context for making a FHIR client with

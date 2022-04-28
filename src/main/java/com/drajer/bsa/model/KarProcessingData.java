@@ -9,6 +9,7 @@ import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.sof.utils.ResourceUtils;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -142,14 +143,16 @@ public class KarProcessingData {
 
       if (actionOutputDataById.containsKey(id)) actionOutputDataById.get(id).add(res);
       else {
-        Set<Resource> resources = new HashSet<Resource>();
+        Set<Resource> resources = new HashSet<>();
         resources.add(res);
         actionOutputDataById.put(id, resources);
       }
     }
   }
 
-  public void addNotifiedResource(String resId, Resource res) {}
+  public void addNotifiedResource(String resId, Resource res) {
+    logger.info(resId, res);
+  }
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -160,14 +163,14 @@ public class KarProcessingData {
       }
     }
 
-    return null;
+    return Collections.emptySet();
   }
 
   public Set<Resource> getOutputDataById(String id) {
 
     if (actionOutputDataById != null && actionOutputDataById.containsKey(id)) {
       return actionOutputDataById.get(id);
-    } else return null;
+    } else return Collections.emptySet();
   }
 
   public void addActionStatus(String id, BsaActionStatus status) {
@@ -177,7 +180,7 @@ public class KarProcessingData {
       actionStatus.get(id).add(status);
     } else {
 
-      List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
+      List<BsaActionStatus> statuses = new ArrayList<>();
       statuses.add(status);
       actionStatus.put(id, statuses);
     }
@@ -185,7 +188,7 @@ public class KarProcessingData {
 
   public List<BsaActionStatus> getActionStatusByType(ActionType type) {
 
-    List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
+    List<BsaActionStatus> statuses = new ArrayList<>();
     for (Map.Entry<String, List<BsaActionStatus>> entry : actionStatus.entrySet()) {
 
       List<BsaActionStatus> statusValues = entry.getValue();
@@ -206,7 +209,7 @@ public class KarProcessingData {
 
     if (res != null && res.size() > 0) {
 
-      logger.info(" Resource Sizes : {}", res.size());
+      logger.info("Resource Sizes : {}", res.size());
       for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
 
         if (fhirInputDataByType.containsKey(entry.getKey())) {

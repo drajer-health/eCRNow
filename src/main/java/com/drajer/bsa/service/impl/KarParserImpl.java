@@ -1,7 +1,10 @@
 package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
+import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
 import com.drajer.bsa.kar.action.CreateReport;
 import com.drajer.bsa.kar.action.EvaluateMeasure;
 import com.drajer.bsa.kar.action.SubmitReport;
@@ -12,22 +15,19 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.service.KarService;
 import com.drajer.bsa.utils.BsaConstants;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
-import com.drajer.bsa.dao.HealthcareSettingsDao;
-import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
-import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
-import com.drajer.bsa.model.HealthcareSetting;
-import com.drajer.bsa.model.KarProcessingData;
-import com.drajer.bsa.model.NotificationContext;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -132,7 +132,7 @@ public class KarParserImpl implements KarParser {
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
-  
+
   @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
@@ -330,11 +330,11 @@ public class KarParserImpl implements KarParser {
           logger.info(" Processing Library");
         }
       }
-      
-     /* for (HealthcareSetting healthcareSetting : allHealthcareSettings) {
-          KarProcessingData kd = makeData(healthcareSetting, art);
-          subscriptionGeneratorService.createSubscriptions(kd);
-        } */
+
+      /* for (HealthcareSetting healthcareSetting : allHealthcareSettings) {
+        KarProcessingData kd = makeData(healthcareSetting, art);
+        subscriptionGeneratorService.createSubscriptions(kd);
+      } */
 
       addArtifactForPersistence(art, repoUrl, repoName);
       KnowledgeArtifactRepositorySystem.getInstance().add(art);
@@ -349,17 +349,17 @@ public class KarParserImpl implements KarParser {
   }
 
   private KarProcessingData makeData(HealthcareSetting hs, KnowledgeArtifact art) {
-  KarProcessingData kd = new KarProcessingData();
-  kd.setHealthcareSetting(hs);
-  kd.setKar(art);
-  kd.setEhrQueryService(ehrInterface);
-  kd.setNotificationContext(new NotificationContext());
-  KnowledgeArtifactStatus knowledgeArtifactStatus = new KnowledgeArtifactStatus();
-  knowledgeArtifactStatus.setIsActive(true);
-  knowledgeArtifactStatus.setSubscriptionsEnabled(true);
-  kd.setKarStatus(knowledgeArtifactStatus);
-  return kd;
-}
+    KarProcessingData kd = new KarProcessingData();
+    kd.setHealthcareSetting(hs);
+    kd.setKar(art);
+    kd.setEhrQueryService(ehrInterface);
+    kd.setNotificationContext(new NotificationContext());
+    KnowledgeArtifactStatus knowledgeArtifactStatus = new KnowledgeArtifactStatus();
+    knowledgeArtifactStatus.setIsActive(true);
+    knowledgeArtifactStatus.setSubscriptionsEnabled(true);
+    kd.setKarStatus(knowledgeArtifactStatus);
+    return kd;
+  }
 
   private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {
 

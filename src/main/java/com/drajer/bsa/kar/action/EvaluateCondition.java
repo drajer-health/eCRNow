@@ -6,7 +6,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
 
 public class EvaluateCondition extends BsaAction {
-	
+
   private FhirPathProcessor fhirPathProcessor;
 
   @Override
