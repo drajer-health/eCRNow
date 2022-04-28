@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "healthcare_setting")
 @DynamicUpdate
-public class HealthcareSetting {
+public class HealthcareSetting implements FhirServerDetails {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(HealthcareSetting.class);
 
@@ -160,6 +160,27 @@ public class HealthcareSetting {
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
   private Date lastUpdated;
+
+  /** This attribute defines the trusted third party that reports should be submitted to. */
+  @Column(name = "trusted_third_party", nullable = true, columnDefinition = "TEXT")
+  private String trustedThirdParty;
+
+  /** The attribute represents the name of the organization. */
+  @Column(name = "orgName", nullable = true, columnDefinition = "TEXT")
+  private String orgName;
+
+  /** The attribute represents the namespace for the "orgId" identifier value . */
+  @Column(name = "orgIdSystem", nullable = false, columnDefinition = "TEXT")
+  private String orgIdSystem;
+
+  /** The attribute represents a unique identifier for the organization */
+  @Column(name = "orgId", nullable = false, columnDefinition = "TEXT")
+  private String orgId;
+
+  /** This attribute shows whether the fhir server supports subscriptions. */
+  @Column(name = "subscriptions_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean subscriptionsEnabled = false;
 
   /**
    * This is an object that is used for convenience to exchange the information as objects. The data
@@ -351,6 +372,14 @@ public class HealthcareSetting {
     this.encounterEndThreshold = encounterEndThreshold;
   }
 
+  public String getTrustedThirdParty() {
+    return trustedThirdParty;
+  }
+
+  public void setTrustedThirdParty(String trustedThirdParty) {
+    this.trustedThirdParty = trustedThirdParty;
+  }
+
   public String getAuthType() {
     return authType;
   }
@@ -382,6 +411,53 @@ public class HealthcareSetting {
   public void setFhirVersion(String fhirVersion) {
     this.fhirVersion = fhirVersion;
   }
+
+  public Boolean getSubscriptionsEnabled() {
+    return subscriptionsEnabled;
+  }
+
+  public void setSubscriptionsEnabled(Boolean subscriptionsEnabled) {
+    this.subscriptionsEnabled = subscriptionsEnabled;
+  }
+
+  public String getOrgName() {
+    return orgName;
+  }
+
+  public void setOrgName(String orgName) {
+    this.orgName = orgName;
+  }
+
+  public String getOrgIdSystem() {
+    return orgIdSystem;
+  }
+
+  public void setOrgIdSystem(String orgIdSystem) {
+    this.orgIdSystem = orgIdSystem;
+  }
+
+  public String getOrgId() {
+    return orgId;
+  }
+
+  public void setOrgId(String orgId) {
+    this.orgId = orgId;
+  }
+
+  // NOTE: username and password are stubbed out with no data model changes
+  // because for the pilot we don't care about password auth on the EHR side
+  // only on the PHA side
+  public String getUsername() {
+    return null;
+  }
+
+  public void setUsername(String username) {}
+
+  public String getPassword() {
+    return null;
+  }
+
+  public void setPassword(String password) {}
 
   public void log() {
 

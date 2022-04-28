@@ -1,6 +1,5 @@
-package com.drajer.bsa.ehr.service.impl;
+package com.drajer.bsa.auth;
 
-import com.drajer.bsa.ehr.service.EhrAuthorizationService;
 import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
@@ -32,9 +31,9 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service("passwordauth")
 @Transactional
-public class PasswordAuthorizationServiceImpl implements EhrAuthorizationService {
+public class PasswordAuthorizationServiceImpl implements AuthorizationService {
 
-  private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(PasswordAuthorizationServiceImpl.class);
   private final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
   private final String WELL_KNOWN = ".well-known/smart-configuration";

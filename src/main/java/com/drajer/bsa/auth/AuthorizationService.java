@@ -1,6 +1,7 @@
-package com.drajer.bsa.ehr.service;
+package com.drajer.bsa.auth;
 
-import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.model.FhirServerDetails;
+import org.json.JSONObject;
 
 /**
  *
@@ -11,13 +12,13 @@ import com.drajer.bsa.model.KarProcessingData;
  *
  * @author nbashyam
  */
-public interface EhrAuthorizationService {
+public interface AuthorizationService {
 
   /**
    * The method is used to retrieve the access token from the EHR
    *
-   * @param kd The processing context which contains information such as patient, encounter,
+   * @param fsd The processing context which contains information such as patient, encounter,
    *     previous data etc.
    */
-  public void getAuthorizationToken(KarProcessingData kd);
+  JSONObject getAuthorizationToken(FhirServerDetails fsd);
 }

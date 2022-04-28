@@ -328,6 +328,9 @@ public class KarParserImpl implements KarParser {
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.Library) {
           logger.info(" Processing Library");
+        } else if (Optional.ofNullable(comp).isPresent()) {
+          logger.info(" Adding resource to dependencies");
+          art.addDependentResource(comp.getResource());
         }
       }
 

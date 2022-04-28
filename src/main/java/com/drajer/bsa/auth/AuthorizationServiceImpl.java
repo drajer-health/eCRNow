@@ -1,12 +1,11 @@
-package com.drajer.bsa.ehr.service.impl;
+package com.drajer.bsa.auth;
 
-import com.drajer.bsa.ehr.service.EhrAuthorizationService;
 import com.drajer.bsa.model.BsaTypes;
-import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
-import java.time.Instant;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Date;
+import java.util.Objects;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,26 +31,22 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service("ehrauth")
 @Transactional
-public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
+public class AuthorizationServiceImpl implements AuthorizationService {
 
-  private final Logger logger = LoggerFactory.getLogger(EhrAuthorizationServiceImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(AuthorizationServiceImpl.class);
 
   private static final String GRANT_TYPE = "grant_type";
 
   @Override
-  public void getAuthorizationToken(KarProcessingData kd) {
+  public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
 
-    JSONObject tokenResponse = null;
-    logger.info(
-        "Getting AccessToken for EHR FHIR URL : {}",
-        kd.getHealthcareSetting().getFhirServerBaseURL());
-    logger.info("Getting AccessToken for Client Id : {}", kd.getHealthcareSetting().getClientId());
+    JSONObject tokenResponse;
+    logger.info("Getting AccessToken for EHR FHIR URL : {}", fsd.getFhirServerBaseURL());
+    logger.info("Getting AccessToken for Client Id : {}", fsd.getClientId());
 
     try {
 
-      if (kd.getHealthcareSetting()
-          .getAuthType()
-          .equals(BsaTypes.getString(BsaTypes.AuthenticationType.SofSystem))) {
+      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SofSystem))) {
 
         logger.info(" System Launch authorization is configured for EHR ");
 
@@ -62,45 +57,32 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 
         // Setup the Authorization Header.
-        String authValues =
-            kd.getHealthcareSetting().getClientId()
-                + ":"
-                + kd.getHealthcareSetting().getClientSecret();
+        String authValues = fsd.getClientId() + ":" + fsd.getClientSecret();
         String base64EncodedString =
-            Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+            Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
 
         // Setup the OAuth Type flow.
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", kd.getHealthcareSetting().getScopes());
+        map.add("scope", fsd.getScopes());
 
-        if (kd.getHealthcareSetting().getRequireAud())
-          map.add("aud", kd.getHealthcareSetting().getFhirServerBaseURL());
+        if (fsd.getRequireAud()) map.add("aud", fsd.getFhirServerBaseURL());
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
-            resTemplate.exchange(
-                kd.getHealthcareSetting().getTokenUrl(), HttpMethod.POST, entity, Response.class);
-        tokenResponse = new JSONObject(response.getBody());
+            resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, Response.class);
+        tokenResponse = new JSONObject(Objects.requireNonNull(response.getBody()));
 
         logger.info("Received AccessToken: {}", tokenResponse);
 
-        kd.getNotificationContext().setEhrAccessToken(tokenResponse.getString("access_token"));
-        kd.getNotificationContext()
-            .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
-
-        Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-        Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
-        kd.getNotificationContext()
-            .setEhrAccessTokenExpirationTime(new Date().from(expireInstantTime));
+        return tokenResponse;
       }
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {}",
-          kd.getHealthcareSetting().getFhirServerBaseURL(),
-          e);
+          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
     }
+    return null;
   }
 }

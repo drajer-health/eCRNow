@@ -121,6 +121,28 @@ public class KnowledgeArtifact {
     }
   }
 
+  public void addDependentResource(Resource res) {
+    // format id for local reference
+    String id = String.format("%s/%s", res.getResourceType(), res.getIdElement().getIdPart());
+    if (dependencies.containsKey(res.getResourceType())) {
+
+      // Dependency to be added.
+      HashMap<String, Resource> resources = dependencies.get(res.getResourceType());
+
+      if (resources != null && resources.containsKey(id)) {
+        logger.info("Resource already present");
+      } else {
+        resources.put(id, res);
+        dependencies.put(res.getResourceType(), resources);
+      }
+    } else {
+      logger.info("Resource Type does not exist, so add to map ");
+      HashMap<String, Resource> resources = new HashMap<>();
+      resources.put(id, res);
+      dependencies.put(res.getResourceType(), resources);
+    }
+  }
+
   public void initializeRelatedActions() {
 
     for (Map.Entry<String, BsaAction> entry : actionMap.entrySet()) {
