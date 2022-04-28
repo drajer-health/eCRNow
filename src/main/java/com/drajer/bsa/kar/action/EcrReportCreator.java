@@ -729,11 +729,11 @@ public class EcrReportCreator extends ReportCreator {
   public void addExtensionIfAppropriate(
       Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
 
-    BsaActionStatus status = kd.getActionStatusByType(ActionType.CheckTriggerCodes);
+    List<BsaActionStatus> status = kd.getActionStatusByType(ActionType.CheckTriggerCodes);
 
-    if (status != null) {
+    if (status != null && status.size() > 0) {
 
-      CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) (status);
+      CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) (status.get(0));
 
       if (ctcs.containsMatches(rt)) {
 

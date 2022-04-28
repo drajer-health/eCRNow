@@ -49,7 +49,8 @@ public class ExecuteReportingActions extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
-    data.addActionStatus(getActionId(), actStatus);
+
+    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
 
     return actStatus;
   }
