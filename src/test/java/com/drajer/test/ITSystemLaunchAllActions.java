@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Description: This test class is created for testing all the actions. ersd.json for this test is
