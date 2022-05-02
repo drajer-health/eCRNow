@@ -47,6 +47,10 @@ public class R3ToR2DataConverterUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(R3ToR2DataConverterUtils.class);
 
+  private R3ToR2DataConverterUtils() {
+    super();
+  }
+
   /**
    * The method creates the Release2.0 R4FhirData and LaunchDetails data structures from
    * KarProcessingData.
@@ -69,7 +73,7 @@ public class R3ToR2DataConverterUtils {
       details.setEhrServerURL(kd.getNotificationContext().getFhirServerBaseUrl());
 
       Set<Resource> patients = kd.getResourcesByType(ResourceType.Patient.toString());
-      if (patients != null && patients.size() >= 1) {
+      if (patients != null && !patients.isEmpty()) {
 
         logger.info(" Setting up the patient for R4FhirData ");
         Resource patient = patients.iterator().next();
@@ -79,7 +83,7 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> encounters = kd.getResourcesByType(ResourceType.Encounter.toString());
-      if (encounters != null && encounters.size() >= 1) {
+      if (encounters != null && !encounters.isEmpty()) {
 
         logger.info(" Setting up the encounter for R4FhirData ");
         Resource encounter = encounters.iterator().next();
@@ -89,7 +93,7 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> locations = kd.getResourcesByType(ResourceType.Location.toString());
-      if (locations != null && locations.size() >= 1) {
+      if (locations != null && !locations.isEmpty()) {
 
         logger.info(" Setting up the location for R4FhirData ");
         Resource location = locations.iterator().next();
@@ -98,7 +102,7 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> orgs = kd.getResourcesByType(ResourceType.Organization.toString());
-      if (orgs != null && orgs.size() >= 1) {
+      if (orgs != null && !orgs.isEmpty()) {
 
         logger.info(" Setting up the organization for R4FhirData ");
         Resource organization = orgs.iterator().next();
@@ -107,8 +111,8 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> conditions = kd.getResourcesByType(ResourceType.Condition.toString());
-      ArrayList<Condition> conditionList = new ArrayList<Condition>();
-      if (conditions != null && conditions.size() >= 1) {
+      ArrayList<Condition> conditionList = new ArrayList<>();
+      if (conditions != null && !conditions.isEmpty()) {
 
         for (Resource r : conditions) {
           conditionList.add((Condition) r);
@@ -118,8 +122,8 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> imms = kd.getResourcesByType(ResourceType.Immunization.toString());
-      ArrayList<Immunization> immList = new ArrayList<Immunization>();
-      if (imms != null && imms.size() >= 1) {
+      ArrayList<Immunization> immList = new ArrayList<>();
+      if (imms != null && !imms.isEmpty()) {
 
         for (Resource r : imms) {
           immList.add((Immunization) r);
@@ -129,8 +133,8 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> procedures = kd.getResourcesByType(ResourceType.Procedure.toString());
-      ArrayList<Procedure> procList = new ArrayList<Procedure>();
-      if (procedures != null && procedures.size() >= 1) {
+      ArrayList<Procedure> procList = new ArrayList<>();
+      if (procedures != null && !procedures.isEmpty()) {
 
         for (Resource r : procedures) {
           procList.add((Procedure) r);
@@ -139,8 +143,8 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> medReqs = kd.getResourcesByType(ResourceType.MedicationRequest.toString());
-      ArrayList<MedicationRequest> medReqList = new ArrayList<MedicationRequest>();
-      if (medReqs != null && medReqs.size() >= 1) {
+      ArrayList<MedicationRequest> medReqList = new ArrayList<>();
+      if (medReqs != null && !medReqs.isEmpty()) {
 
         for (Resource r : medReqs) {
           medReqList.add((MedicationRequest) r);
@@ -151,8 +155,8 @@ public class R3ToR2DataConverterUtils {
 
       Set<Resource> medAdms =
           kd.getResourcesByType(ResourceType.MedicationAdministration.toString());
-      ArrayList<MedicationAdministration> medAdmList = new ArrayList<MedicationAdministration>();
-      if (medAdms != null && medAdms.size() >= 1) {
+      ArrayList<MedicationAdministration> medAdmList = new ArrayList<>();
+      if (medAdms != null && !medAdms.isEmpty()) {
 
         for (Resource r : medAdms) {
           medAdmList.add((MedicationAdministration) r);
@@ -162,8 +166,8 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> meds = kd.getResourcesByType(ResourceType.Medication.toString());
-      ArrayList<Medication> medList = new ArrayList<Medication>();
-      if (meds != null && meds.size() >= 1) {
+      ArrayList<Medication> medList = new ArrayList<>();
+      if (meds != null && !meds.isEmpty()) {
 
         for (Resource r : meds) {
           medList.add((Medication) r);
@@ -173,8 +177,8 @@ public class R3ToR2DataConverterUtils {
       }
 
       Set<Resource> servReqs = kd.getResourcesByType(ResourceType.ServiceRequest.toString());
-      ArrayList<ServiceRequest> servReqList = new ArrayList<ServiceRequest>();
-      if (servReqs != null && servReqs.size() >= 1) {
+      ArrayList<ServiceRequest> servReqList = new ArrayList<>();
+      if (servReqs != null && !servReqs.isEmpty()) {
 
         for (Resource r : servReqs) {
           servReqList.add((ServiceRequest) r);
@@ -188,8 +192,8 @@ public class R3ToR2DataConverterUtils {
       Set<Resource> labObs =
           ReportGenerationUtils.filterObservationsByCategory(
               observations, ObservationCategory.LABORATORY.toCode());
-      ArrayList<Observation> labObsList = new ArrayList<Observation>();
-      if (labObs != null && labObs.size() >= 1) {
+      ArrayList<Observation> labObsList = new ArrayList<>();
+      if (labObs != null && !labObs.isEmpty()) {
 
         for (Resource r : labObs) {
           labObsList.add((Observation) r);
@@ -201,8 +205,8 @@ public class R3ToR2DataConverterUtils {
       Set<Resource> vitalObs =
           ReportGenerationUtils.filterObservationsByCategory(
               observations, ObservationCategory.VITALSIGNS.toCode());
-      ArrayList<Observation> vitalObsList = new ArrayList<Observation>();
-      if (vitalObs != null && vitalObs.size() >= 1) {
+      ArrayList<Observation> vitalObsList = new ArrayList<>();
+      if (vitalObs != null && !vitalObs.isEmpty()) {
 
         for (Resource r : labObs) {
           vitalObsList.add((Observation) r);
@@ -213,8 +217,8 @@ public class R3ToR2DataConverterUtils {
       Set<Resource> socObs =
           ReportGenerationUtils.filterObservationsByCategory(
               observations, ObservationCategory.SOCIALHISTORY.toCode());
-      ArrayList<Observation> socObsList = new ArrayList<Observation>();
-      if (socObs != null && socObs.size() >= 1) {
+      ArrayList<Observation> socObsList = new ArrayList<>();
+      if (socObs != null && !socObs.isEmpty()) {
 
         for (Resource r : socObs) {
           socObsList.add((Observation) r);
@@ -228,7 +232,7 @@ public class R3ToR2DataConverterUtils {
       logger.error(" Cannot convert Null Kar Processing Data For Cda Generation ");
     }
 
-    return new Pair<R4FhirData, LaunchDetails>(r4FhirData, details);
+    return new Pair<>(r4FhirData, details);
   }
 
   /**

@@ -99,10 +99,10 @@ public class KarParserImpl implements KarParser {
   String measurePeriodEnd;
 
   @Value("${cql.enabled:true}")
-  Boolean cqlEnabled;
+  boolean cqlEnabled;
 
   @Value("${fhirpath.enabled:true}")
-  Boolean fhirpathEnabled;
+  boolean fhirpathEnabled;
 
   @Value("${bsa.output.directory}")
   String logDirectory;
@@ -139,13 +139,12 @@ public class KarParserImpl implements KarParser {
   @Value("${report-submission.endpoint}")
   private String reportSubmissionEndpoint;
 
-  private static String[] KAR_FILE_EXT = {"json"};
-  private static String JSON_KAR_EXT = "json";
-  private static String RECEIVER_ADDRESS_URL =
+  private static final String JSON_KAR_EXT = "json";
+  private static final String RECEIVER_ADDRESS_URL =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
 
-  private static String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
-  private static String LOCAL_HOST_REPO_NAME = "local-repo";
+  private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
+  private static final String LOCAL_HOST_REPO_NAME = "local-repo";
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
   // Load the Topic to Named Event Map.
@@ -189,12 +188,8 @@ public class KarParserImpl implements KarParser {
           beanFactory.destroyBean(beanFactory.getBean(instance.getClass()));
         }
         beanFactory.autowireBean(instance);
-      } catch (InstantiationException e) {
-        logger.error(" Error instantiating the object {}", e);
-      } catch (IllegalAccessException e) {
-        logger.error(" Error instantiating the object {}", e);
-      } catch (ClassNotFoundException e) {
-        logger.error(" Error instantiating the object {}", e);
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        logger.error("Error instantiating the object.", e);
       }
     }
 
@@ -203,8 +198,8 @@ public class KarParserImpl implements KarParser {
 
   @PostConstruct
   public void initializeRepository() {
-    localKarRepoUrlToName = new HashMap<String, String>();
-    localKars = new HashMap<String, Set<KnowledgeArtifact>>();
+    localKarRepoUrlToName = new HashMap<>();
+    localKars = new HashMap<>();
     loadKars();
   }
 
@@ -327,7 +322,7 @@ public class KarParserImpl implements KarParser {
   private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {
 
     if (localKars == null) {
-      localKars = new HashMap<String, Set<KnowledgeArtifact>>();
+      localKars = new HashMap<>();
     }
 
     if (localKars.containsKey(repoUrl)) {
@@ -337,13 +332,13 @@ public class KarParserImpl implements KarParser {
       if (arts != null) {
         arts.add(art);
       } else {
-        arts = new HashSet<KnowledgeArtifact>();
+        arts = new HashSet<>();
         arts.add(art);
       }
 
       localKars.put(repoUrl, arts);
     } else {
-      Set<KnowledgeArtifact> arts = new HashSet<KnowledgeArtifact>();
+      Set<KnowledgeArtifact> arts = new HashSet<>();
       arts.add(art);
       localKars.put(repoUrl, arts);
     }
@@ -352,7 +347,7 @@ public class KarParserImpl implements KarParser {
 
       localKarRepoUrlToName.put(repoUrl, repoName);
     } else {
-      localKarRepoUrlToName = new HashMap<String, String>();
+      localKarRepoUrlToName = new HashMap<>();
       localKarRepoUrlToName.put(repoUrl, repoName);
     }
   }
@@ -519,7 +514,7 @@ public class KarParserImpl implements KarParser {
 
     List<PlanDefinitionActionComponent> actions = ac.getAction();
 
-    if (actions != null && actions.size() > 0) {
+    if (actions != null && !actions.isEmpty()) {
       for (PlanDefinitionActionComponent act : actions) {
 
         if (act.getCodeFirstRep() != null && act.getCodeFirstRep().getCodingFirstRep() != null) {
@@ -671,7 +666,7 @@ public class KarParserImpl implements KarParser {
 
   private Set<String> getNamedEvents(PlanDefinitionActionComponent ac) {
 
-    Set<String> events = new HashSet<String>();
+    Set<String> events = new HashSet<>();
 
     List<TriggerDefinition> triggers = ac.getTrigger();
 

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,16 +80,11 @@ public class KarProcessorImpl implements KarProcessor {
 
       logger.info(" **** Executing Action Id {} **** ", action.getActionId());
 
-      // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = action.getInputResourceTypes();
-
-      // Get necessary data to process.
-      HashMap<ResourceType, Set<Resource>> res = ehrInterface.getFilteredData(data, resourceTypes);
       BsaActionStatus status = null;
       try {
         status = action.process(data, ehrInterface);
       } catch (Exception e) {
-        System.out.println(e.getMessage());
+        logger.error("Error in Processing.", e);
       }
 
       data.addActionStatus(action.getActionId(), status);
@@ -169,7 +163,8 @@ public class KarProcessorImpl implements KarProcessor {
 
       for (KnowledgeArtifactStatus ks : stat) {
 
-        if (ks.getIsActive() && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+        if (ks.getIsActive().booleanValue()
+            && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
 
           logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
           kd.setKarStatus(ks);

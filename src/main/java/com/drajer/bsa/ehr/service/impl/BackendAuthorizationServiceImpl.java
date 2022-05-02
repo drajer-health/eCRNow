@@ -48,9 +48,9 @@ import org.springframework.web.client.RestTemplate;
 public class BackendAuthorizationServiceImpl implements EhrAuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
-  private final String OAUTH_URIS =
+  private static final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
-  private final String WELL_KNOWN = ".well-known/smart-configuration";
+  private static final String WELL_KNOWN = ".well-known/smart-configuration";
 
   @Value("${jwks.keystore.location}")
   String jwksLocation;
@@ -72,7 +72,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
           .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
 
       Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-      Instant expireInstantTime = new Date().toInstant().plusSeconds(Long.valueOf(expiresInSec));
+      Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
       kd.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expireInstantTime));
     } catch (Exception e) {
       logger.error(
