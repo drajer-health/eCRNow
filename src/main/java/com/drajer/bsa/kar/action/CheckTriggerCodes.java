@@ -66,7 +66,10 @@ public class CheckTriggerCodes extends BsaAction {
             HashMap<String, Set<Resource>> idres = new HashMap<>();
             Set<Resource> allResources = new HashSet<>();
 
-            matchInfo.getValue1().values().forEach(allResources::addAll);
+            matchInfo
+                .getValue1()
+                .values()
+                .forEach(setOfResources -> allResources.addAll(setOfResources));
             idres.put(dr.getId(), allResources);
             data.resetResourcesById(idres);
 
