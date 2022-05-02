@@ -7,7 +7,6 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
-import com.drajer.sof.launch.LaunchController;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
@@ -54,7 +53,7 @@ public class PatientLaunchController {
 
   @Autowired SubscriptionNotificationReceiver notificationReceiver;
 
-  private final Logger logger = LoggerFactory.getLogger(LaunchController.class);
+  private final Logger logger = LoggerFactory.getLogger(PatientLaunchController.class);
 
   private static final String FHIR_VERSION = "fhirVersion";
 
@@ -76,8 +75,7 @@ public class PatientLaunchController {
   public String launchPatient(
       @RequestBody PatientLaunchContext launchContext,
       HttpServletRequest request,
-      HttpServletResponse response)
-      throws IOException {
+      HttpServletResponse response) {
 
     logger.info(
         "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}",
@@ -85,6 +83,8 @@ public class PatientLaunchController {
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
         request.getHeader("X-Request-ID"));
+
+    logger.info(FHIR_VERSION);
 
     HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
 

@@ -2,6 +2,7 @@ package com.drajer.bsa.kar.action;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
@@ -29,6 +30,16 @@ public class SubmitReport extends BsaAction {
   private static final FhirContext context = FhirContext.forR4();
 
   @Autowired BsaServiceUtils bsaServiceUtils;
+
+  PublicHealthMessagesDao phDao;
+
+  public PublicHealthMessagesDao getPhDao() {
+    return phDao;
+  }
+
+  public void setPhDao(PublicHealthMessagesDao phDao) {
+    this.phDao = phDao;
+  }
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -116,7 +127,8 @@ public class SubmitReport extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
-    data.addActionStatus(getActionId(), actStatus);
+
+    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
 
     return actStatus;
   }
