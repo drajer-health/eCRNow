@@ -43,26 +43,13 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DataRequirement;
-import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.Expression;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionConditionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
-import org.hl7.fhir.r4.model.PrimitiveType;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.TriggerDefinition;
 import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
-import org.hl7.fhir.r4.model.Type;
-import org.hl7.fhir.r4.model.UriType;
-import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
@@ -436,7 +423,7 @@ public class KarParserImpl implements KarParser {
 
       Extension ext = plan.getExtensionByUrl(RECEIVER_ADDRESS_URL);
 
-      if (ext != null) {
+      if (ext != null && ext.hasValue()) {
 
         Type t = ext.getValue();
         if (t instanceof PrimitiveType) {
@@ -445,6 +432,13 @@ public class KarParserImpl implements KarParser {
 
             logger.info(" Found Receiver Address {}", i.getValueAsString());
             art.addReceiverAddress((UriType) i);
+          }
+        } else if (t instanceof Reference) {
+          Endpoint endpoint =
+              (Endpoint)
+                  art.getDependentResource(ResourceType.Endpoint, ((Reference) t).getReference());
+          if (endpoint.hasAddressElement()) {
+            art.addReceiverAddress(endpoint.getAddressElement());
           }
         }
       }
