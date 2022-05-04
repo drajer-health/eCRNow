@@ -65,7 +65,11 @@ public class FhirContextInitializer {
     logger.trace("Initializing the Client");
     FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
     context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
-    client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
+    if (accessToken != null && !accessToken.equalsIgnoreCase("")) {
+      client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
+    } else {
+      logger.debug("AccessToken not supplied for %{}", url);
+    }
     // client.setEncoding(EncodingEnum.JSON);
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
