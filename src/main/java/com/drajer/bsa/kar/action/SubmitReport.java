@@ -2,7 +2,6 @@ package com.drajer.bsa.kar.action;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.impl.GenericClient;
 import ca.uhn.fhir.rest.gclient.IOperationProcessMsgMode;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
@@ -14,7 +13,6 @@ import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
@@ -102,7 +100,11 @@ public class SubmitReport extends BsaAction {
           if (endpoints.size() > 0) {
             for (UriType uri : endpoints) {
               logger.info("Submitting resources to {}", uri);
-              submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
+              try {
+                submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
+              } catch (Throwable th) {
+                logger.error("Error sending data to {} ", uri, th);
+              }
             }
           }
         }
@@ -155,8 +157,8 @@ public class SubmitReport extends BsaAction {
     try (InputStream inputStream =
         SubmitReport.class.getClassLoader().getResourceAsStream("report-headers.properties")) {
       headers.load(inputStream);
-    } catch (IOException ex) {
-      logger.error("Error while loading Action Classes from Proporties File ");
+    } catch (Exception ex) {
+      logger.error("Error while loading report headers from Proporties File ");
     }
     // for all resources to be submitted
     logger.info("{} Resources to submit ", resourcesToSubmit.size());
@@ -169,7 +171,7 @@ public class SubmitReport extends BsaAction {
               token,
               data.getNotificationContext().getNotificationResourceId());
 
-      ((GenericClient) client).setDontValidateConformance(true);
+      // ((GenericClient) client).setDontValidateConformance(true);
       context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
 
       // All submissions are expected to be bundles
