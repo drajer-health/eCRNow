@@ -182,6 +182,17 @@ public class HealthcareSetting implements FhirServerDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean subscriptionsEnabled = false;
 
+  /** The attribute represents a username that may be used with password-based Authorization. */
+  @Column(name = "username", columnDefinition = "TEXT")
+  private String username;
+
+  /**
+   * The attribute represents a password associated with the username for password-based
+   * authorization.
+   */
+  @Column(name = "password", columnDefinition = "TEXT")
+  private String password;
+
   /**
    * This is an object that is used for convenience to exchange the information as objects. The data
    * itself gets stored in the karsActive attribute in the database.
@@ -444,20 +455,21 @@ public class HealthcareSetting implements FhirServerDetails {
     this.orgId = orgId;
   }
 
-  // NOTE: username and password are stubbed out with no data model changes
-  // because for the pilot we don't care about password auth on the EHR side
-  // only on the PHA side
   public String getUsername() {
-    return null;
+    return this.username;
   }
 
-  public void setUsername(String username) {}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
   public String getPassword() {
-    return null;
+    return this.password;
   }
 
-  public void setPassword(String password) {}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
   public void log() {
 
