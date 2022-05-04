@@ -1,5 +1,6 @@
 package com.drajer.bsa.auth;
 
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.FhirServerDetails;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,26 +30,26 @@ public class AuthorizationUtils {
   AuthorizationService passwordAuthorizationService;
 
   public JSONObject getToken(FhirServerDetails fsd) {
-    String password = fsd.getPassword();
-    String secret = fsd.getClientSecret();
-    String client_id = fsd.getClientId();
     JSONObject token;
-    if (client_id != null && client_id.equalsIgnoreCase("NO_AUTH_REQUIRED")) {
-      Map<String, Object> tokenParams = new HashMap<>();
-      tokenParams.put("access_token", "admin");
-      tokenParams.put("expires_in", 60 * 60 * 24);
-      token = new JSONObject(tokenParams);
-      logger.info("Hacked no auth token");
-    } else if (password != null && !password.isEmpty()) {
-      logger.info("Getting passsword auth token");
-      token = passwordAuthorizationService.getAuthorizationToken(fsd);
-    } else if (secret == null || secret.isEmpty()) {
-      logger.info("Getting backend auth token");
-      token = backendAuthorizationService.getAuthorizationToken(fsd);
-    } else {
-      logger.info("Getting EHR auth token");
-      token = ehrAuthorizationService.getAuthorizationToken(fsd);
+    BsaTypes.AuthenticationType authTYpe = BsaTypes.getAuthenticationType(fsd.getAuthType());
+    switch (authTYpe) {
+      case UserNamePwd:
+        token = passwordAuthorizationService.getAuthorizationToken(fsd);
+        break;
+      case SofProvider:
+        token = backendAuthorizationService.getAuthorizationToken(fsd);
+        break;
+      case SofSystem:
+        token = ehrAuthorizationService.getAuthorizationToken(fsd);
+        break;
+      case Unknown:
+      default:
+        Map<String, Object> tokenParams = new HashMap<>();
+        tokenParams.put("expires_in", 60 * 60 * 24);
+        token = new JSONObject(tokenParams);
+        break;
     }
+
     logger.info("Returning token {}", token);
     return token;
   }
