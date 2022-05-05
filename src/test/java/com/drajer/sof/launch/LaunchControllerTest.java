@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -72,8 +71,8 @@ public class LaunchControllerTest {
 
     launchController.setStartAndEndDates(clientDetails, currentStateDetails, encounter);
 
-    assertTrue(Math.abs( currentStateDetails.getStartDate().getTime() - startDate.getTime()) < 2000);
-    assertTrue(Math.abs( currentStateDetails.getEndDate().getTime() - endDate.getTime()) < 2000);
+    assertTrue(Math.abs(currentStateDetails.getStartDate().getTime() - startDate.getTime()) < 2000);
+    assertTrue(Math.abs(currentStateDetails.getEndDate().getTime() - endDate.getTime()) < 2000);
   }
 
   @Test
