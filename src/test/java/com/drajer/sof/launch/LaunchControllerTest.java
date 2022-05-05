@@ -72,12 +72,8 @@ public class LaunchControllerTest {
 
     launchController.setStartAndEndDates(clientDetails, currentStateDetails, encounter);
 
-    assertEquals(
-        DateUtils.truncate(startDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getStartDate(), Calendar.SECOND));
-    assertEquals(
-        DateUtils.truncate(endDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getEndDate(), Calendar.SECOND));
+    assertTrue(Math.abs( currentStateDetails.getStartDate().getTime() - startDate.getTime()) < 2000);
+    assertTrue(Math.abs( currentStateDetails.getEndDate().getTime() - endDate.getTime()) < 2000);
   }
 
   @Test
@@ -144,12 +140,8 @@ public class LaunchControllerTest {
 
     launchController.setStartAndEndDates(clientDetails, currentStateDetails, r4Encounter);
 
-    assertEquals(
-        DateUtils.truncate(startDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getStartDate(), Calendar.SECOND));
-    assertEquals(
-        DateUtils.truncate(endDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getEndDate(), Calendar.SECOND));
+    assertTrue(Math.abs(currentStateDetails.getStartDate().getTime() - startDate.getTime()) < 2000);
+    assertTrue(Math.abs(currentStateDetails.getEndDate().getTime() - endDate.getTime()) < 2000);
   }
 
   @Test
