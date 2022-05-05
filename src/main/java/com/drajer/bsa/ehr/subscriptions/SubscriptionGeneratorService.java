@@ -41,9 +41,9 @@ public interface SubscriptionGeneratorService {
   public void createSubscriptions(KarProcessingData kd);
 
   /**
-   * The method is used to create subscriptions in the EHR.
+   * The method is used to delete subscriptions in the EHR.
    *
-   * <p>The KarProcessingData will contain the following to enable subscription creation.
+   * <p>The KarProcessingData will contain the following to enable subscription deletion.
    * KnowledgeArtifact - The artifact for which subscriptions should be deleted.
    *
    * <p>HealthcareSetting - The setting for which the subscriptions have to be deleted. This will be

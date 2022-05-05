@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -55,7 +56,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
         hsd.setKarsActive(kars);
         logger.info(" Successfully set the KarsActive list ");
       } catch (JsonProcessingException e) {
-        // TODO Auto-generated catch block
+
         e.printStackTrace();
       }
     }
@@ -132,7 +133,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
       HealthcareSettingOperationalKnowledgeArtifacts opkars =
           new HealthcareSettingOperationalKnowledgeArtifacts();
       opkars.setId(hs.getId());
-      for (HashMap.Entry<String, KnowledgeArtifact> entry : arts.entrySet()) {
+      for (Map.Entry<String, KnowledgeArtifact> entry : arts.entrySet()) {
 
         KnowledgeArtifactStatus stat = new KnowledgeArtifactStatus();
         stat.setKarId(entry.getValue().getKarId());
@@ -148,9 +149,13 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
       logger.info(" Successfully set the KAR status ");
     } catch (JsonMappingException e) {
-      logger.info(" Error reading Kars Active status from the database. {}", e);
+      logger.info(
+          org.slf4j.Marker.ANY_MARKER,
+          " JsonMappingException : Error reading Kars Active status from the database. {}",
+          e);
     } catch (JsonProcessingException e) {
-      logger.info(" Error reading Kars Active status from the database. {}", e);
+      logger.info(
+          " JsonProcessingException:  Error reading Kars Active status from the database.", e);
     }
   }
 }

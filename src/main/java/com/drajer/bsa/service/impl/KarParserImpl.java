@@ -1,6 +1,11 @@
 package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.dao.PublicHealthMessagesDao;
+import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
+import com.drajer.bsa.kar.action.CreateReport;
 import com.drajer.bsa.kar.action.EvaluateMeasure;
 import com.drajer.bsa.kar.action.SubmitReport;
 import com.drajer.bsa.kar.action.ValidateReport;
@@ -10,9 +15,13 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaRelatedAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.service.KarService;
@@ -120,6 +129,15 @@ public class KarParserImpl implements KarParser {
 
   // Autowired to pass to FhirPathProcessors.
   @Autowired LibraryProcessor libraryProcessor;
+
+  // Autowired to pass to Actions
+  @Autowired PublicHealthMessagesDao phDao;
+
+  @Autowired HealthcareSettingsDao hsDao;
+
+  @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
+
+  @Autowired EhrQueryService ehrInterface;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -279,6 +297,7 @@ public class KarParserImpl implements KarParser {
 
       // Setup the Id.
       art.setKarId(karBundle.getId());
+      List<HealthcareSetting> allHealthcareSettings = hsDao.getAllHealthcareSettings();
 
       // Setup Version.
       if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
@@ -307,6 +326,11 @@ public class KarParserImpl implements KarParser {
         }
       }
 
+      /* for (HealthcareSetting healthcareSetting : allHealthcareSettings) {
+        KarProcessingData kd = makeData(healthcareSetting, art);
+        subscriptionGeneratorService.createSubscriptions(kd);
+      } */
+
       addArtifactForPersistence(art, repoUrl, repoName);
       KnowledgeArtifactRepositorySystem.getInstance().add(art);
       art.printKarSummary();
@@ -317,6 +341,19 @@ public class KarParserImpl implements KarParser {
           " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
           kar);
     }
+  }
+
+  private KarProcessingData makeData(HealthcareSetting hs, KnowledgeArtifact art) {
+    KarProcessingData kd = new KarProcessingData();
+    kd.setHealthcareSetting(hs);
+    kd.setKar(art);
+    kd.setEhrQueryService(ehrInterface);
+    kd.setNotificationContext(new NotificationContext());
+    KnowledgeArtifactStatus knowledgeArtifactStatus = new KnowledgeArtifactStatus();
+    knowledgeArtifactStatus.setIsActive(true);
+    knowledgeArtifactStatus.setSubscriptionsEnabled(true);
+    kd.setKarStatus(knowledgeArtifactStatus);
+    return kd;
   }
 
   private void addArtifactForPersistence(KnowledgeArtifact art, String repoUrl, String repoName) {
@@ -476,9 +513,14 @@ public class KarParserImpl implements KarParser {
     } else if (action.getType() == ActionType.ValidateReport) {
       ValidateReport vr = (ValidateReport) (action);
       vr.setValidatorEndpoint(validatorEndpoint);
+      vr.setPhDao(phDao);
     } else if (action.getType() == ActionType.SubmitReport) {
       SubmitReport sr = (SubmitReport) (action);
       sr.setSubmissionEndpoint(reportSubmissionEndpoint);
+      sr.setPhDao(phDao);
+    } else if (action.getType() == ActionType.CreateReport) {
+      CreateReport cr = (CreateReport) action;
+      cr.setPhDao(phDao);
     }
   }
 

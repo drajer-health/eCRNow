@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.action;
 
+import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
@@ -21,6 +22,16 @@ public class ValidateReport extends BsaAction {
   private final Logger logger = LoggerFactory.getLogger(ValidateReport.class);
 
   private String validatorEndpoint;
+
+  PublicHealthMessagesDao phDao;
+
+  public PublicHealthMessagesDao getPhDao() {
+    return phDao;
+  }
+
+  public void setPhDao(PublicHealthMessagesDao phDao) {
+    this.phDao = phDao;
+  }
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -117,7 +128,8 @@ public class ValidateReport extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
-    data.addActionStatus(getActionId(), actStatus);
+
+    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
 
     return actStatus;
   }

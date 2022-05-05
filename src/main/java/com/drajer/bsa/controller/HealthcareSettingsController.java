@@ -14,9 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -70,8 +71,8 @@ public class HealthcareSettingsController {
    *     HealthcareSetting when successful, else returns appropriate error.
    */
   @CrossOrigin
-  @RequestMapping(value = "/api/healthcareSettings", method = RequestMethod.POST)
-  public ResponseEntity<?> createHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
+  @PostMapping(value = "/api/healthcareSettings")
+  public ResponseEntity<Object> createHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
     HealthcareSetting hsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
@@ -131,8 +132,8 @@ public class HealthcareSettingsController {
    *     HealthcareSetting when successful, else returns appropriate error.
    */
   @CrossOrigin
-  @RequestMapping(value = "/api/healthcareSettings", method = RequestMethod.PUT)
-  public ResponseEntity<?> updateHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
+  @PutMapping(value = "/api/healthcareSettings")
+  public ResponseEntity<Object> updateHealthcareSettings(@RequestBody HealthcareSetting hsDetails) {
     HealthcareSetting existingHsd =
         healthcareSettingsService.getHealthcareSettingByUrl(hsDetails.getFhirServerBaseURL());
 
