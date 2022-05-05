@@ -1,6 +1,5 @@
 package com.drajer.test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -66,6 +65,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
+    mockRestApi();
   }
 
   @Parameters(name = "{0}")
@@ -98,7 +98,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
-    waitForEICR(50000);
+    waitForCreateEicrCompletion();
     getLaunchDetailAndStatus();
     validateNoMatchedTriggerStatus(JobStatus.COMPLETED);
     validateCreateEICR(JobStatus.COMPLETED, false);
@@ -181,9 +181,15 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     return null;
   }
 
-  private void waitForEICR(int interval) {
+  private void waitForCreateEicrCompletion() {
     try {
-      Thread.sleep(interval);
+      do {
+        // Minimum 2 sec is required as App will execute
+        // createEicr workflow after 2 sec as per eRSD.
+        Thread.sleep(2000);
+        getLaunchDetailAndStatus();
+
+      } while (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED);
     } catch (InterruptedException e) {
       logger.warn("Issue with thread sleep", e);
       Thread.currentThread().interrupt();

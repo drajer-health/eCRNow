@@ -119,21 +119,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     logger.info("Received success response, waiting for EICR generation.....");
 
-    waitForEICR(50000);
-    getLaunchDetailAndStatus();
-    validateActionStatus(state.getPeriodicUpdateStatus().size());
-    assertEquals(JobStatus.COMPLETED, state.getPeriodicUpdateJobStatus());
-  }
-
-  @Test
-  public void testSubmitEicrFromRestApi() {
-    ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
-
-    assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
-    assertTrue(response.getBody().contains("App is launched successfully"));
-
-    logger.info("Received success response, waiting for EICR generation.....");
-    waitForEICR(50000);
+    waitForCloseOutEicrCompletion();
     getLaunchDetailAndStatus();
     validateActionStatus(state.getPeriodicUpdateStatus().size());
     assertEquals(JobStatus.COMPLETED, state.getPeriodicUpdateJobStatus());
@@ -176,7 +162,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     assertTrue(response.getBody().contains("App is launched successfully"));
 
     logger.info("Received success response, waiting for EICR generation.....");
-    waitForEICR(50000);
+    waitForCreateEicrCompletion();
     getLaunchDetailAndStatus();
     validateMatchedTriggerStatus(JobStatus.COMPLETED);
     validateCreateEICR(JobStatus.COMPLETED, false);
@@ -193,7 +179,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
     logger.info("Received success response, waiting for EICR generation.....");
 
-    waitForEICR(50000);
+    waitForCloseOutEicrCompletion();
     getLaunchDetailAndStatus();
     validateActionStatus(state.getPeriodicUpdateStatus().size());
 
@@ -381,6 +367,36 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   private void waitForEICR(int interval) {
     try {
       Thread.sleep(interval);
+    } catch (InterruptedException e) {
+      logger.warn("Issue with thread sleep", e);
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void waitForCreateEicrCompletion() {
+    try {
+      do {
+        // Minimum 2 sec is required as App will execute
+        // createEicr workflow after 2 sec as per eRSD.
+        Thread.sleep(2000);
+        getLaunchDetailAndStatus();
+
+      } while (state.getCreateEicrStatus().getJobStatus() != JobStatus.COMPLETED);
+    } catch (InterruptedException e) {
+      logger.warn("Issue with thread sleep", e);
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void waitForCloseOutEicrCompletion() {
+    try {
+      do {
+        // Minimum 2 sec is required as App will execute
+        // createEicr workflow after 2 sec as per eRSD.
+        Thread.sleep(2000);
+        getLaunchDetailAndStatus();
+
+      } while (state.getCloseOutEicrStatus().getJobStatus() != JobStatus.COMPLETED);
     } catch (InterruptedException e) {
       logger.warn("Issue with thread sleep", e);
       Thread.currentThread().interrupt();

@@ -30,7 +30,7 @@ public class ValueSetSingleton {
     if (logger.isInfoEnabled()) {
       logger.info(" *** Start Printing Value Set Singleton *** ");
 
-      logger.info(" *** Start Printing Grouper To Value Sets **** " + grouperToValueSetMap.size());
+      logger.info(" *** Start Printing Grouper To Value Sets **** {}", grouperToValueSetMap.size());
 
       for (Map.Entry<String, Set<ValueSet>> entry : grouperToValueSetMap.entrySet()) {
 
@@ -41,7 +41,7 @@ public class ValueSetSingleton {
         if (vs != null) {
           for (ValueSet v : vs) {
 
-            logger.info(" Value Set = " + v.getId() + v.getUrl());
+            logger.info(" Value Set = {} {}", v.getId(), v.getUrl());
           }
         }
       }
@@ -51,12 +51,12 @@ public class ValueSetSingleton {
       if (grouperToCovidValueSetMap != null) {
 
         logger.info(
-            " *** Start Printing Grouper To Covid Value Sets **** "
-                + grouperToCovidValueSetMap.size());
+            " *** Start Printing Grouper To Covid Value Sets **** {}",
+            grouperToCovidValueSetMap.size());
 
         for (Map.Entry<String, Set<ValueSet>> coventry : grouperToCovidValueSetMap.entrySet()) {
 
-          logger.info(" Key = " + coventry.getKey());
+          logger.info(" Key = {}", coventry.getKey());
 
           Set<ValueSet> vs = coventry.getValue();
 
@@ -64,7 +64,7 @@ public class ValueSetSingleton {
 
             for (ValueSet v : vs) {
 
-              logger.info(" Value Set = " + v.getId() + v.getUrl());
+              logger.info(" Value Set = {} {}", v.getId(), v.getUrl());
             }
           }
         }
@@ -170,10 +170,8 @@ public class ValueSetSingleton {
 
       if (grouperToValueSetMap.containsKey(grouper)) {
 
-        if (logger.isInfoEnabled()) {
-          logger.info(" Adding Value sets for Grouper {} Size = {}", grouper, vs.size());
-        }
-        grouperToValueSetMap.get(grouper).addAll(vs);
+        logger.info("Value sets for Grouper {} Size = {} is already added", grouper, vs.size());
+        // grouperToValueSetMap.get(grouper).addAll(vs);
 
       } else {
 
@@ -201,12 +199,11 @@ public class ValueSetSingleton {
     if (grouperToCovidValueSetMap != null) {
 
       if (grouperToCovidValueSetMap.containsKey(grouper)) {
-
-        if (logger.isInfoEnabled()) {
-          logger.info(
-              " Adding Covid Value sets for Grouper that exists {} Size = {}", grouper, vs.size());
-        }
-        grouperToCovidValueSetMap.get(grouper).addAll(vs);
+        logger.info(
+            "Covid Value sets for Grouper that exists {} Size = {} is already added",
+            grouper,
+            vs.size());
+        // grouperToCovidValueSetMap.get(grouper).addAll(vs);
 
       } else {
 
