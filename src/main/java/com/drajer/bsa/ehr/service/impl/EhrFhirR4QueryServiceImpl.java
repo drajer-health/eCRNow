@@ -16,13 +16,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
-import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -196,10 +194,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   public void createResource(KarProcessingData kd, Resource resource) {
 
-    logger.info(" Getting FHIR Context for R4");
+    logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info("Initializing FHIR Client");
+    logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
     client.create().resource(resource).execute();
   }
@@ -211,11 +209,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id) {
 
-    logger.info(" Getting FHIR Context for R4");
+    logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    IIdType iIdType = new IdType(id);
-    logger.info("Initializing FHIR Client");
+    logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
     client.delete().resourceById(resourceType.toString(), id).execute();
   }

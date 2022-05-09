@@ -28,7 +28,7 @@ public interface EhrQueryService {
       KarProcessingData kd, Map<String, ResourceType> resTypes);
 
   public Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
-  
+
   public void createResource(KarProcessingData kd, Resource resource);
 
   public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);

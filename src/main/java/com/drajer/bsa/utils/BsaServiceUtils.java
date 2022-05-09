@@ -315,7 +315,7 @@ public class BsaServiceUtils {
           logger.debug("Saving data to file {}", fileName);
           saveDataToFile(payload, fileName);
 
-          Pair<String, String> p = new Pair<String, String>(docRef.getId(), payload);
+          Pair<String, String> p = new Pair<>(docRef.getId(), payload);
           outputs.add(p);
         } // attachment not null
       } // DocRef has content

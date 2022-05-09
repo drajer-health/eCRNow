@@ -297,7 +297,6 @@ public class KarParserImpl implements KarParser {
 
       // Setup the Id.
       art.setKarId(karBundle.getId());
-      List<HealthcareSetting> allHealthcareSettings = hsDao.getAllHealthcareSettings();
 
       // Setup Version.
       if (karBundle.getMeta() != null && karBundle.getMeta().getVersionId() != null)
