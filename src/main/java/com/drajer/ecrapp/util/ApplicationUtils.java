@@ -62,7 +62,7 @@ public class ApplicationUtils {
 
       logger.debug("Looking for grouper value set for {}", grouperId);
 
-      if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
+      if (valueset.getId().equalsIgnoreCase(grouperId)) {
 
         logger.debug("Found Grouper Value Set for {}", grouperId);
 
@@ -97,11 +97,10 @@ public class ApplicationUtils {
     ValueSet valueSetGrouper = null;
 
     for (ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
-
-      if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
-
+      if (valueset.getId().equalsIgnoreCase(grouperId)) {
         logger.debug("Grouper Id {}", grouperId);
         valueSetGrouper = valueset;
+        break;
       }
     }
     return valueSetGrouper;
@@ -462,5 +461,17 @@ public class ApplicationUtils {
     } else if (loglevel == LogLevel.DEBUG) {
       logger.debug(expMsg, e);
     }
+  }
+
+  public static boolean isSetContainsValueSet(Set<ValueSet> valueSets, ValueSet valueSet) {
+
+    if (valueSets != null && valueSet != null) {
+      for (ValueSet vs : valueSets) {
+        if (vs.getId().equalsIgnoreCase(valueSet.getId())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
