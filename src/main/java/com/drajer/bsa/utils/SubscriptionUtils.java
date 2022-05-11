@@ -33,10 +33,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SubscriptionUtils {
 
+  private SubscriptionUtils() {}
+
   private static final String TOPIC_PARAMETER = "topic";
   private static final String SUBSCRIPTION_PARAMETER = "subscription";
   private static final String TYPE_PARAMETER = "type";
-  private static final String STATUS_PARAMETER = "status";
   private static final String EVENT_NOTIFICATION_CODE = "event-notification";
   private static final String SUBSCRIPTION_URL_SPLIT_REGEX = "/Subscription";
   private static final int FHIR_SERVER_URL_MIN_LENGTH = 8;
@@ -132,13 +133,12 @@ public class SubscriptionUtils {
         // Verify if the resource received matches the resource Type expected.
         Resource res = bundle.getEntry().get(1).getResource();
 
-        logger.info(" Resource Type Received : {}", res.getResourceType().toString());
+        logger.info(" Resource Type Received : {}", res.getResourceType());
 
         if (res.getResourceType().toString().equals(resourceType)) {
 
           logger.info(
-              " Found the Resource Type Expected in the bundle : {}",
-              res.getResourceType().toString());
+              " Found the Resource Type Expected in the bundle : {}", res.getResourceType());
 
           String fhirServerUrl = getFhirServerUrl(subsRef);
 
@@ -191,8 +191,8 @@ public class SubscriptionUtils {
 
           logger.error(
               " Resource Type Received {}, does not match Resource Type Expected {}",
-              res.getResourceType().getDeclaringClass().toString(),
-              ResourceType.fromCode(resourceType).getDeclaringClass().toString());
+              res.getResourceType().getDeclaringClass(),
+              ResourceType.fromCode(resourceType).getDeclaringClass());
         }
 
       } else {

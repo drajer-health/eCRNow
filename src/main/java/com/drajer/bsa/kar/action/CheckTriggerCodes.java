@@ -48,7 +48,7 @@ public class CheckTriggerCodes extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
       // Get necessary data to process.
-      HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
       // Apply filters for data and then send the collections to the Condition Evaluator.
       for (DataRequirement dr : inputData) {

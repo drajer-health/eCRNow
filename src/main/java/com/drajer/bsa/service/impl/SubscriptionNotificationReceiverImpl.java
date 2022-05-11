@@ -13,8 +13,9 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.SubscriptionUtils;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,7 +92,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
             for (KnowledgeArtifactStatus ks : stat) {
 
-              if (ks.getIsActive()) {
+              if (ks.getIsActive().booleanValue()) {
 
                 logger.info(
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
@@ -115,9 +116,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
                   if (nc.getNotifiedResource() != null) {
                     logger.info("Adding notified resource to the set of inputs ");
-                    HashMap<ResourceType, Set<Resource>> res =
-                        new HashMap<ResourceType, Set<Resource>>();
-                    Set<Resource> results = new HashSet<Resource>();
+                    Map<ResourceType, Set<Resource>> res = new EnumMap<>(ResourceType.class);
+                    Set<Resource> results = new HashSet<>();
                     results.add(nc.getNotifiedResource());
                     res.put(nc.getNotifiedResource().getResourceType(), results);
                     kd.addResourcesByType(res);
@@ -134,7 +134,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
               } else {
 
                 logger.info(
-                    " Skipping processing of KAR as it is inactive", ks.getVersionUniqueKarId());
+                    " Skipping processing of KAR as it is inactive. {}",
+                    ks.getVersionUniqueKarId());
               }
             }
 
@@ -152,7 +153,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
       } catch (Exception e) {
 
-        logger.error(" Error during processing of notification {}", e);
+        logger.error(" Error during processing of notification.", e);
       }
 
     } else {

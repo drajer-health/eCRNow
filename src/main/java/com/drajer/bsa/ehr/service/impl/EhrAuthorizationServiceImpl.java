@@ -5,6 +5,7 @@ import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.model.Response;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -70,7 +71,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
                 + ":"
                 + kd.getHealthcareSetting().getClientSecret();
         String base64EncodedString =
-            Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+            Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
 
         // Setup the OAuth Type flow.
@@ -78,7 +79,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", kd.getHealthcareSetting().getScopes());
 
-        if (kd.getHealthcareSetting().getRequireAud())
+        if (kd.getHealthcareSetting().getRequireAud().booleanValue())
           map.add("aud", kd.getHealthcareSetting().getFhirServerBaseURL());
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
@@ -94,9 +95,8 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
             .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
 
         Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-        Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
-        kd.getNotificationContext()
-            .setEhrAccessTokenExpirationTime(new Date().from(expireInstantTime));
+        Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+        kd.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expireInstantTime));
       }
 
     } catch (Exception e) {

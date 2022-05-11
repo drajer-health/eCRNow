@@ -208,7 +208,7 @@ public class KarProcessingData {
     return statuses;
   }
 
-  public void addResourcesByType(HashMap<ResourceType, Set<Resource>> res) {
+  public void addResourcesByType(Map<ResourceType, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
 

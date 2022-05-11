@@ -11,6 +11,7 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -56,9 +57,9 @@ public class CreateReport extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
       // Get necessary data to process.
-      HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
-      HashMap<ResourceType, Set<Resource>> finalRes = ehrService.loadJurisdicationData(data);
+      Map<ResourceType, Set<Resource>> finalRes = ehrService.loadJurisdicationData(data);
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {
