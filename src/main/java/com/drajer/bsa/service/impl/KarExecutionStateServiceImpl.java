@@ -30,7 +30,7 @@ public class KarExecutionStateServiceImpl implements KarExecutionStateService {
    * Method to create or update a KarExecutionState.
    *
    * @param kar
-   * @return
+   * @return KarExecutionState that was updated.
    */
   @Override
   public KarExecutionState saveOrUpdate(KarExecutionState kar) {
@@ -42,7 +42,7 @@ public class KarExecutionStateServiceImpl implements KarExecutionStateService {
    * Method to retrieve a KarExecutionState by Id from DB.
    *
    * @param id The unique id for the KarExecutionState from the DB.
-   * @return
+   * @return KarExecutionState that was retrieved or null.
    */
   @Override
   public KarExecutionState getKarExecutionStateById(UUID id) {
@@ -57,5 +57,11 @@ public class KarExecutionStateServiceImpl implements KarExecutionStateService {
   @Override
   public List<KarExecutionState> getAllKarExecutionStates() {
     return karExecutionStateDao.getAllKarExecutionStates();
+  }
+
+  /** @param state - KarExecutionState that needs to be deleted. */
+  @Override
+  public void delete(KarExecutionState state) {
+    karExecutionStateDao.delete(state);
   }
 }

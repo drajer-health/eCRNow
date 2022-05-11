@@ -9,7 +9,6 @@ import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.sof.utils.ResourceUtils;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -100,11 +99,17 @@ public class KarProcessingData {
   /** The previous status of the actions that can be used for comparison */
   KarExecutionState previousState;
 
-  /** The data actually submitted to the TTP/PHA. */
-  String submittedData;
+  /** The data actually submitted to the TTP/PHA in FHIR format. */
+  String submittedFhirData;
 
-  /** The response data received from the TTP/PHA. */
-  String responseData;
+  /** The data actually submitted to the TTP/PHA in CDA format. */
+  String submittedCdaData;
+
+  /** The response data received from the TTP/PHA in FHIR format. */
+  String fhirResponseData;
+
+  /** The response data received from the TTP/PHA in CDA format. */
+  String cdaResponseData;
 
   /** The Dao Helper that will help us save the ExecutionState */
   KarExecutionStateService karExecutionStateService;
@@ -143,16 +148,14 @@ public class KarProcessingData {
 
       if (actionOutputDataById.containsKey(id)) actionOutputDataById.get(id).add(res);
       else {
-        Set<Resource> resources = new HashSet<>();
+        Set<Resource> resources = new HashSet<Resource>();
         resources.add(res);
         actionOutputDataById.put(id, resources);
       }
     }
   }
 
-  public void addNotifiedResource(String resId, Resource res) {
-    logger.info(resId, res);
-  }
+  public void addNotifiedResource(String resId, Resource res) {}
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -163,14 +166,14 @@ public class KarProcessingData {
       }
     }
 
-    return Collections.emptySet();
+    return null;
   }
 
   public Set<Resource> getOutputDataById(String id) {
 
     if (actionOutputDataById != null && actionOutputDataById.containsKey(id)) {
       return actionOutputDataById.get(id);
-    } else return Collections.emptySet();
+    } else return null;
   }
 
   public void addActionStatus(String id, BsaActionStatus status) {
@@ -180,7 +183,7 @@ public class KarProcessingData {
       actionStatus.get(id).add(status);
     } else {
 
-      List<BsaActionStatus> statuses = new ArrayList<>();
+      List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
       statuses.add(status);
       actionStatus.put(id, statuses);
     }
@@ -188,7 +191,7 @@ public class KarProcessingData {
 
   public List<BsaActionStatus> getActionStatusByType(ActionType type) {
 
-    List<BsaActionStatus> statuses = new ArrayList<>();
+    List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
     for (Map.Entry<String, List<BsaActionStatus>> entry : actionStatus.entrySet()) {
 
       List<BsaActionStatus> statusValues = entry.getValue();
@@ -209,7 +212,7 @@ public class KarProcessingData {
 
     if (res != null && res.size() > 0) {
 
-      logger.info("Resource Sizes : {}", res.size());
+      logger.info(" Resource Sizes : {}", res.size());
       for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
 
         if (fhirInputDataByType.containsKey(entry.getKey())) {
@@ -377,20 +380,36 @@ public class KarProcessingData {
     this.fhirInputDataById = fhirInputDataById;
   }
 
-  public String getSubmittedData() {
-    return submittedData;
+  public String getSubmittedFhirData() {
+    return submittedFhirData;
   }
 
-  public void setSubmittedData(String submittedData) {
-    this.submittedData = submittedData;
+  public void setSubmittedFhirData(String submittedData) {
+    this.submittedFhirData = submittedData;
   }
 
-  public String getResponseData() {
-    return responseData;
+  public String getSubmittedCdaData() {
+    return submittedCdaData;
   }
 
-  public void setResponseData(String responseData) {
-    this.responseData = responseData;
+  public void setSubmittedCdaData(String submittedCdaData) {
+    this.submittedCdaData = submittedCdaData;
+  }
+
+  public String getFhirResponseData() {
+    return fhirResponseData;
+  }
+
+  public void setFhirResponseData(String fhirResponseData) {
+    this.fhirResponseData = fhirResponseData;
+  }
+
+  public String getCdaResponseData() {
+    return cdaResponseData;
+  }
+
+  public void setCdaResponseData(String cdaResponseData) {
+    this.cdaResponseData = cdaResponseData;
   }
 
   public KarExecutionStateService getKarExecutionStateService() {

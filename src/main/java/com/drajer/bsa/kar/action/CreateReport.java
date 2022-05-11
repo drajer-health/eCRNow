@@ -165,8 +165,17 @@ public class CreateReport extends BsaAction {
           msg.setxCorrelationId(kd.getxCorrelationId());
           msg.setxRequestId(kd.getxRequestId());
 
+          if (kd.getNotificationContext()
+              .getNotificationResourceType()
+              .equals(ResourceType.Encounter.toString())) {
+            msg.setEncounterId(msg.getNotifiedResourceId());
+          } else {
+            msg.setEncounterId("Unknown");
+          }
+
           // Set Message Information
-          msg.setSubmittedData(jsonParser.encodeResourceToString(output));
+          msg.setSubmittedFhirData(jsonParser.encodeResourceToString(output));
+          msg.setSubmittedCdaData(payload);
           msg.setSubmittedMessageType(header.getEventCoding().getCode());
           msg.setSubmittedDataId(docRef.getId());
           msg.setSubmittedMessageId(header.getId());
@@ -177,6 +186,9 @@ public class CreateReport extends BsaAction {
           logger.info(" TODO : Enable saving only by Healthcare Setting ");
           logger.debug("Saving data to file {}", fileName);
           BsaServiceUtils.saveDataToFile(payload, fileName);
+
+          // Also update the payload in the KarProcessingData
+          kd.setSubmittedCdaData(payload);
 
           // Save the data in the table.
           phDao.saveOrUpdate(msg);

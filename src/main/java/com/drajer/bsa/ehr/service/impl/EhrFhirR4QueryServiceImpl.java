@@ -5,10 +5,13 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.ehr.service.EhrAuthorizationService;
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,18 +20,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -476,5 +486,106 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
       }
     }
+  }
+
+  public DocumentReference constructR4DocumentReference(
+      String payload,
+      String patientId,
+      String encounterId,
+      String providerUuid,
+      String rrDocRefMimeType,
+      String title,
+      String docCode,
+      String docDisplayName,
+      String docCodeSystem) {
+    DocumentReference documentReference = new DocumentReference();
+
+    // Set Doc Ref Status
+    documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
+    documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
+
+    // Set Doc Ref Type
+    CodeableConcept typeCode = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding typeCoding = new Coding();
+    typeCoding.setSystem(docCodeSystem);
+    typeCoding.setCode(docCode);
+    typeCoding.setDisplay(docDisplayName);
+    codingList.add(typeCoding);
+    typeCode.setCoding(codingList);
+    typeCode.setText(docDisplayName);
+    documentReference.setType(typeCode);
+
+    // Set Subject
+    Reference patientReference = new Reference();
+    patientReference.setReference("Patient/" + patientId);
+    documentReference.setSubject(patientReference);
+
+    // Set Author
+    if (providerUuid != null && !providerUuid.isEmpty()) {
+      List<Reference> authorRefList = new ArrayList<>();
+      Reference providerReference = new Reference();
+      providerReference.setReference("Practitioner/" + providerUuid);
+      authorRefList.add(providerReference);
+      documentReference.setAuthor(authorRefList);
+    }
+
+    // Set Doc Ref Content
+    List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
+    DocumentReference.DocumentReferenceContentComponent contentComp =
+        new DocumentReference.DocumentReferenceContentComponent();
+    Attachment attachment = new Attachment();
+    attachment.setTitle(title);
+    attachment.setContentType(rrDocRefMimeType);
+
+    if (payload != null && !payload.isEmpty()) {
+      attachment.setData(payload.getBytes());
+    }
+    contentComp.setAttachment(attachment);
+    contentList.add(contentComp);
+    documentReference.setContent(contentList);
+
+    DocumentReference.DocumentReferenceContextComponent docContextComp =
+        new DocumentReference.DocumentReferenceContextComponent();
+
+    // Set Doc Ref Context
+    if (encounterId != null && !encounterId.isEmpty()) {
+
+      List<Reference> encounterRefList = new ArrayList<>();
+      Reference encounterReference = new Reference();
+      encounterReference.setReference("Encounter/" + encounterId);
+      encounterRefList.add(encounterReference);
+      docContextComp.setEncounter(encounterRefList);
+    }
+
+    Period period = new Period();
+    period.setStart(new Date());
+    period.setEnd(new Date());
+    docContextComp.setPeriod(period);
+    documentReference.setContext(docContextComp);
+
+    String docReference =
+        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+
+    logger.debug("DocumentReference Object===========> {}", docReference);
+
+    return documentReference;
+  }
+
+  @Override
+  public JSONObject getAuthorizationToken(HealthcareSetting hs) {
+
+    JSONObject tokenResponse = null;
+
+    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+
+      tokenResponse = ehrAuthorizationService.getAuthorizationToken(hs);
+
+    } else {
+
+      // Handle other Auth Types
+    }
+
+    return tokenResponse;
   }
 }

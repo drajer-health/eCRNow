@@ -1,14 +1,18 @@
 package com.drajer.bsa.model;
 
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.ecrapp.security.AESEncryption;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -78,36 +82,106 @@ public class HealthcareSetting {
   @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
   private String scopes;
 
+  /**
+   * The attribute represents the Default Provider ID that has to be used for sending or receiving
+   * messages and posting to EHR by some EHR vendors.
+   */
+  @Column(name = "default_provider_id", nullable = true, columnDefinition = "TEXT")
+  private String defaultProviderId;
+
+  /*
+   * The flag that indicates that Direct Transport has to be used.
+   */
   @Column(name = "is_direct", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isDirect;
 
+  /*
+   * The flag that indicates that XDR Transport has to be used.
+   */
   @Column(name = "is_xdr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isXdr;
 
+  /*
+   * The flag that indicates that RESTful API has to be used.
+   */
   @Column(name = "is_restapi", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isRestAPI;
 
+  /*
+   * The flag that indicates that FHIR API has to be used.
+   */
+  @Column(name = "is_fhir", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean fhirAPI;
+
+  /*
+   * The domain of the direct server, (for example abc.direct.org) that will be used as the HISP to send the direct messages.
+   */
   @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
   private String directHost;
 
+  /*
+   * The user name (mail Id) (for example user1@abc.direct.org) that will be used as the
+   * sending address for the message.
+   */
   @Column(name = "direct_user", nullable = true)
   private String directUser;
 
+  /*
+   * The password for the above user that will be used to connect to the direct server
+   * using the directUser to be able send via an SMTP protocol.
+   */
   @Column(name = "direct_pwd", nullable = true)
   private String directPwd;
 
+  /*
+   * The port for the SMTP connection. Default would be port 25, but many HISPs use 465
+   */
   @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
 
+  /*
+   * The Url of the SMTP URL (for e.g smtp.abc.direct.org) that will be used to send messages via the HISP.
+   */
+  @Column(name = "smtp_url", nullable = true)
+  private String smtpUrl;
+
+  /*
+   * The port for the IMAP connection. Default would be port 143, but many HISPs use 993
+   */
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
 
+  /*
+   * The Url of the IMAP URL (for e.g impa.abc.direct.org) that will be used to receive messages from the HISP.
+   */
+  @Column(name = "imap_url", nullable = true)
+  private String imapUrl;
+
+  /*
+   * The port for the POP connection.
+   */
+  @Column(name = "pop_port", nullable = true)
+  private String popPort;
+
+  /*
+   * The Url of the POP URL (for e.g pop.abc.direct.org) that will be used to receive messages from the HISP.
+   */
+  @Column(name = "pop_url", nullable = true)
+  private String popUrl;
+
+  /*
+   * The address to which the Direct messages have to be sent.
+   */
   @Column(name = "direct_recipient_address", nullable = true)
   private String directRecipientAddress;
 
+  /*
+   * The address to which the XDR payload has to be sent.
+   */
   @Column(name = "xdr_recipient_address", nullable = true)
   private String xdrRecipientAddress;
 
@@ -119,6 +193,32 @@ public class HealthcareSetting {
   @Column(name = "rest_api_url", nullable = true)
   private String restApiUrl;
 
+  /**
+   * This attribute represents the value for creating a document reference in the EHR, when a
+   * response is received.
+   */
+  @Column(name = "create_doc_ref_response", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean createDocRefForResponse;
+
+  /**
+   * This attribute represents the Mime Type to be used to persist an XML document in the Document
+   * Reference object.
+   */
+  @Column(name = "doc_ref_mime_type", nullable = true)
+  private String docRefMimeType;
+
+  /**
+   * This attribute represents the intermediary URL where the responses have to be sent when this is
+   * populated. IF this is not populated then the response is either persisted as a
+   * DocumentReference or it will be persisted in the ecrNow DB.
+   */
+  @Column(name = "response_rest_api_url", nullable = true)
+  private String handOffResponseToRestApi;
+
+  /*
+   * The Assigning Authority ID (OID) that would be used to create the CDA documents.
+   */
   @Column(name = "aa_id", nullable = true)
   private String assigningAuthorityId;
 
@@ -151,6 +251,24 @@ public class HealthcareSetting {
   /** This attribute represents the type of authentication to be used by the healthcare setting. */
   @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
   private String authType;
+
+  /**
+   * The access token after authorization to the EHR, this is used with EHRs who are cloud based and
+   * a single access token is used across all healthcare settings. Access token calls are expensive
+   * and not needed in these cases and hence it will be stored in HealthcareSetting based on
+   * AuthType.
+   */
+  @Column(name = "ehr_access_token", nullable = true, columnDefinition = "TEXT")
+  private String ehrAccessToken;
+
+  /** The expiry duration in seconds for the EHR Access Token */
+  @Column(name = "ehr_access_token_expiry_duration")
+  private int ehrAccessTokenExpiryDuration;
+
+  /** The expiration time for EHR Access Token. */
+  @Column(name = "token_expiry_date", nullable = true)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date ehrAccessTokenExpirationTime;
 
   @Column(name = "require_aud", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -381,6 +499,129 @@ public class HealthcareSetting {
 
   public void setFhirVersion(String fhirVersion) {
     this.fhirVersion = fhirVersion;
+  }
+
+  public Boolean getFhirAPI() {
+    return fhirAPI;
+  }
+
+  public void setFhirAPI(Boolean fhirAPI) {
+    this.fhirAPI = fhirAPI;
+  }
+
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
+  }
+
+  public String getPopPort() {
+    return popPort;
+  }
+
+  public void setPopPort(String popPort) {
+    this.popPort = popPort;
+  }
+
+  public String getPopUrl() {
+    return popUrl;
+  }
+
+  public void setPopUrl(String popUrl) {
+    this.popUrl = popUrl;
+  }
+
+  public String getDefaultProviderId() {
+    return defaultProviderId;
+  }
+
+  public void setDefaultProviderId(String defaultProviderId) {
+    this.defaultProviderId = defaultProviderId;
+  }
+
+  public String getDocRefMimeType() {
+    return docRefMimeType;
+  }
+
+  public void setDocRefMimeType(String docRefMimeType) {
+    this.docRefMimeType = docRefMimeType;
+  }
+
+  public Boolean getCreateDocRefForResponse() {
+    return createDocRefForResponse;
+  }
+
+  public void setCreateDocRefForResponse(Boolean createDocRefForResponse) {
+    this.createDocRefForResponse = createDocRefForResponse;
+  }
+
+  public String getHandOffResponseToRestApi() {
+    return handOffResponseToRestApi;
+  }
+
+  public void setHandOffResponseToRestApi(String handOffResponseToRestApi) {
+    this.handOffResponseToRestApi = handOffResponseToRestApi;
+  }
+
+  public String getEhrAccessToken() {
+    return ehrAccessToken;
+  }
+
+  public void setEhrAccessToken(String ehrAccessToken) {
+    this.ehrAccessToken = ehrAccessToken;
+  }
+
+  public int getEhrAccessTokenExpiryDuration() {
+    return ehrAccessTokenExpiryDuration;
+  }
+
+  public void setEhrAccessTokenExpiryDuration(int ehrAccessTokenExpiryDuration) {
+    this.ehrAccessTokenExpiryDuration = ehrAccessTokenExpiryDuration;
+  }
+
+  public Date getEhrAccessTokenExpirationTime() {
+    return ehrAccessTokenExpirationTime;
+  }
+
+  public void setEhrAccessTokenExpirationTime(Date ehrAccessTokenExpirationTime) {
+    this.ehrAccessTokenExpirationTime = ehrAccessTokenExpirationTime;
+  }
+
+  public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {
+
+    HealthcareSettingOperationalKnowledgeArtifacts arts = getKars();
+
+    if (arts != null) {
+
+      Set<KnowledgeArtifactStatus> stats = arts.getArtifactStatus();
+
+      if (stats != null) {
+
+        for (KnowledgeArtifactStatus s : stats) {
+
+          if (s.getVersionUniqueKarId().equals(uniqueUrl)) {
+            logger.debug(" Found the version specific Kar");
+            return s;
+          }
+        }
+      } else {
+        logger.error(" Unable to retrieve Knowlege Artifact Status, hence cannot proceed.");
+      }
+    } else {
+      logger.error(" Unable to retrieve Operational Knowledge Artifacts, hence cannot proceed.");
+    }
+
+    return null;
   }
 
   public void log() {

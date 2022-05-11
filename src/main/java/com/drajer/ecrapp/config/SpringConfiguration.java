@@ -19,8 +19,11 @@ import org.springframework.context.annotation.Import;
       "com.drajer.sof",
       "com.drajer.eca",
       "com.drajer.routing",
+      "com.drajer.cda",
       "com.drajer.bsa.utils",
       "com.drajer.bsa.kar.action",
+      "com.drajer.bsa.service",
+      "com.drajer.bsa.routing",
       "com.drajer.bsa"
     })
 @Import(EvaluatorConfiguration.class)
