@@ -181,7 +181,7 @@ public class ValidateReport extends BsaAction {
     // If the validation passed, add the Resources to Validated List
     List<DataRequirement> output = getOutputData();
 
-    if (output != null && output.size() > 0) {
+    if (output != null && !output.isEmpty()) {
 
       for (DataRequirement dr : output) {
 

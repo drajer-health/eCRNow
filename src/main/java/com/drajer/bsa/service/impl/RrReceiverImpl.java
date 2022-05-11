@@ -167,7 +167,8 @@ public class RrReceiverImpl implements RrReceiver {
           try {
 
             // Check and handoff to REST API if needed
-            if (hs.getHandOffResponseToRestApi() != null && !hs.getHandOffResponseToRestApi().isEmpty()) {
+            if (hs.getHandOffResponseToRestApi() != null
+                && !hs.getHandOffResponseToRestApi().isEmpty()) {
 
               if (!submitResponseToRestApi(phm, rrModel, hs, data.getRrXml())) {
 

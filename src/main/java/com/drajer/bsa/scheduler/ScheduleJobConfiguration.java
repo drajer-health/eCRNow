@@ -2,7 +2,6 @@ package com.drajer.bsa.scheduler;
 
 import com.drajer.bsa.service.KarProcessor;
 import com.github.kagkarlsson.scheduler.task.Task;
-import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,27 +30,25 @@ public class ScheduleJobConfiguration {
   public Task<ScheduledJobData> sampleOneTimeJob() {
     logger.info("Initializing the One time task");
 
-    OneTimeTask<ScheduledJobData> myTask =
-        Tasks.oneTime("BsaScheduledJob", ScheduledJobData.class)
-            .onFailureRetryLater()
-            .execute(
-                (inst, ctx) -> {
-                  try {
+    return Tasks.oneTime("BsaScheduledJob", ScheduledJobData.class)
+        .onFailureRetryLater()
+        .execute(
+            (inst, ctx) -> {
+              try {
 
-                    logger.info(
-                        "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}",
-                        inst.getTaskAndInstance(),
-                        inst.getData().getActionId(),
-                        inst.getData().getKarExecutionStateId());
+                logger.info(
+                    "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}",
+                    inst.getTaskAndInstance(),
+                    inst.getData().getActionId(),
+                    inst.getData().getKarExecutionStateId());
 
-                    karProcessor.applyKarForScheduledJob(inst.getData());
+                karProcessor.applyKarForScheduledJob(inst.getData());
 
-                  } catch (Exception e) {
-                    logger.error("Error in completing the Execution of the schedule job : ", e);
-                  } finally {
-                    logger.info(" Nothing to clean up ");
-                  }
-                });
-    return myTask;
+              } catch (Exception e) {
+                logger.error("Error in completing the Execution of the schedule job : ", e);
+              } finally {
+                logger.info(" Nothing to clean up ");
+              }
+            });
   }
 }

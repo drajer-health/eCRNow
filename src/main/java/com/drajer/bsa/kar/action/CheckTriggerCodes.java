@@ -64,7 +64,7 @@ public class CheckTriggerCodes extends BsaAction {
             logger.info(" Found Match for Code Filter {}", dr.getType());
 
             HashMap<String, Set<Resource>> idres = new HashMap<>();
-            Set<Resource> allResources = new HashSet<Resource>();
+            Set<Resource> allResources = new HashSet<>();
 
             matchInfo
                 .getValue1()
@@ -86,7 +86,7 @@ public class CheckTriggerCodes extends BsaAction {
 
       data.addActionStatus(getActionId(), actStatus);
 
-      if (conditionsMet(data)) {
+      if (Boolean.TRUE.equals(conditionsMet(data))) {
 
         // Execute sub Actions
         executeSubActions(data, ehrService);

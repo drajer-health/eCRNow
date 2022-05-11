@@ -65,7 +65,7 @@ public class BsaRelatedAction {
 
       logger.info(" *** Printing Related Action *** {}", relatedActionId);
 
-      if (relationship != null) logger.info(" Relationship : {}", relationship.toString());
+      if (relationship != null) logger.info(" Relationship : {}", relationship);
 
       if (duration != null) {
 

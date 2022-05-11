@@ -5,7 +5,4 @@ package com.drajer.bsa.kar.action;
  *
  * @author nbashyam
  */
-public class InitiateReportingStatus extends BsaActionStatus {
-
-  public InitiateReportingStatus() {}
-}
+public class InitiateReportingStatus extends BsaActionStatus {}

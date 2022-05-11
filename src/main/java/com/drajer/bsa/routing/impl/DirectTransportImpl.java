@@ -316,15 +316,15 @@ public class DirectTransportImpl implements DataTransportInterface {
 
               try (InputStream stream = bodyPart.getInputStream()) {
 
-            	  
-            	  ReportabilityResponse data = new ReportabilityResponse();
-                  data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
-                  String rrXml = "<?xml version=\"1.0\"?>";
-                  rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
-                  data.setRrXml(rrXml);
-                  
+                ReportabilityResponse data = new ReportabilityResponse();
+                data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+                String rrXml = "<?xml version=\"1.0\"?>";
+                rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
+                data.setRrXml(rrXml);
+
                 String filename = UUID.randomUUID() + ".xml";
-                FileUtils.writeStringToFile(new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
+                FileUtils.writeStringToFile(
+                    new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
 
                 // Invoke the rrReceiver Handler for handling Reportability Response.
                 logger.debug(" RrXML : {}", data.getRrXml());

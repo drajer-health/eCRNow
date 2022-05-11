@@ -32,7 +32,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public abstract class BsaAction {
 
-  private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifact.class);
+  private final Logger logger = LoggerFactory.getLogger(BsaAction.class);
 
   /** The unique Id for the action. */
   protected String actionId;
@@ -106,7 +106,7 @@ public abstract class BsaAction {
     for (BsaCondition bc : conditions) {
 
       // If any of the conditions evaluate to be false, then the method returns false.
-      if (!bc.getConditionProcessor().evaluateExpression(bc, this, kd)) {
+      if (Boolean.FALSE.equals(bc.getConditionProcessor().evaluateExpression(bc, this, kd))) {
         logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
         retVal = false;
       }
@@ -188,7 +188,7 @@ public abstract class BsaAction {
 
   public BsaActionStatusType processTimingData(KarProcessingData kd) {
 
-    if (timingData != null && timingData.size() > 0 && !ignoreTimers) {
+    if (timingData != null && !timingData.isEmpty() && !ignoreTimers) {
 
       // Check and setup future timers.
 
@@ -200,16 +200,16 @@ public abstract class BsaAction {
     }
   }
 
-  public BsaAction() {
+  protected BsaAction() {
 
     actionId = "";
     namedEventTriggers = new HashSet<>();
-    inputData = new ArrayList<DataRequirement>();
+    inputData = new ArrayList<>();
     inputResourceTypes = new HashMap<>();
-    outputData = new ArrayList<DataRequirement>();
-    conditions = new ArrayList<BsaCondition>();
+    outputData = new ArrayList<>();
+    conditions = new ArrayList<>();
     relatedActions = new HashMap<>();
-    timingData = new ArrayList<TimingSchedule>();
+    timingData = new ArrayList<>();
     subActions = new ArrayList<>();
     measureUri = "";
   }
@@ -370,7 +370,7 @@ public abstract class BsaAction {
     if (relatedActions.containsKey(ract.getRelationship())) {
       relatedActions.get(ract.getRelationship()).add(ract);
     } else {
-      Set<BsaRelatedAction> racts = new HashSet<BsaRelatedAction>();
+      Set<BsaRelatedAction> racts = new HashSet<>();
       racts.add(ract);
       relatedActions.put(ract.getRelationship(), racts);
     }
@@ -380,7 +380,7 @@ public abstract class BsaAction {
 
     logger.info(" **** START Printing Action **** ({})", actionId);
 
-    logger.info(" Action Type : {}", type.toString());
+    logger.info(" Action Type : {}", type);
 
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : ({})", ne));
 
@@ -393,7 +393,7 @@ public abstract class BsaAction {
       for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
           relatedActions.entrySet()) {
 
-        logger.info(" ****** RelationshipType : ({}) ****** ", entry.getKey().toString());
+        logger.info(" ****** RelationshipType : ({}) ****** ", entry.getKey());
         Set<BsaRelatedAction> racts = entry.getValue();
 
         for (BsaRelatedAction ract : racts) {
@@ -403,7 +403,7 @@ public abstract class BsaAction {
       }
     }
 
-    if (subActions.size() > 0) {
+    if (!subActions.isEmpty()) {
 
       logger.info(" ****** Number of SubActions : ({}) ****** ", subActions.size());
       for (BsaAction subAct : subActions) {
@@ -415,8 +415,7 @@ public abstract class BsaAction {
           for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
               subAct.getRelatedActions().entrySet()) {
 
-            logger.info(
-                " ********** RelationshipType : ({}) ********** ", entry.getKey().toString());
+            logger.info(" ********** RelationshipType : ({}) ********** ", entry.getKey());
             Set<BsaRelatedAction> racts = entry.getValue();
 
             for (BsaRelatedAction ract : racts) {
@@ -445,7 +444,7 @@ public abstract class BsaAction {
 
     logger.info(" **** START Printing Action **** {}", actionId);
 
-    logger.info(" Action Type : {}", type.toString());
+    logger.info(" Action Type : {}", type);
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : {}", ne));
 
     for (DataRequirement inp : inputData) {
@@ -453,7 +452,7 @@ public abstract class BsaAction {
       logger.info(" Input Data Req Id : {}", inp.getId());
       logger.info(" Input Data Type : {}", inp.getType());
 
-      if (inp.getProfile() != null && inp.getProfile().size() >= 1) {
+      if (inp.getProfile() != null && !inp.getProfile().isEmpty()) {
         logger.info(" Input Data Profile : {}", inp.getProfile().get(0).asStringValue());
       }
 
@@ -482,7 +481,7 @@ public abstract class BsaAction {
       logger.info(" Output Data Req Id : {}", output.getId());
       logger.info(" Output Data Type : {}", output.getType());
 
-      if (output.getProfile() != null && output.getProfile().size() >= 1) {
+      if (output.getProfile() != null && !output.getProfile().isEmpty()) {
         logger.info(" Output Data Profile : {}", output.getProfile().get(0).asStringValue());
       }
     }

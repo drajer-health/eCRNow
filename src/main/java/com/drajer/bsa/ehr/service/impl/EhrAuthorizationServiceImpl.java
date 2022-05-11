@@ -79,7 +79,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", kd.getHealthcareSetting().getScopes());
 
-        if (kd.getHealthcareSetting().getRequireAud().booleanValue())
+        if (Boolean.TRUE.equals(kd.getHealthcareSetting().getRequireAud()))
           map.add("aud", kd.getHealthcareSetting().getFhirServerBaseURL());
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);

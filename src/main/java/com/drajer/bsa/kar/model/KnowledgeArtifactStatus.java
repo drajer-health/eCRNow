@@ -121,7 +121,7 @@ public class KnowledgeArtifactStatus {
     outputFormat = OutputContentType.Both;
     lastActivationDate = new Date();
     lastInActivationDate = new Date();
-    subscriptions = new HashSet<String>();
+    subscriptions = new HashSet<>();
   }
 
   public void log() {
@@ -133,10 +133,8 @@ public class KnowledgeArtifactStatus {
     logger.info(" Kar Version Unique Id : {}", versionUniqueKarId);
     logger.info(" Kar IsActive : {} ", isActive);
     logger.info(" Kar Subscriptions Enabled : {} ", subscriptionsEnabled);
-    logger.info(" Kar Last activation date : {} ", lastActivationDate.toString());
-    logger.info(" Kar Last in-activation date : {} ", lastInActivationDate.toString());
-
-    // subscriptions.forEach(subscription -> logger.info(" Subscription id : {} ", subscription));
+    logger.info(" Kar Last activation date : {} ", lastActivationDate);
+    logger.info(" Kar Last in-activation date : {} ", lastInActivationDate);
 
     logger.info(" **** START Printing Knowledge Artifact Status **** ");
   }

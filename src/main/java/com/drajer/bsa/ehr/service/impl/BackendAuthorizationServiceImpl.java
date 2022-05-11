@@ -49,9 +49,10 @@ import org.springframework.web.client.RestTemplate;
 public class BackendAuthorizationServiceImpl implements EhrAuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
-  private static final String OAUTH_URIS =
+
+  private static final String OAUTHURIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
-  private static final String WELL_KNOWN = ".well-known/smart-configuration";
+  private static final String WELLKNOWN = ".well-known/smart-configuration";
 
   @Value("${jwks.keystore.location}")
   String jwksLocation;
@@ -123,7 +124,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
     RestTemplate resTemplate = new RestTemplate();
     try {
       ResponseEntity<String> res =
-          resTemplate.getForEntity(String.format("%s/%s", url, WELL_KNOWN), String.class);
+          resTemplate.getForEntity(String.format("%s/%s", url, WELLKNOWN), String.class);
       JSONArray result = JsonPath.read(res.getBody(), "$.token_endpoint");
       return result.get(0).toString();
     } catch (Exception e1) {
@@ -137,7 +138,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
                 res.getBody(),
                 "$.rest[?(@.mode == 'server')].security"
                     + ".extension[?(@.url == '"
-                    + OAUTH_URIS
+                    + OAUTHURIS
                     + "')]"
                     + ".extension[?(@.url == 'token')].valueUri");
         return result.get(0).toString();

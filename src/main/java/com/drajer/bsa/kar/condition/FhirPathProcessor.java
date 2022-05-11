@@ -60,9 +60,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       DataRequirement dr, KarProcessingData kd) {
 
     CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
-    Map<String, Set<Resource>> resources = new HashMap<String, Set<Resource>>();
-    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal =
-        new Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>>(ctc, resources);
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal = new Pair<>(ctc, resources);
 
     logger.info(" Getting Resources by Type {}", dr.getType());
 
@@ -102,9 +101,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           filterByCode(dr, cc, kd, ctc, resources, res, false);
 
-          if (obs.getValue() != null
-              && obs.getValue() instanceof CodeableConcept
-              && obs.getValueCodeableConcept() != null) {
+          if (obs.getValue() instanceof CodeableConcept && obs.getValueCodeableConcept() != null) {
             CodeableConcept ccv = obs.getValueCodeableConcept();
             filterByCode(dr, ccv, kd, ctc, resources, res, false);
           }
@@ -172,7 +169,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
           } else {
-            Set<Resource> resources2 = new HashSet<Resource>();
+            Set<Resource> resources2 = new HashSet<>();
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
@@ -181,7 +178,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
           } else {
-            Set<Resource> resources2 = new HashSet<Resource>();
+            Set<Resource> resources2 = new HashSet<>();
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
@@ -190,7 +187,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
           } else {
-            Set<Resource> resources2 = new HashSet<Resource>();
+            Set<Resource> resources2 = new HashSet<>();
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
@@ -242,7 +239,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               if (res.get(resourceMatched.fhirType()) != null) {
                 res.get(resourceMatched.fhirType()).add(resourceMatched);
               } else {
-                Set<Resource> resources = new HashSet<Resource>();
+                Set<Resource> resources = new HashSet<>();
                 resources.add(resourceMatched);
                 res.put(resourceMatched.fhirType(), resources);
               }
