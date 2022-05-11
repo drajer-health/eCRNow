@@ -7,6 +7,7 @@ import com.drajer.bsa.model.KarProcessingData;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
@@ -88,7 +89,7 @@ public class EvaluateMeasure extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
       // Get necessary data to process.
-      HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
 
       Endpoint endpoint =
           new Endpoint()
@@ -151,7 +152,8 @@ public class EvaluateMeasure extends BsaAction {
       logger.info(" Setting Action Status : {}", status);
       actStatus.setActionStatus(status);
     }
-    data.addActionStatus(getActionId(), actStatus);
+
+    data.addActionStatus(data.getExecutionSequenceId(), actStatus);
 
     return actStatus;
   }

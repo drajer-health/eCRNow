@@ -1,6 +1,7 @@
 package com.drajer.bsa.ehr.service.impl;
 
 import com.drajer.bsa.ehr.service.EhrAuthorizationService;
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
@@ -48,6 +49,7 @@ import org.springframework.web.client.RestTemplate;
 public class BackendAuthorizationServiceImpl implements EhrAuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
+
   private static final String OAUTHURIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
   private static final String WELLKNOWN = ".well-known/smart-configuration";
@@ -179,6 +181,12 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
         | UnrecoverableKeyException e) {
       e.printStackTrace();
     }
+    return null;
+  }
+
+  @Override
+  public JSONObject getAuthorizationToken(HealthcareSetting hs) {
+    // TODO Auto-generated method stub
     return null;
   }
 }

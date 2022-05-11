@@ -3,9 +3,11 @@ package com.drajer.bsa.model;
 public final class BsaTypes {
 
   public enum AuthenticationType {
-    SofSystem,
+    System,
+    MultiTenantSystemLaunch,
     SofProvider,
     UserNamePwd,
+    SofBackend,
     Unknown
   }
 
@@ -26,25 +28,10 @@ public final class BsaTypes {
     CompleteReporting,
     ExtractResearchData,
     ExecuteResearchQuery,
+    CheckResponse,
     TerminateReportingWorkflow,
     CancelReport,
     Unknown
-  }
-
-  public static String getString(AuthenticationType t) {
-
-    if (t == AuthenticationType.SofSystem) return "SofSystem";
-    else if (t == AuthenticationType.SofProvider) return "SofProvider";
-    else if (t == AuthenticationType.UserNamePwd) return "UserNamePwd";
-    else return "Unknown";
-  }
-
-  public static AuthenticationType getAuthenticationType(String s) {
-
-    if (s.contentEquals("SofSystem")) return AuthenticationType.SofSystem;
-    else if (s.contentEquals("SofProvider")) return AuthenticationType.SofProvider;
-    else if (s.contentEquals("UserNamePwd")) return AuthenticationType.UserNamePwd;
-    else return AuthenticationType.Unknown;
   }
 
   public enum BsaActionStatusType {
@@ -104,6 +91,7 @@ public final class BsaTypes {
     else if (code.equalsIgnoreCase("extract-research-data")) return ActionType.ExtractResearchData;
     else if (code.equalsIgnoreCase("execute-research-query"))
       return ActionType.ExecuteResearchQuery;
+    else if (code.equalsIgnoreCase("check-response")) return ActionType.CheckResponse;
     else if (code.equalsIgnoreCase("terminate-reporting-workflow"))
       return ActionType.TerminateReportingWorkflow;
     else if (code.equalsIgnoreCase("cancel-report")) return ActionType.CancelReport;
@@ -128,6 +116,7 @@ public final class BsaTypes {
     else if (type == ActionType.CompleteReporting) return "complete-reporting";
     else if (type == ActionType.ExtractResearchData) return "extract-research-data";
     else if (type == ActionType.ExecuteResearchQuery) return "execute-research-query";
+    else if (type == ActionType.CheckResponse) return "check-response";
     else if (type == ActionType.TerminateReportingWorkflow) return "terminate-reporting-workflow";
     else if (type == ActionType.CancelReport) return "cancel-report";
     else return "unknown";
@@ -157,5 +146,26 @@ public final class BsaTypes {
     else if (code.equalsIgnoreCase("CDA_R30")) return OutputContentType.CDA_R30;
     else if (code.equalsIgnoreCase("Both")) return OutputContentType.Both;
     else return OutputContentType.Unknown;
+  }
+
+  public static String getString(AuthenticationType t) {
+
+    if (t == AuthenticationType.System) return "System";
+    else if (t == AuthenticationType.SofProvider) return "SofProvider";
+    else if (t == AuthenticationType.UserNamePwd) return "UserNamePwd";
+    else if (t == AuthenticationType.SofBackend) return "SofBackend";
+    else if (t == AuthenticationType.MultiTenantSystemLaunch) return "MultiTenantSystemLaunch";
+    else return "Unknown";
+  }
+
+  public static AuthenticationType getAuthenticationType(String s) {
+
+    if (s.contentEquals("System")) return AuthenticationType.System;
+    else if (s.contentEquals("SofProvider")) return AuthenticationType.SofProvider;
+    else if (s.contentEquals("UserNamePwd")) return AuthenticationType.UserNamePwd;
+    else if (s.contentEquals("SofBackend")) return AuthenticationType.SofBackend;
+    else if (s.contentEquals("MultiTenantSystemLaunch"))
+      return AuthenticationType.MultiTenantSystemLaunch;
+    else return AuthenticationType.Unknown;
   }
 }

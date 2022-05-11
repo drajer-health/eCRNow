@@ -21,7 +21,7 @@ public interface KarExecutionStateService {
    * Method to create or update a KarExecutionState.
    *
    * @param kar
-   * @return
+   * @return KarExecutionState that was updated
    */
   public KarExecutionState saveOrUpdate(KarExecutionState kar);
 
@@ -29,14 +29,21 @@ public interface KarExecutionStateService {
    * Method to retrieve a KarExecutionState by Id from DB.
    *
    * @param id The unique id for the KarExecutionState from the DB.
-   * @return
+   * @return KarExecutionState that was retrieved or null.
    */
   public KarExecutionState getKarExecutionStateById(UUID id);
 
   /**
-   * Method to to retrieve all Kars
+   * Method to to retrieve all KarExecutionStates
    *
    * @return List of all existing KarExecutionStates
    */
   public List<KarExecutionState> getAllKarExecutionStates();
+
+  /**
+   * Method to delete an Execution State
+   *
+   * @param state - KarExecutionState that needs to be deleted.
+   */
+  public void delete(KarExecutionState state);
 }

@@ -8,6 +8,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.sof.utils.ResourceUtils;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -93,16 +94,22 @@ public class KarProcessingData {
   HashMap<String, Set<Resource>> actionOutputDataById;
 
   /** The current status of each Action after its execution. */
-  HashMap<String, BsaActionStatus> actionStatus;
+  HashMap<String, List<BsaActionStatus>> actionStatus;
 
   /** The previous status of the actions that can be used for comparison */
   KarExecutionState previousState;
 
-  /** The data actually submitted to the TTP/PHA. */
-  String submittedData;
+  /** The data actually submitted to the TTP/PHA in FHIR format. */
+  String submittedFhirData;
 
-  /** The response data received from the TTP/PHA. */
-  String responseData;
+  /** The data actually submitted to the TTP/PHA in CDA format. */
+  String submittedCdaData;
+
+  /** The response data received from the TTP/PHA in FHIR format. */
+  String fhirResponseData;
+
+  /** The response data received from the TTP/PHA in CDA format. */
+  String cdaResponseData;
 
   /** The Dao Helper that will help us save the ExecutionState */
   KarExecutionStateService karExecutionStateService;
@@ -115,6 +122,12 @@ public class KarProcessingData {
 
   /** The X-Correlation ID header from the incoming request */
   String xCorrelationId;
+
+  /**
+   * The attribute helps to track the execution sequence of all the action statuses based on the
+   * type of notification and indicates the NotificaitonContext Id or the Schedule Job Id.
+   */
+  private String executionSequenceId;
 
   public void addActionOutput(String actionId, Resource res) {
 
@@ -167,27 +180,35 @@ public class KarProcessingData {
 
     if (actionStatus.containsKey(id)) {
 
-      logger.error(" Should not have the same action already ");
+      actionStatus.get(id).add(status);
     } else {
 
-      actionStatus.put(id, status);
+      List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
+      statuses.add(status);
+      actionStatus.put(id, statuses);
     }
   }
 
-  public BsaActionStatus getActionStatusByType(ActionType type) {
+  public List<BsaActionStatus> getActionStatusByType(ActionType type) {
 
-    for (Map.Entry<String, BsaActionStatus> entry : actionStatus.entrySet()) {
+    List<BsaActionStatus> statuses = new ArrayList<BsaActionStatus>();
+    for (Map.Entry<String, List<BsaActionStatus>> entry : actionStatus.entrySet()) {
 
-      if (entry.getValue().getActionType() == ActionType.CheckTriggerCodes) {
+      List<BsaActionStatus> statusValues = entry.getValue();
 
-        return entry.getValue();
+      for (BsaActionStatus stat : statusValues) {
+
+        if (stat.getActionType() == type) {
+
+          statuses.add(stat);
+        }
       }
     }
 
-    return null;
+    return statuses;
   }
 
-  public void addResourcesByType(HashMap<ResourceType, Set<Resource>> res) {
+  public void addResourcesByType(Map<ResourceType, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
 
@@ -311,11 +332,11 @@ public class KarProcessingData {
     this.actionOutputData = actionOutputData;
   }
 
-  public HashMap<String, BsaActionStatus> getActionStatus() {
+  public HashMap<String, List<BsaActionStatus>> getActionStatus() {
     return actionStatus;
   }
 
-  public void setActionStatus(HashMap<String, BsaActionStatus> actionStatus) {
+  public void setActionStatus(HashMap<String, List<BsaActionStatus>> actionStatus) {
     this.actionStatus = actionStatus;
   }
 
@@ -359,20 +380,36 @@ public class KarProcessingData {
     this.fhirInputDataById = fhirInputDataById;
   }
 
-  public String getSubmittedData() {
-    return submittedData;
+  public String getSubmittedFhirData() {
+    return submittedFhirData;
   }
 
-  public void setSubmittedData(String submittedData) {
-    this.submittedData = submittedData;
+  public void setSubmittedFhirData(String submittedData) {
+    this.submittedFhirData = submittedData;
   }
 
-  public String getResponseData() {
-    return responseData;
+  public String getSubmittedCdaData() {
+    return submittedCdaData;
   }
 
-  public void setResponseData(String responseData) {
-    this.responseData = responseData;
+  public void setSubmittedCdaData(String submittedCdaData) {
+    this.submittedCdaData = submittedCdaData;
+  }
+
+  public String getFhirResponseData() {
+    return fhirResponseData;
+  }
+
+  public void setFhirResponseData(String fhirResponseData) {
+    this.fhirResponseData = fhirResponseData;
+  }
+
+  public String getCdaResponseData() {
+    return cdaResponseData;
+  }
+
+  public void setCdaResponseData(String cdaResponseData) {
+    this.cdaResponseData = cdaResponseData;
   }
 
   public KarExecutionStateService getKarExecutionStateService() {
@@ -400,7 +437,7 @@ public class KarProcessingData {
   }
 
   public HashMap<String, Resource> getNotificationContextResources() {
-    return notificationContextResources;
+    return this.notificationContextResources;
   }
 
   public void setNotificationContextResources(
@@ -438,5 +475,21 @@ public class KarProcessingData {
 
   public void setxCorrelationId(String xCorrelationId) {
     this.xCorrelationId = xCorrelationId;
+  }
+
+  public KarExecutionState getPreviousState() {
+    return previousState;
+  }
+
+  public void setPreviousState(KarExecutionState previousState) {
+    this.previousState = previousState;
+  }
+
+  public String getExecutionSequenceId() {
+    return executionSequenceId;
+  }
+
+  public void setExecutionSequenceId(String executionSequenceId) {
+    this.executionSequenceId = executionSequenceId;
   }
 }

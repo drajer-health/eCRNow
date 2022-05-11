@@ -5,9 +5,14 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.ehr.service.EhrAuthorizationService;
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,17 +20,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +72,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
   private static final String PATIENT_ID_SEARCH_PARAM = "?patient=";
-  private static final String FHIRCONTEXT = "Getting FHIR Context for R4";
-  private static final String FHIRCLIENT = "Initializing FHIR Client";
+  private static final String LOG_FHIR_CTX_GET = " Getting FHIR Context for R4";
+  private static final String LOG_INIT_FHIR_CLIENT = "Initializing FHIR Client";
 
   /** The FHIR Context Initializer necessary to retrieve FHIR resources */
   @Autowired FhirContextInitializer fhirContextInitializer;
@@ -74,8 +86,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * @return The Map of Resources to its type.
    */
   @Override
-  public HashMap<ResourceType, Set<Resource>> getFilteredData(
-      KarProcessingData kd, HashMap<String, ResourceType> resTypes) {
+  public Map<ResourceType, Set<Resource>> getFilteredData(
+      KarProcessingData kd, Map<String, ResourceType> resTypes) {
 
     String secret = kd.getHealthcareSetting().getClientSecret();
     if (secret == null || secret.isEmpty()) {
@@ -84,16 +96,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
-    logger.info(FHIRCONTEXT);
+    logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info(FHIRCLIENT);
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken(),
-            kd.getxRequestId());
+    logger.info(LOG_INIT_FHIR_CLIENT);
+
+    IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always
     Resource res =
@@ -107,7 +115,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       Set<Resource> resources = new HashSet<>();
       resources.add(res);
-      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(res.getResourceType(), resources);
       kd.addResourcesByType(resMap);
     }
@@ -135,7 +143,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         Set<Resource> resources = new HashSet<>();
         resources.add(enc);
-        HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+        Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
         resMap.put(enc.getResourceType(), resources);
         kd.addResourcesByType(resMap);
       }
@@ -171,6 +179,55 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputData();
   }
 
+  /**
+   * @param kd The data object for getting the healthcareSetting and notification context from
+   * @param context The HAPI FHIR context for making a FHIR client with
+   * @return
+   */
+  public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
+    String secret = kd.getHealthcareSetting().getClientSecret();
+    if (secret == null || secret.isEmpty()) {
+      backendAuthorizationService.getAuthorizationToken(kd);
+    } else {
+      ehrAuthorizationService.getAuthorizationToken(kd);
+    }
+
+    return fhirContextInitializer.createClient(
+        context,
+        kd.getHealthcareSetting().getFhirServerBaseURL(),
+        kd.getNotificationContext().getEhrAccessToken(),
+        kd.getNotificationContext().getxRequestId());
+  }
+
+  /**
+   * @param kd The KarProcessingData includes data about the fhir server to create a resource on
+   * @param resource the resource to create on the fhir server
+   */
+  public void createResource(KarProcessingData kd, Resource resource) {
+
+    logger.info(LOG_FHIR_CTX_GET);
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info(LOG_INIT_FHIR_CLIENT);
+    IGenericClient client = getClient(kd, context);
+    client.create().resource(resource).execute();
+  }
+
+  /**
+   * @param kd The KarProcessingData which contains information about the fhir server
+   * @param resourceType The resource type of the resource to be deleted
+   * @param id The logical ID of the resource to be deleted
+   */
+  public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id) {
+
+    logger.info(LOG_FHIR_CTX_GET);
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info(LOG_INIT_FHIR_CLIENT);
+    IGenericClient client = getClient(kd, context);
+    client.delete().resourceById(resourceType.toString(), id).execute();
+  }
+
   public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd) {
 
     String secret = kd.getHealthcareSetting().getClientSecret();
@@ -180,10 +237,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
-    logger.info(FHIRCONTEXT);
+    logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info(FHIRCLIENT);
+    logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client =
         fhirContextInitializer.createClient(
             context,
@@ -245,7 +302,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       // Load Locations
       if (Boolean.TRUE.equals(encounter.hasLocation())) {
-
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.getLocation() != null) {
@@ -267,21 +323,21 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     if (!practitioners.isEmpty()) {
 
-      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(ResourceType.Practitioner, practitioners);
       kd.addResourcesByType(resMap);
     }
 
     if (!locations.isEmpty()) {
 
-      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(ResourceType.Location, locations);
       kd.addResourcesByType(resMap);
     }
 
     if (!organizations.isEmpty()) {
 
-      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(ResourceType.Organization, organizations);
       kd.addResourcesByType(resMap);
     }
@@ -299,10 +355,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ehrAuthorizationService.getAuthorizationToken(kd);
     }
 
-    logger.info(FHIRCONTEXT);
+    logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info(FHIRCLIENT);
+    logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client =
         fhirContextInitializer.createClient(
             context,
@@ -351,7 +407,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     logger.info("Invoking search url : {}", searchUrl);
     Set<Resource> resources = null;
-    HashMap<ResourceType, Set<Resource>> resMap = null;
+    Map<ResourceType, Set<Resource>> resMap = null;
     HashMap<String, Set<Resource>> resMapById = null;
 
     try {
@@ -364,7 +420,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
 
-      if (!bundle.isEmpty()) {
+      if (bundle.getEntry() != null) {
         logger.info(
             "Total No of Entries {} retrieved : {}", resourceName, bundle.getEntry().size());
 
@@ -373,7 +429,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         if (bc != null) {
 
           resources = new HashSet<>();
-          resMap = new HashMap<>();
+          resMap = new EnumMap<>(ResourceType.class);
           resMapById = new HashMap<>();
           for (BundleEntryComponent comp : bc) {
 
@@ -429,5 +485,106 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         getAllR4RecordsUsingPagination(genericClient, nextPageBundleResults);
       }
     }
+  }
+
+  public DocumentReference constructR4DocumentReference(
+      String payload,
+      String patientId,
+      String encounterId,
+      String providerUuid,
+      String rrDocRefMimeType,
+      String title,
+      String docCode,
+      String docDisplayName,
+      String docCodeSystem) {
+    DocumentReference documentReference = new DocumentReference();
+
+    // Set Doc Ref Status
+    documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
+    documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
+
+    // Set Doc Ref Type
+    CodeableConcept typeCode = new CodeableConcept();
+    List<Coding> codingList = new ArrayList<>();
+    Coding typeCoding = new Coding();
+    typeCoding.setSystem(docCodeSystem);
+    typeCoding.setCode(docCode);
+    typeCoding.setDisplay(docDisplayName);
+    codingList.add(typeCoding);
+    typeCode.setCoding(codingList);
+    typeCode.setText(docDisplayName);
+    documentReference.setType(typeCode);
+
+    // Set Subject
+    Reference patientReference = new Reference();
+    patientReference.setReference("Patient/" + patientId);
+    documentReference.setSubject(patientReference);
+
+    // Set Author
+    if (providerUuid != null && !providerUuid.isEmpty()) {
+      List<Reference> authorRefList = new ArrayList<>();
+      Reference providerReference = new Reference();
+      providerReference.setReference("Practitioner/" + providerUuid);
+      authorRefList.add(providerReference);
+      documentReference.setAuthor(authorRefList);
+    }
+
+    // Set Doc Ref Content
+    List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
+    DocumentReference.DocumentReferenceContentComponent contentComp =
+        new DocumentReference.DocumentReferenceContentComponent();
+    Attachment attachment = new Attachment();
+    attachment.setTitle(title);
+    attachment.setContentType(rrDocRefMimeType);
+
+    if (payload != null && !payload.isEmpty()) {
+      attachment.setData(payload.getBytes());
+    }
+    contentComp.setAttachment(attachment);
+    contentList.add(contentComp);
+    documentReference.setContent(contentList);
+
+    DocumentReference.DocumentReferenceContextComponent docContextComp =
+        new DocumentReference.DocumentReferenceContextComponent();
+
+    // Set Doc Ref Context
+    if (encounterId != null && !encounterId.isEmpty()) {
+
+      List<Reference> encounterRefList = new ArrayList<>();
+      Reference encounterReference = new Reference();
+      encounterReference.setReference("Encounter/" + encounterId);
+      encounterRefList.add(encounterReference);
+      docContextComp.setEncounter(encounterRefList);
+    }
+
+    Period period = new Period();
+    period.setStart(new Date());
+    period.setEnd(new Date());
+    docContextComp.setPeriod(period);
+    documentReference.setContext(docContextComp);
+
+    String docReference =
+        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+
+    logger.debug("DocumentReference Object===========> {}", docReference);
+
+    return documentReference;
+  }
+
+  @Override
+  public JSONObject getAuthorizationToken(HealthcareSetting hs) {
+
+    JSONObject tokenResponse = null;
+
+    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+
+      tokenResponse = ehrAuthorizationService.getAuthorizationToken(hs);
+
+    } else {
+
+      // Handle other Auth Types
+    }
+
+    return tokenResponse;
   }
 }

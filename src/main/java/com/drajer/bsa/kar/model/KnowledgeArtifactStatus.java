@@ -1,8 +1,9 @@
 package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
-import com.drajer.ecrapp.config.JSONObjectUserType;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,6 +16,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "hs_kar_status")
 @DynamicUpdate
-@TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class)
+@TypeDefs({@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)})
 public class KnowledgeArtifactStatus {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactStatus.class);
@@ -95,8 +97,8 @@ public class KnowledgeArtifactStatus {
    * HealthcareSetting.
    */
   @Column(name = "subscriptions", columnDefinition = "TEXT")
-  @Type(type = "StringJsonObject")
-  String subscriptions;
+  @Type(type = "SetOfStringsUserType")
+  Set<String> subscriptions;
 
   @Column(name = "is_only_covid", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -119,7 +121,7 @@ public class KnowledgeArtifactStatus {
     outputFormat = OutputContentType.Both;
     lastActivationDate = new Date();
     lastInActivationDate = new Date();
-    subscriptions = "";
+    subscriptions = new HashSet<>();
   }
 
   public void log() {
@@ -201,11 +203,11 @@ public class KnowledgeArtifactStatus {
     this.subscriptionsEnabled = subscriptionsEnabled;
   }
 
-  public String getSubscriptions() {
+  public Set<String> getSubscriptions() {
     return subscriptions;
   }
 
-  public void setSubscriptions(String subscriptions) {
+  public void setSubscriptions(Set<String> subscriptions) {
     this.subscriptions = subscriptions;
   }
 

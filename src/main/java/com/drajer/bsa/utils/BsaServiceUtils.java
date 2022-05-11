@@ -13,11 +13,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
@@ -80,9 +78,7 @@ public class BsaServiceUtils {
       String part1 = id.substring(0, 1).toLowerCase();
       String part2 = id.substring(1);
 
-      String result = FHIR_PATH_VARIABLE_PREFIX + part1 + part2;
-
-      return result;
+      return FHIR_PATH_VARIABLE_PREFIX + part1 + part2;
     }
 
     return id.toLowerCase();
@@ -104,13 +100,13 @@ public class BsaServiceUtils {
   }
 
   public static Pair<Boolean, MatchedTriggerCodes> isCodeableConceptPresentInValueSet(
-      ValueSet vs, CodeableConcept cd, String path, Boolean valElem) {
+      ValueSet vs, CodeableConcept cd, String path, boolean valElem) {
 
     Pair<Boolean, MatchedTriggerCodes> retVal = null;
-    Boolean matchFound = false;
+    boolean matchFound = false;
     MatchedTriggerCodes mtc = null;
 
-    if (cd != null && cd.getCoding().size() > 0) {
+    if (cd != null && !cd.getCoding().isEmpty()) {
 
       for (Coding c : cd.getCoding()) {
 
@@ -140,7 +136,7 @@ public class BsaServiceUtils {
     }
 
     if (matchFound) {
-      retVal = new Pair<Boolean, MatchedTriggerCodes>(true, mtc);
+      retVal = new Pair<>(true, mtc);
     }
 
     return retVal;
@@ -148,9 +144,9 @@ public class BsaServiceUtils {
 
   public static Set<String> getMatchableCodes(CodeableConcept cc) {
 
-    Set<String> mtcs = new HashSet<String>();
+    Set<String> mtcs = new HashSet<>();
 
-    if (cc != null && cc.getCoding().size() > 0) {
+    if (cc != null && !cc.getCoding().isEmpty()) {
 
       for (Coding c : cc.getCoding()) {
 
@@ -171,7 +167,7 @@ public class BsaServiceUtils {
 
     if (coding != null && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
       Pair<String, String> matchedCodeInfo = new Pair<>(coding.getSystem(), coding.getCode());
-      retVal = new Pair<Boolean, Pair<String, String>>(true, matchedCodeInfo);
+      retVal = new Pair<>(true, matchedCodeInfo);
     }
 
     return retVal;
@@ -179,7 +175,7 @@ public class BsaServiceUtils {
 
   public static Boolean isCodePresentInValueSet(ValueSet vs, String system, String code) {
 
-    Boolean retVal = false;
+    boolean retVal = false;
 
     if (vs.hasCompose()) {
 
@@ -246,7 +242,10 @@ public class BsaServiceUtils {
    * @param res
    * @param docs
    */
-  public static void findDocumentReferences(Resource res, List<DocumentReference> docs) {
+  public static MessageHeader findMessageHeaderAndDocumentReferences(
+      Resource res, List<DocumentReference> docs) {
+
+    MessageHeader header = null;
 
     if (res.getResourceType() == ResourceType.Bundle) {
 
@@ -256,17 +255,23 @@ public class BsaServiceUtils {
 
       for (BundleEntryComponent bec : becs) {
 
-        if (bec.getResource().getResourceType() == ResourceType.DocumentReference) {
+        if (bec.getResource().getResourceType() == ResourceType.MessageHeader) {
+
+          header = (MessageHeader) bec.getResource();
+
+        } else if (bec.getResource().getResourceType() == ResourceType.DocumentReference) {
 
           docs.add((DocumentReference) (bec.getResource()));
 
         } // if it is a doc ref
         else if (bec.getResource().getResourceType() == ResourceType.Bundle) {
 
-          findDocumentReferences(bec.getResource(), docs);
+          findMessageHeaderAndDocumentReferences(bec.getResource(), docs);
         }
       } // For entries
     } // if res is a bundle
+
+    return header;
   }
 
   /**
@@ -275,13 +280,16 @@ public class BsaServiceUtils {
    * the DocumentReference in an XML file. The attachment is expected to be a CDA document.
    *
    * @param res
+   * @return - Pair<String, String>, the first value is the Id of the Payload, the second value is
+   *     the Payload.
    */
-  public static void saveCdaDocumentFromDocumentBundleToFile(
+  public static List<Pair<String, String>> saveCdaDocumentFromDocumentBundleToFile(
       String logDirectory, String actionType, Resource res) {
 
-    List<DocumentReference> docs = new ArrayList<DocumentReference>();
+    List<DocumentReference> docs = new ArrayList<>();
+    List<Pair<String, String>> outputs = new ArrayList<>();
 
-    findDocumentReferences(res, docs);
+    findMessageHeaderAndDocumentReferences(res, docs);
 
     for (DocumentReference docRef : docs) {
 
@@ -295,7 +303,7 @@ public class BsaServiceUtils {
               + docRef.getId()
               + ".xml";
 
-      if (docRef.getContent().size() > 0) {
+      if (!docRef.getContent().isEmpty()) {
 
         DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
 
@@ -306,9 +314,14 @@ public class BsaServiceUtils {
 
           logger.debug("Saving data to file {}", fileName);
           saveDataToFile(payload, fileName);
+
+          Pair<String, String> p = new Pair<>(docRef.getId(), payload);
+          outputs.add(p);
         } // attachment not null
       } // DocRef has content
-    } // For all document referneces.
+    } // For all document references.
+
+    return outputs;
   }
 
   /**
@@ -344,7 +357,6 @@ public class BsaServiceUtils {
     saveDataToFile(data, fileName);
   }
 
-  // public static final Map<String, Bundle> eicrBundles = new HashMap<String, Bundle>();
   public void saveEicrState(String url, Resource res) {
     if (eicrBundles != null) {
       logger.info("Found actions map saving eicr bundle state....");
@@ -358,15 +370,22 @@ public class BsaServiceUtils {
     }
   }
 
-  public void saveActionStatusState(HashMap<String, BsaActionStatus> actionStatus) {
-    if (actions != null) {
+  public void saveActionStatusState(Map<String, BsaActionStatus> actionStatus) {
+
+    logger.info(" ToDo : Not sure what this method is for ");
+
+    /* if (actions != null) {
       logger.info("Found actions map saving action state....");
-      for (Entry<String, BsaActionStatus> entry : actionStatus.entrySet()) {
+      for (Entry<String, List<BsaActionStatus> > entry : actionStatus.entrySet()) {
+
+    	  if(actions.containsKey(entry.getKey())) {
+    		  actions.get(entry.getKey()).addAll(entry.getValue());
+    	  }
         actions.put(entry.getValue().getActionId(), entry.getValue().getActionStatus());
       }
     } else {
       logger.info("No action map found skipping action state save....");
-    }
+    } */
   }
 
   /**

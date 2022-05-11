@@ -1,10 +1,13 @@
 package com.drajer.bsa.ehr.service;
 
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.json.JSONObject;
 
 /**
  *
@@ -24,10 +27,27 @@ public interface EhrQueryService {
    *     previous data etc.
    * @return The Map of Resources to its type.
    */
-  public HashMap<ResourceType, Set<Resource>> getFilteredData(
-      KarProcessingData kd, HashMap<String, ResourceType> resTypes);
+  public Map<ResourceType, Set<Resource>> getFilteredData(
+      KarProcessingData kd, Map<String, ResourceType> resTypes);
 
-  public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
+  public Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
+
+  public void createResource(KarProcessingData kd, Resource resource);
+
+  public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
 
   public Resource getResourceById(KarProcessingData data, String resourceName, String id);
+
+  public DocumentReference constructR4DocumentReference(
+      String payload,
+      String patientId,
+      String encounterID,
+      String providerUUID,
+      String rrDocRefMimeType,
+      String title,
+      String docCode,
+      String docDisplayName,
+      String docCodeSystem);
+
+  public JSONObject getAuthorizationToken(HealthcareSetting hs);
 }
