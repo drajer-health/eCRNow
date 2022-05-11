@@ -57,7 +57,7 @@ public class HealthcareSettingOperationalKnowledgeArtifacts {
         " **** START Printing KnowledgeArtifactOperationalStatus For a Healthcare Setting **** ");
 
     logger.info(" Healthcare Setting Id : {}", hsId);
-    artifactStatus.forEach(KnowledgeArtifactStatus::log);
+    artifactStatus.forEach(status -> status.log());
 
     logger.info(
         " **** END Printing KnowledgeArtifactOperationalStatus For a Healthcare Setting **** ");

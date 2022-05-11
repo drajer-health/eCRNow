@@ -106,7 +106,7 @@ public abstract class BsaAction {
     for (BsaCondition bc : conditions) {
 
       // If any of the conditions evaluate to be false, then the method returns false.
-      if (!Boolean.TRUE.equals(bc.getConditionProcessor().evaluateExpression(bc, this, kd))) {
+      if (Boolean.FALSE.equals(bc.getConditionProcessor().evaluateExpression(bc, this, kd))) {
         logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
         retVal = false;
       }
@@ -384,7 +384,7 @@ public abstract class BsaAction {
 
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : ({})", ne));
 
-    conditions.forEach(BsaCondition::log);
+    conditions.forEach(con -> con.log());
 
     if (relatedActions != null && relatedActions.size() > 0) {
 
@@ -486,15 +486,15 @@ public abstract class BsaAction {
       }
     }
 
-    conditions.forEach(BsaCondition::log);
+    conditions.forEach(con -> con.log());
 
     if (relatedActions != null)
-      relatedActions.forEach((key, value) -> value.forEach(BsaRelatedAction::log));
+      relatedActions.forEach((key, value) -> value.forEach(act -> act.log()));
 
-    timingData.forEach(TimingSchedule::print);
+    timingData.forEach(td -> td.print());
 
     logger.info(" Start Printing Sub Actions ");
-    subActions.forEach(BsaAction::log);
+    subActions.forEach(act -> act.log());
     logger.info(" Finished Printing Sub Actions ");
 
     logger.info(" **** END Printing Action **** {}", actionId);

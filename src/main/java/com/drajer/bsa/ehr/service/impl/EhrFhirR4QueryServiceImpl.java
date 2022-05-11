@@ -100,7 +100,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-
     IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always

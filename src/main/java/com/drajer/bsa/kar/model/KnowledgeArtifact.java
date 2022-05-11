@@ -335,7 +335,7 @@ public class KnowledgeArtifact {
     logger.info(" KAR Id : {}", karId);
     logger.info(" Kar Version : {} ", karVersion);
 
-    firstLevelActions.forEach(BsaAction::printSummary);
+    firstLevelActions.forEach(act -> act.printSummary());
 
     logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
   }

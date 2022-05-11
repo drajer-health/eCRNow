@@ -15,10 +15,6 @@ public class CheckParticipantStatus extends BsaActionStatus {
   /** Flag to indicate the result of the participant check */
   private Boolean participantMatchStatus;
 
-  public CheckParticipantStatus() {
-    logger.info("CheckParticipantStatus default constructor call");
-  }
-
   public Boolean getParticipantMatchStatus() {
     return participantMatchStatus;
   }
