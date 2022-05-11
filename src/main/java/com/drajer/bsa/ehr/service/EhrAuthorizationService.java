@@ -1,6 +1,8 @@
 package com.drajer.bsa.ehr.service;
 
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
+import org.json.JSONObject;
 
 /**
  *
@@ -20,4 +22,6 @@ public interface EhrAuthorizationService {
    *     previous data etc.
    */
   public void getAuthorizationToken(KarProcessingData kd);
+
+  public JSONObject getAuthorizationToken(HealthcareSetting hs);
 }

@@ -196,8 +196,9 @@ public class KarProcessorImpl implements KarProcessor {
 
     if (action != null) {
       logger.info(
-          " **** START Executing Action with id {} based on scheduled job notification. **** ",
-          action.getActionId());
+          " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
+          action.getActionId(),
+          action.getType());
 
       try {
         status = action.process(kd, ehrInterface);
@@ -206,6 +207,10 @@ public class KarProcessorImpl implements KarProcessor {
         logger.info(
             " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
             action.getActionId());
+
+        // Get rid of the KarExecutionState entry that was created for the job.
+        karExecutionStateService.delete(state);
+
       } catch (Exception e) {
 
         logger.error("Exception encountered during processing of the scheduled job ");

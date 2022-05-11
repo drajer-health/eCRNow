@@ -5,6 +5,7 @@ import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
+import com.drajer.bsa.kar.action.CheckResponse;
 import com.drajer.bsa.kar.action.CreateReport;
 import com.drajer.bsa.kar.action.EvaluateMeasure;
 import com.drajer.bsa.kar.action.SubmitReport;
@@ -22,6 +23,7 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.routing.impl.DirectTransportImpl;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.service.KarService;
@@ -138,6 +140,8 @@ public class KarParserImpl implements KarParser {
   @Autowired SubscriptionGeneratorService subscriptionGeneratorService;
 
   @Autowired EhrQueryService ehrInterface;
+
+  @Autowired DirectTransportImpl directInterface;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -343,6 +347,7 @@ public class KarParserImpl implements KarParser {
   }
 
   private KarProcessingData makeData(HealthcareSetting hs, KnowledgeArtifact art) {
+
     KarProcessingData kd = new KarProcessingData();
     kd.setHealthcareSetting(hs);
     kd.setKar(art);
@@ -411,7 +416,14 @@ public class KarParserImpl implements KarParser {
         action.setType(BsaTypes.getActionType(cd.getCode()));
         action.setLogDirectory(logDirectory);
 
-        populateAction(plan, act, action, karBundleFile);
+        populateAction(plan, act, action, karBundleFile, art);
+
+        // This is being done currently since CheckResponse Action is not supported as of yet in the
+        // KARs. Once it is supported this is not needed.
+        if (action.getType() == ActionType.SubmitReport) {
+
+          populateCheckResponseAction((SubmitReport) action, art, plan);
+        }
 
         // Setup the artifact details.
         art.addAction(action);
@@ -419,6 +431,26 @@ public class KarParserImpl implements KarParser {
         art.addTriggerEvent(action);
       }
     }
+  }
+
+  public void populateCheckResponseAction(
+      SubmitReport baseAction, KnowledgeArtifact art, PlanDefinition plan) {
+
+    CheckResponse action = (CheckResponse) getAction("check-response");
+    action.setActionId("check-response", plan.getUrl());
+    action.setScheduler(scheduler);
+    action.setJsonParser(jsonParser);
+    action.setRestTemplate(restTemplate);
+    action.setIgnoreTimers(ignoreTimers);
+    action.setType(ActionType.CheckResponse);
+    action.setLogDirectory(logDirectory);
+    action.setPhDao(phDao);
+    action.setDirectReceiver(directInterface);
+    baseAction.setCheckResponseActionId(action.getActionId());
+
+    art.addAction(action);
+    art.addFirstLevelAction(action);
+    art.addTriggerEvent(action);
   }
 
   public void processExtensions(PlanDefinition plan, KnowledgeArtifact art) {
@@ -467,7 +499,8 @@ public class KarParserImpl implements KarParser {
       PlanDefinition plan,
       PlanDefinitionActionComponent act,
       BsaAction action,
-      File karBundleFile) {
+      File karBundleFile,
+      KnowledgeArtifact art) {
 
     if (act.hasTrigger()) {
       action.setNamedEventTriggers(getNamedEvents(act));
@@ -491,7 +524,7 @@ public class KarParserImpl implements KarParser {
     }
 
     if (act.hasAction()) {
-      populateSubActions(plan, act, action, karBundleFile);
+      populateSubActions(plan, act, action, karBundleFile, art);
     }
 
     if (act.hasDefinitionUriType()) {
@@ -517,6 +550,8 @@ public class KarParserImpl implements KarParser {
       SubmitReport sr = (SubmitReport) (action);
       sr.setSubmissionEndpoint(reportSubmissionEndpoint);
       sr.setPhDao(phDao);
+      sr.setDirectSender(directInterface);
+      populateCheckResponseAction(sr, art, plan);
     } else if (action.getType() == ActionType.CreateReport) {
       CreateReport cr = (CreateReport) action;
       cr.setPhDao(phDao);
@@ -551,7 +586,11 @@ public class KarParserImpl implements KarParser {
   }
 
   private void populateSubActions(
-      PlanDefinition plan, PlanDefinitionActionComponent ac, BsaAction action, File karBundleFile) {
+      PlanDefinition plan,
+      PlanDefinitionActionComponent ac,
+      BsaAction action,
+      File karBundleFile,
+      KnowledgeArtifact art) {
 
     List<PlanDefinitionActionComponent> actions = ac.getAction();
 
@@ -571,7 +610,7 @@ public class KarParserImpl implements KarParser {
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
           subAction.setLogDirectory(logDirectory);
 
-          populateAction(plan, act, subAction, karBundleFile);
+          populateAction(plan, act, subAction, karBundleFile, art);
 
           // Setup the artifact details.
           action.addAction(subAction);

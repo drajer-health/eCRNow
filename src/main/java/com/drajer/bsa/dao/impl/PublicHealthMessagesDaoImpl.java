@@ -6,12 +6,16 @@ import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHealthMessagesDao {
+
+  public static final String SUBMITTED_DATA_ID = "submittedDataId";
 
   @Override
   public PublicHealthMessage saveOrUpdate(PublicHealthMessage message) {
@@ -65,5 +69,14 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
   public void delete(PublicHealthMessage message) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  public PublicHealthMessage getBySubmittedDataId(String subId) {
+
+    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+    criteria.add(Restrictions.eq(SUBMITTED_DATA_ID, subId));
+
+    return (PublicHealthMessage) criteria.uniqueResult();
   }
 }
