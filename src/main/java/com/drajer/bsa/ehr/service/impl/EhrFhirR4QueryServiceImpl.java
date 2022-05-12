@@ -61,11 +61,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private final Logger logger = LoggerFactory.getLogger(EhrFhirR4QueryServiceImpl.class);
 
   /** The EHR Authorization Service class enables the BSA to get an access token. */
-  @Qualifier("backendauth")
+  @Qualifier("oldbackendauth")
   @Autowired
   EhrAuthorizationService backendAuthorizationService;
 
-  @Qualifier("ehrauth")
+  @Qualifier("oldehrauth")
   @Autowired
   EhrAuthorizationService ehrAuthorizationService;
 

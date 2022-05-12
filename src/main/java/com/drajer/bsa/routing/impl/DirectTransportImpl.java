@@ -429,4 +429,11 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     return null;
   }
+
+  @Override
+  public void sendEicrDataUsingRestfulApi(KarProcessingData data) {
+
+    String error = " RESTful API method invoked on Direct Transport which is not supported ";
+    logger.error(error);
+  }
 }

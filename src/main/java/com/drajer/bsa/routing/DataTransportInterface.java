@@ -29,4 +29,13 @@ public interface DataTransportInterface {
    *     information.
    */
   public abstract void receiveRrDataUsingDirect(KarProcessingData data);
+
+  /**
+   * The method is used to send data to a PHA/TTP via an intermediary using RESTful API . The
+   * intermediary may communicate with PHA/TTP using Direct or XDR or other mechanisms.
+   *
+   * @param data - The KarProcessingData that contains the necessary data to process and send the
+   *     information.
+   */
+  public abstract void sendEicrDataUsingRestfulApi(KarProcessingData data);
 }

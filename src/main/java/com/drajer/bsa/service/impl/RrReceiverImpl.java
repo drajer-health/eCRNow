@@ -273,7 +273,6 @@ public class RrReceiverImpl implements RrReceiver {
               context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId());
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
-
       if (outcome != null && outcome.getCreated()) {
         logger.info(
             "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",

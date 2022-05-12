@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "healthcare_setting")
 @DynamicUpdate
-public class HealthcareSetting {
+public class HealthcareSetting implements FhirServerDetails {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(HealthcareSetting.class);
 
@@ -273,6 +273,47 @@ public class HealthcareSetting {
   @Column(name = "require_aud", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
+
+  /**
+   * This attribute defines the trusted third party end point that reports should be submitted to.
+   */
+  @Column(name = "trusted_third_party", nullable = true, columnDefinition = "TEXT")
+  private String trustedThirdParty;
+
+  /** This attribute defines the PHA end point that reports should be submitted to. */
+  @Column(name = "pha_url", nullable = true, columnDefinition = "TEXT")
+  private String phaUrl;
+
+  /** The attribute represents the default name of the organization. */
+  @Column(name = "orgName", nullable = true, columnDefinition = "TEXT")
+  private String orgName;
+
+  /**
+   * The attribute represents the default namespace for the "orgId" identifier value. For CDA based
+   * reporting, the Assigning Authority Id will be used. For FHIR based systems, if a URL is
+   * provided, it can be stored in this attribute.
+   */
+  @Column(name = "orgIdSystem", nullable = true, columnDefinition = "TEXT")
+  private String orgIdSystem;
+
+  /** The attribute represents a unique identifier for the organization */
+  @Column(name = "orgId", nullable = true, columnDefinition = "TEXT")
+  private String orgId;
+
+  /** The attribute represents a username that may be used with password-based Authorization. */
+  @Column(name = "username", columnDefinition = "TEXT")
+  private String username;
+
+  /**
+   * The attribute represents a password associated with the username for password-based
+   * authorization.
+   */
+  @Column(name = "password", columnDefinition = "TEXT")
+  private String password;
+
+  /** The attribute represents the Key Alias for the Private Key to be used for signing. */
+  @Column(name = "backend_auth_key_alias", columnDefinition = "TEXT")
+  private String backendAuthKeyAlias;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -595,6 +636,62 @@ public class HealthcareSetting {
 
   public void setEhrAccessTokenExpirationTime(Date ehrAccessTokenExpirationTime) {
     this.ehrAccessTokenExpirationTime = ehrAccessTokenExpirationTime;
+  }
+
+  public String getTrustedThirdParty() {
+    return trustedThirdParty;
+  }
+
+  public void setTrustedThirdParty(String trustedThirdParty) {
+    this.trustedThirdParty = trustedThirdParty;
+  }
+
+  public String getOrgName() {
+    return orgName;
+  }
+
+  public void setOrgName(String orgName) {
+    this.orgName = orgName;
+  }
+
+  public String getOrgIdSystem() {
+    return orgIdSystem;
+  }
+
+  public void setOrgIdSystem(String orgIdSystem) {
+    this.orgIdSystem = orgIdSystem;
+  }
+
+  public String getOrgId() {
+    return orgId;
+  }
+
+  public void setOrgId(String orgId) {
+    this.orgId = orgId;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getBackendAuthKeyAlias() {
+    return backendAuthKeyAlias;
+  }
+
+  public void setBackendAuthKeyAlias(String backendAuthKeyAlias) {
+    this.backendAuthKeyAlias = backendAuthKeyAlias;
   }
 
   public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {

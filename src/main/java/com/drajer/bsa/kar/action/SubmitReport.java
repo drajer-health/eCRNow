@@ -14,6 +14,7 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
+import com.drajer.bsa.routing.impl.RestfulTransportImpl;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import java.time.Instant;
@@ -45,6 +46,8 @@ public class SubmitReport extends BsaAction {
   private PublicHealthMessagesDao phDao;
 
   private DirectTransportImpl directSender;
+
+  private RestfulTransportImpl restfulSubmitter;
 
   private String checkResponseActionId;
 
