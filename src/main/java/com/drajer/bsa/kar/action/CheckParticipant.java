@@ -6,9 +6,6 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,7 @@ public class CheckParticipant extends BsaAction {
     BsaActionStatusType status = processTimingData(data);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled) {
+    if (status != BsaActionStatusType.SCHEDULED) {
 
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
@@ -45,7 +42,7 @@ public class CheckParticipant extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
       // Get necessary data to process.
-      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      ehrService.getFilteredData(data, resourceTypes);
 
       data.addActionStatus(getActionId(), actStatus);
 
@@ -58,7 +55,7 @@ public class CheckParticipant extends BsaAction {
         executeRelatedActions(data, ehrService);
       }
 
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
 

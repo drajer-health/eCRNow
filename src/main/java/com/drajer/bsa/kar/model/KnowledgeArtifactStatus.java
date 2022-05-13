@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "hs_kar_status")
 @DynamicUpdate
-@TypeDefs({@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)})
+@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)
 public class KnowledgeArtifactStatus {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactStatus.class);
@@ -118,7 +117,7 @@ public class KnowledgeArtifactStatus {
     karId = "";
     isActive = true;
     subscriptionsEnabled = false;
-    outputFormat = OutputContentType.Both;
+    outputFormat = OutputContentType.BOTH;
     lastActivationDate = new Date();
     lastInActivationDate = new Date();
     subscriptions = new HashSet<>();

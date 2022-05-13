@@ -35,6 +35,13 @@ public class SetOfStringsUserType implements UserType {
     return Set.class;
   }
 
+  /** Get a hashcode for the instance, consistent with persistence "equality" */
+  @Override
+  public int hashCode(Object x) {
+
+    return x.hashCode();
+  }
+
   /**
    * Compare two instances of the class mapped by this type for persistence "equality". Equality of
    * the persistent state.
@@ -51,13 +58,6 @@ public class SetOfStringsUserType implements UserType {
       return y == null;
     }
     return x.equals(y);
-  }
-
-  /** Get a hashcode for the instance, consistent with persistence "equality" */
-  @Override
-  public int hashCode(Object x) {
-
-    return x.hashCode();
   }
 
   /**
@@ -101,12 +101,22 @@ public class SetOfStringsUserType implements UserType {
   public void nullSafeSet(
       PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
       throws SQLException {
-    if (value == null || !(value instanceof Set)) {
+    if (!(value instanceof Set)) {
       st.setNull(index, Types.OTHER);
       return;
     }
     String store = String.join("||", ((Set<String>) value));
     st.setObject(index, store, Types.OTHER);
+  }
+
+  /**
+   * Are objects of this type mutable?
+   *
+   * @return boolean
+   */
+  @Override
+  public boolean isMutable() {
+    return true;
   }
 
   /**
@@ -124,16 +134,6 @@ public class SetOfStringsUserType implements UserType {
   }
 
   /**
-   * Are objects of this type mutable?
-   *
-   * @return boolean
-   */
-  @Override
-  public boolean isMutable() {
-    return true;
-  }
-
-  /**
    * Transform the object into its cacheable representation. At the very least this method should
    * perform a deep copy if the type is mutable. That may not be enough for some implementations,
    * however; for example, associations must be cached as identifier values. (optional operation)
@@ -145,20 +145,6 @@ public class SetOfStringsUserType implements UserType {
   @Override
   public Serializable disassemble(Object value) {
     return (String) this.deepCopy(value);
-  }
-
-  /**
-   * Reconstruct an object from the cacheable representation. At the very least this method should
-   * perform a deep copy if the type is mutable. (optional operation)
-   *
-   * @param cached the object to be cached
-   * @param owner the owner of the cached object
-   * @return a reconstructed object from the cachable representation
-   * @throws org.hibernate.HibernateException
-   */
-  @Override
-  public Object assemble(Serializable cached, Object owner) {
-    return this.deepCopy(cached);
   }
 
   /**
@@ -175,5 +161,19 @@ public class SetOfStringsUserType implements UserType {
   @Override
   public Object replace(Object original, Object target, Object owner) {
     return original;
+  }
+
+  /**
+   * Reconstruct an object from the cacheable representation. At the very least this method should
+   * perform a deep copy if the type is mutable. (optional operation)
+   *
+   * @param cached the object to be cached
+   * @param owner the owner of the cached object
+   * @return a reconstructed object from the cachable representation
+   * @throws org.hibernate.HibernateException
+   */
+  @Override
+  public Object assemble(Serializable cached, Object owner) {
+    return this.deepCopy(cached);
   }
 }

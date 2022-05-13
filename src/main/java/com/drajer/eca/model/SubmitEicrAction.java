@@ -47,7 +47,7 @@ public class SubmitEicrAction extends AbstractAction {
             // check if the action is completed.
             String actionId = actn.getRelatedAction().getActionId();
 
-            if (!state.hasActionCompleted(actionId)) {
+            if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))) {
 
               logger.info("Action {} is not completed , hence this action has to wait", actionId);
             } else {
@@ -87,8 +87,6 @@ public class SubmitEicrAction extends AbstractAction {
 
   public void submitEicrs(
       LaunchDetails details, PatientExecutionState state, Set<Integer> ids, String taskInstanceId) {
-
-    Boolean rrCheckScheduled = false;
 
     for (Integer id : ids) {
 

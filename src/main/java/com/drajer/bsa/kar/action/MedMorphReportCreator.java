@@ -31,15 +31,15 @@ public class MedMorphReportCreator extends ReportCreator {
 
   private final Logger logger = LoggerFactory.getLogger(MedMorphReportCreator.class);
 
-  public static String DEFAULT_VERSION = "1";
-  public static String CONTENT_BUNDLE_PROFILE =
+  public static final String DEFAULT_VERSION = "1";
+  public static final String CONTENT_BUNDLE_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-content-bundle";
-  public static String BUNDLE_REL_URL = "Bundle/";
-  public static String MESSAGE_HEADER_PROFILE =
+  public static final String BUNDLE_REL_URL = "Bundle/";
+  public static final String MESSAGE_HEADER_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
-  public static String MESSAGE_TYPE =
+  public static final String MESSAGE_TYPE =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
-  public static String NAMED_EVENT_URL =
+  public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
 
   @Override
@@ -85,7 +85,7 @@ public class MedMorphReportCreator extends ReportCreator {
     // Set message type.
     Coding c = new Coding();
     c.setSystem(MESSAGE_TYPE);
-    c.setCode(BsaTypes.getMessageTypeString(MessageType.CancerReportMessage));
+    c.setCode(BsaTypes.getMessageTypeString(MessageType.CANCER_REPORT_MESSAGE));
     header.setEvent(c);
 
     // set destination

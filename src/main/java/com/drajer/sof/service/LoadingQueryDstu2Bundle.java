@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoadingQueryDstu2Bundle {
 
+  public static final String FILTERED_OBSERVATIONS = "Filtered Observations----> {}";
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   @Autowired Dstu2ResourcesData dstu2ResourcesData;
@@ -177,7 +178,7 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations----> {}", observationList.size());
+      logger.info(FILTERED_OBSERVATIONS, observationList.size());
       dstu2FhirData.setLabResults(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -193,7 +194,7 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations----> {}", observationList.size());
+      logger.info(FILTERED_OBSERVATIONS, observationList.size());
       dstu2FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -209,7 +210,7 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getTravelObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations----> {}", observationList.size());
+      logger.info(FILTERED_OBSERVATIONS, observationList.size());
       dstu2FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);

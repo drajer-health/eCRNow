@@ -117,10 +117,9 @@ public class WorkflowService {
 
       // Identify the appropriate actions and execute it from the Action Repo.
       logger.info(
-          " SOF Launch for Patient : "
-              + details.getLaunchPatientId()
-              + " and Encounter : "
-              + details.getEncounterId());
+          " SOF Launch for Patient : {} and Encounter : {}",
+          details.getLaunchPatientId(),
+          details.getEncounterId());
 
       // Setup Execution State.
       PatientExecutionState oldstate =
@@ -132,7 +131,7 @@ public class WorkflowService {
         logger.error("Error while handling SOF Launch workflow", e);
       }
 
-      logger.info("State = " + details.getStatus());
+      logger.info("State = {}", details.getStatus());
 
       String taskInstanceId = "";
       // Use Action Repo to get the events that we need to fire.
@@ -195,7 +194,7 @@ public class WorkflowService {
     logger.info("Execute Validate Eicr Action");
     executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType, taskInstanceId);
 
-    if (!details.getValidationMode()) {
+    if (Boolean.FALSE.equals(details.getValidationMode())) {
       logger.info("Execute Submit Eicr Action");
       executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType, taskInstanceId);
     }
@@ -367,7 +366,6 @@ public class WorkflowService {
 
   public static Boolean checkIfTasksExists(List<ScheduledTasks> tasks, String taskInstanceId) {
 
-    Boolean retVal = false;
     int numOfTasksExisting = 0;
     if (tasks != null && !tasks.isEmpty()) {
 

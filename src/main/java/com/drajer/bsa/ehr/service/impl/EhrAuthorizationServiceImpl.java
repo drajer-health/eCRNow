@@ -36,6 +36,9 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
 
+  public static final String AUTHORIZATION_IS_CONFIGURED_FOR_EHR =
+      " System Launch authorization is configured for EHR ";
+  public static final String RECEIVED_ACCESS_TOKEN = "Received AccessToken: {}";
   private final Logger logger = LoggerFactory.getLogger(EhrAuthorizationServiceImpl.class);
 
   private static final String GRANT_TYPE = "grant_type";
@@ -55,9 +58,9 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
 
       if (kd.getHealthcareSetting()
           .getAuthType()
-          .equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+          .equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))) {
 
-        logger.info(" System Launch authorization is configured for EHR ");
+        logger.info(AUTHORIZATION_IS_CONFIGURED_FOR_EHR);
 
         RestTemplate resTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -88,13 +91,13 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
                 kd.getHealthcareSetting().getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
 
-        logger.info("Received AccessToken: {}", tokenResponse);
+        logger.info(RECEIVED_ACCESS_TOKEN, tokenResponse);
 
-        kd.getNotificationContext().setEhrAccessToken(tokenResponse.getString("access_token"));
+        kd.getNotificationContext().setEhrAccessToken(tokenResponse.getString(ACCESS_TOKEN));
         kd.getNotificationContext()
-            .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
+            .setEhrAccessTokenExpiryDuration(tokenResponse.getInt(EXPIRES_IN));
 
-        Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
+        Integer expiresInSec = (Integer) tokenResponse.get(EXPIRES_IN);
         Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
         kd.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expireInstantTime));
       }
@@ -115,9 +118,9 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
     logger.info("Getting AccessToken for Client Id : {}", hs.getClientId());
 
     // Before getting a new access token, check to see if the old one is expired.
-    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))) {
 
-      logger.info(" System Launch authorization is configured for EHR ");
+      logger.info(AUTHORIZATION_IS_CONFIGURED_FOR_EHR);
 
       tokenResponse =
           getAccessTokenForSystemLaunch(
@@ -130,7 +133,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
 
       if (tokenResponse != null) {
 
-        logger.info("Received AccessToken: {}", tokenResponse);
+        logger.info(RECEIVED_ACCESS_TOKEN, tokenResponse);
         updateTokenDetailsInHealthcareSetting(tokenResponse, hs);
 
       } else {
@@ -153,7 +156,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
     hs.setEhrAccessTokenExpiryDuration(tokenResponse.getInt(EXPIRES_IN));
 
     Integer expiresInSec = (Integer) tokenResponse.get(EXPIRES_IN);
-    Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresInSec));
+    Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
     hs.setEhrAccessTokenExpirationTime(new Date().from(expireInstantTime));
   }
 
@@ -169,7 +172,7 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
 
     try {
 
-      logger.debug(" System Launch authorization is configured for EHR ");
+      logger.debug(AUTHORIZATION_IS_CONFIGURED_FOR_EHR);
 
       RestTemplate resTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -179,7 +182,8 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
 
       // Setup the Authorization Header.
       String authValues = clientId + ":" + clientSecret;
-      String base64EncodedString = Base64.getEncoder().encodeToString(authValues.getBytes("utf-8"));
+      String base64EncodedString =
+          Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
       headers.add("Authorization", "Basic " + base64EncodedString);
 
       // Setup the OAuth Type flow.
@@ -187,14 +191,16 @@ public class EhrAuthorizationServiceImpl implements EhrAuthorizationService {
       map.add(GRANT_TYPE, "client_credentials");
       map.add("scope", scopes);
 
-      if (requireAud) map.add("aud", fhirServerUrl);
+      if (Boolean.TRUE.equals(requireAud)) {
+        map.add("aud", fhirServerUrl);
+      }
 
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
       ResponseEntity<?> response =
           resTemplate.exchange(tokenUrl, HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
 
-      logger.info("Received AccessToken: {}", tokenResponse);
+      logger.info(RECEIVED_ACCESS_TOKEN, tokenResponse);
 
     } catch (Exception e) {
       logger.error("Error in Getting the AccessToken for the client: {}", fhirServerUrl, e);

@@ -129,9 +129,9 @@ public class EicrServiceImpl implements EicrRRService {
 
       logger.debug("Reportability Response: {}", data.getRrXml());
 
-      final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      final CdaIi rrDocId = rrModel.getRrDocId();
-      final CdaIi eicrDocId = rrModel.getEicrDocId();
+      final CdaRrModel cdaRrModel = rrParser.parse(data.getRrXml());
+      final CdaIi rrDocId = cdaRrModel.getRrDocId();
+      final CdaIi eicrDocId = cdaRrModel.getEicrDocId();
 
       if (rrDocId == null || StringUtils.isBlank(rrDocId.getRootValue())) {
         throw new IllegalArgumentException("Reportability response is missing RR_Doc_Id");
@@ -144,7 +144,7 @@ public class EicrServiceImpl implements EicrRRService {
       logger.info(
           "Processing RR_DOC_ID {} of type {} for EICR_DOC_ID {}",
           rrDocId.getRootValue(),
-          rrModel.getReportableType(),
+          cdaRrModel.getReportableType(),
           eicrDocId.getRootValue());
       final Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
 
@@ -159,16 +159,19 @@ public class EicrServiceImpl implements EicrRRService {
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
 
-        if (rrModel.getReportableType() != null) ecr.setResponseType(rrModel.getReportableType());
+        if (cdaRrModel.getReportableType() != null)
+          ecr.setResponseType(cdaRrModel.getReportableType());
         else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        if (rrModel.getReportableType() != null && rrModel.getReportableStatus() != null)
+        if (cdaRrModel.getReportableType() != null && cdaRrModel.getReportableStatus() != null)
           ecr.setResponseTypeDisplay(
-              rrModel.getReportableType() + "-" + rrModel.getReportableStatus().getDisplayName());
-        else if (rrModel.getReportableType() != null)
-          ecr.setResponseTypeDisplay(rrModel.getReportableType());
-        else if (rrModel.getReportableStatus() != null)
-          ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
+              cdaRrModel.getReportableType()
+                  + "-"
+                  + cdaRrModel.getReportableStatus().getDisplayName());
+        else if (cdaRrModel.getReportableType() != null)
+          ecr.setResponseTypeDisplay(cdaRrModel.getReportableType());
+        else if (cdaRrModel.getReportableStatus() != null)
+          ecr.setResponseTypeDisplay(cdaRrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
         if (Boolean.TRUE.equals(launchDetails.getIsCreateDocRef())
@@ -234,7 +237,7 @@ public class EicrServiceImpl implements EicrRRService {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_XML);
-    HttpEntity<String> request = new HttpEntity<String>(rrXml, headers);
+    HttpEntity<String> request = new HttpEntity<>(rrXml, headers);
     ResponseEntity<?> response =
         restTemplate.exchange(
             launchDetails.getRrRestAPIUrl(), HttpMethod.POST, request, String.class);

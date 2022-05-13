@@ -766,7 +766,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
           + "\n";
 
-    } else if (includeNeg) {
+    } else if (Boolean.TRUE.equals(includeNeg)) {
       return CdaGeneratorConstants.START_XMLTAG
           + actName
           + CdaGeneratorConstants.SPACE
@@ -1947,7 +1947,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForQuantityWithUnits(
       String elName, String value, String units, Boolean valFlag) {
-    if (valFlag) {
+    if (Boolean.TRUE.equals(valFlag)) {
       return getXmlForValuePQ(value, units);
     }
 
@@ -1956,7 +1956,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForQuantity(
       String elName, String value, String units, Boolean valFlag) {
-    if (valFlag) {
+    if (Boolean.TRUE.equals(valFlag)) {
       return getXmlForValuePQ(value, units);
     }
 

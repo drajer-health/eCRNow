@@ -573,20 +573,20 @@ public class HealthcareSetting {
     this.handOffResponseToRestApi = handOffResponseToRestApi;
   }
 
-  public String getEhrAccessToken() {
-    return ehrAccessToken;
-  }
-
-  public void setEhrAccessToken(String ehrAccessToken) {
-    this.ehrAccessToken = ehrAccessToken;
-  }
-
   public int getEhrAccessTokenExpiryDuration() {
     return ehrAccessTokenExpiryDuration;
   }
 
   public void setEhrAccessTokenExpiryDuration(int ehrAccessTokenExpiryDuration) {
     this.ehrAccessTokenExpiryDuration = ehrAccessTokenExpiryDuration;
+  }
+
+  public String getEhrAccessToken() {
+    return ehrAccessToken;
+  }
+
+  public void setEhrAccessToken(String ehrAccessToken) {
+    this.ehrAccessToken = ehrAccessToken;
   }
 
   public Date getEhrAccessTokenExpirationTime() {

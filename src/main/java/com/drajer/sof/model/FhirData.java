@@ -2,6 +2,7 @@ package com.drajer.sof.model;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeableConcept;
 
@@ -117,7 +118,7 @@ public abstract class FhirData {
     } else if (expression.contains("Observation.value")) {
       return labResultValues;
     } else {
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -136,7 +137,7 @@ public abstract class FhirData {
     } else if (expression.contains("Observation.value")) {
       return r4LabResultValues;
     } else {
-      return null;
+      return Collections.emptyList();
     }
   }
 

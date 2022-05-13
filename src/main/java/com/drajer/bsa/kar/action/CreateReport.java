@@ -11,8 +11,6 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -48,7 +46,7 @@ public class CreateReport extends BsaAction {
     BsaActionStatusType status = processTimingData(data);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled) {
+    if (status != BsaActionStatusType.SCHEDULED) {
 
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
@@ -57,9 +55,9 @@ public class CreateReport extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
       // Get necessary data to process.
-      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      ehrService.getFilteredData(data, resourceTypes);
 
-      Map<ResourceType, Set<Resource>> finalRes = ehrService.loadJurisdicationData(data);
+      ehrService.loadJurisdicationData(data);
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {
@@ -88,7 +86,7 @@ public class CreateReport extends BsaAction {
 
                 data.addActionOutputById(dr.getId(), output);
 
-                if (BsaServiceUtils.hasCdaData(output)) {
+                if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
 
                   logger.info("Creating PH message for CDA Data ");
                   createPublicHealthMessageForCda(data, BsaTypes.getActionString(type), output);
@@ -104,22 +102,18 @@ public class CreateReport extends BsaAction {
         }
       }
 
-      if (conditionsMet(data)) {
-
+      if (Boolean.TRUE.equals(conditionsMet(data))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
-
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
-
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
-
       logger.info(
-          " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
-      logger.info(" Setting Action Status : {}", status);
+          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+          status);
       actStatus.setActionStatus(status);
     }
 
@@ -130,7 +124,7 @@ public class CreateReport extends BsaAction {
   public void createPublicHealthMessageForCda(
       KarProcessingData kd, String actionType, Resource output) {
 
-    List<DocumentReference> docrefs = new ArrayList<DocumentReference>();
+    List<DocumentReference> docrefs = new ArrayList<>();
     MessageHeader header = BsaServiceUtils.findMessageHeaderAndDocumentReferences(output, docrefs);
 
     for (DocumentReference docRef : docrefs) {
@@ -145,7 +139,7 @@ public class CreateReport extends BsaAction {
               + docRef.getId()
               + ".xml";
 
-      if (docRef.getContent().size() > 0) {
+      if (!docRef.getContent().isEmpty()) {
 
         DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
 

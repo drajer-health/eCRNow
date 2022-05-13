@@ -179,7 +179,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
         | NoSuchAlgorithmException
         | CertificateException
         | UnrecoverableKeyException e) {
-      e.printStackTrace();
+      logger.error("Exception Occurred: ", e);
     }
     return null;
   }

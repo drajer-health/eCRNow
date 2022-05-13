@@ -56,8 +56,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
         hsd.setKarsActive(kars);
         logger.info(" Successfully set the KarsActive list ");
       } catch (JsonProcessingException e) {
-
-        e.printStackTrace();
+        logger.error("Exception Occurred: ", e);
       }
     }
 

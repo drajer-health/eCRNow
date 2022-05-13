@@ -5,9 +5,6 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +31,10 @@ public class InitiateReporting extends BsaAction {
     HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
     // Get necessary data to process.
-    Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+    ehrService.getFilteredData(data, resourceTypes);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled && Boolean.TRUE.equals(conditionsMet(data))) {
+    if (status != BsaActionStatusType.SCHEDULED && Boolean.TRUE.equals(conditionsMet(data))) {
 
       logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
 
@@ -47,7 +44,7 @@ public class InitiateReporting extends BsaAction {
       // Execute Related Actions.
       executeRelatedActions(data, ehrService);
 
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
 

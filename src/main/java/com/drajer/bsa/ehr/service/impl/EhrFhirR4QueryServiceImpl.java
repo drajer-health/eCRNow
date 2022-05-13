@@ -562,10 +562,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     docContextComp.setPeriod(period);
     documentReference.setContext(docContextComp);
 
-    String docReference =
-        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+    String docRef = FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
 
-    logger.debug("DocumentReference Object===========> {}", docReference);
+    logger.debug("DocumentReference Object===========> {}", docRef);
 
     return documentReference;
   }
@@ -575,7 +574,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     JSONObject tokenResponse = null;
 
-    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))) {
 
       tokenResponse = ehrAuthorizationService.getAuthorizationToken(hs);
 

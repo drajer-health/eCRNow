@@ -49,7 +49,7 @@ public class ValidateReport extends BsaAction {
     BsaActionStatusType status = processTimingData(data);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled || getIgnoreTimers()) {
+    if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
       // Get the Kar.
       KnowledgeArtifact art = data.getKar();
@@ -67,7 +67,7 @@ public class ValidateReport extends BsaAction {
         logger.info(" Validating FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
         validateFhirOutput(data, actStatus);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.Both) {
+      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Validating Both CDA and FHIR Output ");
         validateCdaOutput(data, actStatus);
@@ -75,28 +75,23 @@ public class ValidateReport extends BsaAction {
       }
 
       // Execute Sub and related actions
-      if (conditionsMet(data)) {
-
+      if (Boolean.TRUE.equals(conditionsMet(data))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
-
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
-
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } // Action to be executed
     else {
-
       logger.info(
-          " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
-      logger.info(" Setting Action Status : {}", status);
+          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+          status);
       actStatus.setActionStatus(status);
     }
 
     data.addActionStatus(data.getExecutionSequenceId(), actStatus);
-
     return actStatus;
   }
 
@@ -104,13 +99,11 @@ public class ValidateReport extends BsaAction {
 
     String cda = data.getSubmittedCdaData();
 
-    boolean validatedResult = CdaValidatorUtil.validateEicrXMLData(cda);
-
     // IF there are no exceptions then no need to set status.
     // Validator errors will be put into the log file.
     // There should not be any errors in production.
 
-    return validatedResult;
+    return CdaValidatorUtil.validateEicrXMLData(cda);
   }
 
   public void validateFhirOutput(KarProcessingData data, BsaActionStatus actStatus) {
@@ -121,7 +114,7 @@ public class ValidateReport extends BsaAction {
 
       List<DataRequirement> input = getInputData();
 
-      Set<Resource> resourcesToValidate = new HashSet<Resource>();
+      Set<Resource> resourcesToValidate = new HashSet<>();
 
       if (input != null) {
 
@@ -147,7 +140,7 @@ public class ValidateReport extends BsaAction {
           logger.warn("No validation endpoint set. Skipping validation");
         }
 
-        if (ActionUtils.operationOutcomeHasErrors(outcome)) {
+        if (Boolean.TRUE.equals(ActionUtils.operationOutcomeHasErrors(outcome))) {
 
           logger.error(
               " Total # of issues found in the Operation Outcome {}", outcome.getIssue().size());
@@ -166,7 +159,7 @@ public class ValidateReport extends BsaAction {
 
     } catch (Exception e) {
 
-      actStatus.setActionStatus(BsaActionStatusType.Failed);
+      actStatus.setActionStatus(BsaActionStatusType.FAILED);
 
       outcome
           .addIssue()

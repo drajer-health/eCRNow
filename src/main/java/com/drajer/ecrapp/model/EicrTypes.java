@@ -18,7 +18,7 @@ public final class EicrTypes {
     RRVS2, // May be Reportable
     RRVS3, // Not Reportable
     RRVS4, // No rule met
-    Unknown
+    UNKNOWN
   }
 
   public enum RrProcessingStatus {
