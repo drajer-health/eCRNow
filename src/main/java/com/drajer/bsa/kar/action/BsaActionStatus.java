@@ -30,8 +30,8 @@ public abstract class BsaActionStatus {
 
   public BsaActionStatus() {
     actionId = "";
-    actionType = ActionType.Unknown;
-    actionStatus = BsaActionStatusType.NotStarted;
+    actionType = ActionType.UNKNOWN;
+    actionStatus = BsaActionStatusType.NOT_STARTED;
     outputProduced = new HashSet<>();
   }
 

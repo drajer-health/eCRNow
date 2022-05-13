@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Dstu2ResourcesData {
 
+  public static final String OBSERVATION = "Observation";
   @Autowired FhirContextInitializer resourceData;
 
   private final Logger logger = LoggerFactory.getLogger(Dstu2ResourcesData.class);
@@ -225,7 +226,7 @@ public class Dstu2ResourcesData {
     Bundle bundle =
         (Bundle)
             resourceData.getObservationByPatientId(
-                launchDetails, client, context, "Observation", "laboratory");
+                launchDetails, client, context, OBSERVATION, "laboratory");
     List<Observation> observations = new ArrayList<>();
     List<CodeableConceptDt> observationCodes = new ArrayList<>();
     // Filter Observations based on Encounter Reference
@@ -289,7 +290,7 @@ public class Dstu2ResourcesData {
                 launchDetails,
                 client,
                 context,
-                "Observation",
+                OBSERVATION,
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = filterObservation(bundle, encounter, start, end);
@@ -311,7 +312,7 @@ public class Dstu2ResourcesData {
                 launchDetails,
                 client,
                 context,
-                "Observation",
+                OBSERVATION,
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = filterObservation(bundle, encounter, start, end);

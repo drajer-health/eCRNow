@@ -45,7 +45,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet && encounterClosed) {
+      if (Boolean.TRUE.equals(conditionsMet) && encounterClosed) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -60,7 +60,7 @@ public class CloseOutEicrAction extends AbstractAction {
               // check if the action is completed.
               String actionId = ract.getRelatedAction().getActionId();
 
-              if (!state.hasActionCompleted(actionId)) {
+              if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))) {
 
                 logger.info(
                     " Action {} is not completed , hence this action has to wait ", actionId);
@@ -100,7 +100,7 @@ public class CloseOutEicrAction extends AbstractAction {
 
         // Check Timing Data , Dont check if the state is already scheduled meaning the
         // job was scheduled already.
-        if (relatedActsDone) {
+        if (Boolean.TRUE.equals(relatedActsDone)) {
 
           logger.info(" All Related Actions are completed ");
 
@@ -138,7 +138,7 @@ public class CloseOutEicrAction extends AbstractAction {
             // Check Trigger Codes again in case the data has changed.
             PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 
-            if (newState.getMatchTriggerStatus().getTriggerMatchStatus()
+            if (Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())
                 && newState.getMatchTriggerStatus().getMatchedCodes() != null
                 && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
 

@@ -189,11 +189,11 @@ public class BaseKarsTest extends BaseIntegrationTest {
   protected Boolean reportBundleGenerated(String patientId, String planDefUrl) {
     String submittedActionId = String.format("%s-PlanDefinition/%s", "submit-eicr", planDefUrl);
     Boolean submitted =
-        validateActionStatus(submittedActionId, BsaTypes.BsaActionStatusType.Completed);
+        validateActionStatus(submittedActionId, BsaTypes.BsaActionStatusType.COMPLETED);
     String routeAndSendActionId =
         String.format("%s-PlanDefinition/%s", "route-and-send-eicr", planDefUrl);
     Boolean sent =
-        validateActionStatus(routeAndSendActionId, BsaTypes.BsaActionStatusType.Completed);
+        validateActionStatus(routeAndSendActionId, BsaTypes.BsaActionStatusType.COMPLETED);
     return submitted || sent;
   }
 

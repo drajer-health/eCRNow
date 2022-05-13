@@ -43,8 +43,7 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
    */
   @Override
   public KarExecutionState getKarExecutionStateById(UUID id) {
-    KarExecutionState kar = getSession().get(KarExecutionState.class, id);
-    return kar;
+    return getSession().get(KarExecutionState.class, id);
   }
 
   /**

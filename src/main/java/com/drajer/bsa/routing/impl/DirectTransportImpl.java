@@ -50,8 +50,6 @@ public class DirectTransportImpl implements DataTransportInterface {
   private static final Logger logger = LoggerFactory.getLogger(DirectTransportImpl.class);
 
   private static final String CDA_FILE_NAME = "eICR_Report";
-  private static final String XDM_FILE_NAME = "XDM_eICR_Report";
-
   private static final String IMAP = "imap";
   private static final String INBOX = "Inbox";
 
@@ -59,13 +57,13 @@ public class DirectTransportImpl implements DataTransportInterface {
 
   public class DirectMimeMessage extends MimeMessage {
 
-    Session session;
+    Session sessions;
     String messageId;
     String domain;
 
-    public DirectMimeMessage(Session sess, String id, String domainName) {
-      super(sess);
-      session = sess;
+    public DirectMimeMessage(Session ses, String id, String domainName) {
+      super(ses);
+      sessions = ses;
       messageId = id;
       domain = domainName;
     }
@@ -147,7 +145,7 @@ public class DirectTransportImpl implements DataTransportInterface {
       String username,
       String password,
       String port,
-      String receipientAddr,
+      String recipientAddr,
       InputStream is,
       String filename,
       String correlationId)
@@ -155,7 +153,7 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     Properties props = new Properties();
 
-    // Setup the proprerty to authenticate.
+    // Setup the property to authenticate.
     props.put("mail.smtp.auth", "true");
 
     // Trust all certificates
@@ -173,7 +171,7 @@ public class DirectTransportImpl implements DataTransportInterface {
     logger.info("Setting From Address {}", username);
     message.setFrom(new InternetAddress(username));
 
-    String toAddr = StringUtils.deleteWhitespace(receipientAddr);
+    String toAddr = StringUtils.deleteWhitespace(recipientAddr);
 
     message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddr));
 
@@ -183,13 +181,13 @@ public class DirectTransportImpl implements DataTransportInterface {
     message.setText(CDA_FILE_NAME);
 
     logger.info("Creating Message Body Part ");
-    BodyPart messageBodyPart = new MimeBodyPart();
+    BodyPart mimeBodyPart = new MimeBodyPart();
     Multipart multipart = new MimeMultipart();
     DataSource source = new ByteArrayDataSource(is, "application/xml; charset=UTF-8");
-    messageBodyPart.setDataHandler(new DataHandler(source));
+    mimeBodyPart.setDataHandler(new DataHandler(source));
 
-    messageBodyPart.setFileName(filename + ".xml");
-    multipart.addBodyPart(messageBodyPart);
+    mimeBodyPart.setFileName(filename + ".xml");
+    multipart.addBodyPart(mimeBodyPart);
 
     // Send the complete message parts
     message.setContent(multipart);
@@ -261,7 +259,7 @@ public class DirectTransportImpl implements DataTransportInterface {
    * @param username
    * @param password
    * @param port
-   * @param receipientAddr
+   * @param coorleationId
    */
   public void readMailUsingImap(
       String host, String username, String password, String port, String coorleationId) {
@@ -295,7 +293,7 @@ public class DirectTransportImpl implements DataTransportInterface {
       for (Message message : messages) {
 
         logger.info("Found unread email");
-        Enumeration headers = message.getAllHeaders();
+        message.getAllHeaders();
 
         mId = getMessageId(message);
         logger.info("Message-ID: {}", mId);

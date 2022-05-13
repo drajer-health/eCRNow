@@ -424,7 +424,7 @@ public class KarParserImpl implements KarParser {
 
         // This is being done currently since CheckResponse Action is not supported as of yet in the
         // KARs. Once it is supported this is not needed.
-        if (action.getType() == ActionType.SubmitReport) {
+        if (action.getType() == ActionType.SUBMIT_REPORT) {
 
           populateCheckResponseAction((SubmitReport) action, art, plan);
         }
@@ -446,7 +446,7 @@ public class KarParserImpl implements KarParser {
     action.setJsonParser(jsonParser);
     action.setRestTemplate(restTemplate);
     action.setIgnoreTimers(ignoreTimers);
-    action.setType(ActionType.CheckResponse);
+    action.setType(ActionType.CHECK_RESPONSE);
     action.setLogDirectory(logDirectory);
     action.setPhDao(phDao);
     action.setDirectReceiver(directInterface);
@@ -551,19 +551,19 @@ public class KarParserImpl implements KarParser {
     action.setJsonParser(this.jsonParser);
     action.setIgnoreTimers(this.ignoreTimers);
 
-    if (action.getType() == ActionType.EvaluateMeasure) {
+    if (action.getType() == ActionType.EVALUATE_MEASURE) {
       setMeasureParameters(act, action);
-    } else if (action.getType() == ActionType.ValidateReport) {
+    } else if (action.getType() == ActionType.VALIDATE_REPORT) {
       ValidateReport vr = (ValidateReport) (action);
       vr.setValidatorEndpoint(validatorEndpoint);
       vr.setPhDao(phDao);
-    } else if (action.getType() == ActionType.SubmitReport) {
+    } else if (action.getType() == ActionType.SUBMIT_REPORT) {
       SubmitReport sr = (SubmitReport) (action);
       sr.setSubmissionEndpoint(reportSubmissionEndpoint);
       sr.setPhDao(phDao);
       sr.setDirectSender(directInterface);
       populateCheckResponseAction(sr, art, plan);
-    } else if (action.getType() == ActionType.CreateReport) {
+    } else if (action.getType() == ActionType.CREATE_REPORT) {
       CreateReport cr = (CreateReport) action;
       cr.setPhDao(phDao);
     }

@@ -33,13 +33,13 @@ public class CheckTriggerCodes extends BsaAction {
 
     CheckTriggerCodeStatus actStatus = new CheckTriggerCodeStatus();
     actStatus.setActionId(this.getActionId());
-    actStatus.setActionType(ActionType.CheckTriggerCodes);
+    actStatus.setActionType(ActionType.CHECK_TRIGGER_CODES);
 
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled) {
+    if (status != BsaActionStatusType.SCHEDULED) {
 
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
@@ -48,7 +48,7 @@ public class CheckTriggerCodes extends BsaAction {
       HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
 
       // Get necessary data to process.
-      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      ehrService.getFilteredData(data, resourceTypes);
 
       // Apply filters for data and then send the collections to the Condition Evaluator.
       for (DataRequirement dr : inputData) {
@@ -87,21 +87,17 @@ public class CheckTriggerCodes extends BsaAction {
       data.addActionStatus(getActionId(), actStatus);
 
       if (Boolean.TRUE.equals(conditionsMet(data))) {
-
         // Execute sub Actions
         executeSubActions(data, ehrService);
-
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
-
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
-
       logger.info(
-          " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
-      logger.info(" Setting Action Status : {}", status);
+          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+          status);
       actStatus.setActionStatus(status);
     }
 

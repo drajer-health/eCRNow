@@ -2,7 +2,6 @@ package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
@@ -81,9 +80,8 @@ public class KarProcessorImpl implements KarProcessor {
 
       logger.info(" **** Executing Action Id {} **** ", action.getActionId());
 
-      BsaActionStatus status = null;
       try {
-        status = action.process(data, ehrInterface);
+        action.process(data, ehrInterface);
       } catch (Exception e) {
         logger.error(e.getMessage());
         throw e;
@@ -192,7 +190,6 @@ public class KarProcessorImpl implements KarProcessor {
 
     // Get the action that needs to be executed.
     BsaAction action = kd.getKar().getAction(data.getActionId());
-    BsaActionStatus status = null;
 
     if (action != null) {
       logger.info(
@@ -201,7 +198,7 @@ public class KarProcessorImpl implements KarProcessor {
           action.getType());
 
       try {
-        status = action.process(kd, ehrInterface);
+        action.process(kd, ehrInterface);
 
         saveDataForDebug(kd);
         logger.info(

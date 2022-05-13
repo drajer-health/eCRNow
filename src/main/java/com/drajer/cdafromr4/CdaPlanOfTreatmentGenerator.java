@@ -241,8 +241,9 @@ public class CdaPlanOfTreatmentGenerator {
         if (s.getCode() != null
             && s.getCode().getCoding() != null
             && !s.getCode().getCoding().isEmpty()
-            && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)
+            && Boolean.TRUE.equals(
+                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                    s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))
             && s.getStatus() != null
             && s.getStatus() == ServiceRequestStatus.ACTIVE) {
 

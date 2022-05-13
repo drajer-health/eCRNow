@@ -521,10 +521,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     docContextComp.setPeriod(period);
     documentReference.setContext(docContextComp);
 
-    String docReference =
-        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+    String docRef = FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
 
-    logger.debug("DocumentReference Object===========> {}", docReference);
+    logger.debug("DocumentReference Object===========> {}", docRef);
 
     return documentReference;
   }
@@ -532,8 +531,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public JSONObject getAuthorizationToken(HealthcareSetting hs) {
 
-    JSONObject tokenResponse = authUtils.getToken(hs);
-
-    return tokenResponse;
+    return authUtils.getToken(hs);
   }
 }

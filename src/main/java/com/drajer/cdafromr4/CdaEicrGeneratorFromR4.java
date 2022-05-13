@@ -23,7 +23,7 @@ public class CdaEicrGeneratorFromR4 {
       logger.info("Preparing Jurisdiction data");
       data.prepareJurisdicationData();
 
-      if (data.hasRequiredDataForEicr()) {
+      if (Boolean.TRUE.equals(data.hasRequiredDataForEicr())) {
         logger.info("Bundle has required data for Eicr");
         eICR.append(CdaHeaderGenerator.createCdaHeader(data, details, ecr));
         eICR.append(CdaBodyGenerator.generateCdaBody(data, details));

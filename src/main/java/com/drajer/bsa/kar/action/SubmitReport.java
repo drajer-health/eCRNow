@@ -14,7 +14,6 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
-import com.drajer.bsa.routing.impl.RestfulTransportImpl;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import java.time.Instant;
@@ -36,8 +35,8 @@ public class SubmitReport extends BsaAction {
 
   private String submissionEndpoint;
 
-  private static final int rrCheckTime = 60;
-  private static final String rrCheckTimeUnits = "s";
+  private static final int RR_CHECK_TIME = 60;
+  private static final String RR_CHECK_TIME_UNITS = "s";
 
   private static final FhirContext context = FhirContext.forR4();
 
@@ -46,8 +45,6 @@ public class SubmitReport extends BsaAction {
   private PublicHealthMessagesDao phDao;
 
   private DirectTransportImpl directSender;
-
-  private RestfulTransportImpl restfulSubmitter;
 
   private String checkResponseActionId;
 
@@ -94,7 +91,7 @@ public class SubmitReport extends BsaAction {
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
 
-    if (status != BsaActionStatusType.Scheduled || getIgnoreTimers()) {
+    if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
       // Get the Kar.
       KnowledgeArtifact art = data.getKar();
@@ -112,43 +109,38 @@ public class SubmitReport extends BsaAction {
         logger.info(" Submitting FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
         submitFhirOutput(data, actStatus);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.Both) {
+      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Submitting Both CDA and FHIR Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
         submitFhirOutput(data, actStatus);
       }
 
-      if (conditionsMet(data)) {
-
+      if (Boolean.TRUE.equals(conditionsMet(data))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
-
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
-
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
-
       logger.info(
-          " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
-      logger.info(" Setting Action Status : {}", status);
+          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+          status);
       actStatus.setActionStatus(status);
     }
 
     data.addActionStatus(data.getExecutionSequenceId(), actStatus);
-
     return actStatus;
   }
 
   public boolean submitCdaOutput(
       KarProcessingData data, BsaActionStatus actStatus, HealthcareSetting hs) {
 
-    String cda = data.getSubmittedCdaData();
+    data.getSubmittedCdaData();
 
-    if (hs.getIsDirect()) {
+    if (Boolean.TRUE.equals(hs.getIsDirect())) {
 
       logger.info(" Sending payload via Direct Transport ");
 
@@ -157,7 +149,7 @@ public class SubmitReport extends BsaAction {
       logger.info(" Finished Sending payload via Direct Transport ");
 
       // Setup a rrCheck schedule job after a delay of 300 seconds.
-      if (!ignoreTimers) {
+      if (Boolean.FALSE.equals(ignoreTimers)) {
 
         logger.info(" Setting up Timer to check for Reportability Responses after 5 minutes ");
 
@@ -165,13 +157,13 @@ public class SubmitReport extends BsaAction {
             data.getKarExecutionStateService().saveOrUpdate(data.getKarExecutionState());
 
         Duration d = new Duration();
-        d.setCode(rrCheckTimeUnits);
-        d.setUnit(rrCheckTimeUnits);
-        d.setValue(rrCheckTime);
+        d.setCode(RR_CHECK_TIME_UNITS);
+        d.setUnit(RR_CHECK_TIME_UNITS);
+        d.setValue(RR_CHECK_TIME);
         Instant t = ApplicationUtils.convertDurationToInstant(d);
 
         scheduler.scheduleJob(
-            st.getId(), getCheckResponseActionId(), BsaTypes.ActionType.CheckResponse, t);
+            st.getId(), getCheckResponseActionId(), BsaTypes.ActionType.CHECK_RESPONSE, t);
 
         logger.info(" Finished scheduling timer for checking RR ");
 
@@ -181,9 +173,9 @@ public class SubmitReport extends BsaAction {
             " Reportability Response will not be ready, so no need to check when timers are ignored ");
       }
 
-    } else if (hs.getIsRestAPI()) {
+    } else if (Boolean.TRUE.equals(hs.getIsRestAPI())) {
 
-    } else if (hs.getIsXdr()) {
+    } else if (Boolean.TRUE.equals(hs.getIsXdr())) {
 
     } else {
 

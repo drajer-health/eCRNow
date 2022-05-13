@@ -47,7 +47,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     try {
 
-      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))) {
 
         logger.info(" System Launch authorization is configured for EHR ");
 
@@ -68,7 +68,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", fsd.getScopes());
 
-        if (fsd.getRequireAud()) map.add("aud", fsd.getFhirServerBaseURL());
+        if (Boolean.TRUE.equals(fsd.getRequireAud())) {
+          map.add("aud", fsd.getFhirServerBaseURL());
+        }
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =

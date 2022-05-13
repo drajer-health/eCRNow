@@ -247,7 +247,7 @@ public class R3ToR2DataConverterUtils {
     PatientExecutionState state = new PatientExecutionState();
 
     // Set Trigger codes.
-    List<BsaActionStatus> statuses = data.getActionStatusByType(ActionType.CheckTriggerCodes);
+    List<BsaActionStatus> statuses = data.getActionStatusByType(ActionType.CHECK_TRIGGER_CODES);
 
     for (BsaActionStatus entry : statuses) {
 
@@ -277,12 +277,12 @@ public class R3ToR2DataConverterUtils {
 
   private static JobStatus getJobStatusForActionStatus(BsaActionStatusType status) {
 
-    if (status == BsaActionStatusType.Completed) return JobStatus.COMPLETED;
-    else if (status == BsaActionStatusType.Aborted) return JobStatus.ABORTED;
-    else if (status == BsaActionStatusType.Failed) return JobStatus.ABORTED;
-    else if (status == BsaActionStatusType.InProgress) return JobStatus.IN_PROGRESS;
-    else if (status == BsaActionStatusType.NotStarted) return JobStatus.NOT_STARTED;
-    else if (status == BsaActionStatusType.Scheduled) return JobStatus.SCHEDULED;
+    if (status == BsaActionStatusType.COMPLETED) return JobStatus.COMPLETED;
+    else if (status == BsaActionStatusType.ABORTED) return JobStatus.ABORTED;
+    else if (status == BsaActionStatusType.FAILED) return JobStatus.ABORTED;
+    else if (status == BsaActionStatusType.IN_PROGRESS) return JobStatus.IN_PROGRESS;
+    else if (status == BsaActionStatusType.NOT_STARTED) return JobStatus.NOT_STARTED;
+    else if (status == BsaActionStatusType.SCHEDULED) return JobStatus.SCHEDULED;
     else return JobStatus.ABORTED;
   }
 }

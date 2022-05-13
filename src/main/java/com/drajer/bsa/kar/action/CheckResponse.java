@@ -47,7 +47,7 @@ public class CheckResponse extends BsaAction {
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
 
-    if (status != BsaActionStatusType.Scheduled || getIgnoreTimers()) {
+    if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
       HealthcareSetting hs = data.getHealthcareSetting();
 

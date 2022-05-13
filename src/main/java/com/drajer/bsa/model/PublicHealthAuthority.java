@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @DynamicUpdate
 public class PublicHealthAuthority implements FhirServerDetails {
 
-  @Transient private final Logger logger = LoggerFactory.getLogger(HealthcareSetting.class);
+  @Transient private final Logger logger = LoggerFactory.getLogger(PublicHealthAuthority.class);
 
   /** The attribute represents the primary key for the table and is auto incremented. */
   @Id
@@ -132,14 +132,6 @@ public class PublicHealthAuthority implements FhirServerDetails {
 
   public void setFhirServerBaseURL(String fhirServerBaseURL) {
     this.fhirServerBaseURL = fhirServerBaseURL;
-  }
-
-  public String getTokenURL() {
-    return tokenUrl;
-  }
-
-  public void setTokenURL(String tokenURL) {
-    this.tokenUrl = tokenURL;
   }
 
   public String getScopes() {

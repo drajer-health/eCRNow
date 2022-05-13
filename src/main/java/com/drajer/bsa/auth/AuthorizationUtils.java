@@ -33,16 +33,16 @@ public class AuthorizationUtils {
     JSONObject token;
     BsaTypes.AuthenticationType authTYpe = BsaTypes.getAuthenticationType(fsd.getAuthType());
     switch (authTYpe) {
-      case UserNamePwd:
+      case USER_NAME_PWD:
         token = passwordAuthorizationService.getAuthorizationToken(fsd);
         break;
-      case SofProvider:
+      case SOF_PROVIDER:
         token = backendAuthorizationService.getAuthorizationToken(fsd);
         break;
-      case System:
+      case SYSTEM:
         token = ehrAuthorizationService.getAuthorizationToken(fsd);
         break;
-      case Unknown:
+      case UNKNOWN:
       default:
         Map<String, Object> tokenParams = new HashMap<>();
         tokenParams.put("expires_in", 60 * 60 * 24);

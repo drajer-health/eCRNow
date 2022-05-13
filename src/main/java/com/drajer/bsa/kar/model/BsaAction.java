@@ -188,15 +188,15 @@ public abstract class BsaAction {
 
   public BsaActionStatusType processTimingData(KarProcessingData kd) {
 
-    if (timingData != null && !timingData.isEmpty() && !ignoreTimers) {
+    if (timingData != null && !timingData.isEmpty() && Boolean.FALSE.equals(ignoreTimers)) {
 
       // Check and setup future timers.
 
-      return BsaActionStatusType.Scheduled;
+      return BsaActionStatusType.SCHEDULED;
     } else {
 
       logger.info(" No timing data, so continue with the execution of the action ");
-      return BsaActionStatusType.InProgress;
+      return BsaActionStatusType.IN_PROGRESS;
     }
   }
 

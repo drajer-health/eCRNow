@@ -192,10 +192,10 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).startsWith("1.")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
-        if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).startsWith("4.")) {
           fhirVersion = FhirVersionEnum.R4.toString();
         }
 
@@ -217,10 +217,11 @@ public class LaunchController {
 
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
-          if (!checkWithExistingPatientAndEncounter(
-              systemLaunch.getPatientId(),
-              systemLaunch.getEncounterId(),
-              systemLaunch.getFhirServerURL())) {
+          if (Boolean.FALSE.equals(
+              checkWithExistingPatientAndEncounter(
+                  systemLaunch.getPatientId(),
+                  systemLaunch.getEncounterId(),
+                  systemLaunch.getFhirServerURL()))) {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));

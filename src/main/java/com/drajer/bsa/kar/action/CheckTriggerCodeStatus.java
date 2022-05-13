@@ -4,6 +4,7 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -39,44 +40,30 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
       Set<String> codesToMatch = mtc.getMatchedCodes();
       Set<String> matches = SetUtils.intersection(codes, codesToMatch);
 
-      if (matches != null && !matches.isEmpty()) {
+      if (matches == null || matches.isEmpty()) {
+        matches = SetUtils.intersection(codes, mtc.getMatchedValues());
+      }
 
+      if (matches != null && !matches.isEmpty()) {
         ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
         rc.setValueSet(mtc.getValueSet());
         rc.setValueSetVersion(mtc.getValueSetVersion());
 
-        String rcode = matches.stream().findFirst().get();
-
-        String[] rcodes = rcode.split("\\|");
-
-        rc.setCode(rcodes[1]);
-        rc.setCodeSystem(rcodes[0]);
-        rc.setAllMatches(matches);
-
-        rmtc = new Pair<>(true, rc);
-
-        break;
-      } else {
-
-        matches = SetUtils.intersection(codes, mtc.getMatchedValues());
-
-        if (matches != null && !matches.isEmpty()) {
-          ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
-          rc.setValueSet(mtc.getValueSet());
-          rc.setValueSetVersion(mtc.getValueSetVersion());
-
-          String rcode = matches.stream().findFirst().get();
+        Optional<String> value = matches.stream().findFirst();
+        if (value.isPresent()) {
+          String rcode = value.get();
           String[] rcodes = rcode.split("|");
 
           rc.setCode(rcodes[1]);
           rc.setCodeSystem(rcodes[0]);
-          rc.setAllMatches(matches);
-
-          rmtc.setAt0(true);
-          rmtc.setAt1(rc);
-
-          break;
         }
+
+        rc.setAllMatches(matches);
+
+        rmtc.setAt0(true);
+        rmtc.setAt1(rc);
+
+        break;
       }
     }
 
@@ -114,20 +101,20 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
   }
 
   public void addMatchedCodes(
-      Set<String> codes, String valueSet, String path, String valuesetVersion) {
+      Set<String> codes, String valueSet, String path, String valueSetVersion) {
 
-    MatchedTriggerCodes mtc = getMatchedTriggerCodes(path, valueSet, valuesetVersion);
+    MatchedTriggerCodes mtcCodes = getMatchedTriggerCodes(path, valueSet, valueSetVersion);
 
-    if (mtc == null) {
-      mtc = new MatchedTriggerCodes();
-      mtc.setMatchedCodes(codes);
-      mtc.setValueSet(valueSet);
-      mtc.setValueSetVersion(valuesetVersion);
-      mtc.setMatchedPath(path);
-      matchedCodes.add(mtc);
+    if (mtcCodes == null) {
+      mtcCodes = new MatchedTriggerCodes();
+      mtcCodes.setMatchedCodes(codes);
+      mtcCodes.setValueSet(valueSet);
+      mtcCodes.setValueSetVersion(valueSetVersion);
+      mtcCodes.setMatchedPath(path);
+      matchedCodes.add(mtcCodes);
       triggerMatchStatus = true;
     } else {
-      mtc.addCodes(codes);
+      mtcCodes.addCodes(codes);
       triggerMatchStatus = true;
     }
   }

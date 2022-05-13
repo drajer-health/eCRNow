@@ -47,7 +47,6 @@ public class RrReceiverImpl implements RrReceiver {
   private final Logger logger = LoggerFactory.getLogger(RrReceiverImpl.class);
 
   private static final String ACCESS_TOKEN = "access_token";
-  private static final String EXPIRES_IN = "expires_in";
 
   @Autowired HealthcareSettingsDao hsDao;
 
@@ -137,7 +136,7 @@ public class RrReceiverImpl implements RrReceiver {
           // Set the RRVS1 (Reportable) , RRVS2 (May be Reportable),
           // RRVS3 (Not Reportable), RRVS4 (No Rule Met) attribute to push to EHR.
           phm.setResponseProcessingInstruction(rrModel.getReportableStatus().getCode());
-        } else phm.setResponseProcessingInstruction(EicrTypes.ReportabilityType.Unknown.toString());
+        } else phm.setResponseProcessingInstruction(EicrTypes.ReportabilityType.UNKNOWN.toString());
 
         // Check where the response needs to be delivered.
         HealthcareSetting hs = hsDao.getHealthcareSettingByUrl(phm.getFhirServerBaseUrl());
@@ -149,10 +148,9 @@ public class RrReceiverImpl implements RrReceiver {
 
           try {
             // Check and create Document Reference
-            if (hs.getCreateDocRefForResponse()) {
+            if (Boolean.TRUE.equals(hs.getCreateDocRefForResponse())) {
 
-              DocumentReference docref =
-                  createAndSubmitDocRefToEhr(phm, rrModel, hs, data.getRrXml());
+              createAndSubmitDocRefToEhr(phm, rrModel, hs, data.getRrXml());
             }
 
           } catch (Exception e) {
@@ -239,7 +237,7 @@ public class RrReceiverImpl implements RrReceiver {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_XML);
 
-    HttpEntity<String> request = new HttpEntity<String>(rrXml, headers);
+    HttpEntity<String> request = new HttpEntity<>(rrXml, headers);
 
     ResponseEntity<?> response =
         restTemplate.exchange(

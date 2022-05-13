@@ -57,6 +57,9 @@ import org.slf4j.LoggerFactory;
 
 public class CdaFhirUtilities {
 
+  public static final String PRINTING_THE_CLASS_NAME = "Printing the class name {}";
+  public static final String COMPLETED = "completed";
+
   private CdaFhirUtilities() {
     throw new IllegalStateException("Utility class");
   }
@@ -150,7 +153,7 @@ public class CdaFhirUtilities {
         if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
 
           // if the top level extension has Coding then we will use it.
-          if (ext.getValue() != null && (ext.getValue() instanceof Coding)) {
+          if (ext.getValue() instanceof Coding) {
 
             logger.debug("Found Extension at top level ");
             return (Coding) ext.getValue();
@@ -162,7 +165,7 @@ public class CdaFhirUtilities {
 
             for (Extension subext : subExts) {
 
-              if (subext.getValue() != null && (subext.getValue() instanceof Coding)) {
+              if (subext.getValue() instanceof Coding) {
 
                 logger.debug("Found Extension nested as children ");
                 return (Coding) subext.getValue();
@@ -604,7 +607,7 @@ public class CdaFhirUtilities {
         foundCodeSystem = true;
       }
 
-      if (csOptional && !StringUtils.isEmpty(c.getDisplay())) {
+      if (Boolean.TRUE.equals(csOptional) && !StringUtils.isEmpty(c.getDisplay())) {
         anyDisplay = c.getDisplay();
       }
     }
@@ -716,7 +719,7 @@ public class CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (!valueTrue)
+    if (Boolean.FALSE.equals(valueTrue))
       sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional, ""));
     else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
 
@@ -758,7 +761,7 @@ public class CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (!valueTrue) sb.append(getCodingXml(codes, cdName, ""));
+    if (Boolean.FALSE.equals(valueTrue)) sb.append(getCodingXml(codes, cdName, ""));
     else sb.append(getCodingXmlForValue(codes, cdName));
 
     return sb.toString();
@@ -774,7 +777,7 @@ public class CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (!valueTrue)
+    if (Boolean.FALSE.equals(valueTrue))
       sb.append(
           getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));
     else
@@ -805,7 +808,7 @@ public class CdaFhirUtilities {
 
         if (!csd.getValue0().isEmpty()
             && c.getSystem().contentEquals(codeSystemUrl)
-            && !foundCodeForCodeSystem) {
+            && Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
           logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
@@ -834,7 +837,7 @@ public class CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      if (!foundCodeForCodeSystem) {
+      if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
         // If we dont find the preferred code system, then add NF of OTH along with translations.
         sb.append(
@@ -849,7 +852,7 @@ public class CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (foundCodeForCodeSystem || (!csOptional)) {
+    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || Boolean.FALSE.equals(csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();
@@ -865,7 +868,7 @@ public class CdaFhirUtilities {
       Boolean first = true;
       for (Coding c : codes) {
 
-        if (first) {
+        if (Boolean.TRUE.equals(first)) {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -913,7 +916,7 @@ public class CdaFhirUtilities {
       Boolean cdStarted = false;
       for (Coding c : codes) {
 
-        if (first || !cdStarted) {
+        if (Boolean.TRUE.equals(first) || Boolean.FALSE.equals(cdStarted)) {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -929,7 +932,7 @@ public class CdaFhirUtilities {
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                     cdName, mappedCd, csd.getValue0(), csd.getValue1(), c.getDisplay()));
           }
-        } else if (cdStarted) {
+        } else if (Boolean.TRUE.equals(cdStarted)) {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
           String mappedCode =
@@ -950,9 +953,9 @@ public class CdaFhirUtilities {
       }
 
       // At cd started...close the tag
-      if (cdStarted) sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+      if (Boolean.TRUE.equals(cdStarted)) sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
 
-    } else if (includeNullFlavor) {
+    } else if (Boolean.TRUE.equals(includeNullFlavor)) {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
@@ -978,7 +981,7 @@ public class CdaFhirUtilities {
         if (!csd.getValue0().isEmpty()
             && !csd.getValue1().isEmpty()
             && c.getSystem().contentEquals(codeSystemUrl)
-            && !foundCodeForCodeSystem) {
+            && Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
           logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
@@ -1000,7 +1003,7 @@ public class CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      if (!foundCodeForCodeSystem) {
+      if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
         // If we dont find the preferred code system, then add NF of OTH along with translations.
         sb.append(
@@ -1015,7 +1018,7 @@ public class CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (foundCodeForCodeSystem || (!csOptional)) {
+    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || Boolean.FALSE.equals(csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();
@@ -1031,7 +1034,7 @@ public class CdaFhirUtilities {
       Boolean first = true;
       for (Coding c : codes) {
 
-        if (first) {
+        if (Boolean.TRUE.equals(first)) {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -1075,7 +1078,7 @@ public class CdaFhirUtilities {
       Boolean cdStarted = false;
       for (Coding c : codes) {
 
-        if (first || !cdStarted) {
+        if (Boolean.TRUE.equals(first) || Boolean.FALSE.equals(cdStarted)) {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -1091,7 +1094,7 @@ public class CdaFhirUtilities {
                 CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                     mappedCode, csd.getValue0(), csd.getValue1(), c.getDisplay()));
           }
-        } else if (cdStarted) {
+        } else if (Boolean.TRUE.equals(cdStarted)) {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
           String mappedCode =
@@ -1112,9 +1115,9 @@ public class CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      if (cdStarted)
+      if (Boolean.TRUE.equals(cdStarted))
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
-    } else if (includeNullFlavor) {
+    } else if (Boolean.TRUE.equals(includeNullFlavor)) {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
@@ -1555,7 +1558,7 @@ public class CdaFhirUtilities {
 
           for (Coding c : cds) {
 
-            if (!first) {
+            if (Boolean.FALSE.equals(first)) {
 
               val.append(CdaGeneratorConstants.SPACE)
                   .append(CdaGeneratorConstants.PIPE)
@@ -1631,7 +1634,7 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXml(cds, elName, "");
+        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName, "");
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof CodeableConcept) {
@@ -1640,7 +1643,7 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXml(cds, elName, "");
+        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName, "");
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof Quantity) {
@@ -1672,20 +1675,23 @@ public class CdaFhirUtilities {
       } else if (dt instanceof CodeType) {
 
         CodeType cd = (CodeType) dt;
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForCD(elName, cd.getCode());
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForCD(elName, cd.getCode());
         else val += CdaGeneratorUtils.getXmlForValueString(cd.getCode());
       } else if (dt instanceof StringType) {
 
         StringType st = (StringType) dt;
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
       }
 
-      logger.debug("Printing the class name {}", dt.getClass());
+      logger.debug(PRINTING_THE_CLASS_NAME, dt.getClass());
       return val;
     }
 
-    if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
+    if (Boolean.FALSE.equals(valFlag))
+      val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
 
     return val;
@@ -1715,7 +1721,7 @@ public class CdaFhirUtilities {
         }
       }
 
-      logger.debug("Printing the class name {}", dt.getClass());
+      logger.debug(PRINTING_THE_CLASS_NAME, dt.getClass());
       return val;
     }
 
@@ -1759,8 +1765,9 @@ public class CdaFhirUtilities {
               if (cmed.getCode() != null
                   && cmed.getCode().getCoding() != null
                   && !cmed.getCode().getCoding().isEmpty()
-                  && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                      cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+                  && Boolean.TRUE.equals(
+                      CdaFhirUtilities.isCodingPresentForCodeSystem(
+                          cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
                 logger.debug("Found Medication for code system in code element");
                 // Found the Medication that matters.
@@ -1786,8 +1793,9 @@ public class CdaFhirUtilities {
 
                       if (cc.getCoding() != null
                           && !cc.getCoding().isEmpty()
-                          && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                              cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+                          && Boolean.TRUE.equals(
+                              CdaFhirUtilities.isCodingPresentForCodeSystem(
+                                  cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
                         codeXml =
                             getXmlForTypeForCodeSystem(
                                 cc, elName, valFlag, codeSystemUrl, csOptional);
@@ -1824,7 +1832,8 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
+        if (Boolean.FALSE.equals(valFlag))
+          val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
         else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else if (dt instanceof CodeableConcept) {
@@ -1833,20 +1842,23 @@ public class CdaFhirUtilities {
 
         List<Coding> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
+        if (Boolean.FALSE.equals(valFlag))
+          val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
         else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else {
 
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
       }
 
-      logger.debug("Printing the class name {}", dt.getClass());
+      logger.debug(PRINTING_THE_CLASS_NAME, dt.getClass());
       return val;
     }
 
-    if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+    if (Boolean.FALSE.equals(valFlag))
+      val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
 
     return val;
@@ -1863,7 +1875,7 @@ public class CdaFhirUtilities {
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
-      if (mtc.hasMatchedTriggerCodes(matchResourceType)) {
+      if (Boolean.TRUE.equals(mtc.hasMatchedTriggerCodes(matchResourceType))) {
 
         logger.debug("Found Matched Codes for Resource Type {}", matchResourceType);
 
@@ -1896,7 +1908,7 @@ public class CdaFhirUtilities {
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
-      if (mtc.hasMatchedTriggerValue(matchResourceType)) {
+      if (Boolean.TRUE.equals(mtc.hasMatchedTriggerValue(matchResourceType))) {
 
         logger.debug("Found Matched Codes for Resource Type {}", matchResourceType);
 
@@ -1940,7 +1952,7 @@ public class CdaFhirUtilities {
             && !c.getCode().isEmpty()
             && !c.getSystem().isEmpty()
             && c.getSystem().contentEquals(csUrl)
-            && isCodePresent(matchedCodes, c.getCode())) {
+            && Boolean.TRUE.equals(isCodePresent(matchedCodes, c.getCode()))) {
 
           logger.debug("Found the Coding for Codesystem {} and Code =  {}", csUrl, c.getCode());
 
@@ -2004,7 +2016,7 @@ public class CdaFhirUtilities {
               && !cd.getCode().isEmpty()
               && code.contentEquals(cd.getCode())
               && csUrl.contentEquals(cd.getSystem())
-              && !foundCodings) {
+              && Boolean.FALSE.equals(foundCodings)) {
 
             logger.debug(
                 " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
@@ -2059,7 +2071,7 @@ public class CdaFhirUtilities {
       }
     }
 
-    if (foundCodings) {
+    if (Boolean.TRUE.equals(foundCodings)) {
       retval.append(translations.toString());
       retval.append(CdaGeneratorUtils.getXmlForEndElement(elementName));
     } else {
@@ -2100,8 +2112,8 @@ public class CdaFhirUtilities {
         || val.equalsIgnoreCase("intended")
         || val.equalsIgnoreCase("not-taken")) {
       return "active";
-    } else if (val.equalsIgnoreCase("completed")) {
-      return "completed";
+    } else if (val.equalsIgnoreCase(COMPLETED)) {
+      return COMPLETED;
     } else if (val.equalsIgnoreCase("entered-in-error")) {
       return "nullified";
     } else if (val.equalsIgnoreCase("stopped")) {
@@ -2112,6 +2124,6 @@ public class CdaFhirUtilities {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
       return "held";
-    } else return "completed";
+    } else return COMPLETED;
   }
 }

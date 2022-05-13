@@ -3,6 +3,7 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.AbstractDao;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,13 +45,13 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
   @Override
   public List<PublicHealthMessage> getPublicHealthMessage(Map<String, String> searchParams) {
     // TODO Auto-generated method stub
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
   public List<PublicHealthMessage> getByXRequestId(String xRequestId) {
     // TODO Auto-generated method stub
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

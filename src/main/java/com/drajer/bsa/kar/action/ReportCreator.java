@@ -53,11 +53,11 @@ public abstract class ReportCreator {
         } catch (IllegalAccessException e) {
           logger2.error(" IllegalAccess Exception in creating reporting class {}", propName, e);
         } catch (ClassNotFoundException e) {
-          logger2.error(" ClassNotFoudn Exception in creating reporting class {}", propName, e);
+          logger2.error(" ClassNotFound Exception in creating reporting class {}", propName, e);
         }
       }
     } catch (IOException ex) {
-      logger2.error("Error while loading Action Classes from Proporties File ");
+      logger2.error("Error while loading Action Classes from Properties File ");
     }
   }
 

@@ -4,7 +4,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.ehr.subscriptions.SubscriptionGeneratorService;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KarProcessingData;
-import com.drajer.bsa.service.impl.SubscriptionNotificationReceiverImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,20 +29,20 @@ import org.springframework.stereotype.Service;
 public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
 
   private final String notificationEndpoint;
-  private final String NAMED_EVENT_EXTENSION =
+  private static final String NAMED_EVENT_EXTENSION =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-us-ph-namedEventType";
-  private final String NAMED_EVENT_CODE_SYSTEM =
+  private static final String NAMED_EVENT_CODE_SYSTEM =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
-  private final String BACKPORT_SUBSCRIPTION =
+  private static final String BACKPORT_SUBSCRIPTION =
       "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscription";
-  private final String BACKPORT_TOPIC =
+  private static final String BACKPORT_TOPIC =
       "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-topic-canonical";
-  private final String BACKPORT_PAYLOAD =
+  private static final String BACKPORT_PAYLOAD =
       "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-payload-content";
-  private final String BACKPORT_ADDITIONAL_CRITERIA =
+  private static final String BACKPORT_ADDITIONAL_CRITERIA =
       "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-additional-criteria";
 
-  private final Logger logger = LoggerFactory.getLogger(SubscriptionNotificationReceiverImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(SubscriptionGeneratorImpl.class);
 
   public SubscriptionGeneratorImpl(@Value("${notification.endpoint}") String notificationEndpoint) {
     this.notificationEndpoint = notificationEndpoint;
@@ -61,7 +60,7 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
 
     if (status.getIsActive() && status.getSubscriptionsEnabled()) {
       Set<String> subscriptions = status.getSubscriptions();
-      if (subscriptions.size() == 0) {
+      if (subscriptions.isEmpty()) {
         List<Subscription> subscriptionResources =
             subscriptionsFromBundle(kd.getKar().getOriginalKarBundle());
         for (Subscription sub : subscriptionResources) {
@@ -177,15 +176,15 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
       subscription.addExtension(
           BACKPORT_TOPIC,
           new UriType(String.format("http://example.org/medmorph/subscriptiontopic/%s", code)));
-      CodeType _payload = new CodeType("application/fhir+json");
-      _payload.addExtension(BACKPORT_PAYLOAD, new CodeType("full-resource"));
-      subscriptionChannelComponent.setPayloadElement(_payload);
+      CodeType payload = new CodeType("application/fhir+json");
+      payload.addExtension(BACKPORT_PAYLOAD, new CodeType("full-resource"));
+      subscriptionChannelComponent.setPayloadElement(payload);
     }
 
     subscription.setChannel(subscriptionChannelComponent);
     if (subscription.getCriteria().equals("Medication")) {
-      StringType _criteria = new StringType("MedicationRequest?_lastUpdated=gt2021-01-01");
-      _criteria
+      StringType criteriaElement = new StringType("MedicationRequest?_lastUpdated=gt2021-01-01");
+      criteriaElement
           .addExtension()
           .setUrl(BACKPORT_ADDITIONAL_CRITERIA)
           .setValue(new StringType("MedicationDispense"))
@@ -195,7 +194,7 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
           .addExtension()
           .setUrl(BACKPORT_ADDITIONAL_CRITERIA)
           .setValue(new StringType("MedicationAdministration"));
-      subscription.setCriteriaElement(_criteria);
+      subscription.setCriteriaElement(criteriaElement);
     }
 
     return subscription;

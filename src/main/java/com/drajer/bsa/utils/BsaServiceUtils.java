@@ -412,7 +412,7 @@ public class BsaServiceUtils {
           if (mh.getEventCoding() != null
               && mh.getEventCoding()
                   .getCode()
-                  .equals(BsaTypes.getMessageTypeString(MessageType.CdaEicrMessage))) {
+                  .equals(BsaTypes.getMessageTypeString(MessageType.CDA_EICR_MESSAGE))) {
 
             return true;
           } // If Message Type

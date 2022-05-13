@@ -1,6 +1,5 @@
 package com.drajer.bsa.kar.condition;
 
-import ca.uhn.fhir.fhirpath.IFhirPath;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
@@ -41,7 +40,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
-  IFhirPath fhirPathProcessor;
   ExpressionEvaluator expressionEvaluator;
 
   @Override
