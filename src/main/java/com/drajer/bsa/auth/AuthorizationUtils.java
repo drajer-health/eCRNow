@@ -36,13 +36,15 @@ public class AuthorizationUtils {
       case USER_NAME_PWD:
         token = passwordAuthorizationService.getAuthorizationToken(fsd);
         break;
-      case SOF_PROVIDER:
+      case SOF_BACKEND:
         token = backendAuthorizationService.getAuthorizationToken(fsd);
         break;
       case SYSTEM:
+      case MULTI_TENANT_SYSTEM_LAUNCH:
         token = ehrAuthorizationService.getAuthorizationToken(fsd);
         break;
       case UNKNOWN:
+      case SOF_PROVIDER:
       default:
         Map<String, Object> tokenParams = new HashMap<>();
         tokenParams.put("expires_in", 60 * 60 * 24);

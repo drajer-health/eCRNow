@@ -1,6 +1,7 @@
 package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
@@ -24,12 +25,15 @@ import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
+import com.drajer.bsa.routing.impl.RestfulTransportImpl;
 import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.bsa.service.KarService;
+import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaConstants;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
+import com.drajer.sof.utils.FhirContextInitializer;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -143,6 +147,14 @@ public class KarParserImpl implements KarParser {
   @Autowired EhrQueryService ehrInterface;
 
   @Autowired DirectTransportImpl directInterface;
+
+  @Autowired RestfulTransportImpl restSubmitter;
+
+  @Autowired AuthorizationUtils authUtils;
+
+  @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
 
   // Autowired to update Persistent Kar Repos
   @Autowired KarService karService;
@@ -562,6 +574,10 @@ public class KarParserImpl implements KarParser {
       sr.setSubmissionEndpoint(reportSubmissionEndpoint);
       sr.setPhDao(phDao);
       sr.setDirectSender(directInterface);
+      sr.setRestSubmitter(restSubmitter);
+      sr.setFhirContextInitializer(fhirContextInitializer);
+      sr.setAuthorizationUtils(authUtils);
+      sr.setPublicHealthAuthorityService(publicHealthAuthorityService);
       populateCheckResponseAction(sr, art, plan);
     } else if (action.getType() == ActionType.CREATE_REPORT) {
       CreateReport cr = (CreateReport) action;

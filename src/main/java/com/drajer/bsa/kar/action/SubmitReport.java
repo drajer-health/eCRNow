@@ -2,6 +2,8 @@ package com.drajer.bsa.kar.action;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.gclient.IOperationProcessMsgMode;
+import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
@@ -13,17 +15,25 @@ import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.bsa.routing.impl.DirectTransportImpl;
+import com.drajer.bsa.routing.impl.RestfulTransportImpl;
+import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
+import com.drajer.sof.utils.FhirContextInitializer;
+import java.io.InputStream;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Duration;
-import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,6 +55,14 @@ public class SubmitReport extends BsaAction {
   private PublicHealthMessagesDao phDao;
 
   private DirectTransportImpl directSender;
+
+  private RestfulTransportImpl restSubmitter;
+
+  private AuthorizationUtils authorizationUtils;
+
+  private PublicHealthAuthorityService publicHealthAuthorityService;
+
+  private FhirContextInitializer fhirContextInitializer;
 
   private String checkResponseActionId;
 
@@ -93,6 +111,8 @@ public class SubmitReport extends BsaAction {
 
     if (status != BsaActionStatusType.SCHEDULED || Boolean.TRUE.equals(getIgnoreTimers())) {
 
+      logger.info("Action is not timed going through to submission");
+
       // Get the Kar.
       KnowledgeArtifact art = data.getKar();
       KnowledgeArtifactStatus artStatus =
@@ -108,12 +128,12 @@ public class SubmitReport extends BsaAction {
 
         logger.info(" Submitting FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
-        submitFhirOutput(data, actStatus);
+        submitFhirOutput(data, actStatus, ehrService);
       } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Submitting Both CDA and FHIR Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
-        submitFhirOutput(data, actStatus);
+        submitFhirOutput(data, actStatus, ehrService);
       }
 
       if (Boolean.TRUE.equals(conditionsMet(data))) {
@@ -189,58 +209,145 @@ public class SubmitReport extends BsaAction {
     return true;
   }
 
-  public void submitFhirOutput(KarProcessingData data, BsaActionStatus actStatus) {
+  public void submitFhirOutput(
+      KarProcessingData data, BsaActionStatus actStatus, EhrQueryService ehrService) {
 
     List<DataRequirement> input = getInputData();
+    Set<Resource> resourcesToSubmit = new HashSet<>();
 
     if (input != null) {
 
       for (DataRequirement dr : input) {
         Set<Resource> resources = data.getOutputDataById(dr.getId());
-        if (resources != null && !resources.isEmpty()) {
 
-          // get a restful client and the submission endpoint
-          context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
-          IGenericClient client = context.newRestfulGenericClient(submissionEndpoint);
+        resourcesToSubmit.addAll(resources);
+      }
 
-          for (Resource r : resources) {
+    } else {
+      logger.info("Input is null");
+    }
 
-            // All submissions are expected to be bundles
-            Bundle bundleToSubmit = (Bundle) r;
-            if (logger.isInfoEnabled()) {
-              logger.info(
-                  " Submit Bundle:::::{}",
-                  context.newJsonParser().encodeResourceToString(bundleToSubmit));
+    if (resourcesToSubmit.isEmpty()) {
+      logger.info(" No resources to submit");
+    } else {
+      logger.info(" {} resource(s) to submit", resourcesToSubmit.size());
+
+      if (data.getHealthcareSetting().getTrustedThirdParty() != null
+          && !data.getHealthcareSetting().getTrustedThirdParty().isEmpty()) {
+        logger.info(
+            "Sending to trusted thrid party {}",
+            data.getHealthcareSetting().getTrustedThirdParty());
+        submitResources(
+            resourcesToSubmit,
+            data,
+            ehrService,
+            data.getHealthcareSetting().getTrustedThirdParty());
+      } else if (submissionEndpoint != null && !submissionEndpoint.isEmpty()) {
+        logger.info("Sending to submissionEndpoint {}", submissionEndpoint);
+        submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
+      } else {
+        Set<UriType> endpoints = data.getKar().getReceiverAddresses();
+        logger.info("Sending data to endpoints {} ", endpoints);
+        if (endpoints.size() > 0) {
+          for (UriType uri : endpoints) {
+            logger.info("Submitting resources to {}", uri);
+            try {
+              submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
+            } catch (Throwable th) {
+              logger.error("Error sending data to {} ", uri, th);
             }
-
-            Bundle responseBundle =
-                client
-                    .operation()
-                    .onServer()
-                    .named(this.getSubmissionOperation())
-                    .withParameter(Parameters.class, "content", bundleToSubmit)
-                    .returnResourceType(Bundle.class)
-                    .execute();
-
-            if (responseBundle != null) {
-              logger.debug(
-                  "Response Bundle:::::{}",
-                  context.newJsonParser().encodeResourceToString(responseBundle));
-
-              data.addActionOutput(actionId, responseBundle);
-
-              logger.info(" Adding Response Bundle to output using id {}", responseBundle.getId());
-
-              data.addActionOutputById(responseBundle.getId(), responseBundle);
-            }
-          } // for
-        } else {
-          logger.error(" No resources to submit based on input data requirement ");
+          }
         }
       }
-    } else {
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+    }
+  }
 
-      logger.error(" No input data requirement identifying the data that has to be submitted ");
+  private void submitResources(
+      Set<Resource> resourcesToSubmit,
+      KarProcessingData data,
+      EhrQueryService ehrService,
+      String submissionEndpoint) {
+
+    logger.info("SubmitResources called: sending data to {}", submissionEndpoint);
+    PublicHealthAuthority pha;
+
+    if (submissionEndpoint.endsWith("/")) {
+      submissionEndpoint = submissionEndpoint.substring(0, submissionEndpoint.length() - 1);
+    }
+
+    pha = publicHealthAuthorityService.getPublicHealthAuthorityByUrl(submissionEndpoint);
+
+    if (pha == null) {
+      logger.info("PHA is NULL");
+      if (!submissionEndpoint.endsWith("$process-message")) {
+        pha =
+            publicHealthAuthorityService.getPublicHealthAuthorityByUrl(
+                String.format("%s/$process-message", submissionEndpoint));
+      }
+    }
+
+    String token = "";
+    if (pha != null) {
+      logger.info(
+          "Attempting to retrieve TOKEN from PHA {} or {}", pha.getTokenUrl(), pha.getTokenUrl());
+      token = authorizationUtils.getToken(pha).getString("access_token");
+    } else {
+      logger.warn("No PHA was found with submission endpoint {}", submissionEndpoint);
+      logger.warn("Continuing without auth token");
+    }
+
+    Properties headers = new Properties();
+    try (InputStream inputStream =
+        SubmitReport.class.getClassLoader().getResourceAsStream("report-headers.properties")) {
+      headers.load(inputStream);
+    } catch (Exception ex) {
+      logger.error("Error while loading report headers from Properties File ");
+    }
+
+    // for all resources to be submitted
+    logger.info("{} Resources to submit ", resourcesToSubmit.size());
+    for (Resource r : resourcesToSubmit) {
+
+      IGenericClient client =
+          fhirContextInitializer.createClient(
+              context, submissionEndpoint, token, data.getxRequestId());
+
+      // ((GenericClient) client).setDontValidateConformance(true);
+      context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+
+      // All submissions are expected to be bundles
+      Bundle bundleToSubmit = (Bundle) r;
+
+      IOperationProcessMsgMode<IBaseResource> operation =
+          client.operation().processMessage().setMessageBundle(bundleToSubmit);
+
+      headers.forEach((key, value) -> operation.withAdditionalHeader((String) key, (String) value));
+
+      logger.info("Calling $processMessage operation");
+      Bundle responseBundle;
+      Object response = null;
+      try {
+        response = operation.encodedJson().execute();
+        responseBundle = (Bundle) response;
+      } catch (RuntimeException re) {
+
+        logger.error("Error calling $process-message endpoint", re);
+        logger.info("Response Object was {}", response);
+        return;
+      }
+
+      logger.info("Response is {}", responseBundle);
+      if (responseBundle != null) {
+
+        data.addActionOutput(actionId, responseBundle);
+
+        logger.info(" Adding Response Bundle to output using id {}", responseBundle.getId());
+
+        data.addActionOutputById(responseBundle.getId(), responseBundle);
+      } else {
+        logger.error("Response BUNDLE IS NULL");
+      }
     }
   }
 
@@ -263,6 +370,39 @@ public class SubmitReport extends BsaAction {
 
   public void setSubmissionEndpoint(String submissionEndpoint) {
     this.submissionEndpoint = submissionEndpoint;
+  }
+
+  public RestfulTransportImpl getRestSubmitter() {
+    return restSubmitter;
+  }
+
+  public void setRestSubmitter(RestfulTransportImpl restSubmitter) {
+    this.restSubmitter = restSubmitter;
+  }
+
+  public AuthorizationUtils getAuthorizationUtils() {
+    return authorizationUtils;
+  }
+
+  public void setAuthorizationUtils(AuthorizationUtils authorizationUtils) {
+    this.authorizationUtils = authorizationUtils;
+  }
+
+  public PublicHealthAuthorityService getPublicHealthAuthorityService() {
+    return publicHealthAuthorityService;
+  }
+
+  public void setPublicHealthAuthorityService(
+      PublicHealthAuthorityService publicHealthAuthorityService) {
+    this.publicHealthAuthorityService = publicHealthAuthorityService;
+  }
+
+  public FhirContextInitializer getFhirContextInitializer() {
+    return fhirContextInitializer;
+  }
+
+  public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
+    this.fhirContextInitializer = fhirContextInitializer;
   }
 
   public void printSummary() {

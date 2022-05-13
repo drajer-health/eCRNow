@@ -66,9 +66,6 @@ public class BsaServiceUtils {
   @Autowired(required = false)
   Map<String, BsaTypes.BsaActionStatusType> actions;
 
-  @Autowired(required = false)
-  Map<String, Bundle> eicrBundles;
-
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
 
   public static String getFhirPathVariableString(String id) {
@@ -355,19 +352,6 @@ public class BsaServiceUtils {
     String data = jsonParser.encodeResourceToString(res);
 
     saveDataToFile(data, fileName);
-  }
-
-  public void saveEicrState(String url, Resource res) {
-    if (eicrBundles != null) {
-      logger.info("Found actions map saving eicr bundle state....");
-      if (res instanceof Bundle) {
-        logger.info("Eicr bundle found...");
-        Bundle eicrBundle = (Bundle) res;
-        eicrBundles.put(url, eicrBundle);
-      }
-    } else {
-      logger.info("No action map found skipping eicr bundle state save....");
-    }
   }
 
   public void saveActionStatusState(Map<String, BsaActionStatus> actionStatus) {

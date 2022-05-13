@@ -274,6 +274,10 @@ public class HealthcareSetting implements FhirServerDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
 
+  @Column(name = "ehr_supports_subscriptions", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean ehrSupportsSubscriptions = false;
+
   /**
    * This attribute defines the trusted third party end point that reports should be submitted to.
    */
@@ -692,6 +696,22 @@ public class HealthcareSetting implements FhirServerDetails {
 
   public void setBackendAuthKeyAlias(String backendAuthKeyAlias) {
     this.backendAuthKeyAlias = backendAuthKeyAlias;
+  }
+
+  public Boolean getEhrSupportsSubscriptions() {
+    return ehrSupportsSubscriptions;
+  }
+
+  public void setEhrSupportsSubscriptions(Boolean ehrSupportsSubscriptions) {
+    this.ehrSupportsSubscriptions = ehrSupportsSubscriptions;
+  }
+
+  public String getPhaUrl() {
+    return phaUrl;
+  }
+
+  public void setPhaUrl(String phaUrl) {
+    this.phaUrl = phaUrl;
   }
 
   public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {
