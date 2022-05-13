@@ -3,9 +3,8 @@ package com.drajer.bsa.ehr.service.impl;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import com.drajer.bsa.ehr.service.EhrAuthorizationService;
+import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -41,7 +40,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,14 +58,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   private final Logger logger = LoggerFactory.getLogger(EhrFhirR4QueryServiceImpl.class);
 
-  /** The EHR Authorization Service class enables the BSA to get an access token. */
-  @Qualifier("backendauth")
-  @Autowired
-  EhrAuthorizationService backendAuthorizationService;
-
-  @Qualifier("ehrauth")
-  @Autowired
-  EhrAuthorizationService ehrAuthorizationService;
+  /** The Authorization utils class enables the BSA to get an access token. */
+  @Autowired AuthorizationUtils authUtils;
 
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
@@ -88,13 +80,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, Map<String, ResourceType> resTypes) {
-
-    String secret = kd.getHealthcareSetting().getClientSecret();
-    if (secret == null || secret.isEmpty()) {
-      backendAuthorizationService.getAuthorizationToken(kd);
-    } else {
-      ehrAuthorizationService.getAuthorizationToken(kd);
-    }
 
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
@@ -184,17 +169,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * @return
    */
   public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
-    String secret = kd.getHealthcareSetting().getClientSecret();
-    if (secret == null || secret.isEmpty()) {
-      backendAuthorizationService.getAuthorizationToken(kd);
-    } else {
-      ehrAuthorizationService.getAuthorizationToken(kd);
-    }
+
+    JSONObject token = authUtils.getToken(kd.getHealthcareSetting());
+    String accessToken = token.getString("access_token");
+    kd.getNotificationContext().setEhrAccessToken(accessToken);
 
     return fhirContextInitializer.createClient(
         context,
         kd.getHealthcareSetting().getFhirServerBaseURL(),
-        kd.getNotificationContext().getEhrAccessToken(),
+        accessToken,
         kd.getNotificationContext().getxRequestId());
   }
 
@@ -229,23 +212,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd) {
 
-    String secret = kd.getHealthcareSetting().getClientSecret();
-    if (secret == null || secret.isEmpty()) {
-      backendAuthorizationService.getAuthorizationToken(kd);
-    } else {
-      ehrAuthorizationService.getAuthorizationToken(kd);
-    }
-
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken(),
-            kd.getxRequestId());
+    IGenericClient client = getClient(kd, context);
 
     // Retrieve the encounter
     Set<Resource> res = kd.getResourcesByType(ResourceType.Encounter.toString());
@@ -347,23 +318,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public Resource getResourceById(KarProcessingData kd, String resourceName, String resourceId) {
 
-    String secret = kd.getHealthcareSetting().getClientSecret();
-    if (secret == null || secret.isEmpty()) {
-      backendAuthorizationService.getAuthorizationToken(kd);
-    } else {
-      ehrAuthorizationService.getAuthorizationToken(kd);
-    }
-
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            kd.getNotificationContext().getEhrAccessToken(),
-            kd.getxRequestId());
+    IGenericClient client = getClient(kd, context);
 
     return getResourceById(client, context, resourceName, resourceId);
   }
@@ -572,16 +531,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public JSONObject getAuthorizationToken(HealthcareSetting hs) {
 
-    JSONObject tokenResponse = null;
-
-    if (hs.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))) {
-
-      tokenResponse = ehrAuthorizationService.getAuthorizationToken(hs);
-
-    } else {
-
-      // Handle other Auth Types
-    }
+    JSONObject tokenResponse = authUtils.getToken(hs);
 
     return tokenResponse;
   }

@@ -1,8 +1,7 @@
-package com.drajer.bsa.ehr.service.impl;
+package com.drajer.bsa.auth.impl;
 
-import com.drajer.bsa.ehr.service.EhrAuthorizationService;
-import com.drajer.bsa.model.HealthcareSetting;
-import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.auth.AuthorizationService;
+import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
@@ -15,7 +14,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -46,13 +44,12 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service("backendauth")
 @Transactional
-public class BackendAuthorizationServiceImpl implements EhrAuthorizationService {
+public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
-
-  private static final String OAUTHURIS =
+  private final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
-  private static final String WELLKNOWN = ".well-known/smart-configuration";
+  private final String WELL_KNOWN = ".well-known/smart-configuration";
 
   @Value("${jwks.keystore.location}")
   String jwksLocation;
@@ -63,43 +60,35 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
   @Value("${jwks.keystore.alias}")
   String alias;
 
-  /** @param kd The processing context which contains information such as patient, encounter */
+  /** @param fsd The processing context which contains information such as patient, encounter */
   @Override
-  public void getAuthorizationToken(KarProcessingData kd) {
-    String baseUrl = kd.getHealthcareSetting().getFhirServerBaseURL();
+  public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
+    String baseUrl = fsd.getFhirServerBaseURL();
     try {
-      JSONObject tokenResponse = connectToServer(baseUrl, kd);
-      kd.getNotificationContext().setEhrAccessToken(tokenResponse.getString("access_token"));
-      kd.getNotificationContext()
-          .setEhrAccessTokenExpiryDuration(tokenResponse.getInt("expires_in"));
-
-      Integer expiresInSec = (Integer) tokenResponse.get("expires_in");
-      Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
-      kd.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expireInstantTime));
+      return connectToServer(baseUrl, fsd);
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {}",
-          kd.getHealthcareSetting().getFhirServerBaseURL(),
-          e);
+          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
+      return null;
     }
   }
 
   /**
    * @param url base url of ehr
-   * @param kd knowledge artifact data
+   * @param fsd knowledge artifact data
    * @return the token response from the auth server
    * @throws KeyStoreException in case of invalid public/private keys
    */
-  public JSONObject connectToServer(String url, KarProcessingData kd) throws KeyStoreException {
+  public JSONObject connectToServer(String url, FhirServerDetails fsd) throws KeyStoreException {
     RestTemplate resTemplate = new RestTemplate();
     String tokenEndpoint;
 
-    tokenEndpoint = kd.getHealthcareSetting().getTokenUrl();
+    tokenEndpoint = fsd.getTokenUrl();
     if (tokenEndpoint == null || tokenEndpoint.isEmpty()) {
       tokenEndpoint = getTokenEndpoint(url);
     }
-    String clientId = kd.getHealthcareSetting().getClientId();
-    String scopes = kd.getHealthcareSetting().getScopes();
+    String clientId = fsd.getClientId();
+    String scopes = fsd.getScopes();
     String jwt = generateJwt(clientId, tokenEndpoint);
 
     HttpHeaders headers = new HttpHeaders();
@@ -124,7 +113,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
     RestTemplate resTemplate = new RestTemplate();
     try {
       ResponseEntity<String> res =
-          resTemplate.getForEntity(String.format("%s/%s", url, WELLKNOWN), String.class);
+          resTemplate.getForEntity(String.format("%s/%s", url, WELL_KNOWN), String.class);
       JSONArray result = JsonPath.read(res.getBody(), "$.token_endpoint");
       return result.get(0).toString();
     } catch (Exception e1) {
@@ -138,7 +127,7 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
                 res.getBody(),
                 "$.rest[?(@.mode == 'server')].security"
                     + ".extension[?(@.url == '"
-                    + OAUTHURIS
+                    + OAUTH_URIS
                     + "')]"
                     + ".extension[?(@.url == 'token')].valueUri");
         return result.get(0).toString();
@@ -181,12 +170,6 @@ public class BackendAuthorizationServiceImpl implements EhrAuthorizationService 
         | UnrecoverableKeyException e) {
       logger.error("Exception Occurred: ", e);
     }
-    return null;
-  }
-
-  @Override
-  public JSONObject getAuthorizationToken(HealthcareSetting hs) {
-    // TODO Auto-generated method stub
     return null;
   }
 }
