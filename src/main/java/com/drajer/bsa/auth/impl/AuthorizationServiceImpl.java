@@ -68,7 +68,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         map.add(GRANT_TYPE, "client_credentials");
         map.add("scope", fsd.getScopes());
 
-        if (fsd.getRequireAud()) map.add("aud", fsd.getFhirServerBaseURL());
+        if (Boolean.TRUE.equals(fsd.getRequireAud())) {
+          map.add("aud", fsd.getFhirServerBaseURL());
+        }
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<?> response =
