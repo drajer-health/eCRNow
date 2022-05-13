@@ -15,6 +15,7 @@ import com.drajer.bsa.kar.condition.BsaCqlCondition;
 import com.drajer.bsa.kar.condition.BsaFhirPathCondition;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaRelatedAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
@@ -180,6 +181,11 @@ public class KarParserImpl implements KarParser {
 
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";
+  private static final String PH_QUERY_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
+  private static final String PH_RELATED_DATA_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
+
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
   // Load the Topic to Named Event Map.
@@ -512,6 +518,31 @@ public class KarParserImpl implements KarParser {
       try {
         ResourceType rt = ResourceType.fromCode(dr.getType());
         action.addInputResourceType(dr.getId(), rt);
+
+        // Get Query Extensions to identify default queries.
+        Extension queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
+
+        if (queryExt != null && queryExt.getValue() != null) {
+
+          logger.info(" Found a query extension for action Id {}", action.getActionId());
+          String st = queryExt.getValueAsPrimitive().getValueAsString();
+
+          FhirQueryFilter query = new FhirQueryFilter(st);
+
+          action.addQueryFilter(dr.getId(), query);
+        }
+
+        // Get Related Data Ids to reuse data already accessed.
+        Extension relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+
+        if (relatedDataExt != null && relatedDataExt.getValue() != null) {
+
+          logger.info(" Found a related data extension ");
+          String st = relatedDataExt.getValueAsPrimitive().getValueAsString();
+
+          action.addRelatedDataId(dr.getId(), st);
+        }
+
       } catch (FHIRException ex) {
         logger.error(" Type specified is not a resource Type {}", dr.getType());
       }
