@@ -18,18 +18,19 @@ public class PublicHealthAuthorityController {
   @Autowired PublicHealthAuthorityService publicHealthAuthorityService;
 
   @CrossOrigin
-  @RequestMapping("/api/publicHealthAuthority/{phaId}")
+  @GetMapping("/api/publicHealthAuthority/{phaId}")
   public PublicHealthAuthority getPublicHealthAuthorityById(@PathVariable("phaId") Integer phaId) {
     return publicHealthAuthorityService.getPublicHealthAuthorityById(phaId);
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/publicHealthAuthority", method = RequestMethod.POST)
-  public ResponseEntity<?> createPublicHealthAuthority(@RequestBody PublicHealthAuthority pha) {
-    PublicHealthAuthority pha_current =
+  @PostMapping(value = "/api/publicHealthAuthority")
+  public ResponseEntity<Object> createPublicHealthAuthority(
+      @RequestBody PublicHealthAuthority pha) {
+    PublicHealthAuthority phaCurrent =
         publicHealthAuthorityService.getPublicHealthAuthorityByUrl(pha.getFhirServerBaseURL());
 
-    if (pha_current == null) {
+    if (phaCurrent == null) {
 
       logger.info("Public Health Authority does not exist, Saving the Public Health Authority");
 
@@ -52,8 +53,9 @@ public class PublicHealthAuthorityController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/publicHealthAuthority", method = RequestMethod.PUT)
-  public ResponseEntity<?> updatePublicHealthAuthority(@RequestBody PublicHealthAuthority pha) {
+  @PutMapping(value = "/api/publicHealthAuthority")
+  public ResponseEntity<Object> updatePublicHealthAuthority(
+      @RequestBody PublicHealthAuthority pha) {
     PublicHealthAuthority existingPha =
         publicHealthAuthorityService.getPublicHealthAuthorityByUrl(pha.getFhirServerBaseURL());
 
@@ -75,14 +77,14 @@ public class PublicHealthAuthorityController {
   }
 
   @CrossOrigin
-  @RequestMapping("/api/publicHealthAuthority")
+  @GetMapping("/api/publicHealthAuthority")
   public PublicHealthAuthority getPublicHealthAuthorityByUrl(
       @RequestParam(value = "url") String url) {
     return publicHealthAuthorityService.getPublicHealthAuthorityByUrl(url);
   }
 
   @CrossOrigin
-  @RequestMapping("/api/publicHealthAuthority/")
+  @GetMapping("/api/publicHealthAuthority/")
   public List<PublicHealthAuthority> getAllPublicHealthAuthority() {
     return publicHealthAuthorityService.getAllPublicHealthAuthority();
   }

@@ -47,9 +47,9 @@ import org.springframework.web.client.RestTemplate;
 public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(BackendAuthorizationServiceImpl.class);
-  private final String OAUTH_URIS =
+  private static final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
-  private final String WELL_KNOWN = ".well-known/smart-configuration";
+  private static final String WELL_KNOWN = ".well-known/smart-configuration";
 
   @Value("${jwks.keystore.location}")
   String jwksLocation;
@@ -59,19 +59,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
 
   @Value("${jwks.keystore.alias}")
   String alias;
-
-  /** @param fsd The processing context which contains information such as patient, encounter */
-  @Override
-  public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
-    String baseUrl = fsd.getFhirServerBaseURL();
-    try {
-      return connectToServer(baseUrl, fsd);
-    } catch (Exception e) {
-      logger.error(
-          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
-      return null;
-    }
-  }
 
   /**
    * @param url base url of ehr
@@ -105,6 +92,19 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 
+  /** @param fsd The processing context which contains information such as patient, encounter */
+  @Override
+  public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
+    String baseUrl = fsd.getFhirServerBaseURL();
+    try {
+      return connectToServer(baseUrl, fsd);
+    } catch (Exception e) {
+      logger.error(
+          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
+      return null;
+    }
+  }
+
   /**
    * @param url base ehr url
    * @return token endpoint from the server's capability statement
@@ -112,19 +112,19 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   public String getTokenEndpoint(String url) {
     RestTemplate resTemplate = new RestTemplate();
     try {
-      ResponseEntity<String> res =
+      ResponseEntity<String> response =
           resTemplate.getForEntity(String.format("%s/%s", url, WELL_KNOWN), String.class);
-      JSONArray result = JsonPath.read(res.getBody(), "$.token_endpoint");
+      JSONArray result = JsonPath.read(response.getBody(), "$.token_endpoint");
       return result.get(0).toString();
     } catch (Exception e1) {
       try {
-        ResponseEntity<String> res =
+        ResponseEntity<String> response =
             resTemplate.getForEntity(String.format("%s/metadata", url), String.class);
         // jsonpath allows filtering through lists with '?', where '@' represents the current
         // element
         JSONArray result =
             JsonPath.read(
-                res.getBody(),
+                response.getBody(),
                 "$.rest[?(@.mode == 'server')].security"
                     + ".extension[?(@.url == '"
                     + OAUTH_URIS

@@ -531,8 +531,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public JSONObject getAuthorizationToken(HealthcareSetting hs) {
 
-    JSONObject tokenResponse = authUtils.getToken(hs);
-
-    return tokenResponse;
+    return authUtils.getToken(hs);
   }
 }

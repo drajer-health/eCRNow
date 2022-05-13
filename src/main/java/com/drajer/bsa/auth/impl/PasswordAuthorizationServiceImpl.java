@@ -35,9 +35,9 @@ import org.springframework.web.client.RestTemplate;
 public class PasswordAuthorizationServiceImpl implements AuthorizationService {
 
   private final Logger logger = LoggerFactory.getLogger(PasswordAuthorizationServiceImpl.class);
-  private final String OAUTH_URIS =
+  private static final String OAUTH_URIS =
       "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris";
-  private final String WELL_KNOWN = ".well-known/smart-configuration";
+  private static final String WELL_KNOWN = ".well-known/smart-configuration";
 
   @Value("${jwks.keystore.location}")
   String jwksLocation;

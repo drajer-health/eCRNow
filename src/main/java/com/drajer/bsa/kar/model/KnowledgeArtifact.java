@@ -131,7 +131,7 @@ public class KnowledgeArtifact {
 
       if (resources != null && resources.containsKey(id)) {
         logger.info("Resource already present");
-      } else {
+      } else if (resources != null) {
         resources.put(id, res);
         dependencies.put(res.getResourceType(), resources);
       }

@@ -47,7 +47,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     try {
 
-      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.System))) {
+      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))) {
 
         logger.info(" System Launch authorization is configured for EHR ");
 
