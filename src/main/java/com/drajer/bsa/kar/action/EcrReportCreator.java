@@ -103,11 +103,11 @@ public class EcrReportCreator extends ReportCreator {
 
   @Override
   public Resource createReport(
-          KarProcessingData kd,
-          EhrQueryService ehrService,
-          Set<Resource> inputData,
-          String id,
-          String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      Set<Resource> inputData,
+      String id,
+      String profile) {
     return createReport(kd, ehrService, id, profile);
   }
 

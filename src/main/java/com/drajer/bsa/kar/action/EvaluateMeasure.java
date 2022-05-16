@@ -6,10 +6,8 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;

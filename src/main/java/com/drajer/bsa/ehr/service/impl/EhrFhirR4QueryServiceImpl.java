@@ -66,7 +66,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * @return The Map of Resources to its type.
    */
   @Override
-
   public Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, Map<String, ResourceType> resTypes) {
 
@@ -152,7 +151,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputData();
   }
 
-
   /**
    * The method is used to retrieve data from the Ehr.
    *
@@ -162,7 +160,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   @Override
   public Map<ResourceType, Set<Resource>> getFilteredData(
-          KarProcessingData kd, List<DataRequirement> dRequirements) {
+      KarProcessingData kd, List<DataRequirement> dRequirements) {
     logger.info(" Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
@@ -171,12 +169,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     // Get Patient by Id always
     Resource res =
-            getResourceById(
-                    client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
+        getResourceById(
+            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
     if (res != null) {
 
       logger.info(
-              " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
+          " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
 
       Set<Resource> resources = new HashSet<>();
       resources.add(res);
@@ -193,11 +191,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       if (type != ResourceType.Patient && type != ResourceType.Encounter) {
         String url =
-                kd.getNotificationContext().getFhirServerBaseUrl()
-                        + "/"
-                        + type
-                        + PATIENT_ID_SEARCH_PARAM
-                        + kd.getNotificationContext().getPatientId();
+            kd.getNotificationContext().getFhirServerBaseUrl()
+                + "/"
+                + type
+                + PATIENT_ID_SEARCH_PARAM
+                + kd.getNotificationContext().getPatientId();
 
         logger.info(" Resource Query Url : {}", url);
 
@@ -233,10 +231,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     kd.getNotificationContext().setEhrAccessToken(accessToken);
 
     return fhirContextInitializer.createClient(
-            context,
-            kd.getHealthcareSetting().getFhirServerBaseURL(),
-            accessToken,
-            kd.getNotificationContext().getxRequestId());
+        context,
+        kd.getHealthcareSetting().getFhirServerBaseURL(),
+        accessToken,
+        kd.getNotificationContext().getxRequestId());
   }
 
   /**
@@ -390,7 +388,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public Resource getResourceById(KarProcessingData kd, String resourceName, String resourceId) {
 
-
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
@@ -429,7 +426,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   public Set<Resource> fetchResources(
-          IGenericClient genericClient, FhirContext context, String searchUrl) {
+      IGenericClient genericClient, FhirContext context, String searchUrl) {
     Set<Resource> resources = new HashSet<Resource>();
     Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
     getAllR4RecordsUsingPagination(genericClient, bundle);

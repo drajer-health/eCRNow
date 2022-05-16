@@ -6,7 +6,6 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.Map;
 import java.util.Set;
-
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ public class ExecuteReportingActions extends BsaAction {
 
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
-
 
     Map<ResourceType, Set<Resource>> res = ehrservice.getFilteredData(data, getInputData());
 

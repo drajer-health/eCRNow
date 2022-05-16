@@ -44,7 +44,6 @@ public class CheckTriggerCodes extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-
       // Get necessary data to process.
 
       Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, getInputData());

@@ -7,7 +7,6 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.Instant;
 import java.util.*;
-
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
@@ -19,7 +18,6 @@ import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class MedMorphReportCreator extends ReportCreator {
 
   private final Logger logger = LoggerFactory.getLogger(MedMorphReportCreator.class);
-
 
   public static final String DEFAULT_VERSION = "1";
   public static final String CONTENT_BUNDLE_PROFILE =
@@ -40,24 +37,27 @@ public class MedMorphReportCreator extends ReportCreator {
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
 
-
   @Override
   public Resource createReport(
-          KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
     Set<Resource> resources = new HashSet<Resource>();
-    kd.getFhirInputData().entrySet().stream().forEach((es) -> {
-      resources.addAll(es.getValue());
-    });
-    return createReport(kd,ehrService,resources,id,profile);
+    kd.getFhirInputData()
+        .entrySet()
+        .stream()
+        .forEach(
+            (es) -> {
+              resources.addAll(es.getValue());
+            });
+    return createReport(kd, ehrService, resources, id, profile);
   }
 
   @Override
   public Resource createReport(
-          KarProcessingData kd,
-          EhrQueryService ehrService,
-          Set<Resource> inputData,
-          String id,
-          String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      Set<Resource> inputData,
+      String id,
+      String profile) {
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
     logger.info("Creating report for {}", kd.getKar().getKarId());
@@ -69,7 +69,7 @@ public class MedMorphReportCreator extends ReportCreator {
     logger.info("MEDMORPH REPORT Resource Count {}", inputData.size());
     // Create the Content Bundle.
     Bundle contentBundle =
-            createContentBundle(inputData, kd.getHealthcareSetting().getFhirServerBaseURL());
+        createContentBundle(inputData, kd.getHealthcareSetting().getFhirServerBaseURL());
 
     // Create the Message Header resource.
     MessageHeader header = createMessageHeader(kd);
@@ -85,14 +85,13 @@ public class MedMorphReportCreator extends ReportCreator {
 
     header.setSender(referenceTo(sender));
 
-
     // Add the Message Header Resource
     returnBundle.addEntry(new BundleEntryComponent().setResource(header));
 
     // Add the Content Bundle.
     returnBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
 
-    //returnBundle.addEntry(new BundleEntryComponent().setResource(sender));
+    // returnBundle.addEntry(new BundleEntryComponent().setResource(sender));
 
     return returnBundle;
   }
@@ -180,6 +179,4 @@ public class MedMorphReportCreator extends ReportCreator {
 
     return returnBundle;
   }
-
-
 }

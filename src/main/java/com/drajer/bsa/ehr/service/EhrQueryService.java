@@ -5,8 +5,8 @@ import com.drajer.bsa.model.KarProcessingData;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.json.JSONObject;
@@ -29,7 +29,6 @@ public interface EhrQueryService {
    *     previous data etc.
    * @return The Map of Resources to its type.
    */
-
   Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, Map<String, ResourceType> resTypes);
 
@@ -42,7 +41,7 @@ public interface EhrQueryService {
    * @return The Map of Resources to its type.
    */
   Map<ResourceType, Set<Resource>> getFilteredData(
-          KarProcessingData kd, List<DataRequirement> dRequirements);
+      KarProcessingData kd, List<DataRequirement> dRequirements);
 
   Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
 
@@ -66,5 +65,4 @@ public interface EhrQueryService {
       String docCodeSystem);
 
   JSONObject getAuthorizationToken(HealthcareSetting hs);
-
 }

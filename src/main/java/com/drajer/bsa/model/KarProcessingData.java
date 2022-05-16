@@ -153,11 +153,9 @@ public class KarProcessingData {
 
   public void addNotifiedResource(String resId, Resource res) {}
 
-
   public Set<Resource> getResourcesById(String id) {
     return getFhirInputDataById().get(id);
   }
-
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -216,7 +214,7 @@ public class KarProcessingData {
       logger.info(RESOURCE_SIZES, res.size());
 
       for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
-        addResourcesByType(entry.getKey(),entry.getValue());
+        addResourcesByType(entry.getKey(), entry.getValue());
       }
     }
   }
@@ -232,7 +230,7 @@ public class KarProcessingData {
           Set<Resource> resources = fhirInputDataByType.get(type);
           resources.addAll(res);
           Set<Resource> uniqueResources =
-                  ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
           fhirInputDataByType.put(type, uniqueResources);
         } else fhirInputDataByType.put(type, res);
       }
@@ -262,7 +260,6 @@ public class KarProcessingData {
       fhirInputDataById.put(id, res);
     }
   }
-
 
   public void resetResourcesById(HashMap<String, Set<Resource>> res) {
 
