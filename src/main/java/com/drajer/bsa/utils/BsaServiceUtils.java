@@ -199,10 +199,12 @@ public class BsaServiceUtils {
     // find the attribute by the path element in the code filter: this may be a list of codes or
     // codableconcepts
     // if the filter is contains a valueset match against that
-    // if the filter containts codes match against them -- at this sage the matches are ORs.  If the
+    // if the filter contains codes match, against them -- at this stage the matches are ORs.  If
+    // the
     // vs or
     // any of the codes match its a match.
-    // dont know what this will return
+
+    // we dont know what this will return
     List<IBase> search = FHIR_PATH.evaluate(resource, codeFilter.getPath(), IBase.class);
     if (search == null || search.size() == 0) {
       return false;
@@ -267,6 +269,7 @@ public class BsaServiceUtils {
 
   public static boolean matchesDateFilter(
       Resource r, DataRequirement.DataRequirementDateFilterComponent drdfc, KarProcessingData kd) {
+
     return true;
   }
 
@@ -308,6 +311,10 @@ public class BsaServiceUtils {
   }
 
   public static Boolean isCodePresentInValueSet(ValueSet vs, String system, String code) {
+
+    if (vs == null) {
+      return false;
+    }
 
     boolean retVal = false;
 

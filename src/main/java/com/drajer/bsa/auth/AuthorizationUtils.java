@@ -48,6 +48,7 @@ public class AuthorizationUtils {
       default:
         Map<String, Object> tokenParams = new HashMap<>();
         tokenParams.put("expires_in", 60 * 60 * 24);
+        tokenParams.put("access_token", "");
         token = new JSONObject(tokenParams);
         break;
     }
