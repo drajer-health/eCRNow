@@ -142,6 +142,7 @@ public class SubmitReport extends BsaAction {
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
+
       actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
@@ -160,6 +161,7 @@ public class SubmitReport extends BsaAction {
 
     data.getSubmittedCdaData();
 
+    // Handle Direct.
     if (Boolean.TRUE.equals(hs.getIsDirect())) {
 
       logger.info(" Sending payload via Direct Transport ");
@@ -193,7 +195,10 @@ public class SubmitReport extends BsaAction {
             " Reportability Response will not be ready, so no need to check when timers are ignored ");
       }
 
-    } else if (Boolean.TRUE.equals(hs.getIsRestAPI())) {
+    } else if (Boolean.TRUE.equals(hs.getIsRestAPI()) && restSubmitter != null) {
+
+      logger.info(" Submitting to restful endpoint ");
+      restSubmitter.sendEicrDataUsingRestfulApi(data);
 
     } else if (Boolean.TRUE.equals(hs.getIsXdr())) {
 

@@ -34,6 +34,7 @@ import javax.mail.util.ByteArrayDataSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -429,9 +430,11 @@ public class DirectTransportImpl implements DataTransportInterface {
   }
 
   @Override
-  public void sendEicrDataUsingRestfulApi(KarProcessingData data) {
+  public JSONObject sendEicrDataUsingRestfulApi(KarProcessingData data) {
 
     String error = " RESTful API method invoked on Direct Transport which is not supported ";
     logger.error(error);
+
+    return null;
   }
 }

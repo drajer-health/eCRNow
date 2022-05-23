@@ -4,12 +4,14 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.auth.AuthorizationUtils;
+import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
@@ -49,11 +51,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   /** The Authorization utils class enables the BSA to get an access token. */
   @Autowired AuthorizationUtils authUtils;
 
+  /** The HealthcareSettings Dao to save Healthcare Setting state as needed */
+  @Autowired HealthcareSettingsDao hsDao;
+
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
   private static final String PATIENT_ID_SEARCH_PARAM = "?patient=";
   private static final String LOG_FHIR_CTX_GET = " Getting FHIR Context for R4";
   private static final String LOG_INIT_FHIR_CLIENT = "Initializing FHIR Client";
+
+  private static final String EHR_ACCESS_TOKEN = "access_token";
+  private static final String EHR_ACCESS_TOKEN_EXPIRES_IN = "expires_in";
+  private static final String EHR_ACCESS_TOKEN_PROVIDER_ID = "uuid";
 
   /** The FHIR Context Initializer necessary to retrieve FHIR resources */
   @Autowired FhirContextInitializer fhirContextInitializer;
@@ -226,15 +235,63 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
 
-    JSONObject token = authUtils.getToken(kd.getHealthcareSetting());
-    String accessToken = token.getString("access_token");
-    kd.getNotificationContext().setEhrAccessToken(accessToken);
+    String accessToken = null;
+
+    if (kd.hasValidAccessToken()) {
+
+      accessToken = kd.getAccessToken();
+      logger.info(
+          " Reusing Valid Access Token: {}, Expiration Time: ",
+          accessToken,
+          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
+
+    } else {
+
+      retrieveAndUpdateAccessToken(kd);
+      accessToken = kd.getAccessToken();
+      logger.info(
+          " Generated New Access Token: {}, Expiration Time: ",
+          accessToken,
+          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
+    }
 
     return fhirContextInitializer.createClient(
         context,
         kd.getHealthcareSetting().getFhirServerBaseURL(),
         accessToken,
         kd.getNotificationContext().getxRequestId());
+  }
+
+  private void retrieveAndUpdateAccessToken(KarProcessingData data) {
+
+    logger.info(" Retrieving New Access Token since the old one is not valid anymore ");
+    JSONObject tokenResponse = authUtils.getToken(data.getHealthcareSetting());
+
+    String accessToken = tokenResponse.getString(EHR_ACCESS_TOKEN);
+    int expirationDuration = tokenResponse.getInt(EHR_ACCESS_TOKEN_EXPIRES_IN);
+
+    data.getHealthcareSetting().setEhrAccessToken(accessToken);
+    data.getHealthcareSetting().setEhrAccessTokenExpiryDuration(expirationDuration);
+
+    if (tokenResponse.has(EHR_ACCESS_TOKEN_PROVIDER_ID)) {
+      data.getHealthcareSetting()
+          .setDefaultProviderId(tokenResponse.getString(EHR_ACCESS_TOKEN_PROVIDER_ID));
+    }
+
+    long expiresInSec = tokenResponse.getLong(EHR_ACCESS_TOKEN_EXPIRES_IN);
+    Instant expirationInstantTime = new Date().toInstant().plusSeconds(expiresInSec);
+
+    data.getHealthcareSetting().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime));
+
+    hsDao.saveOrUpdate(data.getHealthcareSetting());
+
+    /*
+    data.getNotificationContext().setEhrAccessToken(accessToken);
+    data.getNotificationContext().setEhrAccessTokenExpiryDuration(expirationDuration);
+    data.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime)); */
+
+    // Save both Notification Context and Healthcare Setting.
+
   }
 
   /**

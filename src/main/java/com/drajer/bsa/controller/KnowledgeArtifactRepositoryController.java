@@ -117,8 +117,12 @@ public class KnowledgeArtifactRepositoryController {
         karService.saveOrUpdateKARStatus(karStatus);
       } else {
         karStatus.setId(existingKarStatus.getId());
-        karStatus.setLastActivationDate(existingKarStatus.getLastActivationDate());
-        karStatus.setLastInActivationDate(existingKarStatus.getLastInActivationDate());
+
+        if (karStatus.getIsActive()) {
+          karStatus.setLastActivationDate(existingKarStatus.getLastActivationDate());
+        } else {
+          karStatus.setLastInActivationDate(existingKarStatus.getLastInActivationDate());
+        }
         karService.saveOrUpdateKARStatus(karStatus);
       }
     }

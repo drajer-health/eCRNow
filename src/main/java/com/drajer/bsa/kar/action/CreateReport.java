@@ -184,7 +184,9 @@ public class CreateReport extends BsaAction {
           kd.setSubmittedCdaData(payload);
 
           // Save the data in the table.
-          phDao.saveOrUpdate(msg);
+          PublicHealthMessage phm = phDao.saveOrUpdate(msg);
+          kd.setPhm(phm);
+
         } // attachment not null
         else {
           logger.info(" Document Reference attachement is empty, nothing to save ");

@@ -147,6 +147,8 @@ public class KarProcessorImpl implements KarProcessor {
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
     kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
+    kd.setxRequestId(nc.getxRequestId());
+    kd.setxCorrelationId(nc.getxCorrelationId());
 
     // Setup the Kar Status for the specific job.
     if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {

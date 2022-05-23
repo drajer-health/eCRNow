@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
+import com.drajer.bsa.model.HealthcareSetting;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
@@ -40,9 +43,14 @@ public class KnowledgeArtifactStatus {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  /** The Id of the HealthcareSetting */
+  /** The Id of the HealthcareSetting, this will be removed */
+  @Deprecated
   @Column(name = "hs_id", nullable = false)
   private Integer hsId;
+
+  @ManyToOne
+  @JoinColumn(name = "hs_fk")
+  private HealthcareSetting healthcareSetting;
 
   /**
    * The Id of the Knowledge Artifact as defined by the Public Health Agency or Research
