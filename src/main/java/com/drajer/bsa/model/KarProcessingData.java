@@ -8,8 +8,6 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.sof.utils.ResourceUtils;
-
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
@@ -102,7 +100,7 @@ public class KarProcessingData {
 
   /** The data actually submitted to the TTP/PHA in CDA format. */
   String submittedCdaData;
-  
+
   /** The public health message logged into the db as per the execution */
   PublicHealthMessage phm;
 
@@ -494,36 +492,32 @@ public class KarProcessingData {
     this.executionSequenceId = executionSequenceId;
   }
 
-public PublicHealthMessage getPhm() {
-	return phm;
-}
+  public PublicHealthMessage getPhm() {
+    return phm;
+  }
 
-public void setPhm(PublicHealthMessage phm) {
-	this.phm = phm;
-}
-  
-public boolean hasValidAccessToken() {
-	
-	// Check to see if the token is at least valid for 20 seconds before reusing the token.
-	Date expirationTimeThreshold = Date.from(new Date().toInstant().plusSeconds(20));
-	Date tokenExpirationTime = this.getHealthcareSetting().getEhrAccessTokenExpirationTime();
-	
-	if(tokenExpirationTime != null && 
-			(tokenExpirationTime.compareTo(expirationTimeThreshold) > 0)) {
-		
-		return true;
-		 
-	}
-	else {
-		return false;
-	}
-		
-	
-}
+  public void setPhm(PublicHealthMessage phm) {
+    this.phm = phm;
+  }
 
-public String getAccessToken() {
-	
-	return this.getHealthcareSetting().getEhrAccessToken();
-}
-  
+  public boolean hasValidAccessToken() {
+
+    // Check to see if the token is at least valid for 20 seconds before reusing the token.
+    Date expirationTimeThreshold = Date.from(new Date().toInstant().plusSeconds(20));
+    Date tokenExpirationTime = this.getHealthcareSetting().getEhrAccessTokenExpirationTime();
+
+    if (tokenExpirationTime != null
+        && (tokenExpirationTime.compareTo(expirationTimeThreshold) > 0)) {
+
+      return true;
+
+    } else {
+      return false;
+    }
+  }
+
+  public String getAccessToken() {
+
+    return this.getHealthcareSetting().getEhrAccessToken();
+  }
 }

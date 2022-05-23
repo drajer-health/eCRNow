@@ -434,7 +434,7 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     String error = " RESTful API method invoked on Direct Transport which is not supported ";
     logger.error(error);
-    
+
     return null;
   }
 }

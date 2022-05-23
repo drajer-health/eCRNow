@@ -47,10 +47,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     try {
 
-      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM)) || 
-    		  fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH))) {
+      if (fsd.getAuthType().equals(BsaTypes.getString(BsaTypes.AuthenticationType.SYSTEM))
+          || fsd.getAuthType()
+              .equals(BsaTypes.getString(BsaTypes.AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH))) {
 
-        logger.info(" System Launch/Multi-tenant System Launch authorization is configured for EHR {}", fsd.getAuthType());
+        logger.info(
+            " System Launch/Multi-tenant System Launch authorization is configured for EHR {}",
+            fsd.getAuthType());
 
         RestTemplate resTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -81,10 +84,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         logger.info("Received AccessToken: {}", tokenResponse);
 
         return tokenResponse;
-      }
-      else {
-    	  
-    	  logger.error(" Wrong Auth Type provided for Authorization {}", fsd.getAuthType());
+      } else {
+
+        logger.error(" Wrong Auth Type provided for Authorization {}", fsd.getAuthType());
       }
 
     } catch (Exception e) {

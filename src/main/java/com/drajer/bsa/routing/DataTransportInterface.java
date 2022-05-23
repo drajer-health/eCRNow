@@ -1,8 +1,7 @@
 package com.drajer.bsa.routing;
 
-import org.json.JSONObject;
-
 import com.drajer.bsa.model.KarProcessingData;
+import org.json.JSONObject;
 
 /*
  * <h1>DataTransportInterface</h1>

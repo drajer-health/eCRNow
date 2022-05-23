@@ -57,7 +57,7 @@ public class KarExecutionState {
   @ManyToOne
   @JoinColumn(name = "nc_fk")
   private NotificationContext nc;
-  
+
   /**
    * The attribute represents the key to retrieve the health care setting information for executing
    * the Kar

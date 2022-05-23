@@ -2,7 +2,6 @@ package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.HealthcareSetting;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class KnowledgeArtifactStatus {
   @Deprecated
   @Column(name = "hs_id", nullable = false)
   private Integer hsId;
-  
+
   @ManyToOne
   @JoinColumn(name = "hs_fk")
   private HealthcareSetting healthcareSetting;

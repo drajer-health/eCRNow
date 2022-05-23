@@ -142,9 +142,8 @@ public class SubmitReport extends BsaAction {
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
-      
+
       actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
-      
 
     } else {
       logger.info(
@@ -161,7 +160,7 @@ public class SubmitReport extends BsaAction {
       KarProcessingData data, BsaActionStatus actStatus, HealthcareSetting hs) {
 
     data.getSubmittedCdaData();
-    
+
     // Handle Direct.
     if (Boolean.TRUE.equals(hs.getIsDirect())) {
 
@@ -197,9 +196,9 @@ public class SubmitReport extends BsaAction {
       }
 
     } else if (Boolean.TRUE.equals(hs.getIsRestAPI()) && restSubmitter != null) {
-    	
-    	logger.info(" Submitting to restful endpoint ");
-    	restSubmitter.sendEicrDataUsingRestfulApi(data);
+
+      logger.info(" Submitting to restful endpoint ");
+      restSubmitter.sendEicrDataUsingRestfulApi(data);
 
     } else if (Boolean.TRUE.equals(hs.getIsXdr())) {
 
