@@ -1,5 +1,7 @@
 package com.drajer.bsa.routing;
 
+import org.json.JSONObject;
+
 import com.drajer.bsa.model.KarProcessingData;
 
 /*
@@ -37,5 +39,5 @@ public interface DataTransportInterface {
    * @param data - The KarProcessingData that contains the necessary data to process and send the
    *     information.
    */
-  public abstract void sendEicrDataUsingRestfulApi(KarProcessingData data);
+  public abstract JSONObject sendEicrDataUsingRestfulApi(KarProcessingData data);
 }
