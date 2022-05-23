@@ -142,7 +142,9 @@ public class SubmitReport extends BsaAction {
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
+      
       actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
+      
 
     } else {
       logger.info(
