@@ -68,7 +68,7 @@ public class RequestMDCFilter implements Filter {
           domainLogicalDomainId);
 
       if (MDC.get(MDC_REQUEST_ID_KEY) == null) {
-        MDC.put(MDC_REQUEST_ID_KEY, correlationId);
+        MDC.put(MDC_REQUEST_ID_KEY, requestId);
       }
 
       if (MDC.get(MDC_CORRELATION_ID_KEY) == null) {
