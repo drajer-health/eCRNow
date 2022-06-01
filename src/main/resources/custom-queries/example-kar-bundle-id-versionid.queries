@@ -1,4 +1,3 @@
-patient=/Patient/{context.patientId}&encounter={context.encounterId}
-encounter=/Encounter/{context.encounterId}
-conditions=/Condition?patient=[patientId]&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active
-labTests=/Observation?patient=[patientId]&category=http://terminology.hl7.org/CodeSystem/observation-category|laboratory
+patient=/Patient/{{context.patientId}}
+encounter=/Encounter/{{context.encounterId}}
+conditions=/Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active

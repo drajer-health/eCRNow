@@ -227,21 +227,23 @@ public abstract class BsaAction {
       return BsaActionStatusType.IN_PROGRESS;
     }
   }
-  
+
   public void populateParamsForConditionEvaluation(KarProcessingData data) {
-	  
-	  Parameters params = new Parameters();
-	  for(DataRequirement dr : inputData) {
-		  
-		  Set<Resource> resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
-		  
-		  BsaServiceUtils.convertDataToParameters(dr.getId(), dr.getType(), 
-				  (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"), resources, params);
-		  
-		  
-	  }
-	  
-	  data.addParameters(actionId, params);
+
+    Parameters params = new Parameters();
+    for (DataRequirement dr : inputData) {
+
+      Set<Resource> resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+
+      BsaServiceUtils.convertDataToParameters(
+          dr.getId(),
+          dr.getType(),
+          (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"),
+          resources,
+          params);
+    }
+
+    data.addParameters(actionId, params);
   }
 
   protected BsaAction() {

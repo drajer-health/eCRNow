@@ -5,11 +5,10 @@ import com.drajer.bsa.kar.condition.FhirPathProcessor;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
-import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +47,9 @@ public class EvaluateCondition extends BsaAction {
       // Get necessary data to process.
       ehrService.getFilteredData(data, resourceTypes);
     }
-    
+
     // Create the necessary parameters for evaluation of the data using FHIR Path processor.
     populateParamsForConditionEvaluation(data);
-    
 
     // Ensure the activity is In-Progress and the Conditions are met.
     if (status != BsaActionStatusType.SCHEDULED && Boolean.TRUE.equals(conditionsMet(data))) {
