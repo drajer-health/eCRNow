@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -67,6 +68,13 @@ public class KarProcessingData {
    * specified in the PlanDefinition.
    */
   HashMap<String, Set<Resource>> fhirInputDataById;
+
+  /**
+   * The data to be used for specific condition evaluation. The map contains a mapping between the
+   * actionId and the Parameters that will be used for evaluating the condition associated with the
+   * action.
+   */
+  Map<String, Parameters> parametersForConditionEvaluation;
 
   /**
    * These are the resources that are received by notification, stored by the FHIR Path context
@@ -225,6 +233,21 @@ public class KarProcessingData {
     }
   }
 
+  public void addResourceById(String dataReqId, Resource res) {
+
+    if (fhirInputDataById.containsKey(dataReqId)) {
+      Set<Resource> resources = fhirInputDataById.get(dataReqId);
+      resources.add(res);
+      Set<Resource> uniqueResources =
+          ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+      fhirInputDataById.put(dataReqId, uniqueResources);
+    } else {
+      Set<Resource> resources = new HashSet<Resource>();
+      resources.add(res);
+      fhirInputDataById.put(dataReqId, resources);
+    }
+  }
+
   public void addResourcesById(HashMap<String, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
@@ -264,6 +287,7 @@ public class KarProcessingData {
     actionOutputData = new HashMap<>();
     actionOutputDataById = new HashMap<>();
     actionStatus = new HashMap<>();
+    parametersForConditionEvaluation = new HashMap<>();
   }
 
   /**
@@ -313,14 +337,6 @@ public class KarProcessingData {
 
   public void setKar(KnowledgeArtifact kar) {
     this.kar = kar;
-  }
-
-  public HashMap<ResourceType, Set<Resource>> getFhirInputData() {
-    return fhirInputDataByType;
-  }
-
-  public void setFhirInputData(HashMap<ResourceType, Set<Resource>> fhirInputData) {
-    this.fhirInputDataByType = fhirInputData;
   }
 
   public HashMap<String, HashMap<String, Resource>> getActionOutputData() {
@@ -452,14 +468,6 @@ public class KarProcessingData {
     this.karStatus = karStatus;
   }
 
-  public HashMap<String, Set<Resource>> getActionOutputDataById() {
-    return actionOutputDataById;
-  }
-
-  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
-    this.actionOutputDataById = actionOutputDataById;
-  }
-
   public String getxRequestId() {
     return xRequestId;
   }
@@ -500,6 +508,38 @@ public class KarProcessingData {
     this.phm = phm;
   }
 
+  public String getKarIdForCustomQueries() {
+
+    return kar.getKarId() + "-" + kar.getKarVersion();
+  }
+
+  public String getContextPatientId() {
+
+    return notificationContext.getPatientId();
+  }
+
+  public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
+
+    boolean returnVal = false;
+
+    // Check if the data is already retrieved.
+    if (fhirInputDataById.containsKey(dataReqId)
+        || (relatedDataId != null && fhirInputDataById.containsKey(relatedDataId))) {
+      returnVal = true;
+    }
+
+    return returnVal;
+  }
+
+  public String getContextEncounterId() {
+
+    if (notificationContext
+        .getNotificationResourceType()
+        .contentEquals(ResourceType.Encounter.toString()))
+      return notificationContext.getNotificationResourceId();
+    else return "";
+  }
+
   public boolean hasValidAccessToken() {
 
     // Check to see if the token is at least valid for 20 seconds before reusing the token.
@@ -519,5 +559,70 @@ public class KarProcessingData {
   public String getAccessToken() {
 
     return this.getHealthcareSetting().getEhrAccessToken();
+  }
+
+  public Set<Resource> getDataForId(String dataReqId, Map<String, String> relatedDataIds) {
+
+    Set<Resource> resources = null;
+
+    if (relatedDataIds.containsKey(dataReqId)) {
+
+      resources = getDataForId(dataReqId, relatedDataIds.get(dataReqId));
+    } else {
+      resources = getDataForId(dataReqId, "");
+    }
+
+    return resources;
+  }
+
+  public Set<Resource> getDataForId(String id, String relatedDataId) {
+
+    Set<Resource> resources = null;
+    if (fhirInputDataById.containsKey(id)) {
+      resources = fhirInputDataById.get(id);
+    }
+
+    if (resources == null
+        && relatedDataId != null
+        && !relatedDataId.isEmpty()
+        && fhirInputDataById.containsKey(relatedDataId)) {
+      resources = fhirInputDataById.get(relatedDataId);
+    }
+    return resources;
+  }
+
+  public Map<String, Parameters> getParametersForConditionEvaluation() {
+    return parametersForConditionEvaluation;
+  }
+
+  public void setParametersForConditionEvaluation(
+      Map<String, Parameters> parametersForConditionEvaluation) {
+    this.parametersForConditionEvaluation = parametersForConditionEvaluation;
+  }
+
+  public HashMap<String, Set<Resource>> getActionOutputDataById() {
+    return actionOutputDataById;
+  }
+
+  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
+    this.actionOutputDataById = actionOutputDataById;
+  }
+
+  public void addParameters(String actionId, Parameters params) {
+
+    if (parametersForConditionEvaluation.containsKey(actionId)) {
+      parametersForConditionEvaluation.replace(actionId, params);
+    } else {
+      parametersForConditionEvaluation.put(actionId, params);
+    }
+  }
+
+  public Parameters getParametersByActionId(String actionId) {
+
+    if (parametersForConditionEvaluation.containsKey(actionId)) {
+      return parametersForConditionEvaluation.get(actionId);
+    } else {
+      return null;
+    }
   }
 }

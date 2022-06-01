@@ -3,14 +3,17 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.condition.FhirPathProcessor;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.javatuples.Pair;
@@ -44,34 +47,50 @@ public class CheckTriggerCodes extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+      // Get the default queries.
+      Map<String, FhirQueryFilter> queries =
+          BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
 
-      // Get necessary data to process.
-      ehrService.getFilteredData(data, resourceTypes);
+      if (queries != null && !queries.isEmpty()) {
+
+        logger.info(" Data Requirements Exist wiht Queries, so executing queries to load data ");
+        // Try to execute the queries.
+        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+
+      } else {
+
+        logger.info(" No Queries, so just get data by Resource Type ");
+        // Try to Get the Resources that need to be retrieved using Resource Type since queries are
+        // not specified.
+        HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+
+        // Get necessary data to process.
+        ehrService.getFilteredData(data, resourceTypes);
+      }
+
+      HashMap<String, Set<Resource>> idres = new HashMap<>();
+      Parameters params = new Parameters();
 
       // Apply filters for data and then send the collections to the Condition Evaluator.
       for (DataRequirement dr : inputData) {
 
+        Set<Resource> allResources = new HashSet<>();
         if (dr.hasCodeFilter()) {
 
           logger.info(" Checking Trigger Codes based on code filter ");
           Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> matchInfo =
-              fhirPathProcessor.filterResources(dr, data);
+              fhirPathProcessor.applyCodeFilter(dr, data, this);
 
           if (matchInfo != null) {
 
             logger.info(" Found Match for Code Filter {}", dr.getType());
 
-            HashMap<String, Set<Resource>> idres = new HashMap<>();
-            Set<Resource> allResources = new HashSet<>();
-
             matchInfo
                 .getValue1()
                 .values()
                 .forEach(setOfResources -> allResources.addAll(setOfResources));
-            idres.put(dr.getId(), allResources);
-            data.resetResourcesById(idres);
+
+            idres.putAll(matchInfo.getValue1());
 
             actStatus.addOutputProducedId(dr.getId());
             actStatus.copyFrom(matchInfo.getValue0());
@@ -79,11 +98,22 @@ public class CheckTriggerCodes extends BsaAction {
           } else {
             logger.info(" No Match found for Code Filter {}", dr.getType());
           }
+
         } else {
           logger.error(" Not processing Data Requirement which is not a code filter ");
         }
+
+        // Add params
+        BsaServiceUtils.convertDataToParameters(
+            dr.getId(),
+            dr.getType(),
+            (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"),
+            allResources,
+            params);
       }
 
+      data.addParameters(actionId, params);
+      actStatus.setMatchedResources(idres);
       data.addActionStatus(getActionId(), actStatus);
 
       if (Boolean.TRUE.equals(conditionsMet(data))) {

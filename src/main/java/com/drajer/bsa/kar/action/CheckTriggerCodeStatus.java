@@ -4,10 +4,12 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -26,8 +28,17 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
   private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodeStatus.class);
 
+  /** The attribute indicates if something matched or not. */
   private Boolean triggerMatchStatus; // Did anything match or not
+
+  /**
+   * The attribute maintains the state of the specific codes that resulted in a match against the
+   * value set.
+   */
   private List<MatchedTriggerCodes> matchedCodes;
+
+  /** The map stores the matches by specific data requirement ids specified for the action. */
+  private Map<String, Set<Resource>> matchedResources;
 
   public Pair<Boolean, ReportableMatchedTriggerCode> getMatchedCode(CodeableConcept cc) {
 
@@ -139,6 +150,14 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
   public void setMatchedCodes(List<MatchedTriggerCodes> matchedCodes) {
     this.matchedCodes = matchedCodes;
+  }
+
+  public Map<String, Set<Resource>> getMatchedResources() {
+    return matchedResources;
+  }
+
+  public void setMatchedResources(Map<String, Set<Resource>> matchedResources) {
+    this.matchedResources = matchedResources;
   }
 
   public void copyFrom(CheckTriggerCodeStatus ctc) {

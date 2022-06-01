@@ -6,10 +6,14 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,8 +22,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
@@ -42,6 +51,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,12 +70,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   private final Logger logger = LoggerFactory.getLogger(EhrFhirR4QueryServiceImpl.class);
 
-  /** The Authorization utils class enables the BSA to get an access token. */
-  @Autowired AuthorizationUtils authUtils;
-
-  /** The HealthcareSettings Dao to save Healthcare Setting state as needed */
-  @Autowired HealthcareSettingsDao hsDao;
-
   private static final String R4 = "R4";
   private static final String PATIENT_RESOURCE = "Patient";
   private static final String PATIENT_ID_SEARCH_PARAM = "?patient=";
@@ -76,8 +80,111 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String EHR_ACCESS_TOKEN_EXPIRES_IN = "expires_in";
   private static final String EHR_ACCESS_TOKEN_PROVIDER_ID = "uuid";
 
+  // Variables for custom queries
+  private static final String QUERY_FILE_EXT = "queries";
+  private static final String PATIENT_ID_CONTEXT_PARAM = "\\{\\{context.patientId\\}\\}";
+  private static final String ENCOUNTER_ID_CONTEXT_PARAM = "\\{\\{context.encounterId\\}\\}";
+  private static final String ENCOUNTER_START_DATE_CONTEXT_PARAM =
+      "\\{\\{context.encounterStartDate\\}\\}";
+  private static final String ENCOUNTER_END_DATE_CONTEXT_PARAM =
+      "\\{\\{context.encounterEndDate\\}\\}";
+  private static final String SEARCH_QUERY_CHARACTERS = "?";
+
+  /**
+   * The attribute stores the custom queries for each KAR.
+   *
+   * <p>The outer map Key value is the [KAR Id-VersionId] for which the custom queries are
+   * applicable. The inner map has the KEY which maps to the DataRequirement Id and the Value maps
+   * to the custom query to be applied for data retrieval for the specific data element.
+   *
+   * <p>For custom queries to be injected, the file name has to match the pattern
+   * {[KAR.id]-[versionId].queries}
+   *
+   * <p>The binding between the KAR file based on version has to be done to the file that contains
+   * the queries using some mechanism. So we have chosen the file name to be used to apply the
+   * queries.
+   */
+  private HashMap<String, HashMap<String, String>> customQueries;
+
+  /** The Authorization utils class enables the BSA to get an access token. */
+  @Autowired AuthorizationUtils authUtils;
+
+  /** The HealthcareSettings Dao to save Healthcare Setting state as needed */
+  @Autowired HealthcareSettingsDao hsDao;
+
   /** The FHIR Context Initializer necessary to retrieve FHIR resources */
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  /**
+   * The attribute contains the directory of custom query files. Each Kar will have its own file
+   * with custom queries.
+   */
+  @Value("${custom-query.directory}")
+  String customQueryDirectory;
+
+  /**
+   * The method is used to load the customized queries from the config file to be used instead of
+   * default queries from the PlanDefinition.
+   *
+   * <p>* For custom queries to be injected, the file name has to match the pattern
+   * {[PlanDefinition.id]-[versionId].queries}
+   *
+   * <p>The binding between the PlanDefinition file based on version has to be done to the file that
+   * contains the queries using some mechanism. So we have chosen the file name to be used to apply
+   * the queries.
+   */
+  @PostConstruct
+  public void initializeCustomQueries() {
+
+    // Load each of the Knowledge Artifact Bundles.
+    File folder = new File(customQueryDirectory);
+
+    File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
+
+    for (File queryFile : files) {
+
+      if (queryFile.isFile()
+          && QUERY_FILE_EXT.contentEquals(FilenameUtils.getExtension(queryFile.getName()))) {
+
+        logger.info(" Processing Custom Query File  {}", queryFile.getName());
+        processQueryFile(queryFile);
+      } // For a File
+    }
+  }
+
+  private void processQueryFile(File queryFile) {
+
+    // Retrieve the properties.
+    HashMap<String, String> queries = new HashMap<>();
+    String filenameWithoutExt = FilenameUtils.getBaseName(queryFile.getName());
+
+    logger.info(" Loading Query File {}", queryFile.getAbsolutePath());
+
+    InputStream input = null;
+    try {
+      input = FileUtils.openInputStream(queryFile);
+      Properties prop = new Properties();
+
+      prop.load(input);
+
+      prop.forEach((key, value) -> queries.put((String) key, (String) value));
+
+      if (customQueries != null) {
+        if (!customQueries.containsKey(filenameWithoutExt)) {
+          customQueries.put(filenameWithoutExt, queries);
+        } else {
+          logger.error(" Not adding the queries, since it is already initialized ");
+        }
+      } else {
+        customQueries = new HashMap<>();
+        customQueries.put(filenameWithoutExt, queries);
+      }
+
+    } catch (Exception e) {
+
+      logger.error(" Unable to load file for finalizing custom queries {}", e);
+    }
+  }
 
   /**
    * The method is used to retrieve data from the Ehr.
@@ -169,7 +276,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
 
     // Get other resources for Patient
-    return kd.getFhirInputData();
+    return kd.getFhirInputDataByType();
   }
 
   /**
@@ -185,7 +292,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       accessToken = kd.getAccessToken();
       logger.info(
-          " Reusing Valid Access Token: {}, Expiration Time: ",
+          " Reusing Valid Access Token: {}, Expiration Time: {}",
           accessToken,
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
 
@@ -194,7 +301,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       retrieveAndUpdateAccessToken(kd);
       accessToken = kd.getAccessToken();
       logger.info(
-          " Generated New Access Token: {}, Expiration Time: ",
+          " Generated New Access Token: {}, Expiration Time: {}",
           accessToken,
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
     }
@@ -369,7 +476,44 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       kd.addResourcesByType(resMap);
     }
 
-    return kd.getFhirInputData();
+    return kd.getFhirInputDataByType();
+  }
+
+  @Override
+  public Resource getResourceByUrl(KarProcessingData kd, String resourceName, String url) {
+
+    logger.info(LOG_FHIR_CTX_GET);
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info(LOG_INIT_FHIR_CLIENT);
+    IGenericClient client = getClient(kd, context);
+
+    return getResourceByUrl(client, context, resourceName, url);
+  }
+
+  public Resource getResourceByUrl(
+      IGenericClient genericClient, FhirContext context, String resourceName, String url) {
+
+    Resource resource = null;
+
+    try {
+
+      logger.info("Getting data for Resource : {} with Url : {}", resourceName, url);
+
+      resource = (Resource) (genericClient.read().resource(resourceName).withUrl(url).execute());
+
+    } catch (BaseServerResponseException responseException) {
+      if (responseException.getOperationOutcome() != null) {
+        logger.debug(
+            context
+                .newJsonParser()
+                .encodeResourceToString(responseException.getOperationOutcome()));
+      }
+      logger.error("Error in getting {} resource by Id: {}", resourceName, url, responseException);
+    } catch (Exception e) {
+      logger.error("Error in getting {} resource by Id: {}", resourceName, url, e);
+    }
+    return resource;
   }
 
   @Override
@@ -589,5 +733,184 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   public JSONObject getAuthorizationToken(HealthcareSetting hs) {
 
     return authUtils.getToken(hs);
+  }
+
+  @Override
+  public void executeQuery(KarProcessingData data, String dataReqId, FhirQueryFilter query) {
+
+    if (!data.isDataAlreadyFetched(dataReqId, query.getRelatedDataId())) {
+
+      logger.info(" Executing Query for DataReqId: {} as it is not already fetched.", dataReqId);
+
+      String queryToExecute = getQuery(data, dataReqId, query);
+
+      logger.info(" Query to be executed before parameter substitution {}", queryToExecute);
+
+      queryToExecute = substituteContextParams(data, queryToExecute);
+
+      logger.info(" Substituted Query to be executed {}", queryToExecute);
+
+      if (isSearchQuery(queryToExecute)) {
+
+        String finalSearchQuery = createSearchUrl(data, queryToExecute);
+
+        logger.info(
+            " Executing Search FHIR Query for resource {} with query {}",
+            query.getResourceType().toString(),
+            finalSearchQuery);
+        executeSearchQuery(data, dataReqId, query, finalSearchQuery);
+
+      } else {
+
+        logger.info(" Executing Get Resource by Id for Query {}", queryToExecute);
+
+        Resource res = getResourceByUrl(data, query.getResourceType().toString(), queryToExecute);
+
+        addResourceToContext(data, res, dataReqId);
+      }
+    } else {
+      logger.info(
+          " Not retrieving the data since it is already fetched for dataReqId: {}", dataReqId);
+    }
+  }
+
+  private String createSearchUrl(KarProcessingData data, String queryToExecute) {
+
+    String finalQuery = data.getNotificationContext().getFhirServerBaseUrl() + queryToExecute;
+
+    return finalQuery;
+  }
+
+  public void executeSearchQuery(
+      KarProcessingData data, String dataReqId, FhirQueryFilter query, String queryToExecute) {
+
+    logger.info(LOG_FHIR_CTX_GET);
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info(LOG_INIT_FHIR_CLIENT);
+    IGenericClient client = getClient(data, context);
+
+    getResourcesFromSearch(client, context, queryToExecute, data, query, dataReqId);
+  }
+
+  private void getResourcesFromSearch(
+      IGenericClient genericClient,
+      FhirContext context,
+      String searchUrl,
+      KarProcessingData kd,
+      FhirQueryFilter queryFilter,
+      String dataReqId) {
+
+    logger.info("Invoking search url : {}", searchUrl);
+    String resType = queryFilter.getResourceType().toString();
+    Set<Resource> resources = null;
+    HashMap<String, Set<Resource>> resMapById = null;
+
+    try {
+      logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
+
+      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+
+      getAllR4RecordsUsingPagination(genericClient, bundle);
+      if (bundle.getEntry() != null) {
+
+        logger.info(
+            "Total No of Entries for Resource {} retrieved : {}",
+            resType,
+            bundle.getEntry().size());
+
+        List<BundleEntryComponent> bc = bundle.getEntry();
+
+        resources = new HashSet<>();
+        resMapById = new HashMap<>();
+        for (BundleEntryComponent comp : bc) {
+
+          logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
+          resources.add(comp.getResource());
+        }
+
+        resMapById.put(dataReqId, resources);
+        kd.addResourcesById(resMapById);
+
+        logger.info(" Adding {} resources of type : {}", resources.size(), resType);
+      } else {
+        logger.error(" No entries found for type : {}", resType);
+      }
+
+    } catch (BaseServerResponseException responseException) {
+      if (responseException.getOperationOutcome() != null) {
+        logger.debug(
+            context
+                .newJsonParser()
+                .encodeResourceToString(responseException.getOperationOutcome()));
+      }
+      logger.info("Error in getting {} resource using search query {}", resType, searchUrl);
+    } catch (Exception e) {
+      logger.info("Error in getting {} resource using search query {}", resType, searchUrl, e);
+    }
+  }
+
+  private void addResourceToContext(KarProcessingData data, Resource res, String dataReqId) {
+
+    if (res != null) {
+      data.addResourceById(dataReqId, res);
+    } else {
+      logger.info(" Resource for dataReqId {} is null, hence not added ", dataReqId);
+    }
+  }
+
+  private Boolean isSearchQuery(String queryToExecute) {
+
+    return queryToExecute.contains(SEARCH_QUERY_CHARACTERS);
+  }
+
+  private String substituteContextParams(KarProcessingData data, String queryToExecute) {
+
+    // Substitute any context parameters.
+    String substitutedQuery =
+        queryToExecute.replaceAll(PATIENT_ID_CONTEXT_PARAM, data.getContextPatientId());
+
+    substitutedQuery =
+        substitutedQuery.replaceAll(ENCOUNTER_ID_CONTEXT_PARAM, data.getContextEncounterId());
+
+    return substitutedQuery;
+  }
+
+  private String getQuery(KarProcessingData data, String dataReqId, FhirQueryFilter query) {
+
+    // Get the Kar Id
+    String customQueryFile = data.getKarIdForCustomQueries();
+    String queryToExecute =
+        data.getKar().getQueryForDataRequirement(dataReqId, query.getRelatedDataId());
+
+    if (customQueries.containsKey(customQueryFile)) {
+
+      if (customQueries.get(customQueryFile).containsKey(dataReqId)) {
+
+        queryToExecute = customQueries.get(customQueryFile).get(dataReqId);
+        logger.info(" Found a custom query {} for dataReqId {}", queryToExecute, dataReqId);
+
+      } else if (customQueries.get(customQueryFile).containsKey(query.getRelatedDataId())) {
+        queryToExecute = customQueries.get(customQueryFile).get(query.getRelatedDataId());
+        logger.info(
+            " Found a custom query {} for Related dataReqId {}",
+            queryToExecute,
+            query.getRelatedDataId());
+      } else {
+
+        logger.info(
+            " No custom query, so using default query {} for dataReqId {}",
+            queryToExecute,
+            dataReqId);
+      }
+    } else {
+
+      logger.info(
+          " No custom queries for the specific KAR Id, so use default query {} for dataReqId {}",
+          queryToExecute,
+          dataReqId);
+    }
+
+    return queryToExecute;
   }
 }

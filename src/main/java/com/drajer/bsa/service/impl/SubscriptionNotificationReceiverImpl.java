@@ -113,6 +113,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   kd.setNotificationBundle(notificationBundle);
                   kd.setScheduledJobData(null);
                   kd.setKarStatus(ks);
+                  kd.setxRequestId(nc.getxRequestId());
+                  kd.setxCorrelationId(nc.getxCorrelationId());
 
                   if (nc.getNotifiedResource() != null) {
                     logger.info("Adding notified resource to the set of inputs ");

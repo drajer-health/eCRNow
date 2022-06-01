@@ -69,6 +69,11 @@ public class KnowledgeArtifact {
   private HashMap<String, Set<BsaAction>> triggerEventActionMap;
 
   /**
+   * This attribute represents all the default queries that are present in the Knowledge Artifact.
+   */
+  private HashMap<String, FhirQueryFilter> defaultQueries;
+
+  /**
    * This attribute stores different types of resources that are required for the processing of the
    * Knowledge Artifact. These include the following currently 1. ValueSet Instances that are
    * required for processing. 2. Group Instances that may be required for processing. 3. Library
@@ -350,6 +355,14 @@ public class KnowledgeArtifact {
     this.karPublisher = karPublisher;
   }
 
+  public HashMap<String, FhirQueryFilter> getDefaultQueries() {
+    return defaultQueries;
+  }
+
+  public void setDefaultQueries(HashMap<String, FhirQueryFilter> defaultQueries) {
+    this.defaultQueries = defaultQueries;
+  }
+
   public void printKarSummary() {
 
     logger.info(" **** START Printing KnowledgeArtifactSummary **** ");
@@ -358,6 +371,8 @@ public class KnowledgeArtifact {
     logger.info(" Kar Version : {} ", karVersion);
 
     firstLevelActions.forEach(act -> act.printSummary());
+    defaultQueries.forEach(
+        (key, value) -> logger.info(" Data Req Id : {}, Query String: {}", key, value));
 
     logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
   }
@@ -385,5 +400,61 @@ public class KnowledgeArtifact {
     }
 
     logger.info(" **** END Printing Knowledge Artifacts **** ");
+  }
+
+  public void populateDefaultQueries(BsaAction action) {
+
+    logger.info(" Populating Default Queries for action {}", action.getActionId());
+    if (defaultQueries == null) {
+      defaultQueries = new HashMap<>();
+      action
+          .getInputDataRequirementQueries()
+          .forEach((key, value) -> defaultQueries.put(key, value));
+
+    } else {
+      action
+          .getInputDataRequirementQueries()
+          .forEach((key, value) -> defaultQueries.put(key, value));
+    }
+
+    logger.info(" Default Queries size = {}", defaultQueries.size());
+  }
+
+  public String getQueryForDataRequirement(String dataReqId, String relatedDataId) {
+
+    String queryToExecute = "";
+    if (defaultQueries != null && defaultQueries.containsKey(dataReqId)) {
+      logger.info(" Found Default Query in KAR for {}", dataReqId);
+      queryToExecute = defaultQueries.get(dataReqId).getQueryString();
+    }
+
+    if (queryToExecute.isEmpty()
+        && relatedDataId != null
+        && !relatedDataId.isEmpty()
+        && defaultQueries != null
+        && defaultQueries.containsKey(relatedDataId)) {
+      queryToExecute = defaultQueries.get(relatedDataId).getQueryString();
+    }
+
+    return queryToExecute;
+  }
+
+  public FhirQueryFilter getQueryFilter(String dataReqId, String relatedDataId) {
+
+    FhirQueryFilter filter = null;
+    if (defaultQueries != null && defaultQueries.containsKey(dataReqId)) {
+      logger.info(" Found Default Query in KAR for {}", dataReqId);
+      filter = defaultQueries.get(dataReqId);
+    }
+
+    if (filter == null
+        && relatedDataId != null
+        && !relatedDataId.isEmpty()
+        && defaultQueries != null
+        && defaultQueries.containsKey(relatedDataId)) {
+      filter = defaultQueries.get(relatedDataId);
+    }
+
+    return filter;
   }
 }

@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
@@ -44,7 +45,7 @@ public class MedMorphReportCreator extends ReportCreator {
 
   @Override
   public Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act) {
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
 
@@ -132,7 +133,7 @@ public class MedMorphReportCreator extends ReportCreator {
 
   public void populateBundleEntries(List<BundleEntryComponent> becs, KarProcessingData kd) {
 
-    HashMap<ResourceType, Set<Resource>> resources = kd.getFhirInputData();
+    HashMap<ResourceType, Set<Resource>> resources = kd.getFhirInputDataByType();
 
     for (Map.Entry<ResourceType, Set<Resource>> res : resources.entrySet()) {
 

@@ -3,6 +3,7 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
@@ -11,6 +12,7 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -51,11 +53,25 @@ public class CreateReport extends BsaAction {
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+      // Get the default queries.
+      Map<String, FhirQueryFilter> queries =
+          BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
 
-      // Get necessary data to process.
-      ehrService.getFilteredData(data, resourceTypes);
+      if (queries != null && !queries.isEmpty()) {
+
+        logger.info(" Found Default/Custom Queries for execution ");
+        // Try to execute the queries.
+        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+
+      } else {
+
+        // Try to Get the Resources that need to be retrieved using Resource Type since queries are
+        // not specified.
+        HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+
+        // Get necessary data to process.
+        ehrService.getFilteredData(data, resourceTypes);
+      }
 
       ehrService.loadJurisdicationData(data);
 
@@ -74,7 +90,8 @@ public class CreateReport extends BsaAction {
             if (rc != null) {
 
               logger.info("Start creating report");
-              Resource output = rc.createReport(data, ehrService, dr.getId(), ct.asStringValue());
+              Resource output =
+                  rc.createReport(data, ehrService, dr.getId(), ct.asStringValue(), this);
               logger.info("Finished creating report");
 
               if (output != null) {

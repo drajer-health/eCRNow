@@ -2,6 +2,9 @@ package com.drajer.bsa.utils;
 
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.eca.model.MatchedTriggerCodes;
@@ -26,6 +29,9 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
 import org.hl7.fhir.r4.model.MessageHeader;
+import org.hl7.fhir.r4.model.ParameterDefinition;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -405,5 +411,57 @@ public class BsaServiceUtils {
     } // Bundle
 
     return false;
+  }
+
+  public static void convertDataToParameters(
+      String dataReqId, String fhirType, String limit, Set<Resource> resources, Parameters params) {
+
+    if (resources != null && !resources.isEmpty()) {
+      for (Resource res : resources) {
+
+        logger.info(" Creating Parameter for name {}", dataReqId);
+        ParametersParameterComponent parameter =
+            new ParametersParameterComponent().setName("%" + String.format("%s", dataReqId));
+        parameter.addExtension(
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+            new ParameterDefinition().setMax(limit).setName("%" + dataReqId).setType(fhirType));
+        parameter.setResource(res);
+        params.addParameter(parameter);
+      }
+    } else {
+      logger.info(" Creating Parameter for name {} with no resources", dataReqId);
+      ParametersParameterComponent parameter =
+          new ParametersParameterComponent().setName("%" + String.format("%s", dataReqId));
+      parameter.addExtension(
+          "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+          new ParameterDefinition().setMax(limit).setName("%" + dataReqId).setType(fhirType));
+      params.addParameter(parameter);
+    }
+  }
+
+  public static Map<String, FhirQueryFilter> getDefaultQueriesForAction(
+      BsaAction act, KnowledgeArtifact art) {
+
+    // Get the default queries.
+    Map<String, FhirQueryFilter> queries = act.getInputDataRequirementQueries();
+
+    // Get the related data elements for Inputs
+    Map<String, String> relatedDataReqIds = act.getInputDataIdToRelatedDataIdMap();
+
+    for (Map.Entry<String, String> entry : relatedDataReqIds.entrySet()) {
+
+      // If the query existed, they should already have been collected.
+      if (!queries.containsKey(entry.getKey())) {
+
+        FhirQueryFilter filter = art.getQueryFilter(entry.getKey(), entry.getValue());
+
+        // This will not be null only when there is a related data Id mapped.
+        if (filter != null) {
+          queries.put(entry.getValue(), filter);
+        }
+      }
+    }
+
+    return queries;
   }
 }

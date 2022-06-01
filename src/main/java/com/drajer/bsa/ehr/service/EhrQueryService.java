@@ -1,5 +1,6 @@
 package com.drajer.bsa.ehr.service;
 
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.Map;
@@ -38,6 +39,8 @@ public interface EhrQueryService {
 
   public Resource getResourceById(KarProcessingData data, String resourceName, String id);
 
+  public Resource getResourceByUrl(KarProcessingData data, String resourceName, String id);
+
   public DocumentReference constructR4DocumentReference(
       String payload,
       String patientId,
@@ -50,4 +53,6 @@ public interface EhrQueryService {
       String docCodeSystem);
 
   public JSONObject getAuthorizationToken(HealthcareSetting hs);
+
+  public void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
 }

@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.model;
 
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +18,15 @@ public class FhirQueryFilter {
 
   private final Logger logger = LoggerFactory.getLogger(FhirQueryFilter.class);
 
+  private String dataReqId;
+
   private String queryString;
 
   private Boolean customized;
+
+  private ResourceType resourceType;
+
+  private String relatedDataId;
 
   public FhirQueryFilter(String st) {
 
@@ -27,10 +34,15 @@ public class FhirQueryFilter {
     customized = false;
   }
 
-  public FhirQueryFilter(String st, Boolean flag) {
+  public FhirQueryFilter(String st, Boolean flag, ResourceType rtype) {
 
     queryString = st;
     customized = flag;
+    resourceType = rtype;
+  }
+
+  public FhirQueryFilter() {
+    customized = false;
   }
 
   public String getQueryString() {
@@ -49,12 +61,39 @@ public class FhirQueryFilter {
     this.customized = customized;
   }
 
+  public ResourceType getResourceType() {
+    return resourceType;
+  }
+
+  public void setResourceType(ResourceType resourceType) {
+    this.resourceType = resourceType;
+  }
+
+  public String getDataReqId() {
+    return dataReqId;
+  }
+
+  public void setDataReqId(String dataReqId) {
+    this.dataReqId = dataReqId;
+  }
+
+  public String getRelatedDataId() {
+    return relatedDataId;
+  }
+
+  public void setRelatedDataId(String relatedDataId) {
+    this.relatedDataId = relatedDataId;
+  }
+
   public void log() {
 
     logger.info(" **** START Printing Fhir Query Filter ****");
 
+    logger.info(" Data Req Id : {}", dataReqId);
     logger.info(" Query String : {}", queryString);
     logger.info(" Query Customized : {}", customized);
+    logger.info(" Resource Type : {}", resourceType);
+    logger.info(" Related Data Id : {}", relatedDataId);
 
     logger.info(" **** FINISH Printing Fhir Query Filter ****");
   }

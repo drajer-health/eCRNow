@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,5 +63,5 @@ public abstract class ReportCreator {
   }
 
   public abstract Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile);
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act);
 }

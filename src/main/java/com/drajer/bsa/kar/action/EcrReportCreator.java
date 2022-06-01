@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
@@ -103,7 +104,11 @@ public class EcrReportCreator extends ReportCreator {
 
   @Override
   public Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     Bundle reportingBundle = null;
 
@@ -124,7 +129,7 @@ public class EcrReportCreator extends ReportCreator {
       logger.info(" Creating a CDA R11 Eicr Report ");
 
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
@@ -136,7 +141,7 @@ public class EcrReportCreator extends ReportCreator {
 
       logger.info(" Creating a CDA R30 Eicr Report ");
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
@@ -150,7 +155,7 @@ public class EcrReportCreator extends ReportCreator {
       logger.info(" Creating an Eicr for each of the above formats ");
 
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       Bundle contentBundle2 = getFhirReport(kd, ehrService, dataRequirementId, profile);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle1);
 
@@ -230,7 +235,11 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Resource getAllReports(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
@@ -241,7 +250,7 @@ public class EcrReportCreator extends ReportCreator {
 
     returnBundle.addEntry(
         new BundleEntryComponent()
-            .setResource(getCdaR11Report(kd, ehrService, dataRequirementId, profile)));
+            .setResource(getCdaR11Report(kd, ehrService, dataRequirementId, profile, act)));
     returnBundle.addEntry(
         new BundleEntryComponent()
             .setResource(getFhirReport(kd, ehrService, dataRequirementId, profile)));
@@ -249,7 +258,11 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Bundle getCdaR11Report(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
@@ -260,7 +273,7 @@ public class EcrReportCreator extends ReportCreator {
 
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
-        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
+        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);
@@ -272,7 +285,11 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Resource getCdaR30Report(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
@@ -284,7 +301,7 @@ public class EcrReportCreator extends ReportCreator {
     logger.info(" Creating Document Reference Resource ");
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
-        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
+        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);

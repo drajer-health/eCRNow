@@ -522,13 +522,16 @@ public class KarParserImpl implements KarParser {
         // Get Query Extensions to identify default queries.
         Extension queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
 
+        FhirQueryFilter query = new FhirQueryFilter();
+        query.setResourceType(rt);
+        query.setDataReqId(dr.getId());
+
         if (queryExt != null && queryExt.getValue() != null) {
 
           logger.info(" Found a query extension for action Id {}", action.getActionId());
           String st = queryExt.getValueAsPrimitive().getValueAsString();
 
-          FhirQueryFilter query = new FhirQueryFilter(st);
-
+          query.setQueryString(st);
           action.addQueryFilter(dr.getId(), query);
         }
 
@@ -540,6 +543,7 @@ public class KarParserImpl implements KarParser {
           logger.info(" Found a related data extension ");
           String st = relatedDataExt.getValueAsPrimitive().getValueAsString();
 
+          query.setRelatedDataId(st);
           action.addRelatedDataId(dr.getId(), st);
         }
 
@@ -614,6 +618,8 @@ public class KarParserImpl implements KarParser {
       CreateReport cr = (CreateReport) action;
       cr.setPhDao(phDao);
     }
+
+    art.populateDefaultQueries(action);
   }
 
   private void setMeasureParameters(PlanDefinitionActionComponent act, BsaAction action) {

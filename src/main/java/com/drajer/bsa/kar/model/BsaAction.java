@@ -8,6 +8,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.BsaScheduler;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import java.time.Instant;
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +85,7 @@ public abstract class BsaAction {
    * conditions are not evaluated to true, then the rest of the actions are not processed. If there
    * are more than one conditions in the List, then all of them have to be true.
    */
-  private List<BsaCondition> conditions;
+  protected List<BsaCondition> conditions;
 
   /**
    * The list of related actions that have to be executed once this action is complete. The
@@ -223,6 +226,22 @@ public abstract class BsaAction {
       logger.info(" No timing data, so continue with the execution of the action ");
       return BsaActionStatusType.IN_PROGRESS;
     }
+  }
+  
+  public void populateParamsForConditionEvaluation(KarProcessingData data) {
+	  
+	  Parameters params = new Parameters();
+	  for(DataRequirement dr : inputData) {
+		  
+		  Set<Resource> resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+		  
+		  BsaServiceUtils.convertDataToParameters(dr.getId(), dr.getType(), 
+				  (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"), resources, params);
+		  
+		  
+	  }
+	  
+	  data.addParameters(actionId, params);
   }
 
   protected BsaAction() {
@@ -442,6 +461,17 @@ public abstract class BsaAction {
     } else {
       logger.debug(" Adding Related Data Id {} to DR Id {}", relatedId, drId);
       inputDataIdToRelatedDataIdMap.put(drId, relatedId);
+    }
+  }
+
+  public String getRelatedDataId(String id) {
+
+    if (inputDataIdToRelatedDataIdMap.containsKey(id)) {
+
+      return inputDataIdToRelatedDataIdMap.get(id);
+
+    } else {
+      return null;
     }
   }
 

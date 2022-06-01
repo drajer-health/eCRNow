@@ -173,52 +173,53 @@ public class KarProcessorImpl implements KarProcessor {
         }
       }
 
-      if (kd.getKarStatus() == null) {
+      if (kd.getKarStatus() != null) {
 
-        logger.error("Cannot process job properly as KarStatus would be invalid.");
+        // Setup Notification Data
+        Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
+        kd.setNotificationBundle(nb);
+        nc.setNotifiedResource(nb.getEntry().get(1).getResource());
+
+        kd.setEhrQueryService(ehrInterface);
+        kd.setKarExecutionStateService(karExecutionStateService);
+        kd.setScheduledJobData(data);
+
+        // Get the action that needs to be executed.
+        BsaAction action = kd.getKar().getAction(data.getActionId());
+
+        if (action != null) {
+          logger.info(
+              " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
+              action.getActionId(),
+              action.getType());
+
+          try {
+            action.process(kd, ehrInterface);
+
+            saveDataForDebug(kd);
+            logger.info(
+                " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
+                action.getActionId());
+
+            // Get rid of the KarExecutionState entry that was created for the job.
+            karExecutionStateService.delete(state);
+
+          } catch (Exception e) {
+
+            logger.error("Exception encountered during processing of the scheduled job ");
+            throw e;
+          }
+        } else {
+          logger.error(
+              " Cannot apply KAR for the scheduled job notification because action with id {} does not exist ",
+              data.getActionId());
+        }
+      } else {
+        logger.error("Cannot process job properly as KarStatus was not found.");
       }
     } else {
-      logger.error("Cannot process job properly as KarStatus would be invalid.");
-    }
 
-    // Setup Notification Data
-    Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
-    kd.setNotificationBundle(nb);
-    nc.setNotifiedResource(nb.getEntry().get(1).getResource());
-
-    kd.setEhrQueryService(ehrInterface);
-    kd.setKarExecutionStateService(karExecutionStateService);
-    kd.setScheduledJobData(data);
-
-    // Get the action that needs to be executed.
-    BsaAction action = kd.getKar().getAction(data.getActionId());
-
-    if (action != null) {
-      logger.info(
-          " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
-          action.getActionId(),
-          action.getType());
-
-      try {
-        action.process(kd, ehrInterface);
-
-        saveDataForDebug(kd);
-        logger.info(
-            " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
-            action.getActionId());
-
-        // Get rid of the KarExecutionState entry that was created for the job.
-        karExecutionStateService.delete(state);
-
-      } catch (Exception e) {
-
-        logger.error("Exception encountered during processing of the scheduled job ");
-        throw e;
-      }
-    } else {
-      logger.error(
-          " Cannot apply KAR for the scheduled job notification because action with id {} does not exist ",
-          data.getActionId());
+      logger.error("Cannot process job properly as Healthcare Setting and KarStatus are invalid.");
     }
   }
 }
