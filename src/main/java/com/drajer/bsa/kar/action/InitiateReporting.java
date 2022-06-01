@@ -6,9 +6,7 @@ import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
-import java.util.HashMap;
 import java.util.Map;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +41,7 @@ public class InitiateReporting extends BsaAction {
 
       // Try to Get the Resources that need to be retrieved using Resource Type since queries are
       // not specified.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
-      // Get necessary data to process.
-      ehrService.getFilteredData(data, resourceTypes);
+      ehrService.getFilteredData(data, getInputData());
     }
 
     // Ensure the activity is In-Progress and the Conditions are met.

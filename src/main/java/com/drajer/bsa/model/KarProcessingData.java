@@ -220,16 +220,33 @@ public class KarProcessingData {
     if (res != null && res.size() > 0) {
 
       logger.info(RESOURCE_SIZES, res.size());
-      for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
 
-        if (fhirInputDataByType.containsKey(entry.getKey())) {
-          Set<Resource> resources = fhirInputDataByType.get(entry.getKey());
-          resources.addAll(entry.getValue());
-          Set<Resource> uniqueResources =
-              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
-          fhirInputDataByType.put(entry.getKey(), uniqueResources);
-        } else fhirInputDataByType.put(entry.getKey(), entry.getValue());
+      for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
+        addResourcesByType(entry.getKey(), entry.getValue());
       }
+    }
+  }
+
+  public void addResourcesByType(ResourceType type, Set<Resource> res) {
+
+    if (res != null && res.size() > 0) {
+
+      logger.info(" Resource Sizes : {}", res.size());
+
+      if (fhirInputDataByType.containsKey(type)) {
+        Set<Resource> resources = fhirInputDataByType.get(type);
+        resources.addAll(res);
+        Set<Resource> uniqueResources =
+            ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+
+        fhirInputDataByType.put(type, uniqueResources);
+      } else fhirInputDataByType.put(type, res);
+    }
+  }
+
+  public void addResourcesById(String id, Set<Resource> res) {
+    if (res != null && res.size() > 0) {
+      fhirInputDataById.put(id, res);
     }
   }
 
@@ -559,6 +576,10 @@ public class KarProcessingData {
   public String getAccessToken() {
 
     return this.getHealthcareSetting().getEhrAccessToken();
+  }
+
+  public Set<Resource> getResourcesById(String id) {
+    return getFhirInputDataById().get(id);
   }
 
   public Set<Resource> getDataForId(String dataReqId, Map<String, String> relatedDataIds) {

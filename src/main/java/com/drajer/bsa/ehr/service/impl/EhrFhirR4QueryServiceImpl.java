@@ -9,6 +9,7 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
 import java.io.File;
@@ -35,6 +36,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -280,6 +282,74 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   /**
+   * The method is used to retrieve data from the Ehr.
+   *
+   * @param kd The processing context which contains information such as patient, encounter,
+   *     previous data etc.
+   * @return The Map of Resources to its type.
+   */
+  @Override
+  public Map<ResourceType, Set<Resource>> getFilteredData(
+      KarProcessingData kd, List<DataRequirement> dRequirements) {
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info("Initializing FHIR Client");
+    IGenericClient client = getClient(kd, context);
+
+    // Get Patient by Id always
+    Resource res =
+        getResourceById(
+            client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
+    if (res != null) {
+
+      logger.info(
+          " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
+
+      Set<Resource> resources = new HashSet<>();
+      resources.add(res);
+      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      resMap.put(res.getResourceType(), resources);
+      kd.addResourcesByType(resMap);
+    }
+
+    // Fetch Resources by Patient Id.
+    for (DataRequirement entry : dRequirements) {
+      String id = entry.getId();
+      ResourceType type = ResourceType.valueOf(entry.getType());
+      logger.info(" Fetching Resource of type {}", type);
+
+      if (type != ResourceType.Patient && type != ResourceType.Encounter) {
+        String url =
+            kd.getNotificationContext().getFhirServerBaseUrl()
+                + "/"
+                + type
+                + PATIENT_ID_SEARCH_PARAM
+                + kd.getNotificationContext().getPatientId();
+
+        logger.info(" Resource Query Url : {}", url);
+
+        // get the resources
+        Set<Resource> resources = kd.getResourcesByType(type.toString());
+        if (resources == null || resources.size() == 0) {
+          resources = fetchResources(client, context, url);
+          kd.addResourcesByType(type, resources);
+        }
+        // filter resources by any filters in the drRequirements
+        Set<Resource> filtered = BsaServiceUtils.filterResources(resources, entry, kd);
+        // add filtered resources to kd by type and id
+        logger.info("Filtered resource count of type {} dr_id {} is {}", type, id, filtered.size());
+        kd.addResourcesById(id, filtered);
+      } else {
+        kd.addResourcesById(id, kd.getResourcesByType(type.toString()));
+      }
+    }
+
+    // Get other resources for Patient
+    return kd.getFhirInputDataByType();
+  }
+
+  /**
    * @param kd The data object for getting the healthcareSetting and notification context from
    * @param context The HAPI FHIR context for making a FHIR client with
    * @return
@@ -360,6 +430,20 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   /**
+   * @param kd The KarProcessingData includes data about the fhir server to update a resource on
+   * @param resource the resource (with ID) to update on the fhir server
+   */
+  public void updateResource(KarProcessingData kd, Resource resource) {
+
+    logger.info(" Getting FHIR Context for R4");
+    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+    logger.info("Initializing FHIR Client");
+    IGenericClient client = getClient(kd, context);
+    client.update().resource(resource).execute();
+  }
+
+  /**
    * @param kd The KarProcessingData which contains information about the fhir server
    * @param resourceType The resource type of the resource to be deleted
    * @param id The logical ID of the resource to be deleted
@@ -383,6 +467,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     IGenericClient client = getClient(kd, context);
 
     // Retrieve the encounter
+    kd.getContextEncounterId();
     Set<Resource> res = kd.getResourcesByType(ResourceType.Encounter.toString());
 
     Set<Resource> practitioners = new HashSet<>();
@@ -514,6 +599,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       logger.error("Error in getting {} resource by Id: {}", resourceName, url, e);
     }
     return resource;
+  }
+
+  public Set<Resource> fetchResources(
+      IGenericClient genericClient, FhirContext context, String searchUrl) {
+    Set<Resource> resources = new HashSet<Resource>();
+    Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+    getAllR4RecordsUsingPagination(genericClient, bundle);
+    List<BundleEntryComponent> bc = bundle.getEntry();
+    for (BundleEntryComponent comp : bc) {
+      resources.add(comp.getResource());
+    }
+    return resources;
   }
 
   @Override
@@ -854,6 +951,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     if (res != null) {
       data.addResourceById(dataReqId, res);
+      Set<Resource> resources = new HashSet<>();
+      resources.add(res);
+      data.addResourcesByType(res.getResourceType(), resources);
     } else {
       logger.info(" Resource for dataReqId {} is null, hence not added ", dataReqId);
     }

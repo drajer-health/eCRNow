@@ -106,6 +106,17 @@ public class EcrReportCreator extends ReportCreator {
   public Resource createReport(
       KarProcessingData kd,
       EhrQueryService ehrService,
+      Set<Resource> inputData,
+      String id,
+      String profile,
+      BsaAction act) {
+    return createReport(kd, ehrService, id, profile, act);
+  }
+
+  @Override
+  public Resource createReport(
+      KarProcessingData kd,
+      EhrQueryService ehrService,
       String dataRequirementId,
       String profile,
       BsaAction act) {

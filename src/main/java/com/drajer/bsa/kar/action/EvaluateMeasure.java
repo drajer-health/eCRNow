@@ -6,12 +6,10 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.HashMap;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
@@ -83,10 +81,7 @@ public class EvaluateMeasure extends BsaAction {
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
       // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
-      // Get necessary data to process.
-      ehrService.getFilteredData(data, resourceTypes);
+      ehrService.getFilteredData(data, getInputData());
 
       Endpoint endpoint =
           new Endpoint()

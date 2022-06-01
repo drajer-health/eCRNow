@@ -117,162 +117,166 @@ public class R3ToR2DataConverterUtils {
       Set<Resource> resources,
       String type) {
 
-    if (type.contentEquals(ResourceType.Patient.toString())) {
+    if (resources != null) {
+      if (type.contentEquals(ResourceType.Patient.toString())) {
 
-      logger.info(" Setting up the patient for R4FhirData ");
-      Resource patient = resources.iterator().next();
-      r4FhirData.setPatient((Patient) patient);
-      details.setLaunchPatientId(patient.getIdElement().getIdPart());
-      data.addEntry(new BundleEntryComponent().setResource(patient));
-    } else if (type.contentEquals(ResourceType.Encounter.toString())) {
+        logger.info(" Setting up the patient for R4FhirData ");
+        Resource patient = resources.iterator().next();
+        r4FhirData.setPatient((Patient) patient);
+        details.setLaunchPatientId(patient.getIdElement().getIdPart());
+        data.addEntry(new BundleEntryComponent().setResource(patient));
+      } else if (type.contentEquals(ResourceType.Encounter.toString())) {
 
-      logger.info(" Setting up the encounter for R4FhirData ");
-      Resource encounter = resources.iterator().next();
-      r4FhirData.setEncounter((Encounter) encounter);
-      details.setEncounterId(encounter.getIdElement().getIdPart());
-      data.addEntry(new BundleEntryComponent().setResource(encounter));
-    } else if (type.contentEquals(ResourceType.Location.toString())) {
+        logger.info(" Setting up the encounter for R4FhirData ");
+        Resource encounter = resources.iterator().next();
+        r4FhirData.setEncounter((Encounter) encounter);
+        details.setEncounterId(encounter.getIdElement().getIdPart());
+        data.addEntry(new BundleEntryComponent().setResource(encounter));
+      } else if (type.contentEquals(ResourceType.Location.toString())) {
 
-      logger.info(" Setting up the location for R4FhirData ");
-      Resource location = resources.iterator().next();
-      r4FhirData.setLocation((Location) location);
-      data.addEntry(new BundleEntryComponent().setResource(location));
-    } else if (type.contentEquals(ResourceType.Organization.toString())) {
+        logger.info(" Setting up the location for R4FhirData ");
+        Resource location = resources.iterator().next();
+        r4FhirData.setLocation((Location) location);
+        data.addEntry(new BundleEntryComponent().setResource(location));
+      } else if (type.contentEquals(ResourceType.Organization.toString())) {
 
-      logger.info(" Setting up the organization for R4FhirData ");
-      Resource organization = resources.iterator().next();
-      r4FhirData.setOrganization((Organization) organization);
-      data.addEntry(new BundleEntryComponent().setResource(organization));
-    } else if (type.contentEquals(ResourceType.Condition.toString())) {
+        logger.info(" Setting up the organization for R4FhirData ");
+        Resource organization = resources.iterator().next();
+        r4FhirData.setOrganization((Organization) organization);
+        data.addEntry(new BundleEntryComponent().setResource(organization));
+      } else if (type.contentEquals(ResourceType.Condition.toString())) {
 
-      logger.info(" Setting up the Conditions for R4FhirData ");
-      ArrayList<Condition> conditionList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the Conditions for R4FhirData ");
+        ArrayList<Condition> conditionList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          conditionList.add((Condition) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            conditionList.add((Condition) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setConditions(conditionList);
         }
-        r4FhirData.setConditions(conditionList);
-      }
-    } else if (type.contentEquals(ResourceType.Immunization.toString())) {
+      } else if (type.contentEquals(ResourceType.Immunization.toString())) {
 
-      logger.info(" Setting up the Immunization for R4FhirData ");
-      ArrayList<Immunization> immList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the Immunization for R4FhirData ");
+        ArrayList<Immunization> immList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          immList.add((Immunization) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            immList.add((Immunization) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setImmunizations(immList);
         }
-        r4FhirData.setImmunizations(immList);
-      }
-    } else if (type.contentEquals(ResourceType.Procedure.toString())) {
+      } else if (type.contentEquals(ResourceType.Procedure.toString())) {
 
-      logger.info(" Setting up the Procedure for R4FhirData ");
-      ArrayList<Procedure> procList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the Procedure for R4FhirData ");
+        ArrayList<Procedure> procList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          procList.add((Procedure) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            procList.add((Procedure) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
         }
-      }
-    } else if (type.contentEquals(ResourceType.MedicationRequest.toString())) {
+      } else if (type.contentEquals(ResourceType.MedicationRequest.toString())) {
 
-      logger.info(" Setting up the MedicationRequest for R4FhirData ");
-      ArrayList<MedicationRequest> medReqList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the MedicationRequest for R4FhirData ");
+        ArrayList<MedicationRequest> medReqList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          medReqList.add((MedicationRequest) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            medReqList.add((MedicationRequest) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setMedicationRequests(medReqList);
         }
-        r4FhirData.setMedicationRequests(medReqList);
-      }
-    } else if (type.contentEquals(ResourceType.MedicationAdministration.toString())) {
+      } else if (type.contentEquals(ResourceType.MedicationAdministration.toString())) {
 
-      logger.info(" Setting up the MedicationAdministration for R4FhirData ");
-      ArrayList<MedicationAdministration> medAdmList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the MedicationAdministration for R4FhirData ");
+        ArrayList<MedicationAdministration> medAdmList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          medAdmList.add((MedicationAdministration) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            medAdmList.add((MedicationAdministration) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setMedicationAdministrations(medAdmList);
         }
-        r4FhirData.setMedicationAdministrations(medAdmList);
-      }
-    } else if (type.contentEquals(ResourceType.Medication.toString())) {
+      } else if (type.contentEquals(ResourceType.Medication.toString())) {
 
-      logger.info(" Setting up the Medication for R4FhirData ");
-      ArrayList<Medication> medList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the Medication for R4FhirData ");
+        ArrayList<Medication> medList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          medList.add((Medication) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            medList.add((Medication) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setMedicationList(medList);
         }
-        r4FhirData.setMedicationList(medList);
-      }
-    } else if (type.contentEquals(ResourceType.ServiceRequest.toString())) {
+      } else if (type.contentEquals(ResourceType.ServiceRequest.toString())) {
 
-      logger.info(" Setting up the ServiceRequest for R4FhirData ");
-      ArrayList<ServiceRequest> servReqList = new ArrayList<>();
-      if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the ServiceRequest for R4FhirData ");
+        ArrayList<ServiceRequest> servReqList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-        for (Resource r : resources) {
-          servReqList.add((ServiceRequest) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : resources) {
+            servReqList.add((ServiceRequest) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setServiceRequests(servReqList);
         }
-        r4FhirData.setServiceRequests(servReqList);
-      }
-    } else if (type.contentEquals(ResourceType.Observation.toString())) {
+      } else if (type.contentEquals(ResourceType.Observation.toString())) {
 
-      logger.info(" Setting up the LabResults for R4FhirData ");
-      Set<Resource> labObs =
-          ReportGenerationUtils.filterObservationsByCategory(
-              resources, ObservationCategory.LABORATORY.toCode());
-      ArrayList<Observation> labObsList = new ArrayList<>();
-      if (labObs != null && !labObs.isEmpty()) {
+        logger.info(" Setting up the LabResults for R4FhirData ");
+        Set<Resource> labObs =
+            ReportGenerationUtils.filterObservationsByCategory(
+                resources, ObservationCategory.LABORATORY.toCode());
+        ArrayList<Observation> labObsList = new ArrayList<>();
+        if (labObs != null && !labObs.isEmpty()) {
 
-        for (Resource r : labObs) {
-          labObsList.add((Observation) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : labObs) {
+            labObsList.add((Observation) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setLabResults(labObsList);
         }
-        r4FhirData.setLabResults(labObsList);
-      }
 
-      logger.info(" Setting up the Vital Signs for R4FhirData ");
-      Set<Resource> vitalObs =
-          ReportGenerationUtils.filterObservationsByCategory(
-              resources, ObservationCategory.VITALSIGNS.toCode());
-      ArrayList<Observation> vitalObsList = new ArrayList<>();
-      if (vitalObs != null && !vitalObs.isEmpty()) {
+        logger.info(" Setting up the Vital Signs for R4FhirData ");
+        Set<Resource> vitalObs =
+            ReportGenerationUtils.filterObservationsByCategory(
+                resources, ObservationCategory.VITALSIGNS.toCode());
+        ArrayList<Observation> vitalObsList = new ArrayList<>();
+        if (vitalObs != null && !vitalObs.isEmpty()) {
 
-        for (Resource r : labObs) {
-          vitalObsList.add((Observation) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : labObs) {
+            vitalObsList.add((Observation) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
         }
-      }
 
-      logger.info(" Setting up the SocialHistory for R4FhirData ");
-      Set<Resource> socObs =
-          ReportGenerationUtils.filterObservationsByCategory(
-              resources, ObservationCategory.SOCIALHISTORY.toCode());
-      ArrayList<Observation> socObsList = new ArrayList<>();
-      if (socObs != null && !socObs.isEmpty()) {
+        logger.info(" Setting up the SocialHistory for R4FhirData ");
+        Set<Resource> socObs =
+            ReportGenerationUtils.filterObservationsByCategory(
+                resources, ObservationCategory.SOCIALHISTORY.toCode());
+        ArrayList<Observation> socObsList = new ArrayList<>();
+        if (socObs != null && !socObs.isEmpty()) {
 
-        for (Resource r : socObs) {
-          socObsList.add((Observation) r);
-          data.addEntry(new BundleEntryComponent().setResource(r));
+          for (Resource r : socObs) {
+            socObsList.add((Observation) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
         }
-      }
 
+      } else {
+        logger.error(
+            " Unknow Resource Type {} passed for report creation. Data from resource type : {} will not be used",
+            type,
+            type);
+      }
     } else {
-      logger.error(
-          " Unknow Resource Type {} passed for report creation. Data from resource type : {} will not be used",
-          type,
-          type);
+      logger.error(" Cannot add null resources ");
     }
   }
 

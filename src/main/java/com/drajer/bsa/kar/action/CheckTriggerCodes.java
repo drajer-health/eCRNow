@@ -15,7 +15,6 @@ import java.util.Set;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +59,10 @@ public class CheckTriggerCodes extends BsaAction {
       } else {
 
         logger.info(" No Queries, so just get data by Resource Type ");
+
         // Try to Get the Resources that need to be retrieved using Resource Type since queries are
         // not specified.
-        HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
-        // Get necessary data to process.
-        ehrService.getFilteredData(data, resourceTypes);
+        ehrService.getFilteredData(data, getInputData());
       }
 
       HashMap<String, Set<Resource>> idres = new HashMap<>();

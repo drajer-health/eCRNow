@@ -1,5 +1,7 @@
 package com.drajer.bsa.utils;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.model.BsaAction;
@@ -7,6 +9,7 @@ import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
+import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -20,6 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.hl7.fhir.instance.model.api.IBase;
+import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -73,6 +79,7 @@ public class BsaServiceUtils {
   Map<String, BsaTypes.BsaActionStatusType> actions;
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
+  private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
 
   public static String getFhirPathVariableString(String id) {
 
@@ -100,6 +107,148 @@ public class BsaServiceUtils {
       logger.error("Exception Reading KAR File", e);
     }
     return bundle;
+  }
+
+  public static Set<Resource> filterResources(
+      Set<Resource> resources, DataRequirement dataRequirement, KarProcessingData kd) {
+
+    List<DataRequirement.DataRequirementCodeFilterComponent> codeFilters =
+        dataRequirement.getCodeFilter();
+    List<DataRequirement.DataRequirementDateFilterComponent> dateFilters =
+        dataRequirement.getDateFilter();
+
+    Set<Resource> filtered = filterByCodeFilters(resources, codeFilters, kd);
+    filtered = filterByDateFilters(filtered, dateFilters, kd);
+    // gather all codes that
+    return filtered;
+  }
+
+  public static Set<Resource> filterByCodeFilters(
+      Set<Resource> resources,
+      List<DataRequirement.DataRequirementCodeFilterComponent> codeFilters,
+      KarProcessingData kd) {
+    Set<Resource> filtered = new HashSet<Resource>();
+    for (Resource res : resources) {
+      boolean matches = true;
+      for (DataRequirement.DataRequirementCodeFilterComponent drcfc : codeFilters) {
+        if (!matchesCodeFilter(res, drcfc, kd)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        logger.info("Resource matches filter {}", res.getId());
+        filtered.add(res);
+      }
+    }
+    return filtered;
+  }
+
+  public static Set<Resource> filterByDateFilters(
+      Set<Resource> resources,
+      List<DataRequirement.DataRequirementDateFilterComponent> dateFilters,
+      KarProcessingData kd) {
+    Set<Resource> filtered = new HashSet<Resource>();
+    for (Resource res : resources) {
+      boolean matches = true;
+      for (DataRequirement.DataRequirementDateFilterComponent drdfc : dateFilters) {
+        if (!matchesDateFilter(res, drdfc, kd)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        filtered.add(res);
+      }
+    }
+    return filtered;
+  }
+
+  public static boolean matchesCodeFilter(
+      Resource resource,
+      DataRequirement.DataRequirementCodeFilterComponent codeFilter,
+      KarProcessingData kd) {
+    // find the attribute by the path element in the code filter: this may be a list of codes or
+    // codableconcepts
+    // if the filter is contains a valueset match against that
+    // if the filter contains codes match, against them -- at this stage the matches are ORs.  If
+    // the
+    // vs or
+    // any of the codes match its a match.
+
+    // we dont know what this will return
+    List<IBase> search = FHIR_PATH.evaluate(resource, codeFilter.getPath(), IBase.class);
+    if (search == null || search.size() == 0) {
+      return false;
+    }
+
+    boolean retVal = false;
+
+    for (IBase ib : search) {
+      if (codeFilter.hasValueSet()) {
+        if (matchesValueSet(ib, codeFilter.getValueSet(), kd)) {
+          retVal = true;
+          break;
+        }
+      }
+      if (codeFilter.hasCode()) {
+        if (matchesCodes(ib, codeFilter.getCode(), kd)) {
+          retVal = true;
+          break;
+        }
+      }
+    }
+    return retVal;
+  }
+
+  public static boolean matchesValueSet(IBase ib, String url, KarProcessingData kd) {
+    ValueSet vs = (ValueSet) kd.getKar().getDependentResource(ResourceType.ValueSet, url);
+    if (ib instanceof Coding) {
+      Coding coding = (Coding) ib;
+      return isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode());
+    } else if (ib instanceof CodeableConcept) {
+      return isCodeableConceptPresentInValueSet(vs, (CodeableConcept) ib);
+    }
+    return false;
+  }
+
+  public static boolean matchesCodes(IBase ib, List<Coding> codes, KarProcessingData kd) {
+    if (ib instanceof Coding) {
+      Coding ibc = (Coding) ib;
+      return codes
+          .stream()
+          .anyMatch(
+              coding ->
+                  ibc.getSystem().equals(coding.getSystem())
+                      && ibc.getCode().equals(coding.getCode()));
+    }
+    if (ib instanceof CodeableConcept) {
+      CodeableConcept ibc = (CodeableConcept) ib;
+      List<Coding> ibcCodings = ibc.getCoding();
+      return ibcCodings
+          .stream()
+          .anyMatch(
+              ibcCoding ->
+                  codes
+                      .stream()
+                      .anyMatch(
+                          coding ->
+                              ibcCoding.getSystem().equals(coding.getSystem())
+                                  && ibcCoding.getCode().equals(coding.getCode())));
+    }
+    return false;
+  }
+
+  public static boolean matchesDateFilter(
+      Resource r, DataRequirement.DataRequirementDateFilterComponent drdfc, KarProcessingData kd) {
+
+    return true;
+  }
+
+  public static Boolean isCodeableConceptPresentInValueSet(ValueSet vs, CodeableConcept cc) {
+    return cc.getCoding()
+        .stream()
+        .anyMatch(coding -> isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode()));
   }
 
   public static Pair<Boolean, MatchedTriggerCodes> isCodeableConceptPresentInValueSet(
@@ -180,7 +329,7 @@ public class BsaServiceUtils {
 
     boolean retVal = false;
 
-    if (vs.hasCompose()) {
+    if (vs != null && vs.hasCompose()) {
 
       ValueSetComposeComponent vsc = vs.getCompose();
 
