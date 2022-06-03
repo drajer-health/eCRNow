@@ -141,85 +141,93 @@ public class KarProcessorImpl implements KarProcessor {
     KarExecutionState state =
         karExecutionStateService.getKarExecutionStateById(data.getKarExecutionStateId());
 
-    NotificationContext nc = ncService.getNotificationContext(state.getNcId());
+    if (state != null) {
 
-    // Setup Processing data
-    kd.setExecutionSequenceId(data.getJobId());
-    kd.setNotificationContext(nc);
-    kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-    kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
-    kd.setxRequestId(nc.getxRequestId());
-    kd.setxCorrelationId(nc.getxCorrelationId());
+      NotificationContext nc = ncService.getNotificationContext(state.getNcId());
 
-    // Setup the Kar Status for the specific job.
-    if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {
+      // Setup Processing data
+      kd.setExecutionSequenceId(data.getJobId());
+      kd.setNotificationContext(nc);
+      kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
+      kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
+      kd.setxRequestId(data.getxRequestId());
+      kd.setxCorrelationId(nc.getxCorrelationId());
 
-      // Get the Active Kars and process it.
-      HealthcareSettingOperationalKnowledgeArtifacts arfts = kd.getHealthcareSetting().getKars();
+      // Setup the Kar Status for the specific job.
+      if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {
 
-      logger.info(
-          " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
-          arfts.getId());
+        // Get the Active Kars and process it.
+        HealthcareSettingOperationalKnowledgeArtifacts arfts = kd.getHealthcareSetting().getKars();
 
-      Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
+        logger.info(
+            " Processing HealthcareSetting Operational Knowledge Artifact Status Id : {}",
+            arfts.getId());
 
-      for (KnowledgeArtifactStatus ks : stat) {
+        Set<KnowledgeArtifactStatus> stat = arfts.getArtifactStatus();
 
-        if (ks.getIsActive().booleanValue()
-            && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+        for (KnowledgeArtifactStatus ks : stat) {
 
-          logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
-          kd.setKarStatus(ks);
+          if (ks.getIsActive().booleanValue()
+              && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
+
+            logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
+            kd.setKarStatus(ks);
+          }
         }
-      }
 
-      if (kd.getKarStatus() != null) {
+        if (kd.getKarStatus() != null) {
 
-        // Setup Notification Data
-        Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
-        kd.setNotificationBundle(nb);
-        nc.setNotifiedResource(nb.getEntry().get(1).getResource());
+          // Setup Notification Data
+          Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
+          kd.setNotificationBundle(nb);
+          nc.setNotifiedResource(nb.getEntry().get(1).getResource());
 
-        kd.setEhrQueryService(ehrInterface);
-        kd.setKarExecutionStateService(karExecutionStateService);
-        kd.setScheduledJobData(data);
+          kd.setEhrQueryService(ehrInterface);
+          kd.setKarExecutionStateService(karExecutionStateService);
+          kd.setScheduledJobData(data);
 
-        // Get the action that needs to be executed.
-        BsaAction action = kd.getKar().getAction(data.getActionId());
+          // Get the action that needs to be executed.
+          BsaAction action = kd.getKar().getAction(data.getActionId());
 
-        if (action != null) {
-          logger.info(
-              " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
-              action.getActionId(),
-              action.getType());
-
-          try {
-            action.process(kd, ehrInterface);
-
-            saveDataForDebug(kd);
+          if (action != null) {
             logger.info(
-                " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
-                action.getActionId());
+                " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
+                action.getActionId(),
+                action.getType());
 
-            // Get rid of the KarExecutionState entry that was created for the job.
-            karExecutionStateService.delete(state);
+            try {
+              action.process(kd, ehrInterface);
 
-          } catch (Exception e) {
+              saveDataForDebug(kd);
+              logger.info(
+                  " **** Finished Executing Action with id {} based on scheduled job notification. **** ",
+                  action.getActionId());
 
-            logger.error("Exception encountered during processing of the scheduled job ");
-            throw e;
+              // Get rid of the KarExecutionState entry that was created for the job.
+              karExecutionStateService.delete(state);
+
+            } catch (Exception e) {
+
+              logger.error("Exception encountered during processing of the scheduled job ");
+              throw e;
+            }
+          } else {
+            logger.error(
+                " Cannot apply KAR for the scheduled job notification because action with id {} does not exist ",
+                data.getActionId());
           }
         } else {
-          logger.error(
-              " Cannot apply KAR for the scheduled job notification because action with id {} does not exist ",
-              data.getActionId());
+          logger.error("Cannot process job properly as KarStatus was not found.");
         }
       } else {
-        logger.error("Cannot process job properly as KarStatus was not found.");
+
+        logger.error(
+            "Cannot process job properly as Healthcare Setting and KarStatus are invalid.");
       }
     } else {
-
-      logger.error("Cannot process job properly as Healthcare Setting and KarStatus are invalid.");
+      logger.error(
+          "Cannot process job properly as KarExecutionState {} is not found.",
+          data.getKarExecutionStateId());
     }
   }
 }

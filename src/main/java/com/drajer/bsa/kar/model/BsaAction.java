@@ -25,6 +25,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -189,7 +190,12 @@ public abstract class BsaAction {
 
             if (t != null && !ignoreTimers)
               scheduler.scheduleJob(
-                  st.getId(), ract.getAction().getActionId(), ract.getAction().getType(), t);
+                  st.getId(),
+                  ract.getAction().getActionId(),
+                  ract.getAction().getType(),
+                  t,
+                  kd.getxRequestId(),
+                  MDC.getCopyOfContextMap());
             else {
               logger.info(
                   " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());

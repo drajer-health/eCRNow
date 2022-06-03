@@ -36,6 +36,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -185,7 +186,12 @@ public class SubmitReport extends BsaAction {
         Instant t = ApplicationUtils.convertDurationToInstant(d);
 
         scheduler.scheduleJob(
-            st.getId(), getCheckResponseActionId(), BsaTypes.ActionType.CHECK_RESPONSE, t);
+            st.getId(),
+            getCheckResponseActionId(),
+            BsaTypes.ActionType.CHECK_RESPONSE,
+            t,
+            data.getxRequestId(),
+            MDC.getCopyOfContextMap());
 
         logger.info(" Finished scheduling timer for checking RR ");
 
