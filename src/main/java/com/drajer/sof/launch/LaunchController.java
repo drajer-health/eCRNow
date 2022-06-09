@@ -192,7 +192,7 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).equals("1.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
         if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
