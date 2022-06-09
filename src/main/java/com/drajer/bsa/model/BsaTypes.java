@@ -11,6 +11,13 @@ public final class BsaTypes {
     UNKNOWN
   }
 
+  public enum NotificationProcessingStatusType {
+    IN_PROGRESS,
+    SUSPENDED,
+    COMPLETED,
+    CANCELLED
+  }
+
   public enum ActionType {
     INITIATE_REPORTING_WORKFLOW,
     EXECUTE_REPORTING_WORKFLOW,

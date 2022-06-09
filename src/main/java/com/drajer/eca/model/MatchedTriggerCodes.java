@@ -177,4 +177,27 @@ public class MatchedTriggerCodes {
 
     logger.info(" *** END Printing Matched Trigger Codes *** ");
   }
+
+  public boolean isCodePresent(String code, String mPath) {
+
+    for (String s : matchedCodes) {
+
+      if (s.contentEquals(code) && matchedPath.contentEquals(mPath)) {
+
+        logger.info(" Found Matched Code {} for Path {}", code, mPath);
+        return true;
+      }
+    }
+
+    for (String sv : matchedValues) {
+
+      if (sv.contentEquals(code) && matchedPath.contentEquals(mPath)) {
+
+        logger.info(" Found Matched Value {} for Path {}", code, mPath);
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

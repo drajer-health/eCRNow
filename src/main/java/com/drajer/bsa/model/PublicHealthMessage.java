@@ -98,8 +98,8 @@ public class PublicHealthMessage {
    * The attribute represents the version of the submitted data, for the same patient and encounter
    * when multiple reports are submitted the version Id will be incremented.
    */
-  @Column(name = "submitted_version_id", nullable = true, columnDefinition = "TEXT")
-  private String submittedVersionId;
+  @Column(name = "submitted_version_number", nullable = true, columnDefinition = "INTEGER")
+  private Integer submittedVersionNumber;
 
   /**
    * The attribute represents the Message ID of message submitted to the TTP/PHA. This Id will be
@@ -188,6 +188,10 @@ public class PublicHealthMessage {
   /** Log the initiating action for debugging purposes. */
   @Column(name = "initiating_action", nullable = true, columnDefinition = "TEXT")
   private String initiatingAction;
+
+  /** Stores the trigger matches if any that resulted in the message to be submitted. */
+  @Column(name = "trigger_match_status", nullable = true, columnDefinition = "TEXT")
+  private String triggerMatchStatus;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -412,11 +416,19 @@ public class PublicHealthMessage {
     this.responseEhrDocRefId = responseEhrDocRefId;
   }
 
-  public String getSubmittedVersionId() {
-    return submittedVersionId;
+  public Integer getSubmittedVersionNumber() {
+    return submittedVersionNumber;
   }
 
-  public void setSubmittedVersionId(String submittedVersionId) {
-    this.submittedVersionId = submittedVersionId;
+  public void setSubmittedVersionNumber(Integer submittedVersionNumber) {
+    this.submittedVersionNumber = submittedVersionNumber;
+  }
+
+  public String getTriggerMatchStatus() {
+    return triggerMatchStatus;
+  }
+
+  public void setTriggerMatchStatus(String triggerMatchStatus) {
+    this.triggerMatchStatus = triggerMatchStatus;
   }
 }

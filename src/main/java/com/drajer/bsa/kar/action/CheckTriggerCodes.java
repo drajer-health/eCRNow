@@ -67,6 +67,7 @@ public class CheckTriggerCodes extends BsaAction {
 
       HashMap<String, Set<Resource>> idres = new HashMap<>();
       Parameters params = new Parameters();
+      CheckTriggerCodeStatusList ctcsl = new CheckTriggerCodeStatusList();
 
       // Apply filters for data and then send the collections to the Condition Evaluator.
       for (DataRequirement dr : inputData) {
@@ -78,7 +79,7 @@ public class CheckTriggerCodes extends BsaAction {
           Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> matchInfo =
               fhirPathProcessor.applyCodeFilter(dr, data, this);
 
-          if (matchInfo != null) {
+          if (matchInfo != null && matchInfo.getValue0().getTriggerMatchStatus()) {
 
             logger.info(" Found Match for Code Filter {}", dr.getType());
 
@@ -91,6 +92,8 @@ public class CheckTriggerCodes extends BsaAction {
 
             actStatus.addOutputProducedId(dr.getId());
             actStatus.copyFrom(matchInfo.getValue0());
+
+            ctcsl.addCheckTriggerCodeStatus(matchInfo.getValue0());
 
           } else {
             logger.info(" No Match found for Code Filter {}", dr.getType());
@@ -112,8 +115,9 @@ public class CheckTriggerCodes extends BsaAction {
       data.addParameters(actionId, params);
       actStatus.setMatchedResources(idres);
       data.addActionStatus(getActionId(), actStatus);
+      data.setCurrentTriggerMatchStatus(ctcsl);
 
-      if (Boolean.TRUE.equals(conditionsMet(data))) {
+      if (Boolean.TRUE.equals(conditionsMet(data) && data.hasNewTriggerCodeMatches())) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.
@@ -123,7 +127,7 @@ public class CheckTriggerCodes extends BsaAction {
 
     } else {
       logger.info(
-          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+          " Action may execute in future or Conditions not met, or there are no new Trigger Codes. Setting Action Status : {}",
           status);
       actStatus.setActionStatus(status);
     }

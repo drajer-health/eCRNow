@@ -2,6 +2,7 @@ package com.drajer.bsa.model;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
@@ -135,6 +136,12 @@ public class KarProcessingData {
    * type of notification and indicates the NotificaitonContext Id or the Schedule Job Id.
    */
   private String executionSequenceId;
+
+  /** The attribute holds the current trigger match status based on previous matches. */
+  private CheckTriggerCodeStatusList currentTriggerMatchStatus;
+
+  /** The attribute holds the last trigger match status based on previous matches. */
+  private CheckTriggerCodeStatusList previousTriggerMatchStatus;
 
   public void addActionOutput(String actionId, Resource res) {
 
@@ -535,6 +542,22 @@ public class KarProcessingData {
     return notificationContext.getPatientId();
   }
 
+  public CheckTriggerCodeStatusList getCurrentTriggerMatchStatus() {
+    return currentTriggerMatchStatus;
+  }
+
+  public void setCurrentTriggerMatchStatus(CheckTriggerCodeStatusList currentTriggerMatchStatus) {
+    this.currentTriggerMatchStatus = currentTriggerMatchStatus;
+  }
+
+  public CheckTriggerCodeStatusList getPreviousTriggerMatchStatus() {
+    return previousTriggerMatchStatus;
+  }
+
+  public void setPreviousTriggerMatchStatus(CheckTriggerCodeStatusList previousTriggerMatchStatus) {
+    this.previousTriggerMatchStatus = previousTriggerMatchStatus;
+  }
+
   public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
 
     boolean returnVal = false;
@@ -645,5 +668,32 @@ public class KarProcessingData {
     } else {
       return null;
     }
+  }
+
+  public Boolean hasNewTriggerCodeMatches() {
+
+    Boolean retVal = false;
+
+    if (currentTriggerMatchStatus != null && previousTriggerMatchStatus == null) {
+      logger.info(" New Matches Found where as there were no matches previously");
+      retVal = true;
+    } else if (currentTriggerMatchStatus == null && previousTriggerMatchStatus != null) {
+      logger.info(" No New Matches Found where as there were matches previously");
+      retVal = false;
+    } else if (currentTriggerMatchStatus == null && previousTriggerMatchStatus == null) {
+      logger.info(" No New or Old Matches");
+      retVal = false;
+    } else {
+
+      // Check if each of the new matches are present in the old ones.
+      retVal = previousTriggerMatchStatus.compareCodes(currentTriggerMatchStatus);
+
+      logger.info(
+          ((retVal == true)
+              ? "New Matches Found compared to old matches"
+              : "No New Matches when compared to old Matches"));
+    }
+
+    return retVal;
   }
 }

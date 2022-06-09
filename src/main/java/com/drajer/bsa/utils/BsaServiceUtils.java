@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
@@ -11,6 +12,8 @@ import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -612,5 +615,41 @@ public class BsaServiceUtils {
     }
 
     return queries;
+  }
+
+  public static CheckTriggerCodeStatusList getTriggerMatchStatus(String data) {
+
+    ObjectMapper mapper = new ObjectMapper();
+    CheckTriggerCodeStatusList state = null;
+
+    try {
+
+      state = mapper.readValue(data, CheckTriggerCodeStatusList.class);
+
+    } catch (JsonProcessingException e1) {
+      String msg = "Unable to read/write Trigger Match state";
+      logger.error(msg, e1);
+      throw new RuntimeException(msg, e1);
+    }
+
+    return state;
+  }
+
+  public static String getEncodedTriggerMatchStatus(CheckTriggerCodeStatusList ctc) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    String state = null;
+    try {
+
+      state = mapper.writeValueAsString(ctc);
+
+    } catch (JsonProcessingException e) {
+
+      String msg = "Unable to update execution state";
+      logger.error(msg, e);
+      throw new RuntimeException(msg, e);
+    }
+
+    return state;
   }
 }

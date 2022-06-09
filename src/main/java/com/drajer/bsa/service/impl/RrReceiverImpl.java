@@ -276,7 +276,7 @@ public class RrReceiverImpl implements RrReceiver {
             "Successfully posted RR: {} for EICR: {} version: {} to EHR with DocRefId: {}",
             rrModel.getRrDocId(),
             phm.getSubmittedDataId(),
-            phm.getSubmittedVersionId(),
+            phm.getSubmittedVersionNumber(),
             outcome.getId().getIdPart());
 
         // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.

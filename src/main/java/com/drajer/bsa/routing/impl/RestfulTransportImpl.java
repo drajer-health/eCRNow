@@ -129,8 +129,8 @@ public class RestfulTransportImpl implements DataTransportInterface {
         + escapeJson(data.getPhm().getPatientId())
         + "\",\"encounterId\":\""
         + escapeJson(data.getPhm().getEncounterId())
-        + "\",\"submittedVersionId\":\""
-        + escapeJson(data.getPhm().getSubmittedVersionId())
+        + "\",\"submittedMessageVersionId\":\""
+        + escapeJson(data.getPhm().getSubmittedVersionNumber().toString())
         + "\",\"payload\":\""
         + escapeJson(payload)
         + "\"}";

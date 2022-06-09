@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Location;
@@ -117,7 +118,7 @@ public class R3ToR2DataConverterUtils {
       Set<Resource> resources,
       String type) {
 
-    if (resources != null) {
+    if (resources != null && !resources.isEmpty()) {
       if (type.contentEquals(ResourceType.Patient.toString())) {
 
         logger.info(" Setting up the patient for R4FhirData ");
@@ -269,6 +270,18 @@ public class R3ToR2DataConverterUtils {
           }
         }
 
+      } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
+
+        logger.info(" Setting up the Diagnostic Report for R4FhirData ");
+        ArrayList<DiagnosticReport> diagReportList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
+
+          for (Resource r : resources) {
+            diagReportList.add((DiagnosticReport) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
+          }
+          r4FhirData.setDiagReports(diagReportList);
+        }
       } else {
         logger.error(
             " Unknow Resource Type {} passed for report creation. Data from resource type : {} will not be used",

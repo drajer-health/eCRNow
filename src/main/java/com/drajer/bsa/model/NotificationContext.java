@@ -59,6 +59,16 @@ public class NotificationContext {
   private String notificationResourceType;
 
   /**
+   * The attribute represents the status of the notification processing. IN_PROGRESS - Will be
+   * status as long as the timers are scheduled for the encounter. SUSPENDED - Will be the status
+   * when the processing is terminated in the app for any reason. (e.g Long Encounter Time threshold
+   * reached). COMPLETED - Completed based on the status of the timers. CANCELLED - Launch Request
+   * was cancelled.
+   */
+  @Column(name = "notification_processing_status", nullable = true, columnDefinition = "TEXT")
+  private String notificationProcessingStatus;
+
+  /**
    * Transient attribute containing the actual resource that was part of the notification, this is
    * used only during processing
    */

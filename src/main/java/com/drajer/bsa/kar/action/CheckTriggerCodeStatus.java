@@ -180,4 +180,18 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
     logger.info(" *** End Printing Check Trigger Code Status *** ");
   }
+
+  public boolean isCodePresent(String code, String matchedPath) {
+
+    for (MatchedTriggerCodes mtc : matchedCodes) {
+
+      if (mtc.isCodePresent(code, matchedPath)) {
+
+        logger.info(" Found Code {} for Path {}", code, matchedPath);
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

@@ -1,6 +1,7 @@
 package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.impl.PublicHealthMessagesDaoImpl;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
@@ -10,6 +11,7 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.bsa.service.KarExecutionStateService;
@@ -17,6 +19,7 @@ import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.NotificationContextService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
@@ -53,6 +56,8 @@ public class KarProcessorImpl implements KarProcessor {
 
   @Autowired HealthcareSettingsService hsService;
 
+  @Autowired PublicHealthMessagesDaoImpl phDao;
+
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
@@ -72,6 +77,13 @@ public class KarProcessorImpl implements KarProcessor {
     data.setExecutionSequenceId(nc.getId().toString());
     data.setEhrQueryService(ehrInterface);
     data.setKarExecutionStateService(karExecutionStateService);
+
+    // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
+    PublicHealthMessage phm = getPublicHealthMessage(nc, data);
+    if (phm != null && phm.getTriggerMatchStatus() != null) {
+      data.setPreviousTriggerMatchStatus(
+          BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
+    }
 
     logger.info(" *** START Executing Trigger Actions *** ");
     Set<BsaAction> actions = kar.getActionsForTriggerEvent(namedEvent);
@@ -153,6 +165,13 @@ public class KarProcessorImpl implements KarProcessor {
       kd.setxRequestId(data.getxRequestId());
       kd.setxCorrelationId(nc.getxCorrelationId());
 
+      // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
+      PublicHealthMessage phm = getPublicHealthMessage(nc, kd);
+      if (phm != null && phm.getTriggerMatchStatus() != null) {
+        kd.setPreviousTriggerMatchStatus(
+            BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
+      }
+
       // Setup the Kar Status for the specific job.
       if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {
 
@@ -229,5 +248,20 @@ public class KarProcessorImpl implements KarProcessor {
           "Cannot process job properly as KarExecutionState {} is not found.",
           data.getKarExecutionStateId());
     }
+  }
+
+  private PublicHealthMessage getPublicHealthMessage(
+      NotificationContext nc, KarProcessingData data) {
+
+    Map<String, String> searchParams = new HashMap<>();
+    searchParams.put(phDao.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
+    searchParams.put(phDao.PATIENT_ID, nc.getPatientId());
+    searchParams.put(phDao.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
+    searchParams.put(phDao.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
+    searchParams.put(phDao.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
+    List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
+
+    if (messages != null && messages.size() >= 1) return messages.get(0);
+    else return null;
   }
 }

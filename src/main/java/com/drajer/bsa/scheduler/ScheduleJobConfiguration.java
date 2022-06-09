@@ -52,7 +52,7 @@ public class ScheduleJobConfiguration {
                     "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {}",
                     inst.getTaskAndInstance(),
                     inst.getData().getActionId(),
-                    inst.getData().getKarExecutionStateId(), 
+                    inst.getData().getKarExecutionStateId(),
                     inst.getData().getxRequestId());
 
                 karProcessor.applyKarForScheduledJob(inst.getData());

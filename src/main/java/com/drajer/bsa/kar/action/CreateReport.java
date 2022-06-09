@@ -195,6 +195,12 @@ public class CreateReport extends BsaAction {
           msg.setSubmittedDataId(docRef.getId());
           msg.setSubmittedMessageId(header.getId());
           msg.setInitiatingAction(actionType);
+          msg.setKarUniqueId(kd.getKar().getVersionUniqueId());
+
+          // Update Version and Matched Trigger Status
+          msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
+          msg.setTriggerMatchStatus(
+              BsaServiceUtils.getEncodedTriggerMatchStatus(kd.getCurrentTriggerMatchStatus()));
 
           // Create BitSet for MessageStatus and add attribute.
 
