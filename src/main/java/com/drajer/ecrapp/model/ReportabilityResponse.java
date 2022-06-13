@@ -1,6 +1,9 @@
 package com.drajer.ecrapp.model;
 
 public class ReportabilityResponse {
+	
+	public static final String MDN_RESPONSE_TYPE = "MDN";
+	  public static final String RR_RESPONSE_TYPE = "RR";
 
   private String rrXml;
   private String responseType;

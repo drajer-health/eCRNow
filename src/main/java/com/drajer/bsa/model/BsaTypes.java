@@ -15,7 +15,8 @@ public final class BsaTypes {
     IN_PROGRESS,
     SUSPENDED,
     COMPLETED,
-    CANCELLED
+    CANCELLED,
+    Unknown
   }
 
   public enum ActionType {
@@ -59,6 +60,27 @@ public final class BsaTypes {
     CDA_REPORTABILITY_RESPONSE_MESSAGE,
     FHIR_REPORTABILITY_RESPONSE_MESSAGE,
     MESSAGE_REPORT,
+  }
+  
+  public static String getNotificationStatusTypeString(NotificationProcessingStatusType nst) {
+	  
+	  if(nst == NotificationProcessingStatusType.IN_PROGRESS) return "IN_PROGRESS";
+	  else if(nst == NotificationProcessingStatusType.SUSPENDED) return "SUSPENDED";
+	  else if(nst == NotificationProcessingStatusType.COMPLETED) return "COMPLETED";
+	  else if(nst == NotificationProcessingStatusType.CANCELLED) return "CANCELLED";
+	  else 
+		  return "Unknown";
+  }
+  
+  public static NotificationProcessingStatusType getNotificationProcessingStatusType(String s) {
+	  
+	  if(s.contentEquals("IN_PROGRESS")) return NotificationProcessingStatusType.IN_PROGRESS;
+	  else if(s.contentEquals("SUSPENDED")) return NotificationProcessingStatusType.SUSPENDED;
+	  else if(s.contentEquals("COMPLETED")) return NotificationProcessingStatusType.COMPLETED;
+	  else if(s.contentEquals("CANCELLED")) return NotificationProcessingStatusType.CANCELLED;
+	  else 
+		  return NotificationProcessingStatusType.Unknown;
+	  
   }
 
   public static String getMessageTypeString(MessageType t) {
