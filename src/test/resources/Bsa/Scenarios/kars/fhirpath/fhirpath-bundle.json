@@ -7975,7 +7975,7 @@
                               "kind": "applicability",
                               "expression": {
                                   "language": "text/fhirpath",
-                                  "expression": "%encounter.where(status = 'in-progress' and period.end <= now() - 72 hours)"
+                                  "expression": "%encounters.where(status = 'in-progress' and period.end <= now() - 72 hours)"
                               }
                           }
                       ],

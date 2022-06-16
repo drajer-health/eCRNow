@@ -179,7 +179,7 @@ public class CreateReport extends BsaAction {
           BsaServiceUtils.saveDataToFile(payload, fileName);
 
           // Save the data in the table.
-          phDao.saveOrUpdate(msg);
+          // phDao.saveOrUpdate(msg);
         } // attachment not null
         else {
           logger.info(" Document Reference attachement is empty, nothing to save ");
