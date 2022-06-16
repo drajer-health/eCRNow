@@ -10,8 +10,12 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.util.BundleUtil;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
-import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.EvaluateMeasureStatus;
+import com.drajer.bsa.kar.action.SubmitReportStatus;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.ScheduleJobConfiguration;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -75,8 +79,6 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected HealthcareSettingsDao hsDao;
 
-  protected Map<String, BsaTypes.BsaActionStatusType> actions;
-
   @Autowired ApplicationContext applicationContext;
 
   protected Map<String, Bundle> eicrBundles;
@@ -92,8 +94,6 @@ public class BaseKarsTest extends BaseIntegrationTest {
     this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
     this.ap = applicationContext.getBean(ApplicationUtils.class);
     this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
-    this.actions =
-        (Map<String, BsaTypes.BsaActionStatusType>) applicationContext.getBean("actions");
     this.wireMockServer.resetAll();
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
@@ -120,12 +120,13 @@ public class BaseKarsTest extends BaseIntegrationTest {
           getNotificationBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
       this.stubHelper.mockProcessMessageBundle(bundle);
 
-      notificationReceiver.processNotification(
-          bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
+      List<KarProcessingData> dataList =
+          notificationReceiver.processNotification(
+              bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
 
       Boolean reportBundleGenerated =
           this.reportBundleGenerated(
-              this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
+              dataList, this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
 
       if (!reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         throw new RuntimeException(
@@ -154,7 +155,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
       if ((this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY
               || this.testCaseInfo.getExpectedOutcome() == REPORTED)
           && this.testCaseInfo.getInitialPopulation() != null) {
-        MeasureReport report = this.getMeasureReport();
+        MeasureReport report = this.getMeasureReport(dataList);
         validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
 
         if (this.testCaseInfo.getDenominator() != null) {
@@ -186,15 +187,22 @@ public class BaseKarsTest extends BaseIntegrationTest {
         "Test {}/{} succeeded", this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
   }
 
-  protected Boolean reportBundleGenerated(String patientId, String planDefUrl) {
-    String submittedActionId = String.format("%s-PlanDefinition/%s", "submit-eicr", planDefUrl);
-    Boolean submitted =
-        validateActionStatus(submittedActionId, BsaTypes.BsaActionStatusType.Completed);
-    String routeAndSendActionId =
-        String.format("%s-PlanDefinition/%s", "route-and-send-eicr", planDefUrl);
-    Boolean sent =
-        validateActionStatus(routeAndSendActionId, BsaTypes.BsaActionStatusType.Completed);
-    return submitted || sent;
+  protected Boolean reportBundleGenerated(
+      List<KarProcessingData> dataList, String patientId, String planDefUrl) {
+    if (dataList == null || dataList.isEmpty()) {
+      return false;
+    }
+    for (KarProcessingData data : dataList) {
+      for (List<BsaActionStatus> actionStatus : data.getActionStatus().values()) {
+        for (BsaActionStatus status : actionStatus) {
+          if (status instanceof SubmitReportStatus
+              && status.getActionStatus().equals(BsaActionStatusType.Completed)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   Bundle getEicrBundle(String planDef) {
@@ -239,7 +247,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     return null;
   }
 
-  MeasureReport getMeasureReport() {
+  MeasureReport getMeasureReport(List<KarProcessingData> dataList) {
     File mr = new File("target/output/karsMeasureReport_null.json");
 
     if (mr.exists()) {
@@ -247,6 +255,23 @@ public class BaseKarsTest extends BaseIntegrationTest {
         return (MeasureReport) this.fhirContext.newJsonParser().parseResource(fis);
       } catch (Exception e) {
         return null;
+      }
+    } else {
+      if (dataList == null || dataList.isEmpty()) {
+        return null;
+      }
+      for (KarProcessingData data : dataList) {
+        for (List<BsaActionStatus> actionStatus : data.getActionStatus().values()) {
+          for (BsaActionStatus status : actionStatus) {
+            if (status instanceof EvaluateMeasureStatus
+                && status.getActionStatus().equals(BsaActionStatusType.Completed)) {
+              EvaluateMeasureStatus evaluateMeasureStatus = (EvaluateMeasureStatus) status;
+              if (evaluateMeasureStatus.getReport() != null) {
+                return evaluateMeasureStatus.getReport();
+              }
+            }
+          }
+        }
       }
     }
 
@@ -416,14 +441,5 @@ public class BaseKarsTest extends BaseIntegrationTest {
           BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
       assertEquals("Did not find expected MeasureReport", 1, mrs.size());
     }
-  }
-
-  protected Boolean validateActionStatus(
-      String actionId, BsaTypes.BsaActionStatusType actionStatus) {
-    if (actions != null) {
-      if (actions.get(actionId) != null) {
-        return actions.get(actionId).equals(actionStatus);
-      } else return false;
-    } else return false;
   }
 }

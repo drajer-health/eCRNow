@@ -51,6 +51,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -328,6 +329,12 @@ public class KarParserImpl implements KarParser {
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.Library) {
           logger.info(" Processing Library");
+          if (art.getKarName() == null) {
+            art.setKarName(((Library) comp.getResource()).getName());
+          }
+          if (art.getKarPublisher() == null) {
+            art.setKarPublisher(((Library) comp.getResource()).getPublisher());
+          }
         }
       }
 

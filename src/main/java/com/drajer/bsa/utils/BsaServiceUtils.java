@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ public class BsaServiceUtils {
   String debugDirectory;
 
   @Autowired(required = false)
-  Map<String, BsaTypes.BsaActionStatusType> actions;
+  Map<String, BsaActionStatus> actions;
 
   @Autowired(required = false)
   Map<String, Bundle> eicrBundles;
@@ -372,24 +371,6 @@ public class BsaServiceUtils {
     } else {
       logger.info("No action map found skipping eicr bundle state save....");
     }
-  }
-
-  public void saveActionStatusState(HashMap<String, List<BsaActionStatus>> actionStatus) {
-
-    logger.info(" ToDo : Not sure what this method is for ");
-
-    /* if (actions != null) {
-      logger.info("Found actions map saving action state....");
-      for (Entry<String, List<BsaActionStatus> > entry : actionStatus.entrySet()) {
-
-    	  if(actions.containsKey(entry.getKey())) {
-    		  actions.get(entry.getKey()).addAll(entry.getValue());
-    	  }
-        actions.put(entry.getValue().getActionId(), entry.getValue().getActionStatus());
-      }
-    } else {
-      logger.info("No action map found skipping action state save....");
-    } */
   }
 
   /**

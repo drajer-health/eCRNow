@@ -181,3 +181,27 @@ Resource names should match below list.
 * OccupationObservation
 * Immunization
 * ServiceRequest
+
+For Bsa Scenario Tests (Chronic Disease and Condition Filtering)
+test/java/com/drajer/bsa/controller
+ As of right now the following tests are:
+ * Chronic BP
+ * Diabetes
+ * ERSDV2
+ * FhirPath
+ * RuleFiltersERSDCQLOnly
+ * RuleFiltersFhirPathOnly
+ * RuleFiltersERSD
+ * SeenPatients
+
+ Coverage includes
+
+ * checking whether a given notification results in a Not Triggered,
+  Triggered or an Eicr Report sent.
+
+ * Population results of a given Measure Evaluation
+
+At the Evaluation level there are tests for FhirPathProcesser and CqlProcessor specifically
+test/java/com/drajer/bsa/kar/condition
+
+(specific tests in progress...)
