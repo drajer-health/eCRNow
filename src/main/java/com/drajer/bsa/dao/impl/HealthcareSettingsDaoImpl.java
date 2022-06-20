@@ -20,6 +20,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class HealthcareSettingsDaoImpl extends AbstractDao implements HealthcareSettingsDao {
+
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
   /**
@@ -127,8 +130,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
       // Setup using Knowledge Artifact Repository temporarily as a work around.
       logger.info(" TODO : Remove after finalizing approach at the Connectathon");
 
-      HashMap<String, KnowledgeArtifact> arts =
-          KnowledgeArtifactRepositorySystem.getInstance().getArtifacts();
+      HashMap<String, KnowledgeArtifact> arts = knowledgeArtifactRepositorySystem.getArtifacts();
 
       HealthcareSettingOperationalKnowledgeArtifacts opkars =
           new HealthcareSettingOperationalKnowledgeArtifacts();

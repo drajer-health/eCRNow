@@ -45,6 +45,8 @@ public class KarProcessorImpl implements KarProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(KarProcessorImpl.class);
 
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
   @Autowired EhrQueryService ehrInterface;
 
   @Autowired BsaServiceUtils serviceUtils;
@@ -148,7 +150,7 @@ public class KarProcessorImpl implements KarProcessor {
     kd.setExecutionSequenceId(data.getJobId());
     kd.setNotificationContext(nc);
     kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-    kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
+    kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
 
     // Setup the Kar Status for the specific job.
     if (kd.getHealthcareSetting() != null && kd.getHealthcareSetting().getKars() != null) {

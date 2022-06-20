@@ -122,6 +122,8 @@ public class KarParserImpl implements KarParser {
   // Autowired to pass to action processors.
   @Autowired BsaScheduler scheduler;
 
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
   // Autowired to pass to action processors.
   @Autowired R4MeasureProcessor measureProcessor;
 
@@ -344,7 +346,7 @@ public class KarParserImpl implements KarParser {
       } */
 
       addArtifactForPersistence(art, repoUrl, repoName);
-      KnowledgeArtifactRepositorySystem.getInstance().add(art);
+      knowledgeArtifactRepositorySystem.add(art);
       art.printKarSummary();
 
     } else {

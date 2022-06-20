@@ -45,6 +45,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
   @Autowired KarProcessor karProcessor;
 
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
@@ -100,8 +102,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
 
                 KnowledgeArtifact kar =
-                    KnowledgeArtifactRepositorySystem.getInstance()
-                        .getById(ks.getVersionUniqueKarId());
+                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
 
                 if (kar != null) {
 
