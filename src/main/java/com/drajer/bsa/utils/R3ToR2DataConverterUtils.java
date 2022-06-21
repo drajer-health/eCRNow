@@ -81,11 +81,11 @@ public class R3ToR2DataConverterUtils {
         Set<Resource> resources = kd.getDataForId(dr.getId(), act.getRelatedDataId(dr.getId()));
         if (resources != null) {
 
-          addResourcesToR4FhirData(data, r4FhirData, details, resources, dr.getType());
+          addResourcesToR4FhirData(dr.getId(), data, r4FhirData, details, resources, dr.getType());
         }
       }
 
-      addAdministrativeResources(data, r4FhirData, details, kd, act);
+      addAdministrativeResources(null, data, r4FhirData, details, kd, act);
 
     } else {
 
@@ -97,6 +97,7 @@ public class R3ToR2DataConverterUtils {
   }
 
   public static void addAdministrativeResources(
+      String dataId,
       Bundle data,
       R4FhirData r4FhirData,
       LaunchDetails details,
@@ -105,13 +106,15 @@ public class R3ToR2DataConverterUtils {
 
     Set<Resource> locations = kd.getResourcesByType(ResourceType.Location.toString());
     addResourcesToR4FhirData(
-        data, r4FhirData, details, locations, ResourceType.Location.toString());
+        dataId, data, r4FhirData, details, locations, ResourceType.Location.toString());
 
     Set<Resource> orgs = kd.getResourcesByType(ResourceType.Organization.toString());
-    addResourcesToR4FhirData(data, r4FhirData, details, orgs, ResourceType.Organization.toString());
+    addResourcesToR4FhirData(
+        dataId, data, r4FhirData, details, orgs, ResourceType.Organization.toString());
   }
 
   public static void addResourcesToR4FhirData(
+      String dataId,
       Bundle data,
       R4FhirData r4FhirData,
       LaunchDetails details,
@@ -289,7 +292,7 @@ public class R3ToR2DataConverterUtils {
             type);
       }
     } else {
-      logger.error(" Cannot add null resources ");
+      logger.warn(" Cannot add null resources for type {}", type);
     }
   }
 

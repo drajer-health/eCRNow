@@ -89,6 +89,9 @@ public class KnowledgeArtifact {
   /** This attribute represents the first level actions of the KAR. */
   private List<BsaAction> firstLevelActions;
 
+  /** This attribute represents the mapping between dataIds and RelatedDataIds for the artifact */
+  private HashMap<String, String> dataIdRelatedDataIdMap;
+
   public BsaAction getAction(String actionId) {
 
     if (actionMap != null && actionMap.containsKey(actionId)) return actionMap.get(actionId);
@@ -363,6 +366,14 @@ public class KnowledgeArtifact {
     this.defaultQueries = defaultQueries;
   }
 
+  public HashMap<String, String> getDataIdRelatedDataIdMap() {
+    return dataIdRelatedDataIdMap;
+  }
+
+  public void setDataIdRelatedDataIdMap(HashMap<String, String> dataIdRelatedDataIdMap) {
+    this.dataIdRelatedDataIdMap = dataIdRelatedDataIdMap;
+  }
+
   public void printKarSummary() {
 
     logger.info(" **** START Printing KnowledgeArtifactSummary **** ");
@@ -456,5 +467,38 @@ public class KnowledgeArtifact {
     }
 
     return filter;
+  }
+
+  public void initializeRelatedDataIds() {
+
+    HashMap<String, String> dataIdRelIdMap = new HashMap<>();
+
+    for (Map.Entry<String, BsaAction> entry : actionMap.entrySet()) {
+
+      BsaAction act = entry.getValue();
+
+      if (act.getInputDataIdToRelatedDataIdMap() != null) {
+
+        dataIdRelIdMap.putAll(act.getInputDataIdToRelatedDataIdMap());
+      }
+    }
+
+    setDataIdRelatedDataIdMap(dataIdRelIdMap);
+  }
+
+  public String getFirstClassRelatedDataId(String id) {
+    String retVal = null;
+    if (dataIdRelatedDataIdMap != null && dataIdRelatedDataIdMap.containsKey(id)) {
+
+      // Check if the value references some other data requirement.
+      if (dataIdRelatedDataIdMap.containsKey(dataIdRelatedDataIdMap.get(id))) {
+        // Recursively call to get the ultimate dataId which has the data.
+        retVal = getFirstClassRelatedDataId(dataIdRelatedDataIdMap.get(id));
+      } else {
+        retVal = dataIdRelatedDataIdMap.get(id);
+      }
+    }
+
+    return retVal;
   }
 }

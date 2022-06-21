@@ -50,8 +50,6 @@ testCase:
     validate:
       - Observation: 26
         Condition: 2
-        Organization: 1
-        Practitioner: 5
         ServiceRequest: 2
   eCR-R4-TriggerQuery-FilterByDtTm:
     testData:

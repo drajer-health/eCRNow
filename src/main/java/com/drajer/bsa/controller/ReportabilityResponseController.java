@@ -1,8 +1,11 @@
 package com.drajer.bsa.controller;
 
+import com.drajer.bsa.dao.PublicHealthMessagesDao;
+import com.drajer.bsa.model.PublicHealthMessage;
+import com.drajer.bsa.service.RrReceiver;
+import com.drajer.ecrapp.model.ReportabilityResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,108 +21,100 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.drajer.bsa.dao.PublicHealthMessagesDao;
-import com.drajer.bsa.model.PublicHealthMessage;
-import com.drajer.bsa.service.RrReceiver;
-import com.drajer.ecrapp.model.ReportabilityResponse;
-
-
 @RestController
 public class ReportabilityResponseController {
-	
-	private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseController.class);
 
-	@Autowired RrReceiver rrReceieverService;
-	
-	@Autowired PublicHealthMessagesDao phDao;
-	
-	@CrossOrigin
-	  @RequestMapping(value = "/api/receiveReportabilityResponse", method = RequestMethod.POST)
-	  public ResponseEntity<String> receiveReportabilityResponse(
-	      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
-	      @RequestHeader(name = "X-Correlation-ID", required = false)
-	          String xCorrelationIdHttpHeaderValue,
-	      @RequestBody ReportabilityResponse data,
-	      HttpServletRequest request,
-	      HttpServletResponse response) {
-	    try {
+  private final Logger logger = LoggerFactory.getLogger(ReportabilityResponseController.class);
 
-	      logger.info(
-	          " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
-	          xCorrelationIdHttpHeaderValue,
-	          xRequestIdHttpHeaderValue);
+  @Autowired RrReceiver rrReceieverService;
 
-	      if (data.getResponseType().contentEquals(ReportabilityResponse.MDN_RESPONSE_TYPE)) {
-	        
-	    	  logger.info(" Received MDN instead of RR on the receiveRR API ");
+  @Autowired PublicHealthMessagesDao phDao;
 
-	        if (StringUtils.isBlank(xCorrelationIdHttpHeaderValue)) {
-	          logger.error("X-Correlation-ID header is not present in MDN request.");
-	          throw new ResponseStatusException(
-	              HttpStatus.BAD_REQUEST, "X-Correlation-ID header is not present in MDN request.");
-	        }
+  @CrossOrigin
+  @RequestMapping(value = "/api/receiveReportabilityResponse", method = RequestMethod.POST)
+  public ResponseEntity<String> receiveReportabilityResponse(
+      @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
+      @RequestHeader(name = "X-Correlation-ID", required = false)
+          String xCorrelationIdHttpHeaderValue,
+      @RequestBody ReportabilityResponse data,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    try {
 
-	        // For MDN, no other data will be present.
-	        rrReceieverService.handleFailureMdn(
-	            data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
+      logger.info(
+          " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
+          xCorrelationIdHttpHeaderValue,
+          xRequestIdHttpHeaderValue);
 
-	      } else {
-	        logger.info(" Received RR as expected on the RR API ");
+      if (data.getResponseType().contentEquals(ReportabilityResponse.MDN_RESPONSE_TYPE)) {
 
-	        // Handle RR and optionally save to EHR.
-	        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
-	      }
+        logger.info(" Received MDN instead of RR on the receiveRR API ");
 
-	    } catch (IllegalArgumentException e) {
-	      logger.error("Error in processing the request", e);
-	      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-	    } catch (Exception e) {
-	      logger.error("Error in processing the request", e);
-	      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-	    }
+        if (StringUtils.isBlank(xCorrelationIdHttpHeaderValue)) {
+          logger.error("X-Correlation-ID header is not present in MDN request.");
+          throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, "X-Correlation-ID header is not present in MDN request.");
+        }
 
-	    return new ResponseEntity<>("Success", HttpStatus.OK);
-	  }
+        // For MDN, no other data will be present.
+        rrReceieverService.handleFailureMdn(
+            data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
 
-	  @CrossOrigin
-	  @RequestMapping(
-	      value = "/api/reSubmitReportabilityResponse",
-	      method = {RequestMethod.POST})
-	  public ResponseEntity<String> reSubmitReportabilityResponse(
-	      @RequestParam(name = "eicrId", required = false) String eicrId,
-	      @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
-	    try {
-	      logger.info("Received EicrId:: {}, EicrDocId:: {} in the request", eicrId, eicrDocId);
-	      PublicHealthMessage phm = null;
-	      if (eicrId != null) {
-	        phm = phDao.getBySubmittedMessageId(eicrId);
-	      } else if (eicrDocId != null) {
-	        phm = phDao.getBySubmittedDataId(eicrDocId);
-	      } else {
-	        logger.error("EicrId and EicrDocId is not present in the request");
-	        throw new ResponseStatusException(
-	            HttpStatus.BAD_REQUEST, "EicrId or EicrDocId is not present in the request");
-	      }
+      } else {
+        logger.info(" Received RR as expected on the RR API ");
 
-	      if (phm != null) {
-	        ReportabilityResponse rr = new ReportabilityResponse();
-	        rr.setRrXml(phm.getCdaResponseData());
-	        rr.setResponseType(phm.getResponseMessageType());
+        // Handle RR and optionally save to EHR.
+        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
+      }
 
-	        // Always save it to the EHR.
-	        rrReceieverService.handleReportabilityResponse(rr, phm.getxRequestId());
-	      }
+    } catch (IllegalArgumentException e) {
+      logger.error("Error in processing the request", e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
 
-	    } catch (IllegalArgumentException e) {
-	      logger.error("Error in processing the request", e);
-	      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-	    } catch (Exception e) {
-	      logger.error("Error in processing the request", e);
-	      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-	    }
+    return new ResponseEntity<>("Success", HttpStatus.OK);
+  }
 
-	    return new ResponseEntity<>("Success", HttpStatus.OK);
-	  }
-	
+  @CrossOrigin
+  @RequestMapping(
+      value = "/api/reSubmitReportabilityResponse",
+      method = {RequestMethod.POST})
+  public ResponseEntity<String> reSubmitReportabilityResponse(
+      @RequestParam(name = "eicrId", required = false) String eicrId,
+      @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
+    try {
+      logger.info("Received EicrId:: {}, EicrDocId:: {} in the request", eicrId, eicrDocId);
+      PublicHealthMessage phm = null;
+      if (eicrId != null) {
+        phm = phDao.getBySubmittedMessageId(eicrId);
+      } else if (eicrDocId != null) {
+        phm = phDao.getBySubmittedDataId(eicrDocId);
+      } else {
+        logger.error("EicrId and EicrDocId is not present in the request");
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "EicrId or EicrDocId is not present in the request");
+      }
 
+      if (phm != null) {
+        ReportabilityResponse rr = new ReportabilityResponse();
+        rr.setRrXml(phm.getCdaResponseData());
+        rr.setResponseType(phm.getResponseMessageType());
+
+        // Always save it to the EHR.
+        rrReceieverService.handleReportabilityResponse(rr, phm.getxRequestId());
+      }
+
+    } catch (IllegalArgumentException e) {
+      logger.error("Error in processing the request", e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    return new ResponseEntity<>("Success", HttpStatus.OK);
+  }
 }

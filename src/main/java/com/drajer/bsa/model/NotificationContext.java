@@ -109,6 +109,13 @@ public class NotificationContext {
   @Column(name = "encounter_start_time", nullable = true)
   private Date encounterStartTime;
 
+  /**
+   * This attribute represents the encounter start time to be used for limiting the data being
+   * extracted from the EHR
+   */
+  @Column(name = "encounter_end_time", nullable = true)
+  private Date encounterEndTime;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -232,5 +239,21 @@ public class NotificationContext {
 
   public void setEncounterStartTime(Date encounterStartTime) {
     this.encounterStartTime = encounterStartTime;
+  }
+
+  public String getNotificationProcessingStatus() {
+    return notificationProcessingStatus;
+  }
+
+  public void setNotificationProcessingStatus(String notificationProcessingStatus) {
+    this.notificationProcessingStatus = notificationProcessingStatus;
+  }
+
+  public Date getEncounterEndTime() {
+    return encounterEndTime;
+  }
+
+  public void setEncounterEndTime(Date encounterEndTime) {
+    this.encounterEndTime = encounterEndTime;
   }
 }

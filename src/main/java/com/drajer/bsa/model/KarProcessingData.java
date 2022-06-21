@@ -626,12 +626,17 @@ public class KarProcessingData {
       resources = fhirInputDataById.get(id);
     }
 
-    if (resources == null
-        && relatedDataId != null
-        && !relatedDataId.isEmpty()
-        && fhirInputDataById.containsKey(relatedDataId)) {
-      resources = fhirInputDataById.get(relatedDataId);
+    if (resources == null) {
+
+      String finalRelatedDataId = this.getKar().getFirstClassRelatedDataId(id);
+
+      if (finalRelatedDataId != null
+          && !finalRelatedDataId.isEmpty()
+          && fhirInputDataById.containsKey(finalRelatedDataId)) {
+        resources = fhirInputDataById.get(finalRelatedDataId);
+      }
     }
+
     return resources;
   }
 

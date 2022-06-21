@@ -2084,8 +2084,8 @@ public class CdaFhirUtilities {
             CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
                 CdaGeneratorConstants.CODE_EL_NAME,
                 code,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                codeSystem,
+                codeSystemName,
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
                 dispName,
@@ -2094,8 +2094,8 @@ public class CdaFhirUtilities {
         retval.append(
             CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                 code,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                codeSystem,
+                codeSystemName,
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
                 dispName));

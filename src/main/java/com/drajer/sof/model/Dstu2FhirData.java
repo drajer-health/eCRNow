@@ -30,6 +30,7 @@ public class Dstu2FhirData extends FhirData {
   private List<DiagnosticReport> diagReports;
   private List<DiagnosticOrder> diagOrders;
   private List<Observation> labResults;
+  private List<Observation> labResultValueObservations;
   private List<Observation> travelObs;
   private List<Observation> pregnancyObs;
   private List<Immunization> immunizations;
@@ -43,6 +44,7 @@ public class Dstu2FhirData extends FhirData {
     diagReports = new ArrayList<>();
     diagOrders = new ArrayList<>();
     labResults = new ArrayList<>();
+    labResultValueObservations = new ArrayList<>();
     travelObs = new ArrayList<>();
     pregnancyObs = new ArrayList<>();
     immunizations = new ArrayList<>();
@@ -178,5 +180,13 @@ public class Dstu2FhirData extends FhirData {
 
   public void setData(Bundle data) {
     this.data = data;
+  }
+
+  public List<Observation> getLabResultValueObservations() {
+    return labResultValueObservations;
+  }
+
+  public void setLabResultValueObservations(List<Observation> labResultValueObservations) {
+    this.labResultValueObservations = labResultValueObservations;
   }
 }

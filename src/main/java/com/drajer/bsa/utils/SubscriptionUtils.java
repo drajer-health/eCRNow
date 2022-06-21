@@ -154,6 +154,21 @@ public class SubscriptionUtils {
             nc.setLastUpdated(Date.from(Instant.now()));
             nc.setNotifiedResource(res);
 
+            if (res.getResourceType() == ResourceType.Encounter) {
+              Encounter enc = (Encounter) res;
+
+              if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
+
+                logger.debug(" Encounter has a start date");
+                nc.setEncounterStartTime(enc.getPeriod().getStart());
+
+                if (enc.getPeriod().getEnd() != null) {
+                  logger.info(" Encounter has an end date, so it is a closed encounter ");
+                  nc.setEncounterEndTime(enc.getPeriod().getEnd());
+                }
+              }
+            }
+
             String xRequestId = request.getHeader("X-Request-ID");
             String xCorrelationId = request.getHeader("X-Correlation-ID");
 
