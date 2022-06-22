@@ -21,6 +21,14 @@
 		<fhir.version>4.2.0</fhir.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
+
+	<distributionManagement>
+		<site>
+			<id>eCRNOW Report</id>
+			<url>${project.build.directory}/staging</url>
+		</site>
+	</distributionManagement>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
