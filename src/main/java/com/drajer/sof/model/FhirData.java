@@ -195,4 +195,20 @@ public abstract class FhirData {
   public void setR4DiagnosticReportCodes(List<CodeableConcept> r4DiagnosticReportCodes) {
     this.r4DiagnosticReportCodes = r4DiagnosticReportCodes;
   }
+
+  public List<CodeableConceptDt> getLabResultValues() {
+    return labResultValues;
+  }
+
+  public void setLabResultValues(List<CodeableConceptDt> labResultValues) {
+    this.labResultValues = labResultValues;
+  }
+
+  public List<CodeableConcept> getR4LabResultValues() {
+    return r4LabResultValues;
+  }
+
+  public void setR4LabResultValues(List<CodeableConcept> r4LabResultValues) {
+    this.r4LabResultValues = r4LabResultValues;
+  }
 }

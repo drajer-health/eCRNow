@@ -239,7 +239,9 @@ public class R4ResourcesData {
             resourceData.getObservationByPatientId(
                 launchDetails, client, context, OBSERVATION, "laboratory");
     List<Observation> observations = new ArrayList<>();
+    List<Observation> valueObservations = new ArrayList<>();
     List<CodeableConcept> observationCodes = new ArrayList<>();
+    List<CodeableConcept> valueObservationCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
       // Filter Observations based on Encounter Reference
       if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
@@ -254,6 +256,7 @@ public class R4ResourcesData {
                   .equals(encounter.getIdElement().getIdPart())) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
+            findAllValueCodes(observation, valueObservations, valueObservationCodes);
           }
         }
         // If Encounter Id is not present using start and end dates to filter
@@ -267,6 +270,7 @@ public class R4ResourcesData {
             if (isResourceWithinDateTime(start, end, observation.getIssued())) {
               observations.add(observation);
               observationCodes.addAll(findLaboratoryCodes(observation));
+              findAllValueCodes(observation, valueObservations, valueObservationCodes);
             }
             // If Issued date is not present, Checking for Effective Date
           } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
@@ -275,6 +279,7 @@ public class R4ResourcesData {
             if (isResourceWithinDateTime(start, end, effDate)) {
               observations.add(observation);
               observationCodes.addAll(findLaboratoryCodes(observation));
+              findAllValueCodes(observation, valueObservations, valueObservationCodes);
             }
             // If Issued and Effective Date are not present looking for LastUpdatedDate
           } else {
@@ -282,14 +287,30 @@ public class R4ResourcesData {
             if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
               observations.add(observation);
               observationCodes.addAll(findLaboratoryCodes(observation));
+              findAllValueCodes(observation, valueObservations, valueObservationCodes);
             }
           }
         }
       }
       r4FhirData.setR4LabResultCodes(observationCodes);
+      r4FhirData.setR4LabResultValues(valueObservationCodes);
+      r4FhirData.setLabResultValueObservations(valueObservations);
     }
     logger.info("Filtered Observations ----> {}", observations.size());
+    logger.info("Filtered Observation Coded Values ----> {}", valueObservations.size());
     return observations;
+  }
+
+  public void findAllValueCodes(
+      Observation obs,
+      List<Observation> valueObservations,
+      List<CodeableConcept> valueObservationCodes) {
+
+    if (obs.getValue() != null && obs.getValue() instanceof CodeableConcept) {
+      CodeableConcept cd = obs.getValueCodeableConcept();
+      valueObservationCodes.add(cd);
+      valueObservations.add(obs);
+    }
   }
 
   public List<Observation> getPregnancyObservationData(
@@ -1082,6 +1103,17 @@ public class R4ResourcesData {
           bundle.addEntry(observationsEntry);
         }
       }
+
+      if (r4FhirData.getLabResultValueObservations() != null
+          && !r4FhirData.getLabResultValueObservations().isEmpty()) {
+
+        for (Observation observation : r4FhirData.getLabResultValueObservations()) {
+          BundleEntryComponent observationsEntry =
+              new BundleEntryComponent().setResource(observation);
+          bundle.addEntry(observationsEntry);
+        }
+      }
+
     } catch (Exception e) {
       logger.error("Error in getting Observation Data", e);
     }
@@ -1318,6 +1350,9 @@ public class R4ResourcesData {
               BundleEntryComponent locationEntry =
                   new BundleEntryComponent().setResource(locationResource);
               bundle.addEntry(locationEntry);
+              if (locationResource.getAddress() != null) {
+                r4FhirData.setLocation(locationResource);
+              }
             }
           }
         }

@@ -542,12 +542,7 @@ public class LaunchController {
     try {
       FhirContext fhirContext = fhirContextInitializer.getFhirContext(fhirVersion);
 
-      IGenericClient fhirClient =
-          fhirContextInitializer.createClient(
-              fhirContext,
-              launchDetails.getEhrServerURL(),
-              launchDetails.getAccessToken(),
-              launchDetails.getxRequestId());
+      IGenericClient fhirClient = fhirContextInitializer.createClient(fhirContext, launchDetails);
 
       if (!StringUtils.isEmpty(encounterId)) {
         return fhirClient.read().resource("Encounter").withId(encounterId).execute();

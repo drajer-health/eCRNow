@@ -29,12 +29,7 @@ public class TriggerQueryR4Bundle {
 
     logger.trace("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            launchDetails.getEhrServerURL(),
-            launchDetails.getAccessToken(),
-            launchDetails.getxRequestId());
+    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
 
     Bundle bundle =
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);

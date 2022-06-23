@@ -203,10 +203,9 @@ public class WorkflowService {
     logger.info("Execute Validate Eicr Action");
     executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType, taskInstanceId);
 
-    if (!details.getValidationMode()) {
-      logger.info("Execute Submit Eicr Action");
-      executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType, taskInstanceId);
-    }
+    logger.info("Execute Submit Eicr Action");
+    executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType, taskInstanceId);
+
     logger.info("Execute RR Check Action");
     executeActionsForType(details, EcrActionTypes.RR_CHECK, launchType, taskInstanceId);
 

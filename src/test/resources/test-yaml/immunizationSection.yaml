@@ -3,7 +3,7 @@ testName: "TestSystemLaunch"
 testCase:
   eCR-immunization-withThreeVaccine:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[5]/section/"
     resourceMappingData:
@@ -22,7 +22,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
       Immunization:
         - params:
             patient: "12742571"
@@ -88,7 +88,7 @@ testCase:
       - xPath: "entry[1]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
         "code/@code": "187"
         "code/@codeSystem": "2.16.840.1.113883.12.292"
-        "code/@codeSystemName": "cvx"
+        "code/@codeSystemName": "CVX"
         "code/@displayName": "zoster vaccine recombinant"
       - xPath: "entry[2]/"
         "@typeCode": "DRIV"
@@ -118,7 +118,7 @@ testCase:
       - xPath: "entry[2]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
         "code/@code": "112"
         "code/@codeSystem": "2.16.840.1.113883.12.292"
-        "code/@codeSystemName": "cvx"
+        "code/@codeSystemName": "CVX"
         "code/@displayName": "tetanus toxoid, unspecified formulation"
       - xPath: "entry[3]/"
         "@typeCode": "DRIV"
@@ -148,11 +148,11 @@ testCase:
       - xPath: "entry[3]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
         "code/@code": "111"
         "code/@codeSystem": "2.16.840.1.113883.12.292"
-        "code/@codeSystemName": "cvx"
+        "code/@codeSystemName": "CVX"
         "code/@displayName": "influenza virus vaccine, live, attenuated, for intranasal use"
   eCR-immunization-withNoVaccine:
     testData:
-      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDataEntry1.json"
+      ClientDataToBeSaved: "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json"
       SystemLaunchPayload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest.json"
       BaseXPath: "/ClinicalDocument/component/structuredBody/component[5]/section/"
     resourceMappingData:
@@ -171,7 +171,7 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
-          responseFilePath: "R4/Condition/ConditionBundle_d2572364249.json"
+          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"

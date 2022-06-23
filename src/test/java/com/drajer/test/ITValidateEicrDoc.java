@@ -79,6 +79,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
+    mockRestApi();
   }
 
   @Parameters(name = "{0}")
