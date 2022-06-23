@@ -36,7 +36,7 @@ public class CdaGeneratorConstantsTest {
   @Test
   public void getMappedCodeFromFhirToCda() {
     String uriValue =
-        CdaGeneratorConstants.getMappedCodeFromFhirToCda(INTERPRETATION_CODE_EL_NAME, oid);
+        CdaGeneratorConstants.getMappedCodeFromFhirToCda(INTERPRETATION_CODE_EL_NAME, "HH");
     assertNotNull(uriValue);
   }
 

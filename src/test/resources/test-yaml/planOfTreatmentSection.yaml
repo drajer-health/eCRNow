@@ -564,7 +564,7 @@ testCase:
         #      'id/@extension': "311539773"
         "code/@code": "11585-7"
         "code/@codeSystem": "2.16.840.1.113883.6.1"
-        "code/@codeSystemName": "loinc.org"    
+        "code/@codeSystemName": "LOINC"    
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501" 
   #entry-3

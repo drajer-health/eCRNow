@@ -528,6 +528,77 @@ public class Dstu2CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getCodingXmlForCodeSystem(
+      List<CodingDt> codes,
+      String cdName,
+      String codeSystemUrl,
+      Boolean csOptional,
+      String contentRef) {
+
+    StringBuilder sb = new StringBuilder(200);
+    StringBuilder translations = new StringBuilder(200);
+
+    Boolean foundCodeForCodeSystem = false;
+
+    if (codes != null && !codes.isEmpty()) {
+
+      for (CodingDt c : codes) {
+
+        Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+        if (!csd.getValue0().isEmpty()
+            && c.getSystem().contentEquals(codeSystemUrl)
+            && !foundCodeForCodeSystem) {
+
+          logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
+          sb.append(
+              CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+                  cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          if (!contentRef.isEmpty())
+            sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
+
+          foundCodeForCodeSystem = true;
+        } else if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
+
+          logger.debug(
+              "Found the Coding for a different Codesystem {} for Translation ", csd.getValue0());
+          translations.append(
+              CdaGeneratorUtils.getXmlForCD(
+                  CdaGeneratorConstants.TRANSLATION_EL_NAME,
+                  c.getCode(),
+                  csd.getValue0(),
+                  csd.getValue1(),
+                  c.getDisplay()));
+        } else {
+          logger.debug(
+              " Did not find the code system mapping from FHIR to CDA for {}", c.getSystem());
+        }
+      }
+
+      // At least one code is there so...close the tag
+      if (!foundCodeForCodeSystem) {
+
+        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        sb.append(
+            CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
+      }
+
+      logger.debug(" Sb = {}", sb);
+      sb.append(translations);
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+
+    } else {
+      sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
+    }
+
+    if (foundCodeForCodeSystem || (!csOptional)) {
+      return sb.toString();
+    } else {
+      return new StringBuilder("").toString();
+    }
+  }
+
   public static String getCodingXml(List<CodingDt> codes, String cdName) {
 
     StringBuilder sb = new StringBuilder(200);

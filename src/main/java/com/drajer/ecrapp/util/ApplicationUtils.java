@@ -256,6 +256,15 @@ public class ApplicationUtils {
     return retVal;
   }
 
+  public static String getCodeAsStringForMatching(String code, String cs) {
+
+    if (code != null && cs != null) {
+      return cs + "|" + code;
+    }
+
+    return null;
+  }
+
   public static Instant convertTimingScheduleToInstant(TimingSchedule ts, Date timeRef) {
 
     Instant t = null;
