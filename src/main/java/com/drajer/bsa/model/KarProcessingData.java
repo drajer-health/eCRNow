@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -142,6 +143,9 @@ public class KarProcessingData {
 
   /** The attribute holds the last trigger match status based on previous matches. */
   private CheckTriggerCodeStatusList previousTriggerMatchStatus;
+
+  /** The attribute holds the context encounter */
+  private Encounter contextEncounter;
 
   public void addActionOutput(String actionId, Resource res) {
 
@@ -542,6 +546,14 @@ public class KarProcessingData {
     return notificationContext.getPatientId();
   }
 
+  public Encounter getContextEncounter() {
+    return contextEncounter;
+  }
+
+  public void setContextEncounter(Encounter contextEncounter) {
+    this.contextEncounter = contextEncounter;
+  }
+
   public CheckTriggerCodeStatusList getCurrentTriggerMatchStatus() {
     return currentTriggerMatchStatus;
   }
@@ -562,9 +574,12 @@ public class KarProcessingData {
 
     boolean returnVal = false;
 
+    String finalRelatedDataId = this.getKar().getFirstClassRelatedDataId(dataReqId);
+
     // Check if the data is already retrieved.
     if (fhirInputDataById.containsKey(dataReqId)
-        || (relatedDataId != null && fhirInputDataById.containsKey(relatedDataId))) {
+        || (relatedDataId != null && fhirInputDataById.containsKey(relatedDataId))
+        || fhirInputDataById.containsKey(finalRelatedDataId)) {
       returnVal = true;
     }
 

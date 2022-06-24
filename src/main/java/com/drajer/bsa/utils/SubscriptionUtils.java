@@ -166,6 +166,10 @@ public class SubscriptionUtils {
                   logger.info(" Encounter has an end date, so it is a closed encounter ");
                   nc.setEncounterEndTime(enc.getPeriod().getEnd());
                 }
+              } else {
+
+                logger.debug(" Initializing Encounter Start time as current time ");
+                nc.setEncounterStartTime(new Date());
               }
             }
 

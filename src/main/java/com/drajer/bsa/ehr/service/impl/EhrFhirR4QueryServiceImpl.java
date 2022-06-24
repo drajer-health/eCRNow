@@ -30,6 +30,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
@@ -86,6 +88,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String QUERY_FILE_EXT = "queries";
   private static final String PATIENT_ID_CONTEXT_PARAM = "\\{\\{context.patientId\\}\\}";
   private static final String ENCOUNTER_ID_CONTEXT_PARAM = "\\{\\{context.encounterId\\}\\}";
+  private static final String ENCOUNTER_START_DATE_PARAM = "context.encounterStartDate";
+  private static final String ENCOUNTER_END_DATE_PARAM = "context.encounterEndDate";
   private static final String ENCOUNTER_START_DATE_CONTEXT_PARAM =
       "\\{\\{context.encounterStartDate\\}\\}";
   private static final String ENCOUNTER_END_DATE_CONTEXT_PARAM =
@@ -973,7 +977,77 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     substitutedQuery =
         substitutedQuery.replaceAll(ENCOUNTER_ID_CONTEXT_PARAM, data.getContextEncounterId());
 
+    if (substitutedQuery.contains(ENCOUNTER_START_DATE_PARAM)
+        || substitutedQuery.contains(ENCOUNTER_END_DATE_PARAM)) {
+
+      int startThreshold =
+          -1 * Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
+      int endThreshold = Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
+
+      Encounter enc = retrieveContextEncounter(data);
+
+      String startDate = null;
+      String endDate = null;
+
+      if (enc != null) {
+
+        if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
+          startDate =
+              DateFormatUtils.format(
+                  DateUtils.addHours(enc.getPeriod().getStart(), startThreshold), "yyy-MM-dd");
+        }
+
+        if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
+          endDate =
+              DateFormatUtils.format(
+                  DateUtils.addHours(enc.getPeriod().getEnd(), endThreshold), "yyy-MM-dd");
+        }
+      }
+
+      if (startDate == null) {
+        startDate =
+            DateFormatUtils.format(
+                DateUtils.addHours(
+                    data.getNotificationContext().getEncounterStartTime(), startThreshold),
+                "yyy-MM-dd");
+      }
+
+      if (endDate == null) {
+        endDate = DateFormatUtils.format(new Date(), "yyy-MM-dd");
+      }
+
+      substitutedQuery = substitutedQuery.replaceAll(ENCOUNTER_START_DATE_CONTEXT_PARAM, startDate);
+
+      substitutedQuery = substitutedQuery.replaceAll(ENCOUNTER_END_DATE_CONTEXT_PARAM, endDate);
+    }
+
     return substitutedQuery;
+  }
+
+  private Encounter retrieveContextEncounter(KarProcessingData data) {
+
+    logger.info(" Retrieving Context Encounter ");
+    Encounter enc = null;
+
+    if (data.getContextEncounter() != null) enc = data.getContextEncounter();
+    else {
+      String encId = data.getContextEncounterId();
+
+      if (encId != null && !encId.isEmpty()) {
+
+        logger.info(LOG_FHIR_CTX_GET);
+        FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+        logger.info(LOG_INIT_FHIR_CLIENT);
+        IGenericClient client = getClient(data, context);
+
+        Resource res = getResourceById(client, context, ResourceType.Encounter.toString(), encId);
+
+        if (res != null) enc = (Encounter) res;
+      }
+    }
+
+    return enc;
   }
 
   private String getQuery(KarProcessingData data, String dataReqId, FhirQueryFilter query) {
