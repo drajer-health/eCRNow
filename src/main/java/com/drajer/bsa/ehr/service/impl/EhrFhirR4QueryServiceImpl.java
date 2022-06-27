@@ -147,14 +147,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
 
-    for (File queryFile : files) {
+    if (files != null && files.length > 0) {
+      for (File queryFile : files) {
 
-      if (queryFile.isFile()
-          && QUERY_FILE_EXT.contentEquals(FilenameUtils.getExtension(queryFile.getName()))) {
+        if (queryFile.isFile()
+            && QUERY_FILE_EXT.contentEquals(FilenameUtils.getExtension(queryFile.getName()))) {
 
-        logger.info(" Processing Custom Query File  {}", queryFile.getName());
-        processQueryFile(queryFile);
-      } // For a File
+          logger.info(" Processing Custom Query File  {}", queryFile.getName());
+          processQueryFile(queryFile);
+        } // For a File
+      }
+    } else {
+      logger.info(" No custom queries defined");
     }
   }
 
