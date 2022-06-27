@@ -889,6 +889,9 @@ public class CdaGeneratorConstants {
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
   private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
 
+  // Map to hold OID to Name
+  private static HashMap<String, String> oidNameMap = new HashMap<>();
+
   // Static block to load OID to URI mapping from property file
   static {
     try (InputStream input =
@@ -909,12 +912,24 @@ public class CdaGeneratorConstants {
           CdaGeneratorConstants.class
               .getClassLoader()
               .getResourceAsStream("interpretationcode-mapping.properties");
-      prop.load(intCode);
+
+      Properties prop1 = new Properties();
+      prop1.load(intCode);
       fhirToCdaTerminologyMap.put(
           CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, new HashMap<>());
       HashMap<String, String> interpretmap =
           fhirToCdaTerminologyMap.get(CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME);
       prop.forEach((key, value) -> interpretmap.put((String) key, (String) value));
+      prop1.forEach((key, value) -> interpretmap.put((String) key, (String) value));
+
+      InputStream oidNames =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("oid-name-mapping.properties");
+
+      Properties prop2 = new Properties();
+      prop2.load(oidNames);
+      prop2.forEach((key, value) -> oidNameMap.put((String) key, (String) value));
 
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
@@ -972,7 +987,11 @@ public class CdaGeneratorConstants {
     if (StringUtils.isEmpty(url)) {
       return new Pair<>("", "");
     } else if (uriMap.containsKey(url)) {
-      return uriMap.get(url);
+      Pair<String, String> retVal = uriMap.get(url);
+
+      if (oidNameMap.containsKey(retVal.getValue0())) {
+        return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
+      } else return retVal;
     } else {
       return new Pair<>("", "");
     }

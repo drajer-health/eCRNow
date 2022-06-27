@@ -486,7 +486,8 @@ public class CdaResultGenerator {
                   ActionRepo.getInstance().getRctcVersion(),
                   code,
                   CdaGeneratorConstants.FHIR_LOINC_URL,
-                  contentRef);
+                  contentRef,
+                  valElement);
 
           retVal = new Pair<Boolean, String>(true, codeXml);
         } else {
@@ -502,7 +503,8 @@ public class CdaResultGenerator {
                   ActionRepo.getInstance().getRctcVersion(),
                   code,
                   CdaGeneratorConstants.FHIR_SNOMED_URL,
-                  contentRef);
+                  contentRef,
+                  valElement);
 
           retVal = new Pair<Boolean, String>(true, valueXml);
         }
