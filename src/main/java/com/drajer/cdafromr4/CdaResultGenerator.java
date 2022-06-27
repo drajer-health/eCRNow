@@ -517,7 +517,7 @@ public class CdaResultGenerator {
                   code.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, contentRef);
         } else {
           defCodeXml =
-              CdaFhirUtilities.getCodingXml(
+              CdaFhirUtilities.getCodingXmlForValue(
                   code.getCoding(), CdaGeneratorConstants.VAL_EL_NAME, contentRef);
         }
         retVal = new Pair<Boolean, String>(false, defCodeXml);
