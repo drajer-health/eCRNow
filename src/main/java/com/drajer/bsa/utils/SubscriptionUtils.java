@@ -1,5 +1,6 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
 import java.io.IOException;
 import java.io.InputStream;
@@ -153,6 +154,8 @@ public class SubscriptionUtils {
             nc.setNotificationResourceType(resourceType);
             nc.setLastUpdated(Date.from(Instant.now()));
             nc.setNotifiedResource(res);
+            nc.setNotificationProcessingStatus(
+                NotificationProcessingStatusType.IN_PROGRESS.toString());
 
             if (res.getResourceType() == ResourceType.Encounter) {
               Encounter enc = (Encounter) res;

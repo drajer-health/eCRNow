@@ -158,6 +158,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
   }
 
+  @Override
+  public FhirContext getContext() {
+
+    return fhirContextInitializer.getFhirContext(R4);
+  }
+
   private void processQueryFile(File queryFile) {
 
     // Retrieve the properties.
@@ -841,7 +847,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     if (!data.isDataAlreadyFetched(dataReqId, query.getRelatedDataId())) {
 
-      logger.info(" Executing Query for DataReqId: {} as it is not already fetched.", dataReqId);
+      logger.info(" Run Query for DataReqId: {} as it is not already fetched.", dataReqId);
 
       String queryToExecute = getQuery(data, dataReqId, query);
 
@@ -856,14 +862,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         String finalSearchQuery = createSearchUrl(data, queryToExecute);
 
         logger.info(
-            " Executing Search FHIR Query for resource {} with query {}",
+            " Run Search FHIR Query for resource {} with query {}",
             query.getResourceType().toString(),
             finalSearchQuery);
         executeSearchQuery(data, dataReqId, query, finalSearchQuery);
 
       } else {
 
-        logger.info(" Executing Get Resource by Id for Query {}", queryToExecute);
+        logger.info(" Run Get Resource by Id for Query {}", queryToExecute);
 
         Resource res = getResourceByUrl(data, query.getResourceType().toString(), queryToExecute);
 
@@ -984,7 +990,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           -1 * Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
       int endThreshold = Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
 
-      Encounter enc = retrieveContextEncounter(data);
+      Encounter enc = null;
+
+      if (substitutedQuery.contains(ENCOUNTER_END_DATE_PARAM)) enc = retrieveContextEncounter(data);
 
       String startDate = null;
       String endDate = null;

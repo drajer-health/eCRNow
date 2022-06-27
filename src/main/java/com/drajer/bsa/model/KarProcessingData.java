@@ -8,11 +8,13 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.ResourceUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
@@ -34,6 +36,17 @@ public class KarProcessingData {
 
   public static final String RESOURCE_SIZES = "Resource Sizes : {}";
   private final Logger logger = LoggerFactory.getLogger(KarProcessingData.class);
+
+  public enum DebugDataType {
+    TRIGGER,
+    LOADING,
+    STATE,
+    ALL_INFO
+  }
+
+  public static String TRIGGER_QUERY_FILE_NAME = "TriggerQueryBundle";
+  public static String LOADING_QUERY_FILE_NAME = "LoadingQueryBundle";
+  public static String ALL_DATA_FILE_NAME = "AllDataFile";
 
   /** The Knowledge Artifact to be processed. */
   KnowledgeArtifact kar;
@@ -624,7 +637,7 @@ public class KarProcessingData {
 
     Set<Resource> resources = null;
 
-    if (relatedDataIds.containsKey(dataReqId)) {
+    if (relatedDataIds != null && relatedDataIds.containsKey(dataReqId)) {
 
       resources = getDataForId(dataReqId, relatedDataIds.get(dataReqId));
     } else {
@@ -715,5 +728,35 @@ public class KarProcessingData {
     }
 
     return retVal;
+  }
+
+  public void saveDataToFile(DebugDataType dt, List<DataRequirement> dr, String filename) {
+
+    Bundle bund = new Bundle();
+
+    if (dr != null && (dt == DebugDataType.TRIGGER || dt == DebugDataType.LOADING)) {
+
+      for (DataRequirement d : dr) {
+
+        Set<Resource> resources = this.getDataForId(d.getId(), "");
+
+        if (resources != null) {
+
+          resources.forEach(
+              resource -> bund.addEntry(new BundleEntryComponent().setResource(resource)));
+        }
+      }
+
+      String outputFileName =
+          filename
+              + "_"
+              + this.getNotificationContext().getPatientId()
+              + "_"
+              + this.getNotificationContext().getNotificationResourceId();
+
+      logger.info(" Bundle Size for filename {} = ", outputFileName, bund.getEntry().size());
+
+      BsaServiceUtils.saveFhirResourceToFile(bund, outputFileName);
+    }
   }
 }

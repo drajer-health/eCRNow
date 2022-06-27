@@ -65,6 +65,11 @@ public class CheckTriggerCodes extends BsaAction {
         ehrService.getFilteredData(data, getInputData());
       }
 
+      data.saveDataToFile(
+          KarProcessingData.DebugDataType.TRIGGER,
+          getInputData(),
+          KarProcessingData.TRIGGER_QUERY_FILE_NAME);
+
       HashMap<String, Set<Resource>> idres = new HashMap<>();
       Parameters params = new Parameters();
       CheckTriggerCodeStatusList ctcsl = new CheckTriggerCodeStatusList();

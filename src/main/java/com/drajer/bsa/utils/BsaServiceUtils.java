@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
 import org.hl7.fhir.r4.model.*;
@@ -78,11 +79,25 @@ public class BsaServiceUtils {
   @Value("${bsa.output.directory}")
   String debugDirectory;
 
+  @Value("${save.debug.files:true}")
+  boolean saveDebugToFiles;
+
   @Autowired(required = false)
   Map<String, BsaTypes.BsaActionStatusType> actions;
 
+  private static String DEBUG_DIRECTORY;
+  private static IParser FHIR_JSON_PARSER;
+  private static boolean SAVE_DEBUG_TO_FILES;
+
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
   private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
+
+  @PostConstruct
+  public void initialize() {
+    DEBUG_DIRECTORY = debugDirectory;
+    FHIR_JSON_PARSER = jsonParser;
+    SAVE_DEBUG_TO_FILES = saveDebugToFiles;
+  }
 
   public static String getFhirPathVariableString(String id) {
 
@@ -444,37 +459,40 @@ public class BsaServiceUtils {
     List<DocumentReference> docs = new ArrayList<>();
     List<Pair<String, String>> outputs = new ArrayList<>();
 
-    findMessageHeaderAndDocumentReferences(res, docs);
+    if (SAVE_DEBUG_TO_FILES) {
 
-    for (DocumentReference docRef : docs) {
+      findMessageHeaderAndDocumentReferences(res, docs);
 
-      logger.info(" Found a document reference that needs to be saved ");
-      String fileName =
-          logDirectory
-              + actionType
-              + "_"
-              + docRef.getSubject().getReferenceElement().getIdPart()
-              + "_"
-              + docRef.getId()
-              + ".xml";
+      for (DocumentReference docRef : docs) {
 
-      if (!docRef.getContent().isEmpty()) {
+        logger.info(" Found a document reference that needs to be saved ");
+        String fileName =
+            logDirectory
+                + actionType
+                + "_"
+                + docRef.getSubject().getReferenceElement().getIdPart()
+                + "_"
+                + docRef.getId()
+                + ".xml";
 
-        DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
+        if (!docRef.getContent().isEmpty()) {
 
-        if (drcc.getAttachment() != null) {
-          Attachment att = drcc.getAttachment();
+          DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
 
-          String payload = new String(att.getData());
+          if (drcc.getAttachment() != null) {
+            Attachment att = drcc.getAttachment();
 
-          logger.debug("Saving data to file {}", fileName);
-          saveDataToFile(payload, fileName);
+            String payload = new String(att.getData());
 
-          Pair<String, String> p = new Pair<>(docRef.getId(), payload);
-          outputs.add(p);
-        } // attachment not null
-      } // DocRef has content
-    } // For all document references.
+            logger.debug("Saving data to file {}", fileName);
+            saveDataToFile(payload, fileName);
+
+            Pair<String, String> p = new Pair<>(docRef.getId(), payload);
+            outputs.add(p);
+          } // attachment not null
+        } // DocRef has content
+      } // For all document references.
+    }
 
     return outputs;
   }
@@ -487,13 +505,15 @@ public class BsaServiceUtils {
    */
   public static void saveDataToFile(String data, String filename) {
 
-    try (DataOutputStream outStream =
-        new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
+    if (SAVE_DEBUG_TO_FILES) {
+      try (DataOutputStream outStream =
+          new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
 
-      logger.info(" Writing data to file: {}", filename);
-      outStream.writeBytes(data);
-    } catch (IOException e) {
-      logger.debug(" Unable to write data to file: {}", filename, e);
+        logger.info(" Writing data to file: {}", filename);
+        outStream.writeBytes(data);
+      } catch (IOException e) {
+        logger.debug(" Unable to write data to file: {}", filename, e);
+      }
     }
   }
 
@@ -504,12 +524,25 @@ public class BsaServiceUtils {
    */
   public void saveResourceToFile(Resource res) {
 
-    String fileName =
-        debugDirectory + res.getResourceType().toString() + "_" + res.getId() + ".json";
+    if (SAVE_DEBUG_TO_FILES) {
+      String fileName =
+          debugDirectory + res.getResourceType().toString() + "_" + res.getId() + ".json";
 
-    String data = jsonParser.encodeResourceToString(res);
+      String data = jsonParser.encodeResourceToString(res);
 
-    saveDataToFile(data, fileName);
+      saveDataToFile(data, fileName);
+    }
+  }
+
+  public static void saveFhirResourceToFile(Resource res, String filename) {
+
+    if (SAVE_DEBUG_TO_FILES) {
+      String fileName = DEBUG_DIRECTORY + filename + ".json";
+
+      String data = FHIR_JSON_PARSER.encodeResourceToString(res);
+
+      saveDataToFile(data, fileName);
+    }
   }
 
   public void saveActionStatusState(Map<String, BsaActionStatus> actionStatus) {
