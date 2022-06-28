@@ -104,11 +104,24 @@ public class Dstu2CdaImmunizationGenerator {
         sb.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
 
         // add the medication Act
-        sb.append(
-            CdaGeneratorUtils.getXmlForAct(
-                CdaGeneratorConstants.MED_ACT_EL_NAME,
-                CdaGeneratorConstants.MED_CLASS_CODE,
-                CdaGeneratorConstants.MOOD_CODE_DEF));
+
+        if (!imm.getStatusElement().getValueAsString().contentEquals("completed")) {
+          sb.append(
+              CdaGeneratorUtils.getXmlForActWithNegationInd(
+                  CdaGeneratorConstants.MED_ACT_EL_NAME,
+                  CdaGeneratorConstants.MED_CLASS_CODE,
+                  CdaGeneratorConstants.MOOD_CODE_DEF,
+                  "true",
+                  true));
+        } else {
+          sb.append(
+              CdaGeneratorUtils.getXmlForActWithNegationInd(
+                  CdaGeneratorConstants.MED_ACT_EL_NAME,
+                  CdaGeneratorConstants.MED_CLASS_CODE,
+                  CdaGeneratorConstants.MOOD_CODE_DEF,
+                  "false",
+                  true));
+        }
 
         sb.append(
             CdaGeneratorUtils.getXmlForTemplateId(

@@ -1,6 +1,7 @@
 package com.drajer.cdafromdstu2;
 
 import ca.uhn.fhir.model.dstu2.composite.AddressDt;
+import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
 import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
@@ -393,9 +394,8 @@ public class Dstu2CdaHeaderGenerator {
         }
       }
 
-      sb.append(
-          Dstu2CdaFhirUtilities.getCodeableConceptXml(
-              en.getType(), CdaGeneratorConstants.CODE_EL_NAME, false));
+      sb.append(Dstu2CdaFhirUtilities.getEncounterClassCodeXml(en.getClassElementElement()));
+
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXml(
               en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
@@ -534,6 +534,18 @@ public class Dstu2CdaHeaderGenerator {
             CdaGeneratorConstants.FHIR_ARGO_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
+    // Check for CodeableConceptDt with DAF extension.
+    if (race == null) {
+      CodeableConceptDt racedt =
+          Dstu2CdaFhirUtilities.getCodeableConceptExtension(
+              p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_RACE_EXT_URL);
+
+      if (racedt != null && racedt.getCodingFirstRep() != null) {
+
+        race = racedt.getCodingFirstRep();
+      }
+    }
+
     if (race != null && race.getCode() != null) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
@@ -553,6 +565,18 @@ public class Dstu2CdaHeaderGenerator {
             p.getUndeclaredExtensions(),
             CdaGeneratorConstants.FHIR_ARGO_ETHNICITY_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+
+    // Check for CodeableConceptDt with DAF extension.
+    if (ethnicity == null) {
+      CodeableConceptDt ethnicitydt =
+          Dstu2CdaFhirUtilities.getCodeableConceptExtension(
+              p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_ETHNICITY_EXT_URL);
+
+      if (ethnicitydt != null && ethnicitydt.getCodingFirstRep() != null) {
+
+        ethnicity = ethnicitydt.getCodingFirstRep();
+      }
+    }
 
     if (ethnicity != null && ethnicity.getCode() != null) {
       patientDetails.append(
