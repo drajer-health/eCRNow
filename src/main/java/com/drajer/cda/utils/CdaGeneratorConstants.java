@@ -101,10 +101,14 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/ValueSet/identifier-type";
   public static final String FHIR_ARGO_RACE_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-race";
+  public static final String DAF_RACE_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/us-core-race";
   public static final String FHIR_ARGO_ETHNICITY_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity";
   public static final String FHIR_ARGO_BIRTHSEX_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex";
+  public static final String DAF_ETHNICITY_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/us-core-ethnicity";
 
   public static final String FHIR_USCORE_RACE_EXT_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
@@ -150,6 +154,9 @@ public class CdaGeneratorConstants {
   public static final String CDA_MALE_CODE = "M";
   public static final String CDA_FEMALE_CODE = "F";
   public static final String CDA_UNK_GENDER = "UN";
+  public static final String CDA_INPATIENT_ENCOUNTER_CLASS = "IMP";
+  public static final String CDA_AMBULATORY_ENCOUNTER_CLASS = "AMB";
+  public static final String CDA_EMERGENCY_ENCOUNTER_CLASS = "EMER";
 
   public static final String RCTC_OID = "2.16.840.1.114222.4.11.7508";
 
@@ -209,6 +216,7 @@ public class CdaGeneratorConstants {
   public static final String PRINCIPAL_DIAGNOSIS_TEMPLATE_ID_EXT = "2017-08-01";
   public static final String PRINCIPAL_DIAGNOSIS_CODE = "8319008";
   public static final String PRINCIPAL_DIAGNOSIS_DISPLAY = "Principal Diagnosis";
+  public static final String ACT_ENCOUNTER_CODE_SYSTEM = "2.16.840.1.113883.1.11.13955";
 
   // Problem Related Information
   public static final String PROB_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.5.1";
