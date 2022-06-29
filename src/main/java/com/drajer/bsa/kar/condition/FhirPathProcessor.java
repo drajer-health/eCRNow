@@ -1,6 +1,5 @@
 package com.drajer.bsa.kar.condition;
 
-import ca.uhn.fhir.fhirpath.IFhirPath;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
@@ -41,28 +40,40 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
 
-  IFhirPath fhirPathProcessor;
   ExpressionEvaluator expressionEvaluator;
 
   @Override
   public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
 
-    Parameters params = resolveInputParameters(act.getInputData(), kd);
+    Parameters params = kd.getParametersByActionId(act.getActionId());
+    if (params == null) {
+
+      params = resolveInputParameters(act.getInputData(), kd, act);
+    }
+
+    logger.info(" Parameters size = {}", params.getParameter().size());
+
     Parameters result =
         (Parameters)
             expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter("return");
 
-    return value.getValue();
+    if (value != null) {
+      return value.getValue();
+    } else {
+
+      logger.error(
+          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      return false;
+    }
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
       DataRequirement dr, KarProcessingData kd) {
 
     CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
-    Map<String, Set<Resource>> resources = new HashMap<String, Set<Resource>>();
-    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal =
-        new Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>>(ctc, resources);
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal = new Pair<>(ctc, resources);
 
     logger.info(" Getting Resources by Type {}", dr.getType());
 
@@ -79,6 +90,18 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         }
       }
     }
+
+    filterByCode(dr, kd, ctc, candidates, resources);
+
+    return retVal;
+  }
+
+  public void filterByCode(
+      DataRequirement dr,
+      KarProcessingData kd,
+      CheckTriggerCodeStatus ctc,
+      Set<Resource> candidates,
+      Map<String, Set<Resource>> resources) {
 
     if (candidates != null) {
 
@@ -102,9 +125,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           filterByCode(dr, cc, kd, ctc, resources, res, false);
 
-          if (obs.getValue() != null
-              && obs.getValue() instanceof CodeableConcept
-              && obs.getValueCodeableConcept() != null) {
+          if (obs.getValue() instanceof CodeableConcept && obs.getValueCodeableConcept() != null) {
             CodeableConcept ccv = obs.getValueCodeableConcept();
             filterByCode(dr, ccv, kd, ctc, resources, res, false);
           }
@@ -172,7 +193,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
           } else {
-            Set<Resource> resources2 = new HashSet<Resource>();
+            Set<Resource> resources2 = new HashSet<>();
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
@@ -181,7 +202,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
           } else {
-            Set<Resource> resources2 = new HashSet<Resource>();
+            Set<Resource> resources2 = new HashSet<>();
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
@@ -190,15 +211,13 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           if (resources.get(res.fhirType()) != null) {
             resources.get(res.fhirType()).add(res);
           } else {
-            Set<Resource> resources2 = new HashSet<Resource>();
+            Set<Resource> resources2 = new HashSet<>();
             resources2.add(res);
             resources.put(res.fhirType(), resources2);
           }
         }
       }
     }
-
-    return retVal;
   }
 
   public void filterByCode(
@@ -239,12 +258,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                   " Found a match for the code, adding resource {}", resourceMatched.getId());
               ctc.setTriggerMatchStatus(retInfo.getValue0());
               ctc.addMatchedTriggerCodes(retInfo.getValue1());
-              if (res.get(resourceMatched.fhirType()) != null) {
-                res.get(resourceMatched.fhirType()).add(resourceMatched);
+              if (res.get(dr.getId()) != null) {
+                res.get(dr.getId()).add(resourceMatched);
               } else {
-                Set<Resource> resources = new HashSet<Resource>();
+                Set<Resource> resources = new HashSet<>();
                 resources.add(resourceMatched);
-                res.put(resourceMatched.fhirType(), resources);
+                res.put(dr.getId(), resources);
               }
             } else {
               logger.debug(" No match found for code ");
@@ -263,40 +282,73 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   }
 
   private Parameters resolveInputParameters(
-      List<DataRequirement> dataRequirements, KarProcessingData kd) {
+      List<DataRequirement> dataRequirements, KarProcessingData kd, BsaAction act) {
     if (dataRequirements == null || dataRequirements.isEmpty()) {
       return null;
     }
 
     Parameters params = new Parameters();
+
     for (DataRequirement req : dataRequirements) {
 
-      String name = req.getId();
-      String fhirType = req.getType();
-      String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
+      if (req.hasCodeFilter()) {
 
-      Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources = filterResources(req, kd);
+        String name = req.getId();
+        String fhirType = req.getType();
+        String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
 
-      if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
-        ParametersParameterComponent parameter =
-            new ParametersParameterComponent().setName("%" + String.format("%s", name));
-        parameter.addExtension(
-            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-            new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
-        params.addParameter(parameter);
-      } else {
-        for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
-          if (entry.getKey().equals(fhirType)) {
-            for (Resource resource : entry.getValue()) {
-              ParametersParameterComponent parameter =
-                  new ParametersParameterComponent().setName("%" + String.format("%s", name));
-              parameter.addExtension(
-                  "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
-                  new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
-              parameter.setResource(resource);
-              params.addParameter(parameter);
+        Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> resources =
+            filterResources(req, kd);
+
+        if (resources == null || resources.getValue1() == null || resources.getValue1().isEmpty()) {
+          ParametersParameterComponent parameter =
+              new ParametersParameterComponent().setName("%" + String.format("%s", name));
+          parameter.addExtension(
+              "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+              new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
+          params.addParameter(parameter);
+        } else {
+          for (Entry<String, Set<Resource>> entry : resources.getValue1().entrySet()) {
+            if (entry.getKey().equals(fhirType)) {
+              for (Resource resource : entry.getValue()) {
+                ParametersParameterComponent parameter =
+                    new ParametersParameterComponent().setName("%" + String.format("%s", name));
+                parameter.addExtension(
+                    "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+                    new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
+                parameter.setResource(resource);
+                params.addParameter(parameter);
+              }
             }
           }
+        }
+      } else {
+
+        logger.info(" Data Requirement does not have Code Filter ");
+        String name = req.getId();
+        String fhirType = req.getType();
+        String limit = req.hasLimit() ? Integer.toString(req.getLimit()) : "*";
+
+        Set<Resource> resources = kd.getDataForId(req.getId(), act.getRelatedDataId(req.getId()));
+
+        if (resources != null) {
+          for (Resource res : resources) {
+
+            ParametersParameterComponent parameter =
+                new ParametersParameterComponent().setName("%" + String.format("%s", name));
+            parameter.addExtension(
+                "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+                new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
+            parameter.setResource(res);
+            params.addParameter(parameter);
+          }
+        } else {
+          ParametersParameterComponent parameter =
+              new ParametersParameterComponent().setName("%" + String.format("%s", name));
+          parameter.addExtension(
+              "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+              new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
+          params.addParameter(parameter);
         }
       }
     }
@@ -309,5 +361,39 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
   public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
     this.expressionEvaluator = expressionEvaluator;
+  }
+
+  public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> applyCodeFilter(
+      DataRequirement dr, KarProcessingData kd, BsaAction action) {
+
+    CheckTriggerCodeStatus ctc = new CheckTriggerCodeStatus();
+    Map<String, Set<Resource>> resources = new HashMap<>();
+    Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> retVal = new Pair<>(ctc, resources);
+
+    logger.info(" Getting Resources by Data Requirement Id: {}", dr.getId());
+
+    Set<Resource> candidates = kd.getDataForId(dr.getId(), action.getRelatedDataId(dr.getId()));
+
+    filterByCode(dr, kd, ctc, candidates, resources);
+
+    return retVal;
+  }
+
+  @Override
+  public Boolean evaluateExpression(BsaCondition cond, Parameters params) {
+
+    Parameters result =
+        (Parameters)
+            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+    BooleanType value = (BooleanType) result.getParameter("return");
+
+    if (value != null) {
+      return value.getValue();
+    } else {
+
+      logger.error(
+          " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
+      return false;
+    }
   }
 }

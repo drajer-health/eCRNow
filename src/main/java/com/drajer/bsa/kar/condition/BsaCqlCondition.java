@@ -1,7 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
 import com.drajer.bsa.kar.model.BsaCondition;
-
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;

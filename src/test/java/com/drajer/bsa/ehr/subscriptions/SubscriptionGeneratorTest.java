@@ -32,10 +32,10 @@ public class SubscriptionGeneratorTest {
       PlanDefinition planDefinition = jsonParser.parseResource(PlanDefinition.class, inputStream);
       List<Subscription> subscriptionList =
           subscriptionGenerator.subscriptionsFromPlanDef(planDefinition);
-      assertEquals(subscriptionList.size(), 1);
+      assertEquals(1, subscriptionList.size());
       Subscription sub = subscriptionList.get(0);
-      assertEquals(sub.getCriteria(), "Encounter?");
-      assertEquals(sub.getChannel().getEndpoint(), "http://example.org/");
+      assertEquals("Encounter?", sub.getCriteria());
+      assertEquals("http://example.org/", sub.getChannel().getEndpoint());
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }

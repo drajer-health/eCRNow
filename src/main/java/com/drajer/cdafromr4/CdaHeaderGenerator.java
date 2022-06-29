@@ -361,7 +361,7 @@ public class CdaHeaderGenerator {
       logger.info("No Practitioner found");
     }
 
-    if (!foundAuthor) {
+    if (Boolean.FALSE.equals(foundAuthor)) {
       sb.append(getPractitionerXml(null));
     }
 
@@ -597,7 +597,7 @@ public class CdaHeaderGenerator {
       logger.info("No Practitioner found");
     }
 
-    if (!foundPrimaryPerformer) {
+    if (Boolean.FALSE.equals(foundPrimaryPerformer)) {
       practXml.append(getPractitionerXml(null));
     }
 
@@ -678,7 +678,7 @@ public class CdaHeaderGenerator {
 
           logger.debug("Using Resource Identifier as id");
 
-          if (addOnce) {
+          if (Boolean.TRUE.equals(addOnce)) {
             patientDetails.append(
                 CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
             addOnce = false;

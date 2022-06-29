@@ -39,7 +39,7 @@ public class KarServiceImpl implements KarService {
 
   @Override
   public KnowledgeArtifactStatus saveOrUpdateKARStatus(KnowledgeArtifactStatus karStatus) {
-    if (karStatus.getIsActive()) {
+    if (karStatus.getIsActive().booleanValue()) {
       karStatus.setLastActivationDate(new Date());
     } else {
       karStatus.setLastInActivationDate(new Date());

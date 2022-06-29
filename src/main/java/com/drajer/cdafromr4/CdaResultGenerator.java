@@ -236,7 +236,7 @@ public class CdaResultGenerator {
             getXmlForObservationComponent(
                 details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
 
-        if (!compString.isEmpty() && !foundComponent) foundComponent = true;
+        if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
 
         lrEntry.append(compString);
 
@@ -244,7 +244,7 @@ public class CdaResultGenerator {
       }
     }
 
-    if (!foundComponent) {
+    if (Boolean.FALSE.equals(foundComponent)) {
 
       logger.debug("No component found , so directly adding the observation code ");
       lrEntry.append(
@@ -448,7 +448,7 @@ public class CdaResultGenerator {
 
       // Add each code as an entry relationship observation
 
-      if (mtc.hasMatchedTriggerCodes(OBSERVATION)) {
+      if (Boolean.TRUE.equals(mtc.hasMatchedTriggerCodes(OBSERVATION))) {
 
         // Add the actual Result Observation
         lrEntry.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -591,8 +591,9 @@ public class CdaResultGenerator {
         if (s.getCode() != null
             && s.getCode().getCoding() != null
             && !s.getCode().getCoding().isEmpty()
-            && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+            && Boolean.TRUE.equals(
+                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                    s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
           logger.debug("Found a Lab Results with a LOINC code");
           sr.add(s);

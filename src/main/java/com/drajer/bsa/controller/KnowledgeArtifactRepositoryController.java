@@ -10,13 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -46,7 +40,7 @@ public class KnowledgeArtifactRepositoryController {
    * @return - The Knowledge Artifact Repository object for the id provided
    */
   @CrossOrigin
-  @RequestMapping("/api/kar/{karId}")
+  @GetMapping("/api/kar/{karId}")
   public KnowledgeArtifactRepository getKnowledgeArtifactById(
       @PathVariable("karId") Integer karId) {
     return karService.getKARById(karId);
@@ -86,7 +80,7 @@ public class KnowledgeArtifactRepositoryController {
    * @return - The KAR object by its URL
    */
   @CrossOrigin
-  @RequestMapping("/api/kars")
+  @GetMapping("/api/kars")
   public KnowledgeArtifactRepository getKARByUrl(@RequestParam(value = "url") String url) {
     return karService.getKARByUrl(url);
   }
@@ -97,7 +91,7 @@ public class KnowledgeArtifactRepositoryController {
    * @return - List of KARs
    */
   @CrossOrigin
-  @RequestMapping("/api/kars/")
+  @GetMapping("/api/kars/")
   public List<KnowledgeArtifactRepository> getAllKARs() {
     return karService.getAllKARs();
   }
@@ -123,8 +117,12 @@ public class KnowledgeArtifactRepositoryController {
         karService.saveOrUpdateKARStatus(karStatus);
       } else {
         karStatus.setId(existingKarStatus.getId());
-        karStatus.setLastActivationDate(existingKarStatus.getLastActivationDate());
-        karStatus.setLastInActivationDate(existingKarStatus.getLastInActivationDate());
+
+        if (karStatus.getIsActive()) {
+          karStatus.setLastActivationDate(existingKarStatus.getLastActivationDate());
+        } else {
+          karStatus.setLastInActivationDate(existingKarStatus.getLastInActivationDate());
+        }
         karService.saveOrUpdateKARStatus(karStatus);
       }
     }
@@ -138,7 +136,7 @@ public class KnowledgeArtifactRepositoryController {
    * @return - The List of KnowledgeArtifact Status for the HealthcareSetting.
    */
   @CrossOrigin
-  @RequestMapping("/api/karStatusByHsId")
+  @GetMapping("/api/karStatusByHsId")
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(
       @RequestParam(value = "hsId") Integer hsId) {
     return karService.getKARStatusByHsId(hsId);

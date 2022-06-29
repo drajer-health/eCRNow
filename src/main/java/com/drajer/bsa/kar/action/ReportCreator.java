@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,14 +54,22 @@ public abstract class ReportCreator {
         } catch (IllegalAccessException e) {
           logger2.error(" IllegalAccess Exception in creating reporting class {}", propName, e);
         } catch (ClassNotFoundException e) {
-          logger2.error(" ClassNotFoudn Exception in creating reporting class {}", propName, e);
+          logger2.error(" ClassNotFound Exception in creating reporting class {}", propName, e);
         }
       }
     } catch (IOException ex) {
-      logger2.error("Error while loading Action Classes from Proporties File ");
+      logger2.error("Error while loading Action Classes from Properties File ");
     }
   }
 
   public abstract Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile);
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act);
+
+  public abstract Resource createReport(
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      Set<Resource> inputData,
+      String id,
+      String profile,
+      BsaAction act);
 }

@@ -15,6 +15,8 @@ public interface PublicHealthMessagesDao {
 
   PublicHealthMessage getByCorrelationId(String coorelId);
 
+  PublicHealthMessage getBySubmittedDataId(String subId);
+
   List<PublicHealthMessage> getPublicHealthMessage(Map<String, String> searchParams);
 
   List<PublicHealthMessage> getByXRequestId(String xRequestId);

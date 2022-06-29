@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
+import com.drajer.bsa.model.HealthcareSetting;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,12 +12,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "hs_kar_status")
 @DynamicUpdate
-@TypeDefs({@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)})
+@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)
 public class KnowledgeArtifactStatus {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactStatus.class);
@@ -41,9 +43,14 @@ public class KnowledgeArtifactStatus {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  /** The Id of the HealthcareSetting */
+  /** The Id of the HealthcareSetting, this will be removed */
+  @Deprecated
   @Column(name = "hs_id", nullable = false)
   private Integer hsId;
+
+  @ManyToOne
+  @JoinColumn(name = "hs_fk")
+  private HealthcareSetting healthcareSetting;
 
   /**
    * The Id of the Knowledge Artifact as defined by the Public Health Agency or Research
@@ -118,10 +125,10 @@ public class KnowledgeArtifactStatus {
     karId = "";
     isActive = true;
     subscriptionsEnabled = false;
-    outputFormat = OutputContentType.Both;
+    outputFormat = OutputContentType.BOTH;
     lastActivationDate = new Date();
     lastInActivationDate = new Date();
-    subscriptions = new HashSet<String>();
+    subscriptions = new HashSet<>();
   }
 
   public void log() {
@@ -133,10 +140,8 @@ public class KnowledgeArtifactStatus {
     logger.info(" Kar Version Unique Id : {}", versionUniqueKarId);
     logger.info(" Kar IsActive : {} ", isActive);
     logger.info(" Kar Subscriptions Enabled : {} ", subscriptionsEnabled);
-    logger.info(" Kar Last activation date : {} ", lastActivationDate.toString());
-    logger.info(" Kar Last in-activation date : {} ", lastInActivationDate.toString());
-
-    // subscriptions.forEach(subscription -> logger.info(" Subscription id : {} ", subscription));
+    logger.info(" Kar Last activation date : {} ", lastActivationDate);
+    logger.info(" Kar Last in-activation date : {} ", lastInActivationDate);
 
     logger.info(" **** START Printing Knowledge Artifact Status **** ");
   }

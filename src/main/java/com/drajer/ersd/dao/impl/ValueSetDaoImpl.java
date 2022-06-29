@@ -5,6 +5,7 @@ import com.drajer.ersd.dao.ValueSetDao;
 import com.drajer.ersd.model.PlanDefinitionActionModel;
 import com.drajer.ersd.model.ValueSetGrouperModel;
 import com.drajer.ersd.model.ValueSetModel;
+import java.util.Collections;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -25,7 +26,7 @@ public class ValueSetDaoImpl extends AbstractDao implements ValueSetDao {
   @Override
   public List<ValueSetModel> getAllValuesets() {
     // TODO Auto-generated method stub
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

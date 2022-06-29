@@ -55,7 +55,6 @@ public class ActionUtils {
     } else {
 
       logger.info(" No Issues in the Report ");
-      retVal = false;
     }
 
     return retVal;

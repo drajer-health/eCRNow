@@ -1,12 +1,16 @@
 package com.drajer.bsa.scheduler;
 
 import com.drajer.bsa.service.KarProcessor;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.github.kagkarlsson.scheduler.task.Task;
-import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
+import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,32 +30,66 @@ public class ScheduleJobConfiguration {
 
   @Autowired KarProcessor karProcessor;
 
+  @Value("${timer.retries:10}")
+  private Integer timerRetries;
+
   /** Define a one-time job which has to be manually scheduled. */
   @Bean
   public Task<ScheduledJobData> sampleOneTimeJob() {
     logger.info("Initializing the One time task");
 
-    OneTimeTask<ScheduledJobData> myTask =
-        Tasks.oneTime("BsaScheduledJob", ScheduledJobData.class)
-            .onFailureRetryLater()
-            .execute(
-                (inst, ctx) -> {
-                  try {
+    return Tasks.oneTime("BsaScheduledJob", ScheduledJobData.class)
+        .onFailureRetryLater()
+        .execute(
+            (inst, ctx) -> {
+              try {
 
-                    logger.info(
-                        "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}",
-                        inst.getTaskAndInstance(),
-                        inst.getData().getActionId(),
-                        inst.getData().getKarExecutionStateId());
+                if (inst.getData().getMdcContext() != null) {
+                  MDC.setContextMap(inst.getData().getMdcContext());
+                }
 
-                    karProcessor.applyKarForScheduledJob(inst.getData());
+                logger.info(
+                    "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}, xRequestId : {}",
+                    inst.getTaskAndInstance(),
+                    inst.getData().getActionId(),
+                    inst.getData().getKarExecutionStateId(),
+                    inst.getData().getxRequestId());
 
-                  } catch (Exception e) {
-                    logger.error("Error in completing the Execution of the schedule job : ", e);
-                  } finally {
-                    logger.info(" Nothing to clean up ");
-                  }
-                });
-    return myTask;
+                karProcessor.applyKarForScheduledJob(inst.getData());
+
+                logger.info(
+                    "Successfully Completed Executing Task for {}, Action Id: {}, KarExecutionStateId: {}",
+                    inst.getTaskAndInstance(),
+                    inst.getData().getActionId(),
+                    inst.getData().getKarExecutionStateId());
+
+              } catch (ObjectDeletedException deletedException) {
+
+                logger.info(
+                    "Executing Task for {}, Action Id : {}, KarExecutionStateId : {}",
+                    inst.getTaskAndInstance(),
+                    inst.getData().getActionId(),
+                    inst.getData().getKarExecutionStateId());
+
+              } catch (Exception e) {
+
+                if (ctx.getExecution().consecutiveFailures >= timerRetries) {
+                  logger.error(
+                      "Error in executing Task for {}, Action Id : {}, KarExecutionStateId : {}, removing the timer after {} retries",
+                      inst.getTaskAndInstance(),
+                      inst.getData().getActionId(),
+                      inst.getData().getKarExecutionStateId(),
+                      ctx.getExecution().consecutiveFailures,
+                      e);
+                } else {
+                  ApplicationUtils.handleException(
+                      e, "Error in completing the Execution, retry in 5 minutes.", LogLevel.ERROR);
+                  throw e;
+                }
+              } finally {
+                logger.info(" Clearing MDC");
+                MDC.clear();
+              }
+            });
   }
 }

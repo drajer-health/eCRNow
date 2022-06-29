@@ -21,7 +21,7 @@ public class CqlProcessor implements BsaConditionProcessor {
     Set<String> expressions = new HashSet<>();
     expressions.add(cond.getLogicExpression().getExpression());
     if (!(cond instanceof BsaCqlCondition)) {
-      logger.error("Expected a BsaCqlCondition, but found: " + cond);
+      logger.error("Expected a BsaCqlCondition, but found:{} ", cond);
     }
     BsaCqlCondition cqlCondition = (BsaCqlCondition) cond;
     Parameters result =
@@ -48,5 +48,13 @@ public class CqlProcessor implements BsaConditionProcessor {
 
   public void setLibraryProcessor(LibraryProcessor libraryProcessor) {
     this.libraryProcessor = libraryProcessor;
+  }
+
+  @Override
+  public Boolean evaluateExpression(BsaCondition cond, Parameters params) {
+
+    logger.error(" Unable to evalue expression as this is not implementd.");
+
+    return null;
   }
 }

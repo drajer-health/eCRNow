@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
@@ -47,8 +49,14 @@ public class KarExecutionState {
   @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the key to retrieve the notification context for executing the Kar */
+  @Deprecated
   @Column(name = "nc_id", nullable = false, columnDefinition = "uuid")
   private UUID ncId;
+
+  /** The attribute links back to the Notification Context */
+  @ManyToOne
+  @JoinColumn(name = "nc_fk")
+  private NotificationContext nc;
 
   /**
    * The attribute represents the key to retrieve the health care setting information for executing

@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
@@ -72,12 +73,12 @@ public class EcrReportCreator extends ReportCreator {
   private static final String EICR_REPORT_LOINC_CODE_SYSTEM = "http://loinc.org";
   public static final String EICR_REPORT_LOINC_CODE_DISPLAY_NAME = "Public Health Case Report";
   public static final String EICR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
-  public static String BUNDLE_REL_URL = "Bundle/";
-  public static String MESSAGE_HEADER_PROFILE =
+  public static final String BUNDLE_REL_URL = "Bundle/";
+  public static final String MESSAGE_HEADER_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
-  public static String MESSAGE_TYPE_URL =
+  public static final String MESSAGE_TYPE_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
-  public static String NAMED_EVENT_URL =
+  public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
 
   private final Logger logger = LoggerFactory.getLogger(EcrReportCreator.class);
@@ -103,7 +104,22 @@ public class EcrReportCreator extends ReportCreator {
 
   @Override
   public Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      Set<Resource> inputData,
+      String id,
+      String profile,
+      BsaAction act) {
+    return createReport(kd, ehrService, id, profile, act);
+  }
+
+  @Override
+  public Resource createReport(
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     Bundle reportingBundle = null;
 
@@ -124,7 +140,7 @@ public class EcrReportCreator extends ReportCreator {
       logger.info(" Creating a CDA R11 Eicr Report ");
 
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
@@ -136,7 +152,7 @@ public class EcrReportCreator extends ReportCreator {
 
       logger.info(" Creating a CDA R30 Eicr Report ");
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
@@ -145,12 +161,12 @@ public class EcrReportCreator extends ReportCreator {
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
 
-    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.Both) {
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.BOTH) {
 
       logger.info(" Creating an Eicr for each of the above formats ");
 
       reportingBundle = createReportingBundle(profile);
-      Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile);
+      Bundle contentBundle1 = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       Bundle contentBundle2 = getFhirReport(kd, ehrService, dataRequirementId, profile);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle1);
 
@@ -176,14 +192,17 @@ public class EcrReportCreator extends ReportCreator {
     // Set message type.
     Coding c = new Coding();
     c.setSystem(MESSAGE_TYPE_URL);
-    if (cdaFlag) c.setCode(BsaTypes.getMessageTypeString(MessageType.CdaEicrMessage));
-    else c.setCode(BsaTypes.getMessageTypeString(MessageType.FhirEicrMessage));
+    if (Boolean.TRUE.equals(cdaFlag)) {
+      c.setCode(BsaTypes.getMessageTypeString(MessageType.CDA_EICR_MESSAGE));
+    } else {
+      c.setCode(BsaTypes.getMessageTypeString(MessageType.FHIR_EICR_MESSAGE));
+    }
 
     header.setEvent(c);
 
     // set destination
     Set<UriType> dests = kd.getKar().getReceiverAddresses();
-    List<MessageDestinationComponent> mdcs = new ArrayList<MessageDestinationComponent>();
+    List<MessageDestinationComponent> mdcs = new ArrayList<>();
     for (UriType i : dests) {
       MessageDestinationComponent mdc = new MessageDestinationComponent();
       mdc.setEndpoint(i.asStringValue());
@@ -192,22 +211,22 @@ public class EcrReportCreator extends ReportCreator {
     header.setDestination(mdcs);
 
     // Set source.
-    MessageSourceComponent msc = new MessageSourceComponent();
-    msc.setEndpoint(kd.getHealthcareSetting().getFhirServerBaseURL());
-    header.setSource(msc);
+    MessageSourceComponent msgComp = new MessageSourceComponent();
+    msgComp.setEndpoint(kd.getHealthcareSetting().getFhirServerBaseURL());
+    header.setSource(msgComp);
 
     // Set Reason.
-    CodeableConcept cd = new CodeableConcept();
+    CodeableConcept codeCpt = new CodeableConcept();
     Coding coding = new Coding();
     coding.setSystem(NAMED_EVENT_URL);
     coding.setCode(kd.getNotificationContext().getTriggerEvent());
-    cd.addCoding(coding);
-    header.setReason(cd);
+    codeCpt.addCoding(coding);
+    header.setReason(codeCpt);
 
     // Setup Message Header to Content Bundle Linkage.
     Reference ref = new Reference();
     ref.setReference(BUNDLE_REL_URL + contentBundle.getId());
-    List<Reference> refs = new ArrayList<Reference>();
+    List<Reference> refs = new ArrayList<>();
     refs.add(ref);
     header.setFocus(refs);
 
@@ -227,7 +246,11 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Resource getAllReports(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
@@ -238,7 +261,7 @@ public class EcrReportCreator extends ReportCreator {
 
     returnBundle.addEntry(
         new BundleEntryComponent()
-            .setResource(getCdaR11Report(kd, ehrService, dataRequirementId, profile)));
+            .setResource(getCdaR11Report(kd, ehrService, dataRequirementId, profile, act)));
     returnBundle.addEntry(
         new BundleEntryComponent()
             .setResource(getFhirReport(kd, ehrService, dataRequirementId, profile)));
@@ -246,7 +269,11 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Bundle getCdaR11Report(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
@@ -257,7 +284,7 @@ public class EcrReportCreator extends ReportCreator {
 
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
-        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
+        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);
@@ -269,7 +296,11 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public Resource getCdaR30Report(
-      KarProcessingData kd, EhrQueryService ehrService, String dataRequirementId, String profile) {
+      KarProcessingData kd,
+      EhrQueryService ehrService,
+      String dataRequirementId,
+      String profile,
+      BsaAction act) {
 
     // Create the report as needed by the Ecr FHIR IG
     Bundle returnBundle = new Bundle();
@@ -281,7 +312,7 @@ public class EcrReportCreator extends ReportCreator {
     logger.info(" Creating Document Reference Resource ");
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
-        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd);
+        R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);
@@ -415,7 +446,7 @@ public class EcrReportCreator extends ReportCreator {
 
     // Set Patient
     Set<Resource> patients = kd.getResourcesByType(ResourceType.Patient.toString());
-    if (patients != null && patients.size() >= 1) {
+    if (patients != null && !patients.isEmpty()) {
 
       logger.info(" Setting up the patient for the composition ");
       Resource patient = patients.iterator().next();
@@ -430,7 +461,7 @@ public class EcrReportCreator extends ReportCreator {
 
     // Set Encounter
     Set<Resource> encounters = kd.getResourcesByType(ResourceType.Encounter.toString());
-    if (encounters != null && encounters.size() >= 1) {
+    if (encounters != null && !encounters.isEmpty()) {
 
       logger.info(" Setting up the patient for the composition ");
       Resource encounter = encounters.iterator().next();
@@ -450,7 +481,7 @@ public class EcrReportCreator extends ReportCreator {
     // Set Author
     comp.getAuthorFirstRep().setResource(getDeviceAuthor());
 
-    List<SectionComponent> scs = new ArrayList<SectionComponent>();
+    List<SectionComponent> scs = new ArrayList<>();
 
     // Add chief complaint section.
     SectionComponent sc = getSection(SectionTypeEnum.CHIEF_COMPLAINT, kd);
@@ -525,9 +556,7 @@ public class EcrReportCreator extends ReportCreator {
 
   public SectionComponent getSection(SectionTypeEnum st, KarProcessingData kd) {
 
-    SectionComponent sc = getSectionComponent(st, kd);
-
-    return sc;
+    return getSectionComponent(st, kd);
   }
 
   public SectionComponent getSectionComponent(SectionTypeEnum st, KarProcessingData kd) {
@@ -663,7 +692,7 @@ public class EcrReportCreator extends ReportCreator {
     StringType st = new StringType();
     st.setValue(DEFAULT_VERSION);
     ext.setValue(st);
-    List<Extension> exts = new ArrayList<Extension>();
+    List<Extension> exts = new ArrayList<>();
     exts.add(ext);
 
     return exts;
@@ -674,7 +703,7 @@ public class EcrReportCreator extends ReportCreator {
     Device dev = new Device();
     DeviceDeviceNameComponent dnc = new DeviceDeviceNameComponent();
     dnc.setName(DEVICE_NAME);
-    List<DeviceDeviceNameComponent> dncs = new ArrayList<DeviceDeviceNameComponent>();
+    List<DeviceDeviceNameComponent> dncs = new ArrayList<>();
     dncs.add(dnc);
     dev.setDeviceName(dncs);
 
@@ -694,20 +723,24 @@ public class EcrReportCreator extends ReportCreator {
     Set<Resource> resourcesByType = kd.getResourcesByType(rt.toString());
     Set<Resource> res = null;
 
-    if (resourcesByType != null && rt == ResourceType.Observation && isResultsSection(sc)) {
+    if (resourcesByType != null
+        && rt == ResourceType.Observation
+        && Boolean.TRUE.equals(isResultsSection(sc))) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.LABORATORY.toCode());
-    } else if (resourcesByType != null && rt == ResourceType.Observation && isVitalsSection(sc)) {
+    } else if (resourcesByType != null
+        && rt == ResourceType.Observation
+        && Boolean.TRUE.equals(isVitalsSection(sc))) {
       res = filterObservationsByCategory(resourcesByType, ObservationCategory.VITALSIGNS.toCode());
     } else if (resourcesByType != null
         && rt == ResourceType.Observation
-        && isSocialHistorySection(sc)) {
+        && Boolean.TRUE.equals(isSocialHistorySection(sc))) {
       res =
           filterObservationsByCategory(resourcesByType, ObservationCategory.SOCIALHISTORY.toCode());
     } else res = resourcesByType;
 
-    if (res != null && res.size() >= 1) {
+    if (res != null && !res.isEmpty()) {
 
-      logger.info(" Adding resources of type {}", rt.toString());
+      logger.info(" Adding resources of type {}", rt);
 
       for (Resource r : res) {
 
@@ -729,20 +762,20 @@ public class EcrReportCreator extends ReportCreator {
   public void addExtensionIfAppropriate(
       Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
 
-    List<BsaActionStatus> status = kd.getActionStatusByType(ActionType.CheckTriggerCodes);
+    List<BsaActionStatus> status = kd.getActionStatusByType(ActionType.CHECK_TRIGGER_CODES);
 
-    if (status != null && status.size() > 0) {
+    if (status != null && !status.isEmpty()) {
 
       CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) (status.get(0));
 
-      if (ctcs.containsMatches(rt)) {
+      if (Boolean.TRUE.equals(ctcs.containsMatches(rt))) {
 
-        logger.debug(" Trigger codes have been found for resource {}", rt.toString());
+        logger.debug(" Trigger codes have been found for resource {}", rt);
 
         // Check to see if the resource being added has the same codes, if so add the extension.
         Pair<Boolean, ReportableMatchedTriggerCode> matchCode = resourceHasMatchedCode(res, ctcs);
 
-        if (matchCode.getValue0() && matchCode.getValue1() != null) {
+        if (Boolean.TRUE.equals(matchCode.getValue0()) && matchCode.getValue1() != null) {
 
           Extension ext = new Extension();
           ext.setUrl(TRIGGER_CODE_EXT_URL);

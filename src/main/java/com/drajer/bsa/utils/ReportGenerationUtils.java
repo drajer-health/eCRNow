@@ -12,10 +12,12 @@ public class ReportGenerationUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(ReportGenerationUtils.class);
 
+  private ReportGenerationUtils() {}
+
   public static Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
 
     logger.info(" Getting observations for category {}", category);
-    Set<Resource> returnVal = new HashSet<Resource>();
+    Set<Resource> returnVal = new HashSet<>();
     if (res != null) {
       for (Resource r : res) {
 

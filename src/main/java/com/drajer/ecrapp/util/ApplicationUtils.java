@@ -47,6 +47,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationUtils {
 
+  public static final String EXCEPTION_READING_FILE = "Exception Reading File";
+
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
@@ -372,7 +374,7 @@ public class ApplicationUtils {
 
         UsageContext uc = v.getUseContextFirstRep();
 
-        if (uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
+        if (uc.getValue() instanceof CodeableConcept) {
 
           CodeableConcept cc = (CodeableConcept) uc.getValue();
 
@@ -403,7 +405,7 @@ public class ApplicationUtils {
 
         UsageContext uc = v.getUseContextFirstRep();
 
-        if (uc.getValue() != null && (uc.getValue() instanceof Reference)) {
+        if (uc.getValue() instanceof Reference) {
 
           logger.debug("Found Use Context Reference ");
 
@@ -453,7 +455,7 @@ public class ApplicationUtils {
       bundle = jsonParser.parseResource(Bundle.class, in);
       logger.info("Completed Reading File");
     } catch (Exception e) {
-      logger.error("Exception Reading File", e);
+      logger.error(EXCEPTION_READING_FILE, e);
     }
     return bundle;
   }
@@ -485,7 +487,7 @@ public class ApplicationUtils {
       resource = jsonParser.parseResource(in);
       logger.info("Completed Reading File");
     } catch (Exception e) {
-      logger.error("Exception Reading File", e);
+      logger.error(EXCEPTION_READING_FILE, e);
     }
     return resource;
   }
@@ -501,7 +503,7 @@ public class ApplicationUtils {
 
       logger.info("Completed Reading String");
     } catch (Exception e) {
-      logger.error("Exception Reading File", e);
+      logger.error(EXCEPTION_READING_FILE, e);
     }
     return bundle;
   }

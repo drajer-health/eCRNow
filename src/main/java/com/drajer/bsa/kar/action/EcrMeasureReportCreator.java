@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.List;
 import java.util.Set;
@@ -17,11 +18,11 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
 
   @Override
   public Resource createReport(
-      KarProcessingData kd, EhrQueryService ehrService, String id, String profile) {
+      KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act) {
 
-    Resource res = super.createReport(kd, ehrService, id, profile);
+    Resource res = super.createReport(kd, ehrService, id, profile, act);
 
-    if (res != null && res instanceof Bundle) {
+    if (res instanceof Bundle) {
 
       Bundle bund = (Bundle) res;
 
@@ -31,7 +32,7 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
 
         Set<Resource> resources = kd.getOutputDataById(identifier);
 
-        if (resources != null && resources.size() > 0) {
+        if (resources != null && !resources.isEmpty()) {
 
           for (Resource r : resources) {
             bund.addEntry(new BundleEntryComponent().setResource(r));

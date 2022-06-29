@@ -40,6 +40,10 @@ public class PublicHealthMessage {
   @Column(name = "patient_id", nullable = false, columnDefinition = "TEXT")
   private String patientId;
 
+  /** The attribute represents the encounter id if the notified resource type was an encounter. */
+  @Column(name = "encounter_id", nullable = false, columnDefinition = "TEXT")
+  private String encounterId;
+
   /** The attribute represents the id of the resource received in the notification. */
   @Column(name = "notified_resource_id", nullable = false, columnDefinition = "TEXT")
   private String notifiedResourceId;
@@ -47,6 +51,10 @@ public class PublicHealthMessage {
   /** The attribute represents the type of the resource in the received notification */
   @Column(name = "notified_resource_type", nullable = false, columnDefinition = "TEXT")
   private String notifiedResourceType;
+
+  /** The attribute represents the KAR that gave rise to the message */
+  @Column(name = "kar_unique_id", nullable = true, columnDefinition = "TEXT")
+  private String karUniqueId;
 
   /**
    * The attribute represents the id of the notification table which resulted in the messages to be
@@ -66,9 +74,13 @@ public class PublicHealthMessage {
   @Column(name = "x_request_id", nullable = true, columnDefinition = "TEXT")
   private String xRequestId;
 
-  /** The attribute represents the submitted data to the TTP/PHA. */
-  @Column(name = "submitted_data", nullable = true, columnDefinition = "TEXT")
-  private String submittedData;
+  /** The attribute represents the submitted data to the TTP/PHA in FHIR format. */
+  @Column(name = "submitted_fhir_data", nullable = true, columnDefinition = "TEXT")
+  private String submittedFhirData;
+
+  /** The attribute represents the submitted data to the TTP/PHA in CDA format. */
+  @Column(name = "submitted_cda_data", nullable = true, columnDefinition = "TEXT")
+  private String submittedCdaData;
 
   /** The attribute represents the format of data submitted to the TTP/PHA. */
   @Column(name = "submitted_message_type", nullable = true, columnDefinition = "TEXT")
@@ -81,6 +93,13 @@ public class PublicHealthMessage {
    */
   @Column(name = "submitted_data_id", nullable = true, columnDefinition = "TEXT")
   private String submittedDataId;
+
+  /**
+   * The attribute represents the version of the submitted data, for the same patient and encounter
+   * when multiple reports are submitted the version Id will be incremented.
+   */
+  @Column(name = "submitted_version_number", nullable = true, columnDefinition = "INTEGER")
+  private Integer submittedVersionNumber;
 
   /**
    * The attribute represents the Message ID of message submitted to the TTP/PHA. This Id will be
@@ -99,11 +118,25 @@ public class PublicHealthMessage {
   private String submissionMessageStatus;
 
   /**
-   * The attribute represents the response data received from the TTP/PHA for the healthcare
-   * setting.
+   * The attribute represents the response data received from the TTP/PHA for the healthcare setting
+   * in FHIR format.
    */
-  @Column(name = "response_data", nullable = true, columnDefinition = "TEXT")
-  private String responseData;
+  @Column(name = "fhir_response_data", nullable = true, columnDefinition = "TEXT")
+  private String fhirResponseData;
+
+  /**
+   * The attribute represents the response data received from the TTP/PHA for the healthcare setting
+   * in CDA format.
+   */
+  @Column(name = "cda_response_data", nullable = true, columnDefinition = "TEXT")
+  private String cdaResponseData;
+
+  /**
+   * The attribute represents the response data received from the TTP/PHA for the healthcare setting
+   * when the messages fail due to any reason. This will hold information such as FailureMDNs etc.
+   */
+  @Column(name = "failure_response_data", nullable = true, columnDefinition = "TEXT")
+  private String failureResponseData;
 
   /**
    * The attribute represents the format of the response message from the TTP/PHA to the healthcare
@@ -145,9 +178,20 @@ public class PublicHealthMessage {
   @Column(name = "response_processing_status", nullable = true, columnDefinition = "TEXT")
   private String responseProcessingStatus;
 
+  /**
+   * The attribute represents the response that is persisted in the EHR as a document reference
+   * object.
+   */
+  @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
+  private String responseEhrDocRefId;
+
   /** Log the initiating action for debugging purposes. */
   @Column(name = "initiating_action", nullable = true, columnDefinition = "TEXT")
   private String initiatingAction;
+
+  /** Stores the trigger matches if any that resulted in the message to be submitted. */
+  @Column(name = "trigger_match_status", nullable = true, columnDefinition = "TEXT")
+  private String triggerMatchStatus;
 
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
@@ -204,20 +248,36 @@ public class PublicHealthMessage {
     this.xRequestId = xRequestId;
   }
 
-  public String getSubmittedData() {
-    return submittedData;
+  public String getSubmittedFhirData() {
+    return submittedFhirData;
   }
 
-  public void setSubmittedData(String submittedData) {
-    this.submittedData = submittedData;
+  public void setSubmittedFhirData(String submittedData) {
+    this.submittedFhirData = submittedData;
   }
 
-  public String getResponseData() {
-    return responseData;
+  public String getSubmittedCdaData() {
+    return submittedCdaData;
   }
 
-  public void setResponseData(String responseData) {
-    this.responseData = responseData;
+  public void setSubmittedCdaData(String submittedCdaData) {
+    this.submittedCdaData = submittedCdaData;
+  }
+
+  public String getFhirResponseData() {
+    return fhirResponseData;
+  }
+
+  public void setFhirResponseData(String responseData) {
+    this.fhirResponseData = responseData;
+  }
+
+  public String getCdaResponseData() {
+    return cdaResponseData;
+  }
+
+  public void setCdaResponseData(String cdaResponseData) {
+    this.cdaResponseData = cdaResponseData;
   }
 
   public Date getLastUpdated() {
@@ -322,5 +382,53 @@ public class PublicHealthMessage {
 
   public void setInitiatingAction(String initiatingAction) {
     this.initiatingAction = initiatingAction;
+  }
+
+  public String getFailureResponseData() {
+    return failureResponseData;
+  }
+
+  public void setFailureResponseData(String failureResponseData) {
+    this.failureResponseData = failureResponseData;
+  }
+
+  public String getKarUniqueId() {
+    return karUniqueId;
+  }
+
+  public void setKarUniqueId(String karUniqueId) {
+    this.karUniqueId = karUniqueId;
+  }
+
+  public String getEncounterId() {
+    return encounterId;
+  }
+
+  public void setEncounterId(String encounterId) {
+    this.encounterId = encounterId;
+  }
+
+  public String getResponseEhrDocRefId() {
+    return responseEhrDocRefId;
+  }
+
+  public void setResponseEhrDocRefId(String responseEhrDocRefId) {
+    this.responseEhrDocRefId = responseEhrDocRefId;
+  }
+
+  public Integer getSubmittedVersionNumber() {
+    return submittedVersionNumber;
+  }
+
+  public void setSubmittedVersionNumber(Integer submittedVersionNumber) {
+    this.submittedVersionNumber = submittedVersionNumber;
+  }
+
+  public String getTriggerMatchStatus() {
+    return triggerMatchStatus;
+  }
+
+  public void setTriggerMatchStatus(String triggerMatchStatus) {
+    this.triggerMatchStatus = triggerMatchStatus;
   }
 }

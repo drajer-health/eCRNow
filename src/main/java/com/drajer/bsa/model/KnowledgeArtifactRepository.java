@@ -60,7 +60,7 @@ public class KnowledgeArtifactRepository {
   private Set<KnowledgeArtifactSummaryInfo> karsInfo;
 
   public KnowledgeArtifactRepository() {
-    karsInfo = new HashSet<KnowledgeArtifactSummaryInfo>();
+    karsInfo = new HashSet<>();
   }
 
   public Integer getId() {

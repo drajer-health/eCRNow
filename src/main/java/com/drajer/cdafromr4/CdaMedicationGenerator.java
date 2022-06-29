@@ -471,8 +471,9 @@ public class CdaMedicationGenerator {
                   if (cmed.getCode() != null
                       && cmed.getCode().getCoding() != null
                       && !cmed.getCode().getCoding().isEmpty()
-                      && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                          cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+                      && Boolean.TRUE.equals(
+                          CdaFhirUtilities.isCodingPresentForCodeSystem(
+                              cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
                     // Found the Medication that matters.
                     logger.debug("Adding Med Req - due to code ");
@@ -496,8 +497,9 @@ public class CdaMedicationGenerator {
 
                         if (cc.getCoding() != null
                             && !cc.getCoding().isEmpty()
-                            && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                                cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+                            && Boolean.TRUE.equals(
+                                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                                    cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
                           logger.debug("Adding Med Req due to ingredient ");
                           cmeds.add(cmed);
@@ -509,7 +511,7 @@ public class CdaMedicationGenerator {
                     } // Ingredients present
                   } // Ingredient present
 
-                  if (found) break;
+                  if (Boolean.TRUE.equals(found)) break;
                 } // Found id
               } // For all resources
             } // contained present
@@ -527,8 +529,9 @@ public class CdaMedicationGenerator {
 
           if (cc.getCoding() != null
               && !cc.getCoding().isEmpty()
-              && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                  cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+              && Boolean.TRUE.equals(
+                  CdaFhirUtilities.isCodingPresentForCodeSystem(
+                      cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
             logger.debug("Found a Medication Request with a RxNorm code");
             mr.add(m);

@@ -2,12 +2,11 @@ package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.util.HashMap;
-import java.util.Set;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
+import com.drajer.bsa.utils.BsaServiceUtils;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +28,24 @@ public class InitiateReporting extends BsaAction {
     // Check Timing constraints and handle them before we evaluate conditions.
     BsaActionStatusType status = processTimingData(data);
 
-    // Get the Resources that need to be retrieved.
-    HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+    // Get the default queries.
+    Map<String, FhirQueryFilter> queries =
+        BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
 
-    // Get necessary data to process.
-    HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+    if (queries != null && !queries.isEmpty()) {
+
+      // Try to execute the queries.
+      queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+
+    } else {
+
+      // Try to Get the Resources that need to be retrieved using Resource Type since queries are
+      // not specified.
+      ehrService.getFilteredData(data, getInputData());
+    }
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled && conditionsMet(data)) {
+    if (status != BsaActionStatusType.SCHEDULED && Boolean.TRUE.equals(conditionsMet(data))) {
 
       logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
 
@@ -46,7 +55,7 @@ public class InitiateReporting extends BsaAction {
       // Execute Related Actions.
       executeRelatedActions(data, ehrService);
 
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
 

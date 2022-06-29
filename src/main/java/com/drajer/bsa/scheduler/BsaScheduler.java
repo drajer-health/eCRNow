@@ -3,6 +3,7 @@ package com.drajer.bsa.scheduler;
 import com.drajer.bsa.model.BsaTypes;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,13 @@ public class BsaScheduler {
 
   @Autowired Scheduler scheduler;
 
-  public void scheduleJob(UUID karExecId, String actionId, BsaTypes.ActionType type, Instant t) {
+  public void scheduleJob(
+      UUID karExecId,
+      String actionId,
+      BsaTypes.ActionType type,
+      Instant t,
+      String xReqId,
+      Map<String, String> mdc) {
 
     String jobId =
         actionId
@@ -40,12 +47,13 @@ public class BsaScheduler {
             + "_"
             + java.util.UUID.randomUUID().toString();
 
-    logger.info(" Scheduling Job Id {} to be executed at : {}", jobId, t.toString());
+    logger.info(" Scheduling Job Id {} to be executed at : {}", jobId, t);
 
     scheduler.schedule(
         schedulerConfig
             .sampleOneTimeJob()
-            .instance(jobId, new ScheduledJobData(karExecId, actionId, type, t, jobId)),
+            .instance(
+                jobId, new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, mdc)),
         t);
   }
 }

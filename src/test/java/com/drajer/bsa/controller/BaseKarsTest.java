@@ -196,7 +196,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
       for (List<BsaActionStatus> actionStatus : data.getActionStatus().values()) {
         for (BsaActionStatus status : actionStatus) {
           if (status instanceof SubmitReportStatus
-              && status.getActionStatus().equals(BsaActionStatusType.Completed)) {
+              && status.getActionStatus().equals(BsaActionStatusType.COMPLETED)) {
             return true;
           }
         }
@@ -264,7 +264,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
         for (List<BsaActionStatus> actionStatus : data.getActionStatus().values()) {
           for (BsaActionStatus status : actionStatus) {
             if (status instanceof EvaluateMeasureStatus
-                && status.getActionStatus().equals(BsaActionStatusType.Completed)) {
+                && status.getActionStatus().equals(BsaActionStatusType.COMPLETED)) {
               EvaluateMeasureStatus evaluateMeasureStatus = (EvaluateMeasureStatus) status;
               if (evaluateMeasureStatus.getReport() != null) {
                 return evaluateMeasureStatus.getReport();

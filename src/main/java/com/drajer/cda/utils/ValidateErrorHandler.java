@@ -32,11 +32,9 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   private static void logMessage(SAXParseException exception) {
     logger.warn(
-        "Message: Error validating XML Data at Line: "
-            + exception.getLineNumber()
-            + " Column: "
-            + exception.getColumnNumber()
-            + "; Message: "
-            + exception.getMessage());
+        "Message: Error validating XML Data at Line: {} Column: {} Message: {}",
+        exception.getLineNumber(),
+        exception.getColumnNumber(),
+        exception.getMessage());
   }
 }

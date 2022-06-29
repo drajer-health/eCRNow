@@ -1,7 +1,6 @@
 package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.kar.condition.BsaConditionProcessor;
-
 import org.hl7.fhir.r4.model.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public abstract class BsaCondition {
 
   private BsaConditionProcessor conditionProcessor;
 
-  public BsaCondition() {}
+  protected BsaCondition() {}
 
   public BsaConditionProcessor getConditionProcessor() {
     return conditionProcessor;

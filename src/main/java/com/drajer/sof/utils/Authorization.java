@@ -73,7 +73,7 @@ public class Authorization {
 
   public JSONObject getAccessToken(LaunchDetails tokenDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + tokenDetails.getClientId());
+    logger.info("Getting AccessToken for Client: {}", tokenDetails.getClientId());
     try {
       RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();

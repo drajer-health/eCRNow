@@ -69,6 +69,11 @@ public class KnowledgeArtifact {
   private HashMap<String, Set<BsaAction>> triggerEventActionMap;
 
   /**
+   * This attribute represents all the default queries that are present in the Knowledge Artifact.
+   */
+  private HashMap<String, FhirQueryFilter> defaultQueries;
+
+  /**
    * This attribute stores different types of resources that are required for the processing of the
    * Knowledge Artifact. These include the following currently 1. ValueSet Instances that are
    * required for processing. 2. Group Instances that may be required for processing. 3. Library
@@ -92,9 +97,9 @@ public class KnowledgeArtifact {
 
   public Resource getDependentResource(ResourceType rt, String url) {
 
-    if (dependencies.containsKey(rt)) {
+    if (dependencies.containsKey(rt) && dependencies.get(rt).containsKey(url)) {
 
-      if (dependencies.get(rt).containsKey(url)) return dependencies.get(rt).get(url);
+      return dependencies.get(rt).get(url);
     }
 
     return null;
@@ -107,7 +112,7 @@ public class KnowledgeArtifact {
       // Dependency to be added.
       HashMap<String, Resource> resources = dependencies.get(res.getResourceType());
 
-      if (resources != null && resources.containsKey(res.getUrl())) {
+      if (!resources.isEmpty() && resources.containsKey(res.getUrl())) {
         logger.info(" Value Set already present ");
       } else if (res.getUrl() != null) {
         resources.put(res.getUrl(), res);
@@ -117,6 +122,28 @@ public class KnowledgeArtifact {
       logger.info("Resource Type does not exist, so add to map ");
       HashMap<String, Resource> resources = new HashMap<>();
       resources.put(res.getUrl(), res);
+      dependencies.put(res.getResourceType(), resources);
+    }
+  }
+
+  public void addDependentResource(Resource res) {
+    // format id for local reference
+    String id = String.format("%s/%s", res.getResourceType(), res.getIdElement().getIdPart());
+    if (dependencies.containsKey(res.getResourceType())) {
+
+      // Dependency to be added.
+      HashMap<String, Resource> resources = dependencies.get(res.getResourceType());
+
+      if (resources != null && resources.containsKey(id)) {
+        logger.info("Resource already present");
+      } else if (resources != null) {
+        resources.put(id, res);
+        dependencies.put(res.getResourceType(), resources);
+      }
+    } else {
+      logger.info("Resource Type does not exist, so add to map ");
+      HashMap<String, Resource> resources = new HashMap<>();
+      resources.put(id, res);
       dependencies.put(res.getResourceType(), resources);
     }
   }
@@ -161,7 +188,7 @@ public class KnowledgeArtifact {
 
   public void addTriggerEvent(String event, BsaAction act) {
     if (!triggerEventActionMap.containsKey(event)) {
-      Set<BsaAction> acts = new HashSet<BsaAction>();
+      Set<BsaAction> acts = new HashSet<>();
       acts.add(act);
       triggerEventActionMap.put(event, acts);
     } else {
@@ -176,7 +203,7 @@ public class KnowledgeArtifact {
    */
   public List<String> getOuputVariableIdsForResourceType(ResourceType type) {
 
-    List<String> retVal = new ArrayList<String>();
+    List<String> retVal = new ArrayList<>();
 
     for (Map.Entry<String, BsaAction> entry : actionMap.entrySet()) {
 
@@ -201,11 +228,11 @@ public class KnowledgeArtifact {
     karPath = "";
     karId = "";
     karVersion = "";
-    actionMap = new HashMap<String, BsaAction>();
-    triggerEventActionMap = new HashMap<String, Set<BsaAction>>();
-    dependencies = new HashMap<ResourceType, HashMap<String, Resource>>();
-    receiverAddresses = new HashSet<UriType>();
-    firstLevelActions = new ArrayList<BsaAction>();
+    actionMap = new HashMap<>();
+    triggerEventActionMap = new HashMap<>();
+    dependencies = new HashMap<>();
+    receiverAddresses = new HashSet<>();
+    firstLevelActions = new ArrayList<>();
   }
 
   public String getKarId() {
@@ -232,7 +259,7 @@ public class KnowledgeArtifact {
     this.karVersion = karVersion;
   }
 
-  public HashMap<String, BsaAction> getActionMap() {
+  public Map<String, BsaAction> getActionMap() {
     return actionMap;
   }
 
@@ -240,7 +267,7 @@ public class KnowledgeArtifact {
     this.actionMap = actionMap;
   }
 
-  public HashMap<String, Set<BsaAction>> getTriggerEventActionMap() {
+  public Map<String, Set<BsaAction>> getTriggerEventActionMap() {
     return triggerEventActionMap;
   }
 
@@ -248,7 +275,7 @@ public class KnowledgeArtifact {
     this.triggerEventActionMap = triggerEventActionMap;
   }
 
-  public HashMap<ResourceType, HashMap<String, Resource>> getDependencies() {
+  public Map<ResourceType, HashMap<String, Resource>> getDependencies() {
     return dependencies;
   }
 
@@ -264,7 +291,7 @@ public class KnowledgeArtifact {
 
     if (triggerEventActionMap != null && triggerEventActionMap.containsKey(event))
       return triggerEventActionMap.get(event);
-    else return new HashSet<BsaAction>();
+    else return new HashSet<>();
   }
 
   public void addAction(BsaAction act) {
@@ -328,6 +355,14 @@ public class KnowledgeArtifact {
     this.karPublisher = karPublisher;
   }
 
+  public HashMap<String, FhirQueryFilter> getDefaultQueries() {
+    return defaultQueries;
+  }
+
+  public void setDefaultQueries(HashMap<String, FhirQueryFilter> defaultQueries) {
+    this.defaultQueries = defaultQueries;
+  }
+
   public void printKarSummary() {
 
     logger.info(" **** START Printing KnowledgeArtifactSummary **** ");
@@ -336,6 +371,8 @@ public class KnowledgeArtifact {
     logger.info(" Kar Version : {} ", karVersion);
 
     firstLevelActions.forEach(act -> act.printSummary());
+    defaultQueries.forEach(
+        (key, value) -> logger.info(" Data Req Id : {}, Query String: {}", key, value));
 
     logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
   }
@@ -363,5 +400,61 @@ public class KnowledgeArtifact {
     }
 
     logger.info(" **** END Printing Knowledge Artifacts **** ");
+  }
+
+  public void populateDefaultQueries(BsaAction action) {
+
+    logger.info(" Populating Default Queries for action {}", action.getActionId());
+    if (defaultQueries == null) {
+      defaultQueries = new HashMap<>();
+      action
+          .getInputDataRequirementQueries()
+          .forEach((key, value) -> defaultQueries.put(key, value));
+
+    } else {
+      action
+          .getInputDataRequirementQueries()
+          .forEach((key, value) -> defaultQueries.put(key, value));
+    }
+
+    logger.info(" Default Queries size = {}", defaultQueries.size());
+  }
+
+  public String getQueryForDataRequirement(String dataReqId, String relatedDataId) {
+
+    String queryToExecute = "";
+    if (defaultQueries != null && defaultQueries.containsKey(dataReqId)) {
+      logger.info(" Found Default Query in KAR for {}", dataReqId);
+      queryToExecute = defaultQueries.get(dataReqId).getQueryString();
+    }
+
+    if (queryToExecute.isEmpty()
+        && relatedDataId != null
+        && !relatedDataId.isEmpty()
+        && defaultQueries != null
+        && defaultQueries.containsKey(relatedDataId)) {
+      queryToExecute = defaultQueries.get(relatedDataId).getQueryString();
+    }
+
+    return queryToExecute;
+  }
+
+  public FhirQueryFilter getQueryFilter(String dataReqId, String relatedDataId) {
+
+    FhirQueryFilter filter = null;
+    if (defaultQueries != null && defaultQueries.containsKey(dataReqId)) {
+      logger.info(" Found Default Query in KAR for {}", dataReqId);
+      filter = defaultQueries.get(dataReqId);
+    }
+
+    if (filter == null
+        && relatedDataId != null
+        && !relatedDataId.isEmpty()
+        && defaultQueries != null
+        && defaultQueries.containsKey(relatedDataId)) {
+      filter = defaultQueries.get(relatedDataId);
+    }
+
+    return filter;
   }
 }

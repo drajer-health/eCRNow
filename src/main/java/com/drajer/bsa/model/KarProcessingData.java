@@ -2,22 +2,18 @@ package com.drajer.bsa.model;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.sof.utils.ResourceUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
@@ -35,6 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KarProcessingData {
 
+  public static final String RESOURCE_SIZES = "Resource Sizes : {}";
   private final Logger logger = LoggerFactory.getLogger(KarProcessingData.class);
 
   /** The Knowledge Artifact to be processed. */
@@ -74,6 +71,13 @@ public class KarProcessingData {
   HashMap<String, Set<Resource>> fhirInputDataById;
 
   /**
+   * The data to be used for specific condition evaluation. The map contains a mapping between the
+   * actionId and the Parameters that will be used for evaluating the condition associated with the
+   * action.
+   */
+  Map<String, Parameters> parametersForConditionEvaluation;
+
+  /**
    * These are the resources that are received by notification, stored by the FHIR Path context
    * variables. (For e.g an encounter received via Subscription notification would be called
    * %encounter)
@@ -100,11 +104,20 @@ public class KarProcessingData {
   /** The previous status of the actions that can be used for comparison */
   KarExecutionState previousState;
 
-  /** The data actually submitted to the TTP/PHA. */
-  String submittedData;
+  /** The data actually submitted to the TTP/PHA in FHIR format. */
+  String submittedFhirData;
 
-  /** The response data received from the TTP/PHA. */
-  String responseData;
+  /** The data actually submitted to the TTP/PHA in CDA format. */
+  String submittedCdaData;
+
+  /** The public health message logged into the db as per the execution */
+  PublicHealthMessage phm;
+
+  /** The response data received from the TTP/PHA in FHIR format. */
+  String fhirResponseData;
+
+  /** The response data received from the TTP/PHA in CDA format. */
+  String cdaResponseData;
 
   /** The Dao Helper that will help us save the ExecutionState */
   KarExecutionStateService karExecutionStateService;
@@ -123,6 +136,12 @@ public class KarProcessingData {
    * type of notification and indicates the NotificaitonContext Id or the Schedule Job Id.
    */
   private String executionSequenceId;
+
+  /** The attribute holds the current trigger match status based on previous matches. */
+  private CheckTriggerCodeStatusList currentTriggerMatchStatus;
+
+  /** The attribute holds the last trigger match status based on previous matches. */
+  private CheckTriggerCodeStatusList previousTriggerMatchStatus;
 
   public void addActionOutput(String actionId, Resource res) {
 
@@ -150,9 +169,7 @@ public class KarProcessingData {
     }
   }
 
-  public void addNotifiedResource(String resId, Resource res) {
-    logger.info(resId, res);
-  }
+  public void addNotifiedResource(String resId, Resource res) {}
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -205,21 +222,53 @@ public class KarProcessingData {
     return statuses;
   }
 
-  public void addResourcesByType(HashMap<ResourceType, Set<Resource>> res) {
+  public void addResourcesByType(Map<ResourceType, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
 
-      logger.info("Resource Sizes : {}", res.size());
-      for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
+      logger.info(RESOURCE_SIZES, res.size());
 
-        if (fhirInputDataByType.containsKey(entry.getKey())) {
-          Set<Resource> resources = fhirInputDataByType.get(entry.getKey());
-          resources.addAll(entry.getValue());
-          Set<Resource> uniqueResources =
-              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
-          fhirInputDataByType.put(entry.getKey(), uniqueResources);
-        } else fhirInputDataByType.put(entry.getKey(), entry.getValue());
+      for (Map.Entry<ResourceType, Set<Resource>> entry : res.entrySet()) {
+        addResourcesByType(entry.getKey(), entry.getValue());
       }
+    }
+  }
+
+  public void addResourcesByType(ResourceType type, Set<Resource> res) {
+
+    if (res != null && res.size() > 0) {
+
+      logger.info(" Resource Sizes : {}", res.size());
+
+      if (fhirInputDataByType.containsKey(type)) {
+        Set<Resource> resources = fhirInputDataByType.get(type);
+        resources.addAll(res);
+        Set<Resource> uniqueResources =
+            ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+
+        fhirInputDataByType.put(type, uniqueResources);
+      } else fhirInputDataByType.put(type, res);
+    }
+  }
+
+  public void addResourcesById(String id, Set<Resource> res) {
+    if (res != null && res.size() > 0) {
+      fhirInputDataById.put(id, res);
+    }
+  }
+
+  public void addResourceById(String dataReqId, Resource res) {
+
+    if (fhirInputDataById.containsKey(dataReqId)) {
+      Set<Resource> resources = fhirInputDataById.get(dataReqId);
+      resources.add(res);
+      Set<Resource> uniqueResources =
+          ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+      fhirInputDataById.put(dataReqId, uniqueResources);
+    } else {
+      Set<Resource> resources = new HashSet<Resource>();
+      resources.add(res);
+      fhirInputDataById.put(dataReqId, resources);
     }
   }
 
@@ -227,7 +276,7 @@ public class KarProcessingData {
 
     if (res != null && res.size() > 0) {
 
-      logger.info(" Resource Sizes : {}", res.size());
+      logger.info(RESOURCE_SIZES, res.size());
       for (Map.Entry<String, Set<Resource>> entry : res.entrySet()) {
 
         if (fhirInputDataById.containsKey(entry.getKey())) {
@@ -245,7 +294,7 @@ public class KarProcessingData {
 
     if (res != null && res.size() > 0) {
 
-      logger.info(" Resource Sizes : {}", res.size());
+      logger.info(RESOURCE_SIZES, res.size());
       for (Map.Entry<String, Set<Resource>> entry : res.entrySet()) {
 
         if (fhirInputDataById.containsKey(entry.getKey())) {
@@ -262,6 +311,7 @@ public class KarProcessingData {
     actionOutputData = new HashMap<>();
     actionOutputDataById = new HashMap<>();
     actionStatus = new HashMap<>();
+    parametersForConditionEvaluation = new HashMap<>();
   }
 
   /**
@@ -311,14 +361,6 @@ public class KarProcessingData {
 
   public void setKar(KnowledgeArtifact kar) {
     this.kar = kar;
-  }
-
-  public HashMap<ResourceType, Set<Resource>> getFhirInputData() {
-    return fhirInputDataByType;
-  }
-
-  public void setFhirInputData(HashMap<ResourceType, Set<Resource>> fhirInputData) {
-    this.fhirInputDataByType = fhirInputData;
   }
 
   public HashMap<String, HashMap<String, Resource>> getActionOutputData() {
@@ -377,20 +419,36 @@ public class KarProcessingData {
     this.fhirInputDataById = fhirInputDataById;
   }
 
-  public String getSubmittedData() {
-    return submittedData;
+  public String getSubmittedCdaData() {
+    return submittedCdaData;
   }
 
-  public void setSubmittedData(String submittedData) {
-    this.submittedData = submittedData;
+  public void setSubmittedCdaData(String submittedCdaData) {
+    this.submittedCdaData = submittedCdaData;
   }
 
-  public String getResponseData() {
-    return responseData;
+  public String getFhirResponseData() {
+    return fhirResponseData;
   }
 
-  public void setResponseData(String responseData) {
-    this.responseData = responseData;
+  public void setFhirResponseData(String fhirResponseData) {
+    this.fhirResponseData = fhirResponseData;
+  }
+
+  public String getSubmittedFhirData() {
+    return submittedFhirData;
+  }
+
+  public void setSubmittedFhirData(String submittedData) {
+    this.submittedFhirData = submittedData;
+  }
+
+  public String getCdaResponseData() {
+    return cdaResponseData;
+  }
+
+  public void setCdaResponseData(String cdaResponseData) {
+    this.cdaResponseData = cdaResponseData;
   }
 
   public KarExecutionStateService getKarExecutionStateService() {
@@ -434,14 +492,6 @@ public class KarProcessingData {
     this.karStatus = karStatus;
   }
 
-  public HashMap<String, Set<Resource>> getActionOutputDataById() {
-    return actionOutputDataById;
-  }
-
-  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
-    this.actionOutputDataById = actionOutputDataById;
-  }
-
   public String getxRequestId() {
     return xRequestId;
   }
@@ -472,5 +522,178 @@ public class KarProcessingData {
 
   public void setExecutionSequenceId(String executionSequenceId) {
     this.executionSequenceId = executionSequenceId;
+  }
+
+  public PublicHealthMessage getPhm() {
+    return phm;
+  }
+
+  public void setPhm(PublicHealthMessage phm) {
+    this.phm = phm;
+  }
+
+  public String getKarIdForCustomQueries() {
+
+    return kar.getKarId() + "-" + kar.getKarVersion();
+  }
+
+  public String getContextPatientId() {
+
+    return notificationContext.getPatientId();
+  }
+
+  public CheckTriggerCodeStatusList getCurrentTriggerMatchStatus() {
+    return currentTriggerMatchStatus;
+  }
+
+  public void setCurrentTriggerMatchStatus(CheckTriggerCodeStatusList currentTriggerMatchStatus) {
+    this.currentTriggerMatchStatus = currentTriggerMatchStatus;
+  }
+
+  public CheckTriggerCodeStatusList getPreviousTriggerMatchStatus() {
+    return previousTriggerMatchStatus;
+  }
+
+  public void setPreviousTriggerMatchStatus(CheckTriggerCodeStatusList previousTriggerMatchStatus) {
+    this.previousTriggerMatchStatus = previousTriggerMatchStatus;
+  }
+
+  public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
+
+    boolean returnVal = false;
+
+    // Check if the data is already retrieved.
+    if (fhirInputDataById.containsKey(dataReqId)
+        || (relatedDataId != null && fhirInputDataById.containsKey(relatedDataId))) {
+      returnVal = true;
+    }
+
+    return returnVal;
+  }
+
+  public String getContextEncounterId() {
+
+    if (notificationContext
+        .getNotificationResourceType()
+        .contentEquals(ResourceType.Encounter.toString()))
+      return notificationContext.getNotificationResourceId();
+    else return "";
+  }
+
+  public boolean hasValidAccessToken() {
+
+    // Check to see if the token is at least valid for 20 seconds before reusing the token.
+    Date expirationTimeThreshold = Date.from(new Date().toInstant().plusSeconds(20));
+    Date tokenExpirationTime = this.getHealthcareSetting().getEhrAccessTokenExpirationTime();
+
+    if (tokenExpirationTime != null
+        && (tokenExpirationTime.compareTo(expirationTimeThreshold) > 0)) {
+
+      return true;
+
+    } else {
+      return false;
+    }
+  }
+
+  public String getAccessToken() {
+
+    return this.getHealthcareSetting().getEhrAccessToken();
+  }
+
+  public Set<Resource> getResourcesById(String id) {
+    return getFhirInputDataById().get(id);
+  }
+
+  public Set<Resource> getDataForId(String dataReqId, Map<String, String> relatedDataIds) {
+
+    Set<Resource> resources = null;
+
+    if (relatedDataIds.containsKey(dataReqId)) {
+
+      resources = getDataForId(dataReqId, relatedDataIds.get(dataReqId));
+    } else {
+      resources = getDataForId(dataReqId, "");
+    }
+
+    return resources;
+  }
+
+  public Set<Resource> getDataForId(String id, String relatedDataId) {
+
+    Set<Resource> resources = null;
+    if (fhirInputDataById.containsKey(id)) {
+      resources = fhirInputDataById.get(id);
+    }
+
+    if (resources == null
+        && relatedDataId != null
+        && !relatedDataId.isEmpty()
+        && fhirInputDataById.containsKey(relatedDataId)) {
+      resources = fhirInputDataById.get(relatedDataId);
+    }
+    return resources;
+  }
+
+  public Map<String, Parameters> getParametersForConditionEvaluation() {
+    return parametersForConditionEvaluation;
+  }
+
+  public void setParametersForConditionEvaluation(
+      Map<String, Parameters> parametersForConditionEvaluation) {
+    this.parametersForConditionEvaluation = parametersForConditionEvaluation;
+  }
+
+  public HashMap<String, Set<Resource>> getActionOutputDataById() {
+    return actionOutputDataById;
+  }
+
+  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
+    this.actionOutputDataById = actionOutputDataById;
+  }
+
+  public void addParameters(String actionId, Parameters params) {
+
+    if (parametersForConditionEvaluation.containsKey(actionId)) {
+      parametersForConditionEvaluation.replace(actionId, params);
+    } else {
+      parametersForConditionEvaluation.put(actionId, params);
+    }
+  }
+
+  public Parameters getParametersByActionId(String actionId) {
+
+    if (parametersForConditionEvaluation.containsKey(actionId)) {
+      return parametersForConditionEvaluation.get(actionId);
+    } else {
+      return null;
+    }
+  }
+
+  public Boolean hasNewTriggerCodeMatches() {
+
+    Boolean retVal = false;
+
+    if (currentTriggerMatchStatus != null && previousTriggerMatchStatus == null) {
+      logger.info(" New Matches Found where as there were no matches previously");
+      retVal = true;
+    } else if (currentTriggerMatchStatus == null && previousTriggerMatchStatus != null) {
+      logger.info(" No New Matches Found where as there were matches previously");
+      retVal = false;
+    } else if (currentTriggerMatchStatus == null && previousTriggerMatchStatus == null) {
+      logger.info(" No New or Old Matches");
+      retVal = false;
+    } else {
+
+      // Check if each of the new matches are present in the old ones.
+      retVal = previousTriggerMatchStatus.compareCodes(currentTriggerMatchStatus);
+
+      logger.info(
+          ((retVal == true)
+              ? "New Matches Found compared to old matches"
+              : "No New Matches when compared to old Matches"));
+    }
+
+    return retVal;
   }
 }

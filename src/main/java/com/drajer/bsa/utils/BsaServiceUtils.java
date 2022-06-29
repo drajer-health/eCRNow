@@ -1,10 +1,19 @@
 package com.drajer.bsa.utils;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
+import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
+import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -17,6 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.hl7.fhir.instance.model.api.IBase;
+import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -26,6 +38,9 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
 import org.hl7.fhir.r4.model.MessageHeader;
+import org.hl7.fhir.r4.model.ParameterDefinition;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -66,10 +81,8 @@ public class BsaServiceUtils {
   @Autowired(required = false)
   Map<String, BsaActionStatus> actions;
 
-  @Autowired(required = false)
-  Map<String, Bundle> eicrBundles;
-
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
+  private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
 
   public static String getFhirPathVariableString(String id) {
 
@@ -78,9 +91,7 @@ public class BsaServiceUtils {
       String part1 = id.substring(0, 1).toLowerCase();
       String part2 = id.substring(1);
 
-      String result = FHIR_PATH_VARIABLE_PREFIX + part1 + part2;
-
-      return result;
+      return FHIR_PATH_VARIABLE_PREFIX + part1 + part2;
     }
 
     return id.toLowerCase();
@@ -101,14 +112,156 @@ public class BsaServiceUtils {
     return bundle;
   }
 
+  public static Set<Resource> filterResources(
+      Set<Resource> resources, DataRequirement dataRequirement, KarProcessingData kd) {
+
+    List<DataRequirement.DataRequirementCodeFilterComponent> codeFilters =
+        dataRequirement.getCodeFilter();
+    List<DataRequirement.DataRequirementDateFilterComponent> dateFilters =
+        dataRequirement.getDateFilter();
+
+    Set<Resource> filtered = filterByCodeFilters(resources, codeFilters, kd);
+    filtered = filterByDateFilters(filtered, dateFilters, kd);
+    // gather all codes that
+    return filtered;
+  }
+
+  public static Set<Resource> filterByCodeFilters(
+      Set<Resource> resources,
+      List<DataRequirement.DataRequirementCodeFilterComponent> codeFilters,
+      KarProcessingData kd) {
+    Set<Resource> filtered = new HashSet<Resource>();
+    for (Resource res : resources) {
+      boolean matches = true;
+      for (DataRequirement.DataRequirementCodeFilterComponent drcfc : codeFilters) {
+        if (!matchesCodeFilter(res, drcfc, kd)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        logger.info("Resource matches filter {}", res.getId());
+        filtered.add(res);
+      }
+    }
+    return filtered;
+  }
+
+  public static Set<Resource> filterByDateFilters(
+      Set<Resource> resources,
+      List<DataRequirement.DataRequirementDateFilterComponent> dateFilters,
+      KarProcessingData kd) {
+    Set<Resource> filtered = new HashSet<Resource>();
+    for (Resource res : resources) {
+      boolean matches = true;
+      for (DataRequirement.DataRequirementDateFilterComponent drdfc : dateFilters) {
+        if (!matchesDateFilter(res, drdfc, kd)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        filtered.add(res);
+      }
+    }
+    return filtered;
+  }
+
+  public static boolean matchesCodeFilter(
+      Resource resource,
+      DataRequirement.DataRequirementCodeFilterComponent codeFilter,
+      KarProcessingData kd) {
+    // find the attribute by the path element in the code filter: this may be a list of codes or
+    // codableconcepts
+    // if the filter is contains a valueset match against that
+    // if the filter contains codes match, against them -- at this stage the matches are ORs.  If
+    // the
+    // vs or
+    // any of the codes match its a match.
+
+    // we dont know what this will return
+    List<IBase> search = FHIR_PATH.evaluate(resource, codeFilter.getPath(), IBase.class);
+    if (search == null || search.size() == 0) {
+      return false;
+    }
+
+    boolean retVal = false;
+
+    for (IBase ib : search) {
+      if (codeFilter.hasValueSet()) {
+        if (matchesValueSet(ib, codeFilter.getValueSet(), kd)) {
+          retVal = true;
+          break;
+        }
+      }
+      if (codeFilter.hasCode()) {
+        if (matchesCodes(ib, codeFilter.getCode(), kd)) {
+          retVal = true;
+          break;
+        }
+      }
+    }
+    return retVal;
+  }
+
+  public static boolean matchesValueSet(IBase ib, String url, KarProcessingData kd) {
+    ValueSet vs = (ValueSet) kd.getKar().getDependentResource(ResourceType.ValueSet, url);
+    if (ib instanceof Coding) {
+      Coding coding = (Coding) ib;
+      return isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode());
+    } else if (ib instanceof CodeableConcept) {
+      return isCodeableConceptPresentInValueSet(vs, (CodeableConcept) ib);
+    }
+    return false;
+  }
+
+  public static boolean matchesCodes(IBase ib, List<Coding> codes, KarProcessingData kd) {
+    if (ib instanceof Coding) {
+      Coding ibc = (Coding) ib;
+      return codes
+          .stream()
+          .anyMatch(
+              coding ->
+                  ibc.getSystem().equals(coding.getSystem())
+                      && ibc.getCode().equals(coding.getCode()));
+    }
+    if (ib instanceof CodeableConcept) {
+      CodeableConcept ibc = (CodeableConcept) ib;
+      List<Coding> ibcCodings = ibc.getCoding();
+      return ibcCodings
+          .stream()
+          .anyMatch(
+              ibcCoding ->
+                  codes
+                      .stream()
+                      .anyMatch(
+                          coding ->
+                              ibcCoding.getSystem().equals(coding.getSystem())
+                                  && ibcCoding.getCode().equals(coding.getCode())));
+    }
+    return false;
+  }
+
+  public static boolean matchesDateFilter(
+      Resource r, DataRequirement.DataRequirementDateFilterComponent drdfc, KarProcessingData kd) {
+
+    return true;
+  }
+
+  public static Boolean isCodeableConceptPresentInValueSet(ValueSet vs, CodeableConcept cc) {
+    return cc.getCoding()
+        .stream()
+        .anyMatch(coding -> isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode()));
+  }
+
   public static Pair<Boolean, MatchedTriggerCodes> isCodeableConceptPresentInValueSet(
-      ValueSet vs, CodeableConcept cd, String path, Boolean valElem) {
+      ValueSet vs, CodeableConcept cd, String path, boolean valElem) {
 
     Pair<Boolean, MatchedTriggerCodes> retVal = null;
-    Boolean matchFound = false;
+    boolean matchFound = false;
     MatchedTriggerCodes mtc = null;
 
-    if (cd != null && cd.getCoding().size() > 0) {
+    if (cd != null && !cd.getCoding().isEmpty()) {
 
       for (Coding c : cd.getCoding()) {
 
@@ -138,7 +291,7 @@ public class BsaServiceUtils {
     }
 
     if (matchFound) {
-      retVal = new Pair<Boolean, MatchedTriggerCodes>(true, mtc);
+      retVal = new Pair<>(true, mtc);
     }
 
     return retVal;
@@ -146,9 +299,9 @@ public class BsaServiceUtils {
 
   public static Set<String> getMatchableCodes(CodeableConcept cc) {
 
-    Set<String> mtcs = new HashSet<String>();
+    Set<String> mtcs = new HashSet<>();
 
-    if (cc != null && cc.getCoding().size() > 0) {
+    if (cc != null && !cc.getCoding().isEmpty()) {
 
       for (Coding c : cc.getCoding()) {
 
@@ -169,7 +322,7 @@ public class BsaServiceUtils {
 
     if (coding != null && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
       Pair<String, String> matchedCodeInfo = new Pair<>(coding.getSystem(), coding.getCode());
-      retVal = new Pair<Boolean, Pair<String, String>>(true, matchedCodeInfo);
+      retVal = new Pair<>(true, matchedCodeInfo);
     }
 
     return retVal;
@@ -177,9 +330,9 @@ public class BsaServiceUtils {
 
   public static Boolean isCodePresentInValueSet(ValueSet vs, String system, String code) {
 
-    Boolean retVal = false;
+    boolean retVal = false;
 
-    if (vs.hasCompose()) {
+    if (vs != null && vs.hasCompose()) {
 
       ValueSetComposeComponent vsc = vs.getCompose();
 
@@ -288,8 +441,8 @@ public class BsaServiceUtils {
   public static List<Pair<String, String>> saveCdaDocumentFromDocumentBundleToFile(
       String logDirectory, String actionType, Resource res) {
 
-    List<DocumentReference> docs = new ArrayList<DocumentReference>();
-    List<Pair<String, String>> outputs = new ArrayList<Pair<String, String>>();
+    List<DocumentReference> docs = new ArrayList<>();
+    List<Pair<String, String>> outputs = new ArrayList<>();
 
     findMessageHeaderAndDocumentReferences(res, docs);
 
@@ -305,7 +458,7 @@ public class BsaServiceUtils {
               + docRef.getId()
               + ".xml";
 
-      if (docRef.getContent().size() > 0) {
+      if (!docRef.getContent().isEmpty()) {
 
         DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
 
@@ -317,7 +470,7 @@ public class BsaServiceUtils {
           logger.debug("Saving data to file {}", fileName);
           saveDataToFile(payload, fileName);
 
-          Pair<String, String> p = new Pair<String, String>(docRef.getId(), payload);
+          Pair<String, String> p = new Pair<>(docRef.getId(), payload);
           outputs.add(p);
         } // attachment not null
       } // DocRef has content
@@ -359,20 +512,6 @@ public class BsaServiceUtils {
     saveDataToFile(data, fileName);
   }
 
-  // public static final Map<String, Bundle> eicrBundles = new HashMap<String, Bundle>();
-  public void saveEicrState(String url, Resource res) {
-    if (eicrBundles != null) {
-      logger.info("Found actions map saving eicr bundle state....");
-      if (res instanceof Bundle) {
-        logger.info("Eicr bundle found...");
-        Bundle eicrBundle = (Bundle) res;
-        eicrBundles.put(url, eicrBundle);
-      }
-    } else {
-      logger.info("No action map found skipping eicr bundle state save....");
-    }
-  }
-
   /**
    * Checks the data provided in the bundle to examine if it is a message type bundle and if it
    * contains data related to a CDA document.
@@ -397,7 +536,7 @@ public class BsaServiceUtils {
           if (mh.getEventCoding() != null
               && mh.getEventCoding()
                   .getCode()
-                  .equals(BsaTypes.getMessageTypeString(MessageType.CdaEicrMessage))) {
+                  .equals(BsaTypes.getMessageTypeString(MessageType.CDA_EICR_MESSAGE))) {
 
             return true;
           } // If Message Type
@@ -406,5 +545,93 @@ public class BsaServiceUtils {
     } // Bundle
 
     return false;
+  }
+
+  public static void convertDataToParameters(
+      String dataReqId, String fhirType, String limit, Set<Resource> resources, Parameters params) {
+
+    if (resources != null && !resources.isEmpty()) {
+      for (Resource res : resources) {
+
+        logger.info(" Creating Parameter for name {}", dataReqId);
+        ParametersParameterComponent parameter =
+            new ParametersParameterComponent().setName("%" + String.format("%s", dataReqId));
+        parameter.addExtension(
+            "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+            new ParameterDefinition().setMax(limit).setName("%" + dataReqId).setType(fhirType));
+        parameter.setResource(res);
+        params.addParameter(parameter);
+      }
+    } else {
+      logger.info(" Creating Parameter for name {} with no resources", dataReqId);
+      ParametersParameterComponent parameter =
+          new ParametersParameterComponent().setName("%" + String.format("%s", dataReqId));
+      parameter.addExtension(
+          "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+          new ParameterDefinition().setMax(limit).setName("%" + dataReqId).setType(fhirType));
+      params.addParameter(parameter);
+    }
+  }
+
+  public static Map<String, FhirQueryFilter> getDefaultQueriesForAction(
+      BsaAction act, KnowledgeArtifact art) {
+
+    // Get the default queries.
+    Map<String, FhirQueryFilter> queries = act.getInputDataRequirementQueries();
+
+    // Get the related data elements for Inputs
+    Map<String, String> relatedDataReqIds = act.getInputDataIdToRelatedDataIdMap();
+
+    for (Map.Entry<String, String> entry : relatedDataReqIds.entrySet()) {
+
+      // If the query existed, they should already have been collected.
+      if (!queries.containsKey(entry.getKey())) {
+
+        FhirQueryFilter filter = art.getQueryFilter(entry.getKey(), entry.getValue());
+
+        // This will not be null only when there is a related data Id mapped.
+        if (filter != null) {
+          queries.put(entry.getValue(), filter);
+        }
+      }
+    }
+
+    return queries;
+  }
+
+  public static CheckTriggerCodeStatusList getTriggerMatchStatus(String data) {
+
+    ObjectMapper mapper = new ObjectMapper();
+    CheckTriggerCodeStatusList state = null;
+
+    try {
+
+      state = mapper.readValue(data, CheckTriggerCodeStatusList.class);
+
+    } catch (JsonProcessingException e1) {
+      String msg = "Unable to read/write Trigger Match state";
+      logger.error(msg, e1);
+      throw new RuntimeException(msg, e1);
+    }
+
+    return state;
+  }
+
+  public static String getEncodedTriggerMatchStatus(CheckTriggerCodeStatusList ctc) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    String state = null;
+    try {
+
+      state = mapper.writeValueAsString(ctc);
+
+    } catch (JsonProcessingException e) {
+
+      String msg = "Unable to update execution state";
+      logger.error(msg, e);
+      throw new RuntimeException(msg, e);
+    }
+
+    return state;
   }
 }

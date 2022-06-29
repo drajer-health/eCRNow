@@ -4,9 +4,12 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -23,10 +26,19 @@ import org.slf4j.LoggerFactory;
  */
 public class CheckTriggerCodeStatus extends BsaActionStatus {
 
-  private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodes.class);
+  private final Logger logger = LoggerFactory.getLogger(CheckTriggerCodeStatus.class);
 
+  /** The attribute indicates if something matched or not. */
   private Boolean triggerMatchStatus; // Did anything match or not
+
+  /**
+   * The attribute maintains the state of the specific codes that resulted in a match against the
+   * value set.
+   */
   private List<MatchedTriggerCodes> matchedCodes;
+
+  /** The map stores the matches by specific data requirement ids specified for the action. */
+  private Map<String, Set<Resource>> matchedResources;
 
   public Pair<Boolean, ReportableMatchedTriggerCode> getMatchedCode(CodeableConcept cc) {
 
@@ -39,43 +51,30 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
       Set<String> codesToMatch = mtc.getMatchedCodes();
       Set<String> matches = SetUtils.intersection(codes, codesToMatch);
 
-      if (matches != null && matches.size() > 0) {
+      if (matches == null || matches.isEmpty()) {
+        matches = SetUtils.intersection(codes, mtc.getMatchedValues());
+      }
 
+      if (matches != null && !matches.isEmpty()) {
         ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
         rc.setValueSet(mtc.getValueSet());
         rc.setValueSetVersion(mtc.getValueSetVersion());
 
-        String rcode = matches.stream().findFirst().get();
-        String[] rcodes = rcode.split("\\|");
-
-        rc.setCode(rcodes[1]);
-        rc.setCodeSystem(rcodes[0]);
-        rc.setAllMatches(matches);
-
-        rmtc = new Pair<>(true, rc);
-
-        break;
-      } else {
-
-        matches = SetUtils.intersection(codes, mtc.getMatchedValues());
-
-        if (matches != null && matches.size() > 0) {
-          ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
-          rc.setValueSet(mtc.getValueSet());
-          rc.setValueSetVersion(mtc.getValueSetVersion());
-
-          String rcode = matches.stream().findFirst().get();
+        Optional<String> value = matches.stream().findFirst();
+        if (value.isPresent()) {
+          String rcode = value.get();
           String[] rcodes = rcode.split("|");
 
           rc.setCode(rcodes[1]);
           rc.setCodeSystem(rcodes[0]);
-          rc.setAllMatches(matches);
-
-          rmtc.setAt0(true);
-          rmtc.setAt1(rc);
-
-          break;
         }
+
+        rc.setAllMatches(matches);
+
+        rmtc.setAt0(true);
+        rmtc.setAt1(rc);
+
+        break;
       }
     }
 
@@ -99,7 +98,7 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
     for (MatchedTriggerCodes mtc : matchedCodes) {
 
-      if (mtc.containsMatch(rt)) return true;
+      if (Boolean.TRUE.equals(mtc.containsMatch(rt))) return true;
     }
 
     return false;
@@ -113,20 +112,20 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
   }
 
   public void addMatchedCodes(
-      Set<String> codes, String valueSet, String path, String valuesetVersion) {
+      Set<String> codes, String valueSet, String path, String valueSetVersion) {
 
-    MatchedTriggerCodes mtc = getMatchedTriggerCodes(path, valueSet, valuesetVersion);
+    MatchedTriggerCodes mtcCodes = getMatchedTriggerCodes(path, valueSet, valueSetVersion);
 
-    if (mtc == null) {
-      mtc = new MatchedTriggerCodes();
-      mtc.setMatchedCodes(codes);
-      mtc.setValueSet(valueSet);
-      mtc.setValueSetVersion(valuesetVersion);
-      mtc.setMatchedPath(path);
-      matchedCodes.add(mtc);
+    if (mtcCodes == null) {
+      mtcCodes = new MatchedTriggerCodes();
+      mtcCodes.setMatchedCodes(codes);
+      mtcCodes.setValueSet(valueSet);
+      mtcCodes.setValueSetVersion(valueSetVersion);
+      mtcCodes.setMatchedPath(path);
+      matchedCodes.add(mtcCodes);
       triggerMatchStatus = true;
     } else {
-      mtc.addCodes(codes);
+      mtcCodes.addCodes(codes);
       triggerMatchStatus = true;
     }
   }
@@ -153,15 +152,20 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
     this.matchedCodes = matchedCodes;
   }
 
-  public void copyFrom(CheckTriggerCodeStatus ctc) {
+  public Map<String, Set<Resource>> getMatchedResources() {
+    return matchedResources;
+  }
 
-    // this.triggerMatchStatus = ctc.triggerMatchStatus;
+  public void setMatchedResources(Map<String, Set<Resource>> matchedResources) {
+    this.matchedResources = matchedResources;
+  }
+
+  public void copyFrom(CheckTriggerCodeStatus ctc) {
 
     for (MatchedTriggerCodes mtc : ctc.getMatchedCodes()) {
 
       matchedCodes.add(mtc);
     }
-    // this.matchedCodes.addAll(ctc.getMatchedCodes());
   }
 
   public void log() {
@@ -175,5 +179,19 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
     }
 
     logger.info(" *** End Printing Check Trigger Code Status *** ");
+  }
+
+  public boolean isCodePresent(String code, String matchedPath) {
+
+    for (MatchedTriggerCodes mtc : matchedCodes) {
+
+      if (mtc.isCodePresent(code, matchedPath)) {
+
+        logger.info(" Found Code {} for Path {}", code, matchedPath);
+        return true;
+      }
+    }
+
+    return false;
   }
 }

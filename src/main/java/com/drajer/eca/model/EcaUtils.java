@@ -103,7 +103,7 @@ public class EcaUtils {
     boolean matchfound = false;
     Set<String> codesToMatchAgainst = null;
 
-    if (details.getIsCovid()) {
+    if (Boolean.TRUE.equals(details.getIsCovid())) {
 
       codesToMatchAgainst =
           ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
@@ -247,8 +247,8 @@ public class EcaUtils {
 
     boolean retVal = false;
 
-    if (!oldState.getMatchTriggerStatus().getTriggerMatchStatus()
-        && newState.getMatchTriggerStatus().getTriggerMatchStatus()) {
+    if (Boolean.FALSE.equals(oldState.getMatchTriggerStatus().getTriggerMatchStatus())
+        && Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())) {
 
       logger.info(
           " No Previously Matched trigger codes, since there is a match now returning true ");
@@ -379,9 +379,9 @@ public class EcaUtils {
           retVal = true;
         }
         if (dstu2Encounter.getStatus() != null
-            && (dstu2Encounter.getStatus() == EncounterStatus.CANCELLED.toString()
-                || dstu2Encounter.getStatus() == EncounterStatus.FINISHED.toString()
-                || dstu2Encounter.getStatus() == EncounterStatus.ENTEREDINERROR.toString())) {
+            && (dstu2Encounter.getStatus().equals(EncounterStatus.CANCELLED.toString())
+                || dstu2Encounter.getStatus().equals(EncounterStatus.FINISHED.toString())
+                || dstu2Encounter.getStatus().equals(EncounterStatus.ENTEREDINERROR.toString()))) {
           logger.info(
               " Encounter status is not null and is closed with a status value of {}",
               dstu2Encounter.getStatus());

@@ -122,7 +122,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (authDetails.getIsSystem()) {
+      } else if (Boolean.TRUE.equals(authDetails.getIsSystem())) {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
         String authValues = authDetails.getClientId() + ":" + authDetails.getClientSecret();
@@ -130,9 +130,10 @@ public class RefreshTokenScheduler {
             Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", authDetails.getScope());
-        if (Boolean.TRUE.equals(authDetails.getRequireAud()) && authDetails.getIsSystem()) {
+        map.add(GRANT_TYPE, CLIENT_CREDENTIALS);
+        map.add(SCOPE, authDetails.getScope());
+        if (Boolean.TRUE.equals(authDetails.getRequireAud())
+            && Boolean.TRUE.equals(authDetails.getIsSystem())) {
           logger.debug("Adding Aud Parameter while getting AccessToken");
           map.add("aud", authDetails.getEhrServerURL());
         }
@@ -141,7 +142,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (authDetails.getIsUserAccountLaunch()) {
+      } else if (Boolean.TRUE.equals(authDetails.getIsUserAccountLaunch())) {
         headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
 
         String tokenUrl =
@@ -235,7 +236,7 @@ public class RefreshTokenScheduler {
     logger.trace("Getting AccessToken for Client: {}", clientDetails.getClientId());
     try {
       RestTemplate resTemplate = new RestTemplate();
-      if (clientDetails.getIsSystem()) {
+      if (Boolean.TRUE.equals(clientDetails.getIsSystem())) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
@@ -244,8 +245,8 @@ public class RefreshTokenScheduler {
             Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", clientDetails.getScopes());
+        map.add(GRANT_TYPE, CLIENT_CREDENTIALS);
+        map.add(SCOPE, clientDetails.getScopes());
         if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
           logger.debug("Adding Aud Parameter while getting Access token");
           map.add("aud", clientDetails.getFhirServerBaseURL());
@@ -256,7 +257,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 clientDetails.getTokenURL(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (clientDetails.getIsUserAccountLaunch()) {
+      } else if (Boolean.TRUE.equals(clientDetails.getIsUserAccountLaunch())) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientDetails.getClientId(), clientDetails.getClientSecret());
 

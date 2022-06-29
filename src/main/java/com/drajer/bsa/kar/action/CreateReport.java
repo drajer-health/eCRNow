@@ -3,14 +3,16 @@ package com.drajer.bsa.kar.action;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -47,18 +49,33 @@ public class CreateReport extends BsaAction {
     BsaActionStatusType status = processTimingData(data);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled) {
+    if (status != BsaActionStatusType.SCHEDULED) {
 
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
+      Set<Resource> resources = new HashSet<>();
 
-      // Get necessary data to process.
-      HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      // Get the default queries.
+      Map<String, FhirQueryFilter> queries =
+          BsaServiceUtils.getDefaultQueriesForAction(this, data.getKar());
 
-      HashMap<ResourceType, Set<Resource>> finalRes = ehrService.loadJurisdicationData(data);
+      if (queries != null && !queries.isEmpty()) {
+
+        logger.info(" Found Default/Custom Queries for execution ");
+        // Try to execute the queries.
+        queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
+
+      } else {
+
+        // Try to Get the Resources that need to be retrieved using Resource Type since queries are
+        // not specified.
+        List<DataRequirement> inputRequirements = getInputData();
+        ehrService.getFilteredData(data, inputRequirements);
+        inputRequirements.forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
+      }
+
+      ehrService.loadJurisdicationData(data);
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {
@@ -75,7 +92,9 @@ public class CreateReport extends BsaAction {
             if (rc != null) {
 
               logger.info("Start creating report");
-              Resource output = rc.createReport(data, ehrService, dr.getId(), ct.asStringValue());
+              Resource output =
+                  rc.createReport(
+                      data, ehrService, resources, dr.getId(), ct.asStringValue(), this);
               logger.info("Finished creating report");
 
               if (output != null) {
@@ -87,7 +106,7 @@ public class CreateReport extends BsaAction {
 
                 data.addActionOutputById(dr.getId(), output);
 
-                if (BsaServiceUtils.hasCdaData(output)) {
+                if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
 
                   logger.info("Creating PH message for CDA Data ");
                   createPublicHealthMessageForCda(data, BsaTypes.getActionString(type), output);
@@ -103,22 +122,18 @@ public class CreateReport extends BsaAction {
         }
       }
 
-      if (conditionsMet(data)) {
-
+      if (Boolean.TRUE.equals(conditionsMet(data))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
-
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
-
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
-
       logger.info(
-          " Action may be executed in the future or Conditions have not been met, so cannot proceed any further. ");
-      logger.info(" Setting Action Status : {}", status);
+          " Action may execute in future or Conditions not met, can't process further. Setting Action Status : {}",
+          status);
       actStatus.setActionStatus(status);
     }
 
@@ -129,7 +144,7 @@ public class CreateReport extends BsaAction {
   public void createPublicHealthMessageForCda(
       KarProcessingData kd, String actionType, Resource output) {
 
-    List<DocumentReference> docrefs = new ArrayList<DocumentReference>();
+    List<DocumentReference> docrefs = new ArrayList<>();
     MessageHeader header = BsaServiceUtils.findMessageHeaderAndDocumentReferences(output, docrefs);
 
     for (DocumentReference docRef : docrefs) {
@@ -144,7 +159,7 @@ public class CreateReport extends BsaAction {
               + docRef.getId()
               + ".xml";
 
-      if (docRef.getContent().size() > 0) {
+      if (!docRef.getContent().isEmpty()) {
 
         DocumentReferenceContentComponent drcc = docRef.getContentFirstRep();
 
@@ -165,12 +180,27 @@ public class CreateReport extends BsaAction {
           msg.setxCorrelationId(kd.getxCorrelationId());
           msg.setxRequestId(kd.getxRequestId());
 
+          if (kd.getNotificationContext()
+              .getNotificationResourceType()
+              .equals(ResourceType.Encounter.toString())) {
+            msg.setEncounterId(msg.getNotifiedResourceId());
+          } else {
+            msg.setEncounterId("Unknown");
+          }
+
           // Set Message Information
-          msg.setSubmittedData(jsonParser.encodeResourceToString(output));
+          msg.setSubmittedFhirData(jsonParser.encodeResourceToString(output));
+          msg.setSubmittedCdaData(payload);
           msg.setSubmittedMessageType(header.getEventCoding().getCode());
           msg.setSubmittedDataId(docRef.getId());
           msg.setSubmittedMessageId(header.getId());
           msg.setInitiatingAction(actionType);
+          msg.setKarUniqueId(kd.getKar().getVersionUniqueId());
+
+          // Update Version and Matched Trigger Status
+          msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
+          msg.setTriggerMatchStatus(
+              BsaServiceUtils.getEncodedTriggerMatchStatus(kd.getCurrentTriggerMatchStatus()));
 
           // Create BitSet for MessageStatus and add attribute.
 
@@ -178,8 +208,13 @@ public class CreateReport extends BsaAction {
           logger.debug("Saving data to file {}", fileName);
           BsaServiceUtils.saveDataToFile(payload, fileName);
 
+          // Also update the payload in the KarProcessingData
+          kd.setSubmittedCdaData(payload);
+
           // Save the data in the table.
-          phDao.saveOrUpdate(msg);
+          PublicHealthMessage phm = phDao.saveOrUpdate(msg);
+          kd.setPhm(phm);
+
         } // attachment not null
         else {
           logger.info(" Document Reference attachement is empty, nothing to save ");

@@ -12,14 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -56,7 +49,7 @@ public class HealthcareSettingsController {
    * @return The HealthcareSetting object for the id provided
    */
   @CrossOrigin
-  @RequestMapping("/api/healthcareSettings/{hsId}")
+  @GetMapping("/api/healthcareSettings/{hsId}")
   public HealthcareSetting getHealthcareSettingById(@PathVariable("hsId") Integer hsId) {
     return healthcareSettingsService.getHealthcareSettingById(hsId);
   }
@@ -89,10 +82,10 @@ public class HealthcareSettingsController {
           JSONObject sec = security.getJSONObject("security");
           JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
           JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-          if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
+          if (object.getString(FHIR_VERSION).startsWith("1.")) {
             hsDetails.setFhirVersion(FhirVersionEnum.DSTU2.toString());
           }
-          if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
+          if (object.getString(FHIR_VERSION).startsWith("4.")) {
             hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
           }
 
@@ -163,7 +156,7 @@ public class HealthcareSettingsController {
    * @return The HealthcareSetting for the url provided
    */
   @CrossOrigin
-  @RequestMapping("/api/healthcareSettings")
+  @GetMapping("/api/healthcareSettings")
   public HealthcareSetting getHealthcareSettingsByUrl(@RequestParam(value = "url") String url) {
     return healthcareSettingsService.getHealthcareSettingByUrl(url);
   }
@@ -176,7 +169,7 @@ public class HealthcareSettingsController {
    * @return The existing list of HealthcareSettings.
    */
   @CrossOrigin
-  @RequestMapping("/api/healthcareSettings/")
+  @GetMapping("/api/healthcareSettings/")
   public List<HealthcareSetting> getAllHealthcareSettings() {
     return healthcareSettingsService.getAllHealthcareSettings();
   }

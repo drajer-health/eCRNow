@@ -1,0 +1,3 @@
+patient=/Patient/{{context.patientId}}
+encounter=/Encounter/{{context.encounterId}}
+conditions=/Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active

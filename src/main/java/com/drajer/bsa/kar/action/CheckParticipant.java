@@ -1,11 +1,10 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.kar.condition.FhirPathProcessor;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -16,12 +15,7 @@ public class CheckParticipant extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(CheckParticipant.class);
 
-  private FhirPathProcessor fhirPathProcessor;
-
-  public CheckParticipant() {
-
-    fhirPathProcessor = new FhirPathProcessor();
-  }
+  public CheckParticipant() {}
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -35,20 +29,15 @@ public class CheckParticipant extends BsaAction {
     BsaActionStatusType status = processTimingData(data);
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.Scheduled) {
+    if (status != BsaActionStatusType.SCHEDULED) {
 
       logger.info(
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
-      // Get the Resources that need to be retrieved.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
-      // Get necessary data to process.
-      HashMap<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, resourceTypes);
+      Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, this.getInputData());
 
       data.addActionStatus(getActionId(), actStatus);
 
-      // if (conditionsMet(data)) {
       if (true) { // Assume participants have matched
 
         // Execute sub Actions
@@ -58,7 +47,7 @@ public class CheckParticipant extends BsaAction {
         executeRelatedActions(data, ehrService);
       }
 
-      actStatus.setActionStatus(BsaActionStatusType.Completed);
+      actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
 

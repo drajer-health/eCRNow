@@ -8,6 +8,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.BsaScheduler;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.eca.model.TimingSchedule;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import java.time.Instant;
@@ -18,10 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -32,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public abstract class BsaAction {
 
-  private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifact.class);
+  private final Logger logger = LoggerFactory.getLogger(BsaAction.class);
 
   /** The unique Id for the action. */
   protected String actionId;
@@ -49,6 +53,31 @@ public abstract class BsaAction {
   /** The list of Resource Types summarized from input Data */
   protected HashMap<String, ResourceType> inputResourceTypes;
 
+  /**
+   * The list of Default Queries from the KAR for the specific Input DataRequirement which are part
+   * of the action. Any queries associated with Input DataRequirements of the sub actions will be
+   * part of the sub-action itself. However when the list of queries are returned, all queries
+   * including the ones from the sub-actions will be returned.
+   *
+   * <p>The Map below contains the Id of the DataRequirement as the key which is unique across the
+   * plan definition. The Value is the QueryFilter which contains the default query or the
+   * customized queries from a config file.
+   */
+  protected HashMap<String, FhirQueryFilter> inputDataRequirementQueries;
+
+  /**
+   * The attribute contains a mapping of input data requirements to other related data items in the
+   * same plan definition that may have already been extracted with queries.
+   *
+   * <p>for e.g if a Patient is already known, the same patient can be used everywhere and there is
+   * no need to query the EHR again. the Related Data would identify the patient already retrieved.
+   *
+   * <p>The Map below contains the Id of the DataRequirement as the Key which is unique across the
+   * plan definition. The Value points to another Id of the DataRequirement which may already have
+   * been retrieved from the EHR and can be used for the purposes of executing this action.
+   */
+  protected HashMap<String, String> inputDataIdToRelatedDataIdMap;
+
   /** The list of output data the action is supposed to create. */
   protected List<DataRequirement> outputData;
 
@@ -57,7 +86,7 @@ public abstract class BsaAction {
    * conditions are not evaluated to true, then the rest of the actions are not processed. If there
    * are more than one conditions in the List, then all of them have to be true.
    */
-  private List<BsaCondition> conditions;
+  protected List<BsaCondition> conditions;
 
   /**
    * The list of related actions that have to be executed once this action is complete. The
@@ -106,7 +135,7 @@ public abstract class BsaAction {
     for (BsaCondition bc : conditions) {
 
       // If any of the conditions evaluate to be false, then the method returns false.
-      if (!bc.getConditionProcessor().evaluateExpression(bc, this, kd)) {
+      if (Boolean.FALSE.equals(bc.getConditionProcessor().evaluateExpression(bc, this, kd))) {
         logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
         retVal = false;
       }
@@ -161,7 +190,12 @@ public abstract class BsaAction {
 
             if (t != null && !ignoreTimers)
               scheduler.scheduleJob(
-                  st.getId(), ract.getAction().getActionId(), ract.getAction().getType(), t);
+                  st.getId(),
+                  ract.getAction().getActionId(),
+                  ract.getAction().getType(),
+                  t,
+                  kd.getxRequestId(),
+                  MDC.getCopyOfContextMap());
             else {
               logger.info(
                   " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
@@ -188,30 +222,50 @@ public abstract class BsaAction {
 
   public BsaActionStatusType processTimingData(KarProcessingData kd) {
 
-    if (timingData != null && timingData.size() > 0 && !ignoreTimers) {
+    if (timingData != null && !timingData.isEmpty() && Boolean.FALSE.equals(ignoreTimers)) {
 
       // Check and setup future timers.
 
-      return BsaActionStatusType.Scheduled;
+      return BsaActionStatusType.SCHEDULED;
     } else {
 
       logger.info(" No timing data, so continue with the execution of the action ");
-      return BsaActionStatusType.InProgress;
+      return BsaActionStatusType.IN_PROGRESS;
     }
   }
 
-  public BsaAction() {
+  public void populateParamsForConditionEvaluation(KarProcessingData data) {
+
+    Parameters params = new Parameters();
+    for (DataRequirement dr : inputData) {
+
+      Set<Resource> resources = data.getDataForId(dr.getId(), this.getRelatedDataId(dr.getId()));
+
+      BsaServiceUtils.convertDataToParameters(
+          dr.getId(),
+          dr.getType(),
+          (dr.hasLimit() ? Integer.toString(dr.getLimit()) : "*"),
+          resources,
+          params);
+    }
+
+    data.addParameters(actionId, params);
+  }
+
+  protected BsaAction() {
 
     actionId = "";
     namedEventTriggers = new HashSet<>();
-    inputData = new ArrayList<DataRequirement>();
+    inputData = new ArrayList<>();
     inputResourceTypes = new HashMap<>();
-    outputData = new ArrayList<DataRequirement>();
-    conditions = new ArrayList<BsaCondition>();
+    outputData = new ArrayList<>();
+    conditions = new ArrayList<>();
     relatedActions = new HashMap<>();
-    timingData = new ArrayList<TimingSchedule>();
+    timingData = new ArrayList<>();
     subActions = new ArrayList<>();
     measureUri = "";
+    inputDataRequirementQueries = new HashMap<>();
+    inputDataIdToRelatedDataIdMap = new HashMap<>();
   }
 
   public String getActionId() {
@@ -365,14 +419,67 @@ public abstract class BsaAction {
     this.actionId = actionId;
   }
 
+  public HashMap<String, FhirQueryFilter> getInputDataRequirementQueries() {
+    return inputDataRequirementQueries;
+  }
+
+  public void setInputDataRequirementQueries(
+      HashMap<String, FhirQueryFilter> inputDataRequirementQueries) {
+    this.inputDataRequirementQueries = inputDataRequirementQueries;
+  }
+
+  public HashMap<String, String> getInputDataIdToRelatedDataIdMap() {
+    return inputDataIdToRelatedDataIdMap;
+  }
+
+  public void setInputDataIdToRelatedDataIdMap(
+      HashMap<String, String> inputDataIdToRelatedDataIdMap) {
+    this.inputDataIdToRelatedDataIdMap = inputDataIdToRelatedDataIdMap;
+  }
+
   public void addRelatedAction(BsaRelatedAction ract) {
 
     if (relatedActions.containsKey(ract.getRelationship())) {
       relatedActions.get(ract.getRelationship()).add(ract);
     } else {
-      Set<BsaRelatedAction> racts = new HashSet<BsaRelatedAction>();
+      Set<BsaRelatedAction> racts = new HashSet<>();
       racts.add(ract);
       relatedActions.put(ract.getRelationship(), racts);
+    }
+  }
+
+  public void addQueryFilter(String drId, FhirQueryFilter queryFilter) {
+
+    if (inputDataRequirementQueries.containsKey(drId)) {
+
+      logger.error(" Duplicate Id {} encountered, so this should be flagged  as an error", drId);
+
+    } else {
+      logger.debug(" Adding query filter {} to DR Id {}", queryFilter.getQueryString(), drId);
+      inputDataRequirementQueries.put(drId, queryFilter);
+    }
+  }
+
+  public void addRelatedDataId(String drId, String relatedId) {
+
+    if (inputDataIdToRelatedDataIdMap.containsKey(drId)) {
+
+      logger.error(" Duplicate Id {} encountered, so this should be flagged  as an error", drId);
+
+    } else {
+      logger.debug(" Adding Related Data Id {} to DR Id {}", relatedId, drId);
+      inputDataIdToRelatedDataIdMap.put(drId, relatedId);
+    }
+  }
+
+  public String getRelatedDataId(String id) {
+
+    if (inputDataIdToRelatedDataIdMap.containsKey(id)) {
+
+      return inputDataIdToRelatedDataIdMap.get(id);
+
+    } else {
+      return null;
     }
   }
 
@@ -380,11 +487,22 @@ public abstract class BsaAction {
 
     logger.info(" **** START Printing Action **** ({})", actionId);
 
-    logger.info(" Action Type : {}", type.toString());
+    logger.info(" Action Type : {}", type);
 
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : ({})", ne));
 
     conditions.forEach(con -> con.log());
+
+    if (inputDataRequirementQueries != null)
+      inputDataRequirementQueries.forEach(
+          (key, value) -> {
+            logger.info(" DR Id: {}", key);
+            value.log();
+          });
+
+    if (inputDataIdToRelatedDataIdMap != null)
+      inputDataIdToRelatedDataIdMap.forEach(
+          (key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
 
     if (relatedActions != null && relatedActions.size() > 0) {
 
@@ -393,7 +511,7 @@ public abstract class BsaAction {
       for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
           relatedActions.entrySet()) {
 
-        logger.info(" ****** RelationshipType : ({}) ****** ", entry.getKey().toString());
+        logger.info(" ****** RelationshipType : ({}) ****** ", entry.getKey());
         Set<BsaRelatedAction> racts = entry.getValue();
 
         for (BsaRelatedAction ract : racts) {
@@ -403,7 +521,7 @@ public abstract class BsaAction {
       }
     }
 
-    if (subActions.size() > 0) {
+    if (!subActions.isEmpty()) {
 
       logger.info(" ****** Number of SubActions : ({}) ****** ", subActions.size());
       for (BsaAction subAct : subActions) {
@@ -415,8 +533,7 @@ public abstract class BsaAction {
           for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
               subAct.getRelatedActions().entrySet()) {
 
-            logger.info(
-                " ********** RelationshipType : ({}) ********** ", entry.getKey().toString());
+            logger.info(" ********** RelationshipType : ({}) ********** ", entry.getKey());
             Set<BsaRelatedAction> racts = entry.getValue();
 
             for (BsaRelatedAction ract : racts) {
@@ -432,6 +549,24 @@ public abstract class BsaAction {
               " ********** No Related Actions for sub Action : ({}) ********** ",
               subAct.getActionId());
         }
+
+        logger.info(" START Printing Sub Actions Data Requirements ");
+
+        if (subAct.getInputDataRequirementQueries() != null)
+          subAct
+              .getInputDataRequirementQueries()
+              .forEach(
+                  (key, value) -> {
+                    logger.info(" DR Id: {}", key);
+                    value.log();
+                  });
+
+        if (subAct.getInputDataIdToRelatedDataIdMap() != null)
+          subAct
+              .getInputDataIdToRelatedDataIdMap()
+              .forEach((key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
+
+        logger.info(" END Printing Sub Actions Data Requirements ");
       }
 
     } else {
@@ -445,7 +580,7 @@ public abstract class BsaAction {
 
     logger.info(" **** START Printing Action **** {}", actionId);
 
-    logger.info(" Action Type : {}", type.toString());
+    logger.info(" Action Type : {}", type);
     namedEventTriggers.forEach(ne -> logger.info(" Named Event : {}", ne));
 
     for (DataRequirement inp : inputData) {
@@ -453,7 +588,7 @@ public abstract class BsaAction {
       logger.info(" Input Data Req Id : {}", inp.getId());
       logger.info(" Input Data Type : {}", inp.getType());
 
-      if (inp.getProfile() != null && inp.getProfile().size() >= 1) {
+      if (inp.getProfile() != null && !inp.getProfile().isEmpty()) {
         logger.info(" Input Data Profile : {}", inp.getProfile().get(0).asStringValue());
       }
 
@@ -482,7 +617,7 @@ public abstract class BsaAction {
       logger.info(" Output Data Req Id : {}", output.getId());
       logger.info(" Output Data Type : {}", output.getType());
 
-      if (output.getProfile() != null && output.getProfile().size() >= 1) {
+      if (output.getProfile() != null && !output.getProfile().isEmpty()) {
         logger.info(" Output Data Profile : {}", output.getProfile().get(0).asStringValue());
       }
     }
@@ -491,6 +626,17 @@ public abstract class BsaAction {
 
     if (relatedActions != null)
       relatedActions.forEach((key, value) -> value.forEach(act -> act.log()));
+
+    if (inputDataRequirementQueries != null)
+      inputDataRequirementQueries.forEach(
+          (key, value) -> {
+            logger.info(" DR Id: {}", key);
+            value.log();
+          });
+
+    if (inputDataIdToRelatedDataIdMap != null)
+      inputDataIdToRelatedDataIdMap.forEach(
+          (key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
 
     timingData.forEach(td -> td.print());
 

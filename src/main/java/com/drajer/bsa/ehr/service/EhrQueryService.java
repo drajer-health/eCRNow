@@ -1,10 +1,16 @@
 package com.drajer.bsa.ehr.service;
 
+import com.drajer.bsa.kar.model.FhirQueryFilter;
+import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.json.JSONObject;
 
 /**
  *
@@ -24,14 +30,44 @@ public interface EhrQueryService {
    *     previous data etc.
    * @return The Map of Resources to its type.
    */
-  public HashMap<ResourceType, Set<Resource>> getFilteredData(
-      KarProcessingData kd, HashMap<String, ResourceType> resTypes);
+  Map<ResourceType, Set<Resource>> getFilteredData(
+      KarProcessingData kd, Map<String, ResourceType> resTypes);
 
-  public void createResource(KarProcessingData kd, Resource resource);
+  /**
+   * The method is used to retrieve data from the Ehr.
+   *
+   * @param kd The processing context which contains information such as patient, encounter,
+   *     previous data etc.
+   * @param dRequirements The list of data requirements to get the data for.
+   * @return The Map of Resources to its type.
+   */
+  Map<ResourceType, Set<Resource>> getFilteredData(
+      KarProcessingData kd, List<DataRequirement> dRequirements);
 
-  public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
+  Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
 
-  public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
+  void createResource(KarProcessingData kd, Resource resource);
 
-  public Resource getResourceById(KarProcessingData data, String resourceName, String id);
+  void updateResource(KarProcessingData kd, Resource resource);
+
+  void deleteResource(KarProcessingData kd, ResourceType resourceType, String id);
+
+  Resource getResourceById(KarProcessingData data, String resourceName, String id);
+
+  Resource getResourceByUrl(KarProcessingData data, String resourceName, String id);
+
+  DocumentReference constructR4DocumentReference(
+      String payload,
+      String patientId,
+      String encounterID,
+      String providerUUID,
+      String rrDocRefMimeType,
+      String title,
+      String docCode,
+      String docDisplayName,
+      String docCodeSystem);
+
+  JSONObject getAuthorizationToken(HealthcareSetting hs);
+
+  void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
 }
