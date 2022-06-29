@@ -15,7 +15,7 @@
       }
     }
   ],
-  "url": "http://hl7.org/fhir/us/ecr/ValueSet/dxtc",
+  "url": "http://example.org/fhir/ValueSet/dxtc",
   "identifier": [
     {
       "system": "urn:ietf:rfc:3986",

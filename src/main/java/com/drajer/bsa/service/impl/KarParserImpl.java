@@ -626,10 +626,17 @@ public class KarParserImpl implements KarParser {
         bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
         bc.setLogicExpression(con.getExpression());
         bc.setLibraryProcessor(libraryProcessor);
+        bc.setNormalReportingDuration(null);
         action.addCondition(bc);
-      } else if (con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
-          && (cqlEnabled || fhirpathEnabled)) {
+      } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+          || con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+              && (cqlEnabled || fhirpathEnabled)) {
         Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+        if (ext == null) {
+          ext =
+              con.getExpression()
+                  .getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+        }
         Expression exp = (Expression) ext.getValue();
         if (exp != null
             // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
@@ -640,6 +647,9 @@ public class KarParserImpl implements KarParser {
 
           logger.info(" Found a CQL Expression from an alternative expression extension");
           BsaCqlCondition bc = new BsaCqlCondition();
+          if (libraryCanonical == null && exp.hasReferenceElement()) {
+            libraryCanonical = new CanonicalType(exp.getReference());
+          }
           bc.setUrl(libraryCanonical.getValue());
 
           // Set location of eRSD bundle for loading terminology and library logic

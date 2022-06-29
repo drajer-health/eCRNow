@@ -15,7 +15,7 @@
       }
     }
   ],
-  "url": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-lotc-example",
+  "url": "http://example.org/fhir/ValueSet/valueset-lotc-example",
   "identifier": [
     {
       "system": "urn:ietf:rfc:3986",

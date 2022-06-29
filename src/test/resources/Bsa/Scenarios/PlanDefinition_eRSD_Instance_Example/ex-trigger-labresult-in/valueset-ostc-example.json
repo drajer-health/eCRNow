@@ -15,7 +15,7 @@
       }
     }
   ],
-  "url": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-ostc-example",
+  "url": "http://example.org/fhir/ValueSet/valueset-ostc-example",
   "identifier": [
     {
       "system": "urn:ietf:rfc:3986",

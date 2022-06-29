@@ -1,6 +1,8 @@
 package com.drajer.bsa.kar.condition;
 
 import com.drajer.bsa.kar.model.BsaCondition;
+
+import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 
@@ -16,6 +18,8 @@ public class BsaCqlCondition extends BsaCondition {
 
   private String patientId;
   private String url;
+
+  private Duration normalReportingDuration;
 
   public Endpoint getDataEndpoint() {
     return dataEndpoint;
@@ -55,6 +59,14 @@ public class BsaCqlCondition extends BsaCondition {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public Duration getNormalReportingDuration() {
+    return normalReportingDuration;
+  }
+
+  public void setNormalReportingDuration(Duration normalReportingDuration) {
+    this.normalReportingDuration = normalReportingDuration;
   }
 
   public BsaCqlCondition() {
