@@ -328,7 +328,7 @@ public class LaunchDetails {
             new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
-        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        logger.debug("AccessToken is Valid. No need to get new AccessToken");
         return accessToken;
       }
 

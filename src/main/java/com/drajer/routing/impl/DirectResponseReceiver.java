@@ -1,9 +1,13 @@
 package com.drajer.routing.impl;
 
+import com.drajer.ecrapp.model.EicrTypes;
+import com.drajer.ecrapp.model.ReportabilityResponse;
+import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.routing.RRReceiver;
 import com.drajer.sof.model.LaunchDetails;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.UUID;
@@ -22,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,6 +36,9 @@ public class DirectResponseReceiver extends RRReceiver {
 
   private static final String IMAP = "imaps";
   private static final String INBOX = "Inbox";
+  
+  @Autowired
+  EicrRRService rrService;
 
   @Override
   public Object receiveRespone(Object context) {
@@ -51,15 +59,14 @@ public class DirectResponseReceiver extends RRReceiver {
 
     try {
 
-      String mId;
+      String mId = "";
       logger.info("Reading mail..");
       // Properties for Javamail
       Properties props = new Properties();
-
-      props.put("mail.smtp.auth", "true");
-      props.setProperty("mail.imap.ssl.trust", "*");
-      props.setProperty("mail.imap.ssl.enable", "true");
-
+      props.put("mail.imap.auth", "true");
+      props.put("mail.imap.ssl.enable", "true");
+      props.put("mail.imap.ssl.trust", "*");
+      
       Session session = Session.getInstance(props, null);
 
       Store store = session.getStore("imap");
@@ -116,13 +123,24 @@ public class DirectResponseReceiver extends RRReceiver {
               String filename = UUID.randomUUID() + ".xml";
               logger.info("Found XML Attachment");
 
+              
+              
               try (InputStream stream = bodyPart.getInputStream()) {
-                byte[] targetArray = IOUtils.toByteArray(stream);
-                FileUtils.writeByteArrayToFile(new File(filename), targetArray);
-              }
-              logger.info(
-                  " Need to determine what to do with the response received from :  {}",
-                  senderAddress);
+            	  
+            	  ReportabilityResponse data = new ReportabilityResponse();
+                  data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+                  String rrXml = "<?xml version=\"1.0\"?>";
+                  rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
+                  data.setRrXml(rrXml);
+                  
+                  FileUtils.writeStringToFile(
+                          new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
+                  
+                  logger.debug(" RrXML : {}", data.getRrXml());
+                  
+                  rrService.handleReportabilityResponse(data, mId);
+                
+              }             
             }
           }
         }
