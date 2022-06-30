@@ -77,7 +77,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected ApplicationUtils ap;
 
-  protected HealthcareSettingsDao hsDao;
+  @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired ApplicationContext applicationContext;
 

@@ -25,7 +25,7 @@
           {
             "name": "subscription",
             "valueReference": {
-              "reference": "http://localhost:9010/fhir/Subscription/encounter-start"
+              "reference": "http://localhost:9011/fhir/Subscription/encounter-start"
             }
           },
           {

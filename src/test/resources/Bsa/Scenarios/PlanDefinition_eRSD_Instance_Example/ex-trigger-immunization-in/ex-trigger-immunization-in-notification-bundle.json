@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-start"
+                "reference" : "http://localhost:9011/fhir/Subscription/encounter-start"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/ex-trigger-immunization-in-encounter-1",
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/ex-trigger-immunization-in-encounter-1",
         "resource" : {
           "resourceType": "Encounter",
           "id": "ex-trigger-immunization-in-encounter-1",

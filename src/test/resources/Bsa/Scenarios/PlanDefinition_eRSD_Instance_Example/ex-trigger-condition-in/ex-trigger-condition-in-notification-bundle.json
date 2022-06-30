@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-start"
+                "reference" : "http://localhost:9011/fhir/Subscription/encounter-start"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/ex-trigger-condition-in-encounter-1",
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/ex-trigger-condition-in-encounter-1",
         "resource" : {
           "resourceType": "Encounter",
           "id": "ex-trigger-condition-in-encounter-1",
@@ -68,7 +68,7 @@
               "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter"
             ]
           },
-          "status": "finished",
+          "status": "in-progress",
           "class": {
             "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
             "code": "IMP",
@@ -91,7 +91,7 @@
           },
           "period": {
             "start": "2020-01-01T11:00:00-07:00",
-            "end": "2020-01-01T12:00:00-07:00"
+            "end": "2020-01-03T12:00:00-07:00"
           }
         },
         "request" : {

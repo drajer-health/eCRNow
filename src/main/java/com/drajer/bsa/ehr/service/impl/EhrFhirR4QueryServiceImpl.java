@@ -143,14 +143,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
 
-    for (File queryFile : files) {
+    if (files != null) {
+      for (File queryFile : files) {
 
-      if (queryFile.isFile()
-          && QUERY_FILE_EXT.contentEquals(FilenameUtils.getExtension(queryFile.getName()))) {
+        if (queryFile.isFile()
+            && QUERY_FILE_EXT.contentEquals(FilenameUtils.getExtension(queryFile.getName()))) {
 
-        logger.info(" Processing Custom Query File  {}", queryFile.getName());
-        processQueryFile(queryFile);
-      } // For a File
+          logger.info(" Processing Custom Query File  {}", queryFile.getName());
+          processQueryFile(queryFile);
+        } // For a File
+      }
     }
   }
 
@@ -983,7 +985,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     String queryToExecute =
         data.getKar().getQueryForDataRequirement(dataReqId, query.getRelatedDataId());
 
-    if (customQueries.containsKey(customQueryFile)) {
+    if (customQueries != null && customQueries.containsKey(customQueryFile)) {
 
       if (customQueries.get(customQueryFile).containsKey(dataReqId)) {
 
