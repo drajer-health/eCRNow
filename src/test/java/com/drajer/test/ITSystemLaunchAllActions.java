@@ -35,11 +35,11 @@ import org.springframework.http.*;
 /**
  * Description: This test class is created for testing all the actions. ersd.json for this test is
  * modified with actions as below. MatchTrigger - Will execute without any dependency. Create_EICR -
- * Will execute after 2 seconds of MatchTrigger action. Periodic_EICR - will execute after 20
- * seconds of MatchTrigger action. with frequency 1 with interval of 20 seconds. CloseOut_EICR -
- * will execute immediately after CreateEicr action is completed. with frequency 1 with interval of
- * 10 seconds. Validate_EICR - will execute immediately after each EICR created with above action.
- * Submit_EICR - will execute immediately after ValidateEICR.
+ * Will execute after 2 seconds of MatchTrigger action. Periodic_EICR - will execute after 10
+ * seconds of MatchTrigger action. with frequency 1 with interval of 10 seconds. CloseOut_EICR -
+ * will execute after CreateEicr action is completed, with frequency 1 with interval of 20 seconds.
+ * Validate_EICR - will execute immediately after each EICR created with above action. Submit_EICR -
+ * will execute immediately after ValidateEICR.
  */
 @RunWith(Parameterized.class)
 public class ITSystemLaunchAllActions extends BaseIntegrationTest {
