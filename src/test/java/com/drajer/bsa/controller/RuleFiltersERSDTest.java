@@ -116,6 +116,61 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
             "PlanDefinition_eRSD_Instance_Example",
             "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
             "ex-trigger-out",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-problem-FullECR-WithNonCOVIDTriggerCode",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-encounterDiagnosis-FullECR-withcovidTriggerCode",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-LabOrder-FullECR-WithCovid19TriggerCode",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-encounterDiagnosis-FullECR-WithCovidAndNonCovidTrigger",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-result-FullECR-WithNonCOVIDTriggerCode",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-result-FullECR-CovidAndNonCovidTriggerCode",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "eCR-LabOrder-FullECR-WithNonCOVIDTriggerCode",
+            TRIGGERED_ONLY),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "NoEcr-DiagnosisWithNonTriggerCode",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "NoECR-LabOrderWithNonTriggerCode",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "NoECR-problem-WithNonTriggerCode",
+            NOT_TRIGGERED),
+        new TestCaseInfo(
+            "PlanDefinition_eRSD_Instance_Example",
+            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+            "NoECR-resultWithNonTriggerCode",
             NOT_TRIGGERED));
   }
 }

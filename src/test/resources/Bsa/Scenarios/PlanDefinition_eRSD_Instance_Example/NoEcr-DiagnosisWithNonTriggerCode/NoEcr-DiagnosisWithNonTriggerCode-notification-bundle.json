@@ -1,0 +1,185 @@
+{
+    "resourceType": "Bundle",
+    "id": "497ca6a7-0ad7-4ecc-a0b6-569513314acd",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition?patient=12765399"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574444509",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "d2574444509",
+                "meta": {
+                    "versionId": "2574444509",
+                    "lastUpdated": "2022-02-10T09:39:53.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, EIGHT</p><p><b>Diagnosis</b>: Migraine, unspecified, not intractable, without status migrainosus, Migraine, unspecified, not intractable, without status migrainosus</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Feb 10, 2022</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "G43.909",
+                            "display": "Migraine, unspecified, not intractable, without status migrainosus",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Migraine, unspecified, not intractable, without status migrainosus"
+                },
+                "subject": {
+                    "reference": "Patient/12765399",
+                    "display": "ECRTEST, EIGHT"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968924"
+                },
+                "onsetDateTime": "2022-02-10",
+                "recordedDate": "2022-02-10T09:39:53.000Z",
+                "recorder": {
+                    "reference": "Practitioner/3215927",
+                    "display": "Cerner Test, Physician - Infectious Disease Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574511075",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "d2574511075",
+                "meta": {
+                    "versionId": "2574511075",
+                    "lastUpdated": "2022-04-13T11:36:58.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, EIGHT</p><p><b>Diagnosis</b>: Mucocutaneous lymph node syndrome [Kawasaki], Mucocutaneous lymph node syndrome [Kawasaki]</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Apr 13, 2022</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "M30.3",
+                            "display": "Mucocutaneous lymph node syndrome [Kawasaki]",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mucocutaneous lymph node syndrome [Kawasaki]"
+                },
+                "subject": {
+                    "reference": "Patient/12765399",
+                    "display": "ECRTEST, EIGHT"
+                },
+                "encounter": {
+                    "reference": "Encounter/97972536"
+                },
+                "onsetDateTime": "2022-04-13",
+                "recordedDate": "2022-04-13T11:36:58.000Z",
+                "recorder": {
+                    "reference": "Practitioner/3215927",
+                    "display": "Cerner Test, Physician - Infectious Disease Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        }
+    ]
+}
