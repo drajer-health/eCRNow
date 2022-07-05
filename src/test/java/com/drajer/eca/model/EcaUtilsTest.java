@@ -92,7 +92,7 @@ public class EcaUtilsTest {
     setupMockForMatchTrigger();
     when(mockDstu2Data.getCodesForExpression("mock test path")).thenReturn(ptCodes);
     when(ApplicationUtils.convertCodeableConceptsToString(ptCodes)).thenReturn(codesToMatch);
-    when(mockValueSet.getCovidValueSetsAsStringForGrouper(anyString()))
+    when(mockValueSet.getEmergentValueSetsAsStringForGrouper(anyString()))
         .thenReturn(codesToMatchAgainst);
     when(mockDetails.getIsCovid()).thenReturn(true);
 
@@ -131,7 +131,7 @@ public class EcaUtilsTest {
     setupMockForMatchTrigger();
     when(mockR4Data.getR4CodesForExpression("mock test path")).thenReturn(ptCodes1);
     when(ApplicationUtils.convertR4CodeableConceptsToString(ptCodes1)).thenReturn(codesToMatch);
-    when(mockValueSet.getCovidValueSetsAsStringForGrouper(anyString()))
+    when(mockValueSet.getEmergentValueSetsAsStringForGrouper(anyString()))
         .thenReturn(codesToMatchAgainst);
     when(mockDetails.getIsCovid()).thenReturn(true);
 

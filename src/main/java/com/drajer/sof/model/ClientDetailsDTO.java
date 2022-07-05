@@ -57,6 +57,8 @@ public class ClientDetailsDTO {
 
   private Boolean isFullEcr;
 
+  private Boolean isEmergentReportingEnabled;
+
   private Boolean debugFhirQueryAndEicr;
 
   private Boolean requireAud = false;
@@ -285,6 +287,14 @@ public class ClientDetailsDTO {
 
   public void setLastUpdated(Date lastUpdated) {
     this.lastUpdated = lastUpdated;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
   }
 
   public void print() {
