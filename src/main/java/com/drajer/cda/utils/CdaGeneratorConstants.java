@@ -801,6 +801,8 @@ public class CdaGeneratorConstants {
   public static final String NULL_FLAVOR_NAME = "nullFlavor";
   public static final String TABLE_BORDER_ATTR_NAME = "border";
   public static final String TABLE_WIDTH_ATTR_NAME = "width";
+  public static final String USE_ATTR_NAME = "use";
+  public static final String QUALIFIER_ATTR_NAME = "qualifier";
 
   // Null Flavors
   public static final String NF_NI = "NI";
@@ -1019,8 +1021,70 @@ public class CdaGeneratorConstants {
       }
 
     } else {
-      return "WP";
+      return "HP";
     }
+  }
+
+  public static String getCodeForAddressUse(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("home")) {
+        return "HP";
+      } else if (val.contentEquals("work")) {
+        return "WP";
+      } else if (val.contentEquals("temp")) {
+        return "TMP";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate Billing and Old which is present in FHIR but not in CDA
+
+  }
+
+  public static String getCodeForNameQualifier(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("official")) {
+        return "PR";
+      } else if (val.contentEquals("nickname")) {
+        return "CL";
+      } else if (val.contentEquals("maiden")) {
+        return "BR";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate Anonymous, Temp and Old which is present in FHIR but not in CDA
+
+  }
+
+  public static String getCodeForNameUse(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("official") || val.contentEquals("usual")) {
+        return "L";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate Anonymous, Temp and Old which is present in FHIR but not in CDA
+
   }
 
   private static String getSplitValueURL(Object theValue) {

@@ -69,28 +69,29 @@ public class ValueSetServiceImpl implements ValueSetService {
     List<DataRequirement> datareqs = triggerDefinition.getData();
 
     Set<ValueSet> grouperToValueSets = new HashSet<>();
-    Set<ValueSet> grouperToCovidValueSets = new HashSet<>();
+    Set<ValueSet> grouperToEmergentValueSets = new HashSet<>();
 
     for (DataRequirement d : datareqs) {
 
       DataRequirementCodeFilterComponent codeFilter = d.getCodeFilterFirstRep();
 
-      logger.debug(" Getting Value Set List for Grouper {}", codeFilter.getValueSet());
+      logger.info(" Getting Value Set List for Grouper {}", codeFilter.getValueSet());
 
       List<CanonicalType> valueSetIdList =
           ApplicationUtils.getValueSetListFromGrouper(codeFilter.getValueSet());
 
-      logger.debug(
+      logger.info(
           " Size of valueSetIdList = {}",
           ((valueSetIdList == null) ? "Null" : valueSetIdList.size()));
 
       grouperToValueSets = ApplicationUtils.getValueSetByIds(valueSetIdList);
 
-      logger.debug(" Size of Value Sets for Grouper : {}", grouperToValueSets.size());
+      logger.info(" Size of Value Sets for Grouper : {}", grouperToValueSets.size());
 
-      grouperToCovidValueSets = ApplicationUtils.getCovidValueSetByIds(valueSetIdList);
+      grouperToEmergentValueSets = ApplicationUtils.getEmergentValueSetByIds(valueSetIdList);
 
-      logger.debug(" Size of Covid Value Sets for Grouper : {}", grouperToCovidValueSets.size());
+      logger.info(
+          " Size of Emergent Value Sets for Grouper : {}", grouperToEmergentValueSets.size());
     }
 
     DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();
@@ -131,7 +132,7 @@ public class ValueSetServiceImpl implements ValueSetService {
       ValueSetSingleton.getInstance()
           .addGrouperToValueSetMap(valuSetGrouper.getId(), grouperToValueSets);
       ValueSetSingleton.getInstance()
-          .addGrouperToCovidValueSetMap(valuSetGrouper.getId(), grouperToCovidValueSets);
+          .addGrouperToEmergentValueSetMap(valuSetGrouper.getId(), grouperToEmergentValueSets);
     }
   }
 }
