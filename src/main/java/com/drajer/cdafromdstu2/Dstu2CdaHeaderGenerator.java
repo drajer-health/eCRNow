@@ -42,7 +42,7 @@ public class Dstu2CdaHeaderGenerator {
     if (data != null) {
 
       eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
-      
+
       String docId = CdaGeneratorUtils.getGuid();
       eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));
       ecr.setEicrDocId(docId);
@@ -614,6 +614,16 @@ public class Dstu2CdaHeaderGenerator {
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+
+        // Add address
+        List<AddressDt> addrs = new ArrayList<>();
+        if (guardianContact.getAddress() != null) {
+
+          addrs.add(guardianContact.getAddress());
+          patientDetails.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+        } else {
+          patientDetails.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+        }
 
         // Add Telecom
         patientDetails.append(Dstu2CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));

@@ -791,11 +791,13 @@ public class CdaHeaderGenerator {
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
 
         // Add address if found
+        List<Address> addrs = new ArrayList<>();
         if (guardianContact.getAddress() != null) {
 
           logger.debug("Adding Address for Guardian");
-          List<Address> addrs = new ArrayList<>();
           addrs.add(guardianContact.getAddress());
+          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
+        } else {
           patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
         }
 
