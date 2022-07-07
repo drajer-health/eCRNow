@@ -22,6 +22,7 @@ import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
@@ -34,15 +35,26 @@ public class Dstu2CdaHeaderGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaHeaderGenerator.class);
 
-  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details) {
+  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details, Eicr ecr) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
     if (data != null) {
 
       eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
+      
+      String docId = CdaGeneratorUtils.getGuid();
+      eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));
+      ecr.setEicrDocId(docId);
+      ecr.setxCorrelationId(docId);
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+      // Set the other eICR details.
+      ecr.setFhirServerUrl(details.getEhrServerURL());
+      ecr.setLaunchPatientId(details.getLaunchPatientId());
+      ecr.setEncounterId(details.getEncounterId());
+      ecr.setSetId(details.getSetId());
+      ecr.setDocVersion(details.getVersionNumber());
+      ecr.setxRequestId(details.getxRequestId());
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForCD(
