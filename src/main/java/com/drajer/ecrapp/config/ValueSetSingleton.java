@@ -227,7 +227,6 @@ public class ValueSetSingleton {
     }
   }
 
-  
   public Set<String> getValueSetsAsStringForGrouper(String path) {
 
     String grouperId = null;

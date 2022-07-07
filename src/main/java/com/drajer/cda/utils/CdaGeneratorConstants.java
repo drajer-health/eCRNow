@@ -897,6 +897,8 @@ public class CdaGeneratorConstants {
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
+  private static HashMap<String, Pair<String, String>> dstu2oidMap = new HashMap<>();
+  private static HashMap<String, Pair<String, String>> dstu2uriMap = new HashMap<>();
   private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
 
   // Map to hold OID to Name
@@ -939,6 +941,21 @@ public class CdaGeneratorConstants {
       Properties prop2 = new Properties();
       prop2.load(oidNames);
       prop2.forEach((key, value) -> oidNameMap.put((String) key, (String) value));
+
+      InputStream dstu2input =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("oid-uri-mapping-dstu2.properties");
+      {
+        Properties prop3 = new Properties();
+        prop3.load(dstu2input);
+        prop3.forEach(
+            (key, value) -> {
+              String name = StringUtils.substringAfterLast((String) value, "/");
+              dstu2oidMap.put((String) key, new Pair<>((String) value, name));
+              dstu2uriMap.put((String) value, new Pair<>((String) key, name));
+            });
+      }
 
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
@@ -997,6 +1014,23 @@ public class CdaGeneratorConstants {
       return new Pair<>("", "");
     } else if (uriMap.containsKey(url)) {
       Pair<String, String> retVal = uriMap.get(url);
+
+      if (oidNameMap.containsKey(retVal.getValue0())) {
+        return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
+      } else return retVal;
+    } else {
+      return new Pair<>("", "");
+    }
+  }
+
+  public static Pair<String, String> getCodeSystemFromUrlForDstu2(String url) {
+
+    logger.debug(" Url passed = {}", url);
+
+    if (StringUtils.isEmpty(url)) {
+      return new Pair<>("", "");
+    } else if (dstu2uriMap.containsKey(url)) {
+      Pair<String, String> retVal = dstu2uriMap.get(url);
 
       if (oidNameMap.containsKey(retVal.getValue0())) {
         return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
