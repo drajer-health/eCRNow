@@ -119,6 +119,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
       Bundle bundle =
           getNotificationBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
       this.stubHelper.mockProcessMessageBundle(bundle);
+      this.stubHelper.mockReceiveEicr(bundle);
 
       List<KarProcessingData> dataList =
           notificationReceiver.processNotification(
@@ -312,7 +313,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     for (Map.Entry<String, List<IBaseResource>> entry : resourceMap.entrySet()) {
       // Mock a search for all resources of a given type.
-      String mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
+      String mockQueryString =
+          String.format("/fhir/%s?patient=Patient/%s", entry.getKey(), patientId);
+      stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
+      mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
       stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
       for (IBaseResource r : entry.getValue()) {
         // Mock a read for a specific instance of a resource

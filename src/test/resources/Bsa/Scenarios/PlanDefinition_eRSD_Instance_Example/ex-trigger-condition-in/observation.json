@@ -29,9 +29,9 @@
         {
             "coding": [
                 {
-                    "system": "http://hl7.org/fhir/v2/0078",
-                    "code": "NEG",
-                    "display": "Negative"
+                    "system": "http://snomed.info/sct",
+                    "code": "280414007",
+                    "display": "Equivocal result (qualifier value)"
                 }
             ]
         }

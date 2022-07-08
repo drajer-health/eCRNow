@@ -320,7 +320,7 @@ public class BsaServiceUtils {
 
     Pair<Boolean, Pair<String, String>> retVal = null;
 
-    if (coding != null && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
+    if (coding != null && coding.hasCode() && coding.hasSystem() && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
       Pair<String, String> matchedCodeInfo = new Pair<>(coding.getSystem(), coding.getCode());
       retVal = new Pair<>(true, matchedCodeInfo);
     }

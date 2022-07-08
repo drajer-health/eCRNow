@@ -875,7 +875,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   private String createSearchUrl(KarProcessingData data, String queryToExecute) {
 
-    String finalQuery = data.getNotificationContext().getFhirServerBaseUrl() + queryToExecute;
+    String finalQuery = data.getNotificationContext().getFhirServerBaseUrl() + "/" + queryToExecute;
 
     return finalQuery;
   }
@@ -904,6 +904,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     String resType = queryFilter.getResourceType().toString();
     Set<Resource> resources = null;
     HashMap<String, Set<Resource>> resMapById = null;
+    HashMap<ResourceType, Set<Resource>> resMapType = null;
 
     try {
       logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
@@ -922,6 +923,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         resources = new HashSet<>();
         resMapById = new HashMap<>();
+        resMapType = new HashMap<>();
         for (BundleEntryComponent comp : bc) {
 
           logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
@@ -929,6 +931,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         }
 
         resMapById.put(dataReqId, resources);
+        resMapType.put(queryFilter.getResourceType(), resources);
+        kd.addResourcesByType(resMapType);
         kd.addResourcesById(resMapById);
 
         logger.info(" Adding {} resources of type : {}", resources.size(), resType);

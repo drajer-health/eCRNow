@@ -715,12 +715,14 @@ public class KarParserImpl implements KarParser {
         bc.setUrl(libraryCanonical.getValue());
 
         // Set location of eRSD bundle for loading terminology and library logic
-        Endpoint libraryAndTerminologyEndpoint =
+        Endpoint karEndpoint =
             new Endpoint()
                 .setAddress(karBundleFile.getAbsolutePath())
                 .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-        bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
-        bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+        bc.setLibraryEndpoint(karEndpoint);
+        bc.setTerminologyEndpoint(karEndpoint);
+        // Necessary for Cql Evaluation because of CodeSystem Retrieve
+        bc.setDataEndpoint(karEndpoint);
         bc.setLogicExpression(con.getExpression());
         bc.setLibraryProcessor(libraryProcessor);
         bc.setNormalReportingDuration(null);
@@ -750,12 +752,14 @@ public class KarParserImpl implements KarParser {
           bc.setUrl(libraryCanonical.getValue());
 
           // Set location of eRSD bundle for loading terminology and library logic
-          Endpoint libraryAndTerminologyEndpoint =
+          Endpoint karEndpoint =
               new Endpoint()
                   .setAddress(karBundleFile.getAbsolutePath())
                   .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-          bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
-          bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+          bc.setLibraryEndpoint(karEndpoint);
+          bc.setTerminologyEndpoint(karEndpoint);
+          // Necessary for Cql Evaluation because of CodeSystem Retrieve
+          bc.setDataEndpoint(karEndpoint);
           bc.setLogicExpression(exp);
           bc.setLibraryProcessor(libraryProcessor);
           action.addCondition(bc);

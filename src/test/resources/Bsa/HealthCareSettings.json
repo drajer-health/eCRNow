@@ -14,7 +14,7 @@
     "directPwd":"test",
     "directRecipientAddress":"connectathon@aimsplatform.sandbox.dmhisp.com",
     "xdrRecipientAddress":"connectathon@aimsplatform.sandbox.dmhisp.com",
-    "restApiUrl": "http://localhost:8081/api/receiveEicr",
+    "restApiUrl": "http://localhost:9011/api/receiveEicr",
     "assigningAuthorityId":"2.16.840.1.113762.1.4.1146.627.1.1.1.1.1",
     "encounterStartThreshold": "3",
     "encounterEndThreshold": "30",
