@@ -132,6 +132,10 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
 
+  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isEmergentReportingEnabled;
+
   @Column(name = "rrprocessing_createdocRef", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
@@ -498,6 +502,14 @@ public class ClientDetails {
 
   public void setLastUpdated(Date lastUpdated) {
     this.lastUpdated = lastUpdated;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
   }
 
   public void print() {

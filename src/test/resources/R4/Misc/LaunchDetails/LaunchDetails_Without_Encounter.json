@@ -23,6 +23,8 @@
   "directPwd": "12345",
   "directRecipient": "connectathon@aimsplatform.sandbox.dmhisp.com",
   "isCovid": true,
+  "isEmergentReportingEnabled": true,
+  "isFullEcr": false,
   "isCreateDocRef": false,
   "isInvokeRestAPI": false,
   "isBoth": true,

@@ -644,6 +644,12 @@ public class Dstu2CdaFhirUtilities {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+          if (csd != null && (csd.getValue0().isEmpty() || csd.getValue1().isEmpty())) {
+            logger.debug(" Try using the DSTU2 map ");
+            csd = CdaGeneratorConstants.getCodeSystemFromUrlForDstu2(c.getSystem());
+          }
+
           sb.append(
               CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                   cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));

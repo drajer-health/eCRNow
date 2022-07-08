@@ -278,6 +278,9 @@ public class LaunchController {
             }
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
+            launchDetails.setIsFullEcr(clientDetails.getIsFullEcr());
+            launchDetails.setIsEmergentReportingEnabled(
+                clientDetails.getIsEmergentReportingEnabled());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
             launchDetails.setTokenUrl(clientDetails.getTokenURL());
             launchDetails.setSetId(

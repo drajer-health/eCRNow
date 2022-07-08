@@ -22,6 +22,7 @@ import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Dstu2CdaHeaderGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaHeaderGenerator.class);
 
-  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details) {
+  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details, Eicr ecr) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
@@ -42,7 +43,18 @@ public class Dstu2CdaHeaderGenerator {
 
       eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+      String docId = CdaGeneratorUtils.getGuid();
+      eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));
+      ecr.setEicrDocId(docId);
+      ecr.setxCorrelationId(docId);
+
+      // Set the other eICR details.
+      ecr.setFhirServerUrl(details.getEhrServerURL());
+      ecr.setLaunchPatientId(details.getLaunchPatientId());
+      ecr.setEncounterId(details.getEncounterId());
+      ecr.setSetId(details.getSetId());
+      ecr.setDocVersion(details.getVersionNumber());
+      ecr.setxRequestId(details.getxRequestId());
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForCD(
@@ -602,6 +614,15 @@ public class Dstu2CdaHeaderGenerator {
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+
+        List<AddressDt> addrs = new ArrayList<>();
+        if (guardianContact.getAddress() != null) {
+
+          addrs.add(guardianContact.getAddress());
+          patientDetails.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+        } else {
+          patientDetails.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+        }
 
         // Add Telecom
         patientDetails.append(Dstu2CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));

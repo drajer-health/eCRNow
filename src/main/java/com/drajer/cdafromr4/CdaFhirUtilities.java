@@ -265,8 +265,14 @@ public class CdaFhirUtilities {
       Address addr = addrs.get(0);
 
       logger.debug(" Found a valid address. ");
+      String addrUse = null;
+      if (addr.getUse() != null) {
+        addrUse = CdaGeneratorConstants.getCodeForAddressUse(addr.getUse().toString());
+      }
+
       addrString.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
+          CdaGeneratorUtils.getXmlForStartElementWithAttribute(
+              CdaGeneratorConstants.ADDR_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, addrUse));
 
       // Address Line
       List<StringType> lines = addr.getLine();
@@ -1282,10 +1288,21 @@ public class CdaFhirUtilities {
 
         for (StringType n : ns) {
 
-          if (!StringUtils.isEmpty(n.getValue()))
+          if (!StringUtils.isEmpty(n.getValue())) {
+
+            String nameQualifier = null;
+            if (name.getUse() != null) {
+              nameQualifier =
+                  CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toString());
+            }
+
             nameString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.FIRST_NAME_EL_NAME, n.getValue()));
+                CdaGeneratorUtils.getXmlForTextWithAttribute(
+                    CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+                    CdaGeneratorConstants.QUALIFIER_ATTR_NAME,
+                    nameQualifier,
+                    n.getValue()));
+          }
         }
 
         // If Empty create NF
@@ -2118,5 +2135,25 @@ public class CdaFhirUtilities {
     } else if (val.equalsIgnoreCase("cancelled")) {
       return "held";
     } else return "completed";
+  }
+
+  public static String getCodeForNameUse(List<HumanName> names) {
+
+    String nameUse = null;
+
+    if (names != null && !names.isEmpty()) {
+
+      Optional<HumanName> hName = names.stream().findFirst();
+      if (hName.isPresent()) {
+
+        HumanName name = hName.get();
+
+        if (name.getUse() != null) {
+          nameUse = CdaGeneratorConstants.getCodeForNameUse(name.getUse().toString());
+        }
+      }
+    }
+
+    return nameUse;
   }
 }

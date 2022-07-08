@@ -69,7 +69,7 @@ public class ValueSetServiceImpl implements ValueSetService {
     List<DataRequirement> datareqs = triggerDefinition.getData();
 
     Set<ValueSet> grouperToValueSets = new HashSet<>();
-    Set<ValueSet> grouperToCovidValueSets = new HashSet<>();
+    Set<ValueSet> grouperToEmergentValueSets = new HashSet<>();
 
     for (DataRequirement d : datareqs) {
 
@@ -88,9 +88,9 @@ public class ValueSetServiceImpl implements ValueSetService {
 
       logger.debug(" Size of Value Sets for Grouper : {}", grouperToValueSets.size());
 
-      grouperToCovidValueSets = ApplicationUtils.getCovidValueSetByIds(valueSetIdList);
+      grouperToEmergentValueSets = ApplicationUtils.getEmergentValueSetByIds(valueSetIdList);
 
-      logger.debug(" Size of Covid Value Sets for Grouper : {}", grouperToCovidValueSets.size());
+      logger.debug(" Size of Covid Value Sets for Grouper : {}", grouperToEmergentValueSets.size());
     }
 
     DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();
@@ -131,7 +131,7 @@ public class ValueSetServiceImpl implements ValueSetService {
       ValueSetSingleton.getInstance()
           .addGrouperToValueSetMap(valuSetGrouper.getId(), grouperToValueSets);
       ValueSetSingleton.getInstance()
-          .addGrouperToCovidValueSetMap(valuSetGrouper.getId(), grouperToCovidValueSets);
+          .addGrouperToEmergentValueSetMap(valuSetGrouper.getId(), grouperToEmergentValueSets);
     }
   }
 }

@@ -24,6 +24,7 @@
   "encounterEndThreshold": "30",
   "isCovid": false,
   "isFullEcr": true,
+  "isEmergentReportingEnabled": true,
   "isCreateDocRef": true,
   "isInvokeRestAPI": false,
   "isBoth": false,

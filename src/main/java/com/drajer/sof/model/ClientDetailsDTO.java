@@ -69,6 +69,8 @@ public class ClientDetailsDTO {
 
   private Boolean isCovid;
 
+  private Boolean isEmergentReportingEnabled;
+
   private Boolean isFullEcr;
 
   private Boolean isCreateDocRef;
@@ -405,6 +407,14 @@ public class ClientDetailsDTO {
 
   public void setLastUpdated(Date lastUpdated) {
     this.lastUpdated = lastUpdated;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
   }
 
   public void print() {

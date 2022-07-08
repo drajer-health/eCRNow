@@ -36,9 +36,8 @@ public class DirectResponseReceiver extends RRReceiver {
 
   private static final String IMAP = "imaps";
   private static final String INBOX = "Inbox";
-  
-  @Autowired
-  EicrRRService rrService;
+
+  @Autowired EicrRRService rrService;
 
   @Override
   public Object receiveRespone(Object context) {
@@ -66,7 +65,7 @@ public class DirectResponseReceiver extends RRReceiver {
       props.put("mail.imap.auth", "true");
       props.put("mail.imap.ssl.enable", "true");
       props.put("mail.imap.ssl.trust", "*");
-      
+
       Session session = Session.getInstance(props, null);
 
       Store store = session.getStore("imap");
@@ -123,24 +122,21 @@ public class DirectResponseReceiver extends RRReceiver {
               String filename = UUID.randomUUID() + ".xml";
               logger.info("Found XML Attachment");
 
-              
-              
               try (InputStream stream = bodyPart.getInputStream()) {
-            	  
-            	  ReportabilityResponse data = new ReportabilityResponse();
-                  data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
-                  String rrXml = "<?xml version=\"1.0\"?>";
-                  rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
-                  data.setRrXml(rrXml);
-                  
-                  FileUtils.writeStringToFile(
-                          new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
-                  
-                  logger.debug(" RrXML : {}", data.getRrXml());
-                  
-                  rrService.handleReportabilityResponse(data, mId);
-                
-              }             
+
+                ReportabilityResponse data = new ReportabilityResponse();
+                data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+                String rrXml = "<?xml version=\"1.0\"?>";
+                rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
+                data.setRrXml(rrXml);
+
+                FileUtils.writeStringToFile(
+                    new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
+
+                logger.debug(" RrXML : {}", data.getRrXml());
+
+                rrService.handleReportabilityResponse(data, mId);
+              }
             }
           }
         }

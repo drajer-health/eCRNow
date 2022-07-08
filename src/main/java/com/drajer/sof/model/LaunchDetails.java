@@ -147,6 +147,14 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid = true;
 
+  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isEmergentReportingEnabled = true;
+
+  @Column(name = "is_full_ecr", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isFullEcr = true;
+
   @Column(name = "rrprocessing_createdocRef", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
@@ -647,6 +655,22 @@ public class LaunchDetails {
 
   public void setProcessingState(String processingState) {
     this.processingState = processingState;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
+  }
+
+  public Boolean getIsFullEcr() {
+    return isFullEcr;
+  }
+
+  public void setIsFullEcr(Boolean isFullEcr) {
+    this.isFullEcr = isFullEcr;
   }
 
   public static String getString(ProcessingStatus status) {
