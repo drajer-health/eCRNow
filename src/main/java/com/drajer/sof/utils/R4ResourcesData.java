@@ -243,73 +243,74 @@ public class R4ResourcesData {
     List<CodeableConcept> observationCodes = new ArrayList<>();
     List<CodeableConcept> valueObservationCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
-    	
-    	// Eliminate the resources which are not applicable in general for ECR Reporting.
-    	bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-    	for (BundleEntryComponent entry : bundle.getEntry()) {
-            Observation observation = (Observation) entry.getResource();
-            
-            if(observationHasSameEncounter(encounter, observation) || 
-            		(isObservationWithinTimeRange(start, end, observation))) {
-            	
-            	observations.add(observation);
-                observationCodes.addAll(findLaboratoryCodes(observation));
-                findAllValueCodes(observation, valueObservations, valueObservationCodes);
-            }
-    	}
+
+      // Eliminate the resources which are not applicable in general for ECR Reporting.
+      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        Observation observation = (Observation) entry.getResource();
+
+        if (observationHasSameEncounter(encounter, observation)
+            || (isObservationWithinTimeRange(start, end, observation))) {
+
+          observations.add(observation);
+          observationCodes.addAll(findLaboratoryCodes(observation));
+          findAllValueCodes(observation, valueObservations, valueObservationCodes);
+        }
+      }
     }
-      
-      r4FhirData.setR4LabResultCodes(observationCodes);
-      r4FhirData.setR4LabResultValues(valueObservationCodes);
-      r4FhirData.setLabResultValueObservations(valueObservations);
+
+    r4FhirData.setR4LabResultCodes(observationCodes);
+    r4FhirData.setR4LabResultValues(valueObservationCodes);
+    r4FhirData.setLabResultValueObservations(valueObservations);
 
     logger.info("Filtered Observations ----> {}", observations.size());
     logger.info("Filtered Observation Coded Values ----> {}", valueObservations.size());
     return observations;
   }
-  
+
   public boolean observationHasSameEncounter(Encounter enc, Observation obs) {
-	  
-	  if(enc != null && obs.getEncounter() != null 
-			  && obs.getEncounter().getReferenceElement() != null 
-			  && obs.getEncounter().getReferenceElement().getIdPart() != null 
-			  && enc.getIdElement().getIdPart().contentEquals(obs.getEncounter().getReferenceElement().getIdPart())) {
-		  
-		  logger.debug(" Filtering based on Encounter Reference {}", enc.getId());
-		  return true;
-		  
-	  }
-	  else 
-		  return false;
+
+    if (enc != null
+        && obs.getEncounter() != null
+        && obs.getEncounter().getReferenceElement() != null
+        && obs.getEncounter().getReferenceElement().getIdPart() != null
+        && enc.getIdElement()
+            .getIdPart()
+            .contentEquals(obs.getEncounter().getReferenceElement().getIdPart())) {
+
+      logger.debug(" Filtering based on Encounter Reference {}", enc.getId());
+      return true;
+
+    } else return false;
   }
-  
+
   public boolean isObservationWithinTimeRange(Date start, Date end, Observation obs) {
-	  
-	  if (obs.getIssued() != null &&
-          isResourceWithinDateTime(start, end, obs.getIssued())) {
-		  
-		  logger.debug(" Adding observation based on time thresholds compared to Issued Time ");
-		  return true;
-	  }
-	  
-	  if (obs.getEffective() != null && !obs.getEffective().isEmpty()) {
-          Type effectiveDate = obs.getEffectiveDateTimeType();
-          Date effDate = effectiveDate.dateTimeValue().getValue();
-          if (isResourceWithinDateTime(start, end, effDate)) {
-        	  
-        	  logger.debug(" Adding observation based on time thresholds compared to Effective Time ");
-    		  return true;
-          }
-	  }
-	  
-	  Date lastUpdatedDateTime = obs.getMeta().getLastUpdated();
-      if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
-    	  logger.debug(" Adding observation based on time thresholds compared to Last Updated Time ");
-		  return true;
+
+    if (obs.getIssued() != null && isResourceWithinDateTime(start, end, obs.getIssued())) {
+
+      logger.debug(" Adding observation based on time thresholds compared to Issued Time ");
+      return true;
+    }
+
+    if (obs.getEffective() != null && !obs.getEffective().isEmpty()) {
+      Type effectiveDate = obs.getEffectiveDateTimeType();
+      Date effDate = effectiveDate.dateTimeValue().getValue();
+      if (isResourceWithinDateTime(start, end, effDate)) {
+
+        logger.debug(" Adding observation based on time thresholds compared to Effective Time ");
+        return true;
       }
-      
-      logger.debug(" Observation {} not being added as it is not within the time range ", obs.getId());
-      return false;
+    }
+
+    Date lastUpdatedDateTime = obs.getMeta().getLastUpdated();
+    if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+      logger.debug(" Adding observation based on time thresholds compared to Last Updated Time ");
+      return true;
+    }
+
+    logger.debug(
+        " Observation {} not being added as it is not within the time range ", obs.getId());
+    return false;
   }
 
   public void findAllValueCodes(
