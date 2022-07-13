@@ -169,11 +169,25 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info("Filtered Observations----> {}", observationList.size());
-      dstu2FhirData.setLabResults(observationList);
-      for (Observation observation : observationList) {
-        Entry observationsEntry = new Entry().setResource(observation);
-        bundle.addEntry(observationsEntry);
+
+      if (observationList != null && !observationList.isEmpty()) {
+        logger.info("Filtered Observations----> {}", observationList.size());
+        dstu2FhirData.setLabResults(observationList);
+        for (Observation observation : observationList) {
+          Entry observationsEntry = new Entry().setResource(observation);
+          bundle.addEntry(observationsEntry);
+        }
+      }
+
+      if (dstu2FhirData.getLabResultValueObservations() != null
+          && !dstu2FhirData.getLabResultValueObservations().isEmpty()) {
+        logger.info(
+            "Filtered Observations----> {}", dstu2FhirData.getLabResultValueObservations().size());
+
+        for (Observation observation : dstu2FhirData.getLabResultValueObservations()) {
+          Entry observationsEntry = new Entry().setResource(observation);
+          bundle.addEntry(observationsEntry);
+        }
       }
     } catch (Exception e) {
       logger.error("Error in getting Observation Data", e);

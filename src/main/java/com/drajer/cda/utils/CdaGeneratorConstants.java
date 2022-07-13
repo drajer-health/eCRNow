@@ -101,10 +101,14 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/ValueSet/identifier-type";
   public static final String FHIR_ARGO_RACE_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-race";
+  public static final String DAF_RACE_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/us-core-race";
   public static final String FHIR_ARGO_ETHNICITY_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity";
   public static final String FHIR_ARGO_BIRTHSEX_EXT_URL =
       "http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex";
+  public static final String DAF_ETHNICITY_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/us-core-ethnicity";
 
   public static final String FHIR_USCORE_RACE_EXT_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
@@ -150,6 +154,9 @@ public class CdaGeneratorConstants {
   public static final String CDA_MALE_CODE = "M";
   public static final String CDA_FEMALE_CODE = "F";
   public static final String CDA_UNK_GENDER = "UN";
+  public static final String CDA_INPATIENT_ENCOUNTER_CLASS = "IMP";
+  public static final String CDA_AMBULATORY_ENCOUNTER_CLASS = "AMB";
+  public static final String CDA_EMERGENCY_ENCOUNTER_CLASS = "EMER";
 
   public static final String RCTC_OID = "2.16.840.1.114222.4.11.7508";
 
@@ -209,6 +216,7 @@ public class CdaGeneratorConstants {
   public static final String PRINCIPAL_DIAGNOSIS_TEMPLATE_ID_EXT = "2017-08-01";
   public static final String PRINCIPAL_DIAGNOSIS_CODE = "8319008";
   public static final String PRINCIPAL_DIAGNOSIS_DISPLAY = "Principal Diagnosis";
+  public static final String ACT_ENCOUNTER_CODE_SYSTEM = "2.16.840.1.113883.1.11.13955";
 
   // Problem Related Information
   public static final String PROB_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.5.1";
@@ -793,6 +801,8 @@ public class CdaGeneratorConstants {
   public static final String NULL_FLAVOR_NAME = "nullFlavor";
   public static final String TABLE_BORDER_ATTR_NAME = "border";
   public static final String TABLE_WIDTH_ATTR_NAME = "width";
+  public static final String USE_ATTR_NAME = "use";
+  public static final String QUALIFIER_ATTR_NAME = "qualifier";
 
   // Null Flavors
   public static final String NF_NI = "NI";
@@ -887,7 +897,12 @@ public class CdaGeneratorConstants {
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
   private static HashMap<String, Pair<String, String>> uriMap = new HashMap<>();
+  private static HashMap<String, Pair<String, String>> dstu2oidMap = new HashMap<>();
+  private static HashMap<String, Pair<String, String>> dstu2uriMap = new HashMap<>();
   private static HashMap<String, HashMap<String, String>> fhirToCdaTerminologyMap = new HashMap<>();
+
+  // Map to hold OID to Name
+  private static HashMap<String, String> oidNameMap = new HashMap<>();
 
   // Static block to load OID to URI mapping from property file
   static {
@@ -909,12 +924,38 @@ public class CdaGeneratorConstants {
           CdaGeneratorConstants.class
               .getClassLoader()
               .getResourceAsStream("interpretationcode-mapping.properties");
-      prop.load(intCode);
+
+      Properties prop1 = new Properties();
+      prop1.load(intCode);
       fhirToCdaTerminologyMap.put(
           CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, new HashMap<>());
       HashMap<String, String> interpretmap =
           fhirToCdaTerminologyMap.get(CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME);
-      prop.forEach((key, value) -> interpretmap.put((String) key, (String) value));
+      prop1.forEach((key, value) -> interpretmap.put((String) key, (String) value));
+
+      InputStream oidNames =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("oid-name-mapping.properties");
+
+      Properties prop2 = new Properties();
+      prop2.load(oidNames);
+      prop2.forEach((key, value) -> oidNameMap.put((String) key, (String) value));
+
+      InputStream dstu2input =
+          CdaGeneratorConstants.class
+              .getClassLoader()
+              .getResourceAsStream("oid-uri-mapping-dstu2.properties");
+      {
+        Properties prop3 = new Properties();
+        prop3.load(dstu2input);
+        prop3.forEach(
+            (key, value) -> {
+              String name = StringUtils.substringAfterLast((String) value, "/");
+              dstu2oidMap.put((String) key, new Pair<>((String) value, name));
+              dstu2uriMap.put((String) value, new Pair<>((String) key, name));
+            });
+      }
 
     } catch (IOException ex) {
       logger.error("Error while loading OID to URI from properties files", ex);
@@ -972,7 +1013,28 @@ public class CdaGeneratorConstants {
     if (StringUtils.isEmpty(url)) {
       return new Pair<>("", "");
     } else if (uriMap.containsKey(url)) {
-      return uriMap.get(url);
+      Pair<String, String> retVal = uriMap.get(url);
+
+      if (oidNameMap.containsKey(retVal.getValue0())) {
+        return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
+      } else return retVal;
+    } else {
+      return new Pair<>("", "");
+    }
+  }
+
+  public static Pair<String, String> getCodeSystemFromUrlForDstu2(String url) {
+
+    logger.debug(" Url passed = {}", url);
+
+    if (StringUtils.isEmpty(url)) {
+      return new Pair<>("", "");
+    } else if (dstu2uriMap.containsKey(url)) {
+      Pair<String, String> retVal = dstu2uriMap.get(url);
+
+      if (oidNameMap.containsKey(retVal.getValue0())) {
+        return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
+      } else return retVal;
     } else {
       return new Pair<>("", "");
     }
@@ -993,8 +1055,70 @@ public class CdaGeneratorConstants {
       }
 
     } else {
-      return "WP";
+      return "HP";
     }
+  }
+
+  public static String getCodeForAddressUse(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("home")) {
+        return "HP";
+      } else if (val.contentEquals("work")) {
+        return "WP";
+      } else if (val.contentEquals("temp")) {
+        return "TMP";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate Billing and Old which is present in FHIR but not in CDA
+
+  }
+
+  public static String getCodeForNameQualifier(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("official")) {
+        return "PR";
+      } else if (val.contentEquals("nickname")) {
+        return "CL";
+      } else if (val.contentEquals("maiden")) {
+        return "BR";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate Anonymous, Temp and Old which is present in FHIR but not in CDA
+
+  }
+
+  public static String getCodeForNameUse(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("official") || val.contentEquals("usual")) {
+        return "L";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate Anonymous, Temp and Old which is present in FHIR but not in CDA
+
   }
 
   private static String getSplitValueURL(Object theValue) {

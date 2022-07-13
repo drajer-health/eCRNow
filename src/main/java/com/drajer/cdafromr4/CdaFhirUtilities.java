@@ -265,8 +265,15 @@ public class CdaFhirUtilities {
       Address addr = addrs.get(0);
 
       logger.debug(" Found a valid address. ");
+
+      String addrUse = null;
+      if (addr.getUse() != null) {
+        addrUse = CdaGeneratorConstants.getCodeForAddressUse(addr.getUse().toString());
+      }
+
       addrString.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
+          CdaGeneratorUtils.getXmlForStartElementWithAttribute(
+              CdaGeneratorConstants.ADDR_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, addrUse));
 
       // Address Line
       List<StringType> lines = addr.getLine();
@@ -759,7 +766,7 @@ public class CdaFhirUtilities {
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
     if (!valueTrue) sb.append(getCodingXml(codes, cdName, ""));
-    else sb.append(getCodingXmlForValue(codes, cdName));
+    else sb.append(getCodingXmlForValue(codes, cdName, null));
 
     return sb.toString();
   }
@@ -867,10 +874,10 @@ public class CdaFhirUtilities {
 
         if (first) {
 
-          first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
           if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
+            first = false;
             sb.append(
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                     cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -894,7 +901,8 @@ public class CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+      if (!sb.toString().isEmpty()) sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+      else sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     } else {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
@@ -1022,7 +1030,7 @@ public class CdaFhirUtilities {
     }
   }
 
-  public static String getCodingXmlForValue(List<Coding> codes, String cdName) {
+  public static String getCodingXmlForValue(List<Coding> codes, String cdName, String contentRef) {
 
     StringBuilder sb = new StringBuilder(200);
 
@@ -1040,6 +1048,9 @@ public class CdaFhirUtilities {
             sb.append(
                 CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                     c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+
+          if (contentRef != null && !contentRef.isEmpty())
+            sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -1278,10 +1289,21 @@ public class CdaFhirUtilities {
 
         for (StringType n : ns) {
 
-          if (!StringUtils.isEmpty(n.getValue()))
+          if (!StringUtils.isEmpty(n.getValue())) {
+
+            String nameQualifier = null;
+            if (name.getUse() != null) {
+              nameQualifier =
+                  CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toString());
+            }
+
             nameString.append(
-                CdaGeneratorUtils.getXmlForText(
-                    CdaGeneratorConstants.FIRST_NAME_EL_NAME, n.getValue()));
+                CdaGeneratorUtils.getXmlForTextWithAttribute(
+                    CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+                    CdaGeneratorConstants.QUALIFIER_ATTR_NAME,
+                    nameQualifier,
+                    n.getValue()));
+          }
         }
 
         // If Empty create NF
@@ -1632,7 +1654,7 @@ public class CdaFhirUtilities {
         List<Coding> cds = new ArrayList<>();
         cds.add(cd);
         if (!valFlag) val += getCodingXml(cds, elName, "");
-        else val += getCodingXmlForValue(cds, elName);
+        else val += getCodingXmlForValue(cds, elName, null);
 
       } else if (dt instanceof CodeableConcept) {
 
@@ -1641,7 +1663,7 @@ public class CdaFhirUtilities {
         List<Coding> cds = cd.getCoding();
 
         if (!valFlag) val += getCodingXml(cds, elName, "");
-        else val += getCodingXmlForValue(cds, elName);
+        else val += getCodingXmlForValue(cds, elName, null);
 
       } else if (dt instanceof Quantity) {
 
@@ -1984,7 +2006,8 @@ public class CdaFhirUtilities {
       String valuesetVersion,
       CodeableConcept cc,
       String csUrl,
-      String contentRef) {
+      String contentRef,
+      Boolean valueElem) {
 
     StringBuilder retval = new StringBuilder();
     StringBuilder translations = new StringBuilder();
@@ -2010,7 +2033,7 @@ public class CdaFhirUtilities {
                 " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
             if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
 
-            if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+            if (!valueElem) {
               retval.append(
                   CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
                       elementName,
@@ -2024,7 +2047,7 @@ public class CdaFhirUtilities {
               if (!contentRef.isEmpty())
                 retval.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
 
-            } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+            } else if (valueElem) {
 
               retval.append(
                   CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
@@ -2067,23 +2090,23 @@ public class CdaFhirUtilities {
       String dispName = "";
       if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
 
-      if (elementName.contentEquals(CdaGeneratorConstants.CODE_EL_NAME)) {
+      if (!valueElem) {
         retval.append(
             CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
                 CdaGeneratorConstants.CODE_EL_NAME,
                 code,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                codeSystem,
+                codeSystemName,
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
                 dispName,
                 contentRef));
-      } else if (elementName.contentEquals(CdaGeneratorConstants.VAL_EL_NAME)) {
+      } else if (valueElem) {
         retval.append(
             CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                 code,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                codeSystem,
+                codeSystemName,
                 CdaGeneratorConstants.RCTC_OID,
                 ActionRepo.getInstance().getRctcVersion(),
                 dispName));
@@ -2113,5 +2136,25 @@ public class CdaFhirUtilities {
     } else if (val.equalsIgnoreCase("cancelled")) {
       return "held";
     } else return "completed";
+  }
+
+  public static String getCodeForNameUse(List<HumanName> names) {
+
+    String nameUse = null;
+
+    if (names != null && !names.isEmpty()) {
+
+      Optional<HumanName> hName = names.stream().findFirst();
+      if (hName.isPresent()) {
+
+        HumanName name = hName.get();
+
+        if (name.getUse() != null) {
+          nameUse = CdaGeneratorConstants.getCodeForNameUse(name.getUse().toString());
+        }
+      }
+    }
+
+    return nameUse;
   }
 }
