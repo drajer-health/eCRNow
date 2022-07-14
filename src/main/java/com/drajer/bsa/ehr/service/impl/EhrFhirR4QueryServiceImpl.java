@@ -321,34 +321,49 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ResourceType type = ResourceType.valueOf(entry.getType());
       logger.info(" Fetching Resource of type {}", type);
 
-      if (type != ResourceType.Patient && type != ResourceType.Encounter) {
-        String url =
-            kd.getNotificationContext().getFhirServerBaseUrl()
-                + "/"
-                + type
-                + PATIENT_ID_SEARCH_PARAM
-                + kd.getNotificationContext().getPatientId();
-
-        logger.info(" Resource Query Url : {}", url);
-
-        // get the resources
-        Set<Resource> resources = kd.getResourcesByType(type.toString());
-        if (resources == null || resources.size() == 0) {
-          resources = fetchResources(client, context, url);
-          kd.addResourcesByType(type, resources);
-        }
-        // filter resources by any filters in the drRequirements
-        Set<Resource> filtered = BsaServiceUtils.filterResources(resources, entry, kd);
-        // add filtered resources to kd by type and id
-        logger.info("Filtered resource count of type {} dr_id {} is {}", type, id, filtered.size());
-        kd.addResourcesById(id, filtered);
+      //  This is for backwards compatability with the old matching input / output ids
+      Set<Resource> outputResources = kd.getOutputDataById(id);
+      if (outputResources != null && !outputResources.isEmpty()) {
+        addFilteredResources(kd, entry, id, type, outputResources);
       } else {
-        kd.addResourcesById(id, kd.getResourcesByType(type.toString()));
+        if (type != ResourceType.Patient && type != ResourceType.Encounter) {
+          String url =
+              kd.getNotificationContext().getFhirServerBaseUrl()
+                  + "/"
+                  + type
+                  + PATIENT_ID_SEARCH_PARAM
+                  + kd.getNotificationContext().getPatientId();
+
+          logger.info(" Resource Query Url : {}", url);
+
+          // get the resources
+          Set<Resource> resources = kd.getResourcesByType(type.toString());
+          if (resources == null || resources.size() == 0) {
+            resources = fetchResources(client, context, url);
+          }
+          addFilteredResources(kd, entry, id, type, resources);
+        } else {
+          kd.addResourcesById(id, kd.getResourcesByType(type.toString()));
+        }
       }
     }
 
     // Get other resources for Patient
     return kd.getFhirInputDataByType();
+  }
+
+  private void addFilteredResources(
+      KarProcessingData kd,
+      DataRequirement entry,
+      String id,
+      ResourceType type,
+      Set<Resource> resources) {
+    // filter resources by any filters in the drRequirements
+    Set<Resource> filtered = BsaServiceUtils.filterResources(resources, entry, kd);
+    // add filtered resources to kd by type and id
+    logger.info("Filtered resource count of type {} dr_id {} is {}", type, id, filtered.size());
+    kd.addResourcesByType(type, filtered);
+    kd.addResourcesById(id, filtered);
   }
 
   /**
@@ -606,11 +621,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   public Set<Resource> fetchResources(
       IGenericClient genericClient, FhirContext context, String searchUrl) {
     Set<Resource> resources = new HashSet<Resource>();
-    Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
-    getAllR4RecordsUsingPagination(genericClient, bundle);
-    List<BundleEntryComponent> bc = bundle.getEntry();
-    for (BundleEntryComponent comp : bc) {
-      resources.add(comp.getResource());
+    try {
+      Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+      getAllR4RecordsUsingPagination(genericClient, bundle);
+      List<BundleEntryComponent> bc = bundle.getEntry();
+      for (BundleEntryComponent comp : bc) {
+        resources.add(comp.getResource());
+      }
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
     }
     return resources;
   }

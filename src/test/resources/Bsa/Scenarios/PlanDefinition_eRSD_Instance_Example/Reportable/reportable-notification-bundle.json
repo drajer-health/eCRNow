@@ -1,6 +1,6 @@
 {
     "resourceType" : "Bundle",
-    "id" : "ex-trigger-medicationadministration-in-notification-bundle",
+    "id" : "reportable-notification-bundle",
     "meta" : {
         "lastUpdated":"2021-05-07T04:54:11.358+00:00",
       "profile" : [
@@ -59,16 +59,16 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9011/fhir/Encounter/ex-trigger-medicationadministration-in-encounter-1",
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/reportable-encounter-1",
         "resource" : {
           "resourceType": "Encounter",
-          "id": "ex-trigger-medicationadministration-in-encounter-1",
+          "id": "reportable-encounter-1",
           "meta": {
             "profile": [
               "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter"
             ]
           },
-          "status": "finished",
+          "status": "in-progress",
           "class": {
             "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
             "code": "IMP",
@@ -87,12 +87,19 @@
             }
           ],
           "subject": {
-            "reference": "ex-trigger-medicationadministration-in"
+            "reference": "reportable"
           },
           "period": {
             "start": "2020-01-01T11:00:00-07:00",
             "end": "2020-01-01T12:00:00-07:00"
-          }
+          },
+          "location": [
+              {
+                  "location": {
+                      "reference": "Location/location-reportable"
+                  }
+              }
+          ]
         },
         "request" : {
           "method" : "POST",

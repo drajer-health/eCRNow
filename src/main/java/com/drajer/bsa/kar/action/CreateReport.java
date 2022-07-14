@@ -72,7 +72,13 @@ public class CreateReport extends BsaAction {
         // not specified.
         List<DataRequirement> inputRequirements = getInputData();
         ehrService.getFilteredData(data, inputRequirements);
-        inputRequirements.forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
+        inputRequirements
+            .stream()
+            .filter(
+                ir ->
+                    data.getResourcesById(ir.getId()) != null
+                        && !data.getResourcesById(ir.getId()).isEmpty())
+            .forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
       }
 
       ehrService.loadJurisdicationData(data);

@@ -6,7 +6,7 @@
       "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter"
     ]
   },
-  "status": "finished",
+  "status": "in-progress",
   "class": {
     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
     "code": "IMP",
@@ -28,8 +28,8 @@
     "reference": "ex-trigger-condition-in"
   },
   "period": {
-    "start": "2020-01-01T11:00:00-07:00",
-    "end": "2020-01-01T12:00:00-07:00"
+    "start": "2022-07-013T11:00:00-07:00",
+    "end": "2022-07-13T12:00:00-07:00"
   },
   "location": [
       {

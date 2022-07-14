@@ -39333,7 +39333,7 @@
             "valueExpression": {
               "name": "normalReportingDuration",
               "language": "text/fhirpath",
-              "expression": "2 weeks"
+              "expression": "14"
             }
           }
         ],
@@ -39591,7 +39591,7 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%encounter.where((status = 'in-progress' and period.start + %normalReportingDuration >= now()) or status = 'finished' and period.end <= now() - 72 hours)"
+                      "expression": "%encounter.where((status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now()) or status = 'finished' and period.end <= Now() - 72 hours).select(true)"
                     }
                   }
                 ],
@@ -39653,7 +39653,7 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%encounter.where(period.start + %normalReportingDuration >= now()) and (%conditions.exists() or %encounters.exists() or %immunizations.exists() or %procedures.exists() or %procedureOrders.exists() or %labOrders.exists() or %labTests.exists() or %labResults.exists() or %medicationAdministrations.exists() or %medicationOrders.exists() or %medicationDispenses.exists())"
+                      "expression": "%encounter.where(period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now()).select(true) and (%conditions.exists() or %encounters.exists() or %immunizations.exists() or %procedures.exists() or %procedureOrders.exists() or %labOrders.exists() or %labTests.exists() or %labResults.exists() or %medicationAdministrations.exists() or %medicationOrders.exists() or %medicationDispenses.exists())"
                     }
                   }
                 ],
@@ -39954,7 +39954,7 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%`inprogress-encounter`.where(status = 'in-progress' and period.start + %normalReportingDuration >= now() and period.end <= now() - 72 hours)"
+                      "expression": "%inprogress-encounter.where(status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now() and period.end <= now() - 72 hours).exists()"
                     }
                   }
                 ],
@@ -39968,17 +39968,6 @@
                       }
                     ],
                     "type": "Encounter"
-                  }
-                ],
-                "relatedAction": [
-                  {
-                    "actionId": "check-reportable",
-                    "relationship": "before-start",
-                    "offsetDuration": {
-                      "value": 6,
-                      "system": "http://unitsofmeasure.org",
-                      "code": "h"
-                    }
                   }
                 ]
               }
@@ -40281,7 +40270,7 @@
                     }
                   ],
                   "language": "text/fhirpath",
-                  "expression": "%encounter.where(period.start + %normalReportingDuration < now())"
+                  "expression": "%encounter.where(period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } < Now()).select(true)"
                 }
               }
             ],

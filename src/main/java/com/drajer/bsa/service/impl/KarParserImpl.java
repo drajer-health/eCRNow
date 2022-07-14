@@ -99,6 +99,10 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class KarParserImpl implements KarParser {
 
+  /** */
+  private static final String VariableExtensionUrl =
+      "http://hl7.org/fhir/StructureDefinition/variable";
+
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
 
@@ -177,6 +181,8 @@ public class KarParserImpl implements KarParser {
 
   @Value("${report-submission.endpoint}")
   private String reportSubmissionEndpoint;
+
+  private Expression planVariableExpression;
 
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
@@ -430,6 +436,16 @@ public class KarParserImpl implements KarParser {
     art.setKarName(plan.getName());
     art.setKarPublisher(plan.getPublisher());
     processExtensions(plan, art);
+    if (plan.hasExtension(VariableExtensionUrl)) {
+      Extension variableExtension = plan.getExtensionByUrl(VariableExtensionUrl);
+      Type variable = variableExtension.getValue();
+      if (variable instanceof Expression) {
+        planVariableExpression = (Expression) variable;
+        logger.debug("Found Variable Extension Expression");
+      } else {
+        logger.debug("Found Variable Extension, but expected Expression.");
+      }
+    }
     List<PlanDefinitionActionComponent> actions = plan.getAction();
 
     for (PlanDefinitionActionComponent act : actions) {
@@ -769,7 +785,23 @@ public class KarParserImpl implements KarParser {
 
           logger.info(" Found a FHIR Path Expression from an alternative expression extension");
           BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          if (planVariableExpression != null) {
+            bc.setVariableExpression(planVariableExpression);
+          }
           bc.setLogicExpression(exp);
+          bc.setExpressionEvaluator(expressionEvaluator);
+          action.addCondition(bc);
+        } else if (con.getExpression() != null
+            && (fromCode(con.getExpression().getLanguage())
+                .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+            && fhirpathEnabled) {
+          logger.info(
+              " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
+          BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          if (planVariableExpression != null) {
+            bc.setVariableExpression(planVariableExpression);
+          }
+          bc.setLogicExpression(con.getExpression());
           bc.setExpressionEvaluator(expressionEvaluator);
           action.addCondition(bc);
         } else {
@@ -782,6 +814,9 @@ public class KarParserImpl implements KarParser {
 
         logger.info(" Found a FHIR Path Expression ");
         BsaFhirPathCondition bc = new BsaFhirPathCondition();
+        if (planVariableExpression != null) {
+          bc.setVariableExpression(planVariableExpression);
+        }
         bc.setLogicExpression(con.getExpression());
         bc.setExpressionEvaluator(expressionEvaluator);
         action.addCondition(bc);

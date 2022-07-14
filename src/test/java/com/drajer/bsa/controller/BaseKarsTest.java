@@ -59,7 +59,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(
     properties = {
       "ignore.timers=true",
-      "report-submission.endpoint=http://localhost:9010/fhir",
+      "report-submission.endpoint=http://localhost:9011/fhir",
       "report-validator.endpoint="
     })
 public class BaseKarsTest extends BaseIntegrationTest {
@@ -81,16 +81,12 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   @Autowired ApplicationContext applicationContext;
 
-  protected Map<String, Bundle> eicrBundles;
-
   protected ClassLoader classLoader = getClass().getClassLoader();
 
   protected WireMockHelper stubHelper;
 
-  @SuppressWarnings("unchecked")
   @Before
   public void setupNotificationMocking() throws IOException {
-    this.eicrBundles = (Map<String, Bundle>) applicationContext.getBean("eicrBundles");
     this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
     this.ap = applicationContext.getBean(ApplicationUtils.class);
     this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
@@ -207,42 +203,36 @@ public class BaseKarsTest extends BaseIntegrationTest {
   }
 
   Bundle getEicrBundle(String planDef) {
-    Bundle eicrBundle = eicrBundles.get("eicr-report-" + planDef);
+    String processMessageUrl = "/fhir/$process-message";
+    List<LoggedRequest> requests =
+        wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
-    if (eicrBundle != null) {
-      return eicrBundle;
-    } else {
-      String processMessageUrl = "/fhir/$process-message";
-      List<LoggedRequest> requests =
-          wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
-
-      if (requests.size() > 0) {
-        try {
-          IBaseResource resource =
-              FhirContext.forCached(FhirVersionEnum.R4)
-                  .newJsonParser()
-                  .parseResource(requests.get(0).getBodyAsString());
-          if (resource instanceof Parameters) {
-            Parameters params = (Parameters) resource;
-            for (ParametersParameterComponent parameter : params.getParameter()) {
-              if (parameter.getName().equals("content")) {
-                if (parameter.getResource() != null
-                    && parameter.getResource().fhirType().equals("Bundle")) {
-                  return (Bundle) parameter.getResource();
-                }
+    if (requests.size() > 0) {
+      try {
+        IBaseResource resource =
+            FhirContext.forCached(FhirVersionEnum.R4)
+                .newJsonParser()
+                .parseResource(requests.get(0).getBodyAsString());
+        if (resource instanceof Parameters) {
+          Parameters params = (Parameters) resource;
+          for (ParametersParameterComponent parameter : params.getParameter()) {
+            if (parameter.getName().equals("content")) {
+              if (parameter.getResource() != null
+                  && parameter.getResource().fhirType().equals("Bundle")) {
+                return (Bundle) parameter.getResource();
               }
             }
-          } else if (resource instanceof Bundle) {
-            return (Bundle) resource;
           }
-
-        } catch (Exception e) {
-          logger.error("Error parsing $process-message request body");
-          return null;
+        } else if (resource instanceof Bundle) {
+          return (Bundle) resource;
         }
-      } else {
-        logger.debug("No $process-message request found.");
+
+      } catch (Exception e) {
+        logger.error("Error parsing $process-message request body");
+        return null;
       }
+    } else {
+      logger.debug("No $process-message request found.");
     }
 
     return null;
@@ -441,8 +431,10 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected void validateBundle(Bundle bundle, Boolean shouldHaveMeasureReport) {
     if (shouldHaveMeasureReport) {
-      List<MeasureReport> mrs =
-          BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
+      List<MeasureReport> mrs = null;
+      if (bundle != null) {
+        mrs = BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
+      }
       assertEquals("Did not find expected MeasureReport", 1, mrs.size());
     }
   }
