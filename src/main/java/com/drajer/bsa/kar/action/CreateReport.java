@@ -101,6 +101,7 @@ public class CreateReport extends BsaAction {
               Resource output =
                   rc.createReport(
                       data, ehrService, resources, dr.getId(), ct.asStringValue(), this);
+              // FhirContext.forCached(FhirVersionEnum.R4).newJsonParser().encodeResourceToString(output)
               logger.info("Finished creating report");
 
               if (output != null) {

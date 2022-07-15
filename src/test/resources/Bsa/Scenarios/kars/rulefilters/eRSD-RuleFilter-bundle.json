@@ -39591,7 +39591,7 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%encounter.where((status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now()) or status = 'finished' and period.end <= Now() - 72 hours).select(true)"
+                      "expression": "%encounter.where((status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now()) or status = 'finished' and period.end + 72 hours >= Now()).select(true)"
                     }
                   }
                 ],
@@ -39901,17 +39901,17 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%last-eicr.last().entry.first().resource.date < now() - 72 hours"
+                      "expression": "((%lasteicr.last().entry[2].resource as Bundle).entry.first().resource as Composition).date < Now() - 72 hours"
                     }
                   }
                 ],
                 "input": [
                   {
-                    "id": "last-eicr",
+                    "id": "lasteicr",
                     "extension": [
                       {
                         "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
-                        "valueString": "eicr-report"
+                        "valueString": "eicrreport"
                       }
                     ],
                     "type": "Bundle",
@@ -39954,13 +39954,13 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%inprogress-encounter.where(status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now() and period.end <= now() - 72 hours).exists()"
+                      "expression": "%inprogressencounter.where(status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now() and period.end <= now() - 72 hours).exists()"
                     }
                   }
                 ],
                 "input": [
                   {
-                    "id": "inprogress-encounter",
+                    "id": "inprogressencounter",
                     "extension": [
                       {
                         "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -39989,7 +39989,7 @@
             ],
             "input": [
               {
-                "id": "patient-data",
+                "id": "patientdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40002,7 +40002,7 @@
                 ]
               },
               {
-                "id": "condition-data",
+                "id": "conditiondata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40015,7 +40015,7 @@
                 ]
               },
               {
-                "id": "encounter-data",
+                "id": "encounterdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40028,7 +40028,7 @@
                 ]
               },
               {
-                "id": "mr-data",
+                "id": "mrdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40041,7 +40041,7 @@
                 ]
               },
               {
-                "id": "immz-data",
+                "id": "immzdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40054,7 +40054,7 @@
                 ]
               },
               {
-                "id": "proc-data",
+                "id": "procdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40067,7 +40067,7 @@
                 ]
               },
               {
-                "id": "labResult-data",
+                "id": "labResultdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40080,7 +40080,7 @@
                 ]
               },
               {
-                "id": "labOrder-data",
+                "id": "labOrderdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40093,7 +40093,7 @@
                 ]
               },
               {
-                "id": "diagnosticResult-data",
+                "id": "diagnosticResultdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40106,7 +40106,7 @@
                 ]
               },
               {
-                "id": "diagnosticOrder-data",
+                "id": "diagnosticOrderdata",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
@@ -40121,7 +40121,7 @@
             ],
             "output": [
               {
-                "id": "eicr-report",
+                "id": "eicrreport",
                 "type": "Bundle",
                 "profile": [
                   "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle"
@@ -40151,11 +40151,11 @@
             ],
             "input": [
               {
-                "id": "generated-eicr-report",
+                "id": "generatedeicrreport",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
-                    "valueString": "eicr-report"
+                    "valueString": "eicrreport"
                   }
                 ],
                 "type": "Bundle",
@@ -40166,7 +40166,7 @@
             ],
             "output": [
               {
-                "id": "valid-eicr-report",
+                "id": "valideicrreport",
                 "type": "Bundle",
                 "profile": [
                   "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle"
@@ -40196,11 +40196,11 @@
             ],
             "input": [
               {
-                "id": "validated-eicr-report",
+                "id": "validatedeicrreport",
                 "extension": [
                   {
                     "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
-                    "valueString": "valid-eicr-report"
+                    "valueString": "valideicrreport"
                   }
                 ],
                 "type": "Bundle",
@@ -40211,7 +40211,7 @@
             ],
             "output": [
               {
-                "id": "submitted-eicr-report",
+                "id": "submittedeicrreport",
                 "type": "Bundle",
                 "profile": [
                   "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle"
