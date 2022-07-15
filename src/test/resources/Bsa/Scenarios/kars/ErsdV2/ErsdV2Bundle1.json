@@ -727,17 +727,6 @@
                     ],
                     "type": "Encounter"
                   }
-                ],
-                "relatedAction": [
-                  {
-                    "actionId": "check-reportable",
-                    "relationship": "before-start",
-                    "offsetDuration": {
-                      "value": 6,
-                      "system": "http://unitsofmeasure.org",
-                      "code": "h"
-                    }
-                  }
                 ]
               }
             ]
