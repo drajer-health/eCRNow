@@ -622,8 +622,10 @@ public class KarProcessingData {
   public Set<Resource> getDataForId(String id, String relatedDataId) {
 
     Set<Resource> resources = null;
-    if (fhirInputDataById.containsKey(id)) {
-      resources = fhirInputDataById.get(id);
+    if (relatedDataId != null) {
+      if (actionOutputDataById.containsKey(relatedDataId)) {
+        resources = actionOutputDataById.get(relatedDataId);
+      }
     }
 
     if (resources == null
@@ -632,6 +634,11 @@ public class KarProcessingData {
         && fhirInputDataById.containsKey(relatedDataId)) {
       resources = fhirInputDataById.get(relatedDataId);
     }
+
+    if (resources == null && fhirInputDataById.containsKey(id)) {
+      resources = fhirInputDataById.get(id);
+    }
+
     return resources;
   }
 

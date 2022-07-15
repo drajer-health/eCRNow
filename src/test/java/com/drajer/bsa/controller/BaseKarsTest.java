@@ -315,6 +315,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
       stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
       mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
       stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
+      // TODO: create stub that lets date based tests update stale dates.
       for (IBaseResource r : entry.getValue()) {
         // Mock a read for a specific instance of a resource
         String id = r.getIdElement().getIdPart();

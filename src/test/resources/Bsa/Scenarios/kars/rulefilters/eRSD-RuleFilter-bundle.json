@@ -39591,7 +39591,7 @@
                         }
                       ],
                       "language": "text/fhirpath",
-                      "expression": "%encounter.where((status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now()) or status = 'finished' and period.end <= Now() - 72 hours).select(true)"
+                      "expression": "%encounter.where((status = 'in-progress' and period.start + System.Quantity { value: %normalReportingDuration, unit: 'days' } >= Now()) or status = 'finished' and period.end + 72 hours >= Now()).select(true)"
                     }
                   }
                 ],

@@ -107,7 +107,7 @@ public class CreateReport extends BsaAction {
               if (output != null) {
 
                 logger.info(" Adding Report to output generated {}", output.getId());
-                data.addActionOutput(dr.getId(), output);
+                data.addActionOutput(actionId, output);
 
                 logger.info(" Adding Report to output using id {}", dr.getId());
 

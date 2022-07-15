@@ -87,12 +87,19 @@
             }
           ],
           "subject": {
-            "reference": "reportable"
+            "reference": "triggered"
           },
           "period": {
             "start": "2020-01-01T11:00:00-07:00",
             "end": "2020-01-01T12:00:00-07:00"
-          }
+          },
+          "location": [
+              {
+                  "location": {
+                      "reference": "Location/location-reportable"
+                  }
+              }
+          ]
         },
         "request" : {
           "method" : "POST",
