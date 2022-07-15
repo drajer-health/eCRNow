@@ -1,0 +1,595 @@
+{
+    "resourceType": "Bundle",
+    "id": "c7bfa589-ce04-4af7-8722-b1b3fa18ea1d",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2022-07-15T10:17:13.861-06:00",
+        "profile": [
+            "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle"
+        ]
+    },
+    "type": "message",
+    "timestamp": "2022-07-15T10:17:13.862-06:00",
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "MessageHeader",
+                "id": "99e2c87b-1d20-47a7-8961-2aafba22253e",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-07-15T10:17:16.604-06:00",
+                    "profile": [
+                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader"
+                    ]
+                },
+                "eventCoding": {
+                    "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types",
+                    "code": "CdaEicrMessage"
+                },
+                "source": {
+                    "endpoint": "http://localhost:9011/fhir"
+                },
+                "reason": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents",
+                            "code": "encounter-start"
+                        }
+                    ]
+                },
+                "focus": [
+                    {
+                        "reference": "Bundle/c8573843-7c32-4b2c-950d-6f74f10aba61"
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Bundle",
+                "id": "c8573843-7c32-4b2c-950d-6f74f10aba61",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-07-15T10:17:13.864-06:00",
+                    "profile": [
+                        "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle"
+                    ]
+                },
+                "type": "document",
+                "timestamp": "2022-07-15T10:17:13.865-06:00",
+                "entry": [
+                    {
+                        "resource": {
+                            "resourceType": "DocumentReference",
+                            "id": "342356d3-a7ba-480b-868b-600b4a4cf8ee",
+                            "status": "current",
+                            "docStatus": "final",
+                            "type": {
+                                "coding": [
+                                    {
+                                        "system": "http://loinc.org",
+                                        "code": "55751-2",
+                                        "display": "Public Health Case Report"
+                                    }
+                                ],
+                                "text": "Public Health Case Report"
+                            },
+                            "subject": {
+                                "reference": "Patient/ex-trigger-condition-in"
+                            },
+                            "content": [
+                                {
+                                    "attachment": {
+                                        "contentType": "application/xml;charset=utf-8",
+                                        "data": "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxDbGluaWNhbERvY3VtZW50IHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiCiB4bWxucz0idXJuOmhsNy1vcmc6djMiCiB4bWxuczpjZGE9InVybjpobDctb3JnOnYzIgogeG1sbnM6c2R0Yz0idXJuOmhsNy1vcmc6c2R0YyI+CjxyZWFsbUNvZGUgY29kZT0iVVMiLz4KPHR5cGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xLjMiIGV4dGVuc2lvbj0iUE9DRF9IRDAwMDA0MCIvPgo8dGVtcGxhdGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xMC4yMC4yMi4xLjEiLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuMS4xIiBleHRlbnNpb249IjIwMTUtMDgtMDEiLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMTUuMiIgZXh0ZW5zaW9uPSIyMDE2LTEyLTAxIi8+CjxpZCByb290PSIzNDIzNTZkMy1hN2JhLTQ4MGItODY4Yi02MDBiNGE0Y2Y4ZWUiLz4KPGNvZGUgY29kZT0iNTU3NTEtMiIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJJbml0aWFsIFB1YmxpYyBIZWFsdGggQ2FzZSBSZXBvcnQiLz4KPHRpdGxlPkluaXRpYWwgUHVibGljIEhlYWx0aCBDYXNlIFJlcG9ydDwvdGl0bGU+CjxlZmZlY3RpdmVUaW1lIHZhbHVlPSIyMDIyMDcxNTEwMTcxNC0wNjAwIi8+Cjxjb25maWRlbnRpYWxpdHlDb2RlIGNvZGU9Ik4iIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjUuMjUiLz4KPGxhbmd1YWdlQ29kZSBjb2RlPSJlbi1VUyIvPgo8c2V0SWQgcm9vdD0ibnVsbCIgZXh0ZW5zaW9uPSJudWxsIi8+Cjx2ZXJzaW9uTnVtYmVyIHZhbHVlPSIwIi8+CjxyZWNvcmRUYXJnZXQ+CjxwYXRpZW50Um9sZT4KPGlkIHJvb3Q9IjEuMi4zNi4xNDYuNTk1LjIxNy4wLjEiIGV4dGVuc2lvbj0iMTIzNDUiLz4KPGFkZHI+CjxzdHJlZXRBZGRyZXNzTGluZT41MTAxIFBlYWNodHJlZSBTdCBORTwvc3RyZWV0QWRkcmVzc0xpbmU+CjxjaXR5PkVsa288L2NpdHk+CjxzdGF0ZT5OVjwvc3RhdGU+Cjxwb3N0YWxDb2RlPjg5ODAxPC9wb3N0YWxDb2RlPgo8Y291bnRyeT5VUzwvY291bnRyeT4KPC9hZGRyPgo8dGVsZWNvbSBudWxsRmxhdm9yPSJOSSIvPgo8dGVsZWNvbSBudWxsRmxhdm9yPSJOSSIvPgo8cGF0aWVudD4KPG5hbWU+CjxnaXZlbj5Kb2huPC9naXZlbj4KPGZhbWlseT5Eb2U8L2ZhbWlseT4KPC9uYW1lPgo8YWRtaW5pc3RyYXRpdmVHZW5kZXJDb2RlIGNvZGU9Ik0iIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjUuMSIvPgo8YmlydGhUaW1lIHZhbHVlPSIyMDAwMDEwMSIvPgo8c2R0YzpkZWNlYXNlZEluZCB2YWx1ZT0idHJ1ZSIvPgo8c2R0YzpkZWNlYXNlZFRpbWUgbnVsbEZsYXZvcj0iTkkiLz4KPHJhY2VDb2RlIGNvZGU9IjIxMDYtMyIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4yMzgiIGNvZGVTeXN0ZW1OYW1lPSJSYWNlICZhbXA7IEV0aG5pY2l0eSAtIENEQyIgZGlzcGxheU5hbWU9IldoaXRlIi8+CjxldGhuaWNHcm91cENvZGUgY29kZT0iMjEzNS0yIiBjb2RlU3lzdGVtPSIyLjE2Ljg0MC4xLjExMzg4My42LjIzOCIgY29kZVN5c3RlbU5hbWU9IlJhY2UgJmFtcDsgRXRobmljaXR5IC0gQ0RDIiBkaXNwbGF5TmFtZT0iSGlzcGFuaWMgb3IgTGF0aW5vIi8+CjxsYW5ndWFnZUNvbW11bmljYXRpb24+CjxsYW5ndWFnZUNvZGUgbnVsbEZsYXZvcj0iTkkiLz4KPC9sYW5ndWFnZUNvbW11bmljYXRpb24+CjwvcGF0aWVudD4KPC9wYXRpZW50Um9sZT4KPC9yZWNvcmRUYXJnZXQ+CjxhdXRob3I+Cjx0aW1lIHZhbHVlPSIyMDIyMDcxMzExMDAwMC0wNzAwIi8+Cjxhc3NpZ25lZEF1dGhvcj4KPGlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjQuNiIvPgo8YWRkcj4KPHN0cmVldEFkZHJlc3NMaW5lIG51bGxGbGF2b3I9Ik5JIi8+CjxjaXR5IG51bGxGbGF2b3I9Ik5JIi8+CjxzdGF0ZSBudWxsRmxhdm9yPSJOSSIvPgo8cG9zdGFsQ29kZSBudWxsRmxhdm9yPSJOSSIvPgo8Y291bnRyeSBudWxsRmxhdm9yPSJOSSIvPgo8L2FkZHI+Cjx0ZWxlY29tIG51bGxGbGF2b3I9Ik5JIi8+Cjxhc3NpZ25lZFBlcnNvbj4KPG5hbWU+CjxnaXZlbiBudWxsRmxhdm9yPSJOSSIvPgo8ZmFtaWx5IG51bGxGbGF2b3I9Ik5JIi8+CjwvbmFtZT4KPC9hc3NpZ25lZFBlcnNvbj4KPC9hc3NpZ25lZEF1dGhvcj4KPC9hdXRob3I+CjxjdXN0b2RpYW4+Cjxhc3NpZ25lZEN1c3RvZGlhbj4KPHJlcHJlc2VudGVkQ3VzdG9kaWFuT3JnYW5pemF0aW9uPgo8aWQgbnVsbEZsYXZvcj0iTkkiLz4KPG5hbWU+VW5rbm93bjwvbmFtZT4KPHRlbGVjb20gbnVsbEZsYXZvcj0iTkkiLz4KPGFkZHI+CjxzdHJlZXRBZGRyZXNzTGluZSBudWxsRmxhdm9yPSJOSSIvPgo8Y2l0eSBudWxsRmxhdm9yPSJOSSIvPgo8c3RhdGUgbnVsbEZsYXZvcj0iTkkiLz4KPHBvc3RhbENvZGUgbnVsbEZsYXZvcj0iTkkiLz4KPGNvdW50cnkgbnVsbEZsYXZvcj0iTkkiLz4KPC9hZGRyPgo8L3JlcHJlc2VudGVkQ3VzdG9kaWFuT3JnYW5pemF0aW9uPgo8L2Fzc2lnbmVkQ3VzdG9kaWFuPgo8L2N1c3RvZGlhbj4KPGNvbXBvbmVudE9mPgo8ZW5jb21wYXNzaW5nRW5jb3VudGVyPgo8aWQgcm9vdD0ibnVsbCIgZXh0ZW5zaW9uPSJFbmNvdW50ZXIvZXgtdHJpZ2dlci1jb25kaXRpb24taW4tZW5jb3VudGVyLTEiLz4KPGNvZGUgY29kZT0iSU1QIiBjb2RlU3lzdGVtPSIyLjE2Ljg0MC4xLjExMzg4My41LjQiIGNvZGVTeXN0ZW1OYW1lPSJ2My1BY3RDb2RlIiBkaXNwbGF5TmFtZT0iaW5wYXRpZW50IGVuY291bnRlciI+PC9jb2RlPgo8ZWZmZWN0aXZlVGltZT4KPGxvdyB2YWx1ZT0iMjAyMjA3MTMxMTAwMDAtMDcwMCIvPgo8aGlnaCB2YWx1ZT0iMjAyMjA3MTMxMjAwMDAtMDcwMCIvPgo8L2VmZmVjdGl2ZVRpbWU+CjxyZXNwb25zaWJsZVBhcnR5Pgo8YXNzaWduZWRFbnRpdHk+CjxpZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My40LjYiLz4KPGFkZHI+CjxzdHJlZXRBZGRyZXNzTGluZSBudWxsRmxhdm9yPSJOSSIvPgo8Y2l0eSBudWxsRmxhdm9yPSJOSSIvPgo8c3RhdGUgbnVsbEZsYXZvcj0iTkkiLz4KPHBvc3RhbENvZGUgbnVsbEZsYXZvcj0iTkkiLz4KPGNvdW50cnkgbnVsbEZsYXZvcj0iTkkiLz4KPC9hZGRyPgo8dGVsZWNvbSBudWxsRmxhdm9yPSJOSSIvPgo8YXNzaWduZWRQZXJzb24+CjxuYW1lPgo8Z2l2ZW4gbnVsbEZsYXZvcj0iTkkiLz4KPGZhbWlseSBudWxsRmxhdm9yPSJOSSIvPgo8L25hbWU+CjwvYXNzaWduZWRQZXJzb24+CjxyZXByZXNlbnRlZE9yZ2FuaXphdGlvbj4KPGlkIG51bGxGbGF2b3I9Ik5JIi8+CjxuYW1lPlVua25vd248L25hbWU+Cjx0ZWxlY29tIG51bGxGbGF2b3I9Ik5JIi8+CjxhZGRyPgo8c3RyZWV0QWRkcmVzc0xpbmUgbnVsbEZsYXZvcj0iTkkiLz4KPGNpdHkgbnVsbEZsYXZvcj0iTkkiLz4KPHN0YXRlIG51bGxGbGF2b3I9Ik5JIi8+Cjxwb3N0YWxDb2RlIG51bGxGbGF2b3I9Ik5JIi8+Cjxjb3VudHJ5IG51bGxGbGF2b3I9Ik5JIi8+CjwvYWRkcj4KPC9yZXByZXNlbnRlZE9yZ2FuaXphdGlvbj4KPC9hc3NpZ25lZEVudGl0eT4KPC9yZXNwb25zaWJsZVBhcnR5Pgo8bG9jYXRpb24+CjxoZWFsdGhDYXJlRmFjaWxpdHk+CjxpZCByb290PSJudWxsIiBleHRlbnNpb249IlVua25vd24iLz4KPGNvZGUgbnVsbEZsYXZvcj0iTkkiLz4KPGxvY2F0aW9uPgo8YWRkcj4KPHN0cmVldEFkZHJlc3NMaW5lIG51bGxGbGF2b3I9Ik5JIi8+CjxjaXR5IG51bGxGbGF2b3I9Ik5JIi8+CjxzdGF0ZSBudWxsRmxhdm9yPSJOSSIvPgo8cG9zdGFsQ29kZSBudWxsRmxhdm9yPSJOSSIvPgo8Y291bnRyeSBudWxsRmxhdm9yPSJOSSIvPgo8L2FkZHI+CjwvbG9jYXRpb24+CjxzZXJ2aWNlUHJvdmlkZXJPcmdhbml6YXRpb24+CjxpZCBudWxsRmxhdm9yPSJOSSIvPgo8bmFtZT5Vbmtub3duPC9uYW1lPgo8dGVsZWNvbSBudWxsRmxhdm9yPSJOSSIvPgo8YWRkcj4KPHN0cmVldEFkZHJlc3NMaW5lIG51bGxGbGF2b3I9Ik5JIi8+CjxjaXR5IG51bGxGbGF2b3I9Ik5JIi8+CjxzdGF0ZSBudWxsRmxhdm9yPSJOSSIvPgo8cG9zdGFsQ29kZSBudWxsRmxhdm9yPSJOSSIvPgo8Y291bnRyeSBudWxsRmxhdm9yPSJOSSIvPgo8L2FkZHI+Cjwvc2VydmljZVByb3ZpZGVyT3JnYW5pemF0aW9uPgo8L2hlYWx0aENhcmVGYWNpbGl0eT4KPC9sb2NhdGlvbj4KPC9lbmNvbXBhc3NpbmdFbmNvdW50ZXI+CjwvY29tcG9uZW50T2Y+Cjxjb21wb25lbnQ+CjxzdHJ1Y3R1cmVkQm9keT4KPGNvbXBvbmVudD4KPHNlY3Rpb24+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuNS4xIi8+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuNS4xIiBleHRlbnNpb249IjIwMTUtMDgtMDEiLz4KPGNvZGUgY29kZT0iMTE0NTAtNCIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJQUk9CTEVNIExJU1QiLz4KPHRpdGxlPlBST0JMRU1TIC0gRElBR05PU0VTPC90aXRsZT4KPHRleHQ+Cjx0YWJsZSBib3JkZXI9IjEiIHdpZHRoPSIxMDAlIj4KPHRoZWFkPgo8dHI+Cjx0aD5Qcm9ibGVtIG9yIERpYWdub3NpczwvdGg+Cjx0aD5Qcm9ibGVtIFN0YXR1czwvdGg+CjwvdHI+CjwvdGhlYWQ+Cjx0Ym9keT4KPHRyPgo8dGQ+Cjxjb250ZW50IElEPSJwcm9ibGVtMSI+Q2hsYW15ZGlhIHRyYWNob21hdGlzIGluZmVjdGlvbiBpbiBtb3RoZXIgY29tcGxpY2F0aW5nIGNoaWxkYmlydGggKGRpc29yZGVyKTwvY29udGVudD4KPC90ZD4KPHRkPgo8Y29udGVudCBJRD0icHJvYmxlbVN0YXR1czEiPkFjdGl2ZTwvY29udGVudD4KPC90ZD4KPC90cj4KPC90Ym9keT4KPC90YWJsZT4KPC90ZXh0Pgo8ZW50cnkgdHlwZUNvZGU9IkRSSVYiPgo8YWN0IGNsYXNzQ29kZT0iQUNUIiBtb29kQ29kZT0iRVZOIj4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuNC4zIi8+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjQuMyIgZXh0ZW5zaW9uPSIyMDE1LTA4LTAxIi8+CjxpZCByb290PSI5MDcxY2I3OS05YTQwLTRmMTAtODhkZC03NWE2NDFiYTY0OWEiLz4KPGNvZGUgY29kZT0iQ09OQyIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNS42IiBjb2RlU3lzdGVtTmFtZT0iSEw3QWN0Q2xhc3MiIGRpc3BsYXlOYW1lPSJDb25jZXJuIi8+CjxzdGF0dXNDb2RlIGNvZGU9ImFjdGl2ZSIvPgo8ZWZmZWN0aXZlVGltZT4KPGxvdyBudWxsRmxhdm9yPSJOSSIvPgo8aGlnaCBudWxsRmxhdm9yPSJOSSIvPgo8L2VmZmVjdGl2ZVRpbWU+CjxlbnRyeVJlbGF0aW9uc2hpcCB0eXBlQ29kZT0iU1VCSiI+CjxvYnNlcnZhdGlvbiBjbGFzc0NvZGU9Ik9CUyIgbW9vZENvZGU9IkVWTiI+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjQuNCIvPgo8dGVtcGxhdGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xMC4yMC4yMi40LjQiIGV4dGVuc2lvbj0iMjAxNS0wOC0wMSIvPgo8aWQgcm9vdD0ibnVsbCIgZXh0ZW5zaW9uPSJodHRwOi8vbG9jYWxob3N0OjkwMTEvL0ZISVIvQ29uZGl0aW9uL2V4LXRyaWdnZXItY29uZGl0aW9uLWluLWNvbmRpdGlvbi0xIi8+Cjxjb2RlIGNvZGU9IjI4MjI5MTAwOSIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi45NiIgY29kZVN5c3RlbU5hbWU9IlNOT01FRC1DVCIgZGlzcGxheU5hbWU9IkRpYWdub3NpcyI+PHRyYW5zbGF0aW9uIGNvZGU9IjI5MzA4LTQiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuMSIgY29kZVN5c3RlbU5hbWU9IkxPSU5DIiBkaXNwbGF5TmFtZT0iRGlhZ25vc2lzIi8+CjwvY29kZT4KPHN0YXR1c0NvZGUgY29kZT0iY29tcGxldGVkIi8+CjxlZmZlY3RpdmVUaW1lPgo8bG93IHZhbHVlPSIyMDIwMDEwMTAwMDAwMCswMDAwIi8+CjxoaWdoIG51bGxGbGF2b3I9Ik5JIi8+CjwvZWZmZWN0aXZlVGltZT4KPHZhbHVlIHhzaTp0eXBlPSJDRCIgY29kZT0iMTA3NTAwNTEwMDAxMTkxMDUiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuOTYiIGNvZGVTeXN0ZW1OYW1lPSJzY3QiIGRpc3BsYXlOYW1lPSJDaGxhbXlkaWEgdHJhY2hvbWF0aXMgaW5mZWN0aW9uIGluIG1vdGhlciBjb21wbGljYXRpbmcgY2hpbGRiaXJ0aCAoZGlzb3JkZXIpIj48L3ZhbHVlPgo8L29ic2VydmF0aW9uPgo8L2VudHJ5UmVsYXRpb25zaGlwPgo8ZW50cnlSZWxhdGlvbnNoaXAgdHlwZUNvZGU9IlJTT04iPgo8b2JzZXJ2YXRpb24gY2xhc3NDb2RlPSJPQlMiIG1vb2RDb2RlPSJFVk4iIG5lZ2F0aW9uSW5kPSJmYWxzZSIgPgo8dGVtcGxhdGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xMC4yMC4yMi40LjQiLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuNC40IiBleHRlbnNpb249IjIwMTUtMDgtMDEiLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMTUuMi4zLjMiIGV4dGVuc2lvbj0iMjAxNi0xMi0wMSIvPgo8aWQgcm9vdD0ibnVsbCIgZXh0ZW5zaW9uPSJodHRwOi8vbG9jYWxob3N0OjkwMTEvL0ZISVIvQ29uZGl0aW9uL2V4LXRyaWdnZXItY29uZGl0aW9uLWluLWNvbmRpdGlvbi0xIi8+Cjxjb2RlIGNvZGU9IjI4MjI5MTAwOSIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi45NiIgY29kZVN5c3RlbU5hbWU9IlNOT01FRC1DVCIgZGlzcGxheU5hbWU9IkRpYWdub3NpcyI+PHRyYW5zbGF0aW9uIGNvZGU9IjI5MzA4LTQiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuMSIgY29kZVN5c3RlbU5hbWU9IkxPSU5DIiBkaXNwbGF5TmFtZT0iRGlhZ25vc2lzIi8+CjwvY29kZT4KPHN0YXR1c0NvZGUgY29kZT0iY29tcGxldGVkIi8+CjxlZmZlY3RpdmVUaW1lPgo8bG93IHZhbHVlPSIyMDIwMDEwMTAwMDAwMCswMDAwIi8+CjxoaWdoIG51bGxGbGF2b3I9Ik5JIi8+CjwvZWZmZWN0aXZlVGltZT4KPHZhbHVlIHhzaTp0eXBlPSJDRCIgY29kZT0iMTA3NTAwNTEwMDAxMTkxMDUiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuOTYiIGNvZGVTeXN0ZW1OYW1lPSJzY3QiIHNkdGM6dmFsdWVTZXQ9IjIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNzUwOCIgc2R0Yzp2YWx1ZVNldFZlcnNpb249IjIwMjAtMDctMDkiLz4KPC9vYnNlcnZhdGlvbj4KPC9lbnRyeVJlbGF0aW9uc2hpcD4KPC9hY3Q+CjwvZW50cnk+Cjwvc2VjdGlvbj4KPC9jb21wb25lbnQ+Cjxjb21wb25lbnQ+CjxzZWN0aW9uPgo8dGVtcGxhdGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xMC4yMC4yMi4yLjIyLjEiLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuMi4yMi4xIiBleHRlbnNpb249IjIwMTUtMDgtMDEiLz4KPGNvZGUgY29kZT0iNDYyNDAtOCIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJIaXN0b3J5IG9mIEVuY291bnRlcnMiLz4KPHRpdGxlPkVOQ09VTlRFUlM8L3RpdGxlPgo8dGV4dD4KPHRhYmxlIGJvcmRlcj0iMSIgd2lkdGg9IjEwMCUiPgo8dGhlYWQ+Cjx0cj4KPHRoPkVuY291bnRlciBSZWFzb248L3RoPgo8dGg+RGF0ZSBvZiBFbmNvdW50ZXI8L3RoPgo8L3RyPgo8L3RoZWFkPgo8dGJvZHk+Cjx0cj4KPHRkPgo8Y29udGVudCBJRD0iZW5jb3VudGVyMSI+aW5wYXRpZW50IGVuY291bnRlcjwvY29udGVudD4KPC90ZD4KPHRkPgo8Y29udGVudCBJRD0iZW5jb3VudGVyRGF0ZTEiPjIwMjIwNzEzMTEwMDAwLTA3MDA8L2NvbnRlbnQ+CjwvdGQ+CjwvdHI+CjwvdGJvZHk+CjwvdGFibGU+CjwvdGV4dD4KPGVudHJ5IHR5cGVDb2RlPSJEUklWIj4KPGVuY291bnRlciBjbGFzc0NvZGU9IkVOQyIgbW9vZENvZGU9IkVWTiI+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjQuNDkiLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuNC40OSIgZXh0ZW5zaW9uPSIyMDE1LTA4LTAxIi8+CjxpZCByb290PSJudWxsIiBleHRlbnNpb249IkVuY291bnRlci9leC10cmlnZ2VyLWNvbmRpdGlvbi1pbi1lbmNvdW50ZXItMSIvPgo8Y29kZSBjb2RlPSJJTVAiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjUuNCIgY29kZVN5c3RlbU5hbWU9InYzLUFjdENvZGUiIGRpc3BsYXlOYW1lPSJpbnBhdGllbnQgZW5jb3VudGVyIj48b3JpZ2luYWxUZXh0Pgo8cmVmZXJlbmNlIHZhbHVlPSIjZW5jb3VudGVyMSIvPgo8L29yaWdpbmFsVGV4dD4KPC9jb2RlPgo8ZWZmZWN0aXZlVGltZT4KPGxvdyB2YWx1ZT0iMjAyMjA3MTMxMTAwMDAtMDcwMCIvPgo8aGlnaCB2YWx1ZT0iMjAyMjA3MTMxMjAwMDAtMDcwMCIvPgo8L2VmZmVjdGl2ZVRpbWU+CjwvZW5jb3VudGVyPgo8L2VudHJ5Pgo8L3NlY3Rpb24+CjwvY29tcG9uZW50Pgo8Y29tcG9uZW50Pgo8c2VjdGlvbiBudWxsRmxhdm9yPSJOSSI+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuMy4xIi8+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuMy4xIiBleHRlbnNpb249IjIwMTUtMDgtMDEiLz4KPGNvZGUgY29kZT0iMzA5NTQtMiIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJSRVNVTFRTIi8+Cjx0aXRsZT5SRVNVTFRTPC90aXRsZT4KPHRleHQ+Tm8gTGFiIFJlc3VsdHMgSW5mb3JtYXRpb248L3RleHQ+Cjwvc2VjdGlvbj4KPC9jb21wb25lbnQ+Cjxjb21wb25lbnQ+CjxzZWN0aW9uIG51bGxGbGF2b3I9Ik5JIj4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuMi4zOCIvPgo8dGVtcGxhdGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xMC4yMC4yMi4yLjM4IiBleHRlbnNpb249IjIwMTQtMDYtMDkiLz4KPGNvZGUgY29kZT0iMjk1NDktMyIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJNZWRpY2F0aW9ucyBBZG1pbmlzdGVyZWQiLz4KPHRpdGxlPk1lZGljYXRpb25zIEFkbWluaXN0ZXJlZDwvdGl0bGU+Cjx0ZXh0Pk5vIE1lZGljYXRpb24gQWRtaW5pc3RlcmVkIEluZm9ybWF0aW9uPC90ZXh0Pgo8L3NlY3Rpb24+CjwvY29tcG9uZW50Pgo8Y29tcG9uZW50Pgo8c2VjdGlvbiBudWxsRmxhdm9yPSJOSSI+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuMi4xIi8+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuMi4xIiBleHRlbnNpb249IjIwMTUtMDgtMDEiLz4KPGNvZGUgY29kZT0iMTEzNjktNiIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJIaXN0b3J5IG9mIGltbXVuaXphdGlvbnMiLz4KPHRpdGxlPklNTVVOSVpBVElPTlM8L3RpdGxlPgo8dGV4dD5ObyBJbW11bml6YXRpb25JbmZvcm1hdGlvbjwvdGV4dD4KPC9zZWN0aW9uPgo8L2NvbXBvbmVudD4KPGNvbXBvbmVudD4KPHNlY3Rpb24+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuMTciLz4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuMi4xNyIgZXh0ZW5zaW9uPSIyMDE1LTA4LTAxIi8+Cjxjb2RlIGNvZGU9IjI5NzYyLTIiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuMSIgY29kZVN5c3RlbU5hbWU9IkxPSU5DIiBkaXNwbGF5TmFtZT0iU29jaWFsIEhpc3RvcnkiLz4KPHRpdGxlPlNPQ0lBTCBISVNUT1JZPC90aXRsZT4KPHRleHQ+Cjx0YWJsZSBib3JkZXI9IjEiIHdpZHRoPSIxMDAlIj4KPHRoZWFkPgo8dHI+Cjx0aD5Tb2NpYWwgSGlzdG9yeSBPYnNlcnZhdGlvbjwvdGg+Cjx0aD5Tb2NpYWwgSGlzdG9yeSBPYnNlcnZhdGlvbiBSZXN1bHQ8L3RoPgo8L3RyPgo8L3RoZWFkPgo8dGJvZHk+Cjx0cj4KPHRkPgo8Y29udGVudCBJRD0ic29jQ29udGVudDAiPkJpcnRoIFNleDwvY29udGVudD4KPC90ZD4KPHRkPgo8Y29udGVudCBJRD0ic29jT2JzZXJ2YXRpb25SZXN1bHQwIj5NPC9jb250ZW50Pgo8L3RkPgo8L3RyPgo8L3Rib2R5Pgo8L3RhYmxlPgo8L3RleHQ+CjxlbnRyeT4KPG9ic2VydmF0aW9uIGNsYXNzQ29kZT0iT0JTIiBtb29kQ29kZT0iRVZOIj4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuNC4yMDAiIGV4dGVuc2lvbj0iMjAxNi0wNi0wMSIvPgo8aWQgcm9vdD0iNmQwODdhMDYtNTlhZi00MWVhLWJjOTMtODVjNTg5MWYxYzM5Ii8+Cjxjb2RlIGNvZGU9Ijc2Njg5LTkiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuMSIgY29kZVN5c3RlbU5hbWU9IkxPSU5DIiBkaXNwbGF5TmFtZT0iQmlydGggU2V4Ii8+CjxzdGF0dXNDb2RlIGNvZGU9ImNvbXBsZXRlZCIvPgo8dmFsdWUgeHNpOnR5cGU9IkNEIiBjb2RlPSJNIiBjb2RlU3lzdGVtPSIyLjE2Ljg0MC4xLjExMzg4My41LjEiIGNvZGVTeXN0ZW1OYW1lPSJBZG1pbmlzdHJhdGl2ZSBHZW5kZXIiIGRpc3BsYXlOYW1lPSJNYWxlIi8+Cjwvb2JzZXJ2YXRpb24+CjwvZW50cnk+Cjwvc2VjdGlvbj4KPC9jb21wb25lbnQ+Cjxjb21wb25lbnQ+CjxzZWN0aW9uIG51bGxGbGF2b3I9Ik5JIj4KPHRlbXBsYXRlSWQgcm9vdD0iMi4xNi44NDAuMS4xMTM4ODMuMTAuMjAuMjIuMi4xMCIvPgo8dGVtcGxhdGVJZCByb290PSIyLjE2Ljg0MC4xLjExMzg4My4xMC4yMC4yMi4yLjEwIiBleHRlbnNpb249IjIwMTQtMDYtMDkiLz4KPGNvZGUgY29kZT0iMTg3NzYtNSIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJUcmVhdG1lbnQgUGxhbiIvPgo8dGl0bGU+UGxhbiBvZiBUcmVhdG1lbnQ8L3RpdGxlPgo8dGV4dD5ObyBQbGFuIE9mIFRyZWF0bWVudCBJbmZvcm1hdGlvbjwvdGV4dD4KPC9zZWN0aW9uPgo8L2NvbXBvbmVudD4KPGNvbXBvbmVudD4KPHNlY3Rpb24+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjEuMy42LjEuNC4xLjE5Mzc2LjEuNS4zLjEuMy40Ii8+Cjxjb2RlIGNvZGU9IjEwMTY0LTIiIGNvZGVTeXN0ZW09IjIuMTYuODQwLjEuMTEzODgzLjYuMSIgY29kZVN5c3RlbU5hbWU9IkxPSU5DIiBkaXNwbGF5TmFtZT0iSGlzdG9yeSBvZiBQcmVzZW50IElsbG5lc3MiLz4KPHRpdGxlPkhpc3Rvcnkgb2YgUHJlc2VudCBJbGxuZXNzPC90aXRsZT4KPHRleHQ+Cjx0YWJsZSBib3JkZXI9IjEiIHdpZHRoPSIxMDAlIj4KPHRoZWFkPgo8dHI+Cjx0aD5OYXJyYXRpdmUgVGV4dDwvdGg+CjwvdHI+CjwvdGhlYWQ+Cjx0Ym9keT4KPHRyPgo8dGQ+Cjxjb250ZW50IElEPSJoaXN0b3J5T2ZQcmVzZW50SWxsbmVzczEiPlVua25vd24gSGlzdG9yeSBvZiBQcmVzZW50IElsbG5lc3M8L2NvbnRlbnQ+CjwvdGQ+CjwvdHI+CjwvdGJvZHk+CjwvdGFibGU+CjwvdGV4dD4KPC9zZWN0aW9uPgo8L2NvbXBvbmVudD4KPGNvbXBvbmVudD4KPHNlY3Rpb24+Cjx0ZW1wbGF0ZUlkIHJvb3Q9IjIuMTYuODQwLjEuMTEzODgzLjEwLjIwLjIyLjIuMTIiLz4KPGNvZGUgY29kZT0iMjkyOTktNSIgY29kZVN5c3RlbT0iMi4xNi44NDAuMS4xMTM4ODMuNi4xIiBjb2RlU3lzdGVtTmFtZT0iTE9JTkMiIGRpc3BsYXlOYW1lPSJSZWFzb24gRm9yIFZpc2l0Ii8+Cjx0aXRsZT5SZWFzb24gRm9yIFZpc2l0PC90aXRsZT4KPHRleHQ+Cjx0YWJsZSBib3JkZXI9IjEiIHdpZHRoPSIxMDAlIj4KPHRoZWFkPgo8dHI+Cjx0aD50ZXh0PC90aD4KPC90cj4KPC90aGVhZD4KPHRib2R5Pgo8dHI+Cjx0ZD4KPGNvbnRlbnQgSUQ9InRleHQxIj5Vbmtub3duIFJlYXNvbiBGb3IgVmlzaXQ8L2NvbnRlbnQ+CjwvdGQ+CjwvdHI+CjwvdGJvZHk+CjwvdGFibGU+CjwvdGV4dD4KPC9zZWN0aW9uPgo8L2NvbXBvbmVudD4KPC9zdHJ1Y3R1cmVkQm9keT4KPC9jb21wb25lbnQ+CjwvQ2xpbmljYWxEb2N1bWVudD4=",
+                                        "title": "Initial Public Health Case Report"
+                                    }
+                                }
+                            ],
+                            "context": {
+                                "encounter": [
+                                    {
+                                        "reference": "Encounter/ex-trigger-condition-in-encounter-1"
+                                    }
+                                ],
+                                "period": {
+                                    "start": "2022-07-15T10:17:16-06:00",
+                                    "end": "2022-07-15T10:17:16-06:00"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Bundle",
+                "id": "eicrreport",
+                "meta": {
+                    "versionId": "1",
+                    "lastUpdated": "2022-07-15T10:17:16.485-06:00",
+                    "profile": [
+                        "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle"
+                    ]
+                },
+                "type": "document",
+                "timestamp": "2022-07-15T10:17:16.486-06:00",
+                "entry": [
+                    {
+                        "resource": {
+                            "resourceType": "Composition",
+                            "id": "00ed8ff3-6ac8-45e5-b81c-2618e03c85c2",
+                            "contained": [
+                                {
+                                    "resourceType": "Device",
+                                    "id": "1",
+                                    "deviceName": [
+                                        {
+                                            "name": "eCRNow/Backend Service App"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "extension": [
+                                {
+                                    "url": "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber",
+                                    "valueString": "1"
+                                }
+                            ],
+                            "identifier": {
+                                "value": "00ed8ff3-6ac8-45e5-b81c-2618e03c85c2"
+                            },
+                            "type": {
+                                "coding": [
+                                    {
+                                        "system": "http://loinc.org",
+                                        "code": "55751-2",
+                                        "display": "Public Health Case Report"
+                                    }
+                                ],
+                                "text": "Public Health Case Report"
+                            },
+                            "subject": {
+                                "reference": "Patient/ex-trigger-condition-in"
+                            },
+                            "encounter": {
+                                "reference": "Encounter/ex-trigger-condition-in-encounter-1"
+                            },
+                            "date": "2022-07-15T10:17:16-06:00",
+                            "author": [
+                                {
+                                    "reference": "#1"
+                                }
+                            ],
+                            "section": [
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "46239-0",
+                                                "display": "Chief complaint+Reason for visit Narrative"
+                                            }
+                                        ],
+                                        "text": "Chief complaint+Reason for visit Narrative"
+                                    },
+                                    "text": {
+                                        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Information</div>"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "10164-2",
+                                                "display": "History of Present illness Narrative"
+                                            }
+                                        ],
+                                        "text": "History of Present illness Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "10187-3",
+                                                "display": "Review of Systems narrative"
+                                            }
+                                        ],
+                                        "text": "Review of Systems narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "11450-4",
+                                                "display": "Problem Section Narrative"
+                                            }
+                                        ],
+                                        "text": "Problem Section Narrative"
+                                    },
+                                    "entry": [
+                                        {
+                                            "reference": "http://localhost:9011//FHIR/Condition/ex-trigger-condition-in-condition-1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "11348-0",
+                                                "display": "Past Medical History Narrative"
+                                            }
+                                        ],
+                                        "text": "Past Medical History Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "29549-3",
+                                                "display": "Medications Administered Narrative"
+                                            }
+                                        ],
+                                        "text": "Medications Administered Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "30954-2",
+                                                "display": "Results Section Narrative"
+                                            }
+                                        ],
+                                        "text": "Results Section Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "18776-5",
+                                                "display": "Plan of Treatment Narrative"
+                                            }
+                                        ],
+                                        "text": "Plan of Treatment Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "11369-6",
+                                                "display": "Immunizations Narrative"
+                                            }
+                                        ],
+                                        "text": "Immunizations Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "47519-4",
+                                                "display": "Procedure Section Narrative"
+                                            }
+                                        ],
+                                        "text": "Procedure Section Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "8716-3",
+                                                "display": "Vital Signs Narrative"
+                                            }
+                                        ],
+                                        "text": "Vital Signs Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "29762-2",
+                                                "display": "Social History Narrative"
+                                            }
+                                        ],
+                                        "text": "Social History Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "90767-5",
+                                                "display": "Pregnancy Section Narrative"
+                                            }
+                                        ],
+                                        "text": "Pregnancy Section Narrative"
+                                    }
+                                },
+                                {
+                                    "code": {
+                                        "coding": [
+                                            {
+                                                "system": "http://loinc.org",
+                                                "code": "83910-0",
+                                                "display": "Emergency Outbreak Section Narrative"
+                                            }
+                                        ],
+                                        "text": "Emergency Outbreak Section Narrative"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "fullUrl": "http://localhost:9011/fhir/Encounter/ex-trigger-condition-in-encounter-1",
+                        "resource": {
+                            "resourceType": "Encounter",
+                            "id": "ex-trigger-condition-in-encounter-1",
+                            "meta": {
+                                "profile": [
+                                    "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter"
+                                ]
+                            },
+                            "status": "in-progress",
+                            "class": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                                "code": "IMP",
+                                "display": "inpatient encounter"
+                            },
+                            "type": [
+                                {
+                                    "coding": [
+                                        {
+                                            "system": "http://snomed.info/sct",
+                                            "version": "2021-09",
+                                            "code": "185389009",
+                                            "display": "Follow-up visit (procedure)"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "subject": {
+                                "reference": "ex-trigger-condition-in"
+                            },
+                            "period": {
+                                "start": "2022-07-13T11:00:00-07:00",
+                                "end": "2022-07-13T12:00:00-07:00"
+                            },
+                            "location": [
+                                {
+                                    "location": {
+                                        "reference": "Location/location-reportable"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "fullUrl": "http://localhost:9011/fhir/Patient/ex-trigger-condition-in",
+                        "resource": {
+                            "resourceType": "Patient",
+                            "id": "ex-trigger-condition-in",
+                            "meta": {
+                                "profile": [
+                                    "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-patient"
+                                ]
+                            },
+                            "extension": [
+                                {
+                                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+                                    "extension": [
+                                        {
+                                            "url": "ombCategory",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "2106-3",
+                                                "display": "White"
+                                            }
+                                        },
+                                        {
+                                            "url": "ombCategory",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "1002-5",
+                                                "display": "American Indian or Alaska Native"
+                                            }
+                                        },
+                                        {
+                                            "url": "ombCategory",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "2028-9",
+                                                "display": "Asian"
+                                            }
+                                        },
+                                        {
+                                            "url": "detailed",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "1586-7",
+                                                "display": "Shoshone"
+                                            }
+                                        },
+                                        {
+                                            "url": "detailed",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "2036-2",
+                                                "display": "Filipino"
+                                            }
+                                        },
+                                        {
+                                            "url": "text",
+                                            "valueString": "Mixed"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+                                    "extension": [
+                                        {
+                                            "url": "ombCategory",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "2135-2",
+                                                "display": "Hispanic or Latino"
+                                            }
+                                        },
+                                        {
+                                            "url": "detailed",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "2184-0",
+                                                "display": "Dominican"
+                                            }
+                                        },
+                                        {
+                                            "url": "detailed",
+                                            "valueCoding": {
+                                                "system": "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+                                                "code": "2148-5",
+                                                "display": "Mexican"
+                                            }
+                                        },
+                                        {
+                                            "url": "text",
+                                            "valueString": "Hispanic or Latino"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+                                    "valueCode": "M"
+                                }
+                            ],
+                            "identifier": [
+                                {
+                                    "use": "usual",
+                                    "type": {
+                                        "coding": [
+                                            {
+                                                "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                                "code": "MR"
+                                            }
+                                        ]
+                                    },
+                                    "system": "urn:oid:1.2.36.146.595.217.0.1",
+                                    "value": "12345",
+                                    "period": {
+                                        "start": "2001-05-06"
+                                    },
+                                    "assigner": {
+                                        "display": "Acme Healthcare"
+                                    }
+                                }
+                            ],
+                            "active": true,
+                            "name": [
+                                {
+                                    "use": "official",
+                                    "family": "Doe",
+                                    "given": [
+                                        "John"
+                                    ]
+                                }
+                            ],
+                            "gender": "male",
+                            "birthDate": "2000-01-01",
+                            "deceasedBoolean": false,
+                            "address": [
+                                {
+                                    "line": [
+                                        "5101 Peachtree St NE"
+                                    ],
+                                    "city": "Elko",
+                                    "state": "NV",
+                                    "postalCode": "89801",
+                                    "country": "US"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "fullUrl": "http://localhost:9011/fhir/Condition/ex-trigger-condition-in-condition-1",
+                        "resource": {
+                            "resourceType": "Condition",
+                            "id": "ex-trigger-condition-in-condition-1",
+                            "meta": {
+                                "profile": [
+                                    "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-condition"
+                                ]
+                            },
+                            "clinicalStatus": {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                                        "version": "0.5.0",
+                                        "code": "active",
+                                        "display": "Active"
+                                    }
+                                ]
+                            },
+                            "verificationStatus": {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/ValueSet/condition-ver-status",
+                                        "version": "0.5.0",
+                                        "code": "confirmed",
+                                        "display": "Confirmed"
+                                    }
+                                ]
+                            },
+                            "category": [
+                                {
+                                    "coding": [
+                                        {
+                                            "system": "http://terminology.hl7.org/ValueSet/condition-category",
+                                            "version": "0.5.0",
+                                            "code": "encounter-diagnosis",
+                                            "display": "Encounter Diagnosis"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "code": {
+                                "coding": [
+                                    {
+                                        "system": "http://snomed.info/sct",
+                                        "code": "10750051000119105",
+                                        "display": "Chlamydia trachomatis infection in mother complicating childbirth (disorder)"
+                                    }
+                                ]
+                            },
+                            "subject": {
+                                "reference": "ex-trigger-condition-in"
+                            },
+                            "onsetDateTime": "2020-01-01T00:00:00-00:00"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

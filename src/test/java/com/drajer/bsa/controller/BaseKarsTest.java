@@ -114,8 +114,15 @@ public class BaseKarsTest extends BaseIntegrationTest {
       deleteOutputFiles();
       Bundle bundle =
           getNotificationBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
-      this.stubHelper.mockProcessMessageBundle(bundle);
-      this.stubHelper.mockReceiveEicr(bundle);
+      Bundle expectedEicr =
+          getExpectedEicrBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
+      if (expectedEicr != null) {
+        this.stubHelper.mockProcessMessageBundle(expectedEicr);
+        this.stubHelper.mockReceiveEicr(expectedEicr);
+      } else {
+        this.stubHelper.mockProcessMessageBundle(bundle);
+        this.stubHelper.mockReceiveEicr(bundle);
+      }
 
       List<KarProcessingData> dataList =
           notificationReceiver.processNotification(
@@ -382,6 +389,28 @@ public class BaseKarsTest extends BaseIntegrationTest {
         "/token",
         String.format(
             "{ \"access_token\": \"%s\", \n\"expires_in\": \"%s\" }", accessToken, expireTime));
+  }
+
+  private Bundle getExpectedEicrBundle(String planDef, String testCase) {
+    java.net.URL url =
+        DiabetesECSDTest.class
+            .getClassLoader()
+            .getResource("Bsa/Scenarios/" + planDef + "/" + testCase);
+    File rootFile = new File(url.getPath());
+
+    File[] bundles = rootFile.listFiles((FilenameFilter) new WildcardFileFilter("*eicr.json"));
+    if (bundles == null || bundles.length == 0) {
+      logger.debug("Did not find expected eicr for test:" + testCase);
+      return null;
+    }
+
+    if (bundles.length > 1) {
+      throw new RuntimeException(
+          "Found multiple notification bundles for test case: " + this.testCaseInfo.getName());
+    }
+
+    String absolutePath = bundles[0].getAbsolutePath();
+    return ap.readBundleFromFile(absolutePath);
   }
 
   private Bundle getNotificationBundle(String planDef, String testCase) {
