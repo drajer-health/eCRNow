@@ -733,7 +733,9 @@ public class KarParserImpl implements KarParser {
         // Set location of eRSD bundle for loading terminology and library logic
         Endpoint karEndpoint =
             new Endpoint()
-                .setAddress(karBundleFile.getAbsolutePath())
+                // get the kar directory so that the Providers will bundle everything together i.e.
+                // All Kar bundles
+                .setAddress(karBundleFile.getParentFile().getAbsolutePath())
                 .setConnectionType(new Coding().setCode("hl7-fhir-files"));
         bc.setLibraryEndpoint(karEndpoint);
         bc.setTerminologyEndpoint(karEndpoint);
@@ -770,7 +772,9 @@ public class KarParserImpl implements KarParser {
           // Set location of eRSD bundle for loading terminology and library logic
           Endpoint karEndpoint =
               new Endpoint()
-                  .setAddress(karBundleFile.getAbsolutePath())
+                  // get the kar directory so that the Providers will bundle everything together
+                  // i.e. All Kar bundles
+                  .setAddress(karBundleFile.getParentFile().getAbsolutePath())
                   .setConnectionType(new Coding().setCode("hl7-fhir-files"));
           bc.setLibraryEndpoint(karEndpoint);
           bc.setTerminologyEndpoint(karEndpoint);

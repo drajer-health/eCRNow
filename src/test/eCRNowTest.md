@@ -205,3 +205,18 @@ At the Evaluation level there are tests for FhirPathProcesser and CqlProcessor s
 test/java/com/drajer/bsa/kar/condition
 
 (specific tests in progress...)
+
+Notes for eCRNow Tests:
+
+Dates in data will go stale must add a way to update stale test dates in the BaseTest
+
+A lot of the code is fragile and was rushed to get it to work, so should try to refactor as much as possible to make it "future proof"
+
+The create eicr to encounter-modified loop is not being tested at all.  
+	(reference https://build.fhir.org/ig/HL7/case-reporting/electronic_reporting_and_surveillance_distribution_ersd_transaction_and_profiles.html)
+
+We are not testing the eicr is created as expected.
+
+Cql is not thoroughly tested.
+
+Need to add tests to CqlProcessor and FhirPathProcessor specifically
