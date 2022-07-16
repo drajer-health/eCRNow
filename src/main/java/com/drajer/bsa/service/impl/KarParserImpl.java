@@ -351,6 +351,7 @@ public class KarParserImpl implements KarParser {
           logger.info(" Processing PlanDefinition ");
           processPlanDefinition((PlanDefinition) comp.getResource(), art, kar);
           art.initializeRelatedActions();
+          art.initializeRelatedDataIds();
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.Library) {
           logger.info(" Processing Library");

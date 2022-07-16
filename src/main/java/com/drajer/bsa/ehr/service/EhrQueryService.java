@@ -1,5 +1,6 @@
 package com.drajer.bsa.ehr.service;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -70,4 +71,6 @@ public interface EhrQueryService {
   JSONObject getAuthorizationToken(HealthcareSetting hs);
 
   void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
+
+  public FhirContext getContext();
 }

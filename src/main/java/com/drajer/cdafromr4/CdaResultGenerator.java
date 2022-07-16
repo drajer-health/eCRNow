@@ -289,6 +289,16 @@ public class CdaResultGenerator {
             CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID,
             CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
 
+    Pair<Boolean, String> obsCodeXml =
+        getObservationCodeXml(details, cd, false, contentRef, "Observation.code");
+
+    Pair<Boolean, String> obsValueXml = null;
+
+    if (val instanceof CodeableConcept) {
+      CodeableConcept value = (CodeableConcept) val;
+      obsValueXml = getObservationCodeXml(details, value, true, contentRef, "Observation.value");
+    }
+    /*
     List<String> matchedTriggerCodes =
         CdaFhirUtilities.getMatchedCodesForResourceAndUrl(
             details, OBSERVATION, CdaGeneratorConstants.FHIR_LOINC_URL);
@@ -364,9 +374,21 @@ public class CdaResultGenerator {
       }
     }
 
+    */
+
+    if (obsCodeXml.getValue0() || (obsValueXml != null && obsValueXml.getValue0())) {
+
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
+    }
+
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    logger.debug("Find the Loinc Code as priority for Lab Results");
+    lrEntry.append(obsCodeXml.getValue1());
+
+    /*  logger.debug("Find the Loinc Code as priority for Lab Results");
     List<Coding> cds = null;
     if (cd != null && cd.getCodingFirstRep() != null) {
       cds = cd.getCoding();
@@ -394,7 +416,7 @@ public class CdaResultGenerator {
 
     } else {
       lrEntry.append(obsCodeXml);
-    }
+    } */
 
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -403,10 +425,10 @@ public class CdaResultGenerator {
     lrEntry.append(
         CdaFhirUtilities.getXmlForType(effective, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
-    if (obsValueXml.isEmpty()) {
+    if (obsValueXml == null) {
       lrEntry.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
     } else {
-      lrEntry.append(obsValueXml);
+      lrEntry.append(obsValueXml.getValue1());
     }
 
     // Add interpretation code.
@@ -430,6 +452,79 @@ public class CdaResultGenerator {
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
     return lrEntry.toString();
+  }
+
+  public static Pair<Boolean, String> getObservationCodeXml(
+      LaunchDetails details,
+      CodeableConcept code,
+      Boolean valElement,
+      String contentRef,
+      String path) {
+
+    Pair<Boolean, String> retVal = null;
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
+
+    List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
+
+    for (MatchedTriggerCodes mtc : mtcs) {
+
+      // if CodeableConcept present in MTC
+      Pair<String, String> matchedCode = mtc.getMatchingCode(code, path);
+
+      if (matchedCode != null) {
+
+        if (!valElement) {
+          Pair<String, String> systemName =
+              CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
+          String codeXml =
+              CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
+                  CdaGeneratorConstants.CODE_EL_NAME,
+                  matchedCode.getValue0(),
+                  systemName.getValue0(),
+                  systemName.getValue1(),
+                  CdaGeneratorConstants.RCTC_OID,
+                  ActionRepo.getInstance().getRctcVersion(),
+                  code,
+                  CdaGeneratorConstants.FHIR_LOINC_URL,
+                  contentRef,
+                  valElement);
+
+          retVal = new Pair<Boolean, String>(true, codeXml);
+        } else {
+          Pair<String, String> systemName =
+              CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
+          String valueXml =
+              CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
+                  CdaGeneratorConstants.VAL_EL_NAME,
+                  matchedCode.getValue0(),
+                  systemName.getValue0(),
+                  systemName.getValue1(),
+                  CdaGeneratorConstants.RCTC_OID,
+                  ActionRepo.getInstance().getRctcVersion(),
+                  code,
+                  CdaGeneratorConstants.FHIR_SNOMED_URL,
+                  contentRef,
+                  valElement);
+
+          retVal = new Pair<Boolean, String>(true, valueXml);
+        }
+      } else if (code.getCoding() != null) {
+
+        String defCodeXml = "";
+        if (!valElement) {
+          defCodeXml =
+              CdaFhirUtilities.getCodingXml(
+                  code.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, contentRef);
+        } else {
+          defCodeXml =
+              CdaFhirUtilities.getCodingXmlForValue(
+                  code.getCoding(), CdaGeneratorConstants.VAL_EL_NAME, contentRef);
+        }
+        retVal = new Pair<Boolean, String>(false, defCodeXml);
+      }
+    }
+
+    return retVal;
   }
 
   public static String addTriggerCodes(LaunchDetails details, Observation obs, List<Coding> cds) {

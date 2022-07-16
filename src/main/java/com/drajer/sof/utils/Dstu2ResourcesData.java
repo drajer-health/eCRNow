@@ -228,7 +228,9 @@ public class Dstu2ResourcesData {
             resourceData.getObservationByPatientId(
                 launchDetails, client, context, OBSERVATION, "laboratory");
     List<Observation> observations = new ArrayList<>();
+    List<Observation> valueObservations = new ArrayList<>();
     List<CodeableConceptDt> observationCodes = new ArrayList<>();
+    List<CodeableConceptDt> valueObservationCodes = new ArrayList<>();
     // Filter Observations based on Encounter Reference
     if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
@@ -241,6 +243,7 @@ public class Dstu2ResourcesData {
               .equals(encounter.getIdElement().getIdPart())) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
+            findAllValueCodes(observation, valueObservations, valueObservationCodes);
           }
         }
       }
@@ -254,6 +257,7 @@ public class Dstu2ResourcesData {
           if (observation.getIssued().after(start) && observation.getIssued().before(end)) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
+            findAllValueCodes(observation, valueObservations, valueObservationCodes);
           }
           // If Issued date is not present, Checking for Effective Date
         } else if (!observation.getEffective().isEmpty()) {
@@ -261,6 +265,7 @@ public class Dstu2ResourcesData {
           if (effectiveDate.after(start) && effectiveDate.before(end)) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
+            findAllValueCodes(observation, valueObservations, valueObservationCodes);
           }
           // If Issued and Effective Date are not present looking for LastUpdatedDate
         } else {
@@ -268,12 +273,27 @@ public class Dstu2ResourcesData {
           if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
+            findAllValueCodes(observation, valueObservations, valueObservationCodes);
           }
         }
       }
     }
     dstu2FhirData.setLabResultCodes(observationCodes);
+    dstu2FhirData.setLabResultValues(valueObservationCodes);
+    dstu2FhirData.setLabResultValueObservations(valueObservations);
     return observations;
+  }
+
+  public void findAllValueCodes(
+      Observation obs,
+      List<Observation> valueObservations,
+      List<CodeableConceptDt> valueObservationCodes) {
+
+    if (obs.getValue() != null && obs.getValue() instanceof CodeableConceptDt) {
+      CodeableConceptDt cd = (CodeableConceptDt) obs.getValue();
+      valueObservationCodes.add(cd);
+      valueObservations.add(obs);
+    }
   }
 
   public List<Observation> getPregnancyObservationData(

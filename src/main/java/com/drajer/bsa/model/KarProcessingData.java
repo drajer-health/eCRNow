@@ -8,11 +8,14 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.ResourceUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -33,6 +36,17 @@ public class KarProcessingData {
 
   public static final String RESOURCE_SIZES = "Resource Sizes : {}";
   private final Logger logger = LoggerFactory.getLogger(KarProcessingData.class);
+
+  public enum DebugDataType {
+    TRIGGER,
+    LOADING,
+    STATE,
+    ALL_INFO
+  }
+
+  public static String TRIGGER_QUERY_FILE_NAME = "TriggerQueryBundle";
+  public static String LOADING_QUERY_FILE_NAME = "LoadingQueryBundle";
+  public static String ALL_DATA_FILE_NAME = "AllDataFile";
 
   /** The Knowledge Artifact to be processed. */
   KnowledgeArtifact kar;
@@ -142,6 +156,9 @@ public class KarProcessingData {
 
   /** The attribute holds the last trigger match status based on previous matches. */
   private CheckTriggerCodeStatusList previousTriggerMatchStatus;
+
+  /** The attribute holds the context encounter */
+  private Encounter contextEncounter;
 
   public void addActionOutput(String actionId, Resource res) {
 
@@ -542,6 +559,14 @@ public class KarProcessingData {
     return notificationContext.getPatientId();
   }
 
+  public Encounter getContextEncounter() {
+    return contextEncounter;
+  }
+
+  public void setContextEncounter(Encounter contextEncounter) {
+    this.contextEncounter = contextEncounter;
+  }
+
   public CheckTriggerCodeStatusList getCurrentTriggerMatchStatus() {
     return currentTriggerMatchStatus;
   }
@@ -562,9 +587,12 @@ public class KarProcessingData {
 
     boolean returnVal = false;
 
+    String finalRelatedDataId = this.getKar().getFirstClassRelatedDataId(dataReqId);
+
     // Check if the data is already retrieved.
     if (fhirInputDataById.containsKey(dataReqId)
-        || (relatedDataId != null && fhirInputDataById.containsKey(relatedDataId))) {
+        || (relatedDataId != null && fhirInputDataById.containsKey(relatedDataId))
+        || fhirInputDataById.containsKey(finalRelatedDataId)) {
       returnVal = true;
     }
 
@@ -609,7 +637,7 @@ public class KarProcessingData {
 
     Set<Resource> resources = null;
 
-    if (relatedDataIds.containsKey(dataReqId)) {
+    if (relatedDataIds != null && relatedDataIds.containsKey(dataReqId)) {
 
       resources = getDataForId(dataReqId, relatedDataIds.get(dataReqId));
     } else {
@@ -628,11 +656,15 @@ public class KarProcessingData {
       }
     }
 
-    if (resources == null
-        && relatedDataId != null
-        && !relatedDataId.isEmpty()
-        && fhirInputDataById.containsKey(relatedDataId)) {
-      resources = fhirInputDataById.get(relatedDataId);
+    if (resources == null) {
+
+      String finalRelatedDataId = this.getKar().getFirstClassRelatedDataId(id);
+
+      if (finalRelatedDataId != null
+          && !finalRelatedDataId.isEmpty()
+          && fhirInputDataById.containsKey(finalRelatedDataId)) {
+        resources = fhirInputDataById.get(finalRelatedDataId);
+      }
     }
 
     if (resources == null && fhirInputDataById.containsKey(id)) {
@@ -702,5 +734,35 @@ public class KarProcessingData {
     }
 
     return retVal;
+  }
+
+  public void saveDataToFile(DebugDataType dt, List<DataRequirement> dr, String filename) {
+
+    Bundle bund = new Bundle();
+
+    if (dr != null && (dt == DebugDataType.TRIGGER || dt == DebugDataType.LOADING)) {
+
+      for (DataRequirement d : dr) {
+
+        Set<Resource> resources = this.getDataForId(d.getId(), "");
+
+        if (resources != null) {
+
+          resources.forEach(
+              resource -> bund.addEntry(new BundleEntryComponent().setResource(resource)));
+        }
+      }
+
+      String outputFileName =
+          filename
+              + "_"
+              + this.getNotificationContext().getPatientId()
+              + "_"
+              + this.getNotificationContext().getNotificationResourceId();
+
+      logger.info(" Bundle Size for filename {} = ", outputFileName, bund.getEntry().size());
+
+      BsaServiceUtils.saveFhirResourceToFile(bund, outputFileName);
+    }
   }
 }

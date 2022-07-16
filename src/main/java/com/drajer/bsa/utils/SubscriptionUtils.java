@@ -1,5 +1,6 @@
 package com.drajer.bsa.utils;
 
+import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
 import java.io.IOException;
 import java.io.InputStream;
@@ -153,6 +154,27 @@ public class SubscriptionUtils {
             nc.setNotificationResourceType(resourceType);
             nc.setLastUpdated(Date.from(Instant.now()));
             nc.setNotifiedResource(res);
+            nc.setNotificationProcessingStatus(
+                NotificationProcessingStatusType.IN_PROGRESS.toString());
+
+            if (res.getResourceType() == ResourceType.Encounter) {
+              Encounter enc = (Encounter) res;
+
+              if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
+
+                logger.debug(" Encounter has a start date");
+                nc.setEncounterStartTime(enc.getPeriod().getStart());
+
+                if (enc.getPeriod().getEnd() != null) {
+                  logger.info(" Encounter has an end date, so it is a closed encounter ");
+                  nc.setEncounterEndTime(enc.getPeriod().getEnd());
+                }
+              } else {
+
+                logger.debug(" Initializing Encounter Start time as current time ");
+                nc.setEncounterStartTime(new Date());
+              }
+            }
 
             String xRequestId = request.getHeader("X-Request-ID");
             String xCorrelationId = request.getHeader("X-Correlation-ID");

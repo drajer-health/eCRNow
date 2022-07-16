@@ -7,6 +7,7 @@ import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
 import com.drajer.bsa.utils.ReportGenerationUtils;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
@@ -285,6 +286,17 @@ public class EcrReportCreator extends ReportCreator {
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
         R3ToR2DataConverterUtils.convertKarProcessingDataForCdaGeneration(kd, act);
+
+    // Save data to File for debugging.
+    String outputFileName =
+        kd.LOADING_QUERY_FILE_NAME
+            + "_"
+            + kd.getNotificationContext().getPatientId()
+            + "_"
+            + kd.getNotificationContext().getNotificationResourceId();
+
+    BsaServiceUtils.saveFhirResourceToFile(data.getValue0().getData(), outputFileName);
+
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);
