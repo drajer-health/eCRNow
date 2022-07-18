@@ -1,0 +1,91 @@
+{
+  "resourceType": "Bundle",
+  "id": "904b7eb8-e9bf-42ff-ada8-9a37b6318741",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition?patient=12742571"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2572364249",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "d2572364249",
+        "meta": {
+          "versionId": "2572364249",
+          "lastUpdated": "2020-05-13T19:04:28.000Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: FHIRTest, COVIDONE</p><p><b>Diagnosis</b>: Disease caused by 2019 novel coronavirus, Disease caused by 2019-nCoV</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: May 13, 2020  7:04 P.M. UTC</p></div>"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ],
+          "text": "Active"
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed",
+              "userSelected": false
+            }
+          ],
+          "text": "Confirmed"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ],
+            "text": "Problem List Item"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "840539006",
+              "display": "Disease caused by 2019-nCoV",
+              "userSelected": true
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "U07.1",
+              "display": "2019-nCoV acute respiratory disease",
+              "userSelected": false
+            }
+          ],
+          "text": "Disease caused by 2019 novel coronavirus"
+        },
+        "subject": {
+          "reference": "Patient/12742571",
+          "display": "FHIRTest, COVIDONE"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "onsetDateTime": "2020-05-13T19:04:00.000Z",
+        "recordedDate": "2020-05-13T19:04:28.000Z",
+        "recorder": {
+          "reference": "Practitioner/4122622",
+          "display": "Cerner Test, Physician - Hospitalist Cerner"
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.drajer.test;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 
 import com.drajer.ecrapp.config.SpringConfiguration;
@@ -140,5 +141,19 @@ public abstract class BaseIntegrationTest {
 
   protected String createURLWithPort(String uri) {
     return URL + port + uri;
+  }
+
+  protected void mockRestApi() {
+
+    String restResponse = "{\"status\":\"success\"}";
+
+    wireMockServer.stubFor(
+        post(urlPathEqualTo("/directurl"))
+            .atPriority(1)
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(restResponse)
+                    .withHeader("Content-Type", "application/json; charset=utf-8")));
   }
 }

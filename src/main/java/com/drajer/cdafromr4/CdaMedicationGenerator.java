@@ -339,8 +339,11 @@ public class CdaMedicationGenerator {
           CdaFhirUtilities.getQuantityXml(dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
     }
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForPIVLWithTS(CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
+    if (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(freqInHours)) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForPIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
+    }
 
     // add Dose quantity
     sb.append(ds);

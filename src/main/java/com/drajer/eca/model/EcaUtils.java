@@ -103,12 +103,12 @@ public class EcaUtils {
     boolean matchfound = false;
     Set<String> codesToMatchAgainst = null;
 
-    if (Boolean.TRUE.equals(details.getIsCovid())) {
+    if (details.getIsCovid() || details.getIsEmergentReportingEnabled()) {
 
       codesToMatchAgainst =
-          ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
+          ValueSetSingleton.getInstance().getEmergentValueSetsAsStringForGrouper(ad.getPath());
       logger.debug(
-          "Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
+          "Total # of {} Codes in Trigger Code Value Set for matching for Emergent Reporting",
           codesToMatchAgainst.size());
     } else {
 

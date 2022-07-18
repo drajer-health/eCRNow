@@ -143,6 +143,9 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                 && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()
                 && (dataChanged || Boolean.FALSE.equals(state.hasEicrBeenCreated()))) {
 
+              logger.info(
+                  "Creating the EICR for {} action as new trigger code is matched",
+                  EcrActionTypes.PERIODIC_UPDATE_EICR);
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);

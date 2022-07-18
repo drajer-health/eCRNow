@@ -1,9 +1,13 @@
 package com.drajer.routing.impl;
 
+import com.drajer.ecrapp.model.EicrTypes;
+import com.drajer.ecrapp.model.ReportabilityResponse;
+import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.routing.RRReceiver;
 import com.drajer.sof.model.LaunchDetails;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.UUID;
@@ -22,13 +26,18 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DirectResponseReceiver extends RRReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class);
 
   private static final String IMAP = "imaps";
   private static final String INBOX = "Inbox";
+
+  @Autowired EicrRRService rrService;
 
   @Override
   public Object receiveRespone(Object context) {
@@ -42,26 +51,45 @@ public class DirectResponseReceiver extends RRReceiver {
       readMail(details);
     }
 
-    return null;
+    return context;
   }
 
   public void readMail(LaunchDetails details) {
 
     try {
 
-      String mId;
+      String mId = "";
       logger.info("Reading mail..");
       // Properties for Javamail
       Properties props = new Properties();
+      props.put("mail.imap.auth", "true");
+      props.put("mail.imap.ssl.enable", "true");
+      props.put("mail.imap.ssl.trust", "*");
+
       Session session = Session.getInstance(props, null);
 
-      Store store = session.getStore(IMAP);
-      int port = 993;
-      logger.info("Connecting to IMAP Inbox");
-      store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
+      Store store = session.getStore("imap");
+      int port = Integer.parseUnsignedInt(details.getImapPort());
+
+      logger.info("Connecting to IMAP Inbox ");
+      if (details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
+        logger.info(
+            "Connecting to IMAP Inbox using the imap url {} and port {}",
+            details.getDirectHost(),
+            port);
+        store.connect(
+            details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
+      } else {
+        logger.info(
+            "Connecting to IMAP Inbox using imap url {} and port {}",
+            details.getDirectHost(),
+            port);
+        store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
+      }
 
       Folder inbox = store.getFolder(INBOX);
       inbox.open(Folder.READ_WRITE);
+      logger.info("Opened the inbox for reading/writing ");
 
       Flags seen = new Flags(Flags.Flag.SEEN);
       FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
@@ -95,18 +123,26 @@ public class DirectResponseReceiver extends RRReceiver {
               logger.info("Found XML Attachment");
 
               try (InputStream stream = bodyPart.getInputStream()) {
-                byte[] targetArray = IOUtils.toByteArray(stream);
-                FileUtils.writeByteArrayToFile(new File(filename), targetArray);
+
+                ReportabilityResponse data = new ReportabilityResponse();
+                data.setResponseType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+                String rrXml = "<?xml version=\"1.0\"?>";
+                rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
+                data.setRrXml(rrXml);
+
+                FileUtils.writeStringToFile(
+                    new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
+
+                logger.debug(" RrXML : {}", data.getRrXml());
+
+                rrService.handleReportabilityResponse(data, mId);
               }
-              logger.info(
-                  " Need to determine what to do with the response received from :  {}",
-                  senderAddress);
             }
           }
         }
       }
 
-      deleteMail(details.getDirectHost(), details.getDirectUser(), details.getDirectPwd());
+      deleteMail(details, details.getDirectUser(), details.getDirectPwd());
 
     } catch (Exception e) {
 
@@ -114,13 +150,31 @@ public class DirectResponseReceiver extends RRReceiver {
     }
   }
 
-  public void deleteMail(String host, String username, String password) throws Exception {
+  public void deleteMail(LaunchDetails details, String username, String password) throws Exception {
+
     logger.info("Deleting mail..");
+
     Properties props = new Properties();
+
+    // props.put("mail.imap.auth", "true");
+    props.setProperty("mail.imap.ssl.trust", "*");
+    props.setProperty("mail.imap.ssl.enable", "true");
     Session session = Session.getInstance(props, null);
 
-    Store store = session.getStore(IMAP);
-    store.connect(host, username, password);
+    Store store = session.getStore("imap");
+    int port = Integer.parseUnsignedInt(details.getImapPort());
+
+    if (details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
+      logger.info(
+          "Connecting to IMAP Inbox using the imap url {} and port {}",
+          details.getDirectHost(),
+          port);
+      store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
+    } else {
+      logger.info(
+          "Connecting to IMAP Inbox using imap url {} and port {}", details.getDirectHost(), port);
+      store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
+    }
 
     Folder inbox = store.getFolder(INBOX);
     inbox.open(Folder.READ_WRITE);
@@ -129,8 +183,8 @@ public class DirectResponseReceiver extends RRReceiver {
     FlagTerm seenFlagTerm = new FlagTerm(seen, true);
     Message[] messages = inbox.search(seenFlagTerm);
 
+    logger.info(" Marking messages as deleted ");
     for (Message message : messages) {
-
       message.setFlag(Flags.Flag.DELETED, true);
     }
 

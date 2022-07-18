@@ -40,6 +40,12 @@ public class ClientDetailsController {
     if (checkClientDetails == null) {
       logger.info("Adding the Client Details");
       ClientDetails newClientDetails = new ClientDetails();
+
+      if (clientDetailsDTO.getIsEmergentReportingEnabled() == null
+          && clientDetailsDTO.getIsCovid() != null) {
+        clientDetailsDTO.setIsEmergentReportingEnabled(clientDetailsDTO.getIsCovid());
+      }
+
       BeanUtils.copyProperties(clientDetailsDTO, newClientDetails);
       clientDetailsService.saveOrUpdate(newClientDetails);
       BeanUtils.copyProperties(newClientDetails, clientDetailsDTO);
@@ -63,6 +69,12 @@ public class ClientDetailsController {
         || (checkClientDetails.getId().equals(clientDetailsDTO.getId()))) {
       logger.info("Saving the Client Details");
       ClientDetails updateClientDetails = new ClientDetails();
+
+      if (clientDetailsDTO.getIsEmergentReportingEnabled() == null
+          && clientDetailsDTO.getIsCovid() != null) {
+        clientDetailsDTO.setIsEmergentReportingEnabled(clientDetailsDTO.getIsCovid());
+      }
+
       BeanUtils.copyProperties(clientDetailsDTO, updateClientDetails);
       clientDetailsService.saveOrUpdate(updateClientDetails);
       BeanUtils.copyProperties(updateClientDetails, clientDetailsDTO);

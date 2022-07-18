@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.hibernate.ObjectDeletedException;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -65,7 +64,7 @@ public class ApplicationUtils {
 
       logger.debug("Looking for grouper value set for {}", grouperId);
 
-      if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
+      if (valueset.getUrl() != null && valueset.getUrl().equals(grouperId)) {
 
         logger.debug("Found Grouper Value Set for {}", grouperId);
 
@@ -89,7 +88,8 @@ public class ApplicationUtils {
         }
         break;
       } else {
-        logger.debug("Value Set Id {}  does not match grouper Id ", valueset.getId());
+        logger.debug(
+            "Value Set Id {}  does not match grouper Id : {}", valueset.getId(), grouperId);
       }
     }
     return valueSetIdList;
@@ -100,11 +100,10 @@ public class ApplicationUtils {
     ValueSet valueSetGrouper = null;
 
     for (ValueSet valueset : ValueSetSingleton.getInstance().getGrouperValueSets()) {
-
-      if (valueset.getId().equals(grouperId) || grouperId.contains(valueset.getId())) {
-
+      if (valueset.getUrl() != null && valueset.getUrl().equals(grouperId)) {
         logger.debug("Grouper Id {}", grouperId);
         valueSetGrouper = valueset;
+        break;
       }
     }
     return valueSetGrouper;
@@ -130,7 +129,7 @@ public class ApplicationUtils {
           }
         }
 
-        for (ValueSet valueSet : ValueSetSingleton.getInstance().getCovidValueSets()) {
+        for (ValueSet valueSet : ValueSetSingleton.getInstance().getEmergentValueSets()) {
 
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
               || ((valueSet.getUrl() != null)
@@ -144,7 +143,7 @@ public class ApplicationUtils {
     return valueSets;
   }
 
-  public static Set<ValueSet> getCovidValueSetByIds(List<CanonicalType> valueSetIdList) {
+  public static Set<ValueSet> getEmergentValueSetByIds(List<CanonicalType> valueSetIdList) {
 
     Set<ValueSet> valueSets = new HashSet<>();
 
@@ -157,32 +156,32 @@ public class ApplicationUtils {
         for (ValueSet valueSet : ValueSetSingleton.getInstance().getValueSets()) {
 
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
-              && isACovidValueSet(valueSet)) {
-            logger.debug("Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
+              && isAEmergentValueSet(valueSet)) {
+            logger.debug("Found a Emergent Value Set for Grouper using Id {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           } else if ((valueSet.getUrl() != null)
               && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))
-              && isACovidValueSet(valueSet)) {
+              && isAEmergentValueSet(valueSet)) {
 
-            logger.debug("Urls Matched for a Covid Value Set {}", valueSet.getId());
+            logger.debug("Urls Matched for a Emergent Value Set {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           }
         }
 
-        for (ValueSet valueSet : ValueSetSingleton.getInstance().getCovidValueSets()) {
+        for (ValueSet valueSet : ValueSetSingleton.getInstance().getEmergentValueSets()) {
 
           if (valueSet.getId().equalsIgnoreCase(canonicalType.getValueAsString())
-              && isACovidValueSet(valueSet)) {
+              && isAEmergentValueSet(valueSet)) {
 
-            logger.debug("Found a Covid Value Set for Grouper using Id {}", valueSet.getId());
+            logger.debug("Found a Emergent Value Set for Grouper using Id {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           } else if ((valueSet.getUrl() != null)
               && (valueSet.getUrl().equalsIgnoreCase(canonicalType.getValueAsString()))
-              && isACovidValueSet(valueSet)) {
-            logger.debug("Urls Matched for a Covid Value Set {}", valueSet.getId());
+              && isAEmergentValueSet(valueSet)) {
+            logger.debug("Urls Matched for a Emergent Value Set {}", valueSet.getId());
             valueSets.add(valueSet);
             break;
           }
@@ -371,29 +370,34 @@ public class ApplicationUtils {
     }
   }
 
-  public static boolean isACovidValueSet(ValueSet v) {
+  public static boolean isAEmergentValueSet(ValueSet v) {
 
     boolean retVal = false;
 
-    if (v != null) {
+    if (v != null && v.getUseContext() != null) {
 
       logger.debug("Checking Value Set Id {}", v.getId());
 
       if (v.getUseContextFirstRep() != null) {
+        List<UsageContext> ucs = v.getUseContext();
 
-        UsageContext uc = v.getUseContextFirstRep();
+        for (UsageContext uc : ucs) {
 
-        if (uc.getValue() instanceof CodeableConcept) {
+          if (uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
 
-          CodeableConcept cc = (CodeableConcept) uc.getValue();
+            CodeableConcept cc = (CodeableConcept) uc.getValue();
 
-          if (cc.getCodingFirstRep() != null
-              && (cc.getCodingFirstRep().getCode() != null
-                  && cc.getCodingFirstRep()
-                      .getCode()
-                      .contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE))) {
-            logger.debug("Found COVID VALUE SET = {}", v.getId());
-            retVal = true;
+            if (cc.getCodingFirstRep() != null
+                && (cc.getCodingFirstRep().getCode() != null
+                    && (cc.getCodingFirstRep()
+                            .getCode()
+                            .contentEquals(PlanDefinitionProcessor.COVID_SNOMED_USE_CONTEXT_CODE)
+                        || cc.getCodingFirstRep()
+                            .getCode()
+                            .contentEquals(PlanDefinitionProcessor.EMERGENT_USE_CONTEXT_CODE)))) {
+              logger.debug("Found EMERGENT VALUE SET = {}", v.getId());
+              retVal = true;
+            }
           }
         }
       }
@@ -486,34 +490,15 @@ public class ApplicationUtils {
     }
   }
 
-  public IBaseResource readResourceFromFile(String filename) {
+  public static boolean isSetContainsValueSet(Set<ValueSet> valueSets, ValueSet valueSet) {
 
-    logger.info("About to read File {}", filename);
-    IBaseResource resource = null;
-    try (InputStream in = new FileInputStream(new File(filename))) {
-      logger.info("Reading File ");
-
-      resource = jsonParser.parseResource(in);
-      logger.info("Completed Reading File");
-    } catch (Exception e) {
-      logger.error(EXCEPTION_READING_FILE, e);
+    if (valueSets != null && valueSet != null) {
+      for (ValueSet vs : valueSets) {
+        if (vs.getId().equalsIgnoreCase(valueSet.getId())) {
+          return true;
+        }
+      }
     }
-    return resource;
-  }
-
-  public Bundle readBundleFromString(String str) {
-
-    logger.info("About to read str ");
-    Bundle bundle = null;
-    try {
-      logger.info("Reading String ");
-
-      bundle = (Bundle) jsonParser.parseResource(str);
-
-      logger.info("Completed Reading String");
-    } catch (Exception e) {
-      logger.error(EXCEPTION_READING_FILE, e);
-    }
-    return bundle;
+    return false;
   }
 }

@@ -1,6 +1,7 @@
 package com.drajer.cdafromdstu2;
 
 import ca.uhn.fhir.model.dstu2.composite.AddressDt;
+import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
 import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
@@ -21,6 +22,7 @@ import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class Dstu2CdaHeaderGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaHeaderGenerator.class);
 
-  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details) {
+  public static String createCdaHeader(Dstu2FhirData data, LaunchDetails details, Eicr ecr) {
 
     StringBuilder eICRHeader = new StringBuilder();
 
@@ -41,7 +43,18 @@ public class Dstu2CdaHeaderGenerator {
 
       eICRHeader.append(CdaGeneratorUtils.getXmlHeaderForClinicalDocument());
 
-      eICRHeader.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+      String docId = CdaGeneratorUtils.getGuid();
+      eICRHeader.append(CdaGeneratorUtils.getXmlForII(docId));
+      ecr.setEicrDocId(docId);
+      ecr.setxCorrelationId(docId);
+
+      // Set the other eICR details.
+      ecr.setFhirServerUrl(details.getEhrServerURL());
+      ecr.setLaunchPatientId(details.getLaunchPatientId());
+      ecr.setEncounterId(details.getEncounterId());
+      ecr.setSetId(details.getSetId());
+      ecr.setDocVersion(details.getVersionNumber());
+      ecr.setxRequestId(details.getxRequestId());
 
       eICRHeader.append(
           CdaGeneratorUtils.getXmlForCD(
@@ -393,9 +406,8 @@ public class Dstu2CdaHeaderGenerator {
         }
       }
 
-      sb.append(
-          Dstu2CdaFhirUtilities.getCodeableConceptXml(
-              en.getType(), CdaGeneratorConstants.CODE_EL_NAME, false));
+      sb.append(Dstu2CdaFhirUtilities.getEncounterClassCodeXml(en.getClassElementElement()));
+
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXml(
               en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
@@ -534,6 +546,18 @@ public class Dstu2CdaHeaderGenerator {
             CdaGeneratorConstants.FHIR_ARGO_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
+    // Check for CodeableConceptDt with DAF extension.
+    if (race == null) {
+      CodeableConceptDt racedt =
+          Dstu2CdaFhirUtilities.getCodeableConceptExtension(
+              p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_RACE_EXT_URL);
+
+      if (racedt != null && racedt.getCodingFirstRep() != null) {
+
+        race = racedt.getCodingFirstRep();
+      }
+    }
+
     if (race != null && race.getCode() != null) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
@@ -553,6 +577,18 @@ public class Dstu2CdaHeaderGenerator {
             p.getUndeclaredExtensions(),
             CdaGeneratorConstants.FHIR_ARGO_ETHNICITY_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+
+    // Check for CodeableConceptDt with DAF extension.
+    if (ethnicity == null) {
+      CodeableConceptDt ethnicitydt =
+          Dstu2CdaFhirUtilities.getCodeableConceptExtension(
+              p.getUndeclaredExtensions(), CdaGeneratorConstants.DAF_ETHNICITY_EXT_URL);
+
+      if (ethnicitydt != null && ethnicitydt.getCodingFirstRep() != null) {
+
+        ethnicity = ethnicitydt.getCodingFirstRep();
+      }
+    }
 
     if (ethnicity != null && ethnicity.getCode() != null) {
       patientDetails.append(
@@ -578,6 +614,15 @@ public class Dstu2CdaHeaderGenerator {
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
+
+        List<AddressDt> addrs = new ArrayList<>();
+        if (guardianContact.getAddress() != null) {
+
+          addrs.add(guardianContact.getAddress());
+          patientDetails.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+        } else {
+          patientDetails.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+        }
 
         // Add Telecom
         patientDetails.append(Dstu2CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom()));

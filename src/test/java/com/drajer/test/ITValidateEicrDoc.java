@@ -64,6 +64,24 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   private PatientExecutionState state;
   WireMockHelper stubHelper;
 
+  @Before
+  public void launchTestSetUp() throws Throwable {
+    logger.info("Executing Test: {}", testCaseId);
+    tx = session.beginTransaction();
+
+    // Data Setup
+    createClientDetails(testData.get("ClientDataToBeSaved"));
+    systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
+    session.flush();
+    tx.commit();
+
+    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
+    logger.info("Creating WireMock stubs..");
+    stubHelper.stubResources(allResourceMapping);
+    stubHelper.stubAuthAndMetadata(allOtherMapping);
+    mockRestApi();
+  }
+
   @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
 
@@ -100,23 +118,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
       }
     }
     return Arrays.asList(data);
-  }
-
-  @Before
-  public void launchTestSetUp() throws Throwable {
-    logger.info("Executing Test: {}", testCaseId);
-    tx = session.beginTransaction();
-
-    // Data Setup
-    createClientDetails(testData.get("ClientDataToBeSaved"));
-    systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
-    session.flush();
-    tx.commit();
-
-    stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
-    logger.info("Creating WireMock stubs..");
-    stubHelper.stubResources(allResourceMapping);
-    stubHelper.stubAuthAndMetadata(allOtherMapping);
   }
 
   @Test

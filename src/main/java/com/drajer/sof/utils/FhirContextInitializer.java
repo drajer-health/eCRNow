@@ -81,8 +81,28 @@ public class FhirContextInitializer {
     return client;
   }
 
+  public IGenericClient createClient(FhirContext context, LaunchDetails launchDetails) {
+    logger.trace("Initializing the Client");
+    FhirClient client =
+        new FhirClient(
+            context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
+            launchDetails.getxRequestId());
+    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+
+    BearerTokenAuthInterceptor bearerTokenAuthInterceptor =
+        new EcrOAuthBearerTokenInterceptor(launchDetails);
+    client.registerInterceptor(bearerTokenAuthInterceptor);
+
+    if (logger.isDebugEnabled()) {
+      client.registerInterceptor(new LoggingInterceptor(true));
+    }
+    logger.trace(
+        "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
+    return client;
+  }
+
   public MethodOutcome submitResource(IGenericClient genericClient, Resource resource) {
-    MethodOutcome outcome = new MethodOutcome();
+    MethodOutcome outcome = null;
     try {
       outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
     } catch (Exception e) {
