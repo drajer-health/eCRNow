@@ -51,12 +51,7 @@ public class LoadingQueryDstu2Bundle {
     logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            launchDetails.getEhrServerURL(),
-            launchDetails.getAccessToken(),
-            launchDetails.getxRequestId());
+    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
 
     // GET Patient Details and Add to Bundle
     try {

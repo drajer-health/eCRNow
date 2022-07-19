@@ -65,7 +65,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
-    // mockRestApi();
+    mockRestApi();
   }
 
   @Parameters(name = "{0}")

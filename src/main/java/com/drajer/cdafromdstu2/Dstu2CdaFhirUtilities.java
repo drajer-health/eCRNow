@@ -23,6 +23,7 @@ import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
+import ca.uhn.fhir.model.dstu2.valueset.EncounterClassEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ParticipantTypeEnum;
 import ca.uhn.fhir.model.primitive.BoundCodeDt;
@@ -92,6 +93,28 @@ public class Dstu2CdaFhirUtilities {
     }
 
     logger.info(" Did not find the Identifier for  System : " + system);
+    return null;
+  }
+
+  public static CodeableConceptDt getCodeableConceptExtension(
+      List<ExtensionDt> exts, String extUrl) {
+
+    if (exts != null && exts.size() > 0) {
+
+      for (ExtensionDt ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          // if the top level extension has CodingDt then we will use it.
+          if (ext.getValue() != null && (ext.getValue() instanceof CodeableConceptDt)) {
+
+            logger.info(" Found Extension at top level ");
+            return (CodeableConceptDt) ext.getValue();
+          }
+        }
+      }
+    }
+
     return null;
   }
 
@@ -350,7 +373,16 @@ public class Dstu2CdaFhirUtilities {
       for (Contact contact : contactList) {
         if (contact.getRelationship() != null && contact.getRelationship().size() > 0) {
           for (CodeableConceptDt code : contact.getRelationship()) {
-            if (code.getText() != null
+
+            if (code.getCodingFirstRep() != null
+                && (code.getCodingFirstRep().getCode() != null
+                    && code.getCodingFirstRep()
+                        .getCode()
+                        .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME))) {
+
+              return contact;
+
+            } else if (code.getText() != null
                 && (code.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME)
                     || code.getText()
                         .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME))) {
@@ -612,6 +644,12 @@ public class Dstu2CdaFhirUtilities {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+          if (csd != null && (csd.getValue0().isEmpty() || csd.getValue1().isEmpty())) {
+            logger.debug(" Try using the DSTU2 map ");
+            csd = CdaGeneratorConstants.getCodeSystemFromUrlForDstu2(c.getSystem());
+          }
+
           sb.append(
               CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                   cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -742,6 +780,44 @@ public class Dstu2CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  public static String getEncounterClassCodeXml(BoundCodeDt<EncounterClassEnum> encClass) {
+
+    String s = "";
+
+    if (encClass != null
+        && (encClass.getValueAsEnum() == EncounterClassEnum.AMBULATORY
+            || encClass.getValueAsEnum() == EncounterClassEnum.OUTPATIENT)) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForCD(
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.CDA_AMBULATORY_ENCOUNTER_CLASS,
+              CdaGeneratorConstants.ACT_ENCOUNTER_CODE_SYSTEM);
+    } else if (encClass != null && (encClass.getValueAsEnum() == EncounterClassEnum.INPATIENT)) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForCD(
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.CDA_INPATIENT_ENCOUNTER_CLASS,
+              CdaGeneratorConstants.ACT_ENCOUNTER_CODE_SYSTEM);
+    } else if (encClass != null && (encClass.getValueAsEnum() == EncounterClassEnum.EMERGENCY)) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForCD(
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.CDA_EMERGENCY_ENCOUNTER_CLASS,
+              CdaGeneratorConstants.ACT_ENCOUNTER_CODE_SYSTEM);
+    } else {
+
+      logger.info(" Did not find the encounter class for the patient ");
+      s +=
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI);
+    }
+
+    return s;
   }
 
   public static String getGenderXml(BoundCodeDt<AdministrativeGenderEnum> gender) {

@@ -71,7 +71,7 @@ public class ITLoadingQueryServiceTest extends BaseIntegrationTest {
       tx = session.beginTransaction();
 
       String launchDetailJson = TestUtils.getFileContentAsString(launchDetailsFile);
-      launchDetailJson = launchDetailJson.replace("port", "" + wireMockHttpPort);
+      launchDetailJson = launchDetailJson.replace(":port", ":" + wireMockHttpPort);
       launchDetails = mapper.readValue(launchDetailJson, LaunchDetails.class);
 
       stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);

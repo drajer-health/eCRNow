@@ -43,7 +43,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     try {
       super.setUp();
       tx = session.beginTransaction();
-      createClientDetails("R4/Misc/ClientDetails/ClientDataEntry1.json");
+      createClientDetails("R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json");
       createLaunchDetails("R4/Misc/LaunchDetails/LaunchDetails.json");
       createLaunchDetailsWithCreateDocRefFalse(
           "R4/Misc/LaunchDetails/LaunchDetails_With_CreateDocRef_False.json");

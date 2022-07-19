@@ -22,77 +22,87 @@ public class RequestMDCFilter implements Filter {
   public static final String X_CORRELATION_ID_HEADER = "X-Correlation-ID";
   public static final String MDC_CORRELATION_ID_KEY = "correlationId";
 
+  public static final String X_DOMAIN_LOGICALDOMAIN_ID = "X-Domain-LogicalDomain-ID";
+  public static final String MDC_DOMAIN_LOGICAL_DOMAIN_ID = "domain-logicalDomainId";
+
   public void doFilter(
       final ServletRequest request, final ServletResponse response, final FilterChain chain)
       throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) request;
-    if (logger.isDebugEnabled()) {
-      logger.debug("Start to handle request: {}", req.getRequestURI());
-    }
+
+    logger.debug("Start to handle request: {}", req.getRequestURI());
 
     String requestId = req.getHeader(X_REQUEST_ID_HEADER);
     final String correlationId = req.getHeader(X_CORRELATION_ID_HEADER);
+    final String domainLogicalDomainId = req.getHeader(X_DOMAIN_LOGICALDOMAIN_ID);
 
     try {
 
       // Create a requestId if one does not exist.
       if (StringUtils.isBlank(requestId)) {
-        requestId = UUID.randomUUID().toString();
 
-        if (logger.isInfoEnabled()) {
-          logger.info("No X-Request-ID header found; creating new requestId: {}", requestId);
-        }
+        requestId = UUID.randomUUID().toString();
+        logger.info("No X-Request-ID header found; creating new requestId: {}", requestId);
+
       } else {
-        if (logger.isInfoEnabled()) {
-          logger.info("Using given X-Request-ID header for requestId: {}", requestId);
-        }
+        logger.info("Using given X-Request-ID header for requestId: {}", requestId);
       }
 
       if (StringUtils.isBlank(correlationId)) {
-        if (logger.isInfoEnabled()) {
-          logger.info("No X-Correlation-ID header found.");
-        }
+        logger.info("No X-Correlation-ID header found.");
       } else {
-        if (logger.isInfoEnabled()) {
-          logger.info("Using given X-Correlation-ID header for correlationId: {}", correlationId);
-        }
+        logger.info("Using given X-Correlation-ID header for correlationId: {}", correlationId);
       }
 
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            "Request {} being handled for requestId {} associated to correlationId {}",
-            req.getRequestURI(),
-            requestId,
-            correlationId);
+      if (StringUtils.isBlank(domainLogicalDomainId)) {
+        logger.info("No X-Domain-LogicalDomain-ID header found.");
+      } else {
+        logger.info("Using given X-Domain-LogicalDomain-ID from header: {}", domainLogicalDomainId);
       }
+
+      logger.info(
+          "Request {} being handled for requestId {} associated to correlationId {} for domain {}",
+          req.getRequestURI(),
+          requestId,
+          correlationId,
+          domainLogicalDomainId);
 
       if (MDC.get(MDC_REQUEST_ID_KEY) == null) {
         MDC.put(MDC_REQUEST_ID_KEY, requestId);
       }
+
       if (MDC.get(MDC_CORRELATION_ID_KEY) == null) {
         MDC.put(MDC_CORRELATION_ID_KEY, correlationId);
       }
 
+      if (MDC.get(MDC_DOMAIN_LOGICAL_DOMAIN_ID) == null) {
+        MDC.put(MDC_DOMAIN_LOGICAL_DOMAIN_ID, domainLogicalDomainId);
+      }
+
       chain.doFilter(request, response);
     } finally {
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            "Request {} completed for requestId {} associated to correlationId {}",
-            req.getRequestURI(),
-            requestId,
-            correlationId);
-      }
+      logger.info(
+          "Request {} completed for requestId {} associated to correlationId {} for domain {}",
+          req.getRequestURI(),
+          requestId,
+          correlationId,
+          domainLogicalDomainId);
 
       MDC.remove(MDC_REQUEST_ID_KEY);
       MDC.remove(MDC_CORRELATION_ID_KEY);
+      MDC.remove(MDC_DOMAIN_LOGICAL_DOMAIN_ID);
     }
 
-    if (logger.isDebugEnabled()) {
-      logger.debug("Completed handling request: {}", req.getRequestURI());
-    }
+    logger.debug("Completed handling request: {}", req.getRequestURI());
   }
 
-  public void init(final FilterConfig filterConfig) throws ServletException {}
+  @Override
+  public void init(final FilterConfig filterConfig) throws ServletException {
+    // Do nothing not required at this time.
+  }
 
-  public void destroy() {}
+  @Override
+  public void destroy() {
+    // Do nothing not required at this time.
+  }
 }

@@ -15,6 +15,8 @@ public class ClientDetailsDTO {
 
   private Boolean isSystem;
 
+  private Boolean isMultiTenantSystemLaunch;
+
   private Boolean isUserAccountLaunch;
 
   private String clientId;
@@ -26,6 +28,12 @@ public class ClientDetailsDTO {
   private String tokenURL;
 
   private String scopes;
+
+  private String accessToken;
+
+  private int tokenExpiry;
+
+  private Date tokenExpiryDateTime;
 
   private Boolean isDirect;
 
@@ -60,6 +68,8 @@ public class ClientDetailsDTO {
   private String encounterEndThreshold;
 
   private Boolean isCovid;
+
+  private Boolean isEmergentReportingEnabled;
 
   private Boolean isFullEcr;
 
@@ -101,6 +111,14 @@ public class ClientDetailsDTO {
 
   public void setIsSystem(Boolean isSystem) {
     this.isSystem = isSystem;
+  }
+
+  public Boolean getIsMultiTenantSystemLaunch() {
+    return isMultiTenantSystemLaunch;
+  }
+
+  public void setIsMultiTenantSystemLaunch(Boolean isMultiTenantSystemLaunch) {
+    this.isMultiTenantSystemLaunch = isMultiTenantSystemLaunch;
   }
 
   public String getClientId() {
@@ -153,6 +171,30 @@ public class ClientDetailsDTO {
 
   public void setScopes(String scopes) {
     this.scopes = scopes;
+  }
+
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public int getTokenExpiry() {
+    return tokenExpiry;
+  }
+
+  public void setTokenExpiry(int tokenExpiry) {
+    this.tokenExpiry = tokenExpiry;
+  }
+
+  public Date getTokenExpiryDateTime() {
+    return tokenExpiryDateTime;
+  }
+
+  public void setTokenExpiryDateTime(Date tokenExpiryDateTime) {
+    this.tokenExpiryDateTime = tokenExpiryDateTime;
   }
 
   public Boolean getIsDirect() {
@@ -365,6 +407,14 @@ public class ClientDetailsDTO {
 
   public void setLastUpdated(Date lastUpdated) {
     this.lastUpdated = lastUpdated;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
   }
 
   public void print() {

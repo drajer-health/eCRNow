@@ -142,12 +142,6 @@
 			<version>${fhir.version}</version>
 		</dependency>
 
-		<!--  
- 		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-base</artifactId>
-			<version>${fhirpath.version}</version>
-		</dependency> -->
 
 
 		<dependency>
@@ -230,9 +224,20 @@
 
 		<!-- Java stuff -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.11.3</version>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>2.13.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>2.13.3</version>
+		</dependency>
+
+		<dependency>
+   			<groupId>com.fasterxml.jackson.core</groupId>
+   			<artifactId>jackson-databind</artifactId>
+   			<version>2.12.6.1</version>
 		</dependency>
 
 		<dependency>
@@ -494,7 +499,7 @@
 						</goals>
 						<configuration>
 							<argLine>${surefireArgLine}</argLine>
-							<skipTests>${skip.unit.tests}</skipTests>
+							<skipTests>true</skipTests>
 							<excludes>
 								<exclude>**/IT*.java</exclude>
 							</excludes>
@@ -518,7 +523,7 @@
 								<include>**/IT*.java</include>
 							</includes>
 							<argLine>${failsafeArgLine}</argLine>
-							<skipTests>${skip.integration.tests}</skipTests>
+							<skipTests>true</skipTests>
 						</configuration>
 					</execution>
 				</executions>
@@ -581,11 +586,10 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>3.0.0-M5</version>
 			</plugin>
 		</plugins>
 	</reporting>

@@ -44,11 +44,11 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   public static Collection<TestCaseInfo> data() {
 
     return Arrays.asList(
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_CqlOnly",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "Reportable",
-            REPORTED),
+        /*    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_CqlOnly",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "Reportable",
+        REPORTED),*/
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_CqlOnly",
             "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",

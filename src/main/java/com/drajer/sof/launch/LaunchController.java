@@ -14,6 +14,7 @@ import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.LaunchDetails.ProcessingStatus;
 import com.drajer.sof.model.SystemLaunch;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
@@ -101,8 +102,10 @@ public class LaunchController {
     logger.info(" Saving Launch Context: {}", launchDetails);
     authDetailsService.saveOrUpdate(launchDetails);
 
-    logger.info("Scheduling refresh token job ");
-    tokenScheduler.scheduleJob(launchDetails);
+    if (Boolean.FALSE.equals(launchDetails.getIsMultiTenantSystemLaunch())) {
+      logger.info("Scheduling refresh token job ");
+      tokenScheduler.scheduleJob(launchDetails);
+    }
 
     String taskInstanceId = "";
     // Kick off the Launch Event Processing
@@ -213,7 +216,37 @@ public class LaunchController {
         }
       }
 
-      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+      JSONObject tokenResponse = null;
+      if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())
+          && clientDetails.getTokenExpiryDateTime() != null
+          && clientDetails.getAccessToken() != null) {
+        // Retrieve Access token 3 minutes before it expires.
+        Instant currentInstant = new Date().toInstant().plusSeconds(180);
+        Date currentDate = Date.from(currentInstant);
+        Date tokenExpiryTime = clientDetails.getTokenExpiryDateTime();
+        int value = currentDate.compareTo(tokenExpiryTime);
+        if (value > 0) {
+          logger.info("AccessToken is Expired. Getting new AccessToken");
+          tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+          if (tokenResponse != null) {
+            clientDetails.setTokenExpiryDateTime(
+                getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+          }
+        } else {
+          logger.info("AccessToken is Valid. No need to get new AccessToken");
+          tokenResponse = new JSONObject();
+          tokenResponse.put(ACCESS_TOKEN, clientDetails.getAccessToken());
+          tokenResponse.put(EXPIRES_IN, clientDetails.getTokenExpiry());
+          // clientDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
+        }
+      } else {
+        tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+        if (tokenResponse != null
+            && Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+          clientDetails.setTokenExpiryDateTime(
+              getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+        }
+      }
 
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
@@ -245,12 +278,17 @@ public class LaunchController {
             }
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
+            launchDetails.setIsFullEcr(clientDetails.getIsFullEcr());
+            launchDetails.setIsEmergentReportingEnabled(
+                clientDetails.getIsEmergentReportingEnabled());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
             launchDetails.setTokenUrl(clientDetails.getTokenURL());
             launchDetails.setSetId(
                 systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsMultiTenantSystemLaunch(
+                clientDetails.getIsMultiTenantSystemLaunch());
             launchDetails.setIsUserAccountLaunch(clientDetails.getIsUserAccountLaunch());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
@@ -261,19 +299,32 @@ public class LaunchController {
             launchDetails.setRrRestAPIUrl(clientDetails.getRrRestAPIUrl());
             launchDetails.setRrDocRefMimeType(clientDetails.getRrDocRefMimeType());
             launchDetails.setxRequestId(requestIdHeadervalue);
+            launchDetails.setProcessingState(LaunchDetails.getString(ProcessingStatus.In_Progress));
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
+            if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {}
+
             if (tokenResponse.get(EXPIRES_IN) != null) {
-              Integer expiresInSec = tokenResponse.getInt(EXPIRES_IN);
-              Instant expireInstantTime =
-                  new Date().toInstant().plusSeconds(new Long(expiresInSec));
-              launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+              if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+                clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+                clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+                launchDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
+              } else {
+                launchDetails.setTokenExpiryDateTime(
+                    getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+              }
             }
             launchDetails.setLaunchType("SystemLaunch");
 
             IBaseResource encounter = getEncounterById(launchDetails);
             setStartAndEndDates(clientDetails, launchDetails, encounter);
+
+            /*
+             * if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+             * clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+             * clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN)); }
+             */
 
             clientDetailsService.saveOrUpdate(clientDetails);
 
@@ -494,12 +545,7 @@ public class LaunchController {
     try {
       FhirContext fhirContext = fhirContextInitializer.getFhirContext(fhirVersion);
 
-      IGenericClient fhirClient =
-          fhirContextInitializer.createClient(
-              fhirContext,
-              launchDetails.getEhrServerURL(),
-              launchDetails.getAccessToken(),
-              launchDetails.getxRequestId());
+      IGenericClient fhirClient = fhirContextInitializer.createClient(fhirContext, launchDetails);
 
       if (!StringUtils.isEmpty(encounterId)) {
         return fhirClient.read().resource("Encounter").withId(encounterId).execute();
@@ -543,15 +589,18 @@ public class LaunchController {
           return encounterResource;
         }
       }
-      logger.info(EncounterError);
+
+      logger.error(EncounterError);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
 
     } catch (ResourceNotFoundException notFoundException) {
-      logger.info(EncounterError, notFoundException);
+
+      logger.error(EncounterError, notFoundException);
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, EncounterError, notFoundException);
 
     } catch (Exception e) {
-      logger.info(EncounterError, e);
+
+      logger.error(EncounterError, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError, e);
     }
   }
@@ -608,6 +657,11 @@ public class LaunchController {
 
   private static Date getDate(String thresholdValue) {
     return DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
+  }
+
+  private Date getTokenExpirationDateTime(Integer expiresIn) {
+    Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresIn));
+    return new Date().from(expireInstantTime);
   }
 
   @CrossOrigin

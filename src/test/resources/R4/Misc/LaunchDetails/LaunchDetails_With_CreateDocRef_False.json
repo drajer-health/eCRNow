@@ -27,6 +27,7 @@
   "isInvokeRestAPI": false,
   "isBoth": false,
   "rrRestAPIUrl":"http://localhost:port/rrRestAPI",
+  "isMultiTenantSystemLaunch": false,
   "isUserAccountLaunch": false,
   "launchId": null,
   "launchState": 0,

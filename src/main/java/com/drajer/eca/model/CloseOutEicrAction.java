@@ -7,6 +7,7 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.LaunchDetails.ProcessingStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -142,6 +143,9 @@ public class CloseOutEicrAction extends AbstractAction {
                 && newState.getMatchTriggerStatus().getMatchedCodes() != null
                 && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
 
+              logger.info(
+                  "Creating the EICR for {} action as new trigger code is matched",
+                  EcrActionTypes.CLOSE_OUT_EICR);
               // Since the job has started, Execute the job.
               // Call the Loading Queries and create eICR.
               Eicr ecr = EcaUtils.createEicr(details);
@@ -154,6 +158,7 @@ public class CloseOutEicrAction extends AbstractAction {
               newState.getCloseOutEicrStatus().setEicrClosed(true);
               newState.getCloseOutEicrStatus().seteICRId(ecr.getId().toString());
               newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+              details.setProcessingState(LaunchDetails.getString(ProcessingStatus.Completed));
 
               EcaUtils.updateDetailStatus(details, newState);
 
@@ -180,6 +185,7 @@ public class CloseOutEicrAction extends AbstractAction {
               newState.getCloseOutEicrStatus().setEicrClosed(false);
               newState.getCloseOutEicrStatus().seteICRId("0");
               newState.getCloseOutEicrStatus().setJobStatus(JobStatus.COMPLETED);
+              details.setProcessingState(LaunchDetails.getString(ProcessingStatus.Completed));
 
               EcaUtils.updateDetailStatus(details, newState);
             }

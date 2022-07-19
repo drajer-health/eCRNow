@@ -373,7 +373,6 @@ public class CdaResultGenerator {
             "Did not find the code value in the matched values, make it a regular Observation");
       }
     }
-
     */
 
     if (obsCodeXml.getValue0() || (obsValueXml != null && obsValueXml.getValue0())) {
@@ -387,36 +386,6 @@ public class CdaResultGenerator {
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
     lrEntry.append(obsCodeXml.getValue1());
-
-    /*  logger.debug("Find the Loinc Code as priority for Lab Results");
-    List<Coding> cds = null;
-    if (cd != null && cd.getCodingFirstRep() != null) {
-      cds = cd.getCoding();
-    }
-
-    if (obsCodeXml.isEmpty()) {
-
-      logger.debug("Did not find the trigger code matches, adding XML based on code system");
-      obsCodeXml =
-          CdaFhirUtilities.getCodingXmlForCodeSystem(
-              cds,
-              CdaGeneratorConstants.CODE_EL_NAME,
-              CdaGeneratorConstants.FHIR_LOINC_URL,
-              false,
-              contentRef);
-
-      if (!obsCodeXml.isEmpty()) {
-        logger.debug("Did not find the trigger code matches, adding XML based on code system");
-        lrEntry.append(obsCodeXml);
-      } else {
-        logger.debug("Did not find the trigger code matches, creating default xml");
-        lrEntry.append(
-            CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME, contentRef));
-      }
-
-    } else {
-      lrEntry.append(obsCodeXml);
-    } */
 
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(

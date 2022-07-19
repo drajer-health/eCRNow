@@ -1068,76 +1068,6 @@ public class R4ResourcesData {
 
       if (encounter != null) {
         r4FhirData.setEncounter(encounter);
-        /*   if (encounter.getParticipant() != null) {
-          List<Practitioner> practitionerList = new ArrayList<>();
-          Map<String, String> practitionerMap = new HashMap<>();
-          List<EncounterParticipantComponent> participants = encounter.getParticipant();
-          for (EncounterParticipantComponent participant : participants) {
-            if (participant.getIndividual() != null) {
-              Reference practitionerReference = participant.getIndividual();
-              String practitionerID = practitionerReference.getReferenceElement().getIdPart();
-              if (!practitionerMap.containsKey(practitionerID)) {
-                Practitioner practitioner =
-                    (Practitioner)
-                        fhirContextInitializer.getResouceById(
-                            launchDetails, client, context, "Practitioner", practitionerID);
-                if (practitioner != null) {
-                  practitionerList.add(practitioner);
-                  practitionerMap.put(practitionerID, practitioner.getResourceType().name());
-                  BundleEntryComponent practitionerEntry =
-                      new BundleEntryComponent().setResource(practitioner);
-                  bundle.addEntry(practitionerEntry);
-                }
-              }
-            }
-          }
-          if (!practitionerList.isEmpty()) {
-            r4FhirData.setPractitionersList(practitionerList);
-          }
-        }
-        if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
-          Reference organizationReference = encounter.getServiceProvider();
-          if (organizationReference.hasReferenceElement()) {
-            Organization organization =
-                (Organization)
-                    fhirContextInitializer.getResouceById(
-                        launchDetails,
-                        client,
-                        context,
-                        "Organization",
-                        organizationReference.getReferenceElement().getIdPart());
-            if (organization != null) {
-              BundleEntryComponent organizationEntry =
-                  new BundleEntryComponent().setResource(organization);
-              bundle.addEntry(organizationEntry);
-              r4FhirData.setOrganization(organization);
-            }
-          }
-        }
-        if (Boolean.TRUE.equals(encounter.hasLocation())) {
-          List<Location> locationList = new ArrayList<>();
-          List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
-          for (EncounterLocationComponent location : enocunterLocations) {
-            if (location.getLocation() != null) {
-              Reference locationReference = location.getLocation();
-              Location locationResource =
-                  (Location)
-                      fhirContextInitializer.getResouceById(
-                          launchDetails,
-                          client,
-                          context,
-                          "Location",
-                          locationReference.getReferenceElement().getIdPart());
-              if (locationResource != null) {
-                locationList.add(locationResource);
-                BundleEntryComponent locationEntry =
-                    new BundleEntryComponent().setResource(locationResource);
-                bundle.addEntry(locationEntry);
-              }
-            }
-          }
-          r4FhirData.setLocationList(locationList);
-        } */
         BundleEntryComponent encounterEntry = new BundleEntryComponent().setResource(encounter);
         bundle.addEntry(encounterEntry);
       }
@@ -1199,6 +1129,55 @@ public class R4ResourcesData {
     } catch (Exception e) {
       logger.error("Error in getting Observation Data", e);
     }
+
+    // Get ServiceRequest for Patients (Write a method).
+    // Filter the ServiceRequest based on encounter Reference if encounter is
+    // present.
+    // If encounter is not present, then filter based on times (Start and end, if
+    // ServiceRequest time is between start and end times) -- Do this later.
+    // Add to the bundle
+    // As you are adding to the bundle within Fhir Data, add the codeable concept
+    // also to the list of ServiceRequestCodes.
+
+    try {
+      List<ServiceRequest> serviceRequestsList =
+          getServiceRequestData(context, client, launchDetails, r4FhirData, encounter, start, end);
+      if (serviceRequestsList != null && !serviceRequestsList.isEmpty()) {
+        r4FhirData.setServiceRequests(serviceRequestsList);
+        for (ServiceRequest serviceRequest : serviceRequestsList) {
+          BundleEntryComponent serviceRequestEntry =
+              new BundleEntryComponent().setResource(serviceRequest);
+          bundle.addEntry(serviceRequestEntry);
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting the ServiceRequest Data", e);
+    }
+    return bundle;
+  }
+
+  public Resource getResourceFromBundle(Bundle bundle, Class<?> resource) {
+    try {
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        if (entry.getResource() != null && entry.getResource().getClass() == resource) {
+          return entry.getResource();
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting the Resource from Bundle", e);
+    }
+    return null;
+  }
+
+  public void loadMedicationsData(
+      FhirContext context,
+      IGenericClient client,
+      LaunchDetails launchDetails,
+      R4FhirData r4FhirData,
+      Encounter encounter,
+      Bundle bundle,
+      Date start,
+      Date end) {
 
     // Get MedicationAdministration for Patients and laboratory category (Write a
     // method).
@@ -1296,44 +1275,6 @@ public class R4ResourcesData {
     } catch (Exception e) {
       logger.error("Error in getting the MedicationRequest Data", e);
     }
-
-    // Get ServiceRequest for Patients (Write a method).
-    // Filter the ServiceRequest based on encounter Reference if encounter is
-    // present.
-    // If encounter is not present, then filter based on times (Start and end, if
-    // ServiceRequest time is between start and end times) -- Do this later.
-    // Add to the bundle
-    // As you are adding to the bundle within Fhir Data, add the codeable concept
-    // also to the list of ServiceRequestCodes.
-
-    try {
-      List<ServiceRequest> serviceRequestsList =
-          getServiceRequestData(context, client, launchDetails, r4FhirData, encounter, start, end);
-      if (serviceRequestsList != null && !serviceRequestsList.isEmpty()) {
-        r4FhirData.setServiceRequests(serviceRequestsList);
-        for (ServiceRequest serviceRequest : serviceRequestsList) {
-          BundleEntryComponent serviceRequestEntry =
-              new BundleEntryComponent().setResource(serviceRequest);
-          bundle.addEntry(serviceRequestEntry);
-        }
-      }
-    } catch (Exception e) {
-      logger.error("Error in getting the ServiceRequest Data", e);
-    }
-    return bundle;
-  }
-
-  public Resource getResourceFromBundle(Bundle bundle, Class<?> resource) {
-    try {
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        if (entry.getResource() != null && entry.getResource().getClass() == resource) {
-          return entry.getResource();
-        }
-      }
-    } catch (Exception e) {
-      logger.error("Error in getting the Resource from Bundle", e);
-    }
-    return null;
   }
 
   public void loadPractitionersLocationAndOrganization(
@@ -1380,7 +1321,7 @@ public class R4ResourcesData {
         }
       }
 
-      // Load Location
+      // Add Organization
       if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()) {
@@ -1400,6 +1341,8 @@ public class R4ResourcesData {
           }
         }
       }
+
+      // Add Locations
       if (Boolean.TRUE.equals(encounter.hasLocation())) {
         List<Location> locationList = new ArrayList<>();
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
@@ -1426,6 +1369,10 @@ public class R4ResourcesData {
           }
         }
         r4FhirData.setLocationList(locationList);
+
+        if (locationList.size() > 0) {
+          r4FhirData.setLocation(locationList.get(0));
+        }
       }
     } else {
       logger.debug("Encounter is null, cannot fetch Practitioners");
