@@ -499,7 +499,7 @@
 						</goals>
 						<configuration>
 							<argLine>${surefireArgLine}</argLine>
-							<skipTests>true</skipTests>
+							<skipTests>${skip.unit.tests}</skipTests>
 							<excludes>
 								<exclude>**/IT*.java</exclude>
 							</excludes>
@@ -523,7 +523,7 @@
 								<include>**/IT*.java</include>
 							</includes>
 							<argLine>${failsafeArgLine}</argLine>
-							<skipTests>true</skipTests>
+							<skipTests>${skip.integration.tests}</skipTests>
 						</configuration>
 					</execution>
 				</executions>
