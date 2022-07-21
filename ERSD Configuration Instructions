@@ -1,0 +1,15 @@
+ERSD FILE LOCATION
+
+Change the ERSD File location to reflect where to find the eRSD file that contains the trigger code definitions. 
+The ERSD file can be downloaded by registering for an account at : https://ersd.aimsplatform.org Currently this link only works state-side and if you are out of country, please contact us to figure out how we can get you a copy of it through the right means.
+
+The Release 3.0 branch supports the usage of the eCRNow App in two modes.
+
+* Release 2.X mode 
+* Release 3.X mode.
+
+If you are using the systemLaunch API to launch the Patient Instance in the app then you are functioming in Release 2.X mode using the Release 3.X baseline.
+If you are using the launchPatient API to launch the Patient Instance in the app then you are functioming in Release 3.X mode using the Release 3.X baseline.
+
+Download ERSD v1 Specification Bundle for configuring the eCRNow App if you are operating the eCRNow App in Release 2.X mode.
+Download ERSD v2 Specification Bundle for configuring the eCRNow App if you are operating the eCRNow App in Release 3.X mode.
