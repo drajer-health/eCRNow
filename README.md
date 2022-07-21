@@ -71,6 +71,9 @@ Change the database user name, password to reflect the database that was created
 Change the ERSD File location to reflect where to find the eRSD file that contains the trigger code definitions.
 The ERSD file can be downloaded by registering for an account at : https://ersd.aimsplatform.org 
 Currently this link only works state-side and if you are out of country, please contact us to figure out how we can get you a copy of it through the right means.
+For Release 2.X of the application, the ERSD v1 Specification Bundle should be used.
+For Release 3.X of the application using the systemLaunch API, the ERSD v1 Specification Bundle should be used.
+For Release 3.X of the application using the launchPatient API, the ERSD v2 Specification Bundle should be used.
 
 *SCHEMATRON FILE LOCATION*
 
