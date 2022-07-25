@@ -283,12 +283,12 @@ public class CdaPlanOfTreatmentGenerator {
 
 	    List<String> matchedTriggerCodes =
 	        CdaFhirUtilities.getMatchedCodesForResourceAndUrl(
-	            details, "ServiceRequest", CdaGeneratorConstants.FHIR_LOINC_URL);
+	            details, "DiagnosticReport", CdaGeneratorConstants.FHIR_LOINC_URL);
 
 	    String codeXml = "";
 	    // Add Trigger code template if the code matched the Url in the Service Request.
 	    if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-	      logger.debug("Found a Matched Code that is for Service Request");
+	      logger.info("Found a Matched Code that is for DiagnosticReport");
 
 	      String mCd =
 	          CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
