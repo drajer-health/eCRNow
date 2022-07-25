@@ -577,6 +577,19 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     return kd.getFhirInputDataByType();
   }
+  
+  public HashMap<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd) {
+
+	    logger.info(LOG_FHIR_CTX_GET);
+	    FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+	    logger.info(LOG_INIT_FHIR_CLIENT);
+	    IGenericClient client = getClient(kd, context);
+
+	    // Retrieve the DiagnosticReports and get their components
+	    
+	    return kd.getFhirInputDataByType();
+	  }
 
   @Override
   public Resource getResourceByUrl(KarProcessingData kd, String resourceName, String url) {
@@ -916,6 +929,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     String resType = queryFilter.getResourceType().toString();
     Set<Resource> resources = null;
     HashMap<String, Set<Resource>> resMapById = null;
+    HashMap<ResourceType, Set<Resource>> resByType = null;
 
     try {
       logger.info("Getting data for resource type {} using query: {}", resType, searchUrl);
@@ -934,14 +948,27 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         resources = new HashSet<>();
         resMapById = new HashMap<>();
+        resByType = new HashMap<>();
+        Set<Resource> reports = new HashSet<>();
+        ResourceType rType = null;
         for (BundleEntryComponent comp : bc) {
 
           logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
           resources.add(comp.getResource());
+          
+          if(comp.getResource().getResourceType() == ResourceType.DiagnosticReport) {
+        	  rType = ResourceType.DiagnosticReport;
+        	  reports.add(comp.getResource());
+          }
         }
 
         resMapById.put(dataReqId, resources);
         kd.addResourcesById(resMapById);
+        
+        if(reports != null && !reports.isEmpty()) {
+        	resByType.put(rType, reports);
+        	kd.addResourcesByType(resByType);
+        }
 
         logger.info(" Adding {} resources of type : {}", resources.size(), resType);
       } else {
