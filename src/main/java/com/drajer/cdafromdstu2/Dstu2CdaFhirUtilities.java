@@ -1005,11 +1005,11 @@ public class Dstu2CdaFhirUtilities {
 
   public static String getIDataTypeXml(IDatatype dt, String elName, Boolean valFlag) {
 
+    String val = "";
     if (dt != null) {
 
       logger.info(" Printing the class name " + dt.getClass());
 
-      String val = "";
       if (dt instanceof CodingDt) {
         CodingDt cd = (CodingDt) dt;
 
@@ -1049,11 +1049,20 @@ public class Dstu2CdaFhirUtilities {
 
         if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
+      } else if (dt instanceof StringDt) {
+
+        StringDt st = (StringDt) dt;
+        if (!valFlag) val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
+        else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
       }
 
       return val;
     }
-    return CdaGeneratorConstants.UNKNOWN_VALUE;
+
+    if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
+    else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
+
+    return val;
   }
 
   // public CodeableConcept getMedication(MedicationAdmininstration med, )
