@@ -138,6 +138,14 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid = true;
 
+  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isEmergentReportingEnabled = true;
+
+  @Column(name = "is_full_ecr", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isFullEcr = true;
+
   @Column(name = "launch_id", nullable = true)
   private String launchId;
 
@@ -288,7 +296,7 @@ public class LaunchDetails {
         JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
         return accessTokenObj.getString("access_token");
       } else {
-        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        logger.debug("AccessToken is Valid. No need to get new AccessToken");
         return accessToken;
       }
     } else {
@@ -514,6 +522,22 @@ public class LaunchDetails {
 
   public String getLaunchType() {
     return launchType;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
+  }
+
+  public Boolean getIsFullEcr() {
+    return isFullEcr;
+  }
+
+  public void setIsFullEcr(Boolean isFullEcr) {
+    this.isFullEcr = isFullEcr;
   }
 
   public void setLaunchType(String launchType) {

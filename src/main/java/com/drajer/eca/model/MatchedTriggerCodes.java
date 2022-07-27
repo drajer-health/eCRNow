@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,31 @@ public class MatchedTriggerCodes {
 
   public void setMatchedValues(Set<String> matchedValues) {
     this.matchedValues = matchedValues;
+  }
+
+  public Pair<String, String> getMatchingCode(CodeableConcept cd, String path) {
+
+    Pair<String, String> retVal = null;
+    if (cd != null && cd.getCoding() != null && !cd.getCoding().isEmpty()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+        String code = c.getCode();
+        String system = c.getSystem();
+
+        if (matchedCodes != null
+            && !matchedCodes.isEmpty()
+            && matchedPath.contains(path)
+            && matchedCodes.contains(ApplicationUtils.getCodeAsStringForMatching(code, system))) {
+
+          logger.info(" Found matched code for code: {}, system {}", code, system);
+          retVal = new Pair<String, String>(code, system);
+        }
+      }
+    }
+
+    return retVal;
   }
 
   public Set<String> hasMatchedTriggerCodesFromCodeableConcept(

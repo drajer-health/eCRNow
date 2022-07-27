@@ -99,7 +99,7 @@ public class Dstu2CdaEicrGenerator {
           }
         }
 
-        eICR.append(Dstu2CdaHeaderGenerator.createCdaHeader(data, details));
+        eICR.append(Dstu2CdaHeaderGenerator.createCdaHeader(data, details, ecr));
         eICR.append(Dstu2CdaBodyGenerator.generateCdaBody(data, details));
         eICR.append(CdaGeneratorUtils.getEndXMLHeaderForCdaDocument());
       }

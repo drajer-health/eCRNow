@@ -88,7 +88,7 @@ testCase:
       - xPath: "entry[1]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
         "code/@code": "187"
         "code/@codeSystem": "2.16.840.1.113883.12.292"
-        "code/@codeSystemName": "cvx"
+        "code/@codeSystemName": "CVX"
         "code/@displayName": "zoster vaccine recombinant"
       - xPath: "entry[2]/"
         "@typeCode": "DRIV"
@@ -118,7 +118,7 @@ testCase:
       - xPath: "entry[2]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
         "code/@code": "112"
         "code/@codeSystem": "2.16.840.1.113883.12.292"
-        "code/@codeSystemName": "cvx"
+        "code/@codeSystemName": "CVX"
         "code/@displayName": "tetanus toxoid, unspecified formulation"
       - xPath: "entry[3]/"
         "@typeCode": "DRIV"
@@ -148,7 +148,7 @@ testCase:
       - xPath: "entry[3]/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/"
         "code/@code": "111"
         "code/@codeSystem": "2.16.840.1.113883.12.292"
-        "code/@codeSystemName": "cvx"
+        "code/@codeSystemName": "CVX"
         "code/@displayName": "influenza virus vaccine, live, attenuated, for intranasal use"
   eCR-immunization-withNoVaccine:
     testData:

@@ -192,7 +192,7 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).equals("1.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
         if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
@@ -234,6 +234,9 @@ public class LaunchController {
             launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
+            launchDetails.setIsFullEcr(clientDetails.getIsFullEcr());
+            launchDetails.setIsEmergentReportingEnabled(
+                clientDetails.getIsEmergentReportingEnabled());
             launchDetails.setLaunchPatientId(systemLaunch.getPatientId());
             launchDetails.setTokenUrl(clientDetails.getTokenURL());
             launchDetails.setSetId(

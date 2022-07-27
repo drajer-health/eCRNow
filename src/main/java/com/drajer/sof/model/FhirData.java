@@ -105,15 +105,25 @@ public abstract class FhirData {
   public List<CodeableConceptDt> getCodesForExpression(String expression) {
 
     if (expression.contains("Condition.code")) {
-      return conditionCodes;
+      List<CodeableConceptDt> returnCodes = new ArrayList<>();
+      returnCodes.addAll(conditionCodes);
+      returnCodes.addAll(encounterCodes);
+      return returnCodes;
     } else if (expression.contains("MedicationAdministration.code")) {
       return medicationCodes;
     } else if (expression.contains("Observation.code")) {
-      return labResultCodes;
+      List<CodeableConceptDt> returnCodes = new ArrayList<>();
+      returnCodes.addAll(labResultCodes);
+      returnCodes.addAll(diagnosticReportCodes);
+      return returnCodes;
     } else if (expression.contains("Immunization.vaccineCode")) {
       return immuniationCodes;
     } else if (expression.contains("ServiceRequest.code")) {
-      return diagnosticOrderCodes;
+      List<CodeableConceptDt> returnCodes = new ArrayList<>();
+      returnCodes.addAll(diagnosticOrderCodes);
+      returnCodes.addAll(diagnosticReportCodes);
+      returnCodes.addAll(labResultCodes);
+      return returnCodes;
     } else if (expression.contains("Observation.value")) {
       return labResultValues;
     } else {
@@ -124,15 +134,25 @@ public abstract class FhirData {
   public List<CodeableConcept> getR4CodesForExpression(String expression) {
 
     if (expression.contains("Condition.code")) {
-      return r4ConditionCodes;
+      List<CodeableConcept> returnCodes = new ArrayList<>();
+      returnCodes.addAll(r4ConditionCodes);
+      returnCodes.addAll(r4EncounterCodes);
+      return returnCodes;
     } else if (expression.contains("MedicationAdministration.code")) {
       return r4MedicationCodes;
     } else if (expression.contains("Observation.code")) {
-      return r4LabResultCodes;
+      List<CodeableConcept> returnCodes = new ArrayList<>();
+      returnCodes.addAll(r4LabResultCodes);
+      returnCodes.addAll(r4DiagnosticReportCodes);
+      return returnCodes;
     } else if (expression.contains("Immunization.vaccineCode")) {
       return r4ImmunizationCodes;
     } else if (expression.contains("ServiceRequest.code")) {
-      return r4ServiceRequestCodes;
+      List<CodeableConcept> returnCodes = new ArrayList<>();
+      returnCodes.addAll(r4ServiceRequestCodes);
+      returnCodes.addAll(r4DiagnosticReportCodes);
+      returnCodes.addAll(r4LabResultCodes);
+      return returnCodes;
     } else if (expression.contains("Observation.value")) {
       return r4LabResultValues;
     } else {
@@ -194,5 +214,21 @@ public abstract class FhirData {
 
   public void setR4DiagnosticReportCodes(List<CodeableConcept> r4DiagnosticReportCodes) {
     this.r4DiagnosticReportCodes = r4DiagnosticReportCodes;
+  }
+
+  public List<CodeableConceptDt> getLabResultValues() {
+    return labResultValues;
+  }
+
+  public void setLabResultValues(List<CodeableConceptDt> labResultValues) {
+    this.labResultValues = labResultValues;
+  }
+
+  public List<CodeableConcept> getR4LabResultValues() {
+    return r4LabResultValues;
+  }
+
+  public void setR4LabResultValues(List<CodeableConcept> r4LabResultValues) {
+    this.r4LabResultValues = r4LabResultValues;
   }
 }

@@ -26,6 +26,8 @@
   "directRecipient": "connectathon@aimsplatform.sandbox.dmhisp.com",
   "restAPIURL": "https://unittest/luanchdetial/dao/restapi",
   "isCovid": true,
+  "isEmergentReportingEnabled": true,
+  "isFullEcr": false,
   "launchId": null,
   "launchState": 0,
   "redirectURI": "https://unittest/luanchdetial/dao/redirect",
