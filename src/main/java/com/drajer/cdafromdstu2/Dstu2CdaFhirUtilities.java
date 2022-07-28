@@ -378,19 +378,31 @@ public class Dstu2CdaFhirUtilities {
         if (contact.getRelationship() != null && contact.getRelationship().size() > 0) {
           for (CodeableConceptDt code : contact.getRelationship()) {
 
-            if (code.getCodingFirstRep() != null
-                && (code.getCodingFirstRep().getCode() != null
-                    && code.getCodingFirstRep()
-                        .getCode()
-                        .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME))) {
-
-              return contact;
-
-            } else if (code.getText() != null
+            if (code.getText() != null
                 && (code.getText().equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_EL_NAME)
                     || code.getText()
                         .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME))) {
               return contact;
+            } else {
+              List<CodingDt> cs = code.getCoding();
+
+              for (CodingDt c : cs) {
+
+                if (c.getSystem() != null
+                    && (c.getSystem()
+                            .contentEquals(
+                                CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                        || c.getSystem()
+                            .contentEquals(
+                                CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM))
+                    && c.getCode() != null
+                    && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
+                        || c.getCode()
+                            .contentEquals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE))) {
+                  return contact;
+                }
+              }
             }
           }
         }
