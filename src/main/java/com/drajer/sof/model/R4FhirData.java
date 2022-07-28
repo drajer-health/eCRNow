@@ -50,7 +50,7 @@ public class R4FhirData extends FhirData {
   private List<MedicationAdministration> medicationAdministrations;
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
-  private List<Procedure>      procedureList;
+  private List<Procedure> procedureList;
 
   private Address jurisdiction;
 
@@ -307,13 +307,11 @@ public class R4FhirData extends FhirData {
     this.labResultValueObservations = labResultValueObservations;
   }
 
-public List<Procedure> getProcedureList() {
-	return procedureList;
-}
+  public List<Procedure> getProcedureList() {
+    return procedureList;
+  }
 
-public void setProcedureList(List<Procedure> procedureList) {
-	this.procedureList = procedureList;
-}
-  
-  
+  public void setProcedureList(List<Procedure> procedureList) {
+    this.procedureList = procedureList;
+  }
 }

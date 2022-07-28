@@ -80,13 +80,12 @@ public class R3ToR2DataConverterUtils {
       details.setEncounterId(kd.getNotificationContext().getNotificationResourceId());
       details.setProviderUUID(kd.getHealthcareSetting().getDefaultProviderId());
       details.setSetId(details.getLaunchPatientId() + "|" + details.getEncounterId());
-      if(kd.getPhm() != null) {
-    	  details.setVersionNumber(kd.getPhm().getSubmittedVersionNumber()+1);
+      if (kd.getPhm() != null) {
+        details.setVersionNumber(kd.getPhm().getSubmittedVersionNumber() + 1);
+      } else {
+        details.setVersionNumber(1);
       }
-      else {
-    	  details.setVersionNumber(1);
-      }
-     
+
       List<DataRequirement> reqs = act.getInputData();
 
       for (DataRequirement dr : reqs) {
@@ -167,18 +166,18 @@ public class R3ToR2DataConverterUtils {
         data.addEntry(new BundleEntryComponent().setResource(organization));
       } else if (type.contentEquals(ResourceType.Practitioner.toString())) {
 
-          logger.info(" Setting up the Practitioner for R4FhirData ");
-          
-          ArrayList<Practitioner> practitioners = new ArrayList<>();
-          if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the Practitioner for R4FhirData ");
 
-            for (Resource r : resources) {
-              practitioners.add((Practitioner) r);
-              data.addEntry(new BundleEntryComponent().setResource(r));
-            }
-            r4FhirData.setPractitionersList(practitioners);
+        ArrayList<Practitioner> practitioners = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
+
+          for (Resource r : resources) {
+            practitioners.add((Practitioner) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
           }
-        } else if (type.contentEquals(ResourceType.Condition.toString())) {
+          r4FhirData.setPractitionersList(practitioners);
+        }
+      } else if (type.contentEquals(ResourceType.Condition.toString())) {
 
         logger.info(" Setting up the Conditions for R4FhirData ");
         ArrayList<Condition> conditionList = new ArrayList<>();
@@ -240,17 +239,17 @@ public class R3ToR2DataConverterUtils {
         }
       } else if (type.contentEquals(ResourceType.MedicationStatement.toString())) {
 
-          logger.info(" Setting up the MedicationStatement for R4FhirData ");
-          ArrayList<MedicationStatement> medStatementList = new ArrayList<>();
-          if (resources != null && !resources.isEmpty()) {
+        logger.info(" Setting up the MedicationStatement for R4FhirData ");
+        ArrayList<MedicationStatement> medStatementList = new ArrayList<>();
+        if (resources != null && !resources.isEmpty()) {
 
-            for (Resource r : resources) {
-            	medStatementList.add((MedicationStatement) r);
-              data.addEntry(new BundleEntryComponent().setResource(r));
-            }
-            r4FhirData.setMedications(medStatementList);
+          for (Resource r : resources) {
+            medStatementList.add((MedicationStatement) r);
+            data.addEntry(new BundleEntryComponent().setResource(r));
           }
-        }else if (type.contentEquals(ResourceType.Medication.toString())) {
+          r4FhirData.setMedications(medStatementList);
+        }
+      } else if (type.contentEquals(ResourceType.Medication.toString())) {
 
         logger.info(" Setting up the Medication for R4FhirData ");
         ArrayList<Medication> medList = new ArrayList<>();
