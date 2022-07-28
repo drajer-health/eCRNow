@@ -46,6 +46,7 @@ public interface EhrQueryService {
       KarProcessingData kd, List<DataRequirement> dRequirements);
 
   Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
+
   Map<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd);
 
   void createResource(KarProcessingData kd, Resource resource);

@@ -107,38 +107,38 @@ public class CdaPlanOfTreatmentGenerator {
 
         potObsXml.append(getPlannedObservationXml(s, details, contentRef));
       }
-      
+
       for (DiagnosticReport dr : reports) {
 
-          Pair<String, Boolean> drDisplayName =
-              CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
-                  dr.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL, false);
+        Pair<String, Boolean> drDisplayName =
+            CdaFhirUtilities.getCodeableConceptDisplayForCodeSystem(
+                dr.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL, false);
 
-          if (drDisplayName.getValue0().isEmpty()) {
-            drDisplayName.setAt0(CdaGeneratorConstants.UNKNOWN_VALUE);
-          }
-
-          String orderDate = CdaFhirUtilities.getStringForType(dr.getEffective());
-          logger.debug("Order Date for display {} ", orderDate);
-
-          if (orderDate.isEmpty() && dr.getIssued() != null) {
-            //orderDate = CdaFhirUtilities.getDisplayStringForDateTimeType(dr.getIssued());
-          }
-
-          Map<String, String> bodyvals = new LinkedHashMap<>();
-          bodyvals.put(
-              CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, drDisplayName.getValue0());
-          bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, orderDate);
-
-          sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-
-          String contentRef =
-              CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
-
-          rowNum++;
-
-          drXml.append(getDiagnosticReportXml(dr, details, contentRef));
+        if (drDisplayName.getValue0().isEmpty()) {
+          drDisplayName.setAt0(CdaGeneratorConstants.UNKNOWN_VALUE);
         }
+
+        String orderDate = CdaFhirUtilities.getStringForType(dr.getEffective());
+        logger.debug("Order Date for display {} ", orderDate);
+
+        if (orderDate.isEmpty() && dr.getIssued() != null) {
+          // orderDate = CdaFhirUtilities.getDisplayStringForDateTimeType(dr.getIssued());
+        }
+
+        Map<String, String> bodyvals = new LinkedHashMap<>();
+        bodyvals.put(
+            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT, drDisplayName.getValue0());
+        bodyvals.put(CdaGeneratorConstants.POT_OBS_TABLE_COL_2_BODY_CONTENT, orderDate);
+
+        sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+
+        String contentRef =
+            CdaGeneratorConstants.POT_OBS_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+
+        rowNum++;
+
+        drXml.append(getDiagnosticReportXml(dr, details, contentRef));
+      }
 
       // Close the Text Element
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -261,107 +261,107 @@ public class CdaPlanOfTreatmentGenerator {
 
     return sb.toString();
   }
-  
+
   public static String getDiagnosticReportXml(
-	      DiagnosticReport dr, LaunchDetails details, String contentRef) {
+      DiagnosticReport dr, LaunchDetails details, String contentRef) {
 
-	    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
 
-	    // Generate the entry
-	    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-	    sb.append(
-	        CdaGeneratorUtils.getXmlForAct(
-	            CdaGeneratorConstants.OBS_ACT_EL_NAME,
-	            CdaGeneratorConstants.OBS_CLASS_CODE,
-	            CdaGeneratorConstants.MOOD_CODE_RQO));
+    // Generate the entry
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_RQO));
 
-	    sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PLANNED_OBS_TEMPLATE_ID));
-	    sb.append(
-	        CdaGeneratorUtils.getXmlForTemplateId(
-	            CdaGeneratorConstants.PLANNED_OBS_TEMPLATE_ID,
-	            CdaGeneratorConstants.PLANNED_OBS_TEMPLATE_ID_EXT));
+    sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PLANNED_OBS_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.PLANNED_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.PLANNED_OBS_TEMPLATE_ID_EXT));
 
-	    List<String> matchedTriggerCodes =
-	        CdaFhirUtilities.getMatchedCodesForResourceAndUrl(
-	            details, "DiagnosticReport", CdaGeneratorConstants.FHIR_LOINC_URL);
+    List<String> matchedTriggerCodes =
+        CdaFhirUtilities.getMatchedCodesForResourceAndUrl(
+            details, "DiagnosticReport", CdaGeneratorConstants.FHIR_LOINC_URL);
 
-	    String codeXml = "";
-	    // Add Trigger code template if the code matched the Url in the Service Request.
-	    if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-	      logger.info("Found a Matched Code that is for DiagnosticReport");
+    String codeXml = "";
+    // Add Trigger code template if the code matched the Url in the Service Request.
+    if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
+      logger.info("Found a Matched Code that is for DiagnosticReport");
 
-	      String mCd =
-	          CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
-	              matchedTriggerCodes, dr.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL);
+      String mCd =
+          CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
+              matchedTriggerCodes, dr.getCode(), CdaGeneratorConstants.FHIR_LOINC_URL);
 
-	      if (!mCd.isEmpty()) {
+      if (!mCd.isEmpty()) {
 
-	        sb.append(
-	            CdaGeneratorUtils.getXmlForTemplateId(
-	                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
-	                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
+        sb.append(
+            CdaGeneratorUtils.getXmlForTemplateId(
+                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE,
+                CdaGeneratorConstants.LAB_TEST_ORDER_TRIGGER_CODE_TEMPLATE_EXT));
 
-	        codeXml =
-	            CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
-	                CdaGeneratorConstants.CODE_EL_NAME,
-	                mCd,
-	                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-	                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-	                CdaGeneratorConstants.RCTC_OID,
-	                ActionRepo.getInstance().getRctcVersion(),
-	                "",
-	                contentRef);
-	      } else {
-	        logger.debug(
-	            "Did not find the code value in the matched codes, make it a regular Planned Observation");
-	      }
-	    }
+        codeXml =
+            CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+                CdaGeneratorConstants.CODE_EL_NAME,
+                mCd,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+                CdaGeneratorConstants.RCTC_OID,
+                ActionRepo.getInstance().getRctcVersion(),
+                "",
+                contentRef);
+      } else {
+        logger.debug(
+            "Did not find the code value in the matched codes, make it a regular Planned Observation");
+      }
+    }
 
-	    // add Id
-	    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    // add Id
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
 
-	    if (codeXml.isEmpty()) {
-	      List<CodeableConcept> ccs = new ArrayList<>();
-	      ccs.add(dr.getCode());
-	      codeXml =
-	          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-	              ccs,
-	              CdaGeneratorConstants.CODE_EL_NAME,
-	              false,
-	              CdaGeneratorConstants.FHIR_LOINC_URL,
-	              false);
+    if (codeXml.isEmpty()) {
+      List<CodeableConcept> ccs = new ArrayList<>();
+      ccs.add(dr.getCode());
+      codeXml =
+          CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+              ccs,
+              CdaGeneratorConstants.CODE_EL_NAME,
+              false,
+              CdaGeneratorConstants.FHIR_LOINC_URL,
+              false);
 
-	      if (!codeXml.isEmpty()) {
-	        sb.append(codeXml);
-	      } else {
-	        sb.append(
-	            CdaFhirUtilities.getCodeableConceptXml(ccs, CdaGeneratorConstants.CODE_EL_NAME, false));
-	      }
-	    } else {
-	      sb.append(codeXml);
-	    }
+      if (!codeXml.isEmpty()) {
+        sb.append(codeXml);
+      } else {
+        sb.append(
+            CdaFhirUtilities.getCodeableConceptXml(ccs, CdaGeneratorConstants.CODE_EL_NAME, false));
+      }
+    } else {
+      sb.append(codeXml);
+    }
 
-	    sb.append(
-	        CdaGeneratorUtils.getXmlForCD(
-	            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
 
-	    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(dr.getEffective());
-	    if (effDate.getValue0() == null) {
-	      logger.debug("Use Authored Date");
+    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(dr.getEffective());
+    if (effDate.getValue0() == null) {
+      logger.debug("Use Authored Date");
 
-	      effDate.setAt0(dr.getIssued());
-	    }
+      effDate.setAt0(dr.getIssued());
+    }
 
-	    sb.append(
-	        CdaGeneratorUtils.getXmlForEffectiveTime(
-	            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+    sb.append(
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
-	    // End Tag for Entry
-	    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-	    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    // End Tag for Entry
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
-	    return sb.toString();
-	  }
+    return sb.toString();
+  }
 
   public static List<ServiceRequest> getValidServiceRequests(R4FhirData data) {
 

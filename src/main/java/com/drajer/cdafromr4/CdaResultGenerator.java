@@ -175,7 +175,7 @@ public class CdaResultGenerator {
         resultEntries.append(lrEntry);
         rowNum++;
       }
-      
+
       // End the Sb string.
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
@@ -671,33 +671,33 @@ public class CdaResultGenerator {
 
     return sr;
   }
-  
+
   public static List<DiagnosticReport> getValidDiagnosticReports(R4FhirData data) {
 
-	    List<DiagnosticReport> drs = new ArrayList<>();
+    List<DiagnosticReport> drs = new ArrayList<>();
 
-	    if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
+    if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
 
-	      logger.info(
-	          "Total num of Diagnostic Reports available for Patient {}", data.getDiagReports().size());
+      logger.info(
+          "Total num of Diagnostic Reports available for Patient {}", data.getDiagReports().size());
 
-	      for (DiagnosticReport dr : data.getDiagReports()) {
+      for (DiagnosticReport dr : data.getDiagReports()) {
 
-	        if (dr.getCode() != null
-	            && dr.getCode().getCoding() != null
-	            && !dr.getCode().getCoding().isEmpty()
-	            && Boolean.TRUE.equals(
-	                CdaFhirUtilities.isCodingPresentForCodeSystem(
-	                    dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
+        if (dr.getCode() != null
+            && dr.getCode().getCoding() != null
+            && !dr.getCode().getCoding().isEmpty()
+            && Boolean.TRUE.equals(
+                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                    dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
-	          logger.debug("Found a DiagnosticReport with a LOINC code");
-	          drs.add(dr);
-	        }
-	      }
-	    } else {
-	      logger.debug("No Valid DiagnosticReport in the bundle to process");
-	    }
+          logger.debug("Found a DiagnosticReport with a LOINC code");
+          drs.add(dr);
+        }
+      }
+    } else {
+      logger.debug("No Valid DiagnosticReport in the bundle to process");
+    }
 
-	    return drs;
-	  }
+    return drs;
+  }
 }

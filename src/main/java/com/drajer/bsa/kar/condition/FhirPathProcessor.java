@@ -139,14 +139,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
           filterByCode(dr, cc, kd, ctc, resources, res, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())
-                && res.getResourceType() == ResourceType.DiagnosticReport) {
+            && res.getResourceType() == ResourceType.DiagnosticReport) {
 
-            logger.debug(" Found DiagnosticReport Resource {}", res.getId());
-            DiagnosticReport d = (DiagnosticReport) res;
-            CodeableConcept cc = d.getCode();
+          logger.debug(" Found DiagnosticReport Resource {}", res.getId());
+          DiagnosticReport d = (DiagnosticReport) res;
+          CodeableConcept cc = d.getCode();
 
-            filterByCode(dr, cc, kd, ctc, resources, res, false);
-          } else if (res.getResourceType().toString().contentEquals(dr.getType())
+          filterByCode(dr, cc, kd, ctc, resources, res, false);
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
             && res.getResourceType() == ResourceType.MedicationRequest) {
 
           logger.debug(" Found MedicationRequest Resource {}", res.getId());
