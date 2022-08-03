@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Type;
@@ -39,6 +40,7 @@ public class CdaResultGenerator {
     StringBuilder resultEntries = new StringBuilder();
 
     List<Observation> results = getValidLabResults(data);
+    List<DiagnosticReport> reports = getValidDiagnosticReports(data);
 
     if (results != null && !results.isEmpty()) {
 
@@ -668,5 +670,34 @@ public class CdaResultGenerator {
     }
 
     return sr;
+  }
+
+  public static List<DiagnosticReport> getValidDiagnosticReports(R4FhirData data) {
+
+    List<DiagnosticReport> drs = new ArrayList<>();
+
+    if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
+
+      logger.info(
+          "Total num of Diagnostic Reports available for Patient {}", data.getDiagReports().size());
+
+      for (DiagnosticReport dr : data.getDiagReports()) {
+
+        if (dr.getCode() != null
+            && dr.getCode().getCoding() != null
+            && !dr.getCode().getCoding().isEmpty()
+            && Boolean.TRUE.equals(
+                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                    dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
+
+          logger.debug("Found a DiagnosticReport with a LOINC code");
+          drs.add(dr);
+        }
+      }
+    } else {
+      logger.debug("No Valid DiagnosticReport in the bundle to process");
+    }
+
+    return drs;
   }
 }

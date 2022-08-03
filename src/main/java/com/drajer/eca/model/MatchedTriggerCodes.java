@@ -114,7 +114,7 @@ public class MatchedTriggerCodes {
 
       if (intersection != null && !intersection.isEmpty()) {
 
-        logger.debug("Number of Matched Codes = {}", intersection.size());
+        logger.info("Number of Matched Codes = {}", intersection.size());
 
         retval = intersection;
 

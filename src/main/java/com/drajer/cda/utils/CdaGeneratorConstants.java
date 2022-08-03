@@ -643,6 +643,7 @@ public class CdaGeneratorConstants {
   public static final String TABLE_ACTIVE_STATUS = "Active";
 
   // Default Attribute Values
+  public static final String TYPE_CODE_IND = "IND";
   public static final String TYPE_CODE_DEF = "DRIV";
   public static final String MOOD_CODE_DEF = "EVN";
   public static final String MOOD_CODE_INT = "INT";
@@ -758,6 +759,7 @@ public class CdaGeneratorConstants {
   public static final String ASSGND_CUST_EL_NAME = "assignedCustodian";
   public static final String REP_CUST_ORG_EL_NAME = "representedCustodianOrganization";
   public static final String ASSIGNED_PERSON_EL_NAME = "assignedPerson";
+  public static final String ASSOCIATED_PERSON_EL_NAME = "associatedPerson";
   public static final String REP_ORG_EL_NAME = "representedOrganization";
   public static final String ENCOMPASSING_ENC_EL_NAME = "encompassingEncounter";
   public static final String ENCOUNTER_PARTICIPANT_EL_NAME = "encounterParticipant";
@@ -893,6 +895,15 @@ public class CdaGeneratorConstants {
   public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS =
       "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
+
+  // Valueset Values
+  public static final String FHIR_GUARDIAN_VALUE = "N";
+  public static final String FHIR_EMERGENCY_CONTACT_VALUE = "E";
+  public static final String GUARDIAN_VALUE = "GUARD";
+  public static final String FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
+      "http://terminology.hl7.org/CodeSystem/v2-0131";
+  public static final String DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
+      "http://hl7.org/fhir/patient-contact-relationship";
 
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
@@ -1118,6 +1129,30 @@ public class CdaGeneratorConstants {
     }
 
     // Unable to translate Anonymous, Temp and Old which is present in FHIR but not in CDA
+
+  }
+
+  public static String getCodeForContactRelationship(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("C") || val.contentEquals("emergency")) {
+        return "ECON";
+      } else if (val.contentEquals("N")
+          || val.contentEquals("family")
+          || val.contentEquals("friend")
+          || val.contentEquals("partner")
+          || val.contentEquals("parent")) {
+        return "NOK";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate other codes
 
   }
 

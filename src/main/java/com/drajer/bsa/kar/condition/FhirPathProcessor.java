@@ -18,6 +18,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Immunization;
@@ -161,6 +162,14 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           logger.debug(" Found ServiceRequest Resource {}", res.getId());
           ServiceRequest sr = (ServiceRequest) res;
           CodeableConcept cc = sr.getCode();
+
+          filterByCode(dr, cc, kd, ctc, resources, res, false);
+        } else if (res.getResourceType().toString().contentEquals(dr.getType())
+            && res.getResourceType() == ResourceType.DiagnosticReport) {
+
+          logger.debug(" Found DiagnosticReport Resource {}", res.getId());
+          DiagnosticReport d = (DiagnosticReport) res;
+          CodeableConcept cc = d.getCode();
 
           filterByCode(dr, cc, kd, ctc, resources, res, false);
         } else if (res.getResourceType().toString().contentEquals(dr.getType())

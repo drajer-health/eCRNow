@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.javatuples.Pair;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorUtils {
+
+  public static Pattern digitPattern = Pattern.compile("[^0-9]");
 
   private CdaGeneratorUtils() {
     throw new IllegalStateException("Utility class");
@@ -610,9 +613,17 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForTelecom(String telName, String telNo, String use) {
+
     String s = "";
 
-    if (!StringUtils.isEmpty(use) && telNo.length() == 10) {
+    String tel = digitPattern.matcher(telNo).replaceAll("");
+    String finalTel = tel;
+
+    if (tel.length() > 10) {
+      finalTel = tel.substring(tel.length() - 10);
+    }
+
+    if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {
 
       s +=
           CdaGeneratorConstants.START_XMLTAG
@@ -621,16 +632,32 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + "tel:("
-              + telNo.substring(0, 3)
+              + finalTel.substring(0, 3)
               + ")"
-              + telNo.substring(3, 6)
+              + finalTel.substring(3, 6)
               + "-"
-              + telNo.substring(6, 10)
+              + finalTel.substring(6, 10)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
               + "use="
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + use
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    } else if (finalTel.length() == 10) {
+
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + telName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + "tel:("
+              + finalTel.substring(0, 3)
+              + ")"
+              + finalTel.substring(3, 6)
+              + "-"
+              + finalTel.substring(6, 10)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
     } else {
@@ -639,14 +666,9 @@ public class CdaGeneratorUtils {
           CdaGeneratorConstants.START_XMLTAG
               + telName
               + CdaGeneratorConstants.SPACE
-              + CdaGeneratorConstants.VALUE_WITH_EQUAL
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
-              + telNo.substring(0, 3)
-              + ")"
-              + telNo.substring(3, 6)
-              + "-"
-              + telNo.substring(6, 10)
+              + CdaGeneratorConstants.NF_NI
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
     }

@@ -82,6 +82,7 @@ public class CreateReport extends BsaAction {
       }
 
       ehrService.loadJurisdicationData(data);
+      ehrService.loadSecondaryResources(data);
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {

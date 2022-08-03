@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ public class R4FhirData extends FhirData {
   private List<MedicationAdministration> medicationAdministrations;
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
+  private List<Procedure> procedureList;
 
   private Address jurisdiction;
   private List<Address> jurisdictions;
@@ -123,6 +125,7 @@ public class R4FhirData extends FhirData {
     medicationAdministrations = new ArrayList<>();
     serviceRequests = new ArrayList<>();
     medicationList = new ArrayList<>();
+    procedureList = new ArrayList<>();
   }
 
   public Bundle getData() {
@@ -308,5 +311,13 @@ public class R4FhirData extends FhirData {
 
   public void setLabResultValueObservations(List<Observation> labResultValueObservations) {
     this.labResultValueObservations = labResultValueObservations;
+  }
+
+  public List<Procedure> getProcedureList() {
+    return procedureList;
+  }
+
+  public void setProcedureList(List<Procedure> procedureList) {
+    this.procedureList = procedureList;
   }
 }
