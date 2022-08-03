@@ -1886,7 +1886,7 @@ public class CdaFhirUtilities {
       // Add each code as an entry relationship observation
       if (mtc.hasMatchedTriggerCodes(matchResourceType)) {
 
-        logger.debug("Found Matched Codes for Resource Type {}", matchResourceType);
+        logger.info("Found Matched Codes for Resource Type {}", matchResourceType);
 
         Set<String> matchedCodes = mtc.getMatchedCodes();
 

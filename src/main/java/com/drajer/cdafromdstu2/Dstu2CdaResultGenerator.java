@@ -37,6 +37,8 @@ public class Dstu2CdaResultGenerator {
 
     if (results != null && results.size() > 0) {
 
+      logger.info(" Number of Lab Result Observations to process {}", results.size());
+
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
 

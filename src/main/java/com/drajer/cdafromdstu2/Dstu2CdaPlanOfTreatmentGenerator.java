@@ -34,7 +34,7 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
     List<DiagnosticOrder> dors = getValidDiagnosticOrders(data);
 
     if ((drs != null && !drs.isEmpty())) {
-      logger.debug("Found a Diagnostic objects to translate to CDA.");
+      logger.info("Found {} Diagnostic Report objects to translate to CDA.", drs.size());
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -155,7 +155,7 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
     String codeXml = "";
     // Add Trigger code template if the code matched the Url in the DiagnosticReport.
     if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-      logger.debug("Found a Matched Code that is for DiagnosticReport");
+      logger.info("Found a Matched Code that is for DiagnosticReport");
 
       String mCd =
           Dstu2CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
@@ -237,7 +237,7 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
 
     if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
 
-      logger.debug(
+      logger.info(
           "Total num of DiagnosticReports available for Patient {}", data.getDiagReports().size());
 
       for (DiagnosticReport dr : data.getDiagReports()) {
@@ -246,18 +246,19 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
             && dr.getCode().getCoding() != null
             && !dr.getCode().getCoding().isEmpty()
             && dr.getStatus() != null
-            && dr.getStatus() == DiagnosticReportStatusEnum.FINAL.getCode()
+            && dr.getStatus().contentEquals(DiagnosticReportStatusEnum.FINAL.getCode())
             && dr.getResult() != null
             && !dr.getResult().isEmpty()) {
 
-          logger.debug("Found a Diagnostic Report");
+          logger.info("Found a Diagnostic Report");
           drs.add(dr);
         }
       }
     } else {
-      logger.debug("No Valid DiagnosticReports in the bundle to process");
+      logger.info("No Valid DiagnosticReports in the bundle to process");
     }
 
+    logger.info("Total num of DiagnosticReports after filtering for Patient {}", drs.size());
     return drs;
   }
 
