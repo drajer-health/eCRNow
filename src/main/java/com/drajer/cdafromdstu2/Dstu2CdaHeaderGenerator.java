@@ -113,6 +113,8 @@ public class Dstu2CdaHeaderGenerator {
 
         eICRHeader.append(getCustodianXml(data.getOrganization(), details));
 
+        eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
+
         eICRHeader.append(
             getEncompassingEncounter(
                 data.getEncounter(),
@@ -124,6 +126,116 @@ public class Dstu2CdaHeaderGenerator {
     }
 
     return eICRHeader.toString();
+  }
+
+  private static String getParticipantXml(
+      LaunchDetails details, Dstu2FhirData data, Patient patient) {
+
+    StringBuilder s = new StringBuilder("");
+    if (patient != null && patient.getContact() != null) {
+
+      List<Contact> ccs = patient.getContact();
+
+      for (Contact cc : ccs) {
+
+        if (cc.getRelationship() != null) {
+
+          CodingDt c = getTranslatableCodeableConceptCoding(cc.getRelationship());
+
+          if (c != null) {
+            s.append(getParticipantXml(cc, c));
+          }
+        }
+      }
+    }
+
+    return s.toString();
+  }
+
+  public static String getParticipantXml(Contact cc, CodingDt c) {
+
+    StringBuilder s = new StringBuilder(200);
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+            CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_IND));
+
+    String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+            CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
+
+    if (cc.getAddress() != null) {
+      List<AddressDt> addrs = new ArrayList<>();
+      addrs.add(cc.getAddress());
+      s.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+    }
+
+    if (cc.getTelecom() != null) {
+      s.append(Dstu2CdaFhirUtilities.getTelecomXml(cc.getTelecom()));
+    }
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    List<HumanNameDt> names = new ArrayList<>();
+    if (cc.getName() != null) {
+      names.add(cc.getName());
+    }
+    s.append(Dstu2CdaFhirUtilities.getNameXml(names));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+
+    return s.toString();
+  }
+
+  public static CodingDt getTranslatableCodeableConceptCoding(List<CodeableConceptDt> cds) {
+
+    if (cds != null) {
+
+      for (CodeableConceptDt cd : cds) {
+
+        List<CodingDt> codes = cd.getCoding();
+
+        CodingDt c = getTranslatableCoding(codes);
+
+        if (c != null) {
+
+          return c;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  public static CodingDt getTranslatableCoding(List<CodingDt> codes) {
+
+    if (codes != null) {
+
+      for (CodingDt c : codes) {
+
+        if (c.getCode() != null) {
+
+          String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
+
+          if (relationship != null && !relationship.isEmpty()) {
+
+            return c;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   public static String getPractitionerXml(Practitioner pr) {
@@ -272,7 +384,10 @@ public class Dstu2CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
-    if (en != null && en.getPeriod() != null && en.getPeriod().getStartElement() != null) {
+    if (en != null
+        && en.getPeriod() != null
+        && en.getPeriod().getStartElement() != null
+        && en.getPeriod().getStart() != null) {
       sb.append(
           Dstu2CdaFhirUtilities.getDateTimeTypeXml(
               en.getPeriod().getStartElement(), CdaGeneratorConstants.TIME_EL_NAME));

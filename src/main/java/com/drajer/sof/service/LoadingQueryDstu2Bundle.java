@@ -185,7 +185,9 @@ public class LoadingQueryDstu2Bundle {
 
       if (dstu2FhirData.getLabResultValueObservations() != null
           && !dstu2FhirData.getLabResultValueObservations().isEmpty()) {
-        logger.info(FILTERED_OBSERVATIONS, dstu2FhirData.getLabResultValueObservations().size());
+        logger.info(
+            "Filtered Value Observations----> {}",
+            dstu2FhirData.getLabResultValueObservations().size());
 
         for (Observation observation : dstu2FhirData.getLabResultValueObservations()) {
           Entry observationsEntry = new Entry().setResource(observation);
@@ -203,7 +205,9 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info(FILTERED_OBSERVATIONS, observationList.size());
+
+      logger.info("Filtered Pregnancy Observations----> {}", observationList.size());
+
       dstu2FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -219,7 +223,9 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getTravelObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info(FILTERED_OBSERVATIONS, observationList.size());
+
+      logger.info("Filtered Travel Observations----> {}", observationList.size());
+
       dstu2FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
