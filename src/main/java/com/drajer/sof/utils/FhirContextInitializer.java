@@ -9,6 +9,9 @@ import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
+import com.drajer.ecrapp.fhir.utils.ecrretry.EcrFhirClient;
+import com.drajer.ecrapp.fhir.utils.ecrretry.EcrFhirRetryConfig;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -17,6 +20,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,6 +34,8 @@ public class FhirContextInitializer {
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
 
+  @Autowired EcrFhirRetryConfig ecrFhirRetryConfig;
+  @Autowired FHIRRetryTemplate retryTemplate;
   /**
    * Get FhirContext appropriate to fhirVersion
    *
@@ -69,6 +75,12 @@ public class FhirContextInitializer {
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
+    if (ecrFhirRetryConfig.isRetryEnabled()) {
+      logger.trace(
+          "Initialized the Retryable Client with X-Request-ID: {}",
+          client.getHttpInterceptor().getXReqId());
+      return new EcrFhirClient(client, retryTemplate, requestId);
+    }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
     return client;
@@ -89,6 +101,12 @@ public class FhirContextInitializer {
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
+    if (ecrFhirRetryConfig.isRetryEnabled()) {
+      logger.trace(
+          "Initialized the Retryable Client with X-Request-ID: {}",
+          client.getHttpInterceptor().getXReqId());
+      return new EcrFhirClient(client, retryTemplate, client.getHttpInterceptor().getXReqId());
+    }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
     return client;
@@ -97,7 +115,9 @@ public class FhirContextInitializer {
   public MethodOutcome submitResource(IGenericClient genericClient, Resource resource) {
     MethodOutcome outcome = null;
     try {
-      outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
+      outcome =
+          (MethodOutcome)
+              genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
     } catch (Exception e) {
       logger.error(
           "Error in Submitting the resource::::: {}", resource.getResourceType().name(), e);
@@ -115,7 +135,8 @@ public class FhirContextInitializer {
     IBaseResource resource = null;
     try {
       logger.info("Getting {} data by ID {}", resourceName, resourceId);
-      resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
+      resource =
+          (IBaseResource) genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (ForbiddenOperationException scopeException) {
       logger.info(
           "Failed getting {} resource by Id: {}\n{}\nCurrent scope: {}",
@@ -210,7 +231,8 @@ public class FhirContextInitializer {
           authDetails.getLaunchPatientId(),
           url);
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
-        Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
+        Bundle bundle =
+            (Bundle) genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         getAllDSTU2RecordsUsingPagination(genericClient, bundle);
         if (bundle != null && bundle.getEntry() != null) {
           logger.info(
@@ -221,11 +243,8 @@ public class FhirContextInitializer {
         bundleResponse = bundle;
       } else if (authDetails.getFhirVersion().equalsIgnoreCase(R4)) {
         org.hl7.fhir.r4.model.Bundle bundle =
-            genericClient
-                .search()
-                .byUrl(url)
-                .returnBundle(org.hl7.fhir.r4.model.Bundle.class)
-                .execute();
+            (org.hl7.fhir.r4.model.Bundle)
+                genericClient.search().byUrl(url).returnBundle(org.hl7.fhir.r4.model.Bundle.class);
         getAllR4RecordsUsingPagination(genericClient, bundle);
         if (bundle != null && bundle.getEntry() != null) {
           logger.info(
@@ -273,7 +292,7 @@ public class FhirContextInitializer {
         logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
         org.hl7.fhir.r4.model.Bundle nextPageBundleResults =
-            genericClient.loadPage().next(bundle).execute();
+            (org.hl7.fhir.r4.model.Bundle) genericClient.loadPage().next(bundle).execute();
         if (nextPageBundleResults != null) {
           entriesList.addAll(nextPageBundleResults.getEntry());
           nextPageBundleResults.setEntry(entriesList);
@@ -290,7 +309,7 @@ public class FhirContextInitializer {
       if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
         logger.info(
             "Found Next Page in Bundle:::::{}", bundle.getLink(IBaseBundle.LINK_NEXT).getUrl());
-        Bundle nextPageBundleResults = genericClient.loadPage().next(bundle).execute();
+        Bundle nextPageBundleResults = (Bundle) genericClient.loadPage().next(bundle).execute();
         if (nextPageBundleResults != null) {
           entriesList.addAll(nextPageBundleResults.getEntry());
           nextPageBundleResults.setEntry(entriesList);
