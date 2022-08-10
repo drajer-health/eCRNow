@@ -382,8 +382,11 @@ public class KnowledgeArtifact {
     logger.info(" Kar Version : {} ", karVersion);
 
     firstLevelActions.forEach(act -> act.printSummary());
-    defaultQueries.forEach(
-        (key, value) -> logger.info(" Data Req Id : {}, Query String: {}", key, value));
+    // Supplemental Bundle does not have a PlanDefinition with actions
+    if (defaultQueries != null) {
+      defaultQueries.forEach(
+          (key, value) -> logger.info(" Data Req Id : {}, Query String: {}", key, value));
+    }
 
     logger.info(" **** END Printing KnowledgeArtifactSummary **** ");
   }

@@ -46,6 +46,8 @@ public class KarProcessorImpl implements KarProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(KarProcessorImpl.class);
 
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
   @Autowired EhrQueryService ehrInterface;
 
   @Autowired BsaServiceUtils serviceUtils;
@@ -98,13 +100,6 @@ public class KarProcessorImpl implements KarProcessor {
         logger.error(e.getMessage());
         throw e;
       }
-
-      /*
-      if (data.getActionStatus() != null && !data.getActionStatus().isEmpty()) {
-        serviceUtils.saveActionStatusState(data.getActionStatus());
-      } else {
-        logger.debug("Action status whas either null or empty");
-      } */
 
       logger.info(" **** Finished Executing Action Id {} **** ", action.getActionId());
     }
@@ -161,7 +156,7 @@ public class KarProcessorImpl implements KarProcessor {
       kd.setExecutionSequenceId(data.getJobId());
       kd.setNotificationContext(nc);
       kd.setHealthcareSetting(hsService.getHealthcareSettingByUrl(state.getHsFhirServerUrl()));
-      kd.setKar(KnowledgeArtifactRepositorySystem.getInstance().getById(state.getKarUniqueId()));
+      kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
       kd.setxRequestId(data.getxRequestId());
       kd.setxCorrelationId(nc.getxCorrelationId());
 

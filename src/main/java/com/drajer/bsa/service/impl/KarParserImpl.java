@@ -58,6 +58,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
@@ -98,6 +99,10 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class KarParserImpl implements KarParser {
 
+  /** */
+  private static final String VariableExtensionUrl =
+      "http://hl7.org/fhir/StructureDefinition/variable";
+
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
 
@@ -128,6 +133,8 @@ public class KarParserImpl implements KarParser {
 
   // Autowired to pass to action processors.
   @Autowired BsaScheduler scheduler;
+
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   // Autowired to pass to action processors.
   @Autowired R4MeasureProcessor measureProcessor;
@@ -174,6 +181,8 @@ public class KarParserImpl implements KarParser {
 
   @Value("${report-submission.endpoint}")
   private String reportSubmissionEndpoint;
+
+  private Expression planVariableExpression;
 
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
@@ -346,6 +355,12 @@ public class KarParserImpl implements KarParser {
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.Library) {
           logger.info(" Processing Library");
+          if (art.getKarName() == null) {
+            art.setKarName(((Library) comp.getResource()).getName());
+          }
+          if (art.getKarPublisher() == null) {
+            art.setKarPublisher(((Library) comp.getResource()).getPublisher());
+          }
         } else if (Optional.ofNullable(comp).isPresent()) {
           logger.info(" Adding resource to dependencies");
           art.addDependentResource(comp.getResource());
@@ -358,7 +373,7 @@ public class KarParserImpl implements KarParser {
       } */
 
       addArtifactForPersistence(art, repoUrl, repoName);
-      KnowledgeArtifactRepositorySystem.getInstance().add(art);
+      knowledgeArtifactRepositorySystem.add(art);
       art.printKarSummary();
 
     } else {
@@ -422,6 +437,16 @@ public class KarParserImpl implements KarParser {
     art.setKarName(plan.getName());
     art.setKarPublisher(plan.getPublisher());
     processExtensions(plan, art);
+    if (plan.hasExtension(VariableExtensionUrl)) {
+      Extension variableExtension = plan.getExtensionByUrl(VariableExtensionUrl);
+      Type variable = variableExtension.getValue();
+      if (variable instanceof Expression) {
+        planVariableExpression = (Expression) variable;
+        logger.debug("Found Variable Extension Expression");
+      } else {
+        logger.debug("Found Variable Extension, but expected Expression.");
+      }
+    }
     List<PlanDefinitionActionComponent> actions = plan.getAction();
 
     for (PlanDefinitionActionComponent act : actions) {
@@ -707,18 +732,29 @@ public class KarParserImpl implements KarParser {
         bc.setUrl(libraryCanonical.getValue());
 
         // Set location of eRSD bundle for loading terminology and library logic
-        Endpoint libraryAndTerminologyEndpoint =
+        Endpoint karEndpoint =
             new Endpoint()
-                .setAddress(karBundleFile.getAbsolutePath())
+                // get the kar directory so that the Providers will bundle everything together i.e.
+                // All Kar bundles
+                .setAddress(karBundleFile.getParentFile().getAbsolutePath())
                 .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-        bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
-        bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+        bc.setLibraryEndpoint(karEndpoint);
+        bc.setTerminologyEndpoint(karEndpoint);
+        // Necessary for Cql Evaluation because of CodeSystem Retrieve
+        bc.setDataEndpoint(karEndpoint);
         bc.setLogicExpression(con.getExpression());
         bc.setLibraryProcessor(libraryProcessor);
+        bc.setNormalReportingDuration(null);
         action.addCondition(bc);
-      } else if (con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
-          && (cqlEnabled || fhirpathEnabled)) {
+      } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+          || con.hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
+              && (cqlEnabled || fhirpathEnabled)) {
         Extension ext = con.getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+        if (ext == null) {
+          ext =
+              con.getExpression()
+                  .getExtensionByUrl(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL);
+        }
         Expression exp = (Expression) ext.getValue();
         if (exp != null
             // Expression.ExpressionLanguage.fromCode does not support text/cql-identifier
@@ -729,15 +765,22 @@ public class KarParserImpl implements KarParser {
 
           logger.info(" Found a CQL Expression from an alternative expression extension");
           BsaCqlCondition bc = new BsaCqlCondition();
+          if (libraryCanonical == null && exp.hasReferenceElement()) {
+            libraryCanonical = new CanonicalType(exp.getReference());
+          }
           bc.setUrl(libraryCanonical.getValue());
 
           // Set location of eRSD bundle for loading terminology and library logic
-          Endpoint libraryAndTerminologyEndpoint =
+          Endpoint karEndpoint =
               new Endpoint()
-                  .setAddress(karBundleFile.getAbsolutePath())
+                  // get the kar directory so that the Providers will bundle everything together
+                  // i.e. All Kar bundles
+                  .setAddress(karBundleFile.getParentFile().getAbsolutePath())
                   .setConnectionType(new Coding().setCode("hl7-fhir-files"));
-          bc.setLibraryEndpoint(libraryAndTerminologyEndpoint);
-          bc.setTerminologyEndpoint(libraryAndTerminologyEndpoint);
+          bc.setLibraryEndpoint(karEndpoint);
+          bc.setTerminologyEndpoint(karEndpoint);
+          // Necessary for Cql Evaluation because of CodeSystem Retrieve
+          bc.setDataEndpoint(karEndpoint);
           bc.setLogicExpression(exp);
           bc.setLibraryProcessor(libraryProcessor);
           action.addCondition(bc);
@@ -747,7 +790,23 @@ public class KarParserImpl implements KarParser {
 
           logger.info(" Found a FHIR Path Expression from an alternative expression extension");
           BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          if (planVariableExpression != null) {
+            bc.setVariableExpression(planVariableExpression);
+          }
           bc.setLogicExpression(exp);
+          bc.setExpressionEvaluator(expressionEvaluator);
+          action.addCondition(bc);
+        } else if (con.getExpression() != null
+            && (fromCode(con.getExpression().getLanguage())
+                .equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
+            && fhirpathEnabled) {
+          logger.info(
+              " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
+          BsaFhirPathCondition bc = new BsaFhirPathCondition();
+          if (planVariableExpression != null) {
+            bc.setVariableExpression(planVariableExpression);
+          }
+          bc.setLogicExpression(con.getExpression());
           bc.setExpressionEvaluator(expressionEvaluator);
           action.addCondition(bc);
         } else {
@@ -760,6 +819,9 @@ public class KarParserImpl implements KarParser {
 
         logger.info(" Found a FHIR Path Expression ");
         BsaFhirPathCondition bc = new BsaFhirPathCondition();
+        if (planVariableExpression != null) {
+          bc.setVariableExpression(planVariableExpression);
+        }
         bc.setLogicExpression(con.getExpression());
         bc.setExpressionEvaluator(expressionEvaluator);
         action.addCondition(bc);

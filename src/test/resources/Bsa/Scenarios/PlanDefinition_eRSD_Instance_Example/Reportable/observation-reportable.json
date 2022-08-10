@@ -11,8 +11,8 @@
         "coding": [
             {
                 "system": "http://loinc.org",
-                "code": "32774-2",
-                "display": "Chlamydia sp DNA [Presence] in Genital specimen by NAA with probe detection"
+                "code": "14461-8",
+                "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture"
             }
         ]
     },
@@ -29,9 +29,9 @@
         {
             "coding": [
                 {
-                    "system": "http://hl7.org/fhir/v2/0078",
-                    "code": "NEG",
-                    "display": "Negative"
+                    "system": "http://snomed.info/sct",
+                    "code": "280414007",
+                    "display": "Equivocal result (qualifier value)"
                 }
             ]
         }

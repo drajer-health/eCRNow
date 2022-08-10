@@ -18,7 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 @RunWith(Parameterized.class)
 @TestPropertySource(
     properties = {
-      "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefiltersCqlOnly",
+      "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefilters",
       "fhirpath.enabled=false"
     })
 public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {

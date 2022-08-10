@@ -10,8 +10,12 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.util.BundleUtil;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
-import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.EvaluateMeasureStatus;
+import com.drajer.bsa.kar.action.SubmitReportStatus;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.ScheduleJobConfiguration;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -55,7 +59,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(
     properties = {
       "ignore.timers=true",
-      "report-submission.endpoint=http://localhost:9010/fhir",
+      "report-submission.endpoint=http://localhost:9011/fhir",
       "report-validator.endpoint="
     })
 public class BaseKarsTest extends BaseIntegrationTest {
@@ -73,27 +77,19 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected ApplicationUtils ap;
 
-  protected HealthcareSettingsDao hsDao;
-
-  protected Map<String, BsaTypes.BsaActionStatusType> actions;
+  @Autowired HealthcareSettingsDao hsDao;
 
   @Autowired ApplicationContext applicationContext;
-
-  protected Map<String, Bundle> eicrBundles;
 
   protected ClassLoader classLoader = getClass().getClassLoader();
 
   protected WireMockHelper stubHelper;
 
-  @SuppressWarnings("unchecked")
   @Before
   public void setupNotificationMocking() throws IOException {
-    this.eicrBundles = (Map<String, Bundle>) applicationContext.getBean("eicrBundles");
     this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
     this.ap = applicationContext.getBean(ApplicationUtils.class);
     this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
-    this.actions =
-        (Map<String, BsaTypes.BsaActionStatusType>) applicationContext.getBean("actions");
     this.wireMockServer.resetAll();
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
@@ -118,14 +114,23 @@ public class BaseKarsTest extends BaseIntegrationTest {
       deleteOutputFiles();
       Bundle bundle =
           getNotificationBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
-      this.stubHelper.mockProcessMessageBundle(bundle);
+      Bundle expectedEicr =
+          getExpectedEicrBundle(this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
+      if (expectedEicr != null) {
+        this.stubHelper.mockProcessMessageBundle(expectedEicr);
+        this.stubHelper.mockReceiveEicr(expectedEicr);
+      } else {
+        this.stubHelper.mockProcessMessageBundle(bundle);
+        this.stubHelper.mockReceiveEicr(bundle);
+      }
 
-      notificationReceiver.processNotification(
-          bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
+      List<KarProcessingData> dataList =
+          notificationReceiver.processNotification(
+              bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
 
       Boolean reportBundleGenerated =
           this.reportBundleGenerated(
-              this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
+              dataList, this.testCaseInfo.getName(), this.testCaseInfo.getPlanDefUrl());
 
       if (!reportBundleGenerated && this.testCaseInfo.getExpectedOutcome() == REPORTED) {
         throw new RuntimeException(
@@ -154,7 +159,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
       if ((this.testCaseInfo.getExpectedOutcome() == TRIGGERED_ONLY
               || this.testCaseInfo.getExpectedOutcome() == REPORTED)
           && this.testCaseInfo.getInitialPopulation() != null) {
-        MeasureReport report = this.getMeasureReport();
+        MeasureReport report = this.getMeasureReport(dataList);
         validatePopulation(report, "initial-population", this.testCaseInfo.getInitialPopulation());
 
         if (this.testCaseInfo.getDenominator() != null) {
@@ -186,60 +191,61 @@ public class BaseKarsTest extends BaseIntegrationTest {
         "Test {}/{} succeeded", this.testCaseInfo.getPlanDef(), this.testCaseInfo.getName());
   }
 
-  protected Boolean reportBundleGenerated(String patientId, String planDefUrl) {
-    String submittedActionId = String.format("%s-PlanDefinition/%s", "submit-eicr", planDefUrl);
-    Boolean submitted =
-        validateActionStatus(submittedActionId, BsaTypes.BsaActionStatusType.COMPLETED);
-    String routeAndSendActionId =
-        String.format("%s-PlanDefinition/%s", "route-and-send-eicr", planDefUrl);
-    Boolean sent =
-        validateActionStatus(routeAndSendActionId, BsaTypes.BsaActionStatusType.COMPLETED);
-    return submitted || sent;
+  protected Boolean reportBundleGenerated(
+      List<KarProcessingData> dataList, String patientId, String planDefUrl) {
+    if (dataList == null || dataList.isEmpty()) {
+      return false;
+    }
+    for (KarProcessingData data : dataList) {
+      for (List<BsaActionStatus> actionStatus : data.getActionStatus().values()) {
+        for (BsaActionStatus status : actionStatus) {
+          if (status instanceof SubmitReportStatus
+              && status.getActionStatus().equals(BsaActionStatusType.COMPLETED)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   Bundle getEicrBundle(String planDef) {
-    Bundle eicrBundle = eicrBundles.get("eicr-report-" + planDef);
+    String processMessageUrl = "/fhir/$process-message";
+    List<LoggedRequest> requests =
+        wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
-    if (eicrBundle != null) {
-      return eicrBundle;
-    } else {
-      String processMessageUrl = "/fhir/$process-message";
-      List<LoggedRequest> requests =
-          wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
-
-      if (requests.size() > 0) {
-        try {
-          IBaseResource resource =
-              FhirContext.forCached(FhirVersionEnum.R4)
-                  .newJsonParser()
-                  .parseResource(requests.get(0).getBodyAsString());
-          if (resource instanceof Parameters) {
-            Parameters params = (Parameters) resource;
-            for (ParametersParameterComponent parameter : params.getParameter()) {
-              if (parameter.getName().equals("content")) {
-                if (parameter.getResource() != null
-                    && parameter.getResource().fhirType().equals("Bundle")) {
-                  return (Bundle) parameter.getResource();
-                }
+    if (requests.size() > 0) {
+      try {
+        IBaseResource resource =
+            FhirContext.forCached(FhirVersionEnum.R4)
+                .newJsonParser()
+                .parseResource(requests.get(0).getBodyAsString());
+        if (resource instanceof Parameters) {
+          Parameters params = (Parameters) resource;
+          for (ParametersParameterComponent parameter : params.getParameter()) {
+            if (parameter.getName().equals("content")) {
+              if (parameter.getResource() != null
+                  && parameter.getResource().fhirType().equals("Bundle")) {
+                return (Bundle) parameter.getResource();
               }
             }
-          } else if (resource instanceof Bundle) {
-            return (Bundle) resource;
           }
-
-        } catch (Exception e) {
-          logger.error("Error parsing $process-message request body");
-          return null;
+        } else if (resource instanceof Bundle) {
+          return (Bundle) resource;
         }
-      } else {
-        logger.debug("No $process-message request found.");
+
+      } catch (Exception e) {
+        logger.error("Error parsing $process-message request body");
+        return null;
       }
+    } else {
+      logger.debug("No $process-message request found.");
     }
 
     return null;
   }
 
-  MeasureReport getMeasureReport() {
+  MeasureReport getMeasureReport(List<KarProcessingData> dataList) {
     File mr = new File("target/output/karsMeasureReport_null.json");
 
     if (mr.exists()) {
@@ -247,6 +253,23 @@ public class BaseKarsTest extends BaseIntegrationTest {
         return (MeasureReport) this.fhirContext.newJsonParser().parseResource(fis);
       } catch (Exception e) {
         return null;
+      }
+    } else {
+      if (dataList == null || dataList.isEmpty()) {
+        return null;
+      }
+      for (KarProcessingData data : dataList) {
+        for (List<BsaActionStatus> actionStatus : data.getActionStatus().values()) {
+          for (BsaActionStatus status : actionStatus) {
+            if (status instanceof EvaluateMeasureStatus
+                && status.getActionStatus().equals(BsaActionStatusType.COMPLETED)) {
+              EvaluateMeasureStatus evaluateMeasureStatus = (EvaluateMeasureStatus) status;
+              if (evaluateMeasureStatus.getReport() != null) {
+                return evaluateMeasureStatus.getReport();
+              }
+            }
+          }
+        }
       }
     }
 
@@ -287,8 +310,12 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
     for (Map.Entry<String, List<IBaseResource>> entry : resourceMap.entrySet()) {
       // Mock a search for all resources of a given type.
-      String mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
+      String mockQueryString =
+          String.format("/fhir/%s?patient=Patient/%s", entry.getKey(), patientId);
       stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
+      mockQueryString = String.format("/fhir/%s?patient=%s", entry.getKey(), patientId);
+      stubHelper.mockFhirSearch(mockQueryString, entry.getValue());
+      // TODO: create stub that lets date based tests update stale dates.
       for (IBaseResource r : entry.getValue()) {
         // Mock a read for a specific instance of a resource
         String id = r.getIdElement().getIdPart();
@@ -365,6 +392,28 @@ public class BaseKarsTest extends BaseIntegrationTest {
             "{ \"access_token\": \"%s\", \n\"expires_in\": \"%s\" }", accessToken, expireTime));
   }
 
+  private Bundle getExpectedEicrBundle(String planDef, String testCase) {
+    java.net.URL url =
+        DiabetesECSDTest.class
+            .getClassLoader()
+            .getResource("Bsa/Scenarios/" + planDef + "/" + testCase);
+    File rootFile = new File(url.getPath());
+
+    File[] bundles = rootFile.listFiles((FilenameFilter) new WildcardFileFilter("*eicr.json"));
+    if (bundles == null || bundles.length == 0) {
+      logger.debug("Did not find expected eicr for test:" + testCase);
+      return null;
+    }
+
+    if (bundles.length > 1) {
+      throw new RuntimeException(
+          "Found multiple notification bundles for test case: " + this.testCaseInfo.getName());
+    }
+
+    String absolutePath = bundles[0].getAbsolutePath();
+    return ap.readBundleFromFile(absolutePath);
+  }
+
   private Bundle getNotificationBundle(String planDef, String testCase) {
     java.net.URL url =
         DiabetesECSDTest.class
@@ -412,18 +461,11 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   protected void validateBundle(Bundle bundle, Boolean shouldHaveMeasureReport) {
     if (shouldHaveMeasureReport) {
-      List<MeasureReport> mrs =
-          BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
+      List<MeasureReport> mrs = null;
+      if (bundle != null) {
+        mrs = BundleUtil.toListOfResourcesOfType(this.fhirContext, bundle, MeasureReport.class);
+      }
       assertEquals("Did not find expected MeasureReport", 1, mrs.size());
     }
-  }
-
-  protected Boolean validateActionStatus(
-      String actionId, BsaTypes.BsaActionStatusType actionStatus) {
-    if (actions != null) {
-      if (actions.get(actionId) != null) {
-        return actions.get(actionId).equals(actionStatus);
-      } else return false;
-    } else return false;
   }
 }

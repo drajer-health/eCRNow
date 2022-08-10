@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-start"
+                "reference" : "http://localhost:9011/fhir/Subscription/encounter-start"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/ex-trigger-in-encounter-1",
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/ex-trigger-in-encounter-1",
         "resource" : {
           "resourceType": "Encounter",
           "id": "ex-trigger-in-encounter-1",
@@ -90,8 +90,8 @@
             "reference": "ex-trigger-in"
           },
           "period": {
-            "start": "2020-01-01T11:00:00-07:00",
-            "end": "2020-01-01T12:00:00-07:00"
+            "start": "2022-08-03T11:00:00-07:00",
+            "end": "2022-08-03T12:00:00-07:00"
           }
         },
         "request" : {

@@ -26,25 +26,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
 import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
-import org.hl7.fhir.r4.model.MessageHeader;
-import org.hl7.fhir.r4.model.ParameterDefinition;
-import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent;
 import org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetComposeComponent;
@@ -83,7 +73,7 @@ public class BsaServiceUtils {
   boolean saveDebugToFiles;
 
   @Autowired(required = false)
-  Map<String, BsaTypes.BsaActionStatusType> actions;
+  Map<String, BsaActionStatus> actions;
 
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
@@ -134,11 +124,48 @@ public class BsaServiceUtils {
         dataRequirement.getCodeFilter();
     List<DataRequirement.DataRequirementDateFilterComponent> dateFilters =
         dataRequirement.getDateFilter();
+    List<CanonicalType> profileFilters = dataRequirement.getProfile();
 
     Set<Resource> filtered = filterByCodeFilters(resources, codeFilters, kd);
     filtered = filterByDateFilters(filtered, dateFilters, kd);
+    filtered = filterByProfileFilters(filtered, profileFilters, kd);
     // gather all codes that
     return filtered;
+  }
+
+  private static Set<Resource> filterByProfileFilters(
+      Set<Resource> resources, List<CanonicalType> profileFilters, KarProcessingData kd) {
+    Set<Resource> filtered = new HashSet<Resource>();
+    for (Resource res : resources) {
+      boolean matches = true;
+      for (CanonicalType profile : profileFilters) {
+        if (!matchesProfile(res, profile, kd)) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        logger.info("Resource matches filter {}", res.getId());
+        filtered.add(res);
+      }
+    }
+    return filtered;
+  }
+
+  private static boolean matchesProfile(
+      Resource res, CanonicalType drProfile, KarProcessingData kd) {
+    if (drProfile == null) {
+      return true;
+    } else if (!res.hasMeta() || !res.getMeta().hasProfile()) {
+      return false;
+    } else {
+      return !res.getMeta()
+          .getProfile()
+          .stream()
+          .filter(resProfile -> resProfile.getValueAsString().equals(drProfile.getValueAsString()))
+          .collect(Collectors.toList())
+          .isEmpty();
+    }
   }
 
   public static Set<Resource> filterByCodeFilters(
@@ -335,7 +362,10 @@ public class BsaServiceUtils {
 
     Pair<Boolean, Pair<String, String>> retVal = null;
 
-    if (coding != null && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
+    if (coding != null
+        && coding.hasCode()
+        && coding.hasSystem()
+        && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
       Pair<String, String> matchedCodeInfo = new Pair<>(coding.getSystem(), coding.getCode());
       retVal = new Pair<>(true, matchedCodeInfo);
     }
@@ -543,24 +573,6 @@ public class BsaServiceUtils {
 
       saveDataToFile(data, fileName);
     }
-  }
-
-  public void saveActionStatusState(Map<String, BsaActionStatus> actionStatus) {
-
-    logger.info(" ToDo : Not sure what this method is for ");
-
-    /* if (actions != null) {
-      logger.info("Found actions map saving action state....");
-      for (Entry<String, List<BsaActionStatus> > entry : actionStatus.entrySet()) {
-
-    	  if(actions.containsKey(entry.getKey())) {
-    		  actions.get(entry.getKey()).addAll(entry.getValue());
-    	  }
-        actions.put(entry.getValue().getActionId(), entry.getValue().getActionStatus());
-      }
-    } else {
-      logger.info("No action map found skipping action state save....");
-    } */
   }
 
   /**

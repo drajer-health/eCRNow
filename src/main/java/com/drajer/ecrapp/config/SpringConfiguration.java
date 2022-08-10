@@ -22,7 +22,9 @@ import org.springframework.context.annotation.Import;
       "com.drajer.cda",
       "com.drajer.bsa.utils",
       "com.drajer.bsa.kar.action",
+      "com.drajer.bsa.kar.model",
       "com.drajer.bsa.service",
+      "com.drajer.bsa.ehr.service",
       "com.drajer.bsa.routing",
       "com.drajer.bsa"
     })

@@ -1,23 +1,18 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.kar.condition.FhirPathProcessor;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
-import java.util.HashMap;
 import java.util.Map;
-import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EvaluateCondition extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateCondition.class);
-
-  private FhirPathProcessor fhirPathProcessor;
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -40,12 +35,11 @@ public class EvaluateCondition extends BsaAction {
 
     } else {
 
+      logger.info(" No Queries, so just get data by Resource Type ");
+
       // Try to Get the Resources that need to be retrieved using Resource Type since queries are
       // not specified.
-      HashMap<String, ResourceType> resourceTypes = getInputResourceTypes();
-
-      // Get necessary data to process.
-      ehrService.getFilteredData(data, resourceTypes);
+      ehrService.getFilteredData(data, getInputData());
     }
 
     // Create the necessary parameters for evaluation of the data using FHIR Path processor.

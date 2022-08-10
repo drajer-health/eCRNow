@@ -217,6 +217,17 @@ public class WireMockHelper {
                 .withBody(getFhirParser().encodeResourceToString(bundle))));
   }
 
+  public void mockReceiveEicr(IBaseBundle bundle) {
+    String path = "/api/receiveEicr";
+    MappingBuilder builder = post(urlEqualTo(path));
+    wireMockServer.stubFor(
+        builder.willReturn(
+            aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(getFhirParser().encodeResourceToString(bundle))));
+  }
+
   public IBaseBundle makeBundle(List<? extends IBaseResource> resources) {
     return makeBundle(resources.toArray(new IBaseResource[resources.size()]));
   }

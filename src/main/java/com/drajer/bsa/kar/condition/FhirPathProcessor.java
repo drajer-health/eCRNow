@@ -13,12 +13,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
@@ -50,6 +52,30 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     if (params == null) {
 
       params = resolveInputParameters(act.getInputData(), kd, act);
+    }
+
+    for (BundleEntryComponent entry : kd.getNotificationBundle().getEntry()) {
+      if (entry.hasResource()
+          && entry.getResource().getResourceType().equals(ResourceType.Encounter)) {
+        ParametersParameterComponent paramComponent = new ParametersParameterComponent();
+        paramComponent.setResource(entry.getResource());
+        paramComponent.setName("%encounter");
+        params.addParameter(paramComponent);
+      }
+    }
+    if (cond instanceof BsaFhirPathCondition) {
+      Expression variableExpression = ((BsaFhirPathCondition) cond).getVariableExpression();
+      if (variableExpression != null
+          && (variableExpression.hasLanguage()
+              && variableExpression.getLanguage().equals("text/fhirpath"))) {
+        ParametersParameterComponent paramComponent = new ParametersParameterComponent();
+        Parameters variableResult =
+            (Parameters) expressionEvaluator.evaluate(variableExpression.getExpression(), null);
+        Type value = variableResult.getParameter("return");
+        paramComponent.setName("%" + variableExpression.getName());
+        paramComponent.setValue(value);
+        params.addParameter(paramComponent);
+      }
     }
 
     logger.info(" Parameters size = {}", params.getParameter().size());

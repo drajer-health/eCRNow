@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-end"
+                "reference" : "http://localhost:9011/fhir/Subscription/encounter-end"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/seen-patients-sde-in-enc",
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/seen-patients-sde-in-enc",
         "resource" : {
           "resourceType": "Encounter",
           "id": "seen-patients-sde-in-enc",
@@ -86,7 +86,7 @@
             }
           ],
           "subject": {
-            "reference": "Patient/seen-patients-sde"
+            "reference": "Patient/seen-patients-sde-in"
           },
           "period": {
             "start": "2019-06-07T11:01:33-06:00",

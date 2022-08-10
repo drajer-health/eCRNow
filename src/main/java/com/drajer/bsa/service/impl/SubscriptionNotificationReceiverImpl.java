@@ -13,8 +13,10 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.SubscriptionUtils;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +46,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
   @Autowired KarProcessor karProcessor;
 
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
@@ -52,9 +56,10 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
   /** The method that processes the notification. */
   @Override
-  public void processNotification(
+  public List<KarProcessingData> processNotification(
       Bundle notificationBundle, HttpServletRequest request, HttpServletResponse response) {
 
+    List<KarProcessingData> dataList = new ArrayList<KarProcessingData>();
     logger.info(" Stating to process notification ");
 
     NotificationContext nc =
@@ -98,8 +103,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
 
                 KnowledgeArtifact kar =
-                    KnowledgeArtifactRepositorySystem.getInstance()
-                        .getById(ks.getVersionUniqueKarId());
+                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
 
                 if (kar != null) {
 
@@ -126,6 +130,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   }
 
                   karProcessor.applyKarForNotification(kd);
+                  dataList.add(kd);
                 } else {
 
                   logger.error(
@@ -165,5 +170,6 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     }
 
     logger.info(" End processing notification ");
+    return dataList;
   }
 }
