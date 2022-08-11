@@ -55,7 +55,8 @@ public class BsaScheduler {
         schedulerConfig
             .sampleOneTimeJob()
             .instance(
-                jobId, new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, jobtype, mdc)),
+                jobId,
+                new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, jobtype, mdc)),
         t);
   }
 }

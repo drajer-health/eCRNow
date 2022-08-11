@@ -2,7 +2,6 @@ package com.drajer.bsa.scheduler;
 
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.BsaJobType;
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
@@ -94,13 +93,11 @@ public class ScheduledJobData implements Serializable {
     this.xRequestId = xRequestId;
   }
 
-public BsaJobType getJobType() {
-	return jobType;
-}
+  public BsaJobType getJobType() {
+    return jobType;
+  }
 
-public void setJobType(BsaJobType jobType) {
-	this.jobType = jobType;
-}
-  
-  
+  public void setJobType(BsaJobType jobType) {
+    this.jobType = jobType;
+  }
 }

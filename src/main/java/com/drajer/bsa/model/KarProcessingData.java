@@ -160,7 +160,7 @@ public class KarProcessingData {
 
   /** The attribute holds the context encounter */
   private Encounter contextEncounter;
-  
+
   /** The type of job to be executed on the infrastructure */
   private BsaJobType jobType;
 
@@ -588,14 +588,14 @@ public class KarProcessingData {
   }
 
   public BsaJobType getJobType() {
-	return jobType;
-}
+    return jobType;
+  }
 
-public void setJobType(BsaJobType jobType) {
-	this.jobType = jobType;
-}
+  public void setJobType(BsaJobType jobType) {
+    this.jobType = jobType;
+  }
 
-public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
+  public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
 
     boolean returnVal = false;
 

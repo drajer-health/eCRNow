@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -256,18 +255,18 @@ public abstract class BsaAction {
 
     data.addParameters(actionId, params);
   }
-  
-  public void scheduleJob(UUID karExecutionStateId, String actionId, ActionType actType,
-		  Instant t, String xRequestId, BsaJobType jobtype, Map<String,String> contextMap) {
-	 
-          scheduler.scheduleJob(
-              karExecutionStateId,
-              actionId,
-              actType,
-              t,
-              xRequestId,
-              jobtype,
-              contextMap);
+
+  public void scheduleJob(
+      UUID karExecutionStateId,
+      String actionId,
+      ActionType actType,
+      Instant t,
+      String xRequestId,
+      BsaJobType jobtype,
+      Map<String, String> contextMap) {
+
+    scheduler.scheduleJob(
+        karExecutionStateId, actionId, actType, t, xRequestId, jobtype, contextMap);
   }
 
   protected BsaAction() {
