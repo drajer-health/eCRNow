@@ -6,6 +6,7 @@ import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.bsa.utils.BsaServiceUtils;
@@ -159,6 +160,9 @@ public class KarProcessingData {
 
   /** The attribute holds the context encounter */
   private Encounter contextEncounter;
+  
+  /** The type of job to be executed on the infrastructure */
+  private BsaJobType jobType;
 
   public void addActionOutput(String actionId, Resource res) {
 
@@ -583,7 +587,15 @@ public class KarProcessingData {
     this.previousTriggerMatchStatus = previousTriggerMatchStatus;
   }
 
-  public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
+  public BsaJobType getJobType() {
+	return jobType;
+}
+
+public void setJobType(BsaJobType jobType) {
+	this.jobType = jobType;
+}
+
+public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
 
     boolean returnVal = false;
 

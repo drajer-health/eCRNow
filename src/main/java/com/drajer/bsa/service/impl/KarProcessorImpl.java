@@ -3,21 +3,28 @@ package com.drajer.bsa.service.impl;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.dao.impl.PublicHealthMessagesDaoImpl;
 import com.drajer.bsa.ehr.service.EhrQueryService;
+import com.drajer.bsa.interfaces.InfrastructureLoadManagerInterface;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthMessage;
+import com.drajer.bsa.scheduler.BsaScheduler;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.NotificationContextService;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import com.github.kagkarlsson.scheduler.Scheduler;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +67,14 @@ public class KarProcessorImpl implements KarProcessor {
   @Autowired HealthcareSettingsService hsService;
 
   @Autowired PublicHealthMessagesDaoImpl phDao;
+  
+  @Autowired InfrastructureLoadManagerInterface loadManager;
+  
+  @Value("${enable.throttling:false}")
+  Boolean throttlingEnabled;
+  
+  @Value("${throttle.recheck.interval:5}")
+  Integer throttleRecheckInterval;
 
   @Autowired
   @Qualifier("jsonParser")
@@ -79,6 +95,7 @@ public class KarProcessorImpl implements KarProcessor {
     data.setExecutionSequenceId(nc.getId().toString());
     data.setEhrQueryService(ehrInterface);
     data.setKarExecutionStateService(karExecutionStateService);
+    data.setJobType(BsaJobType.IMMEDIATE_REPORTING);
 
     // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
     PublicHealthMessage phm = getPublicHealthMessage(nc, data);
@@ -151,7 +168,9 @@ public class KarProcessorImpl implements KarProcessor {
     if (state != null) {
 
       NotificationContext nc = ncService.getNotificationContext(state.getNcId());
-
+      
+      if(nc != null) {
+    	  
       // Setup Processing data
       kd.setExecutionSequenceId(data.getJobId());
       kd.setNotificationContext(nc);
@@ -159,6 +178,7 @@ public class KarProcessorImpl implements KarProcessor {
       kd.setKar(knowledgeArtifactRepositorySystem.getById(state.getKarUniqueId()));
       kd.setxRequestId(data.getxRequestId());
       kd.setxCorrelationId(nc.getxCorrelationId());
+      kd.setJobType(data.getJobType());
 
       // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
       PublicHealthMessage phm = getPublicHealthMessage(nc, kd);
@@ -204,12 +224,16 @@ public class KarProcessorImpl implements KarProcessor {
           BsaAction action = kd.getKar().getAction(data.getActionId());
 
           if (action != null) {
-            logger.info(
-                " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
-                action.getActionId(),
-                action.getType());
 
             try {
+            	
+            	if(!throttlingEnabled || 
+            			loadManager.canExecuteJob(nc.getThrottleContext(), data.getJobType())) {
+            		
+            		logger.info(
+                            " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
+                            action.getActionId(),
+                            action.getType());
               action.process(kd, ehrInterface);
 
               saveDataForDebug(kd);
@@ -219,6 +243,25 @@ public class KarProcessorImpl implements KarProcessor {
 
               // Get rid of the KarExecutionState entry that was created for the job.
               karExecutionStateService.delete(state);
+            	}
+            	else {
+            		logger.info(
+              	          "Cannot process job since the  infrastructure is busy, reschedule the job {} after {} minutes",
+              	          data.getKarExecutionStateId(), throttleRecheckInterval);
+          		  
+          		  Instant jobTime = Instant.now().plus(throttleRecheckInterval, ChronoUnit.MINUTES);
+          		  action.scheduleJob(
+          				  data.getKarExecutionStateId(),
+          				  action.getActionId(),
+          				  action.getType(),
+          				  jobTime,
+          				  data.getxRequestId(),
+          				  data.getJobType(),
+          				  data.getMdcContext());
+          				  
+          				  
+          				  
+            	}
 
             } catch (Exception e) {
 
@@ -237,6 +280,14 @@ public class KarProcessorImpl implements KarProcessor {
 
         logger.error(
             "Cannot process job properly as Healthcare Setting and KarStatus are invalid.");
+      }
+
+      
+      } // nc != null
+      else {
+    	  logger.error(
+    	          "Cannot process job properly as Notification Context {} is not found.",
+    	          data.getKarExecutionStateId());
       }
     } else {
       logger.error(

@@ -4,7 +4,9 @@ import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.BsaScheduler;
@@ -18,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -195,6 +199,7 @@ public abstract class BsaAction {
                   ract.getAction().getType(),
                   t,
                   kd.getxRequestId(),
+                  kd.getJobType(),
                   MDC.getCopyOfContextMap());
             else {
               logger.info(
@@ -250,6 +255,19 @@ public abstract class BsaAction {
     }
 
     data.addParameters(actionId, params);
+  }
+  
+  public void scheduleJob(UUID karExecutionStateId, String actionId, ActionType actType,
+		  Instant t, String xRequestId, BsaJobType jobtype, Map<String,String> contextMap) {
+	 
+          scheduler.scheduleJob(
+              karExecutionStateId,
+              actionId,
+              actType,
+              t,
+              xRequestId,
+              jobtype,
+              contextMap);
   }
 
   protected BsaAction() {
