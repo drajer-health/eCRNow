@@ -78,11 +78,12 @@ public class PatientLaunchController {
       HttpServletResponse response) {
 
     logger.info(
-        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}",
+        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
         launchContext.getFhirServerURL(),
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
-        request.getHeader("X-Request-ID"));
+        request.getHeader("X-Request-ID"),
+        launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
 
@@ -97,7 +98,77 @@ public class PatientLaunchController {
 
         Bundle nb = getNotificationBundle(launchContext, hs);
 
-        notificationReceiver.processNotification(nb, request, response);
+        notificationReceiver.processNotification(nb, request, response, launchContext);
+
+      } else {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "No Request Id set in the header. Add X-Request-ID parameter for request tracking. ");
+      }
+
+    } else {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Unrecognized healthcare setting FHIR URL ");
+    }
+
+    return "Patient Instance launched for processing successfully";
+  }
+
+  /**
+   * The method is the API to re-launch a patient instance within the app for processing. The
+   * re-launch API is intended to be used when the original patientId/encounterId combination has
+   * bee completed either by the eCRNow App or by the EHR. This is intended to be used for long
+   * running encounters. In such cases, the encounters may be open for a long duration of time and
+   * the eCRNow App will suspend reporting for the encounter after a configurable time period. Once
+   * it is suspended, any changes to the patient record for the patient/encounter combination will
+   * not be detected and reported. In these cases, the re-launch API can be used to perform the
+   * reporting.
+   *
+   * <p>NOTE: The re-launch API is a one shot check to report on the patient/encounter combination
+   * and does not setup any future timers to keep checking and reporting. So EHR vendors are advised
+   * to invoke, when their internal workflows detect specific data such as diagnosis,labresults etc
+   * have been changed on a closed or long running encounter.
+   *
+   * <p>In addition to the parameters listed below, the following HTTP headers are expected to be
+   * populated. 'X-Request-ID' - This can be used for logging across the client and server. This is
+   * expected to be a GUID. 'X-Correlation-ID' - This can be used for correlation across clients and
+   * server request / responses. This is expected to be a GUID.
+   *
+   * @param launchContext - Contains the context of the launch.
+   * @param request - Request parameters
+   * @param response - Response parameters.
+   * @return
+   * @throws IOException
+   */
+  @CrossOrigin
+  @PostMapping(value = "/api/reLaunchPatient")
+  public String reLaunchPatient(
+      @RequestBody PatientLaunchContext launchContext,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+
+    logger.info(
+        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+        launchContext.getFhirServerURL(),
+        launchContext.getPatientId(),
+        launchContext.getEncounterId(),
+        request.getHeader("X-Request-ID"),
+        launchContext.getThrottleContext());
+
+    logger.info(FHIR_VERSION);
+
+    HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
+
+    // If the healthcare setting exists
+    if (hs != null) {
+
+      String requestId = request.getHeader("X-Request-ID");
+
+      if (!StringUtils.isEmpty(requestId)) {
+
+        Bundle nb = getNotificationBundle(launchContext, hs);
+
+        notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
 
       } else {
         throw new ResponseStatusException(

@@ -120,7 +120,7 @@ public class KarParserImpl implements KarParser {
   @Value("${measure-reporting-period.end}")
   String measurePeriodEnd;
 
-  @Value("${cql.enabled:true}")
+  @Value("${cql.enabled:false}")
   boolean cqlEnabled;
 
   @Value("${fhirpath.enabled:true}")

@@ -10,6 +10,7 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.SubscriptionUtils;
@@ -57,7 +58,10 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
   /** The method that processes the notification. */
   @Override
   public List<KarProcessingData> processNotification(
-      Bundle notificationBundle, HttpServletRequest request, HttpServletResponse response) {
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext) {
 
     List<KarProcessingData> dataList = new ArrayList<KarProcessingData>();
     logger.info(" Stating to process notification ");
@@ -171,5 +175,15 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
     logger.info(" End processing notification ");
     return dataList;
+  }
+
+  @Override
+  public List<KarProcessingData> processRelaunchNotification(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

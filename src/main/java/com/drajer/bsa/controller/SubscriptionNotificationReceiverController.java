@@ -1,6 +1,7 @@
 package com.drajer.bsa.controller;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,7 +52,8 @@ public class SubscriptionNotificationReceiverController {
   public ResponseEntity<Object> processNotification(
       @RequestBody String notificationBundle,
       HttpServletRequest request,
-      HttpServletResponse response) {
+      HttpServletResponse response,
+      PatientLaunchContext launchContext) {
 
     if (notificationBundle != null) {
 
@@ -63,7 +65,7 @@ public class SubscriptionNotificationReceiverController {
 
         logger.info(" Successfully parsed incoming notification as bundle ");
 
-        subscriptionProcessor.processNotification(bund, request, response);
+        subscriptionProcessor.processNotification(bund, request, response, launchContext);
 
         logger.info(" Finished processing notification ");
 
