@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.Dstu2FhirData;
@@ -317,11 +318,14 @@ public class Dstu2CdaResultGenerator {
                     Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
                     // For Connectathon, until we get the right test data finish testing.
-                    String vs = "2.16.840.1.114222.4.11.7508";
-                    String vsVersion = "19/05/2016";
                     lrEntry.append(
                         CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                            parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+                            parts[1],
+                            csd.getValue0(),
+                            csd.getValue1(),
+                            CdaGeneratorConstants.RCTC_OID,
+                            ActionRepo.getInstance().getRctcVersion(),
+                            ""));
 
                     // Adding one is sufficient and only one is possible according to Schema.
                   });

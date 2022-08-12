@@ -229,6 +229,34 @@ public class LoadingQueryDstu2Bundle {
       logger.error("Error in getting Travel Observation Data", e);
     }
 
+    // Get Social History Observations (Occupation)
+    try {
+      List<Observation> observationList =
+          dstu2ResourcesData.getSocialHistoryObservationDataOccupation(
+              context, client, launchDetails, dstu2FhirData, encounter, start, end);
+      dstu2FhirData.setOccupationObs(observationList);
+      for (Observation observation : observationList) {
+        Entry observationsEntry = new Entry().setResource(observation);
+        bundle.addEntry(observationsEntry);
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting Social History Observation(Occupation) Data", e);
+    }
+
+    // Get Pregnancy Conditions
+    try {
+      List<Condition> conditionList =
+          dstu2ResourcesData.getPregnancyConditions(
+              context, client, launchDetails, dstu2FhirData, encounter, start, end);
+      dstu2FhirData.setPregnancyConditions(conditionList);
+      for (Condition condition : conditionList) {
+        Entry conditionEntry = new Entry().setResource(condition);
+        bundle.addEntry(conditionEntry);
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting Pregnancy Conditions", e);
+    }
+
     // Get MedicationAdministration for Patients and laboratory category (Write a
     // method).
     // Filter the MedicationAdministrations based on encounter Reference if

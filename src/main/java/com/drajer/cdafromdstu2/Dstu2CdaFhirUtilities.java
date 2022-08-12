@@ -397,6 +397,8 @@ public class Dstu2CdaFhirUtilities {
                                 CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM))
                     && c.getCode() != null
                     && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
                         || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
                         || c.getCode()
                             .contentEquals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE))) {
@@ -565,7 +567,14 @@ public class Dstu2CdaFhirUtilities {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());
 
-          if (!StringUtils.isEmpty(csd.getValue0())) codes.add(code);
+          if (!StringUtils.isEmpty(csd.getValue0())) {
+            codes.add(code);
+          } else {
+            Pair<String, String> csd2 =
+                CdaGeneratorConstants.getCodeSystemFromUrlForDstu2(code.getSystem());
+
+            if (!StringUtils.isEmpty(csd2.getValue0())) codes.add(code);
+          }
         }
       }
     }
@@ -704,6 +713,11 @@ public class Dstu2CdaFhirUtilities {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+          if (csd != null && (csd.getValue0().isEmpty() || csd.getValue1().isEmpty())) {
+            logger.debug(" Try using the DSTU2 map ");
+            csd = CdaGeneratorConstants.getCodeSystemFromUrlForDstu2(c.getSystem());
+          }
           sb.append(
               CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                   c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -1340,5 +1354,231 @@ public class Dstu2CdaFhirUtilities {
     }
 
     return new Pair<>(d, t);
+  }
+
+  public static String getStringForType(IDatatype dt) {
+
+    if (dt != null) {
+
+      StringBuilder val = new StringBuilder();
+      if (dt instanceof CodingDt) {
+        CodingDt cd = (CodingDt) dt;
+
+        val.append(getStringForCoding(cd));
+
+      } else if (dt instanceof CodeableConceptDt) {
+
+        CodeableConceptDt cd = (CodeableConceptDt) dt;
+
+        if (!StringUtils.isEmpty(cd.getText())) {
+          val.append(cd.getText());
+        } else {
+          List<CodingDt> cds = cd.getCoding();
+          Boolean first = true;
+
+          for (CodingDt c : cds) {
+
+            if (!first) {
+
+              val.append(CdaGeneratorConstants.SPACE)
+                  .append(CdaGeneratorConstants.PIPE)
+                  .append(CdaGeneratorConstants.SPACE);
+            }
+            first = false;
+            val.append(getStringForCoding(c));
+          }
+        }
+
+      } else if (dt instanceof QuantityDt) {
+
+        QuantityDt qt = (QuantityDt) dt;
+
+        val.append(getStringForQuantity(qt));
+
+      } else if (dt instanceof DateTimeDt) {
+
+        DateTimeDt d = (DateTimeDt) dt;
+
+        val.append(d.getValueAsString());
+
+      } else if (dt instanceof TimingDt) {
+
+        logger.debug("Found an instance of timing for creating string ");
+        TimingDt t = (TimingDt) (dt);
+        if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+
+          logger.debug("Found the bounds element for creating string ");
+
+          String v = getStringForType(t.getRepeat().getBounds());
+          val.append(v);
+        }
+
+      } else if (dt instanceof PeriodDt) {
+        PeriodDt pt = (PeriodDt) dt;
+
+        logger.debug("Found the Period element for creating string");
+        if (pt.getStart() != null && pt.getEnd() != null) {
+          val.append(pt.getStart().toString())
+              .append(CdaGeneratorConstants.PIPE)
+              .append(pt.getEnd().toString());
+        } else if (pt.getStart() != null) {
+          val.append(pt.getStart().toString());
+        } else {
+          val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
+        }
+      } else if (dt instanceof CodeDt) {
+
+        CodeDt cd = (CodeDt) dt;
+
+        val.append(cd.getValue());
+      } else if (dt instanceof StringDt) {
+
+        StringDt st = (StringDt) dt;
+
+        val.append(st.getValue());
+      }
+
+      logger.debug("Printing the class name {} and value {}", dt.getClass(), val);
+      return val.toString();
+    }
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getStringForCoding(CodingDt cd) {
+
+    String val = "";
+    if (cd != null) {
+
+      if (!StringUtils.isEmpty(cd.getDisplay())) {
+        val += cd.getDisplay();
+      } else if (cd.getCodeElement() != null && cd.getSystemElement() != null) {
+
+        val +=
+            cd.getSystemElement().getValue()
+                + CdaGeneratorConstants.PIPE
+                + cd.getCodeElement().getValue();
+      }
+    }
+
+    return val;
+  }
+
+  public static String getStringForQuantity(QuantityDt qt) {
+
+    String val = "";
+
+    if (qt != null
+        && qt.getValueElement() != null
+        && qt.getSystemElement() != null
+        && qt.getUnit() != null) {
+
+      val +=
+          qt.getValueElement().getValueAsString()
+              + CdaGeneratorConstants.PIPE
+              + qt.getSystemElement().getValueAsString()
+              + CdaGeneratorConstants.PIPE
+              + qt.getUnit();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    return val;
+  }
+
+  public static String getXmlForType(IDatatype dt, String elName, Boolean valFlag) {
+
+    String val = "";
+    if (dt != null) {
+
+      if (dt instanceof CodingDt) {
+        CodingDt cd = (CodingDt) dt;
+
+        List<CodingDt> cds = new ArrayList<>();
+        cds.add(cd);
+        if (!valFlag) val += getCodingXml(cds, elName);
+        else val += getCodingXmlForValue(cds, elName);
+
+      } else if (dt instanceof CodeableConceptDt) {
+
+        CodeableConceptDt cd = (CodeableConceptDt) dt;
+
+        List<CodingDt> cds = cd.getCoding();
+
+        if (!valFlag) val += getCodingXml(cds, elName);
+        else val += getCodingXmlForValue(cds, elName);
+
+      } else if (dt instanceof QuantityDt) {
+
+        QuantityDt qt = (QuantityDt) dt;
+
+        val += getQuantityXml(qt, elName, valFlag);
+
+      } else if (dt instanceof DateTimeDt) {
+
+        DateTimeDt d = (DateTimeDt) dt;
+
+        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
+
+      } else if (dt instanceof PeriodDt) {
+        PeriodDt pt = (PeriodDt) dt;
+
+        val += getPeriodXml(pt, elName);
+      } else if (dt instanceof TimingDt) {
+
+        TimingDt t = (TimingDt) (dt);
+        if (t.getRepeat() != null && t.getRepeat().getBounds() != null) {
+
+          logger.debug("Found the bounds element for creating xml");
+
+          String v = getXmlForType(t.getRepeat().getBounds(), elName, valFlag);
+          val += v;
+        }
+      } else if (dt instanceof CodeDt) {
+
+        CodeDt cd = (CodeDt) dt;
+        if (!valFlag) val += CdaGeneratorUtils.getXmlForCD(elName, cd.getValue());
+        else val += CdaGeneratorUtils.getXmlForValueString(cd.getValue());
+      } else if (dt instanceof StringDt) {
+
+        StringDt st = (StringDt) dt;
+        if (!valFlag) val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
+        else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
+      }
+
+      logger.debug("Printing the class name {}", dt.getClass());
+      return val;
+    }
+
+    if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
+    else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
+
+    return val;
+  }
+
+  public static String getCombinationStringForCodeSystem(
+      CodeableConceptDt code, IDatatype value, String codeSystemUrl, Boolean csOptional) {
+
+    Pair<String, Boolean> codeString = new Pair<>("", false);
+    if (code != null) {
+
+      codeString = getCodeableConceptDisplayForCodeSystem(code, codeSystemUrl, csOptional);
+    }
+
+    Pair<String, Boolean> valueString = new Pair<>("", false);
+    if (value instanceof CodeableConceptDt) {
+
+      CodeableConceptDt vCode = (CodeableConceptDt) value;
+      valueString = getCodeableConceptDisplayForCodeSystem(vCode, codeSystemUrl, csOptional);
+    } else if (value instanceof CodingDt) {
+      CodingDt vCd = (CodingDt) value;
+      List<CodingDt> cds = new ArrayList<>();
+      cds.add(vCd);
+      valueString = getCodingDisplayForCodeSystem(cds, codeSystemUrl, csOptional);
+    } else if (value instanceof StringDt) {
+      StringDt st = (StringDt) value;
+      valueString.setAt0(st.getValue());
+    }
+
+    return codeString.getValue0() + CdaGeneratorConstants.HYPHEN + valueString.getValue0();
   }
 }

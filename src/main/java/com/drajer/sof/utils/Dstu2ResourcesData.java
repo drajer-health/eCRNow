@@ -2,6 +2,7 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
@@ -341,7 +342,106 @@ public class Dstu2ResourcesData {
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = filterObservation(bundle, encounter, start, end);
 
+    for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
+      Bundle travelHisWithSNOMEDCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  "Observation",
+                  travelSnomedCode,
+                  QueryConstants.SNOMED_CODE_SYSTEM);
+      List<Observation> travelobs = new ArrayList<>();
+      travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
+
+      if (!travelobs.isEmpty()) {
+        observations.addAll(travelobs);
+      }
+    }
+
     return observations;
+  }
+
+  public List<Observation> getSocialHistoryObservationDataOccupation(
+      FhirContext context,
+      IGenericClient client,
+      LaunchDetails launchDetails,
+      Dstu2FhirData dstu2FhirData,
+      Encounter encounter,
+      Date start,
+      Date end) {
+    logger.trace("Get Social History Observation Data (Occupation)");
+    List<Observation> observations = new ArrayList<>();
+    for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
+      Bundle occupationCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  "Observation",
+                  occupationCode,
+                  QueryConstants.SNOMED_CODE_SYSTEM);
+      if (occupationCodesbundle != null) {
+
+        for (Entry entryComp : occupationCodesbundle.getEntry()) {
+          observations.add((Observation) entryComp.getResource());
+        }
+      }
+    }
+
+    for (String occupationCode : QueryConstants.getOccupationLoincCodes()) {
+      Bundle occupationCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  "Observation",
+                  occupationCode,
+                  QueryConstants.LOINC_CODE_SYSTEM);
+
+      if (occupationCodesbundle != null) {
+
+        for (Entry entryComp : occupationCodesbundle.getEntry()) {
+          observations.add((Observation) entryComp.getResource());
+        }
+      }
+    }
+    logger.info("Filtered Social History Occupation Observations ----> {}", observations.size());
+    return observations;
+  }
+
+  public List<Condition> getPregnancyConditions(
+      FhirContext context,
+      IGenericClient client,
+      LaunchDetails launchDetails,
+      Dstu2FhirData dstu2FhirData,
+      Encounter encounter,
+      Date start,
+      Date end) {
+    logger.trace("Get Pregnancy Conditions");
+    List<Condition> conditions = new ArrayList<>();
+    for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
+      Bundle pregnancyCodesbundle =
+          (Bundle)
+              resourceData.getResourceByPatientIdAndCode(
+                  launchDetails,
+                  client,
+                  context,
+                  "Condition",
+                  pregnancySnomedCode,
+                  QueryConstants.SNOMED_CODE_SYSTEM);
+      if (pregnancyCodesbundle != null) {
+        for (Entry entryComp : pregnancyCodesbundle.getEntry()) {
+          Condition condition = (Condition) entryComp.getResource();
+          conditions.add(condition);
+        }
+      }
+    }
+    logger.info("Filtered Pregnancy Conditions ----> {}", conditions.size());
+    return conditions;
   }
 
   public Medication getMedicationData(
@@ -638,6 +738,38 @@ public class Dstu2ResourcesData {
     }
     dstu2FhirData.setDiagnosticReportCodes(diagnosticReportCodes);
     return diagnosticReports;
+  }
+
+  private Bundle filterObservationsBundleByCategory(
+      Bundle bundle, String observationSocialHistory) {
+    Bundle filteredBundle = new Bundle();
+    List<Entry> filteredEntryComponents = new ArrayList<>();
+    for (Entry entryComp : bundle.getEntry()) {
+      Observation observation = (Observation) entryComp.getResource();
+
+      if (isSocialHistoryObservation(observation)) {
+        filteredBundle.addEntry(entryComp);
+      }
+    }
+    return filteredBundle;
+  }
+
+  public Boolean isSocialHistoryObservation(Observation ob) {
+
+    CodeableConceptDt cd = ob.getCategory();
+
+    if (cd != null && cd.getCoding() != null && !cd.getCoding().isEmpty()) {
+
+      List<CodingDt> cds = cd.getCoding();
+
+      for (CodingDt c : cds) {
+
+        if (c.getCode().contentEquals("social-history")) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public static List<Observation> filterObservation(

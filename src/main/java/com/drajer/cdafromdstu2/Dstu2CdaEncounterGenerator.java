@@ -146,6 +146,19 @@ public class Dstu2CdaEncounterGenerator {
           Dstu2CdaFhirUtilities.getPeriodXml(
               encounter.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
 
+      if (encounter.getHospitalization() != null
+          && encounter.getHospitalization().getDischargeDisposition() != null) {
+
+        List<CodeableConceptDt> dds = new ArrayList<>();
+        dds.add(encounter.getHospitalization().getDischargeDisposition());
+
+        String ddxml =
+            Dstu2CdaFhirUtilities.getCodeableConceptXml(
+                dds, CdaGeneratorConstants.SDTC_DISCHARGE_DISPOSITION, false);
+
+        if (ddxml != null && !ddxml.isEmpty()) sb.append(ddxml);
+      }
+
       // End Entry Tags
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENC_ACT_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
