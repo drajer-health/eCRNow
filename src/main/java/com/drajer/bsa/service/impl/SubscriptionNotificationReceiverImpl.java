@@ -74,7 +74,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       logger.info(" Notification Context exists for processing the notification ");
       nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
 
-      if (launchContext.getThrottleContext() != null)
+      if (launchContext != null && launchContext.getThrottleContext() != null)
         nc.setThrottleContext(launchContext.getThrottleContext());
 
       ncDao.saveOrUpdate(nc);
