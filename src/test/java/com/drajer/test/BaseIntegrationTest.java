@@ -102,6 +102,11 @@ public abstract class BaseIntegrationTest {
     return systemLaunchPayload;
   }
 
+  protected String getSystemLaunch3Payload(String systemLaunchFile) {
+
+    return TestUtils.getFileContentAsString(systemLaunchFile);
+  }
+
   protected void createClientDetails(String clientDetailsFile) throws IOException {
 
     String clientDetailString = TestUtils.getFileContentAsString(clientDetailsFile);
