@@ -434,7 +434,7 @@
       "url": "http://hl7.org/fhir/Library/FHIR-ModelInfo",
       "identifier": [ {
         "use": "official",
-        "system": "http://example.org/fhir/cqi/ecqm/Library/Identifier",
+        "system": "http://hl7.org/fhir/us/ecr/cqi/ecqm/Library/Identifier",
         "value": "FHIR"
       } ],
       "version": "4.0.1",

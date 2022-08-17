@@ -119,7 +119,7 @@ public class EvaluateMeasure extends BsaAction {
               additionalData); // Data Bundle
 
       if (result != null) {
-
+        result.getMeta().addProfile("http://hl7.org/fhir/MeasureReport");
         actStatus.setReport(result);
         data.addActionOutput(this.getActionId(), result);
 

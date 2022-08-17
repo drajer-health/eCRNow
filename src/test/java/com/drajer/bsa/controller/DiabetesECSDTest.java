@@ -36,13 +36,13 @@ public class DiabetesECSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        /*   new TestCaseInfo(
+        new TestCaseInfo(
             "ChronicDSDiabetesPoorControl",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",
             "diabetes-report-denom-exc-in",
-            REPORTED,
+            TRIGGERED_ONLY,
             1,
-            1,
+            0,
             1,
             0),
         new TestCaseInfo(
@@ -77,7 +77,7 @@ public class DiabetesECSDTest extends BaseKarsTest {
             1,
             1,
             0,
-            1),*/
+            1),
         new TestCaseInfo(
             "ChronicDSDiabetesPoorControl",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSDiabetesPoorControl",

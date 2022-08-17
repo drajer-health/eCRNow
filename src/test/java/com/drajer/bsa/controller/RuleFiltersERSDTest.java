@@ -42,11 +42,11 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
             "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
             "Reportable",
             REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "NotTriggered",
-            NOT_TRIGGERED),
+        // new TestCaseInfo(
+        //     "PlanDefinition_eRSD_Instance_Example",
+        //     "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        //     "NotTriggered",
+        //     NOT_TRIGGERED),
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_Example",
             "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",

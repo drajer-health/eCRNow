@@ -73,7 +73,7 @@
         "relatedArtifact": [
           {
             "type": "composed-of",
-            "resource": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+            "resource": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
           },
           {
             "type": "composed-of",
@@ -83,7 +83,7 @@
       }
     },
     {
-      "fullUrl": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example",
+      "fullUrl": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
       "resource": {
         "resourceType": "PlanDefinition",
         "id": "plandefinition-ersd-instance-example",
@@ -94,7 +94,7 @@
         },
         "text": {
           "status": "extensions",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"plandefinition-ersd-instance-example\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ersd-plandefinition.html\">eRSD PlanDefinition</a></p></div><p><b>Variable</b>: <span title=\"text/fhirpath\"><code>14</code></span>(<b>normalReportingDuration</b>)</p><p><b>url</b>: <code>http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example</code></p><p><b>version</b>: 0.1</p><p><b>name</b>: PlanDefinition_eRSD_Instance_Example</p><p><b>title</b>: eRSD PlanDefinition Instance Example</p><p><b>type</b>: Workflow Definition <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-plan-definition-type.html\">PlanDefinitionType</a>#workflow-definition)</span></p><p><b>status</b>: active</p><p><b>experimental</b>: true</p><p><b>date</b>: 2020-07-31 12:32:29-0500</p><p><b>publisher</b>: HL7 Public Health Work Group</p><p><b>description</b>: An example ersd PlanDefinition</p><p><b>jurisdiction</b>: United States of America <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#US)</span></p><p><b>effectivePeriod</b>: 2020-12-01 --&gt; (ongoing)</p><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the start of the reporting workflow in response to the encounter-start event.</p><p><b>textEquivalent</b>: Start the reporting workflow in response to an encounter-start event</p><p><b>code</b>: Initiate a reporting workflow <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#initiate-reporting-workflow)</span></p><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td><td><b>Offset[x]</b></td></tr><tr><td>*</td><td>check-suspected-disorder</td><td>before-start</td><td>1 h<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code h = 'h')</span></td></tr></table></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the start of the check suspected disorder reporting workflow in response to the encounter-start event.</p><p><b>textEquivalent</b>: Check suspected disorders for immediate reportability and setup jobs for future reportability checks.</p><p><b>code</b>: Execute a series of actions to accomplish reporting <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#execute-reporting-workflow)</span></p><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the check for suspected disorder reportability to create the patients eICR.</p><p><b>textEquivalent</b>: Check Trigger Codes based on Suspected Reportable Value set.</p><p><b>code</b>: Evaluate candidate patient's data against trigger codes to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#check-trigger-codes)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>code</b>: Evaluate condition to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#evaluate-condition)</span></p></blockquote></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the check for suspected reportability of the eICR.</p><p><b>textEquivalent</b>: Check Reportability and setup jobs for future reportability checks.</p><p><b>code</b>: Execute a series of actions to accomplish reporting <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#execute-reporting-workflow)</span></p><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the check for reportability to create the patients eICR.</p><p><b>textEquivalent</b>: Check Trigger Codes based on RCTC Value sets.</p><p><b>code</b>: Evaluate candidate patient's data against trigger codes to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#check-trigger-codes)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>code</b>: Evaluate condition to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#evaluate-condition)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>code</b>: Evaluate condition to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#evaluate-condition)</span></p></blockquote></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the creation of the eICR. It subsequently calls validate.</p><p><b>textEquivalent</b>: Create eICR</p><p><b>code</b>: Create a Report containing Patient's data for patients who passed the check-reportability test <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#create-report)</span></p><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td></tr><tr><td>*</td><td>validate-eicr</td><td>before-start</td></tr></table></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the validation of the eICR. It subsequently calls route-and-send.</p><p><b>textEquivalent</b>: Validate eICR</p><p><b>code</b>: Validate Report against specified profiles and terminologies. <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#validate-report)</span></p><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td></tr><tr><td>*</td><td>route-and-send-eicr</td><td>before-start</td></tr></table></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the routing and sending of the eICR.</p><p><b>textEquivalent</b>: Route and send eICR</p><p><b>code</b>: Submit the report to specified endpoint <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#submit-report)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the start of the reporting workflow in response to the encounter-modified event</p><p><b>textEquivalent</b>: Start the reporting workflow in response to an encounter-modified event</p><p><b>code</b>: Initiate a reporting workflow <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#initiate-reporting-workflow)</span></p><blockquote><p><b>condition</b></p><p><b>kind</b>: applicability</p></blockquote><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td></tr><tr><td>*</td><td>create-eicr</td><td>before-start</td></tr></table></blockquote></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"plandefinition-ersd-instance-example\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ersd-plandefinition.html\">eRSD PlanDefinition</a></p></div><p><b>Variable</b>: <span title=\"text/fhirpath\"><code>14</code></span>(<b>normalReportingDuration</b>)</p><p><b>url</b>: <code>http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example</code></p><p><b>version</b>: 0.1</p><p><b>name</b>: PlanDefinition_eRSD_Instance_Example</p><p><b>title</b>: eRSD PlanDefinition Instance Example</p><p><b>type</b>: Workflow Definition <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-plan-definition-type.html\">PlanDefinitionType</a>#workflow-definition)</span></p><p><b>status</b>: active</p><p><b>experimental</b>: true</p><p><b>date</b>: 2020-07-31 12:32:29-0500</p><p><b>publisher</b>: HL7 Public Health Work Group</p><p><b>description</b>: An example ersd PlanDefinition</p><p><b>jurisdiction</b>: United States of America <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#US)</span></p><p><b>effectivePeriod</b>: 2020-12-01 --&gt; (ongoing)</p><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the start of the reporting workflow in response to the encounter-start event.</p><p><b>textEquivalent</b>: Start the reporting workflow in response to an encounter-start event</p><p><b>code</b>: Initiate a reporting workflow <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#initiate-reporting-workflow)</span></p><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td><td><b>Offset[x]</b></td></tr><tr><td>*</td><td>check-suspected-disorder</td><td>before-start</td><td>1 h<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code h = 'h')</span></td></tr></table></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the start of the check suspected disorder reporting workflow in response to the encounter-start event.</p><p><b>textEquivalent</b>: Check suspected disorders for immediate reportability and setup jobs for future reportability checks.</p><p><b>code</b>: Execute a series of actions to accomplish reporting <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#execute-reporting-workflow)</span></p><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the check for suspected disorder reportability to create the patients eICR.</p><p><b>textEquivalent</b>: Check Trigger Codes based on Suspected Reportable Value set.</p><p><b>code</b>: Evaluate candidate patient's data against trigger codes to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#check-trigger-codes)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>code</b>: Evaluate condition to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#evaluate-condition)</span></p></blockquote></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the check for suspected reportability of the eICR.</p><p><b>textEquivalent</b>: Check Reportability and setup jobs for future reportability checks.</p><p><b>code</b>: Execute a series of actions to accomplish reporting <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#execute-reporting-workflow)</span></p><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the check for reportability to create the patients eICR.</p><p><b>textEquivalent</b>: Check Trigger Codes based on RCTC Value sets.</p><p><b>code</b>: Evaluate candidate patient's data against trigger codes to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#check-trigger-codes)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>code</b>: Evaluate condition to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#evaluate-condition)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>code</b>: Evaluate condition to determine reportability <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#evaluate-condition)</span></p></blockquote></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the creation of the eICR. It subsequently calls validate.</p><p><b>textEquivalent</b>: Create eICR</p><p><b>code</b>: Create a Report containing Patient's data for patients who passed the check-reportability test <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#create-report)</span></p><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td></tr><tr><td>*</td><td>validate-eicr</td><td>before-start</td></tr></table></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the validation of the eICR. It subsequently calls route-and-send.</p><p><b>textEquivalent</b>: Validate eICR</p><p><b>code</b>: Validate Report against specified profiles and terminologies. <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#validate-report)</span></p><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td></tr><tr><td>*</td><td>route-and-send-eicr</td><td>before-start</td></tr></table></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the routing and sending of the eICR.</p><p><b>textEquivalent</b>: Route and send eICR</p><p><b>code</b>: Submit the report to specified endpoint <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#submit-report)</span></p></blockquote><blockquote><p><b>action</b></p><p><b>description</b>: This action represents the start of the reporting workflow in response to the encounter-modified event</p><p><b>textEquivalent</b>: Start the reporting workflow in response to an encounter-modified event</p><p><b>code</b>: Initiate a reporting workflow <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-us-ph-plandefinition-actions.html\">US Public Health PlanDefinition Action Codes</a>#initiate-reporting-workflow)</span></p><blockquote><p><b>condition</b></p><p><b>kind</b>: applicability</p></blockquote><h3>RelatedActions</h3><table class=\"grid\"><tr><td>-</td><td><b>ActionId</b></td><td><b>Relationship</b></td></tr><tr><td>*</td><td>create-eicr</td><td>before-start</td></tr></table></blockquote></div>"
         },
         "extension": [
           {
@@ -106,7 +106,7 @@
             }
           }
         ],
-        "url": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example",
+        "url": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
         "version": "0.1",
         "name": "PlanDefinition_eRSD_Instance_Example",
         "title": "eRSD PlanDefinition Instance Example",
@@ -143,7 +143,7 @@
           {
             "type": "depends-on",
             "label": "RCTC Value Set Library of Trigger Codes",
-            "resource": "http://example.org/fhir/Library/library-rctc-example"
+            "resource": "http://hl7.org/fhir/us/ecr/Library/library-rctc-example"
           }
         ],
         "action": [
@@ -256,7 +256,7 @@
                           "valueExpression": {
                             "language": "text/cql-identifier",
                             "expression": "Is Suspected Disorder?",
-                            "reference": "http://example.org/fhir/Library/RuleFilters|1.0.0"
+                            "reference": "http://hl7.org/fhir/us/ecr/Library/RuleFilters|1.0.0"
                           }
                         }
                       ],
@@ -278,7 +278,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-sdtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-sdtc-example"
                       }
                     ]
                   },
@@ -294,7 +294,7 @@
                     "codeFilter": [
                       {
                         "path": "value",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-sdtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-sdtc-example"
                       }
                     ]
                   },
@@ -310,7 +310,7 @@
                     "codeFilter": [
                       {
                         "path": "medication",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-sdtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-sdtc-example"
                       }
                     ]
                   }
@@ -344,7 +344,7 @@
                           "valueExpression": {
                             "language": "text/cql-identifier",
                             "expression": "Is Encounter In Progress and Within Normal Reporting Duration or 72h or less after end of encounter?",
-                            "reference": "http://example.org/fhir/Library/RuleFilters|1.0.0"
+                            "reference": "http://hl7.org/fhir/us/ecr/Library/RuleFilters|1.0.0"
                           }
                         }
                       ],
@@ -406,7 +406,7 @@
                           "valueExpression": {
                             "language": "text/cql-identifier",
                             "expression": "Is Encounter Reportable and Within Normal Reporting Duration?",
-                            "reference": "http://example.org/fhir/Library/RuleFilters|1.0.0"
+                            "reference": "http://hl7.org/fhir/us/ecr/Library/RuleFilters|1.0.0"
                           }
                         }
                       ],
@@ -428,7 +428,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-dxtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-dxtc-example"
                       }
                     ]
                   },
@@ -444,7 +444,7 @@
                     "codeFilter": [
                       {
                         "path": "reasonCode",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-dxtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-dxtc-example"
                       }
                     ]
                   },
@@ -460,7 +460,7 @@
                     "codeFilter": [
                       {
                         "path": "vaccineCode",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-mrtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-mrtc-example"
                       }
                     ]
                   },
@@ -476,7 +476,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-lotc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-lotc-example"
                       }
                     ]
                   },
@@ -492,7 +492,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-lotc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-lotc-example"
                       }
                     ]
                   },
@@ -508,7 +508,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-lotc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-lotc-example"
                       }
                     ]
                   },
@@ -524,7 +524,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-pctc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-pctc-example"
                       }
                     ]
                   },
@@ -540,7 +540,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-pctc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-pctc-example"
                       }
                     ]
                   },
@@ -556,7 +556,7 @@
                     "codeFilter": [
                       {
                         "path": "medication",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-mrtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-mrtc-example"
                       }
                     ]
                   },
@@ -572,7 +572,7 @@
                     "codeFilter": [
                       {
                         "path": "medication",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-mrtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-mrtc-example"
                       }
                     ]
                   },
@@ -588,7 +588,7 @@
                     "codeFilter": [
                       {
                         "path": "medication",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-mrtc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-mrtc-example"
                       }
                     ]
                   },
@@ -604,7 +604,7 @@
                     "codeFilter": [
                       {
                         "path": "value",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-ostc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-ostc-example"
                       }
                     ]
                   },
@@ -620,7 +620,7 @@
                     "codeFilter": [
                       {
                         "path": "code",
-                        "valueSet": "http://example.org/fhir/ValueSet/valueset-ostc-example"
+                        "valueSet": "http://hl7.org/fhir/us/ecr/ValueSet/valueset-ostc-example"
                       }
                     ]
                   }
@@ -654,7 +654,7 @@
                           "valueExpression": {
                             "language": "text/cql-identifier",
                             "expression": "Most recent eICR sent over 72 hours ago?",
-                            "reference": "http://example.org/fhir/Library/RuleFilters|1.0.0"
+                            "reference": "http://hl7.org/fhir/us/ecr/Library/RuleFilters|1.0.0"
                           }
                         }
                       ],
@@ -707,7 +707,7 @@
                           "valueExpression": {
                             "language": "text/cql-identifier",
                             "expression": "Is Encounter In Progress and Within Normal Reporting Duration or 72h or less after end of encounter?",
-                            "reference": "http://example.org/fhir/Library/RuleFilters|1.0.0"
+                            "reference": "http://hl7.org/fhir/us/ecr/Library/RuleFilters|1.0.0"
                           }
                         }
                       ],
@@ -1023,7 +1023,7 @@
                       "valueExpression": {
                         "language": "text/cql-identifier",
                         "expression": "Is Encounter Longer Than Normal Reporting Duration?",
-                        "reference": "http://example.org/fhir/Library/RuleFilters|1.0.0"
+                        "reference": "http://hl7.org/fhir/us/ecr/Library/RuleFilters|1.0.0"
                       }
                     }
                   ],
@@ -1189,7 +1189,7 @@
               "code": "program"
             },
             "valueReference": {
-              "reference": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+              "reference": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
             }
           },
           {
@@ -1627,7 +1627,7 @@
               "code": "program"
             },
             "valueReference": {
-              "reference": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+              "reference": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
             }
           },
           {
@@ -1875,7 +1875,7 @@
               "code": "program"
             },
             "valueReference": {
-              "reference": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+              "reference": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
             }
           },
           {
@@ -2703,7 +2703,7 @@
               "code": "program"
             },
             "valueReference": {
-              "reference": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+              "reference": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
             }
           },
           {
@@ -3011,7 +3011,7 @@
               "code": "program"
             },
             "valueReference": {
-              "reference": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+              "reference": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
             }
           },
           {
@@ -3539,7 +3539,7 @@
               "code": "program"
             },
             "valueReference": {
-              "reference": "http://example.org/fhir/PlanDefinition/plandefinition-ersd-instance-example"
+              "reference": "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example"
             }
           },
           {
