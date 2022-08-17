@@ -15,10 +15,6 @@ testCase:
         - params:
             patient: "12742571"
           responseFilePath: "R4/Encounter/EncounterBundle_97953900.json"
-      Condition:
-        - params:
-            patient: "12742571"
-          responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
