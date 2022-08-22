@@ -286,6 +286,10 @@
 			<artifactId>logback-jackson</artifactId>
 			<version>${logback-contrib.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

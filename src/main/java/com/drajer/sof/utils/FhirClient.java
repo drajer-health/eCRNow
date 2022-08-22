@@ -29,7 +29,7 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 public class FhirClient implements IGenericClient {
-  IGenericClient client;
+  protected IGenericClient client;
   FhirHttpHeaderInterceptor interceptor;
 
   public FhirClient(@Nonnull IGenericClient client, String requestId) {

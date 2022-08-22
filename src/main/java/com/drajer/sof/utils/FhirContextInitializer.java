@@ -9,6 +9,8 @@ import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
+import com.drajer.ecrapp.fhir.utils.ecrretry.EcrFhirRetryClient;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -17,6 +19,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,6 +33,11 @@ public class FhirContextInitializer {
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
 
+  @Autowired FHIRRetryTemplate retryTemplate;
+
+  public FhirContextInitializer(FHIRRetryTemplate retryTemplate) {
+    this.retryTemplate = retryTemplate;
+  }
   /**
    * Get FhirContext appropriate to fhirVersion
    *
@@ -69,6 +77,12 @@ public class FhirContextInitializer {
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
+    if (retryTemplate.isRetryEnabled()) {
+      logger.trace(
+          "Initialized the Retryable Client with X-Request-ID: {}",
+          client.getHttpInterceptor().getXReqId());
+      return new EcrFhirRetryClient(client, retryTemplate, requestId);
+    }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
     return client;
@@ -88,6 +102,12 @@ public class FhirContextInitializer {
 
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
+    }
+    if (retryTemplate.isRetryEnabled()) {
+      logger.trace(
+          "Initialized the Retryable Client with X-Request-ID: {}",
+          client.getHttpInterceptor().getXReqId());
+      return new EcrFhirRetryClient(client, retryTemplate, client.getHttpInterceptor().getXReqId());
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
@@ -115,7 +135,8 @@ public class FhirContextInitializer {
     IBaseResource resource = null;
     try {
       logger.info("Getting {} data by ID {}", resourceName, resourceId);
-      resource = genericClient.read().resource(resourceName).withId(resourceId).execute();
+      resource =
+          (IBaseResource) genericClient.read().resource(resourceName).withId(resourceId).execute();
     } catch (ForbiddenOperationException scopeException) {
       logger.info(
           "Failed getting {} resource by Id: {}\n{}\nCurrent scope: {}",
