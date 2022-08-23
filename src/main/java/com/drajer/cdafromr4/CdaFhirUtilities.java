@@ -129,6 +129,7 @@ public class CdaFhirUtilities {
                     && c.getCode() != null
                     && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
                         || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.EMERGENCY_VALUE)
                         || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
                         || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
                         || c.getCode()

@@ -6,7 +6,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +79,7 @@ public class Dstu2CdaReasonForVisitGenerator {
       }
     }
 
-    Map<String, String> bodyvals = new HashMap<String, String>();
+    Map<String, String> bodyvals = new LinkedHashMap<String, String>();
     bodyvals.put(CdaGeneratorConstants.REASON_FOR_VISIT_BODY_CONTENT, text);
 
     sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));

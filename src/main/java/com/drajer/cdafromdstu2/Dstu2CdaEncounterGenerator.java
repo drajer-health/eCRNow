@@ -8,7 +8,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +91,7 @@ public class Dstu2CdaEncounterGenerator {
             " Period is either null or the Period.DateTime has a null value or null timezone value ");
       }
 
-      Map<String, String> bodyvals = new HashMap<String, String>();
+      Map<String, String> bodyvals = new LinkedHashMap<String, String>();
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 

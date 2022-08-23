@@ -825,7 +825,7 @@ public class CdaGeneratorConstants {
   // Table Values
   public static final int TABLE_BORDER = 1;
   public static final int TABLE_WIDTH = 100;
-  public static final String ENC_TABLE_COL_1_TITLE = "Encounter Reason";
+  public static final String ENC_TABLE_COL_1_TITLE = "Encounter Code";
   public static final String ENC_TABLE_COL_1_BODY_CONTENT = "encounter";
   public static final String ENC_TABLE_COL_2_TITLE = "Date of Encounter";
   public static final String ENC_TABLE_COL_2_BODY_CONTENT = "encounterDate";
@@ -898,6 +898,7 @@ public class CdaGeneratorConstants {
 
   public static final String FHIR_GUARDIAN_VALUE = "N";
   public static final String FHIR_EMERGENCY_CONTACT_VALUE = "E";
+  public static final String EMERGENCY_VALUE = "emergency";
   public static final String GUARDIAN_VALUE = "GUARD";
   public static final String FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
       "http://terminology.hl7.org/CodeSystem/v2-0131";

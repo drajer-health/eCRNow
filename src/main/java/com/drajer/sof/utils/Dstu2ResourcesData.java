@@ -235,7 +235,11 @@ public class Dstu2ResourcesData {
     // Filter Observations based on Encounter Reference
     if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
-        if (entry.getResource().getResourceName().equals(ResourceTypeEnum.OBSERVATION.toString())) {
+        if (entry
+            .getResource()
+            .getResourceName()
+            .toLowerCase()
+            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
           Observation observation = (Observation) entry.getResource();
           if (!observation.getEncounter().isEmpty()) {
             if (observation
@@ -254,7 +258,11 @@ public class Dstu2ResourcesData {
       // Observations
     } else {
       for (Entry entry : bundle.getEntry()) {
-        if (entry.getResource().getResourceName().equals(ResourceTypeEnum.OBSERVATION.toString())) {
+        if (entry
+            .getResource()
+            .getResourceName()
+            .toLowerCase()
+            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
           Observation observation = (Observation) entry.getResource();
           // Checking If Issued Date is present in Observation resource
           if (observation.getIssued() != null) {
@@ -779,9 +787,13 @@ public class Dstu2ResourcesData {
     // Filter Observations based on Encounter Reference
     if (encounter != null && !encounter.getId().getValue().isEmpty()) {
       for (Entry entry : bundle.getEntry()) {
-        if (entry.getResource().getResourceName().equals(ResourceTypeEnum.OBSERVATION.toString())) {
+        if (entry
+            .getResource()
+            .getResourceName()
+            .toLowerCase()
+            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
           Observation observation = (Observation) entry.getResource();
-          if (!observation.getEncounter().isEmpty()) {
+          if (observation.getEncounter() != null && !observation.getEncounter().isEmpty()) {
             if (observation
                 .getEncounter()
                 .getReference()
@@ -796,7 +808,11 @@ public class Dstu2ResourcesData {
       // Observations
     } else {
       for (Entry entry : bundle.getEntry()) {
-        if (entry.getResource().getResourceName().equals(ResourceTypeEnum.OBSERVATION.toString())) {
+        if (entry
+            .getResource()
+            .getResourceName()
+            .toLowerCase()
+            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
           Observation observation = (Observation) entry.getResource();
           // Checking If Issued Date is present in Observation resource
           if (observation.getIssued() != null) {

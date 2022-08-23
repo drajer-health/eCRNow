@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -95,7 +95,7 @@ public class Dstu2CdaResultGenerator {
           }
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
         String val = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -289,20 +289,8 @@ public class Dstu2CdaResultGenerator {
             CdaGeneratorUtils.getXmlForII(
                 details.getAssigningAuthorityId(), obs.getId().getIdPart()));
 
-        lrEntry.append(Dstu2CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
-
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
-
-        lrEntry.append(
-            Dstu2CdaFhirUtilities.getIDataTypeXml(
-                obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
-
-        //	lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(),
-        // CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
-
         Set<String> matchedCodes = mtc.getMatchedCodes();
+        StringBuilder obsValueXml = new StringBuilder(200);
 
         if (matchedCodes != null && matchedCodes.size() > 0) {
 
@@ -315,20 +303,85 @@ public class Dstu2CdaResultGenerator {
                   matchCode -> {
                     String[] parts = matchCode.split("\\|");
 
-                    Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+                    if (Dstu2CdaFhirUtilities.isCodePresentInCoding(matchCode, cds)) {
 
-                    // For Connectathon, until we get the right test data finish testing.
-                    lrEntry.append(
-                        CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                            parts[1],
-                            csd.getValue0(),
-                            csd.getValue1(),
-                            CdaGeneratorConstants.RCTC_OID,
-                            ActionRepo.getInstance().getRctcVersion(),
-                            ""));
+                      Pair<String, String> csd =
+                          CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
-                    // Adding one is sufficient and only one is possible according to Schema.
+                      // For Connectathon, until we get the right test data finish testing.
+                      lrEntry.append(
+                          CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+                              CdaGeneratorConstants.CODE_EL_NAME,
+                              parts[1],
+                              csd.getValue0(),
+                              csd.getValue1(),
+                              CdaGeneratorConstants.RCTC_OID,
+                              ActionRepo.getInstance().getRctcVersion(),
+                              "",
+                              ""));
+
+                    } else {
+
+                      lrEntry.append(
+                          Dstu2CdaFhirUtilities.getCodingXml(
+                              cds, CdaGeneratorConstants.CODE_EL_NAME));
+                    }
+
+                    if (obs.getValue() != null && obs.getValue() instanceof CodeableConceptDt) {
+
+                      CodeableConceptDt cd = (CodeableConceptDt) obs.getValue();
+                      if (Dstu2CdaFhirUtilities.isCodePresentInCoding(matchCode, cd.getCoding())) {
+
+                        Pair<String, String> csd =
+                            CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+
+                        // For Connectathon, until we get the right test data finish testing.
+                        obsValueXml.append(
+                            CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
+                                parts[1],
+                                csd.getValue0(),
+                                csd.getValue1(),
+                                CdaGeneratorConstants.RCTC_OID,
+                                ActionRepo.getInstance().getRctcVersion(),
+                                ""));
+
+                      } else {
+
+                        obsValueXml.append(
+                            Dstu2CdaFhirUtilities.getCodingXml(
+                                cds, CdaGeneratorConstants.CODE_EL_NAME));
+                      }
+                    }
                   });
+        }
+
+        lrEntry.append(
+            CdaGeneratorUtils.getXmlForCD(
+                CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+        lrEntry.append(
+            Dstu2CdaFhirUtilities.getIDataTypeXml(
+                obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+
+        if (!obsValueXml.toString().isEmpty()) {
+          lrEntry.append(obsValueXml.toString());
+        } else {
+          lrEntry.append(
+              Dstu2CdaFhirUtilities.getIDataTypeXml(
+                  obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+        }
+
+        // Add interpretation code.
+        if ((obs.getInterpretation() != null)
+            && (obs.getInterpretation().getCoding() != null)
+            && (obs.getInterpretation().getCoding().size() > 0)) {
+
+          logger.info(" Adding Interpretaion Code ");
+          List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
+          cdt.add(obs.getInterpretation());
+          lrEntry.append(
+              Dstu2CdaFhirUtilities.getCodeableConceptXml(
+                  cdt, CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, false));
         }
 
         // End Tag for Entry Relationship

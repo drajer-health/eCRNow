@@ -398,6 +398,7 @@ public class Dstu2CdaFhirUtilities {
                     && c.getCode() != null
                     && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
                         || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.EMERGENCY_VALUE)
                         || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
                         || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
                         || c.getCode()
@@ -1196,10 +1197,21 @@ public class Dstu2CdaFhirUtilities {
     return "";
   }
 
-  public static Boolean isCodePresent(List<String> codes, String code) {
+  public static Boolean isCodePresent(List<String> matchCodes, String code) {
 
-    for (String c : codes) {
-      if (c.contentEquals(code)) return true;
+    for (String cd : matchCodes) {
+
+      if (cd.contentEquals(code)) return true;
+    }
+
+    return false;
+  }
+
+  public static Boolean isCodePresentInCoding(String matchCode, List<CodingDt> cds) {
+
+    for (CodingDt cd : cds) {
+
+      if (cd.getCode() != null && cd.getCode().contentEquals(matchCode)) return true;
     }
 
     return false;
