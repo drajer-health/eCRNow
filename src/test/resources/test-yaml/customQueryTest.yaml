@@ -9,6 +9,9 @@ testCase:
       Patient:
         - params: "12742571"
           responseFilePath: "R4/Patient/Patient_12742571.json"
+        - params:
+            patient: "12742571"
+          responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
         - params: "97953900"
           responseFilePath: "R4/Encounter/Encounter_97953900.json"
@@ -19,4 +22,5 @@ testCase:
       metadata: "R4/Misc/MetaData_r4.json"
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
+      
   
