@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import ca.uhn.fhir.rest.server.exceptions.*;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +58,21 @@ public class SpringConfiguration {
 
     Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>();
     retryableExceptions.put(HttpServerErrorException.class, true);
+    retryableExceptions.put(AuthenticationException.class, true);
+    retryableExceptions.put(BaseServerResponseException.class, true);
+    retryableExceptions.put(ForbiddenOperationException.class, true);
+    retryableExceptions.put(InternalErrorException.class, true);
+    retryableExceptions.put(InvalidRequestException.class, true);
+    retryableExceptions.put(MethodNotAllowedException.class, true);
+    retryableExceptions.put(NotImplementedOperationException.class, true);
+    retryableExceptions.put(NotModifiedException.class, true);
+    retryableExceptions.put(PayloadTooLargeException.class, true);
+    retryableExceptions.put(PreconditionFailedException.class, true);
+    retryableExceptions.put(ResourceGoneException.class, true);
+    retryableExceptions.put(ResourceVersionConflictException.class, true);
+    retryableExceptions.put(ResourceVersionNotSpecifiedException.class, true);
+    retryableExceptions.put(UnclassifiedServerFailureException.class, true);
+    retryableExceptions.put(UnprocessableEntityException.class, true);
     template.setRetryPolicy(new SimpleRetryPolicy(5, retryableExceptions));
 
     template.setBackOffPolicy(backOffPolicy);

@@ -131,11 +131,7 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
             retryContext -> {
               return readExecutableParent.execute();
             },
-            retryContext -> {
-              logger.info("All retries exausted.");
-
-              return null;
-            });
+            null);
   }
 
   @Override

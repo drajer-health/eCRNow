@@ -7,13 +7,11 @@ import com.drajer.sof.utils.FhirClient;
 
 public class EcrFhirRetryClient extends FhirClient {
 
-  //  private IGenericClient parent;
   private FHIRRetryTemplate fhirRetryTemplate;
 
   public EcrFhirRetryClient(
       IGenericClient parent, FHIRRetryTemplate fhirRetryTemplate, String requestId) {
     super(parent, requestId);
-    //   this.parent = parent;
     this.fhirRetryTemplate = fhirRetryTemplate;
   }
 
@@ -23,6 +21,7 @@ public class EcrFhirRetryClient extends FhirClient {
 
   @Override
   public IRead read() {
+    this.interceptor.reset();
     return new EcrFhirRetryableRead(client.read(), this);
   }
 }

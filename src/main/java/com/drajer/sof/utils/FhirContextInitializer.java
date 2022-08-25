@@ -78,7 +78,7 @@ public class FhirContextInitializer {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
     if (retryTemplate.isRetryEnabled()) {
-      logger.trace(
+      logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
           client.getHttpInterceptor().getXReqId());
       return new EcrFhirRetryClient(client, retryTemplate, requestId);
@@ -104,10 +104,13 @@ public class FhirContextInitializer {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
     if (retryTemplate.isRetryEnabled()) {
-      logger.trace(
+      logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
           client.getHttpInterceptor().getXReqId());
-      return new EcrFhirRetryClient(client, retryTemplate, client.getHttpInterceptor().getXReqId());
+      return new EcrFhirRetryClient(
+          context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
+          retryTemplate,
+          client.getHttpInterceptor().getXReqId());
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
