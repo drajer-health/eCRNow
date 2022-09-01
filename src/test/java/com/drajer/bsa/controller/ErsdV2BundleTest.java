@@ -13,7 +13,12 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.test.context.TestPropertySource;
 
 @RunWith(Parameterized.class)
-@TestPropertySource(properties = {"kar.directory=src/test/resources/Bsa/Scenarios/kars/ErsdV2"})
+@TestPropertySource(
+    properties = {
+      "kar.directory=src/test/resources/Bsa/Scenarios/kars/ErsdV2",
+      "fhirpath.enabled=false",
+      "cql.enabled=true"
+    })
 public class ErsdV2BundleTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 

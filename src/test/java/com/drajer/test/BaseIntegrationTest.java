@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -55,6 +56,8 @@ public abstract class BaseIntegrationTest {
   @Rule public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
   @LocalServerPort protected int port;
+
+  @Autowired private ApplicationContext applicationContext;
 
   @Autowired protected SessionFactory sessionFactory;
   protected Session session = null;

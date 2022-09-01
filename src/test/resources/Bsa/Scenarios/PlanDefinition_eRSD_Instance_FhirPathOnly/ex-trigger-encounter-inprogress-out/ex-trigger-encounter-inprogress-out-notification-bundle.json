@@ -101,8 +101,8 @@
             "reference": "ex-trigger-encounter-inprogress-out"
           },
           "period": {
-            "start": "2022-08-16T11:00:00-07:00",
-            "end": "2022-08-16T12:00:00-07:00"
+            "start": "2022-09-01T11:00:00-07:00",
+            "end": "2022-09-01T12:00:00-07:00"
           }
         },
         "request" : {

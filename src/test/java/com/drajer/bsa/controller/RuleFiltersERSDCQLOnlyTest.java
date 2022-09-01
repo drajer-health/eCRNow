@@ -19,7 +19,8 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(
     properties = {
       "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefilters",
-      "fhirpath.enabled=false"
+      "fhirpath.enabled=false",
+      "cql.enabled=true"
     })
 public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   protected FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);

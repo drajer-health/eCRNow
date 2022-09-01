@@ -1,6 +1,7 @@
 package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.model.PatientLaunchContext;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,5 +28,14 @@ public interface SubscriptionNotificationReceiver {
    * @return
    */
   public List<KarProcessingData> processNotification(
-      Bundle notificationBundle, HttpServletRequest request, HttpServletResponse response);
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext);
+
+  public List<KarProcessingData> processRelaunchNotification(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext);
 }

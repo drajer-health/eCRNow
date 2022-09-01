@@ -16,6 +16,7 @@ import com.drajer.bsa.kar.action.SubmitReportStatus;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.scheduler.ScheduleJobConfiguration;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -124,9 +125,13 @@ public class BaseKarsTest extends BaseIntegrationTest {
         this.stubHelper.mockReceiveEicr(bundle);
       }
 
+      PatientLaunchContext launchContext = null;
       List<KarProcessingData> dataList =
           notificationReceiver.processNotification(
-              bundle, mock(HttpServletRequest.class), mock(HttpServletResponse.class));
+              bundle,
+              mock(HttpServletRequest.class),
+              mock(HttpServletResponse.class),
+              launchContext);
 
       Boolean reportBundleGenerated =
           this.reportBundleGenerated(

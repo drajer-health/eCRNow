@@ -2,6 +2,11 @@ package com.drajer.bsa.model;
 
 public final class BsaTypes {
 
+  public enum BsaJobType {
+    IMMEDIATE_REPORTING,
+    DELAYED_REPORTING
+  }
+
   public enum AuthenticationType {
     SYSTEM,
     MULTI_TENANT_SYSTEM_LAUNCH,

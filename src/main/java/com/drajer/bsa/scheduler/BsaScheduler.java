@@ -1,6 +1,7 @@
 package com.drajer.bsa.scheduler;
 
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import java.time.Instant;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class BsaScheduler {
       BsaTypes.ActionType type,
       Instant t,
       String xReqId,
+      BsaJobType jobtype,
       Map<String, String> mdc) {
 
     String jobId =
@@ -53,7 +55,8 @@ public class BsaScheduler {
         schedulerConfig
             .sampleOneTimeJob()
             .instance(
-                jobId, new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, mdc)),
+                jobId,
+                new ScheduledJobData(karExecId, actionId, type, t, jobId, xReqId, jobtype, mdc)),
         t);
   }
 }

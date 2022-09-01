@@ -191,6 +191,7 @@ public class SubmitReport extends BsaAction {
             BsaTypes.ActionType.CHECK_RESPONSE,
             t,
             data.getxRequestId(),
+            data.getJobType(),
             MDC.getCopyOfContextMap());
 
         logger.info(" Finished scheduling timer for checking RR ");

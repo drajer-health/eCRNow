@@ -193,6 +193,14 @@ public class PublicHealthMessage {
   @Column(name = "trigger_match_status", nullable = true, columnDefinition = "TEXT")
   private String triggerMatchStatus;
 
+  /**
+   * Stores the data linker Id which is used if the data is de-identified. When the data is
+   * de-identified, this Id is passed to the PHA and the PHA may want to link back to the Patient.
+   * In these cases the this Id can be used to re-identify the specific patient.
+   */
+  @Column(name = "patient_linker_id", nullable = true, columnDefinition = "TEXT")
+  private String patientLinkerId;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -430,5 +438,13 @@ public class PublicHealthMessage {
 
   public void setTriggerMatchStatus(String triggerMatchStatus) {
     this.triggerMatchStatus = triggerMatchStatus;
+  }
+
+  public String getPatientLinkerId() {
+    return patientLinkerId;
+  }
+
+  public void setPatientLinkerId(String patientLinkerId) {
+    this.patientLinkerId = patientLinkerId;
   }
 }
