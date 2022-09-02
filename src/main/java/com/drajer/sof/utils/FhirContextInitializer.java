@@ -81,7 +81,7 @@ public class FhirContextInitializer {
       logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
           client.getHttpInterceptor().getXReqId());
-      return new EcrFhirRetryClient(context.newRestfulGenericClient(url), retryTemplate, requestId);
+      return new EcrFhirRetryClient(client, retryTemplate, requestId);
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
@@ -107,10 +107,7 @@ public class FhirContextInitializer {
       logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
           client.getHttpInterceptor().getXReqId());
-      return new EcrFhirRetryClient(
-          context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
-          retryTemplate,
-          client.getHttpInterceptor().getXReqId());
+      return new EcrFhirRetryClient(client, retryTemplate, client.getHttpInterceptor().getXReqId());
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
