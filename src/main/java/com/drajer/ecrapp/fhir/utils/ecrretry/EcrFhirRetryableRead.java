@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadIfNoneMatch;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -94,32 +95,27 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IClientExecutable elementsSubset(String... theElements) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable encoded(EncodingEnum theEncoding) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable encodedJson() {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable encodedXml() {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable withAdditionalHeader(String theHeaderName, String theHeaderValue) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
@@ -129,6 +125,7 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
         .getRetryTemplate()
         .execute(
             retryContext -> {
+              logger.info("Retry FHIR read");
               return readExecutableParent.execute();
             },
             null);
@@ -136,37 +133,31 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IClientExecutable preferResponseType(Class theType) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable preferResponseTypes(List theTypes) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable prettyPrint() {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable summaryMode(SummaryEnum theSummary) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IClientExecutable accept(String theHeaderValue) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 
   @Override
   public IReadIfNoneMatch ifVersionMatches(String theVersion) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new NotImplementedOperationException("The request operation is not implemented");
   }
 }
