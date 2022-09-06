@@ -18,6 +18,7 @@ import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.valueset.ResourceTypeEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import com.drajer.cdafromdstu2.Dstu2CdaFhirUtilities;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
@@ -546,8 +547,14 @@ public class Dstu2ResourcesData {
         MedicationStatement medStatement = (MedicationStatement) entry.getResource();
         // Checking If Effective Date is present in MedicationAdministration resource
         if (medStatement.getEffective() != null) {
-          Date effectiveDateTime = (Date) medStatement.getEffective();
-          if (effectiveDateTime.after(start) && effectiveDateTime.before(end)) {
+
+          Date effectiveDateTime =
+              Dstu2CdaFhirUtilities.getDateForDataType(medStatement.getEffective());
+
+          if (effectiveDateTime != null
+              && effectiveDateTime.after(start)
+              && effectiveDateTime.before(end)) {
+            logger.info(" Found Medication Statement to add based on Effective Time");
             medStatements.add(medStatement);
             medicationCodes.addAll(findMedicationStatementCodes(medStatement));
           }
@@ -556,6 +563,7 @@ public class Dstu2ResourcesData {
         else {
           Date lastUpdatedDateTime = medStatement.getMeta().getLastUpdated();
           if (lastUpdatedDateTime.after(start) && lastUpdatedDateTime.before(end)) {
+            logger.info(" Found Medication Statement to add based on last Updated Time");
             medStatements.add(medStatement);
             medicationCodes.addAll(findMedicationStatementCodes(medStatement));
           }
