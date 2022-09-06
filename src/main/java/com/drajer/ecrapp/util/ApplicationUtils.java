@@ -301,6 +301,85 @@ public class ApplicationUtils {
     return t;
   }
 
+  public static Instant getInstantForOffHours(
+      Duration d, String offhourStart, String offhourEnd, String tz) {
+
+    Instant t = null;
+    String unit = "";
+
+    logger.info(
+        " OffHour Parameters: Start = {}, End = {} , Tz = {} ", offhourStart, offhourEnd, tz);
+
+    t = calculateNewTimeForTimer(offhourStart, offhourEnd, tz);
+
+    return t;
+  }
+
+  public static Instant calculateNewTimeForTimer(
+      String offhourStart, String offhourEnd, String tz) {
+
+    if (offhourStart != null
+        && offhourEnd != null
+        && tz != null
+        && offhourStart.length() == 5
+        && offhourStart.contains(":")
+        && offhourEnd.length() == 5
+        && offhourEnd.contains(":")) {
+
+      int lowHours = Integer.valueOf(offhourStart.split(":")[0]);
+      int lowMin = Integer.valueOf(offhourStart.split(":")[1]);
+
+      int highHours = Integer.valueOf(offhourEnd.split(":")[0]);
+      int highMin = Integer.valueOf(offhourEnd.split(":")[1]);
+      int totalHours = 0;
+
+      logger.info(
+          " LowHours: {}, LowMin: {}, HighHours: {}, HighMin: {}",
+          lowHours,
+          lowMin,
+          highHours,
+          highMin);
+
+      if (lowHours < highHours) {
+        totalHours = highHours - lowHours;
+      } else {
+        totalHours = lowHours + highHours;
+      }
+
+      lowMin = 60 - lowMin;
+
+      int totalOffHourMin = (totalHours * 60) - lowMin + highMin;
+      int totalBusyHourMin = (24 * 60) - totalOffHourMin;
+
+      logger.info(" Total off Hour Min = {}", totalOffHourMin);
+
+      Instant t = new Date().toInstant();
+      Calendar today = Calendar.getInstance();
+      today.set(Calendar.HOUR_OF_DAY, highHours);
+      today.set(Calendar.MINUTE, highMin);
+      Instant busyHourStart = today.getTime().toInstant();
+
+      long offsetMinutes = java.time.Duration.between(busyHourStart, t).abs().toMinutes();
+
+      logger.info(
+          " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}",
+          t,
+          busyHourStart,
+          offsetMinutes);
+
+      // Calculate the new Instant
+      int newTimeOffset = ((int) offsetMinutes * totalOffHourMin) / totalBusyHourMin;
+
+      Calendar newTime = Calendar.getInstance();
+      newTime.set(Calendar.HOUR_OF_DAY, lowHours);
+      newTime.set(Calendar.MINUTE, lowMin);
+
+      return newTime.getTime().toInstant();
+    }
+
+    return null;
+  }
+
   public static Instant convertDurationToInstant(Duration d) {
 
     Instant t = null;

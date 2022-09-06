@@ -603,6 +603,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     // Retrieve the DiagnosticReports and get their components
 
+    // Retrieve Medication References
+
     return kd.getFhirInputDataByType();
   }
 

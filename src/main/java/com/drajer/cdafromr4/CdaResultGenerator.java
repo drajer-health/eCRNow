@@ -376,8 +376,8 @@ public class CdaResultGenerator {
       }
     }
     */
-
-    if (obsCodeXml.getValue0() || (obsValueXml != null && obsValueXml.getValue0())) {
+    if ((obsCodeXml != null && obsCodeXml.getValue0())
+        || (obsValueXml != null && obsValueXml.getValue0())) {
 
       lrEntry.append(
           CdaGeneratorUtils.getXmlForTemplateId(

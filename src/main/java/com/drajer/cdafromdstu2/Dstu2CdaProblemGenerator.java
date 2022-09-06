@@ -6,6 +6,7 @@ import ca.uhn.fhir.model.dstu2.valueset.ConditionClinicalStatusCodesEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.Dstu2FhirData;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -87,7 +88,7 @@ public class Dstu2CdaProblemGenerator {
           probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
 
         if (prob.getClinicalStatus() != null
@@ -365,11 +366,14 @@ public class Dstu2CdaProblemGenerator {
                     Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
                     // Add the right value set and version number.
-                    String vs = "2.16.840.1.114222.4.11.7508";
-                    String vsVersion = "19/05/2016";
                     sb.append(
                         CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                            parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+                            parts[1],
+                            csd.getValue0(),
+                            csd.getValue1(),
+                            CdaGeneratorConstants.RCTC_OID,
+                            ActionRepo.getInstance().getRctcVersion(),
+                            ""));
 
                     // Adding one is sufficient, wait for feedback from connectathon.
                   });

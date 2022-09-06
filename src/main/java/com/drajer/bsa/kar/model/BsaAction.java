@@ -185,26 +185,50 @@ public abstract class BsaAction {
             logger.info(
                 " Found the Related Action, with a duration so need to setup a timer to execute later ");
 
-            // Save the execution state, before the scheduling of a job.
-            KarExecutionState st =
-                kd.getKarExecutionStateService().saveOrUpdate(kd.getKarExecutionState());
+            // Check if offhours is enabled.
+            if (kd.getHealthcareSetting().getOffhoursEnabled()) {
 
-            Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+              logger.info(" Off hours is enabled, so the timers have to be shifted ");
 
-            if (t != null && !ignoreTimers)
-              scheduler.scheduleJob(
-                  st.getId(),
-                  ract.getAction().getActionId(),
-                  ract.getAction().getType(),
-                  t,
-                  kd.getxRequestId(),
-                  kd.getJobType(),
-                  MDC.getCopyOfContextMap());
-            else {
+              Instant t =
+                  ApplicationUtils.getInstantForOffHours(
+                      ract.getDuration(),
+                      kd.getHealthcareSetting().getOffHoursStart(),
+                      kd.getHealthcareSetting().getOffHoursEnd(),
+                      kd.getHealthcareSetting().getOffHoursTimezone());
+
+              if (t != null && !ignoreTimers) {
+                setupTimer(kd, t, ract);
+              } else {
+                t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+
+                if (t != null && !ignoreTimers) {
+
+                  setupTimer(kd, t, ract);
+                } else {
+                  logger.info(
+                      " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+                  ract.getAction().process(kd, ehrService);
+                  logger.info(" **** Finished execuing the Related Action. **** ");
+                }
+              }
+
+            } else {
+
               logger.info(
-                  " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
-              ract.getAction().process(kd, ehrService);
-              logger.info(" **** Finished execuing the Related Action. **** ");
+                  " Off hours is not enabled, so the timers will be set as in the Knowledge Artifact. ");
+
+              Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+
+              if (t != null && !ignoreTimers) {
+
+                setupTimer(kd, t, ract);
+              } else {
+                logger.info(
+                    " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+                ract.getAction().process(kd, ehrService);
+                logger.info(" **** Finished execuing the Related Action. **** ");
+              }
             }
 
           } else {
@@ -222,6 +246,22 @@ public abstract class BsaAction {
     }
 
     logger.info(" Finished Executing Related Action for action {}", this.getActionId());
+  }
+
+  public void setupTimer(KarProcessingData kd, Instant t, BsaRelatedAction ract) {
+
+    logger.info(" Setting timer for Instant {}", t);
+
+    KarExecutionState st = kd.getKarExecutionStateService().saveOrUpdate(kd.getKarExecutionState());
+
+    scheduler.scheduleJob(
+        st.getId(),
+        ract.getAction().getActionId(),
+        ract.getAction().getType(),
+        t,
+        kd.getxRequestId(),
+        kd.getJobType(),
+        MDC.getCopyOfContextMap());
   }
 
   public BsaActionStatusType processTimingData(KarProcessingData kd) {

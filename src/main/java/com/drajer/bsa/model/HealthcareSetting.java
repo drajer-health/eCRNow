@@ -289,7 +289,7 @@ public class HealthcareSetting implements FhirServerDetails {
   private String phaUrl;
 
   /** The attribute represents the default name of the organization. */
-  @Column(name = "orgName", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "org_name", nullable = true, columnDefinition = "TEXT")
   private String orgName;
 
   /**
@@ -297,12 +297,34 @@ public class HealthcareSetting implements FhirServerDetails {
    * reporting, the Assigning Authority Id will be used. For FHIR based systems, if a URL is
    * provided, it can be stored in this attribute.
    */
-  @Column(name = "orgIdSystem", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "org_id_system", nullable = true, columnDefinition = "TEXT")
   private String orgIdSystem;
 
   /** The attribute represents a unique identifier for the organization */
-  @Column(name = "orgId", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "org_id", nullable = true, columnDefinition = "TEXT")
   private String orgId;
+
+  /**
+   * The attribute represents the time when the offhours timers can be scheduled for the healthcare
+   * setting
+   */
+  @Column(name = "off_hours_start", nullable = true, columnDefinition = "TEXT")
+  private String offHoursStart;
+
+  /**
+   * The attribute represents the time when the offhours timers should end for the healthcare
+   * setting
+   */
+  @Column(name = "off_hours_end", nullable = true, columnDefinition = "TEXT")
+  private String offHoursEnd;
+
+  /** The attribute represents the timezone for the offhours. */
+  @Column(name = "off_hours_timezone", nullable = true, columnDefinition = "TEXT")
+  private String offHoursTimezone;
+
+  @Column(name = "off_hours_enabled", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean offhoursEnabled = true;
 
   /** The attribute represents a username that may be used with password-based Authorization. */
   @Column(name = "username", columnDefinition = "TEXT")
@@ -712,6 +734,38 @@ public class HealthcareSetting implements FhirServerDetails {
 
   public void setPhaUrl(String phaUrl) {
     this.phaUrl = phaUrl;
+  }
+
+  public String getOffHoursStart() {
+    return offHoursStart;
+  }
+
+  public void setOffHoursStart(String offHoursStart) {
+    this.offHoursStart = offHoursStart;
+  }
+
+  public String getOffHoursEnd() {
+    return offHoursEnd;
+  }
+
+  public void setOffHoursEnd(String offHoursEnd) {
+    this.offHoursEnd = offHoursEnd;
+  }
+
+  public String getOffHoursTimezone() {
+    return offHoursTimezone;
+  }
+
+  public void setOffHoursTimezone(String offHoursTimezone) {
+    this.offHoursTimezone = offHoursTimezone;
+  }
+
+  public Boolean getOffhoursEnabled() {
+    return offhoursEnabled;
+  }
+
+  public void setOffhoursEnabled(Boolean offhoursEnabled) {
+    this.offhoursEnabled = offhoursEnabled;
   }
 
   public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {

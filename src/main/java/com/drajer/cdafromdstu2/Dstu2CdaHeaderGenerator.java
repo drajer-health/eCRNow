@@ -15,8 +15,6 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Patient.Contact;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
-import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
-import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.StringDt;
@@ -111,7 +109,7 @@ public class Dstu2CdaHeaderGenerator {
 
         eICRHeader.append(getAuthorXml(data.getPractitioner(), data.getEncounter()));
 
-        eICRHeader.append(getCustodianXml(data.getOrganization(), details));
+        eICRHeader.append(getCustodianXml(data.getOrganization(), data.getLocation(), details));
 
         eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
 
@@ -408,7 +406,8 @@ public class Dstu2CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getOrganizationXml(Organization org, LaunchDetails details) {
+  public static String getOrganizationXml(
+      Organization org, Location location, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(200);
     if (org != null) {
@@ -427,55 +426,47 @@ public class Dstu2CdaHeaderGenerator {
       sb.append(Dstu2CdaFhirUtilities.getTelecomXml(org.getTelecom()));
       sb.append(Dstu2CdaFhirUtilities.getAddressXml(org.getAddress()));
 
-    } else {
+    } else if (location != null) {
 
-      // ***************
-      // NOTE : THIS IS TEMPORARY --------
-      // For Connectathon testing add defaults, this needs to be removed after connectathon and
-      // replaced with the commented out code.
-      // ***************
+      IdentifierDt id = location.getIdentifierFirstRep();
+
+      if (id != null && !id.isEmpty()) {
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id.getValue()));
+      } else {
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), org.getId().getValue()));
+      }
+
       sb.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), "UtahOutpatientClinic"));
-      sb.append(
-          CdaGeneratorUtils.getXmlForText(
-              CdaGeneratorConstants.NAME_EL_NAME, "Utah Outpatient Clinic"));
+          CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, location.getName()));
+      sb.append(Dstu2CdaFhirUtilities.getTelecomXml(location.getTelecom()));
 
-      List<ContactPointDt> cps = new ArrayList<ContactPointDt>();
-      ContactPointDt cp = new ContactPointDt();
-      cp.setSystem(ContactPointSystemEnum.PHONE);
-      cp.setUse(ContactPointUseEnum.HOME);
-      cp.setValue("5557770123");
-      cps.add(cp);
-      sb.append(Dstu2CdaFhirUtilities.getTelecomXml(cps));
-
-      List<AddressDt> addrs = new ArrayList<AddressDt>();
-      AddressDt addr = new AddressDt();
-      List<StringDt> addrLine = new ArrayList<StringDt>();
-      addrLine.add(new StringDt("0987 Facility Drive"));
-      addr.setLine(addrLine);
-      addr.setCity("alt Lake City");
-      addr.setState("UT");
-      addr.setCountry("US");
-      addr.setPostalCode("84101");
-      addr.setUse(AddressUseEnum.WORK);
-      addrs.add(addr);
+      List<AddressDt> addrs = new ArrayList<>();
+      if (location.getAddress() != null) {
+        addrs.add(location.getAddress());
+      }
       sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
 
-      /* sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
-      sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
+    } else {
+
+      // Code that will replace the code above after testing.
+      sb.append(CdaGeneratorUtils.getNFXMLForII(CdaGeneratorConstants.NF_NI));
+      sb.append(
+          CdaGeneratorUtils.getXmlForText(
+              CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 
       List<ContactPointDt> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps));
+      sb.append(Dstu2CdaFhirUtilities.getTelecomXml(cps));
 
       List<AddressDt> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs)); */
-
+      sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
     }
 
     return sb.toString();
   }
 
-  public static String getCustodianXml(Organization org, LaunchDetails details) {
+  public static String getCustodianXml(Organization org, Location location, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -483,7 +474,7 @@ public class Dstu2CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(org, details));
+    sb.append(getOrganizationXml(org, location, details));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
@@ -544,7 +535,7 @@ public class Dstu2CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(org, details));
+    sb.append(getOrganizationXml(org, loc, details));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -561,7 +552,7 @@ public class Dstu2CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(org, details));
+    sb.append(getOrganizationXml(org, loc, details));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
