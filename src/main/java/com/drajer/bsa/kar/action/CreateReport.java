@@ -63,6 +63,7 @@ public class CreateReport extends BsaAction {
       if (queries != null && !queries.isEmpty()) {
 
         logger.info(" Found Default/Custom Queries for execution ");
+
         // Try to execute the queries.
         queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
 
@@ -82,7 +83,7 @@ public class CreateReport extends BsaAction {
       }
 
       ehrService.loadJurisdicationData(data);
-      ehrService.loadSecondaryResources(data);
+      // ehrService.loadSecondaryResources(data);
 
       // Get the Output Data Requirement to determine the type of bundle to create.
       for (DataRequirement dr : outputData) {

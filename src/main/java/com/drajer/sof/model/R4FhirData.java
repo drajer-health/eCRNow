@@ -39,6 +39,7 @@ public class R4FhirData extends FhirData {
   private List<Condition> encounterDiagnosisConditions;
   private List<Condition> pregnancyConditions;
   private List<DiagnosticReport> diagReports;
+  private List<Observation> diagReportObservations;
   private List<Observation> labResults;
   private List<Observation> labResultValueObservations;
   private List<Observation> travelObs;
@@ -114,6 +115,7 @@ public class R4FhirData extends FhirData {
     encounterDiagnosisConditions = new ArrayList<>();
     pregnancyConditions = new ArrayList<>();
     diagReports = new ArrayList<>();
+    diagReportObservations = new ArrayList<>();
     labResults = new ArrayList<>();
     labResultValueObservations = new ArrayList<>();
     travelObs = new ArrayList<>();
@@ -232,6 +234,10 @@ public class R4FhirData extends FhirData {
     this.labResults = labResults;
   }
 
+  public void addLabResults(List<Observation> labRes) {
+    this.labResults.addAll(labRes);
+  }
+
   public List<Observation> getTravelObs() {
     return travelObs;
   }
@@ -319,5 +325,13 @@ public class R4FhirData extends FhirData {
 
   public void setProcedureList(List<Procedure> procedureList) {
     this.procedureList = procedureList;
+  }
+
+  public List<Observation> getDiagReportObservations() {
+    return diagReportObservations;
+  }
+
+  public void setDiagReportObservations(List<Observation> diagReportObservations) {
+    this.diagReportObservations = diagReportObservations;
   }
 }

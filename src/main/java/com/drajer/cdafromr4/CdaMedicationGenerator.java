@@ -132,7 +132,8 @@ public class CdaMedicationGenerator {
                 null,
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
-                med));
+                med,
+                medList));
       }
 
       // Add Medication Administration
@@ -180,7 +181,8 @@ public class CdaMedicationGenerator {
                 dose,
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
-                medAdm));
+                medAdm,
+                medList));
       }
 
       // Add Medication Requests
@@ -243,7 +245,8 @@ public class CdaMedicationGenerator {
                 null,
                 startDate,
                 moodCode,
-                medReq));
+                medReq,
+                medList));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -277,7 +280,8 @@ public class CdaMedicationGenerator {
       Quantity dose,
       DateTimeType startDate,
       String moodCode,
-      DomainResource res) {
+      DomainResource res,
+      List<Medication> medList) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -331,9 +335,6 @@ public class CdaMedicationGenerator {
 
         freqInHours = Integer.toString(dosage.getTiming().getRepeat().getFrequency());
       }
-    } else if (dose != null) {
-      ds =
-          CdaFhirUtilities.getQuantityXml(dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
     } else {
       ds =
           CdaFhirUtilities.getQuantityXml(dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
@@ -373,7 +374,8 @@ public class CdaMedicationGenerator {
             false,
             CdaGeneratorConstants.FHIR_RXNORM_URL,
             false,
-            res);
+            res,
+            medList);
 
     if (!codeXml.isEmpty()) {
       sb.append(codeXml);

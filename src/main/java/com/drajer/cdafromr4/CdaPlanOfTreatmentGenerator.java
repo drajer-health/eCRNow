@@ -30,7 +30,7 @@ public class CdaPlanOfTreatmentGenerator {
     StringBuilder sb = new StringBuilder(2000);
 
     List<ServiceRequest> sr = getValidServiceRequests(data);
-    List<DiagnosticReport> reports = CdaResultGenerator.getValidDiagnosticReports(data);
+    List<DiagnosticReport> reports = getValidDiagnosticOrders(data);
 
     if ((sr != null && !sr.isEmpty()) || (reports != null && !reports.isEmpty())) {
       logger.debug("Found a total of {} service request objects to translate to CDA.", sr.size());
@@ -436,5 +436,35 @@ public class CdaPlanOfTreatmentGenerator {
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
     return sb.toString();
+  }
+
+  public static List<DiagnosticReport> getValidDiagnosticOrders(R4FhirData data) {
+
+    List<DiagnosticReport> drs = new ArrayList<>();
+
+    if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
+
+      logger.info(
+          "Total num of Diagnostic Reports available for Patient {}", data.getDiagReports().size());
+
+      for (DiagnosticReport dr : data.getDiagReports()) {
+
+        if (dr.getCode() != null
+            && dr.getCode().getCoding() != null
+            && !dr.getCode().getCoding().isEmpty()
+            && (dr.getResult() == null || dr.getResult().size() == 0)
+            && Boolean.TRUE.equals(
+                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                    dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
+
+          logger.debug("Found a DiagnosticReport with a LOINC code with no result");
+          drs.add(dr);
+        }
+      }
+    } else {
+      logger.debug("No Valid DiagnosticReport in the bundle to process");
+    }
+
+    return drs;
   }
 }

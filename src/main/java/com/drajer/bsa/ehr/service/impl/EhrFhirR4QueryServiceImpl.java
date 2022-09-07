@@ -39,12 +39,16 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationDispense;
+import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -617,11 +621,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
 
-    return getResourceByUrl(client, context, resourceName, url);
+    return getResourceByUrl(client, context, resourceName, url, kd);
   }
 
   public Resource getResourceByUrl(
-      IGenericClient genericClient, FhirContext context, String resourceName, String url) {
+      IGenericClient genericClient,
+      FhirContext context,
+      String resourceName,
+      String url,
+      KarProcessingData data) {
 
     Resource resource = null;
 
@@ -631,6 +639,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       resource = (Resource) (genericClient.read().resource(resourceName).withUrl(url).execute());
 
+      if (resource != null) {
+        populateSecondaryResources(
+            genericClient, context, resource, data, resource.getResourceType());
+      }
+
     } catch (BaseServerResponseException responseException) {
       if (responseException.getOperationOutcome() != null) {
         logger.debug(
@@ -638,9 +651,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 .newJsonParser()
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
-      logger.error("Error in getting {} resource by Id: {}", resourceName, url, responseException);
+      logger.error("Error in getting {} resource by Url: {}", resourceName, url, responseException);
     } catch (Exception e) {
-      logger.error("Error in getting {} resource by Id: {}", resourceName, url, e);
+      logger.error("Error in getting {} resource by Url: {}", resourceName, url, e);
     }
     return resource;
   }
@@ -970,28 +983,19 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         resources = new HashSet<>();
         resMapById = new HashMap<>();
         resMapType = new HashMap<>();
-        Set<Resource> reports = new HashSet<>();
-        ResourceType rType = null;
         for (BundleEntryComponent comp : bc) {
 
           logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
           resources.add(comp.getResource());
 
-          if (comp.getResource().getResourceType() == ResourceType.DiagnosticReport) {
-            rType = ResourceType.DiagnosticReport;
-            reports.add(comp.getResource());
-          }
+          populateSecondaryResources(
+              genericClient, context, comp.getResource(), kd, comp.getResource().getResourceType());
         }
 
         resMapById.put(dataReqId, resources);
         resMapType.put(queryFilter.getResourceType(), resources);
         kd.addResourcesByType(resMapType);
         kd.addResourcesById(resMapById);
-
-        if (reports != null && !reports.isEmpty()) {
-          resMapType.put(rType, reports);
-          kd.addResourcesByType(resMapType);
-        }
 
         logger.info(" Adding {} resources of type : {}", resources.size(), resType);
       } else {
@@ -1008,6 +1012,107 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl);
     } catch (Exception e) {
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl, e);
+    }
+  }
+
+  private void populateSecondaryResources(
+      IGenericClient genericClient,
+      FhirContext context,
+      Resource res,
+      KarProcessingData kd,
+      ResourceType rType) {
+
+    if (res != null && rType == ResourceType.MedicationRequest) {
+      MedicationRequest mreq = (MedicationRequest) res;
+
+      // Retrieve any medications
+      if (mreq.getMedication() != null && mreq.getMedication() instanceof Reference) {
+        Reference medRef = (Reference) mreq.getMedication();
+        Resource secRes =
+            getResourceById(
+                genericClient,
+                context,
+                ResourceType.Medication.toString(),
+                medRef.getReferenceElement().getIdPart());
+
+        if (secRes != null) {
+
+          logger.info(
+              " Adding secondary Medication resource for MedicationRequest with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+        }
+      }
+    } else if (res != null && rType == ResourceType.MedicationAdministration) {
+
+      MedicationAdministration mAdm = (MedicationAdministration) res;
+
+      // Retrieve any medications
+      if (mAdm.getMedication() != null && mAdm.getMedication() instanceof Reference) {
+        Reference medRef = (Reference) mAdm.getMedication();
+        Resource secRes =
+            getResourceById(
+                genericClient,
+                context,
+                ResourceType.Medication.toString(),
+                medRef.getReferenceElement().getIdPart());
+
+        if (secRes != null) {
+
+          logger.info(
+              " Adding secondary Medication resource for MedicationAdministration with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+        }
+      }
+    } else if (res != null && rType == ResourceType.MedicationDispense) {
+
+      MedicationDispense mDisp = (MedicationDispense) res;
+
+      // Retrieve any medications
+      if (mDisp.getMedication() != null && mDisp.getMedication() instanceof Reference) {
+        Reference medRef = (Reference) mDisp.getMedication();
+        Resource secRes =
+            getResourceById(
+                genericClient,
+                context,
+                ResourceType.Medication.toString(),
+                medRef.getReferenceElement().getIdPart());
+
+        if (secRes != null) {
+
+          logger.info(
+              " Adding secondary Medidcation resource for MedicationDispense with id {}",
+              secRes.getId());
+          kd.addResourceByType(secRes.getResourceType(), secRes);
+        }
+      }
+    } else if (res != null && rType == ResourceType.DiagnosticReport) {
+
+      DiagnosticReport report = (DiagnosticReport) res;
+
+      if (report.getResult() != null) {
+
+        List<Reference> components = report.getResult();
+
+        for (Reference r : components) {
+
+          Resource secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Observation.toString(),
+                  r.getReferenceElement().getIdPart());
+
+          if (secRes != null) {
+
+            logger.info(
+                " Adding secondary Observation resource for Diagnostic Report with id {}",
+                secRes.getId());
+            kd.addResourceByType(secRes.getResourceType(), secRes);
+          }
+        }
+      }
     }
   }
 

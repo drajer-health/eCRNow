@@ -272,6 +272,25 @@ public class KarProcessingData {
     }
   }
 
+  public void addResourceByType(ResourceType type, Resource res) {
+
+    if (res != null) {
+
+      if (fhirInputDataByType.containsKey(type)) {
+        Set<Resource> resources = fhirInputDataByType.get(type);
+        resources.add(res);
+        Set<Resource> uniqueResources =
+            ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+
+        fhirInputDataByType.put(type, uniqueResources);
+      } else {
+        Set<Resource> resources = new HashSet<>();
+        resources.add(res);
+        fhirInputDataByType.put(type, resources);
+      }
+    }
+  }
+
   public void addResourcesById(String id, Set<Resource> res) {
     if (res != null && res.size() > 0) {
       fhirInputDataById.put(id, res);

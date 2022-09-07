@@ -91,6 +91,7 @@ public class R3ToR2DataConverterUtils {
       for (DataRequirement dr : reqs) {
 
         Set<Resource> resources = kd.getDataForId(dr.getId(), act.getRelatedDataId(dr.getId()));
+
         if (resources != null) {
 
           addResourcesToR4FhirData(dr.getId(), data, r4FhirData, details, resources, dr.getType());
@@ -98,6 +99,7 @@ public class R3ToR2DataConverterUtils {
       }
 
       addAdministrativeResources(null, data, r4FhirData, details, kd, act);
+      addSecondaryResources(null, data, r4FhirData, details, kd, act);
 
     } else {
 
@@ -106,6 +108,23 @@ public class R3ToR2DataConverterUtils {
 
     r4FhirData.setData(data);
     return new Pair<>(r4FhirData, details);
+  }
+
+  public static void addSecondaryResources(
+      String dataId,
+      Bundle data,
+      R4FhirData r4FhirData,
+      LaunchDetails details,
+      KarProcessingData kd,
+      BsaAction act) {
+
+    Set<Resource> medications = kd.getResourcesByType(ResourceType.Medication.toString());
+    addResourcesToR4FhirData(
+        dataId, data, r4FhirData, details, medications, ResourceType.Medication.toString());
+
+    Set<Resource> observations = kd.getResourcesByType(ResourceType.Observation.toString());
+    addResourcesToR4FhirData(
+        dataId, data, r4FhirData, details, observations, ResourceType.Observation.toString());
   }
 
   public static void addAdministrativeResources(
@@ -286,7 +305,7 @@ public class R3ToR2DataConverterUtils {
             labObsList.add((Observation) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setLabResults(labObsList);
+          r4FhirData.addLabResults(labObsList);
         }
 
         logger.info(" Setting up the Vital Signs for R4FhirData ");
