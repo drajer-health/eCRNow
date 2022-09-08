@@ -577,7 +577,7 @@ public class CdaGeneratorUtilsTest {
 
     String trimmedResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "+1(202)1021012", "WORK");
     assertEquals(expectedResult, trimmedResult);
-    
+
     String expectedResult2 = "<MOBILE value=\"tel:(555)555-5006\" use=\"WORK\"/>\n";
     String trimmedResult2 = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "555-555-5006", "WORK");
     assertEquals(expectedResult2, trimmedResult2);

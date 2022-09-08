@@ -209,9 +209,9 @@ public class R4FhirData extends FhirData {
   public void setEncounterDiagnosisConditions(List<Condition> encounterDiagnosisConditions) {
     this.encounterDiagnosisConditions = encounterDiagnosisConditions;
   }
-  
+
   public void addEncounterDiagnosisConditions(List<Condition> encounterDiagnosisConditions) {
-	    this.encounterDiagnosisConditions.addAll(encounterDiagnosisConditions);	    
+    this.encounterDiagnosisConditions.addAll(encounterDiagnosisConditions);
   }
 
   public List<Condition> getPregnancyConditions() {

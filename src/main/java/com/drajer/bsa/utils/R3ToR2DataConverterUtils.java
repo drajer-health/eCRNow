@@ -204,17 +204,20 @@ public class R3ToR2DataConverterUtils {
         if (resources != null && !resources.isEmpty()) {
 
           for (Resource r : resources) {
-        	  
-        	  Condition c = (Condition)r;
+
+            Condition c = (Condition) r;
             conditionList.add(c);
-            
-            if(c.getCategoryFirstRep() != null && 
-            		c.getCategoryFirstRep().getCodingFirstRep() != null && 
-            		c.getCategoryFirstRep().getCodingFirstRep().getCode() != null && 
-            		c.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals("encounter-diagnosis")) {
-            	encDiagList.add(c);
+
+            if (c.getCategoryFirstRep() != null
+                && c.getCategoryFirstRep().getCodingFirstRep() != null
+                && c.getCategoryFirstRep().getCodingFirstRep().getCode() != null
+                && c.getCategoryFirstRep()
+                    .getCodingFirstRep()
+                    .getCode()
+                    .contentEquals("encounter-diagnosis")) {
+              encDiagList.add(c);
             }
-            
+
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
           r4FhirData.setConditions(conditionList);
