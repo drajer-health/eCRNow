@@ -200,13 +200,25 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the Conditions for R4FhirData ");
         ArrayList<Condition> conditionList = new ArrayList<>();
+        ArrayList<Condition> encDiagList = new ArrayList<>();
         if (resources != null && !resources.isEmpty()) {
 
           for (Resource r : resources) {
-            conditionList.add((Condition) r);
+        	  
+        	  Condition c = (Condition)r;
+            conditionList.add(c);
+            
+            if(c.getCategoryFirstRep() != null && 
+            		c.getCategoryFirstRep().getCodingFirstRep() != null && 
+            		c.getCategoryFirstRep().getCodingFirstRep().getCode() != null && 
+            		c.getCategoryFirstRep().getCodingFirstRep().getCode().contentEquals("encounter-diagnosis")) {
+            	encDiagList.add(c);
+            }
+            
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
           r4FhirData.setConditions(conditionList);
+          r4FhirData.addEncounterDiagnosisConditions(encDiagList);
         }
       } else if (type.contentEquals(ResourceType.Immunization.toString())) {
 
