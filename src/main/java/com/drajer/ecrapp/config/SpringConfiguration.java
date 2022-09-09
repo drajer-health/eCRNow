@@ -3,6 +3,7 @@ package com.drajer.ecrapp.config;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.*;
 import java.util.HashMap;
@@ -57,9 +58,9 @@ public class SpringConfiguration {
     RetryTemplate template = new RetryTemplate();
 
     Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>();
+    retryableExceptions.put(FhirClientConnectionException.class, true);
     retryableExceptions.put(HttpServerErrorException.class, true);
     retryableExceptions.put(AuthenticationException.class, true);
-    retryableExceptions.put(BaseServerResponseException.class, true);
     retryableExceptions.put(ForbiddenOperationException.class, true);
     retryableExceptions.put(InternalErrorException.class, true);
     retryableExceptions.put(InvalidRequestException.class, true);
