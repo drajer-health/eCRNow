@@ -99,7 +99,7 @@ public class Dstu2CdaFhirUtilities {
   public static CodeableConceptDt getCodeableConceptExtension(
       List<ExtensionDt> exts, String extUrl) {
 
-    if (exts != null && !exts.isEmpty()) {
+    if (exts != null && exts.size() > 0) {
 
       for (ExtensionDt ext : exts) {
 
@@ -108,7 +108,7 @@ public class Dstu2CdaFhirUtilities {
           // if the top level extension has CodingDt then we will use it.
           if (ext.getValue() != null && (ext.getValue() instanceof CodeableConceptDt)) {
 
-            logger.info(" Found Extension at Top LEVEL ");
+            logger.info(" Found Extension at top level ");
             return (CodeableConceptDt) ext.getValue();
           }
         }
