@@ -14,11 +14,11 @@ import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.gclient.ISort;
 import ca.uhn.fhir.rest.gclient.IUntypedQuery;
 import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> 
   private final EcrFhirRetryClient client;
   private IUntypedQuery<IQuery> untypedQuery;
   private static final Logger logger = LoggerFactory.getLogger(EcrFhirRetryableSearch.class);
+  private static String url;
 
   public EcrFhirRetryableSearch(final IUntypedQuery untypedQuery, final EcrFhirRetryClient client) {
     this.untypedQuery = untypedQuery;
@@ -86,11 +87,13 @@ public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> 
 
   @Override
   public Object execute() {
+    AtomicInteger retryCount = new AtomicInteger();
     return client
         .getRetryTemplate()
         .execute(
             context -> {
-              logger.info("Retry FHIR search");
+              retryCount.getAndIncrement();
+              logger.info("Retrying FHIR search url {}. Count {} ", url, retryCount);
               return query.execute();
             },
             null);
@@ -139,6 +142,7 @@ public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> 
 
   @Override
   public IQuery<IQuery> byUrl(String theSearchUrl) {
+    this.url = theSearchUrl;
     return new EcrFhirRetryableSearch<>(untypedQuery.byUrl(theSearchUrl), client);
   }
 

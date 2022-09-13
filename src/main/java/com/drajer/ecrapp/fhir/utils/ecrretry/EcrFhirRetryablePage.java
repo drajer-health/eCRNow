@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.gclient.IGetPageTyped;
 import ca.uhn.fhir.rest.gclient.IGetPageUntyped;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -72,12 +73,14 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public IBaseBundle execute() {
+    AtomicInteger retryCount = new AtomicInteger();
     return client
         .getRetryTemplate()
         .execute(
             retryContext -> {
+              retryCount.getAndIncrement();
               client.getHttpInterceptor().setRetryCount(retryContext.getRetryCount());
-              logger.info("Retry FHIR page");
+              logger.info("Retrying FHIR page. Count: {}",retryCount);
               return pageTyped.execute();
             },
             null);

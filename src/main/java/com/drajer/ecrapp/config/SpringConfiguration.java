@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,9 @@ public class SpringConfiguration {
       "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde";
 
   public static final FhirContext ctx = FhirContext.forR4();
+
+  @Value("${ecr.fhir.retry.maxRetryCount}")
+  private int maxRetryCount;
 
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {
@@ -74,7 +78,7 @@ public class SpringConfiguration {
     retryableExceptions.put(ResourceVersionNotSpecifiedException.class, true);
     retryableExceptions.put(UnclassifiedServerFailureException.class, true);
     retryableExceptions.put(UnprocessableEntityException.class, true);
-    template.setRetryPolicy(new SimpleRetryPolicy(5, retryableExceptions));
+    template.setRetryPolicy(new SimpleRetryPolicy(maxRetryCount, retryableExceptions));
 
     template.setBackOffPolicy(backOffPolicy);
 

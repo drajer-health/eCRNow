@@ -1,5 +1,6 @@
 package com.drajer.test;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.*;
@@ -107,7 +108,7 @@ public class ITPageRetry extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
     wireMockServer.verify(
-        15,
+        moreThanOrExactly(15),
         getRequestedFor(
             urlEqualTo(
                 "/FHIR/Observation?patient=12742571&category=laboratory&-pageContext=10065315_11316911_12742571_1_1&-pageDirection=NEXT")));

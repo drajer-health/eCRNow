@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.gclient.IReadIfNoneMatch;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
@@ -120,12 +121,13 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public Object execute() {
-
+    AtomicInteger retryCount = new AtomicInteger();
     return client
         .getRetryTemplate()
         .execute(
             retryContext -> {
-              logger.info("Retry FHIR read");
+              retryCount.getAndIncrement();
+              logger.info("Retrying FHIR read. Count: {} ",retryCount);
               return readExecutableParent.execute();
             },
             null);

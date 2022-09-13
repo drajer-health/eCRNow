@@ -4,7 +4,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import com.drajer.test.model.StubVO;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +88,8 @@ public class WireMockHelper {
     for (String key : mappingKey) {
       String url = "";
       if (key.equalsIgnoreCase("default")) {
-        UrlMatchingStrategy urlMatchingStrategy = new UrlMatchingStrategy();
-        urlMatchingStrategy.setUrlPattern(baseUrl + "/.*");
         wireMockServer.stubFor(
-            any(urlMatchingStrategy)
+            any(urlPathMatching(baseUrl + "/.*"))
                 .atPriority(10)
                 .willReturn(
                     aResponse()
