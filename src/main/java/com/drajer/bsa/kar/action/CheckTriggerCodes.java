@@ -122,7 +122,7 @@ public class CheckTriggerCodes extends BsaAction {
       data.addActionStatus(getActionId(), actStatus);
       data.setCurrentTriggerMatchStatus(ctcsl);
 
-      if (Boolean.TRUE.equals(conditionsMet(data) && data.hasNewTriggerCodeMatches())) {
+      if (Boolean.TRUE.equals(conditionsMet(data, ehrService) && data.hasNewTriggerCodeMatches())) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.

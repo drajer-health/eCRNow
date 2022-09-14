@@ -1133,7 +1133,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return queryToExecute.contains(SEARCH_QUERY_CHARACTERS);
   }
 
-  private String substituteContextParams(KarProcessingData data, String queryToExecute) {
+  public String substituteContextParams(KarProcessingData data, String queryToExecute) {
 
     // Substitute any context parameters.
     String substitutedQuery =

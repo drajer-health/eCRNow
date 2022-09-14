@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
+import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
@@ -20,7 +21,8 @@ public class CqlProcessor implements BsaConditionProcessor {
   private LibraryProcessor libraryProcessor;
 
   @Override
-  public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
+  public Boolean evaluateExpression(
+      BsaCondition cond, BsaAction act, KarProcessingData kd, EhrQueryService ehrService) {
     Set<String> expressions = new HashSet<>();
     expressions.add(cond.getLogicExpression().getExpression());
     if (!(cond instanceof BsaCqlCondition)) {
@@ -65,7 +67,8 @@ public class CqlProcessor implements BsaConditionProcessor {
   }
 
   @Override
-  public Boolean evaluateExpression(BsaCondition cond, Parameters params) {
+  public Boolean evaluateExpression(
+      BsaCondition cond, Parameters params, EhrQueryService ehrService) {
 
     logger.error(" Unable to evalue expression as this is not implementd.");
 

@@ -343,7 +343,7 @@ public class ApplicationUtils {
       if (lowHours < highHours) {
         totalHours = highHours - lowHours;
       } else {
-        totalHours = lowHours + highHours;
+        totalHours = (24 - lowHours) + highHours;
       }
 
       lowMin = 60 - lowMin;
@@ -351,7 +351,8 @@ public class ApplicationUtils {
       int totalOffHourMin = (totalHours * 60) - lowMin + highMin;
       int totalBusyHourMin = (24 * 60) - totalOffHourMin;
 
-      logger.info(" Total off Hour Min = {}", totalOffHourMin);
+      logger.info(
+          " Total off Hour Min = {}, Total Busy Hour Min {}", totalOffHourMin, totalBusyHourMin);
 
       Instant t = new Date().toInstant();
       Calendar today = Calendar.getInstance();
@@ -361,18 +362,20 @@ public class ApplicationUtils {
 
       long offsetMinutes = java.time.Duration.between(busyHourStart, t).abs().toMinutes();
 
-      logger.info(
-          " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}",
-          t,
-          busyHourStart,
-          offsetMinutes);
-
       // Calculate the new Instant
       int newTimeOffset = ((int) offsetMinutes * totalOffHourMin) / totalBusyHourMin;
+
+      logger.info(
+          " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}, newTimeOffset {}",
+          t,
+          busyHourStart,
+          offsetMinutes,
+          newTimeOffset);
 
       Calendar newTime = Calendar.getInstance();
       newTime.set(Calendar.HOUR_OF_DAY, lowHours);
       newTime.set(Calendar.MINUTE, lowMin);
+      newTime.add(Calendar.MINUTE, newTimeOffset);
 
       return newTime.getTime().toInstant();
     }

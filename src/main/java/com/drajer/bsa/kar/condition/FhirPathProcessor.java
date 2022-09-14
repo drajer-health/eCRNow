@@ -1,5 +1,6 @@
 package com.drajer.bsa.kar.condition;
 
+import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
@@ -18,6 +19,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Expression;
@@ -46,7 +48,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   ExpressionEvaluator expressionEvaluator;
 
   @Override
-  public Boolean evaluateExpression(BsaCondition cond, BsaAction act, KarProcessingData kd) {
+  public Boolean evaluateExpression(
+      BsaCondition cond, BsaAction act, KarProcessingData kd, EhrQueryService ehrService) {
 
     Parameters params = kd.getParametersByActionId(act.getActionId());
     if (params == null) {
@@ -63,22 +66,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         params.addParameter(paramComponent);
       }
     }
-    if (cond instanceof BsaFhirPathCondition) {
-      Expression variableExpression = ((BsaFhirPathCondition) cond).getVariableExpression();
-      if (variableExpression != null
-          && (variableExpression.hasLanguage()
-              && variableExpression.getLanguage().equals("text/fhirpath"))) {
-        ParametersParameterComponent paramComponent = new ParametersParameterComponent();
-        Parameters variableResult =
-            (Parameters) expressionEvaluator.evaluate(variableExpression.getExpression(), null);
-        Type value = variableResult.getParameter("return");
-        paramComponent.setName("%" + variableExpression.getName());
-        paramComponent.setValue(value);
-        params.addParameter(paramComponent);
-      }
-    }
 
-    logger.info(" Parameters size = {}", params.getParameter().size());
+    logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
+
+    resolveVariables(cond, params, kd, act, ehrService);
+
+    logger.info(" Parameters size after resolving variables = {}", params.getParameter().size());
 
     Parameters result =
         (Parameters)
@@ -93,6 +86,76 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           " Null Value returned from FHIR Path Expression Evaluator : So condition not met");
       return false;
     }
+  }
+
+  public void resolveVariables(
+      BsaCondition cond,
+      Parameters params,
+      KarProcessingData kd,
+      BsaAction act,
+      EhrQueryService ehrService) {
+
+    if (cond instanceof BsaFhirPathCondition) {
+      logger.info(" Found a FhirPath Condition ");
+
+      List<Expression> expressions = ((BsaFhirPathCondition) cond).getVariables();
+
+      if (expressions != null && expressions.size() > 0) {
+
+        for (Expression exp : expressions) {
+
+          if (exp.hasLanguage() && exp.getLanguage().contentEquals("text/fhirpath")) {
+
+            ParametersParameterComponent paramComponent = new ParametersParameterComponent();
+
+            logger.info(" Expression before resolution {}", exp.getExpression());
+
+            String expr = resolveContextVariables(exp.getExpression(), ehrService, kd);
+
+            logger.info(" Expression after resolution {}", expr);
+
+            Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
+
+            if (exp.getName().contentEquals("encounterStartDate")
+                || exp.getName().contentEquals("encounterEndDate")) {
+
+              DateTimeType value = new DateTimeType(expr);
+
+              paramComponent.setName("%" + exp.getName());
+              paramComponent.setValue(value);
+
+              logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+
+            } else {
+
+              Type value = variableResult.getParameter("return");
+              paramComponent.setName("%" + exp.getName());
+              paramComponent.setValue(value);
+
+              logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+            }
+
+            params.addParameter(paramComponent);
+          } else {
+            logger.info(" Ignoring non FhirPath Expression ");
+          }
+        }
+
+      } else {
+        logger.info(" No expressions to process ");
+      }
+    } else {
+
+      logger.info(" Not a FhirPath Condition, so ignored ");
+    }
+  }
+
+  public String resolveContextVariables(
+      String exp, EhrQueryService ehrService, KarProcessingData kd) {
+
+    String expr = ehrService.substituteContextParams(kd, exp);
+
+    return expr;
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
@@ -415,7 +478,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   }
 
   @Override
-  public Boolean evaluateExpression(BsaCondition cond, Parameters params) {
+  public Boolean evaluateExpression(
+      BsaCondition cond, Parameters params, EhrQueryService ehrService) {
 
     Parameters result =
         (Parameters)

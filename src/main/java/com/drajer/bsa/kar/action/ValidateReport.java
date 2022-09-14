@@ -75,7 +75,7 @@ public class ValidateReport extends BsaAction {
       }
 
       // Execute Sub and related actions
-      if (Boolean.TRUE.equals(conditionsMet(data))) {
+      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.

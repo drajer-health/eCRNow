@@ -72,7 +72,9 @@ public interface EhrQueryService {
 
   JSONObject getAuthorizationToken(HealthcareSetting hs);
 
-  void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
+  public void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
 
   public FhirContext getContext();
+
+  public String substituteContextParams(KarProcessingData data, String str);
 }

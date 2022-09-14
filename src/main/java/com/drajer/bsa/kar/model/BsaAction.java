@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r5.model.Enumerations.QuantityComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -131,14 +132,15 @@ public abstract class BsaAction {
   /** The method that all actions have to implement to process data. */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
 
-  public Boolean conditionsMet(KarProcessingData kd) {
+  public Boolean conditionsMet(KarProcessingData kd, EhrQueryService ehrService) {
 
     Boolean retVal = true;
 
     for (BsaCondition bc : conditions) {
 
       // If any of the conditions evaluate to be false, then the method returns false.
-      if (Boolean.FALSE.equals(bc.getConditionProcessor().evaluateExpression(bc, this, kd))) {
+      if (Boolean.FALSE.equals(
+          bc.getConditionProcessor().evaluateExpression(bc, this, kd, ehrService))) {
         logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
         retVal = false;
       }
@@ -186,7 +188,10 @@ public abstract class BsaAction {
                 " Found the Related Action, with a duration so need to setup a timer to execute later ");
 
             // Check if offhours is enabled.
-            if (kd.getHealthcareSetting().getOffhoursEnabled()) {
+            if (kd.getHealthcareSetting().getOffhoursEnabled()
+                && ract.getDuration().hasComparator()
+                && ract.getDuration().getComparator().toString()
+                    == QuantityComparator.LESS_OR_EQUAL.toString()) {
 
               logger.info(" Off hours is enabled, so the timers have to be shifted ");
 
@@ -198,12 +203,15 @@ public abstract class BsaAction {
                       kd.getHealthcareSetting().getOffHoursTimezone());
 
               if (t != null && !ignoreTimers) {
+
+                logger.info(" Setting up timer to expire at: {}", t.toString());
                 setupTimer(kd, t, ract);
               } else {
                 t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
 
                 if (t != null && !ignoreTimers) {
 
+                  logger.info(" Setting up timer to expire at: {}", t.toString());
                   setupTimer(kd, t, ract);
                 } else {
                   logger.info(
@@ -216,12 +224,13 @@ public abstract class BsaAction {
             } else {
 
               logger.info(
-                  " Off hours is not enabled, so the timers will be set as in the Knowledge Artifact. ");
+                  " Does not qualify for off hour timers, so the timers will be set as in the Knowledge Artifact. ");
 
               Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
 
               if (t != null && !ignoreTimers) {
 
+                logger.info(" Setting up timer to expire at: {}", t.toString());
                 setupTimer(kd, t, ract);
               } else {
                 logger.info(

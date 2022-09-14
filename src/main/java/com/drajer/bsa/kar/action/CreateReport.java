@@ -131,7 +131,7 @@ public class CreateReport extends BsaAction {
         }
       }
 
-      if (Boolean.TRUE.equals(conditionsMet(data))) {
+      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.

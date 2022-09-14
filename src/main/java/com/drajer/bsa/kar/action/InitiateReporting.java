@@ -45,7 +45,8 @@ public class InitiateReporting extends BsaAction {
     }
 
     // Ensure the activity is In-Progress and the Conditions are met.
-    if (status != BsaActionStatusType.SCHEDULED && Boolean.TRUE.equals(conditionsMet(data))) {
+    if (status != BsaActionStatusType.SCHEDULED
+        && Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
 
       logger.info(" All conditions in the Actions have been met for {}", this.getActionId());
 
