@@ -633,7 +633,7 @@ public class CdaGeneratorUtils {
               + use
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-    } else {
+    } else if (telNo.length() == 10) {
 
       s +=
           CdaGeneratorConstants.START_XMLTAG

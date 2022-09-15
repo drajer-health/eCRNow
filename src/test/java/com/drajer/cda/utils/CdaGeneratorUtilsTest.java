@@ -577,6 +577,12 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
+  public void getXmlForTelecomTest_TelecomNumberLesserThan10() {
+    String result = CdaGeneratorUtils.getXmlForTelecom("PHONE", "2021022", "HOME");
+    assertEquals("", result);
+  }
+
+  @Test
   public void getXmlForEmailTest() {
     String expectedResult = "<MOBILE value=\"mailto:20210210123\"/>\n";
     String result = CdaGeneratorUtils.getXmlForEmail("MOBILE", "20210210123", "");
