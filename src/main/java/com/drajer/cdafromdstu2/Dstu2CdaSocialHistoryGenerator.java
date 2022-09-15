@@ -4,6 +4,7 @@ import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.primitive.CodeDt;
+import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
@@ -16,8 +17,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import jline.internal.Log;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.StringType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,8 +127,10 @@ public class Dstu2CdaSocialHistoryGenerator {
         for (Observation obs : occHistory) {
 
           if (obs.getValue() != null
-              && (obs.getValue() instanceof StringType
-                  || obs.getValue() instanceof CodeableConcept)) {
+              && (obs.getValue() instanceof StringDt
+                  || obs.getValue() instanceof CodeableConceptDt)) {
+
+            logger.info(" Found the Occupation Observation to include ");
             bodyvals.put(
                 CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
                 CdaGeneratorConstants.OCCUPATION_HISTORY_DISPLAY);
@@ -176,24 +177,27 @@ public class Dstu2CdaSocialHistoryGenerator {
 
       // Add entry
       if (!StringUtils.isEmpty(birthSexXml)) {
-        logger.info(" Adding birth sex xml");
+        logger.debug(" Adding Birth Sex Xml {}", birthSexXml);
         sb.append(birthSexXml);
       }
 
-      if (!StringUtils.isEmpty(pregCondXml.toString())) {
-        logger.info(" Adding birth sex xml");
+      if (!StringUtils.isEmpty(pregCondXml)) {
+        logger.debug(" Adding Pregnancy Condition Xml {}", pregCondXml);
         sb.append(pregCondXml);
       }
 
       if (!StringUtils.isEmpty(pregObsXml)) {
+        logger.debug(" Adding Pregnancy Observation Xml {}", pregObsXml);
         sb.append(pregObsXml);
       }
 
       if (!StringUtils.isEmpty(occHistoryXml.toString())) {
+    	  logger.debug(" Adding Occupation History Xml {}", occHistoryXml);
         sb.append(occHistoryXml);
       }
 
       if (!StringUtils.isEmpty(travelHistoryXml.toString())) {
+        logger.debug(" Adding Travel History Xml {}", travelHistoryXml);
         sb.append(travelHistoryXml);
       }
 
@@ -310,6 +314,8 @@ public class Dstu2CdaSocialHistoryGenerator {
             CdaGeneratorConstants.OBS_CLASS_CODE,
             CdaGeneratorConstants.MOOD_CODE_DEF));
 
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID));
     sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,

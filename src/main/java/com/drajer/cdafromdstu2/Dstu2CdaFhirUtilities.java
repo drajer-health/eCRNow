@@ -744,6 +744,70 @@ public class Dstu2CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getPeriodXmlForValueElement(PeriodDt dt, String elName) {
+
+    if (dt != null) {
+
+      return getEffectiveTimeXmlForValueElement(dt.getStartElement(), dt.getEndElement(), elName);
+
+    } else {
+
+      String start = CdaGeneratorConstants.NF_NI;
+      String end = CdaGeneratorConstants.NF_NI;
+      return CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, start, end);
+    }
+  }
+
+  public static String getEffectiveTimeXmlForValueElement(
+      DateTimeDt start, DateTimeDt end, String elName) {
+
+    String retXml = "";
+    if (start != null && end != null) {
+
+      Date s = start.getValue();
+      TimeZone stz = start.getTimeZone();
+
+      String startStr = CdaGeneratorUtils.getStringForDateTime(s, stz);
+
+      Date e = end.getValue();
+      TimeZone etz = end.getTimeZone();
+
+      String endStr = CdaGeneratorUtils.getStringForDateTime(e, etz);
+
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+
+    } else if (start != null) {
+
+      Date s = start.getValue();
+      TimeZone stz = start.getTimeZone();
+
+      String startStr = CdaGeneratorUtils.getStringForDateTime(s, stz);
+
+      String endStr = CdaGeneratorConstants.NF_NI;
+
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+
+    } else if (end != null) {
+
+      String startStr = CdaGeneratorConstants.NF_NI;
+
+      Date e = end.getValue();
+      TimeZone etz = end.getTimeZone();
+
+      String endStr = CdaGeneratorUtils.getStringForDateTime(e, etz);
+
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+
+    } else {
+
+      String startStr = CdaGeneratorConstants.NF_NI;
+      String endStr = CdaGeneratorConstants.NF_NI;
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+    }
+
+    return retXml;
+  }
+
   public static String getDateTimeTypeXml(DateTimeDt dt, String elName) {
 
     if (dt != null) {
@@ -772,6 +836,27 @@ public class Dstu2CdaFhirUtilities {
     } else {
       return CdaGeneratorConstants.UNKNOWN_VALUE;
     }
+  }
+
+  public static Date getDateForDataType(IDatatype dateType) {
+
+    Date effectiveDateTime = null;
+
+    if (dateType != null && dateType instanceof DateDt) {
+
+      DateDt eDate = (DateDt) dateType;
+      effectiveDateTime = eDate.getValue();
+    } else if (dateType != null && dateType instanceof DateTimeDt) {
+      DateTimeDt eDate = (DateTimeDt) dateType;
+      effectiveDateTime = eDate.getValue();
+    } else if (dateType != null && dateType instanceof PeriodDt) {
+      PeriodDt pDate = (PeriodDt) dateType;
+
+      if (pDate.getStart() != null) effectiveDateTime = pDate.getStart();
+      else if (pDate.getEnd() != null) effectiveDateTime = pDate.getEnd();
+    }
+
+    return effectiveDateTime;
   }
 
   public static String getPeriodXml(PeriodDt period, String elName) {
@@ -1007,6 +1092,11 @@ public class Dstu2CdaFhirUtilities {
                   + CdaGeneratorConstants.PIPE
                   + qt.getUnit();
         }
+
+      } else if (dt instanceof DateDt) {
+
+        DateDt d = (DateDt) dt;
+        val += d.getValueAsString();
 
       } else if (dt instanceof DateTimeDt) {
 
@@ -1592,5 +1682,60 @@ public class Dstu2CdaFhirUtilities {
     }
 
     return codeString.getValue0() + CdaGeneratorConstants.HYPHEN + valueString.getValue0();
+  }
+
+  public static Boolean isCodingPresentForCodeSystem(List<CodingDt> codings, String codeSystemUrl) {
+
+    Boolean foundCodeSystem = false;
+
+    for (CodingDt c : codings) {
+
+      if (c.getSystem().contentEquals(codeSystemUrl)) {
+
+        foundCodeSystem = true;
+        break;
+      }
+    }
+
+    return foundCodeSystem;
+  }
+
+  public static String getXmlForTypeForCodeSystem(
+      IDatatype dt, String elName, Boolean valFlag, String codeSystemUrl, Boolean csOptional) {
+
+    String val = "";
+    if (dt != null) {
+
+      if (dt instanceof CodingDt) {
+        CodingDt cd = (CodingDt) dt;
+
+        List<CodingDt> cds = new ArrayList<>();
+        cds.add(cd);
+        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
+        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+
+      } else if (dt instanceof CodeableConceptDt) {
+
+        CodeableConceptDt cd = (CodeableConceptDt) dt;
+
+        List<CodingDt> cds = cd.getCoding();
+
+        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
+        else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
+
+      } else {
+
+        if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+        else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
+      }
+
+      logger.debug("Printing the class name {}", dt.getClass());
+      return val;
+    }
+
+    if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+    else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
+
+    return val;
   }
 }
