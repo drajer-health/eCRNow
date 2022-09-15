@@ -93,6 +93,8 @@ public class Dstu2CdaResultGenerator {
           } else if (!StringUtils.isEmpty(obs.getCode().getText())) {
             obsDisplayName = obs.getCode().getText();
           }
+        } else if (obs.getCode() != null && obs.getCode().getText() != null) {
+          obsDisplayName = obs.getCode().getText();
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<String, String>();
@@ -303,7 +305,7 @@ public class Dstu2CdaResultGenerator {
                   matchCode -> {
                     String[] parts = matchCode.split("\\|");
 
-                    if (Dstu2CdaFhirUtilities.isCodePresentInCoding(matchCode, cds)) {
+                    if (Dstu2CdaFhirUtilities.isCodePresentInCoding(parts[1], cds)) {
 
                       Pair<String, String> csd =
                           CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
@@ -330,7 +332,7 @@ public class Dstu2CdaResultGenerator {
                     if (obs.getValue() != null && obs.getValue() instanceof CodeableConceptDt) {
 
                       CodeableConceptDt cd = (CodeableConceptDt) obs.getValue();
-                      if (Dstu2CdaFhirUtilities.isCodePresentInCoding(matchCode, cd.getCoding())) {
+                      if (Dstu2CdaFhirUtilities.isCodePresentInCoding(parts[1], cd.getCoding())) {
 
                         Pair<String, String> csd =
                             CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
@@ -348,8 +350,8 @@ public class Dstu2CdaResultGenerator {
                       } else {
 
                         obsValueXml.append(
-                            Dstu2CdaFhirUtilities.getCodingXml(
-                                cds, CdaGeneratorConstants.CODE_EL_NAME));
+                            Dstu2CdaFhirUtilities.getCodingXmlForValue(
+                                cds, CdaGeneratorConstants.VAL_EL_NAME));
                       }
                     }
                   });

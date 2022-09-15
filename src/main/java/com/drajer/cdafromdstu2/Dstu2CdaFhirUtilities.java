@@ -744,6 +744,70 @@ public class Dstu2CdaFhirUtilities {
     return sb.toString();
   }
 
+  public static String getPeriodXmlForValueElement(PeriodDt dt, String elName) {
+
+    if (dt != null) {
+
+      return getEffectiveTimeXmlForValueElement(dt.getStartElement(), dt.getEndElement(), elName);
+
+    } else {
+
+      String start = CdaGeneratorConstants.NF_NI;
+      String end = CdaGeneratorConstants.NF_NI;
+      return CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, start, end);
+    }
+  }
+
+  public static String getEffectiveTimeXmlForValueElement(
+      DateTimeDt start, DateTimeDt end, String elName) {
+
+    String retXml = "";
+    if (start != null && end != null) {
+
+      Date s = start.getValue();
+      TimeZone stz = start.getTimeZone();
+
+      String startStr = CdaGeneratorUtils.getStringForDateTime(s, stz);
+
+      Date e = end.getValue();
+      TimeZone etz = end.getTimeZone();
+
+      String endStr = CdaGeneratorUtils.getStringForDateTime(e, etz);
+
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+
+    } else if (start != null) {
+
+      Date s = start.getValue();
+      TimeZone stz = start.getTimeZone();
+
+      String startStr = CdaGeneratorUtils.getStringForDateTime(s, stz);
+
+      String endStr = CdaGeneratorConstants.NF_NI;
+
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+
+    } else if (end != null) {
+
+      String startStr = CdaGeneratorConstants.NF_NI;
+
+      Date e = end.getValue();
+      TimeZone etz = end.getTimeZone();
+
+      String endStr = CdaGeneratorUtils.getStringForDateTime(e, etz);
+
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+
+    } else {
+
+      String startStr = CdaGeneratorConstants.NF_NI;
+      String endStr = CdaGeneratorConstants.NF_NI;
+      retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
+    }
+
+    return retXml;
+  }
+
   public static String getDateTimeTypeXml(DateTimeDt dt, String elName) {
 
     if (dt != null) {

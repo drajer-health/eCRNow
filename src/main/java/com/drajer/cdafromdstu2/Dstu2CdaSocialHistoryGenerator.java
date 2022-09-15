@@ -312,6 +312,8 @@ public class Dstu2CdaSocialHistoryGenerator {
             CdaGeneratorConstants.MOOD_CODE_DEF));
 
     sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID));
+    sb.append(
         CdaGeneratorUtils.getXmlForTemplateId(
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID,
             CdaGeneratorConstants.SOC_HISTORY_OBS_TEMPLATE_ID_EXT));

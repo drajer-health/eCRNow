@@ -3,6 +3,7 @@ package com.drajer.cdafromdstu2;
 import ca.uhn.fhir.model.api.IDatatype;
 import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.dstu2.composite.ContainedDt;
+import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.BaseResource;
@@ -230,18 +231,21 @@ public class Dstu2CdaMedicationGenerator {
     sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, medStatus));
 
     // Set up Effective Time for start and End time.
-    if (effectiveTime != null) {
+    if (effectiveTime != null && effectiveTime instanceof PeriodDt) {
+      PeriodDt p = (PeriodDt) effectiveTime;
       sb.append(
-          Dstu2CdaFhirUtilities.getXmlForType(
-              effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+          Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
+              p, CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else if (startDate != null) {
+      PeriodDt p = new PeriodDt();
+      p.setStart(startDate);
       sb.append(
-          Dstu2CdaFhirUtilities.getDateTimeTypeXml(
-              startDate, CdaGeneratorConstants.EFF_TIME_EL_NAME));
+          Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
+              p, CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else {
       sb.append(
-          CdaGeneratorUtils.getXmlForNullEffectiveTime(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+          Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
+              null, CdaGeneratorConstants.EFF_TIME_EL_NAME));
     }
 
     // Set up Effective Time for Frequency.
@@ -262,8 +266,9 @@ public class Dstu2CdaMedicationGenerator {
               dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
     }
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForPIVLWithTS(CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
+    // Cannot set frequency as it is not in HAPI APIs
+    /* sb.append(
+    CdaGeneratorUtils.getXmlForPIVLWithTS(CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours)); */
 
     // add Dose quantity
     sb.append(ds);
