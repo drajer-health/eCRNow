@@ -21,6 +21,14 @@
 		<fhir.version>4.2.0</fhir.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
+
+	<distributionManagement>
+		<site>
+			<id>eCRNOW Report</id>
+			<url>${project.build.directory}/staging</url>
+		</site>
+	</distributionManagement>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -47,7 +55,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -75,20 +83,20 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
 			<version>9.2</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
-<dependency>
-    <groupId>javax.interceptor</groupId>
-    <artifactId>javax.interceptor-api</artifactId>
-    <version>1.2-b06</version>
-</dependency>
-		
+		<dependency>
+			<groupId>javax.interceptor</groupId>
+			<artifactId>javax.interceptor-api</artifactId>
+			<version>1.2-b06</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -182,22 +190,12 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.2</version>
 		</dependency>
-		<!--  <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.21</version>
-            </dependency> -->
+
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>dsn</artifactId>
 			<version>1.4.7</version>
 		</dependency>
-		<!--  <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-jdk14</artifactId>
-                <version>1.7.21</version>
-            </dependency> -->
-
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -243,10 +241,7 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
 		<!-- Spring Boot Test -->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -264,23 +259,27 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock</artifactId>
 			<version>1.58</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
 			<version>2.11.1</version>
 		</dependency>
+
 		<!-- Dependency for formatting logs in json format -->
 		<dependency>
 			<groupId>ch.qos.logback.contrib</groupId>
 			<artifactId>logback-json-classic</artifactId>
 			<version>${logback-contrib.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>ch.qos.logback.contrib</groupId>
 			<artifactId>logback-jackson</artifactId>
@@ -308,29 +307,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.heroku</groupId>
-									<artifactId>webapp-runner</artifactId>
-									<version>9.0.30.0</version>
-									<destFileName>webapp-runner.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -464,7 +440,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 
@@ -526,7 +501,9 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-site-plugin</artifactId>
+						<version>4.0.0-M1</version>
 						<executions>
 							<execution>
 								<id>attach-descriptor</id>
@@ -535,6 +512,15 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-publish-plugin</artifactId>
+						<version>3.1.0</version>
+						<configuration>
+							<scmBranch>master</scmBranch>
+							<skipDeletedFiles>true</skipDeletedFiles>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
