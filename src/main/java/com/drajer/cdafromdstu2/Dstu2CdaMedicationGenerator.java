@@ -242,6 +242,12 @@ public class Dstu2CdaMedicationGenerator {
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
               p, CdaGeneratorConstants.EFF_TIME_EL_NAME));
+    } else if (effectiveTime != null && effectiveTime instanceof DateTimeDt) {
+      PeriodDt p = new PeriodDt();
+      p.setStart((DateTimeDt) effectiveTime);
+      sb.append(
+          Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
+              p, CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else {
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
