@@ -266,6 +266,10 @@ public class Dstu2CdaResultGenerator {
 
         // Check if match was found and then include the rest.
         Boolean matchFound = doesTriggerCodesMatchObservation(obs, mtc, codeXml, valXml);
+        
+        logger.info(" code Xml {}", codeXml.getValue1());
+        logger.info(" value Xml {}", valXml.getValue1());
+
 
         if (matchFound) {
 
@@ -379,19 +383,17 @@ public class Dstu2CdaResultGenerator {
     }
 
     if (matchedCodes != null && matchedCodes.size() > 0) {
+    	
+    	logger.info(" Size of the Matched Codes {}",matchedCodes.size());
 
       for (String s : matchedCodes) {
-
-        codeXml.setAt0(false);
-        codeXml.setAt1("");
-        valXml.setAt0(false);
-        valXml.setAt1("");
 
         String[] parts = s.split("\\|");
 
         if (codeElements != null
             && Dstu2CdaFhirUtilities.isCodePresentInCoding(parts[1], codeElements)) {
 
+          logger.info(" Code is present in the Codings {}", parts[1]);
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
           // For Connectathon, until we get the right test data finish testing.
@@ -410,6 +412,7 @@ public class Dstu2CdaResultGenerator {
 
         } else if (codeElements != null) {
 
+          logger.info(" Setting code xml to just the value of the codings ");
           codeXml.setAt1(
               Dstu2CdaFhirUtilities.getCodingXml(codeElements, CdaGeneratorConstants.CODE_EL_NAME));
           codeXml.setAt0(false);
@@ -419,6 +422,7 @@ public class Dstu2CdaResultGenerator {
         if (valElements != null
             && Dstu2CdaFhirUtilities.isCodePresentInCoding(parts[1], valElements)) {
 
+          logger.info(" Matched Value Element for triggering {}", parts[1]);
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
           // For Connectathon, until we get the right test data finish testing.
@@ -435,9 +439,11 @@ public class Dstu2CdaResultGenerator {
 
         } else if (valElements != null) {
 
+          logger.info(" No Matched Value Element so just encoding value element ");
           valXml.setAt1(
               Dstu2CdaFhirUtilities.getCodingXmlForValue(
                   valElements, CdaGeneratorConstants.VAL_EL_NAME));
+          valXml.setAt0(false);
         }
 
         if (matchFound) break;
