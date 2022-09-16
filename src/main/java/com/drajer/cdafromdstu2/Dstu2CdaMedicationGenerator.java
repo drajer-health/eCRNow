@@ -239,12 +239,14 @@ public class Dstu2CdaMedicationGenerator {
     } else if (startDate != null) {
       PeriodDt p = new PeriodDt();
       p.setStart(startDate);
+      p.setEnd(null);
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
               p, CdaGeneratorConstants.EFF_TIME_EL_NAME));
     } else if (effectiveTime != null && effectiveTime instanceof DateTimeDt) {
       PeriodDt p = new PeriodDt();
       p.setStart((DateTimeDt) effectiveTime);
+      p.setEnd(null);
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
               p, CdaGeneratorConstants.EFF_TIME_EL_NAME));

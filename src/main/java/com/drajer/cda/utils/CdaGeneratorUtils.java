@@ -917,17 +917,36 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForValueIVLWithTS(String elName, String low, String high) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.XSI_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.IVL_TS_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high)
-        + CdaGeneratorUtils.getXmlForEndElement(elName);
+
+    String retVal =
+        CdaGeneratorConstants.START_XMLTAG
+            + elName
+            + CdaGeneratorConstants.SPACE
+            + CdaGeneratorConstants.XSI_TYPE
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.IVL_TS_TYPE
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+
+    if (!StringUtils.isEmpty(low) && (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(low)))
+      retVal +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low);
+    else
+      retVal +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
+
+    if (!StringUtils.isEmpty(high) && (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(high)))
+      retVal +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high);
+    else
+      retVal +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NF_NI);
+
+    retVal += CdaGeneratorUtils.getXmlForEndElement(elName);
+
+    return retVal;
   }
 
   public static String getXmlForLowIVLWithTSWithNFHigh(String elName, String value) {
