@@ -9,6 +9,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -223,6 +224,11 @@ public class CreateReport extends BsaAction {
           // Save the data in the table.
           PublicHealthMessage phm = phDao.saveOrUpdate(msg);
           kd.setPhm(phm);
+          MDCUtils.addEicrDocId(msg.getSubmittedDataId());
+          logger.info(
+              "Public Health message created successfully with submittedDataId: {} version: {}",
+              msg.getSubmittedDataId(),
+              msg.getSubmittedVersionNumber());
 
         } // attachment not null
         else {
