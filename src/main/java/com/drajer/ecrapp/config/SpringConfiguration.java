@@ -38,6 +38,10 @@ public class SpringConfiguration {
   @Value("${ecr.fhir.retry.maxRetryCount}")
   private int maxRetryCount;
 
+  public void setMaxRetryCount(int maxRetryCount) {
+    this.maxRetryCount = maxRetryCount;
+  }
+
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {
     BearerTokenAuthInterceptor authInterceptor =

@@ -18,6 +18,10 @@ public class FHIRRetryTemplate implements GenericRetryTemplate, InitializingBean
   @Qualifier("FhirRetryTemplate")
   private RetryTemplate retryTemplate;
 
+  public void setRetryTemplate(RetryTemplate retryTemplate) {
+    this.retryTemplate = retryTemplate;
+  }
+
   @Value("${ecr.fhir.retry.enabled}")
   protected Boolean isRetryEnabled;
 

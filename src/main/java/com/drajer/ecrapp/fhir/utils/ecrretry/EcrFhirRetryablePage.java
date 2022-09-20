@@ -80,7 +80,7 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
             retryContext -> {
               retryCount.getAndIncrement();
               client.getHttpInterceptor().setRetryCount(retryContext.getRetryCount());
-              logger.info("Retrying FHIR page. Count: {}",retryCount);
+              logger.info("Retrying FHIR page. Count: {}", retryCount);
               return pageTyped.execute();
             },
             null);

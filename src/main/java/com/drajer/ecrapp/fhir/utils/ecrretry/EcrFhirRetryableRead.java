@@ -127,7 +127,7 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
         .execute(
             retryContext -> {
               retryCount.getAndIncrement();
-              logger.info("Retrying FHIR read. Count: {} ",retryCount);
+              logger.info("Retrying FHIR read. Count: {} ", retryCount);
               return readExecutableParent.execute();
             },
             null);
