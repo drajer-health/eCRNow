@@ -259,20 +259,20 @@ public class Dstu2CdaResultGenerator {
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
-      String codeXml = "";
-      String valXml = "";
+      StringBuilder codeXml = new StringBuilder(200);
+      StringBuilder valXml = new StringBuilder(200);
 
       if (mtc.hasMatchedTriggerCodes("Observation")) {
 
         // Check if match was found and then include the rest.
         Boolean matchFound = doesTriggerCodesMatchObservation(obs, mtc, codeXml, valXml);
 
-        logger.info(" code Xml {}", codeXml);
-        logger.info(" value Xml {}", valXml);
+        logger.info(" code Xml {}", codeXml.toString());
+        logger.info(" value Xml {}", valXml.toString());
 
         if (matchFound) {
 
-          lrEntry.append(addEntry(obs, details, codeXml, valXml));
+          lrEntry.append(addEntry(obs, details, codeXml.toString(), valXml.toString()));
           break;
         }
       }
@@ -352,7 +352,7 @@ public class Dstu2CdaResultGenerator {
   }
 
   public static Boolean doesTriggerCodesMatchObservation(
-      Observation obs, MatchedTriggerCodes mtc, String codeXml, String valXml) {
+      Observation obs, MatchedTriggerCodes mtc, StringBuilder codeXml, StringBuilder valXml) {
 
     Boolean matchFound = false;
 
@@ -390,7 +390,7 @@ public class Dstu2CdaResultGenerator {
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
           // For Connectathon, until we get the right test data finish testing.
-          codeXml +=
+          codeXml.append(
               CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
                   CdaGeneratorConstants.CODE_EL_NAME,
                   parts[1],
@@ -399,14 +399,14 @@ public class Dstu2CdaResultGenerator {
                   CdaGeneratorConstants.RCTC_OID,
                   ActionRepo.getInstance().getRctcVersion(),
                   "",
-                  "");
+                  ""));
           matchFound = true;
 
         } else if (codeElements != null) {
 
           logger.info(" Setting code xml to just the value of the codings ");
-          codeXml +=
-              Dstu2CdaFhirUtilities.getCodingXml(codeElements, CdaGeneratorConstants.CODE_EL_NAME);
+          codeXml.append(
+              Dstu2CdaFhirUtilities.getCodingXml(codeElements, CdaGeneratorConstants.CODE_EL_NAME));
         }
 
         // Check for values
@@ -417,22 +417,22 @@ public class Dstu2CdaResultGenerator {
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
           // For Connectathon, until we get the right test data finish testing.
-          valXml +=
+          valXml.append(
               CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                   parts[1],
                   csd.getValue0(),
                   csd.getValue1(),
                   CdaGeneratorConstants.RCTC_OID,
                   ActionRepo.getInstance().getRctcVersion(),
-                  "");
+                  ""));
           matchFound = true;
 
         } else if (valElements != null) {
 
           logger.info(" No Matched Value Element so just encoding value element ");
-          valXml +=
+          valXml.append(
               Dstu2CdaFhirUtilities.getCodingXmlForValue(
-                  valElements, CdaGeneratorConstants.VAL_EL_NAME);
+                  valElements, CdaGeneratorConstants.VAL_EL_NAME));
         }
 
         if (matchFound) break;
