@@ -748,7 +748,16 @@ public class Dstu2CdaFhirUtilities {
 
     if (dt != null) {
 
-      return getEffectiveTimeXmlForValueElement(dt.getStartElement(), dt.getEndElement(), elName);
+      DateTimeDt start = null;
+      DateTimeDt end = null;
+
+      if (dt.getStartElement() != null && dt.getStartElement().hasValue()) {
+        start = dt.getStartElement();
+      }
+      if (dt.getEndElement() != null && dt.getEndElement().hasValue()) {
+        end = dt.getEndElement();
+      }
+      return getEffectiveTimeXmlForValueElement(start, end, elName);
 
     } else {
 
@@ -783,13 +792,13 @@ public class Dstu2CdaFhirUtilities {
 
       String startStr = CdaGeneratorUtils.getStringForDateTime(s, stz);
 
-      String endStr = CdaGeneratorConstants.NF_NI;
+      String endStr = "";
 
       retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
 
     } else if (end != null) {
 
-      String startStr = CdaGeneratorConstants.NF_NI;
+      String startStr = "";
 
       Date e = end.getValue();
       TimeZone etz = end.getTimeZone();
@@ -800,8 +809,8 @@ public class Dstu2CdaFhirUtilities {
 
     } else {
 
-      String startStr = CdaGeneratorConstants.NF_NI;
-      String endStr = CdaGeneratorConstants.NF_NI;
+      String startStr = "";
+      String endStr = "";
       retXml = CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, startStr, endStr);
     }
 
@@ -1071,12 +1080,42 @@ public class Dstu2CdaFhirUtilities {
       if (dt instanceof CodingDt) {
         CodingDt cd = (CodingDt) dt;
 
-        if (cd.getCodeElement() != null && cd.getSystemElement() != null) {
+        if (!StringUtils.isEmpty(cd.getDisplay())) {
+
+          val += cd.getDisplay();
+        } else if (cd.getCodeElement() != null && cd.getSystemElement() != null) {
 
           val +=
               cd.getSystemElement().getValue()
                   + CdaGeneratorConstants.PIPE
                   + cd.getCodeElement().getValue();
+        } else {
+          val += CdaGeneratorConstants.UNKNOWN_VALUE;
+        }
+
+      } else if (dt instanceof CodeableConceptDt) {
+
+        CodeableConceptDt cd = (CodeableConceptDt) dt;
+
+        if (!StringUtils.isEmpty(cd.getText())) {
+          val += cd.getText();
+        } else if (cd.getCodingFirstRep() != null) {
+
+          if (!StringUtils.isEmpty(cd.getCodingFirstRep().getDisplay())) {
+
+            val += cd.getCodingFirstRep().getDisplay();
+          } else if (cd.getCodingFirstRep().getCodeElement() != null
+              && cd.getCodingFirstRep().getSystemElement() != null) {
+
+            val +=
+                cd.getCodingFirstRep().getSystemElement().getValue()
+                    + CdaGeneratorConstants.PIPE
+                    + cd.getCodingFirstRep().getCodeElement().getValue();
+          } else {
+            val += CdaGeneratorConstants.UNKNOWN_VALUE;
+          }
+        } else {
+          val += CdaGeneratorConstants.UNKNOWN_VALUE;
         }
 
       } else if (dt instanceof BaseQuantityDt) {
