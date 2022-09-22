@@ -46,6 +46,7 @@ public class CdaMedicationGenerator {
         || (medAdms != null && !medAdms.isEmpty())
         || (medReqs != null && !medReqs.isEmpty())) {
 
+      logger.info("Medications found for processing ");
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -187,6 +188,8 @@ public class CdaMedicationGenerator {
 
       // Add Medication Requests
       for (MedicationRequest medReq : medReqs) {
+
+        logger.info(" Adding medication requests ");
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (medReq.getMedication() != null) {
@@ -283,6 +286,7 @@ public class CdaMedicationGenerator {
       DomainResource res,
       List<Medication> medList) {
 
+    logger.info(" Adding medication entry ");
     StringBuilder sb = new StringBuilder();
 
     // add the Entries.
@@ -591,6 +595,8 @@ public class CdaMedicationGenerator {
           } // Else if it is an external reference
 
         } else if (m.getMedication() instanceof CodeableConcept) {
+
+          logger.info(" Found a medication codeable concept ");
 
           CodeableConcept cc = (CodeableConcept) m.getMedication();
 

@@ -1799,25 +1799,25 @@ public class CdaFhirUtilities {
 
     if (dt instanceof Reference) {
 
-      logger.debug("Found Medication of Type Reference within Domain Resource");
+      logger.info("Found Medication of Type Reference within Domain Resource");
       Reference med = (Reference) dt;
       String codeXml = "";
       if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
         // Check contained.
         String refId = med.getReference().substring(1);
 
-        logger.debug("Found Medication of Type Reference with Id {}", refId);
+        logger.info("Found Medication of Type Reference with Id {}", refId);
 
         if (res.getContained() != null) {
 
-          logger.debug("Contained Elements Not null");
+          logger.info("Contained Elements Not null");
           List<Resource> meds = res.getContained();
 
           for (Resource r : meds) {
 
             if (r.getId().contains(refId) && r instanceof Medication) {
 
-              logger.debug("Found Medication in contained resource");
+              logger.info("Found Medication in contained resource");
 
               Medication cmed = (Medication) r;
 
@@ -1830,6 +1830,7 @@ public class CdaFhirUtilities {
       } // Contained reference
       else {
 
+        logger.info(" Checking medication references ");
         // check if the medications have been extracted for non contained references.
         if (medList != null && medList.size() > 0) {
 

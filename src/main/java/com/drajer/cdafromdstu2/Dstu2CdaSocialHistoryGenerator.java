@@ -192,7 +192,7 @@ public class Dstu2CdaSocialHistoryGenerator {
       }
 
       if (!StringUtils.isEmpty(occHistoryXml.toString())) {
-    	  logger.debug(" Adding Occupation History Xml {}", occHistoryXml);
+        logger.debug(" Adding Occupation History Xml {}", occHistoryXml);
         sb.append(occHistoryXml);
       }
 
