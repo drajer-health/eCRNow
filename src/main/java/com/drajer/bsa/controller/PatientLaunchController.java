@@ -99,6 +99,11 @@ public class PatientLaunchController {
         Bundle nb = getNotificationBundle(launchContext, hs);
 
         notificationReceiver.processNotification(nb, request, response, launchContext);
+        logger.info(
+            " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+            launchContext.getPatientId(),
+            launchContext.getEncounterId(),
+            request.getHeader("X-Request-ID"));
 
       } else {
         throw new ResponseStatusException(
@@ -169,6 +174,11 @@ public class PatientLaunchController {
         Bundle nb = getNotificationBundle(launchContext, hs);
 
         notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
+        logger.info(
+            " Patient Relaunch was successful for patientId: {}, encounterId: {}, requestId: {}",
+            launchContext.getPatientId(),
+            launchContext.getEncounterId(),
+            request.getHeader("X-Request-ID"));
 
       } else {
         throw new ResponseStatusException(
