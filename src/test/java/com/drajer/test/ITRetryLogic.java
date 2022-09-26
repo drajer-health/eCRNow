@@ -94,6 +94,6 @@ public class ITRetryLogic extends BaseIntegrationTest {
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayLoad);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     wireMockServer.verify(
-        moreThanOrExactly(5), getRequestedFor(urlEqualTo("/FHIR/Encounter/97953900")));
+        moreThanOrExactly(3), getRequestedFor(urlEqualTo("/FHIR/Encounter/97953900")));
   }
 }

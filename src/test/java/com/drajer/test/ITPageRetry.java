@@ -108,7 +108,7 @@ public class ITPageRetry extends BaseIntegrationTest {
     logger.info("Received success response, waiting for EICR generation.....");
     Eicr createEicr = getCreateEicrDocument();
     wireMockServer.verify(
-        moreThanOrExactly(15),
+        moreThanOrExactly(9),
         getRequestedFor(
             urlEqualTo(
                 "/FHIR/Observation?patient=12742571&category=laboratory&-pageContext=10065315_11316911_12742571_1_1&-pageDirection=NEXT")));
