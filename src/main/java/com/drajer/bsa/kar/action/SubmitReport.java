@@ -22,6 +22,7 @@ import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
+import io.micrometer.core.instrument.util.StringUtils;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashSet;
@@ -202,7 +203,9 @@ public class SubmitReport extends BsaAction {
             " Reportability Response will not be ready, so no need to check when timers are ignored ");
       }
 
-    } else if (Boolean.TRUE.equals(hs.getIsRestAPI()) && restSubmitter != null) {
+    } else if (Boolean.TRUE.equals(hs.getIsRestAPI())
+        && restSubmitter != null
+        && !StringUtils.isEmpty(data.getSubmittedCdaData())) {
 
       logger.info(" Submitting to restful endpoint ");
       restSubmitter.sendEicrDataUsingRestfulApi(data);
@@ -423,6 +426,8 @@ public class SubmitReport extends BsaAction {
 
     logger.info(" checkResponseActionId : {}", checkResponseActionId);
 
+    logger.info(" Submission End point : {}", submissionEndpoint);
+
     logger.info(" **** START Printing Derived Action **** ({})", actionId);
   }
 
@@ -431,6 +436,8 @@ public class SubmitReport extends BsaAction {
     logger.info(" **** START Printing Derived Action **** {}", actionId);
 
     logger.info(" checkResponseActionId : {}", checkResponseActionId);
+
+    logger.info(" Submission End point : {}", submissionEndpoint);
 
     logger.info(" **** END Printing Derived Action **** {}", actionId);
   }

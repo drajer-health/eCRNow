@@ -204,6 +204,18 @@ public class KarProcessingData {
     return Collections.emptySet();
   }
 
+  public Set<Resource> getResourcesByType(ResourceType type) {
+
+    for (Map.Entry<ResourceType, Set<Resource>> entry : fhirInputDataByType.entrySet()) {
+
+      if (entry.getKey() == type) {
+        return entry.getValue();
+      }
+    }
+
+    return Collections.emptySet();
+  }
+
   public Set<Resource> getOutputDataById(String id) {
 
     if (actionOutputDataById != null && actionOutputDataById.containsKey(id)) {

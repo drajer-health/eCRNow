@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.Composition.CompositionStatus;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Device;
@@ -45,7 +46,9 @@ import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
@@ -54,6 +57,7 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
+import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,7 +179,7 @@ public class EcrReportCreator extends ReportCreator {
       reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
 
       // Add the Content Bundle.
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle1));
+      // reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle1));
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle2));
     }
 
@@ -449,6 +453,9 @@ public class EcrReportCreator extends ReportCreator {
     val.setValue(comp.getId());
     comp.setIdentifier(val);
 
+    // Add status
+    comp.setStatus(CompositionStatus.FINAL);
+
     // Add Type
     comp.setType(
         FhirGeneratorUtils.getCodeableConcept(
@@ -491,8 +498,23 @@ public class EcrReportCreator extends ReportCreator {
     comp.setDate(Date.from(Instant.now()));
 
     // Set Author
-    comp.getAuthorFirstRep().setResource(getDeviceAuthor());
+    List<Practitioner> practs = addAuthors(kd, comp);
+    if (practs != null && practs.size() > 0) resTobeAdded.addAll(practs);
 
+    // Add title
+    comp.setTitle("Public Health Case Report");
+
+    // Add Organization
+    Organization org = ReportCreationUtilities.getOrganization(kd);
+
+    if (org != null) {
+      Reference orgRef = new Reference();
+      orgRef.setResource(org);
+      comp.setCustodian(orgRef);
+      resTobeAdded.add(org);
+    }
+
+    // Add sections
     List<SectionComponent> scs = new ArrayList<>();
 
     // Add chief complaint section.
@@ -563,7 +585,31 @@ public class EcrReportCreator extends ReportCreator {
     // Finalize the sections.
     comp.setSection(scs);
 
+    // Add Locations
+    Set<Resource> locs = kd.getResourcesByType(ResourceType.Location);
+    if (locs != null && locs.size() > 0) {
+      resTobeAdded.addAll(locs);
+    }
+
     return comp;
+  }
+
+  public List<Practitioner> addAuthors(KarProcessingData kd, Composition comp) {
+
+    List<Practitioner> authors =
+        ReportCreationUtilities.getPractitioners(kd, V3ParticipationType.AUT);
+
+    if (authors != null && authors.size() > 0) {
+
+      Practitioner author = authors.get(0);
+      Reference authReference = new Reference();
+      authReference.setResource(author);
+      List<Reference> authRefs = new ArrayList<>();
+      authRefs.add(authReference);
+      comp.setAuthor(authRefs);
+    }
+
+    return authors;
   }
 
   public SectionComponent getSection(SectionTypeEnum st, KarProcessingData kd) {

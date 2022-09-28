@@ -9,6 +9,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.cda.utils.CdaValidatorUtil;
+import io.micrometer.core.instrument.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,7 +104,8 @@ public class ValidateReport extends BsaAction {
     // Validator errors will be put into the log file.
     // There should not be any errors in production.
 
-    return CdaValidatorUtil.validateEicrXMLData(cda);
+    if (!StringUtils.isEmpty(cda)) return CdaValidatorUtil.validateEicrXMLData(cda);
+    else return false;
   }
 
   public void validateFhirOutput(KarProcessingData data, BsaActionStatus actStatus) {
