@@ -3,19 +3,16 @@ package com.drajer.ecrapp.config;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
-import ca.uhn.fhir.rest.server.exceptions.*;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
+import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.policy.ExceptionClassifierRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.web.client.HttpServerErrorException;
 
 @Configuration
 @ComponentScan(
@@ -35,11 +32,10 @@ public class SpringConfiguration {
 
   public static final FhirContext ctx = FhirContext.forR4();
 
-  @Value("${ecr.fhir.retry.maxRetryCount}")
-  private int maxRetryCount;
+  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
 
-  public void setMaxRetryCount(int maxRetryCount) {
-    this.maxRetryCount = maxRetryCount;
+  public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
+    this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
   }
 
   @Bean(name = "esrdGenericClient")
@@ -58,32 +54,19 @@ public class SpringConfiguration {
 
   @Bean(name = "FhirRetryTemplate")
   public RetryTemplate retryTemplate() {
-
     FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
 
-    backOffPolicy.setBackOffPeriod(3000);
-
+    for (FHIRRetryTemplateConfig.HttpMethodType map :
+        fhirRetryTemplateConfig.getHttpMethodTypeMap().values()) {
+      backOffPolicy.setBackOffPeriod(map.getMaxRetries());
+    }
     RetryTemplate template = new RetryTemplate();
 
-    Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>();
-    retryableExceptions.put(FhirClientConnectionException.class, true);
-    retryableExceptions.put(HttpServerErrorException.class, true);
-    retryableExceptions.put(AuthenticationException.class, true);
-    retryableExceptions.put(ForbiddenOperationException.class, true);
-    retryableExceptions.put(InternalErrorException.class, true);
-    retryableExceptions.put(InvalidRequestException.class, true);
-    retryableExceptions.put(MethodNotAllowedException.class, true);
-    retryableExceptions.put(NotImplementedOperationException.class, true);
-    retryableExceptions.put(NotModifiedException.class, true);
-    retryableExceptions.put(PayloadTooLargeException.class, true);
-    retryableExceptions.put(PreconditionFailedException.class, true);
-    retryableExceptions.put(ResourceGoneException.class, true);
-    retryableExceptions.put(ResourceVersionConflictException.class, true);
-    retryableExceptions.put(ResourceVersionNotSpecifiedException.class, true);
-    retryableExceptions.put(UnclassifiedServerFailureException.class, true);
-    retryableExceptions.put(UnprocessableEntityException.class, true);
-    template.setRetryPolicy(new SimpleRetryPolicy(maxRetryCount, retryableExceptions));
+    ExceptionClassifierRetryPolicy policy = new ExceptionClassifierRetryPolicy();
+    RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
+    policy.setExceptionClassifier(retryStatusCode.configureStatusCodeBasedRetryPolicy());
 
+    template.setRetryPolicy(policy);
     template.setBackOffPolicy(backOffPolicy);
 
     return template;

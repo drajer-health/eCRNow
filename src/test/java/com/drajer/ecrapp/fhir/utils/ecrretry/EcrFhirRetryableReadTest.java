@@ -4,24 +4,24 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.test.util.TestUtils;
-import java.util.Date;
+import java.util.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpServerErrorException;
 
 public class EcrFhirRetryableReadTest {
 
@@ -30,6 +30,8 @@ public class EcrFhirRetryableReadTest {
 
   @InjectMocks FHIRRetryTemplate fhirretryTemplate;
 
+  @InjectMocks FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  @InjectMocks FHIRRetryTemplateConfig.HttpMethodType httpMethodType;
   @InjectMocks SpringConfiguration springConfiguration;
   @Mock FhirContextInitializer fhirContextInitializer;
 
@@ -54,10 +56,18 @@ public class EcrFhirRetryableReadTest {
     IRead read = mock(EcrFhirRetryableRead.class);
     IReadTyped<IBaseResource> readType = mock((EcrFhirRetryableRead.class));
     IReadExecutable readExecutable = mock((IReadExecutable.class));
-
+    Map<String, FHIRRetryTemplateConfig.HttpMethodType> map = new HashMap<>();
     currentStateDetails.setFhirVersion("R4");
 
-    springConfiguration.setMaxRetryCount(3);
+    httpMethodType.setMaxRetries(3);
+    httpMethodType.setRetryWaitTime(3000);
+    httpMethodType.setRetryStatusCodes(
+        new ArrayList<>(Arrays.asList(408, 429, 502, 503, 504, 500)));
+
+    map.put("GET", httpMethodType);
+    fhirRetryTemplateConfig.setHttpMethodTypeMap(map);
+
+    springConfiguration.setFhirRetryTemplateConfig(fhirRetryTemplateConfig);
     fhirretryTemplate.setRetryTemplate(springConfiguration.retryTemplate());
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
 
@@ -70,11 +80,10 @@ public class EcrFhirRetryableReadTest {
     when(read.resource("Encounter")).thenReturn(readType);
     when(readType.withId(currentStateDetails.getEncounterId())).thenReturn(readExecutable);
     when(readExecutable.execute())
-        .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+        .thenThrow(new FhirClientConnectionException("INTERNAL_SERVER_ERROR"));
     try {
       fhirretryTemplate.execute(
           retryContext -> {
-            System.out.println("hello retry");
             return readExecutable.execute();
           },
           null);

@@ -159,6 +159,11 @@ public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> 
   }
 
   @Override
+  public IQuery offset(int i) {
+    throw new NotImplementedOperationException("The request operation is not implemented");
+  }
+
+  @Override
   public IQuery include(Include theInclude) {
     return query.revInclude(theInclude);
   }
