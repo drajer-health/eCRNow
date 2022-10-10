@@ -571,8 +571,21 @@ public class CdaGeneratorUtilsTest {
 
   @Test
   public void getXmlForTelecomTest() {
-    String expectedResult = "<MOBILE value=\"tel:(202)102-1012\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "20210210123", "WORK");
+    String expectedResult = "<MOBILE value=\"tel:(202)102-1012\" use=\"WORK\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "2021021012", "WORK");
+    assertEquals(expectedResult, result);
+  }
+
+  @Test
+  public void getXmlForTelecomTest_TelecomNumberLesserThan10() {
+    String result = CdaGeneratorUtils.getXmlForTelecom("PHONE", "2021022", "HOME");
+    assertEquals("", result);
+  }
+
+  @Test
+  public void getXmlForTelecomTest_WithSpecialCharacters() {
+    String expectedResult = "<MOBILE value=\"tel:(202)102-1012\" use=\"WORK\"/>\n";
+    String result = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "202-102-1012", "WORK");
     assertEquals(expectedResult, result);
   }
 

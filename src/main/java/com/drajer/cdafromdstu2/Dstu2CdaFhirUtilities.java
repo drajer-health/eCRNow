@@ -48,7 +48,7 @@ public class Dstu2CdaFhirUtilities {
   public static IdentifierDt getIdentifierForType(
       List<IdentifierDt> ids, IdentifierTypeCodesEnum type) {
 
-    if (ids != null && ids.size() > 0) {
+    if (ids != null && !ids.isEmpty()) {
 
       for (IdentifierDt id : ids) {
 
@@ -56,7 +56,7 @@ public class Dstu2CdaFhirUtilities {
 
           List<CodingDt> codings = id.getType().getCoding();
 
-          if (codings != null && codings.size() > 0) {
+          if (codings != null && !codings.isEmpty()) {
 
             for (CodingDt coding : codings) {
 
@@ -74,25 +74,47 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Identifier for the patient for type " + type.toString());
+    logger.info(" Did not find the Identifier for the patient for type :" + type.toString());
     return null;
   }
 
   public static IdentifierDt getIdentifierForSystem(List<IdentifierDt> ids, String system) {
 
-    if (ids != null && ids.size() > 0) {
+    if (ids != null && !ids.isEmpty()) {
 
       for (IdentifierDt id : ids) {
 
         if (id.getSystem() != null && id.getSystem().contentEquals(system)) {
 
-          logger.info(" Found the Identifier for System: " + system);
+          logger.info(" Found the Identifier for System:{} ", system);
           return id;
         }
       }
     }
 
-    logger.info(" Did not find the Identifier for  System : " + system);
+    logger.info(" Did not find the Identifier for  System :{} ", system);
+    return null;
+  }
+
+  public static CodeableConceptDt getCodeableConceptExtension(
+      List<ExtensionDt> exts, String extUrl) {
+
+    if (exts != null && exts.size() > 0) {
+
+      for (ExtensionDt ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          // if the top level extension has CodingDt then we will use it.
+          if (ext.getValue() != null && (ext.getValue() instanceof CodeableConceptDt)) {
+
+            logger.info(" Found Extension at top level ");
+            return (CodeableConceptDt) ext.getValue();
+          }
+        }
+      }
+    }
+
     return null;
   }
 
@@ -121,7 +143,7 @@ public class Dstu2CdaFhirUtilities {
   public static CodingDt getCodingExtension(
       List<ExtensionDt> exts, String extUrl, String subextUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (ExtensionDt ext : exts) {
 
@@ -151,13 +173,13 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+    logger.info(" Did not find the Extension or sub extensions for the Url:{} ", extUrl);
     return null;
   }
 
   public static CodeDt getCodeExtension(List<ExtensionDt> exts, String extUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (ExtensionDt ext : exts) {
 
@@ -179,7 +201,7 @@ public class Dstu2CdaFhirUtilities {
 
   public static CodingDt getLanguage(List<Communication> comms) {
 
-    if (comms != null && comms.size() > 0) {
+    if (comms != null && !comms.isEmpty()) {
 
       for (Communication comm : comms) {
 
@@ -200,7 +222,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder addrString = new StringBuilder(200);
 
-    if (addrs != null && addrs.size() > 0) {
+    if (addrs != null && !addrs.isEmpty()) {
 
       for (AddressDt addr : addrs) {
 
@@ -298,7 +320,6 @@ public class Dstu2CdaFhirUtilities {
       addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
     }
 
-    // logger.info(" Address String = " + addrString.toString());
     return addrString.toString();
   }
 
@@ -306,7 +327,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder telString = new StringBuilder(200);
 
-    if (tels != null && tels.size() > 0) {
+    if (tels != null && !tels.isEmpty()) {
 
       for (ContactPointDt tel : tels) {
 
@@ -339,7 +360,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder telString = new StringBuilder(200);
 
-    if (tels != null && tels.size() > 0) {
+    if (tels != null && !tels.isEmpty()) {
 
       for (ContactPointDt tel : tels) {
 
@@ -369,9 +390,9 @@ public class Dstu2CdaFhirUtilities {
   }
 
   public static Contact getGuardianContact(List<Contact> contactList) {
-    if (contactList != null && contactList.size() > 0) {
+    if (contactList != null && !contactList.isEmpty()) {
       for (Contact contact : contactList) {
-        if (contact.getRelationship() != null && contact.getRelationship().size() > 0) {
+        if (contact.getRelationship() != null && !contact.getRelationship().isEmpty()) {
           for (CodeableConceptDt code : contact.getRelationship()) {
 
             if (code.getCodingFirstRep() != null
@@ -428,7 +449,7 @@ public class Dstu2CdaFhirUtilities {
       if (ent != null) {
 
         logger.info(
-            " Found organization for Id " + en.getServiceProvider().getReference().getIdPart());
+            " Found organization for Id:{} ", en.getServiceProvider().getReference().getIdPart());
         return (Organization) ent.getResource();
       }
     }
@@ -461,7 +482,7 @@ public class Dstu2CdaFhirUtilities {
 
     List<Participant> participants = en.getParticipant();
 
-    if (participants != null && participants.size() > 0) {
+    if (participants != null && !participants.isEmpty()) {
 
       for (Participant part : participants) {
 
@@ -489,13 +510,13 @@ public class Dstu2CdaFhirUtilities {
                 if (ent != null) {
 
                   logger.info(
-                      " Found Practitioner for Id "
-                          + part.getIndividual().getReference().getIdPart());
+                      " Found Practitioner for Id :{}",
+                      part.getIndividual().getReference().getIdPart());
                   return (Practitioner) ent.getResource();
                 } else {
                   logger.info(
-                      " Did not find the practitioner for : "
-                          + part.getIndividual().getReference().getIdPart());
+                      " Did not find the practitioner for : {}",
+                      part.getIndividual().getReference().getIdPart());
                 }
               }
             }
@@ -534,13 +555,13 @@ public class Dstu2CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<CodingDt> codes = new ArrayList<CodingDt>();
 
-    if (cds != null && cds.size() > 0) {
+    if (cds != null && !cds.isEmpty()) {
 
       CodeableConceptDt cd = cds.get(0);
 
       List<CodingDt> codings = cd.getCoding();
 
-      if (codings != null && codings.size() > 0) {
+      if (codings != null && !codings.isEmpty()) {
 
         Boolean found = false;
         Boolean first = true;
@@ -635,7 +656,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (codes != null && codes.size() > 0) {
+    if (codes != null && !codes.isEmpty()) {
 
       Boolean first = true;
       for (CodingDt c : codes) {
@@ -679,7 +700,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (codes.size() > 0) {
+    if (!codes.isEmpty()) {
 
       Boolean first = true;
       for (CodingDt c : codes) {
@@ -860,7 +881,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder nameString = new StringBuilder(200);
 
-    if (names != null && names.size() > 0) {
+    if (names != null && !names.isEmpty()) {
 
       Optional<HumanNameDt> hName = names.stream().findFirst();
       if (hName.isPresent()) {
@@ -949,7 +970,7 @@ public class Dstu2CdaFhirUtilities {
 
     if (dt != null) {
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name:{} ", dt.getClass());
 
       String val = "";
       if (dt instanceof CodingDt) {
@@ -1007,7 +1028,7 @@ public class Dstu2CdaFhirUtilities {
 
     if (dt != null) {
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name:{} ", dt.getClass());
 
       String val = "";
       if (dt instanceof CodingDt) {

@@ -92,9 +92,11 @@ public class TaskConfiguration {
 
                       LaunchDetails details =
                           launchDetailsDao.getAuthDetailsById(inst.getData().getLaunchDetailsId());
-                      details.setProcessingState(
-                          LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
-                      launchDetailsDao.saveOrUpdate(details);
+                      if (details != null) {
+                        details.setProcessingState(
+                            LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
+                        launchDetailsDao.saveOrUpdate(details);
+                      }
 
                     } else {
                       ApplicationUtils.handleException(

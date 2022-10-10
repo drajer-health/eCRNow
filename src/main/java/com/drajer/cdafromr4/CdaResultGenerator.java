@@ -375,7 +375,8 @@ public class CdaResultGenerator {
     }
     */
 
-    if (obsCodeXml.getValue0() || (obsValueXml != null && obsValueXml.getValue0())) {
+    if ((obsCodeXml != null && obsCodeXml.getValue0())
+        || (obsValueXml != null && obsValueXml.getValue0())) {
 
       lrEntry.append(
           CdaGeneratorUtils.getXmlForTemplateId(
@@ -385,7 +386,9 @@ public class CdaResultGenerator {
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    lrEntry.append(obsCodeXml.getValue1());
+    if (obsCodeXml != null) {
+      lrEntry.append(obsCodeXml.getValue1());
+    }
 
     /*   logger.debug("Find the Loinc Code as priority for Lab Results");
     List<Coding> cds = null;

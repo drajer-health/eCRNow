@@ -369,9 +369,9 @@ public class EcaUtils {
           retVal = true;
         }
         if (dstu2Encounter.getStatus() != null
-            && (dstu2Encounter.getStatus() == EncounterStatus.CANCELLED.toString()
-                || dstu2Encounter.getStatus() == EncounterStatus.FINISHED.toString()
-                || dstu2Encounter.getStatus() == EncounterStatus.ENTEREDINERROR.toString())) {
+            && (dstu2Encounter.getStatus().equals(EncounterStatus.CANCELLED.toString())
+                || dstu2Encounter.getStatus().equals(EncounterStatus.FINISHED.toString())
+                || dstu2Encounter.getStatus().equals(EncounterStatus.ENTEREDINERROR.toString()))) {
           logger.info(
               " Encounter status is not null and is closed with a status value of {}",
               dstu2Encounter.getStatus());

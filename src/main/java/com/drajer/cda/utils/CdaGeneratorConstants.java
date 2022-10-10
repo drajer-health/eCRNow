@@ -85,18 +85,20 @@ public class CdaGeneratorConstants {
   // CCDA Header Related Information
   public static final String CDA_DOC_ROOT = "2.16.840.1.113883.1.3";
   public static final String CDA_DOC_EXT = "POCD_HD000040";
-  // public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
+  /** public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1"; */
   public static final String US_REALM_HEADER_EXT = "2015-08-01";
+
   public static final String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2";
   public static final String PUBLIC_HEALTH_EXT = "2016-12-01";
   public static final String PH_DOC_CODE = "55751-2";
   public static final String PH_DOC_DISPLAY_NAME = "Initial Public Health Case Report";
-  // public static final String PH_REPORT_TITLE = "Initial Public Health Case Report";
+  /** public static final String PH_REPORT_TITLE = "Initial Public Health Case Report"; */
 
   // FHIR Types
 
   // FHIR Value Set URLS and values
   public static final String FHIR_IDTYPE_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0203";
+
   public static final String FHIR_IDENTIFIER_TYPE_SYSTEM =
       "http://hl7.org/fhir/ValueSet/identifier-type";
   public static final String FHIR_ARGO_RACE_EXT_URL =

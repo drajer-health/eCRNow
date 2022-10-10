@@ -611,8 +611,12 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForTelecom(String telName, String telNo, String use) {
     String s = "";
+    String telNum = "";
 
-    if (!StringUtils.isEmpty(use) && telNo.length() == 10) {
+    if (!StringUtils.isEmpty(telNo)) {
+      telNum = telNo.replaceAll("[^0-9]", "");
+    }
+    if (!StringUtils.isEmpty(use) && telNum.length() == 10) {
 
       s +=
           CdaGeneratorConstants.START_XMLTAG
@@ -621,11 +625,11 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + "tel:("
-              + telNo.substring(0, 3)
+              + telNum.substring(0, 3)
               + ")"
-              + telNo.substring(3, 6)
+              + telNum.substring(3, 6)
               + "-"
-              + telNo.substring(6, 10)
+              + telNum.substring(6, 10)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
               + "use="
@@ -633,7 +637,7 @@ public class CdaGeneratorUtils {
               + use
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-    } else {
+    } else if (telNum.length() == 10) {
 
       s +=
           CdaGeneratorConstants.START_XMLTAG
@@ -642,11 +646,11 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + "tel:("
-              + telNo.substring(0, 3)
+              + telNum.substring(0, 3)
               + ")"
-              + telNo.substring(3, 6)
+              + telNum.substring(3, 6)
               + "-"
-              + telNo.substring(6, 10)
+              + telNum.substring(6, 10)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
     }
