@@ -224,7 +224,7 @@ public class CloseOutEicrAction extends AbstractAction {
     }
 
     logger.info(
-            " **** END Executing Close Out Eicr Action after completing normal execution. **** ");
+        " **** END Executing Close Out Eicr Action after completing normal execution. **** ");
   }
 
   public void scheduleJob(

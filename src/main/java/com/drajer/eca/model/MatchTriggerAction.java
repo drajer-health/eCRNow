@@ -139,7 +139,7 @@ public class MatchTriggerAction extends AbstractAction {
     }
 
     logger.info(
-            " **** END Executing Match Trigger Action after completing normal execution. **** ");
+        " **** END Executing Match Trigger Action after completing normal execution. **** ");
   }
 
   @Override
