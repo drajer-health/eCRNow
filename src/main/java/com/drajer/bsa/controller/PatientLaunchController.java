@@ -110,6 +110,11 @@ public class PatientLaunchController {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "Unrecognized healthcare setting FHIR URL ");
     }
+    logger.info(
+        " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+        launchContext.getPatientId(),
+        launchContext.getEncounterId(),
+        request.getHeader("X-Request-ID"));
 
     return "Patient Instance launched for processing successfully";
   }
@@ -180,6 +185,11 @@ public class PatientLaunchController {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "Unrecognized healthcare setting FHIR URL ");
     }
+    logger.info(
+        " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+        launchContext.getPatientId(),
+        launchContext.getEncounterId(),
+        request.getHeader("X-Request-ID"));
 
     return "Patient Instance launched for processing successfully";
   }
