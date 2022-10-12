@@ -175,18 +175,18 @@ public class PlanDefinitionProcessor {
 
               logger.debug(" Found a Emergent Value Set {}", valueSet.getId());
 
-              valueSetService.createValueSet(valueSet);
+              // valueSetService.createValueSet(valueSet);
               emergentValuesets.add(valueSet);
               valuesets.add(valueSet);
             } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {
 
               logger.debug(" Found a Grouper Value Set {}", valueSet.getId());
-              valueSetService.createValueSetGrouper(valueSet);
+              // valueSetService.createValueSetGrouper(valueSet);
               grouperValueSets.add(valueSet);
 
             } else {
               logger.debug(" Found a Regular Value Set {}", valueSet.getId());
-              valueSetService.createValueSet(valueSet);
+              // valueSetService.createValueSet(valueSet);
               valuesets.add(valueSet);
             }
 
