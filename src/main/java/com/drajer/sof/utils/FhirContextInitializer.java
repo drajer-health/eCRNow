@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,6 +30,12 @@ public class FhirContextInitializer {
   private static final String QUERY_PATIENT = "?patient=";
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
+
+  @Value("${eicr.fhir.paging.count.enabled:false}")
+  private Boolean pagingCountEnabled;
+
+  @Value("${eicr.fhir.paging.count:500}")
+  private Integer pagingCount;
 
   /**
    * Get FhirContext appropriate to fhirVersion
@@ -150,6 +157,11 @@ public class FhirContextInitializer {
             + resourceName
             + QUERY_PATIENT
             + authDetails.getLaunchPatientId();
+    if (Boolean.TRUE.equals(pagingCountEnabled)) {
+      if (resourceName.matches("ServiceRequest|MedicationRequest")) {
+        url += "&_count=" + pagingCount;
+      }
+    }
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
@@ -169,6 +181,10 @@ public class FhirContextInitializer {
             + authDetails.getLaunchPatientId()
             + "&category="
             + category;
+
+    if (Boolean.TRUE.equals(pagingCountEnabled)) {
+      url += "&_count=" + pagingCount;
+    }
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
