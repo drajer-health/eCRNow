@@ -11,6 +11,8 @@ import com.drajer.sof.model.LaunchDetails;
 import com.github.kagkarlsson.scheduler.task.Task;
 import com.github.kagkarlsson.scheduler.task.helper.OneTimeTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
+import java.time.Duration;
+import java.time.Instant;
 import org.hibernate.ObjectDeletedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +52,15 @@ public class TaskConfiguration {
                       MDC.setContextMap(inst.getData().getMdcContext());
                       MDCUtils.removeEicrDocId();
                     }
+                    long timeDiff =
+                        Duration.between(ctx.getExecution().executionTime, Instant.now())
+                            .toMinutes();
                     log.info(
-                        "Executing Task for {}, Launch Id::: {}",
+                        "Executing Task for {}, Launch Id::: {}, ExecutionTime:: {}, Execution delay in minutes:: {}",
                         inst.getTaskAndInstance(),
-                        inst.getData().getLaunchDetailsId());
+                        inst.getData().getLaunchDetailsId(),
+                        ctx.getExecution().executionTime,
+                        timeDiff);
 
                     WorkflowTask workflowTask = new WorkflowTask();
                     workflowTask.setLaunchId(inst.getData().getLaunchDetailsId());
