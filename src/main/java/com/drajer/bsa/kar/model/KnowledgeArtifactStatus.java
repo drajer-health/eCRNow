@@ -44,7 +44,6 @@ public class KnowledgeArtifactStatus {
   private Integer id;
 
   /** The Id of the HealthcareSetting, this will be removed */
-  @Deprecated
   @Column(name = "hs_id", nullable = false)
   private Integer hsId;
 

@@ -1,9 +1,12 @@
 package com.drajer.bsa.kar.action;
 
 import org.hl7.fhir.r4.model.MeasureReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EvaluateMeasureStatus extends BsaActionStatus {
-  public MeasureReport report;
+  private final Logger logger = LoggerFactory.getLogger(EvaluateMeasureStatus.class);
+  private MeasureReport report;
 
   public MeasureReport getReport() {
     return report;
@@ -13,5 +16,7 @@ public class EvaluateMeasureStatus extends BsaActionStatus {
     this.report = report;
   }
 
-  public EvaluateMeasureStatus() {}
+  public EvaluateMeasureStatus() {
+    logger.info("EvaluateMeasureStatus object initiated.");
+  }
 }

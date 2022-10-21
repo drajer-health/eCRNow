@@ -180,7 +180,7 @@ public class CdaResultGenerator {
         rowNum++;
       }
 
-      if (reports != null && reports.size() > 0) {
+      if (reports != null && !reports.isEmpty()) {
         processDiagnosticResults(reports, allResults, details, rowNum, sb, resultEntries);
       }
 
@@ -364,6 +364,7 @@ public class CdaResultGenerator {
       if (obs != null && obs.getComponent() != null && !obs.getComponent().isEmpty()) {
 
         CodeableConcept cc = obs.getCode();
+        logger.info("CodeableConcept :{}", cc);
         Type val = obs.getValue();
         List<CodeableConcept> interpretation = obs.getInterpretation();
         StringBuilder id = new StringBuilder(200);
@@ -515,7 +516,7 @@ public class CdaResultGenerator {
             CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID,
             CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
 
-    List<String> paths = new ArrayList<String>();
+    List<String> paths = new ArrayList<>();
     paths.add("Observation.code");
     paths.add("DiagnosticReport.code");
 
@@ -530,82 +531,7 @@ public class CdaResultGenerator {
       CodeableConcept value = (CodeableConcept) val;
       obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths);
     }
-    /*
-    List<String> matchedTriggerCodes =
-        CdaFhirUtilities.getMatchedCodesForResourceAndUrl(
-            details, OBSERVATION, CdaGeneratorConstants.FHIR_LOINC_URL);
 
-    List<String> matchedTriggerValues =
-        CdaFhirUtilities.getMatchedValuesForResourceAndUrl(
-            details, OBSERVATION, CdaGeneratorConstants.FHIR_LOINC_URL);
-
-    String obsCodeXml = "";
-    String obsValueXml = "";
-    // Add Trigger code template if the code matched the Url in the Service Request.
-    if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-      logger.debug("Found a Matched Code that is for Observation.code ");
-
-      String mCd =
-          CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
-              matchedTriggerCodes, cd, CdaGeneratorConstants.FHIR_LOINC_URL);
-
-      if (!mCd.isEmpty()) {
-
-        logger.debug("Found exact code that matches the trigger codes");
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
-                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
-
-        obsCodeXml =
-            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-                CdaGeneratorConstants.CODE_EL_NAME,
-                mCd,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-                CdaGeneratorConstants.RCTC_OID,
-                ActionRepo.getInstance().getRctcVersion(),
-                cd,
-                CdaGeneratorConstants.FHIR_LOINC_URL,
-                contentRef);
-      } else {
-        logger.debug(
-            "Did not find the code value in the matched codes, make it a regular Observation");
-      }
-    } else if (matchedTriggerValues != null && !matchedTriggerValues.isEmpty()) {
-      logger.debug("Found a Matched Code that is for Observation.value");
-
-      String mCd =
-          CdaFhirUtilities.getMatchingCodeFromTypeForCodeSystem(
-              matchedTriggerValues, val, CdaGeneratorConstants.FHIR_LOINC_URL);
-
-      if (!mCd.isEmpty() && val instanceof CodeableConcept) {
-
-        logger.debug("Found exact Value Codeable concept that matches the trigger codes");
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
-                CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
-
-        CodeableConcept cc = (CodeableConcept) val;
-
-        obsValueXml =
-            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-                CdaGeneratorConstants.VAL_EL_NAME,
-                mCd,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
-                CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-                CdaGeneratorConstants.RCTC_OID,
-                ActionRepo.getInstance().getRctcVersion(),
-                cc,
-                CdaGeneratorConstants.FHIR_LOINC_URL,
-                contentRef);
-      } else {
-        logger.debug(
-            "Did not find the code value in the matched values, make it a regular Observation");
-      }
-    }
-    */
     if ((obsCodeXml != null && obsCodeXml.getValue0())
         || (obsValueXml != null && obsValueXml.getValue0())) {
 
@@ -617,7 +543,9 @@ public class CdaResultGenerator {
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    lrEntry.append(obsCodeXml.getValue1());
+    if (obsCodeXml != null) {
+      lrEntry.append(obsCodeXml.getValue1());
+    }
 
     lrEntry.append(
         CdaGeneratorUtils.getXmlForCD(
@@ -680,7 +608,7 @@ public class CdaResultGenerator {
 
       if (matchedCode != null) {
 
-        if (!valElement) {
+        if (Boolean.FALSE.equals(valElement)) {
 
           logger.info(" Found a Matched Code for the observation or diagnostic report ");
 
@@ -699,7 +627,7 @@ public class CdaResultGenerator {
                   contentRef,
                   valElement);
 
-          retVal = new Pair<Boolean, String>(true, codeXml);
+          retVal = new Pair<>(true, codeXml);
         } else {
 
           logger.info(" Found a Matched Value for the observation or diagnostic report ");
@@ -718,7 +646,7 @@ public class CdaResultGenerator {
                   contentRef,
                   valElement);
 
-          retVal = new Pair<Boolean, String>(true, valueXml);
+          retVal = new Pair<>(true, valueXml);
         }
       } else if (code.getCoding() != null) {
 
@@ -726,7 +654,7 @@ public class CdaResultGenerator {
             " Did not find a Matched Code or value for the observation or diagnostic report ");
 
         String defCodeXml = "";
-        if (!valElement) {
+        if (Boolean.FALSE.equals(valElement)) {
           defCodeXml =
               CdaFhirUtilities.getCodingXml(
                   code.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, contentRef);
@@ -735,7 +663,7 @@ public class CdaResultGenerator {
               CdaFhirUtilities.getCodingXmlForValue(
                   code.getCoding(), CdaGeneratorConstants.VAL_EL_NAME, contentRef);
         }
-        retVal = new Pair<Boolean, String>(false, defCodeXml);
+        retVal = new Pair<>(false, defCodeXml);
       }
     }
 
@@ -931,7 +859,7 @@ public class CdaResultGenerator {
             && dr.getCode().getCoding() != null
             && !dr.getCode().getCoding().isEmpty()
             && dr.getResult() != null
-            && dr.getResult().size() > 0
+            && !dr.getResult().isEmpty()
             && Boolean.TRUE.equals(
                 CdaFhirUtilities.isCodingPresentForCodeSystem(
                     dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {

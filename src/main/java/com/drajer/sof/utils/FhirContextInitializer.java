@@ -72,7 +72,6 @@ public class FhirContextInitializer {
       logger.debug("AccessToken not supplied for %{}", url);
     }
 
-    // client.setEncoding(EncodingEnum.JSON);
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }

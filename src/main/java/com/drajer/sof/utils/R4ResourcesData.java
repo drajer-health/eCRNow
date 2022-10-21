@@ -132,6 +132,8 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "Encounter :{} StartDate :{} and EndDate :{} in getConditionData ", encounter, start, end);
 
     logger.trace("Getting Conditions Data");
     Bundle bundle =
@@ -179,7 +181,7 @@ public class R4ResourcesData {
                 } else if (categoryCoding.getCode().equals(ENCOUNTER_DIAGNOSIS_CONDITION)
                     && condition.hasEncounter()
                     && !foundPregnancyCondition) {
-
+                  logger.info(ATTACHMENT_CONTENT_TYPE);
                   if (condition
                       .getEncounter()
                       .getReference()
@@ -318,7 +320,7 @@ public class R4ResourcesData {
       List<Observation> valueObservations,
       List<CodeableConcept> valueObservationCodes) {
 
-    if (obs.getValue() != null && obs.getValue() instanceof CodeableConcept) {
+    if (obs.getValue() instanceof CodeableConcept) {
       CodeableConcept cd = obs.getValueCodeableConcept();
       valueObservationCodes.add(cd);
       valueObservations.add(obs);
@@ -333,6 +335,12 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "R4FhirData :{} Encounter :{} StartDate :{} and EndDate :{} in getPregnancyObservationData ",
+        r4FhirData,
+        encounter,
+        start,
+        end);
     logger.trace("Get Pregnancy Observation Data");
     Bundle bundle =
         (Bundle)
@@ -360,6 +368,12 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "R4FhirData :{} Encounter :{} StartDate :{} and EndDate :{} in getTravelObservationData. ",
+        r4FhirData,
+        encounter,
+        start,
+        end);
     logger.trace("Get Travel Observation Data");
     Bundle bundle =
         (Bundle)
@@ -455,6 +469,12 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "R4FhirData :{} Encounter :{} StartDate :{} and EndDate :{} in getSocialHistoryObservationDataOccupation. ",
+        r4FhirData,
+        encounter,
+        start,
+        end);
     logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
     for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
@@ -505,6 +525,12 @@ public class R4ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "R4FhirData :{} Encounter :{} StartDate :{} and EndDate :{} in getPregnancyConditions. ",
+        r4FhirData,
+        encounter,
+        start,
+        end);
     logger.trace("Get Pregnancy Conditions");
     List<Condition> conditions = new ArrayList<>();
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
@@ -555,6 +581,7 @@ public class R4ResourcesData {
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
       String medicationId) {
+    logger.info("R4FhirData :{} in getMedicationData. ", r4FhirData);
     return (Medication)
         resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
   }
@@ -1286,6 +1313,8 @@ public class R4ResourcesData {
       Bundle bundle,
       Date start,
       Date end) {
+    logger.info(
+        "StartDate :{} EndDate :{} in loadPractitionersLocationAndOrganization", start, end);
     if (encounter != null) {
 
       // Load Practitioners
@@ -1370,7 +1399,7 @@ public class R4ResourcesData {
         }
         r4FhirData.setLocationList(locationList);
 
-        if (locationList.size() > 0) {
+        if (!locationList.isEmpty()) {
           r4FhirData.setLocation(locationList.get(0));
         }
       }

@@ -19,6 +19,7 @@ public class EcrMeasureReportCreator extends EcrReportCreator {
   @Override
   public Resource createReport(
       KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act) {
+    logger.info("Ecr Measure Report Creator is executing");
 
     Resource res = super.createReport(kd, ehrService, id, profile, act);
 

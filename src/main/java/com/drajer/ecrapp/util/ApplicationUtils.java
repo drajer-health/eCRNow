@@ -271,6 +271,7 @@ public class ApplicationUtils {
   }
 
   public static Instant convertTimingScheduleToInstant(TimingSchedule ts, Date timeRef) {
+    logger.info("Time Ref in convertTimingScheduleToInstant:{}", timeRef);
 
     Instant t = null;
 
@@ -304,9 +305,9 @@ public class ApplicationUtils {
 
   public static Instant getInstantForOffHours(
       Duration d, String offhourStart, String offhourEnd, String tz) {
+    logger.info("OffHours Duration ={}", d);
 
     Instant t = null;
-    String unit = "";
 
     logger.info(
         " OffHour Parameters: Start = {}, End = {} , Tz = {} ", offhourStart, offhourEnd, tz);
@@ -327,11 +328,11 @@ public class ApplicationUtils {
         && offhourEnd.length() == 5
         && offhourEnd.contains(":")) {
 
-      int lowHours = Integer.valueOf(offhourStart.split(":")[0]);
-      int lowMin = Integer.valueOf(offhourStart.split(":")[1]);
+      int lowHours = Integer.parseInt(offhourStart.split(":")[0]);
+      int lowMin = Integer.parseInt(offhourStart.split(":")[1]);
 
-      int highHours = Integer.valueOf(offhourEnd.split(":")[0]);
-      int highMin = Integer.valueOf(offhourEnd.split(":")[1]);
+      int highHours = Integer.parseInt(offhourEnd.split(":")[0]);
+      int highMin = Integer.parseInt(offhourEnd.split(":")[1]);
       int totalHours = 0;
 
       logger.info(
@@ -466,7 +467,7 @@ public class ApplicationUtils {
 
         for (UsageContext uc : ucs) {
 
-          if (uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
+          if ((uc.getValue() instanceof CodeableConcept)) {
 
             CodeableConcept cc = (CodeableConcept) uc.getValue();
 
@@ -494,6 +495,7 @@ public class ApplicationUtils {
     boolean retVal = false;
 
     if (v != null) {
+      logger.info("Value Set:{}", v);
 
       if (v.getUseContextFirstRep() != null) {
 
@@ -571,7 +573,7 @@ public class ApplicationUtils {
               .parseResource(ca.uhn.fhir.model.dstu2.resource.Bundle.class, in);
       logger.info("Completed Reading File");
     } catch (Exception e) {
-      logger.error("Exception Reading File", e);
+      logger.error("Exception Reading File ", e);
     }
     return bundle;
   }

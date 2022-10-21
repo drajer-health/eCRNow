@@ -69,6 +69,7 @@ public class R4FhirData extends FhirData {
       logger.info(
           " Using Patient address information for Jurisdiction assuming first entry of list.");
       jurisdictions = patient.getAddress();
+
       jurisdiction = patient.getAddressFirstRep();
     }
   }
@@ -337,5 +338,64 @@ public class R4FhirData extends FhirData {
 
   public void setDiagReportObservations(List<Observation> diagReportObservations) {
     this.diagReportObservations = diagReportObservations;
+  }
+
+  @Override
+  public String toString() {
+    return "R4FhirData [data="
+        + data
+        + ", patient="
+        + patient
+        + ", practitioner="
+        + practitioner
+        + ", practitionersList="
+        + practitionersList
+        + ", encounter="
+        + encounter
+        + ", location="
+        + location
+        + ", locationList="
+        + locationList
+        + ", organization="
+        + organization
+        + ", conditions="
+        + conditions
+        + ", encounterDiagnosisConditions="
+        + encounterDiagnosisConditions
+        + ", pregnancyConditions="
+        + pregnancyConditions
+        + ", diagReports="
+        + diagReports
+        + ", diagReportObservations="
+        + diagReportObservations
+        + ", labResults="
+        + labResults
+        + ", labResultValueObservations="
+        + labResultValueObservations
+        + ", travelObs="
+        + travelObs
+        + ", pregnancyObs="
+        + pregnancyObs
+        + ", occupationObs="
+        + occupationObs
+        + ", immunizations="
+        + immunizations
+        + ", medications="
+        + medications
+        + ", medicationRequests="
+        + medicationRequests
+        + ", medicationAdministrations="
+        + medicationAdministrations
+        + ", medicationList="
+        + medicationList
+        + ", serviceRequests="
+        + serviceRequests
+        + ", procedureList="
+        + procedureList
+        + ", jurisdiction="
+        + jurisdiction
+        + ", jurisdictions="
+        + jurisdictions
+        + "]";
   }
 }

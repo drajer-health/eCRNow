@@ -19,13 +19,13 @@ public class ValueSetDaoImpl extends AbstractDao implements ValueSetDao {
 
   @Override
   public ValueSetModel getValueSetById(int id) {
-    // TODO Auto-generated method stub
+
     return null;
   }
 
   @Override
   public List<ValueSetModel> getAllValuesets() {
-    // TODO Auto-generated method stub
+
     return Collections.emptyList();
   }
 
@@ -33,7 +33,7 @@ public class ValueSetDaoImpl extends AbstractDao implements ValueSetDao {
   public void createValueset(ValueSetModel valueSetModel) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    //	session.save(valueSetModel);
+
     session.getTransaction().commit();
     session.close();
   }
@@ -42,7 +42,6 @@ public class ValueSetDaoImpl extends AbstractDao implements ValueSetDao {
   public void createValuesetGrouper(ValueSetGrouperModel valuesetGrouper) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    //	session.save(valuesetGrouper);
     session.getTransaction().commit();
     session.close();
   }
@@ -51,7 +50,6 @@ public class ValueSetDaoImpl extends AbstractDao implements ValueSetDao {
   public void createPlanDefinitionActions(PlanDefinitionActionModel planDefinitionAction) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    //	session.save(planDefinitionAction);
     session.getTransaction().commit();
     session.close();
   }

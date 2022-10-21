@@ -122,7 +122,7 @@ public class CdaPlanOfTreatmentGenerator {
         logger.debug("Order Date for display {} ", orderDate);
 
         if (orderDate.isEmpty() && dr.getIssued() != null) {
-          // orderDate = CdaFhirUtilities.getDisplayStringForDateTimeType(dr.getIssued());
+          logger.info("Order Date is empty");
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
@@ -452,7 +452,7 @@ public class CdaPlanOfTreatmentGenerator {
         if (dr.getCode() != null
             && dr.getCode().getCoding() != null
             && !dr.getCode().getCoding().isEmpty()
-            && (dr.getResult() == null || dr.getResult().size() == 0)
+            && (dr.getResult() == null || dr.getResult().isEmpty())
             && Boolean.TRUE.equals(
                 CdaFhirUtilities.isCodingPresentForCodeSystem(
                     dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {

@@ -160,6 +160,7 @@ public class SubmitReport extends BsaAction {
 
   public boolean submitCdaOutput(
       KarProcessingData data, BsaActionStatus actStatus, HealthcareSetting hs) {
+    logger.info("Bsa Action Status:{}", actStatus);
 
     data.getSubmittedCdaData();
 
@@ -211,6 +212,7 @@ public class SubmitReport extends BsaAction {
       restSubmitter.sendEicrDataUsingRestfulApi(data);
 
     } else if (Boolean.TRUE.equals(hs.getIsXdr())) {
+      logger.info(" Submitting to XDR endpoint :TO DO");
 
     } else {
 
@@ -263,12 +265,12 @@ public class SubmitReport extends BsaAction {
       } else {
         Set<UriType> endpoints = data.getKar().getReceiverAddresses();
         logger.info("Sending data to endpoints {} ", endpoints);
-        if (endpoints.size() > 0) {
+        if (!endpoints.isEmpty()) {
           for (UriType uri : endpoints) {
             logger.info("Submitting resources to {}", uri);
             try {
               submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
-            } catch (Throwable th) {
+            } catch (Exception th) {
               logger.error("Error sending data to {} ", uri, th);
             }
           }
@@ -283,6 +285,7 @@ public class SubmitReport extends BsaAction {
       KarProcessingData data,
       EhrQueryService ehrService,
       String submissionEndpoint) {
+    logger.info("Ehr Query Service:{}", ehrService);
 
     logger.info("SubmitResources called: sending data to {}", submissionEndpoint);
     PublicHealthAuthority pha;
@@ -328,7 +331,6 @@ public class SubmitReport extends BsaAction {
           fhirContextInitializer.createClient(
               context, submissionEndpoint, token, data.getxRequestId());
 
-      // ((GenericClient) client).setDontValidateConformance(true);
       context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
 
       // All submissions are expected to be bundles
@@ -420,6 +422,7 @@ public class SubmitReport extends BsaAction {
     this.fhirContextInitializer = fhirContextInitializer;
   }
 
+  @Override
   public void printSummary() {
 
     logger.info(" **** START Printing Derived Action **** ({})", actionId);
@@ -431,6 +434,7 @@ public class SubmitReport extends BsaAction {
     logger.info(" **** START Printing Derived Action **** ({})", actionId);
   }
 
+  @Override
   public void log() {
 
     logger.info(" **** START Printing Derived Action **** {}", actionId);

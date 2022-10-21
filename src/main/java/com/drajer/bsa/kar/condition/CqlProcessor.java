@@ -72,6 +72,6 @@ public class CqlProcessor implements BsaConditionProcessor {
 
     logger.error(" Unable to evalue expression as this is not implementd.");
 
-    return null;
+    return false;
   }
 }

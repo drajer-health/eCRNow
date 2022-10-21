@@ -331,12 +331,12 @@ public class LaunchDetails {
       Date tokenExpiryTime = this.getTokenExpiryDateTime();
       int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
-        logger.info("AccessToken is Expired. Getting new AccessToken");
+        logger.info("AccessToken is Expired. Getting new AccessToken.");
         JSONObject accessTokenObj =
             new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
-        logger.debug("AccessToken is Valid. No need to get new AccessToken");
+        logger.debug("AccessToken is Valid. No need to get new AccessToken.");
         return accessToken;
       }
 

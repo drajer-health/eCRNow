@@ -1832,7 +1832,7 @@ public class CdaFhirUtilities {
 
         logger.info(" Checking medication references ");
         // check if the medications have been extracted for non contained references.
-        if (medList != null && medList.size() > 0) {
+        if (medList != null && !medList.isEmpty()) {
 
           String id = med.getReferenceElement().getIdPart();
           Medication medRes = null;
@@ -1846,7 +1846,9 @@ public class CdaFhirUtilities {
           }
 
           // Found the reference, check the code and ingredients.
-          codeXml = getXmlForMedication(medRes, elName, valFlag, codeSystemUrl, csOptional);
+          if (medRes != null) {
+            codeXml = getXmlForMedication(medRes, elName, valFlag, codeSystemUrl, csOptional);
+          }
         }
       }
 
@@ -2106,7 +2108,7 @@ public class CdaFhirUtilities {
                 " Found a Coding that matches the CodeSystem and Code {} : {} ", codeSystem, code);
             if (cd.getDisplay() != null && !cd.getDisplay().isEmpty()) dispName = cd.getDisplay();
 
-            if (!valueElem) {
+            if (Boolean.FALSE.equals(valueElem)) {
               retval.append(
                   CdaGeneratorUtils.getXmlForCDWithValueSetAndVersionWihoutEndTag(
                       elementName,
@@ -2120,7 +2122,7 @@ public class CdaFhirUtilities {
               if (!contentRef.isEmpty())
                 retval.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
 
-            } else if (valueElem) {
+            } else if (Boolean.TRUE.equals(valueElem)) {
 
               retval.append(
                   CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersionWihoutEndTag(
@@ -2163,7 +2165,7 @@ public class CdaFhirUtilities {
       String dispName = "";
       if (cc != null && cc.getText() != null && !cc.getText().isEmpty()) dispName = cc.getText();
 
-      if (!valueElem) {
+      if (Boolean.FALSE.equals(valueElem)) {
         retval.append(
             CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
                 CdaGeneratorConstants.CODE_EL_NAME,
@@ -2174,7 +2176,7 @@ public class CdaFhirUtilities {
                 ActionRepo.getInstance().getRctcVersion(),
                 dispName,
                 contentRef));
-      } else if (valueElem) {
+      } else if (Boolean.TRUE.equals(valueElem)) {
         retval.append(
             CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                 code,

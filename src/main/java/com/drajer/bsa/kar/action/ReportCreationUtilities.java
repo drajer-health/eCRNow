@@ -16,8 +16,11 @@ public class ReportCreationUtilities {
 
   private static final Logger logger = LoggerFactory.getLogger(ReportCreationUtilities.class);
 
+  private ReportCreationUtilities() {}
+
   public static List<Practitioner> getPractitioners(
       KarProcessingData data, V3ParticipationType type) {
+    logger.info("V3ParticipationType:{}", type);
 
     List<Practitioner> result = new ArrayList<>();
     Set<Resource> res = data.getResourcesByType(ResourceType.Practitioner);
@@ -35,7 +38,7 @@ public class ReportCreationUtilities {
 
     Set<Resource> res = kd.getResourcesByType(ResourceType.Organization);
     Organization org = null;
-    if (res != null && res.size() > 0) {
+    if (res != null && !res.isEmpty()) {
       org = (Organization) (res.iterator().next());
     }
 

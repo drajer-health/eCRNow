@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
 
     List<DiagnosticReport> drs = getValidDiagnosticReports(data);
     List<DiagnosticOrder> dors = getValidDiagnosticOrders(data);
+    logger.info("DiagnosticOrder List in generatePlanOfTreatmentSection :{}", dors);
 
     if ((drs != null && !drs.isEmpty())) {
       logger.info("Found {} Diagnostic Report objects to translate to CDA.", drs.size());
@@ -278,7 +280,7 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
             && dr.getItemFirstRep().getCode().getCoding() != null
             && !dr.getItemFirstRep().getCode().getCoding().isEmpty()
             && dr.getStatus() != null
-            && dr.getStatus() == DiagnosticOrderStatusEnum.ACCEPTED.getCode()) {
+            && Objects.equals(dr.getStatus(), DiagnosticOrderStatusEnum.ACCEPTED.getCode())) {
 
           logger.debug("Found a Diagnostic Order");
           drs.add(dr);

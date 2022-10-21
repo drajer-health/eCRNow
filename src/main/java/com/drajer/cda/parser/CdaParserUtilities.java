@@ -1,6 +1,7 @@
 package com.drajer.cda.parser;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -10,7 +11,9 @@ public class CdaParserUtilities {
 
   private static final Logger logger = LoggerFactory.getLogger(CdaParserUtilities.class);
 
-  public static ArrayList<CdaIi> readTemplateIdList(NodeList templateIDNodeList) {
+  private CdaParserUtilities() {}
+
+  public static List<CdaIi> readTemplateIdList(NodeList templateIDNodeList) {
     ArrayList<CdaIi> templateList = null;
     if (!isNodeListEmpty(templateIDNodeList)) {
       templateList = new ArrayList<>();

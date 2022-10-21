@@ -381,7 +381,7 @@ public class KnowledgeArtifact {
     logger.info(" KAR Id : {}", karId);
     logger.info(" Kar Version : {} ", karVersion);
 
-    firstLevelActions.forEach(act -> act.printSummary());
+    firstLevelActions.forEach(BsaAction::printSummary);
     // Supplemental Bundle does not have a PlanDefinition with actions
     if (defaultQueries != null) {
       defaultQueries.forEach(

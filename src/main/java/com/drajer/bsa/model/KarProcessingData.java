@@ -45,9 +45,9 @@ public class KarProcessingData {
     ALL_INFO
   }
 
-  public static String TRIGGER_QUERY_FILE_NAME = "TriggerQueryBundle";
-  public static String LOADING_QUERY_FILE_NAME = "LoadingQueryBundle";
-  public static String ALL_DATA_FILE_NAME = "AllDataFile";
+  public static final String TRIGGER_QUERY_FILE_NAME = "TriggerQueryBundle";
+  public static final String LOADING_QUERY_FILE_NAME = "LoadingQueryBundle";
+  public static final String ALL_DATA_FILE_NAME = "AllDataFile";
 
   /** The Knowledge Artifact to be processed. */
   KnowledgeArtifact kar;
@@ -190,7 +190,9 @@ public class KarProcessingData {
     }
   }
 
-  public void addNotifiedResource(String resId, Resource res) {}
+  public void addNotifiedResource(String resId, Resource res) {
+    logger.info("addNotifiedResource:TO DO:{}{}", resId, res);
+  }
 
   public Set<Resource> getResourcesByType(String type) {
 
@@ -269,7 +271,7 @@ public class KarProcessingData {
 
   public void addResourcesByType(ResourceType type, Set<Resource> res) {
 
-    if (res != null && res.size() > 0) {
+    if (res != null && !res.isEmpty()) {
 
       logger.info(" Resource Sizes : {}", res.size());
 
@@ -304,7 +306,7 @@ public class KarProcessingData {
   }
 
   public void addResourcesById(String id, Set<Resource> res) {
-    if (res != null && res.size() > 0) {
+    if (res != null && !res.isEmpty()) {
       fhirInputDataById.put(id, res);
     }
   }
@@ -318,7 +320,7 @@ public class KarProcessingData {
           ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
       fhirInputDataById.put(dataReqId, uniqueResources);
     } else {
-      Set<Resource> resources = new HashSet<Resource>();
+      Set<Resource> resources = new HashSet<>();
       resources.add(res);
       fhirInputDataById.put(dataReqId, resources);
     }
@@ -659,6 +661,7 @@ public class KarProcessingData {
 
     if (tokenExpirationTime != null
         && (tokenExpirationTime.compareTo(expirationTimeThreshold) > 0)) {
+      logger.info("Access Token is Valid");
 
       return true;
 
@@ -693,10 +696,9 @@ public class KarProcessingData {
   public Set<Resource> getDataForId(String id, String relatedDataId) {
 
     Set<Resource> resources = null;
-    if (relatedDataId != null) {
-      if (actionOutputDataById.containsKey(relatedDataId)) {
-        resources = actionOutputDataById.get(relatedDataId);
-      }
+    if (relatedDataId != null && actionOutputDataById.containsKey(relatedDataId)) {
+
+      resources = actionOutputDataById.get(relatedDataId);
     }
 
     if (resources == null) {
@@ -803,7 +805,7 @@ public class KarProcessingData {
               + "_"
               + this.getNotificationContext().getNotificationResourceId();
 
-      logger.info(" Bundle Size for filename {} = ", outputFileName, bund.getEntry().size());
+      logger.info(" Bundle Size for filename {} {}= ", outputFileName, bund.getEntry().size());
 
       BsaServiceUtils.saveFhirResourceToFile(bund, outputFileName);
     }

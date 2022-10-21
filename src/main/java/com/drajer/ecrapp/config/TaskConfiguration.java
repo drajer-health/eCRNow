@@ -108,6 +108,7 @@ public class TaskConfiguration {
                     MDC.clear();
                   }
                 });
+    log.info("One time task execution done");
     return myTask;
   }
 }

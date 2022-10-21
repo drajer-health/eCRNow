@@ -169,7 +169,7 @@ public class SubscriptionGeneratorImpl implements SubscriptionGeneratorService {
         .setEndpoint(notificationEndpoint)
         .setPayload("application/fhir+json")
         .setType(Subscription.SubscriptionChannelType.RESTHOOK);
-    //      .addHeader(String.format("Authorization: Bearer %s", token)); //TODO: the subscription
+
     // needs auth token
     if (code != null) {
       subscription.setMeta(new Meta().addProfile(BACKPORT_SUBSCRIPTION));

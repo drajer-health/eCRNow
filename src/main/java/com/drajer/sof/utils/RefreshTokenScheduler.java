@@ -25,7 +25,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-// TODO: Auto-generated Javadoc
 /** The Class RefreshTokenScheduler. */
 @Component
 public class RefreshTokenScheduler {
@@ -167,20 +166,21 @@ public class RefreshTokenScheduler {
                 + "="
                 + authDetails.getScope();
 
-        HttpEntity entity = new HttpEntity(headers);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<?> response =
             resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
-        String responseBody =
-            response
-                .getBody()
-                .toString()
-                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
-                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
-        tokenResponse = new JSONObject(responseBody);
+        String resBody = (String) response.getBody();
+        if (resBody != null) {
+          String responseBody =
+              resBody
+                  .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                  .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+          tokenResponse = new JSONObject(responseBody);
+        }
       }
       logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
-      if (authDetails.getIsMultiTenantSystemLaunch()) {
+      if (Boolean.TRUE.equals(authDetails.getIsMultiTenantSystemLaunch())) {
         ClientDetails clientDetails =
             ActionRepo.getInstance()
                 .getClientDetailsService()
@@ -193,7 +193,7 @@ public class RefreshTokenScheduler {
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {}", authDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the Client: {}", authDetails.getClientId(), e);
     }
     return tokenResponse;
   }
@@ -307,17 +307,19 @@ public class RefreshTokenScheduler {
                 + "="
                 + clientDetails.getScopes();
 
-        HttpEntity entity = new HttpEntity(headers);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<?> response =
             resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
-        String responseBody =
-            response
-                .getBody()
-                .toString()
-                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
-                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
-        tokenResponse = new JSONObject(responseBody);
+        String resBody = (String) response.getBody();
+        logger.info(resBody);
+        if (resBody != null) {
+          String responseBody =
+              resBody
+                  .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                  .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+          tokenResponse = new JSONObject(responseBody);
+        }
       }
 
       logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());

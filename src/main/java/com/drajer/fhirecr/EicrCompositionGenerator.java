@@ -46,7 +46,6 @@ public class EicrCompositionGenerator {
 
     comp.setAuthor(auths);
 
-    // Add Reason for Visit Section;
     SectionComponent rvs =
         FhirGeneratorUtils.getSectionComponent(
             FhirGeneratorConstants.LOINC_CS_URL,

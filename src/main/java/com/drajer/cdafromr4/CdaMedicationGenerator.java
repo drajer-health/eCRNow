@@ -108,7 +108,7 @@ public class CdaMedicationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
 
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
@@ -156,7 +156,7 @@ public class CdaMedicationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
 
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
@@ -222,7 +222,7 @@ public class CdaMedicationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
 
         // Create the Med Entry for the Medication Request.
         String medstatus = "";
@@ -352,8 +352,6 @@ public class CdaMedicationGenerator {
 
     // add Dose quantity
     sb.append(ds);
-    // sb.append(CdaGeneratorUtils.getXmlForQuantity(CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME,
-    // ds));
 
     // add the consumable presentation.
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));

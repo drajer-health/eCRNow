@@ -167,6 +167,7 @@ public class RrReceiverImpl implements RrReceiver {
             // Check and handoff to REST API if needed
             if (hs.getHandOffResponseToRestApi() != null
                 && !hs.getHandOffResponseToRestApi().isEmpty()) {
+              logger.info("getHandOffResponseToRestApi is not empty");
 
               if (!submitResponseToRestApi(phm, rrModel, hs, data.getRrXml())) {
 
@@ -231,6 +232,8 @@ public class RrReceiverImpl implements RrReceiver {
 
   private boolean submitResponseToRestApi(
       PublicHealthMessage phm, CdaRrModel rrModel, HealthcareSetting hs, String rrXml) {
+    logger.info("Public Health Message:{}", phm);
+    logger.info("Cda Rr Model:{}", rrModel);
 
     boolean isSubmitSuccess = false;
     RestTemplate restTemplate = new RestTemplate();
@@ -298,6 +301,7 @@ public class RrReceiverImpl implements RrReceiver {
   public DocumentReference constructDocumentReference(
       PublicHealthMessage phm, CdaRrModel rrModel, HealthcareSetting hs, String rrXml) {
 
+    logger.info("Cda Rr Model in construct Doc Ref method:{}", rrModel);
     if (phm.getResponseProcessingInstruction() != null
         && (phm.getResponseProcessingInstruction()
                 .equals(EicrTypes.ReportabilityType.RRVS1.toString())

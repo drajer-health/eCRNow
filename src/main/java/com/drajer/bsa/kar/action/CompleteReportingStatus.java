@@ -1,6 +1,12 @@
 package com.drajer.bsa.kar.action;
 
-public class CompleteReportingStatus extends BsaActionStatus {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  public CompleteReportingStatus() {}
+public class CompleteReportingStatus extends BsaActionStatus {
+  private final Logger logger = LoggerFactory.getLogger(CompleteReportingStatus.class);
+
+  public CompleteReportingStatus() {
+    logger.info("CompleteReportingStatus :To Do");
+  }
 }

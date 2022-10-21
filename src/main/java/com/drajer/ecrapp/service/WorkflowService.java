@@ -273,6 +273,7 @@ public class WorkflowService {
         Integer launchDetailsId,
         EcrActionTypes actionType,
         Map<String, String> loggingDiagnosticContext) {
+      logger.info("loggingDiagnosticContext:{}", loggingDiagnosticContext);
       this.launchDetailsId = launchDetailsId;
       this.actionType = actionType;
       this.loggingDiagnosticContext = MDC.getCopyOfContextMap();
@@ -315,6 +316,7 @@ public class WorkflowService {
       EcrActionTypes actionType,
       Date timeRef,
       String taskInstanceId) {
+    logger.info("timeRef in scheduleJob:{}", timeRef);
 
     Instant t = ApplicationUtils.convertDurationToInstant(d);
 
@@ -326,6 +328,7 @@ public class WorkflowService {
 
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t, String taskInstanceId) {
+    logger.info("Task Instance Id:{}", taskInstanceId);
 
     Boolean timerAlreadyExists = false;
     CommandLineRunner task = null;
@@ -361,7 +364,7 @@ public class WorkflowService {
               .instance(
                   actionType.toString()
                       + "_"
-                      + String.valueOf(launchDetailsId)
+                      + launchDetailsId
                       + "_"
                       + java.util.UUID.randomUUID().toString(),
                   new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
@@ -395,8 +398,7 @@ public class WorkflowService {
       logger.info(" No tasks exist, so return false ");
     }
 
-    if (numOfTasksExisting > 1) return true;
-    else return false;
+    return (numOfTasksExisting > 1);
   }
 
   public static void cancelAllScheduledTasksForLaunch(

@@ -206,7 +206,9 @@ public class PublicHealthMessage {
   @CreationTimestamp
   private Date lastUpdated;
 
-  public PublicHealthMessage() {}
+  public PublicHealthMessage() {
+    logger.info("PublicHealthMessage initiated.");
+  }
 
   public UUID getId() {
     return id;

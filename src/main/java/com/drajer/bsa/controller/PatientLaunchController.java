@@ -56,6 +56,7 @@ public class PatientLaunchController {
   private final Logger logger = LoggerFactory.getLogger(PatientLaunchController.class);
 
   private static final String FHIR_VERSION = "fhirVersion";
+  private static final String X_REQUEST_ID = "X-Request-ID";
 
   /**
    * The method is the API to launch a patient instance within the app for processing. In addition
@@ -82,7 +83,7 @@ public class PatientLaunchController {
         launchContext.getFhirServerURL(),
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
-        request.getHeader("X-Request-ID"),
+        request.getHeader(X_REQUEST_ID),
         launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
@@ -92,7 +93,7 @@ public class PatientLaunchController {
     // If the healthcare setting exists
     if (hs != null) {
 
-      String requestId = request.getHeader("X-Request-ID");
+      String requestId = request.getHeader(X_REQUEST_ID);
 
       if (!StringUtils.isEmpty(requestId)) {
 
@@ -152,7 +153,7 @@ public class PatientLaunchController {
         launchContext.getFhirServerURL(),
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
-        request.getHeader("X-Request-ID"),
+        request.getHeader(X_REQUEST_ID),
         launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
@@ -162,7 +163,7 @@ public class PatientLaunchController {
     // If the healthcare setting exists
     if (hs != null) {
 
-      String requestId = request.getHeader("X-Request-ID");
+      String requestId = request.getHeader(X_REQUEST_ID);
 
       if (!StringUtils.isEmpty(requestId)) {
 

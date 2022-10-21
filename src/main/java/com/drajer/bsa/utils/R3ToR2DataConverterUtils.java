@@ -68,9 +68,10 @@ public class R3ToR2DataConverterUtils {
     R4FhirData r4FhirData = new R4FhirData();
     LaunchDetails details = new LaunchDetails();
     Bundle data = new Bundle();
-    setPatientStateInLaunchDetails(kd, details);
 
     if (kd != null) {
+
+      setPatientStateInLaunchDetails(kd, details);
 
       logger.debug(" KarProcessingData is not null, to be converted ");
 
@@ -117,6 +118,7 @@ public class R3ToR2DataConverterUtils {
       LaunchDetails details,
       KarProcessingData kd,
       BsaAction act) {
+    logger.info("BsaAction in addSecondaryResources:{}", act);
 
     Set<Resource> medications = kd.getResourcesByType(ResourceType.Medication.toString());
     addResourcesToR4FhirData(
@@ -134,6 +136,7 @@ public class R3ToR2DataConverterUtils {
       LaunchDetails details,
       KarProcessingData kd,
       BsaAction act) {
+    logger.info("BsaAction in addAdministrativeResources:{}", act);
 
     Set<Resource> practitioners = kd.getResourcesByType(ResourceType.Practitioner.toString());
     addResourcesToR4FhirData(
@@ -155,6 +158,7 @@ public class R3ToR2DataConverterUtils {
       LaunchDetails details,
       Set<Resource> resources,
       String type) {
+    logger.info("Data id in addResourcesToR4FhirData:{}", dataId);
 
     if (resources != null && !resources.isEmpty()) {
       if (type.contentEquals(ResourceType.Patient.toString())) {
@@ -188,7 +192,7 @@ public class R3ToR2DataConverterUtils {
         logger.info(" Setting up the Practitioner for R4FhirData ");
 
         ArrayList<Practitioner> practitioners = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             practitioners.add((Practitioner) r);
@@ -201,7 +205,7 @@ public class R3ToR2DataConverterUtils {
         logger.info(" Setting up the Conditions for R4FhirData ");
         ArrayList<Condition> conditionList = new ArrayList<>();
         ArrayList<Condition> encDiagList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
 
@@ -227,7 +231,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the Immunization for R4FhirData ");
         ArrayList<Immunization> immList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             immList.add((Immunization) r);
@@ -239,7 +243,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the Procedure for R4FhirData ");
         ArrayList<Procedure> procList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             procList.add((Procedure) r);
@@ -251,7 +255,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the MedicationRequest for R4FhirData ");
         ArrayList<MedicationRequest> medReqList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             medReqList.add((MedicationRequest) r);
@@ -263,7 +267,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the MedicationAdministration for R4FhirData ");
         ArrayList<MedicationAdministration> medAdmList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             medAdmList.add((MedicationAdministration) r);
@@ -275,7 +279,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the MedicationStatement for R4FhirData ");
         ArrayList<MedicationStatement> medStatementList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             medStatementList.add((MedicationStatement) r);
@@ -287,7 +291,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the Medication for R4FhirData ");
         ArrayList<Medication> medList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             medList.add((Medication) r);
@@ -299,7 +303,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the ServiceRequest for R4FhirData ");
         ArrayList<ServiceRequest> servReqList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             servReqList.add((ServiceRequest) r);
@@ -353,7 +357,7 @@ public class R3ToR2DataConverterUtils {
 
         logger.info(" Setting up the Diagnostic Report for R4FhirData ");
         ArrayList<DiagnosticReport> diagReportList = new ArrayList<>();
-        if (resources != null && !resources.isEmpty()) {
+        if (!resources.isEmpty()) {
 
           for (Resource r : resources) {
             diagReportList.add((DiagnosticReport) r);

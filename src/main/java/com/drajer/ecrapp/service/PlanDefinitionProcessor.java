@@ -98,7 +98,6 @@ public class PlanDefinitionProcessor {
 
     // Reading Bundle with Id 506 from ersd server.
     // Bundle esrdBundle =
-    // esrdClient.read().resource(Bundle.class).withId("506").execute();
 
     logger.info(" Reading ERSD Bundle File ");
     Bundle ersdBundle = readErsdBundleFromFile();
@@ -213,6 +212,7 @@ public class PlanDefinitionProcessor {
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
         if (Optional.ofNullable(bundleEntry).isPresent()) {
+          logger.info("Bundle exist");
 
           if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
             planDefinition = (PlanDefinition) bundleEntry.getResource();

@@ -22,8 +22,8 @@ public class SubmitEicrAction extends AbstractAction {
 
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
 
-  public static int RR_TIMER_CHECK_DURATION = 5;
-  public static String RR_TIMER_CHECK_UNITS = "min";
+  public static final int RR_TIMER_CHECK_DURATION = 5;
+  public static final String RR_TIMER_CHECK_UNITS = "min";
 
   @Override
   public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {

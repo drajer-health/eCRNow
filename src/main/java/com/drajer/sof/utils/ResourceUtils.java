@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceUtils {
+  private static final Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
 
   public static <T extends IBaseResource> List<T> deduplicate(Collection<T> resources) {
     Map<String, List<T>> groupedById =
@@ -36,6 +39,7 @@ public class ResourceUtils {
                         .get())
             .collect(Collectors.toList());
 
+    logger.info("Sorted Resource List :{}", sorted);
     return sorted;
   }
 }
