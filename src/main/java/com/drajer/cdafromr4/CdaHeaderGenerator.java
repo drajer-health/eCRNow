@@ -857,7 +857,7 @@ public class CdaHeaderGenerator {
             CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
-    if (race != null && race.getCode() != null) {
+    if (race != null && race.getCode() != null && !isCodingNullFlavor(race)) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.RACE_CODE_EL_NAME,
@@ -865,6 +865,10 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.RACE_CODE_SYSTEM,
               CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
               race.getDisplay()));
+    } else if (race != null && race.getCode() != null && isCodingNullFlavor(race)) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.RACE_CODE_EL_NAME, race.getCode()));
     } else {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForNullCD(
@@ -877,7 +881,7 @@ public class CdaHeaderGenerator {
             CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
-    if (ethnicity != null && ethnicity.getCode() != null) {
+    if (ethnicity != null && ethnicity.getCode() != null && !isCodingNullFlavor(ethnicity)) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ETHNIC_CODE_EL_NAME,
@@ -885,6 +889,10 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.RACE_CODE_SYSTEM,
               CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
               ethnicity.getDisplay()));
+    } else if (ethnicity != null && ethnicity.getCode() != null && isCodingNullFlavor(ethnicity)) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, ethnicity.getCode()));
     } else {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForNullCD(
@@ -962,6 +970,15 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
 
     return patientDetails.toString();
+  }
+
+  private static boolean isCodingNullFlavor(Coding coding) {
+
+    if (coding != null
+        && coding.getCode() != null
+        && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
+      return true;
+    } else return false;
   }
 
   public static List<Address> getAddressDetails() {

@@ -208,6 +208,10 @@ public class CdaMedicationGenerator {
           }
         }
 
+        if (startDate == null && medReq.getAuthoredOnElement() != null) {
+          startDate = medReq.getAuthoredOnElement();
+        }
+
         String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (startDate != null) {
           dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
