@@ -320,8 +320,8 @@ public class WorkflowService {
 
     Boolean timerAlreadyExists = false;
     CommandLineRunner task = null;
-
-    if (staticSchedulerService != null) {
+    // Commenting temporarily
+    /*    if (staticSchedulerService != null) {
 
       List<ScheduledTasks> tasks =
           staticSchedulerService.getScheduledTasks(
@@ -339,7 +339,7 @@ public class WorkflowService {
             actionType,
             launchDetailsId);
       }
-    }
+    }*/
 
     if (Boolean.FALSE.equals(timerAlreadyExists)) {
 
