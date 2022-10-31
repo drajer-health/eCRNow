@@ -233,6 +233,7 @@ public class EicrServiceImpl implements EicrRRService {
   }
 
   private boolean submitRRXmlToRestAPI(String rrXml, Eicr ecr, LaunchDetails launchDetails) {
+    logger.info("Eicr in submitRRXmlToRestAPI:{}", ecr);
     boolean isSubmitSuccess = false;
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();

@@ -10,7 +10,7 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   public static final Logger logger = LoggerFactory.getLogger(ValidateErrorHandler.class);
 
-  private static boolean isException = false;
+  private boolean isException = false;
 
   public void warning(SAXParseException exception) throws SAXException {
     logMessage(exception);
@@ -23,6 +23,7 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   public void error(SAXParseException exception) throws SAXException {
     isException = true;
+    logger.info("error method called in ValidateErrorHandler");
     logMessage(exception);
   }
 

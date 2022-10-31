@@ -15,7 +15,9 @@ public class CheckParticipant extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(CheckParticipant.class);
 
-  public CheckParticipant() {}
+  public CheckParticipant() {
+    logger.info("CheckParticipant is executing.");
+  }
 
   @Override
   public BsaActionStatus process(KarProcessingData data, EhrQueryService ehrService) {
@@ -35,6 +37,7 @@ public class CheckParticipant extends BsaAction {
           " Action {} can proceed as it does not have timing information ", this.getActionId());
 
       Map<ResourceType, Set<Resource>> res = ehrService.getFilteredData(data, this.getInputData());
+      logger.info("Resource:{}", res);
 
       data.addActionStatus(getActionId(), actStatus);
 

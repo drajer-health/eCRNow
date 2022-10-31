@@ -128,6 +128,7 @@ public class Dstu2CdaHeaderGenerator {
 
   private static String getParticipantXml(
       LaunchDetails details, Dstu2FhirData data, Patient patient) {
+    logger.info("LaunchDetails :{} Dstu2FhirData:{} in getParticipantXml", details, data);
 
     StringBuilder s = new StringBuilder("");
     if (patient != null && patient.getContact() != null) {
@@ -260,7 +261,7 @@ public class Dstu2CdaHeaderGenerator {
           CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
-      List<HumanNameDt> hns = new ArrayList<HumanNameDt>();
+      List<HumanNameDt> hns = new ArrayList<>();
       hns.add(pr.getName());
       sb.append(Dstu2CdaFhirUtilities.getNameXml(hns));
 
@@ -324,7 +325,7 @@ public class Dstu2CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      List<AddressDt> addrs = new ArrayList<AddressDt>();
+      List<AddressDt> addrs = new ArrayList<>();
       addrs.add(loc.getAddress());
       sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
@@ -348,9 +349,9 @@ public class Dstu2CdaHeaderGenerator {
               "Outpatient Facility"));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      List<AddressDt> addrs = new ArrayList<AddressDt>();
+      List<AddressDt> addrs = new ArrayList<>();
       AddressDt addr = new AddressDt();
-      List<StringDt> addrLine = new ArrayList<StringDt>();
+      List<StringDt> addrLine = new ArrayList<>();
       addrLine.add(new StringDt("0987 Facility Drive"));
       addr.setLine(addrLine);
       addr.setCity("alt Lake City");
@@ -362,15 +363,6 @@ public class Dstu2CdaHeaderGenerator {
       sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
-
-      /*	sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
-      sb.append(CdaGeneratorUtils.getXmlForNullCD(CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
-
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
-      List<AddressDt> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs));
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME)); */
-
     }
 
     return sb.toString();
@@ -435,7 +427,7 @@ public class Dstu2CdaHeaderGenerator {
       } else {
         sb.append(
             CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), org.getId().getValue()));
+                details.getAssigningAuthorityId(), location.getId().getValue()));
       }
 
       sb.append(
@@ -569,6 +561,7 @@ public class Dstu2CdaHeaderGenerator {
   }
 
   public static String getPatientDetails(Dstu2FhirData data, Patient p, LaunchDetails details) {
+    logger.info("Dstu2FhirData in getPatientDetails:{}", data);
 
     StringBuilder patientDetails = new StringBuilder();
 
@@ -592,14 +585,13 @@ public class Dstu2CdaHeaderGenerator {
       } else {
 
         logger.info(" Using Resource Identifier as id ");
-        ;
+
         patientDetails.append(
             CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
       }
 
     } else {
       logger.info(" Using Resource Identifier as id ");
-      ;
       patientDetails.append(
           CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId().toString()));
     }
@@ -711,7 +703,7 @@ public class Dstu2CdaHeaderGenerator {
     }
 
     // Adding Guardian details for patient
-    if (p.getContact() != null && p.getContact().size() > 0) {
+    if (p.getContact() != null && !p.getContact().isEmpty()) {
 
       // Add Guardian element
       Contact guardianContact = Dstu2CdaFhirUtilities.getGuardianContact(p.getContact());

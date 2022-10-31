@@ -23,7 +23,7 @@ public class RestApiBody {
   /** This is the version of the report for the same patient and encounter */
   private Boolean submittedVersionId;
 
-  /** The payload attribute that is going to be sent representing the data */
+  /** The Pay load attribute that is going to be sent representing the data */
   private String payload;
 
   public String getFhirServerURL() {

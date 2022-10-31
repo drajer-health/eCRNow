@@ -150,6 +150,8 @@ public class CdaHeaderGenerator {
 
   private static String getParticipantXml(LaunchDetails details, R4FhirData data, Patient patient) {
 
+    logger.info("LaunchDetails :{} R4FhirData:{}", details, data);
+
     StringBuilder s = new StringBuilder("");
     if (patient != null && patient.getContact() != null) {
 
@@ -415,6 +417,7 @@ public class CdaHeaderGenerator {
 
   public static String getAuthorXml(
       R4FhirData data, Encounter en, HashMap<V3ParticipationType, List<Practitioner>> practMap) {
+    logger.info("R4FhirData in getAuthorXml :{}", data);
 
     StringBuilder sb = new StringBuilder(500);
 

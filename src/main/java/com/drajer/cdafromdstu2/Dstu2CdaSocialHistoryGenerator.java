@@ -55,7 +55,7 @@ public class Dstu2CdaSocialHistoryGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
       sb.append(
@@ -110,7 +110,7 @@ public class Dstu2CdaSocialHistoryGenerator {
         }
       }
 
-      if (pregObs != null && pregObs.size() > 0) {
+      if (pregObs != null && !pregObs.isEmpty()) {
 
         logger.error(" Pregnancy Status Observation Found , translation not implemented ");
         // These are not available in FHIR right now reliably, so nothing to process until further
@@ -212,6 +212,7 @@ public class Dstu2CdaSocialHistoryGenerator {
 
   public static String generateBirthSexEntry(
       Dstu2FhirData data, LaunchDetails details, CodeDt birthSex) {
+    logger.info("Dstu2FhirData {} LaunchDetails {} in generateBirthSexEntry", data, details);
 
     StringBuilder sb = new StringBuilder();
 

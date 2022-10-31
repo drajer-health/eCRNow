@@ -135,7 +135,7 @@ public class BsaServiceUtils {
 
   private static Set<Resource> filterByProfileFilters(
       Set<Resource> resources, List<CanonicalType> profileFilters, KarProcessingData kd) {
-    Set<Resource> filtered = new HashSet<Resource>();
+    Set<Resource> filtered = new HashSet<>();
     for (Resource res : resources) {
       boolean matches = true;
       for (CanonicalType profile : profileFilters) {
@@ -154,6 +154,7 @@ public class BsaServiceUtils {
 
   private static boolean matchesProfile(
       Resource res, CanonicalType drProfile, KarProcessingData kd) {
+    logger.info("KarProcessingData in matchesProfile:{}", kd);
     if (drProfile == null) {
       return true;
     } else if (!res.hasMeta() || !res.getMeta().hasProfile()) {
@@ -172,7 +173,7 @@ public class BsaServiceUtils {
       Set<Resource> resources,
       List<DataRequirement.DataRequirementCodeFilterComponent> codeFilters,
       KarProcessingData kd) {
-    Set<Resource> filtered = new HashSet<Resource>();
+    Set<Resource> filtered = new HashSet<>();
     for (Resource res : resources) {
       boolean matches = true;
       for (DataRequirement.DataRequirementCodeFilterComponent drcfc : codeFilters) {
@@ -193,7 +194,7 @@ public class BsaServiceUtils {
       Set<Resource> resources,
       List<DataRequirement.DataRequirementDateFilterComponent> dateFilters,
       KarProcessingData kd) {
-    Set<Resource> filtered = new HashSet<Resource>();
+    Set<Resource> filtered = new HashSet<>();
     for (Resource res : resources) {
       boolean matches = true;
       for (DataRequirement.DataRequirementDateFilterComponent drdfc : dateFilters) {
@@ -223,7 +224,7 @@ public class BsaServiceUtils {
 
     // we dont know what this will return
     List<IBase> search = FHIR_PATH.evaluate(resource, codeFilter.getPath(), IBase.class);
-    if (search == null || search.size() == 0) {
+    if (search == null || search.isEmpty()) {
       return false;
     }
 
@@ -231,12 +232,14 @@ public class BsaServiceUtils {
 
     for (IBase ib : search) {
       if (codeFilter.hasValueSet()) {
+        logger.info("Code Filter has value set");
         if (matchesValueSet(ib, codeFilter.getValueSet(), kd)) {
           retVal = true;
           break;
         }
       }
       if (codeFilter.hasCode()) {
+        logger.info("Code Filter has code");
         if (matchesCodes(ib, codeFilter.getCode(), kd)) {
           retVal = true;
           break;
@@ -258,6 +261,7 @@ public class BsaServiceUtils {
   }
 
   public static boolean matchesCodes(IBase ib, List<Coding> codes, KarProcessingData kd) {
+    logger.info("KarProcessingData in matchesCose:{}", kd);
     if (ib instanceof Coding) {
       Coding ibc = (Coding) ib;
       return codes
@@ -286,6 +290,8 @@ public class BsaServiceUtils {
 
   public static boolean matchesDateFilter(
       Resource r, DataRequirement.DataRequirementDateFilterComponent drdfc, KarProcessingData kd) {
+    logger.info(
+        "Resource :{} DataRequirementDateFilterComponent :{} KarProcessingData:{}", r, drdfc, kd);
 
     return true;
   }
@@ -365,7 +371,7 @@ public class BsaServiceUtils {
     if (coding != null
         && coding.hasCode()
         && coding.hasSystem()
-        && isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode())) {
+        && Boolean.TRUE.equals(isCodePresentInValueSet(vs, coding.getSystem(), coding.getCode()))) {
       Pair<String, String> matchedCodeInfo = new Pair<>(coding.getSystem(), coding.getCode());
       retVal = new Pair<>(true, matchedCodeInfo);
     }

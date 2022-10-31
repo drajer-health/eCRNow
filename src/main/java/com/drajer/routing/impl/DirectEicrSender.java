@@ -33,13 +33,13 @@ public class DirectEicrSender extends EicrSender {
 
   public class DirectMimeMessage extends MimeMessage {
 
-    Session session;
+    Session session1;
     String messageId;
     String domain;
 
     public DirectMimeMessage(Session sess, String id, String domainName) {
       super(sess);
-      session = sess;
+      session1 = sess;
       messageId = id;
       domain = domainName;
     }
@@ -114,9 +114,8 @@ public class DirectEicrSender extends EicrSender {
     Properties props = new Properties();
 
     props.put("mail.smtp.auth", "true");
-    //   props.put("mail.smtp.auth.mechanisms", "PLAIN");
+
     props.setProperty("mail.smtp.ssl.trust", "*");
-    //  props.setProperty("mail.smtp.starttls.enable","true");
     props.setProperty("mail.smtp.ssl.enable", "true");
 
     Session session = Session.getInstance(props, null);

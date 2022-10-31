@@ -98,6 +98,8 @@ public class ValidateReport extends BsaAction {
 
   public boolean validateCdaOutput(KarProcessingData data, BsaActionStatus actStatus) {
 
+    logger.info("BSA Action Status:{}", actStatus);
+
     String cda = data.getSubmittedCdaData();
 
     // IF there are no exceptions then no need to set status.

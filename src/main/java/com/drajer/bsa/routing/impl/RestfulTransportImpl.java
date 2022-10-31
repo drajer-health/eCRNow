@@ -37,7 +37,8 @@ public class RestfulTransportImpl implements DataTransportInterface {
   @Override
   public void receiveRrDataUsingDirect(KarProcessingData data) {
 
-    String error = " Direct Transport method invoked on Restful Transport which is not supported ";
+    String error =
+        "Direct Transport method invoked on Restful  Transport API which is not supported ";
     logger.error(error);
   }
 

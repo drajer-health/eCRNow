@@ -184,7 +184,6 @@ public class KarParserImpl implements KarParser {
   private String reportSubmissionEndpoint;
 
   private List<Expression> planVariableExpressions;
-  // private Expression planVariableExpression;
 
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
@@ -369,11 +368,10 @@ public class KarParserImpl implements KarParser {
         }
       }
 
-      /* for (HealthcareSetting healthcareSetting : allHealthcareSettings) {
-        KarProcessingData kd = makeData(healthcareSetting, art);
-        subscriptionGeneratorService.createSubscriptions(kd);
-      } */
-
+      /**
+       * for (HealthcareSetting healthcareSetting : allHealthcareSettings) { KarProcessingData kd =
+       * makeData(healthcareSetting, art); subscriptionGeneratorService.createSubscriptions(kd); }
+       */
       addArtifactForPersistence(art, repoUrl, repoName);
       knowledgeArtifactRepositorySystem.add(art);
       art.printKarSummary();
@@ -440,16 +438,13 @@ public class KarParserImpl implements KarParser {
     art.setKarPublisher(plan.getPublisher());
     processExtensions(plan, art);
 
-    /*  if (plan.hasExtension(VARIABLE_EXTENSION_URL)) {
-      Extension variableExtension = plan.getExtensionByUrl(VARIABLE_EXTENSION_URL);
-      Type variable = variableExtension.getValue();
-      if (variable instanceof Expression) {
-        planVariableExpression = (Expression) variable;
-        logger.debug("Found Variable Extension Expression");
-      } else {
-        logger.debug("Found Variable Extension, but expected Expression.");
-      }
-    } */
+    /**
+     * if (plan.hasExtension(VARIABLE_EXTENSION_URL)) { Extension variableExtension =
+     * plan.getExtensionByUrl(VARIABLE_EXTENSION_URL); Type variable = variableExtension.getValue();
+     * if (variable instanceof Expression) { planVariableExpression = (Expression) variable;
+     * logger.debug("Found Variable Extension Expression"); } else { logger.debug("Found Variable
+     * Extension, but expected Expression."); } }
+     */
     List<PlanDefinitionActionComponent> actions = plan.getAction();
 
     for (PlanDefinitionActionComponent act : actions) {
@@ -506,7 +501,7 @@ public class KarParserImpl implements KarParser {
 
   public void processExtensions(PlanDefinition plan, KnowledgeArtifact art) {
 
-    planVariableExpressions = new ArrayList<Expression>();
+    planVariableExpressions = new ArrayList<>();
 
     if (plan.hasExtension()) {
 
@@ -547,27 +542,20 @@ public class KarParserImpl implements KarParser {
         }
       }
 
-      /*  Extension ext = plan.getExtensionByUrl(RECEIVER_ADDRESS_URL);
-
-      if (ext != null && ext.hasValue()) {
-
-        Type t = ext.getValue();
-        if (t instanceof PrimitiveType) {
-          PrimitiveType<?> i = (PrimitiveType<?>) t;
-          if (i instanceof UriType) {
-
-            logger.info(" Found Receiver Address {}", i.getValueAsString());
-            art.addReceiverAddress((UriType) i);
-          }
-        } else if (t instanceof Reference) {
-          Endpoint endpoint =
-              (Endpoint)
-                  art.getDependentResource(ResourceType.Endpoint, ((Reference) t).getReference());
-          if (endpoint != null && endpoint.hasAddressElement()) {
-            art.addReceiverAddress(endpoint.getAddressElement());
-          }
-        }
-      } */
+      /**
+       * Extension ext = plan.getExtensionByUrl(RECEIVER_ADDRESS_URL);
+       *
+       * <p>if (ext != null && ext.hasValue()) {
+       *
+       * <p>Type t = ext.getValue(); if (t instanceof PrimitiveType) { PrimitiveType<?> i =
+       * (PrimitiveType<?>) t; if (i instanceof UriType) {
+       *
+       * <p>logger.info(" Found Receiver Address {}", i.getValueAsString());
+       * art.addReceiverAddress((UriType) i); } } else if (t instanceof Reference) { Endpoint
+       * endpoint = (Endpoint) art.getDependentResource(ResourceType.Endpoint, ((Reference)
+       * t).getReference()); if (endpoint != null && endpoint.hasAddressElement()) {
+       * art.addReceiverAddress(endpoint.getAddressElement()); } } }
+       */
     }
   }
 
@@ -659,10 +647,9 @@ public class KarParserImpl implements KarParser {
 
     if (act.hasTiming()) {
 
-      // Todo - handle timing elements in the action itslef.
+      logger.info("PlanDefinitionActionComponent have time");
     }
 
-    // TODO: Why are these populated at this point?
     action.setJsonParser(this.jsonParser);
     action.setIgnoreTimers(this.ignoreTimers);
 
@@ -833,7 +820,6 @@ public class KarParserImpl implements KarParser {
           logger.info(" Found a FHIR Path Expression from an alternative expression extension");
           BsaFhirPathCondition bc = new BsaFhirPathCondition();
           if (planVariableExpressions != null) {
-            // bc.setVariableExpression(planVariableExpressions);
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(exp);
@@ -847,7 +833,6 @@ public class KarParserImpl implements KarParser {
               " Cql disabled and found alternative cql expression therefor using primary fhirpath expression");
           BsaFhirPathCondition bc = new BsaFhirPathCondition();
           if (planVariableExpressions != null) {
-            // bc.setVariableExpression(planVariableExpression);
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(con.getExpression());
@@ -864,7 +849,6 @@ public class KarParserImpl implements KarParser {
         logger.info(" Found a FHIR Path Expression ");
         BsaFhirPathCondition bc = new BsaFhirPathCondition();
         if (planVariableExpressions != null) {
-          // bc.setVariableExpression(planVariableExpression);
           bc.setVariables(planVariableExpressions);
         }
         bc.setLogicExpression(con.getExpression());

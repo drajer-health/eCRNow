@@ -32,11 +32,10 @@ public class Dstu2CdaMedicationGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    // List<MedicationStatement> meds = data.getMedications();
     List<MedicationAdministration> meds = data.getMedicationAdministrations();
     List<MedicationStatement> medications = data.getMedications();
 
-    if ((meds != null && meds.size() > 0) || (medications != null && medications.size() > 0)) {
+    if ((meds != null && !meds.isEmpty()) || (medications != null && !medications.isEmpty())) {
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -66,7 +65,7 @@ public class Dstu2CdaMedicationGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.MED_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.MED_TABLE_COL_2_TITLE);
 
@@ -93,7 +92,7 @@ public class Dstu2CdaMedicationGenerator {
           dt = Dstu2CdaFhirUtilities.getStringForIDataType(med.getEffectiveTime());
         }
 
-        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
 
@@ -140,7 +139,7 @@ public class Dstu2CdaMedicationGenerator {
           dt = Dstu2CdaFhirUtilities.getStringForIDataType(med.getEffective());
         }
 
-        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.MED_TABLE_COL_2_BODY_CONTENT, dt);
 
@@ -231,7 +230,7 @@ public class Dstu2CdaMedicationGenerator {
     sb.append(CdaGeneratorUtils.getXmlForCD(CdaGeneratorConstants.STATUS_CODE_EL_NAME, medStatus));
 
     // Set up Effective Time for start and End time.
-    if (effectiveTime != null && effectiveTime instanceof PeriodDt) {
+    if (effectiveTime instanceof PeriodDt) {
       PeriodDt p = (PeriodDt) effectiveTime;
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
@@ -243,7 +242,7 @@ public class Dstu2CdaMedicationGenerator {
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXmlForValueElement(
               p, CdaGeneratorConstants.EFF_TIME_EL_NAME));
-    } else if (effectiveTime != null && effectiveTime instanceof DateTimeDt) {
+    } else if (effectiveTime instanceof DateTimeDt) {
       PeriodDt p = new PeriodDt();
       p.setStart((DateTimeDt) effectiveTime);
       p.setEnd(null);
@@ -259,6 +258,7 @@ public class Dstu2CdaMedicationGenerator {
     // Set up Effective Time for Frequency.
     String ds = "";
     String freqInHours = CdaGeneratorConstants.UNKNOWN_VALUE;
+    logger.info("freqInHours in Dstu2CdaMedicationGenerator:{}", freqInHours);
     if (dosage != null) {
 
       if (dosage.getQuantity() != null)
@@ -275,8 +275,6 @@ public class Dstu2CdaMedicationGenerator {
     }
 
     // Cannot set frequency as it is not in HAPI APIs
-    /* sb.append(
-    CdaGeneratorUtils.getXmlForPIVLWithTS(CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours)); */
 
     // add Dose quantity
     sb.append(ds);
@@ -372,8 +370,9 @@ public class Dstu2CdaMedicationGenerator {
               if (cmed.getCode() != null
                   && cmed.getCode().getCoding() != null
                   && !cmed.getCode().getCoding().isEmpty()
-                  && Dstu2CdaFhirUtilities.isCodingPresentForCodeSystem(
-                      cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
+                  && Boolean.TRUE.equals(
+                      Dstu2CdaFhirUtilities.isCodingPresentForCodeSystem(
+                          cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
                 logger.debug("Found Medication for code system in code element");
                 // Found the Medication that matters.

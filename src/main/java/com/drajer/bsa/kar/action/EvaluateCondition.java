@@ -29,16 +29,16 @@ public class EvaluateCondition extends BsaAction {
 
     if (queries != null && !queries.isEmpty()) {
 
-      logger.info(" Found Default/Custom Queries for execution ");
+      logger.info(" Found Default/Custom Queries for execution. ");
       // Try to execute the queries.
       queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
 
     } else {
 
-      logger.info(" No Queries, so just get data by Resource Type ");
+      logger.info(" No Queries, so just get data by Resource Type. ");
 
       // Try to Get the Resources that need to be retrieved using Resource Type since queries are
-      // not specified.
+      // not specified. Calling getFilteredData method
       ehrService.getFilteredData(data, getInputData());
     }
 

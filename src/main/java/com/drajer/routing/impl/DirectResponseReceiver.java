@@ -34,7 +34,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
   private final Logger logger = LoggerFactory.getLogger(DirectResponseReceiver.class);
 
-  private static final String IMAP = "imaps";
+  private static final String IMAP = "imap";
   private static final String INBOX = "Inbox";
 
   @Autowired EicrRRService rrService;
@@ -68,7 +68,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
       Session session = Session.getInstance(props, null);
 
-      Store store = session.getStore("imap");
+      Store store = session.getStore(IMAP);
       int port = Integer.parseUnsignedInt(details.getImapPort());
 
       logger.info("Connecting to IMAP Inbox ");
@@ -98,7 +98,7 @@ public class DirectResponseReceiver extends RRReceiver {
       for (Message message : messages) {
 
         logger.info("Found unread emails");
-        Enumeration headers = message.getAllHeaders();
+        Enumeration<?> headers = message.getAllHeaders();
 
         while (headers.hasMoreElements()) {
           Header h = (Header) headers.nextElement();
@@ -110,6 +110,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
         Address[] froms = message.getFrom();
         String senderAddress = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
+        logger.info("Sender Address :{}", senderAddress);
 
         if (message.getContent() instanceof Multipart) {
           Multipart multipart = (Multipart) message.getContent();
@@ -152,11 +153,10 @@ public class DirectResponseReceiver extends RRReceiver {
 
   public void deleteMail(LaunchDetails details, String username, String password) throws Exception {
 
-    logger.info("Deleting mail..");
+    logger.info("Deleting mail of User:{}{}", username, password);
 
     Properties props = new Properties();
 
-    // props.put("mail.imap.auth", "true");
     props.setProperty("mail.imap.ssl.trust", "*");
     props.setProperty("mail.imap.ssl.enable", "true");
     Session session = Session.getInstance(props, null);

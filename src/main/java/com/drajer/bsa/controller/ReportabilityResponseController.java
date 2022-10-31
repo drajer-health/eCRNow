@@ -13,10 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,7 +30,7 @@ public class ReportabilityResponseController {
   @Autowired PublicHealthMessagesDao phDao;
 
   @CrossOrigin
-  @RequestMapping(value = "/api/receiveReportabilityResponse", method = RequestMethod.POST)
+  @PostMapping(value = "/api/receiveReportabilityResponse")
   public ResponseEntity<String> receiveReportabilityResponse(
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
@@ -68,10 +67,10 @@ public class ReportabilityResponseController {
       }
 
     } catch (IllegalArgumentException e) {
-      logger.error("Error in processing the request", e);
+      logger.error("Error in processing the request ", e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      logger.error("Error in processing the request", e);
+      logger.error("Error in processing the request ", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
@@ -79,9 +78,7 @@ public class ReportabilityResponseController {
   }
 
   @CrossOrigin
-  @RequestMapping(
-      value = "/api/reSubmitReportabilityResponse",
-      method = {RequestMethod.POST})
+  @PostMapping(value = "/api/reSubmitReportabilityResponse")
   public ResponseEntity<String> reSubmitReportabilityResponse(
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {

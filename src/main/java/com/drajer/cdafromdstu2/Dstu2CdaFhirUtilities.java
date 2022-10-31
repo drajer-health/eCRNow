@@ -52,7 +52,7 @@ public class Dstu2CdaFhirUtilities {
   public static IdentifierDt getIdentifierForType(
       List<IdentifierDt> ids, IdentifierTypeCodesEnum type) {
 
-    if (ids != null && ids.size() > 0) {
+    if (ids != null && !ids.isEmpty()) {
 
       for (IdentifierDt id : ids) {
 
@@ -60,7 +60,7 @@ public class Dstu2CdaFhirUtilities {
 
           List<CodingDt> codings = id.getType().getCoding();
 
-          if (codings != null && codings.size() > 0) {
+          if (codings != null && !codings.isEmpty()) {
 
             for (CodingDt coding : codings) {
 
@@ -69,7 +69,7 @@ public class Dstu2CdaFhirUtilities {
                   && coding.getCode() != null
                   && coding.getCode().contentEquals(type.getCode())) {
 
-                logger.info(" Found the Identifier for Patient for type " + type.toString());
+                logger.info(" Found the Identifier for Patient for type :{}", type);
                 return id;
               }
             }
@@ -78,41 +78,42 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Identifier for the patient for type " + type.toString());
+    logger.info(" Did not find the Identifier for the patient for type :{}", type);
     return null;
   }
 
   public static IdentifierDt getIdentifierForSystem(List<IdentifierDt> ids, String system) {
 
-    if (ids != null && ids.size() > 0) {
+    if (ids != null && !ids.isEmpty()) {
 
       for (IdentifierDt id : ids) {
 
         if (id.getSystem() != null && id.getSystem().contentEquals(system)) {
 
-          logger.info(" Found the Identifier for System: " + system);
+          logger.info(" Found the Identifier for System: {}", system);
           return id;
         }
       }
     }
 
-    logger.info(" Did not find the Identifier for  System : " + system);
+    logger.info(" Did not find the Identifier for  System :{} ", system);
     return null;
   }
 
   public static CodeableConceptDt getCodeableConceptExtension(
       List<ExtensionDt> exts, String extUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (ExtensionDt ext : exts) {
 
         if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+          logger.info("Extension URl :{}", ext.getUrl());
 
           // if the top level extension has CodingDt then we will use it.
-          if (ext.getValue() != null && (ext.getValue() instanceof CodeableConceptDt)) {
+          if ((ext.getValue() instanceof CodeableConceptDt)) {
 
-            logger.info(" Found Extension at top level ");
+            logger.info("Found Extension at top level");
             return (CodeableConceptDt) ext.getValue();
           }
         }
@@ -125,14 +126,14 @@ public class Dstu2CdaFhirUtilities {
   public static CodingDt getCodingExtension(
       List<ExtensionDt> exts, String extUrl, String subextUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (ExtensionDt ext : exts) {
 
         if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
 
           // if the top level extension has CodingDt then we will use it.
-          if (ext.getValue() != null && (ext.getValue() instanceof CodingDt)) {
+          if (ext.getValue() instanceof CodingDt) {
 
             logger.info(" Found Extension at top level ");
             return (CodingDt) ext.getValue();
@@ -144,7 +145,7 @@ public class Dstu2CdaFhirUtilities {
 
             for (ExtensionDt subext : subExts) {
 
-              if (subext.getValue() != null && (subext.getValue() instanceof CodingDt)) {
+              if ((subext.getValue() instanceof CodingDt)) {
 
                 logger.info(" Found Extension nested as children ");
                 return (CodingDt) subext.getValue();
@@ -155,20 +156,21 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+    logger.info(" Did not find the Extension or sub extensions for the Url:{}", extUrl);
     return null;
   }
 
   public static CodeDt getCodeExtension(List<ExtensionDt> exts, String extUrl) {
 
-    if (exts != null && exts.size() > 0) {
+    if (exts != null && !exts.isEmpty()) {
 
       for (ExtensionDt ext : exts) {
 
         if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+          logger.info("Extention url exist.");
 
           // if the top level extension has CodingDt then we will use it.
-          if (ext.getValue() != null && (ext.getValue() instanceof CodeDt)) {
+          if ((ext.getValue() instanceof CodeDt)) {
 
             logger.info(" Found Extension at top level ");
             return (CodeDt) ext.getValue();
@@ -177,13 +179,13 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    logger.info(" Did not find the Extension or sub extensions for the Url " + extUrl);
+    logger.info(" Did not find the Extension or sub extensions for the Url:{}", extUrl);
     return null;
   }
 
   public static CodingDt getLanguage(List<Communication> comms) {
 
-    if (comms != null && comms.size() > 0) {
+    if (comms != null && !comms.isEmpty()) {
 
       for (Communication comm : comms) {
 
@@ -204,7 +206,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder addrString = new StringBuilder(200);
 
-    if (addrs != null && addrs.size() > 0) {
+    if (addrs != null && !addrs.isEmpty()) {
 
       for (AddressDt addr : addrs) {
 
@@ -302,7 +304,6 @@ public class Dstu2CdaFhirUtilities {
       addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
     }
 
-    // logger.info(" Address String = " + addrString.toString());
     return addrString.toString();
   }
 
@@ -310,7 +311,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder telString = new StringBuilder(200);
 
-    if (tels != null && tels.size() > 0) {
+    if (tels != null && !tels.isEmpty()) {
 
       for (ContactPointDt tel : tels) {
 
@@ -343,7 +344,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder telString = new StringBuilder(200);
 
-    if (tels != null && tels.size() > 0) {
+    if (tels != null && !tels.isEmpty()) {
 
       for (ContactPointDt tel : tels) {
 
@@ -373,9 +374,9 @@ public class Dstu2CdaFhirUtilities {
   }
 
   public static Contact getGuardianContact(List<Contact> contactList) {
-    if (contactList != null && contactList.size() > 0) {
+    if (contactList != null && !contactList.isEmpty()) {
       for (Contact contact : contactList) {
-        if (contact.getRelationship() != null && contact.getRelationship().size() > 0) {
+        if (contact.getRelationship() != null && !contact.getRelationship().isEmpty()) {
           for (CodeableConceptDt code : contact.getRelationship()) {
 
             if (code.getText() != null
@@ -414,28 +415,6 @@ public class Dstu2CdaFhirUtilities {
     return null;
   }
 
-  /*public static void populateEntriesForEncounter(Bundle bundle, LaunchDetails details, Encounter en, Practitioner pr, Location loc, Organization org) {
-
-  	List<Entry> entries = bundle.getEntry();
-  	for(Entry ent : entries) {
-
-  		// Populate Patient
-  		if((ent.getResource() instanceof Encounter) &&
-  		   (details.getEncounterId().contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) ||
-  		    ent.getResource().getId().getIdPart().contentEquals(details.getEncounterId()))) {
-
-  			en = (Encounter)ent.getResource();
-
-  			logger.info(" Found Encounter for Id:  " + details.getEncounterId() + " Resource Id : "+ en.getId().getIdPart());
-
-  			// For this encounter extract the other resources.
-  			pr = getPractitioner(entries, en);
-  			loc = getLocation(entries, en);
-  			org = getOrganization(entries, en);
-  		}
-  	}
-  }*/
-
   public static Organization getOrganization(List<Entry> entries, Encounter en) {
 
     if (!en.getServiceProvider().getReference().hasIdPart()) {
@@ -447,7 +426,7 @@ public class Dstu2CdaFhirUtilities {
       if (ent != null) {
 
         logger.info(
-            " Found organization for Id " + en.getServiceProvider().getReference().getIdPart());
+            " Found organization for Id {} ", en.getServiceProvider().getReference().getIdPart());
         return (Organization) ent.getResource();
       }
     }
@@ -467,7 +446,7 @@ public class Dstu2CdaFhirUtilities {
 
       if (ent != null) {
 
-        logger.info(" Found Location for Id " + loc.getLocation().getReference().getIdPart());
+        logger.info(" Found Location for Id {}", loc.getLocation().getReference().getIdPart());
         return (Location) ent.getResource();
       }
     }
@@ -480,7 +459,7 @@ public class Dstu2CdaFhirUtilities {
 
     List<Participant> participants = en.getParticipant();
 
-    if (participants != null && participants.size() > 0) {
+    if (participants != null && !participants.isEmpty()) {
 
       for (Participant part : participants) {
 
@@ -508,13 +487,13 @@ public class Dstu2CdaFhirUtilities {
                 if (ent != null) {
 
                   logger.info(
-                      " Found Practitioner for Id "
-                          + part.getIndividual().getReference().getIdPart());
+                      " Found Practitioner for Id {}",
+                      part.getIndividual().getReference().getIdPart());
                   return (Practitioner) ent.getResource();
                 } else {
                   logger.info(
-                      " Did not find the practitioner for : "
-                          + part.getIndividual().getReference().getIdPart());
+                      " Did not find the practitioner for :{} ",
+                      part.getIndividual().getReference().getIdPart());
                 }
               }
             }
@@ -538,12 +517,12 @@ public class Dstu2CdaFhirUtilities {
           ent.getResource().getId() != null
           && ent.getResource().getId().getIdPart().contentEquals(id)) {
 
-        logger.info(" Found entry for ID " + id + " Type : " + type);
+        logger.info(" Found entry for ID : {} Type : {}", id, type);
         return ent;
       }
     }
 
-    logger.info(" Did not find entry for ID " + id + " Type : " + type);
+    logger.info(" Did not find entry for ID {}  Type :{} ", id, type);
     return null;
   }
 
@@ -551,18 +530,15 @@ public class Dstu2CdaFhirUtilities {
       List<CodeableConceptDt> cds, String cdName, Boolean valueTrue) {
 
     StringBuilder sb = new StringBuilder(500);
-    List<CodingDt> codes = new ArrayList<CodingDt>();
+    List<CodingDt> codes = new ArrayList<>();
 
-    if (cds != null && cds.size() > 0) {
+    if (cds != null && !cds.isEmpty()) {
 
       CodeableConceptDt cd = cds.get(0);
 
       List<CodingDt> codings = cd.getCoding();
 
-      if (codings != null && codings.size() > 0) {
-
-        Boolean found = false;
-        Boolean first = true;
+      if (codings != null && !codings.isEmpty()) {
 
         for (CodingDt code : codings) {
 
@@ -580,7 +556,7 @@ public class Dstu2CdaFhirUtilities {
       }
     }
 
-    if (!valueTrue) sb.append(getCodingXml(codes, cdName));
+    if (Boolean.FALSE.equals(valueTrue)) sb.append(getCodingXml(codes, cdName));
     else sb.append(getCodingXmlForValue(codes, cdName));
 
     return sb.toString();
@@ -606,7 +582,7 @@ public class Dstu2CdaFhirUtilities {
 
         if (!csd.getValue0().isEmpty()
             && c.getSystem().contentEquals(codeSystemUrl)
-            && !foundCodeForCodeSystem) {
+            && Boolean.TRUE.equals(!foundCodeForCodeSystem)) {
 
           logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
@@ -635,7 +611,7 @@ public class Dstu2CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      if (!foundCodeForCodeSystem) {
+      if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
         // If we dont find the preferred code system, then add NF of OTH along with translations.
         sb.append(
@@ -650,7 +626,7 @@ public class Dstu2CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (foundCodeForCodeSystem || (!csOptional)) {
+    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || (!csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();
@@ -661,12 +637,12 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (codes != null && codes.size() > 0) {
+    if (codes != null && !codes.isEmpty()) {
 
       Boolean first = true;
       for (CodingDt c : codes) {
 
-        if (first) {
+        if (Boolean.TRUE.equals(first)) {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -675,10 +651,12 @@ public class Dstu2CdaFhirUtilities {
             logger.debug(" Try using the DSTU2 map ");
             csd = CdaGeneratorConstants.getCodeSystemFromUrlForDstu2(c.getSystem());
           }
+          if (csd != null) {
 
-          sb.append(
-              CdaGeneratorUtils.getXmlForCDWithoutEndTag(
-                  cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+            sb.append(
+                CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+                    cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+          }
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -705,12 +683,12 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (codes.size() > 0) {
+    if (!codes.isEmpty()) {
 
       Boolean first = true;
       for (CodingDt c : codes) {
 
-        if (first) {
+        if (Boolean.TRUE.equals(first)) {
 
           first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -719,9 +697,12 @@ public class Dstu2CdaFhirUtilities {
             logger.debug(" Try using the DSTU2 map ");
             csd = CdaGeneratorConstants.getCodeSystemFromUrlForDstu2(c.getSystem());
           }
-          sb.append(
-              CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
-                  c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+          if (csd != null) {
+            sb.append(
+                CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
+                    c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
+          }
+
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -851,14 +832,14 @@ public class Dstu2CdaFhirUtilities {
 
     Date effectiveDateTime = null;
 
-    if (dateType != null && dateType instanceof DateDt) {
+    if (dateType instanceof DateDt) {
 
       DateDt eDate = (DateDt) dateType;
       effectiveDateTime = eDate.getValue();
-    } else if (dateType != null && dateType instanceof DateTimeDt) {
+    } else if (dateType instanceof DateTimeDt) {
       DateTimeDt eDate = (DateTimeDt) dateType;
       effectiveDateTime = eDate.getValue();
-    } else if (dateType != null && dateType instanceof PeriodDt) {
+    } else if (dateType instanceof PeriodDt) {
       PeriodDt pDate = (PeriodDt) dateType;
 
       if (pDate.getStart() != null) effectiveDateTime = pDate.getStart();
@@ -985,7 +966,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder nameString = new StringBuilder(200);
 
-    if (names != null && names.size() > 0) {
+    if (names != null && !names.isEmpty()) {
 
       Optional<HumanNameDt> hName = names.stream().findFirst();
       if (hName.isPresent()) {
@@ -1074,7 +1055,7 @@ public class Dstu2CdaFhirUtilities {
 
     if (dt != null) {
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info("Printing the class name :{}", dt.getClass());
 
       String val = "";
       if (dt instanceof CodingDt) {
@@ -1168,14 +1149,14 @@ public class Dstu2CdaFhirUtilities {
     String val = "";
     if (dt != null) {
 
-      logger.info(" Printing the class name " + dt.getClass());
+      logger.info(" Printing the class name {}", dt.getClass());
 
       if (dt instanceof CodingDt) {
         CodingDt cd = (CodingDt) dt;
 
-        List<CodingDt> cds = new ArrayList<CodingDt>();
+        List<CodingDt> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXml(cds, elName);
+        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName);
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof CodeableConceptDt) {
@@ -1184,7 +1165,7 @@ public class Dstu2CdaFhirUtilities {
 
         List<CodingDt> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXml(cds, elName);
+        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName);
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof QuantityDt) {
@@ -1206,20 +1187,24 @@ public class Dstu2CdaFhirUtilities {
       } else if (dt instanceof CodeDt) {
 
         CodeDt cd = (CodeDt) dt;
+        logger.info("CodeDt:{}", cd);
 
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
       } else if (dt instanceof StringDt) {
 
         StringDt st = (StringDt) dt;
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
       }
 
       return val;
     }
 
-    if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
+    if (Boolean.FALSE.equals(valFlag))
+      val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
 
     return val;
@@ -1281,7 +1266,7 @@ public class Dstu2CdaFhirUtilities {
         foundCodeSystem = true;
       }
 
-      if (csOptional && !StringUtils.isEmpty(c.getDisplay())) {
+      if (Boolean.TRUE.equals(csOptional) && !StringUtils.isEmpty(c.getDisplay())) {
         anyDisplay = c.getDisplay();
       }
     }
@@ -1314,7 +1299,7 @@ public class Dstu2CdaFhirUtilities {
             && !c.getCode().isEmpty()
             && !c.getSystem().isEmpty()
             && c.getSystem().contentEquals(csUrl)
-            && isCodePresent(matchedCodes, c.getCode())) {
+            && Boolean.TRUE.equals(isCodePresent(matchedCodes, c.getCode()))) {
 
           logger.debug("Found the Coding for Codesystem {} and Code =  {}", csUrl, c.getCode());
 
@@ -1356,7 +1341,7 @@ public class Dstu2CdaFhirUtilities {
     StringBuilder sb = new StringBuilder(500);
     List<CodingDt> codes = getCodingForValidCodeSystems(cds);
 
-    if (!valueTrue)
+    if (Boolean.FALSE.equals(valueTrue))
       sb.append(getCodingXmlForCodeSystem(codes, cdName, codeSystemUrl, csOptional, ""));
     else sb.append(getCodingXmlForValueForCodeSystem(codes, cdName, codeSystemUrl, csOptional));
 
@@ -1409,7 +1394,7 @@ public class Dstu2CdaFhirUtilities {
         if (!csd.getValue0().isEmpty()
             && !csd.getValue1().isEmpty()
             && c.getSystem().contentEquals(codeSystemUrl)
-            && !foundCodeForCodeSystem) {
+            && Boolean.TRUE.equals(!foundCodeForCodeSystem)) {
 
           logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
@@ -1431,7 +1416,7 @@ public class Dstu2CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      if (!foundCodeForCodeSystem) {
+      if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
         // If we dont find the preferred code system, then add NF of OTH along with translations.
         sb.append(
@@ -1446,7 +1431,7 @@ public class Dstu2CdaFhirUtilities {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
 
-    if (foundCodeForCodeSystem || (!csOptional)) {
+    if (Boolean.TRUE.equals(foundCodeForCodeSystem) || (!csOptional)) {
       return sb.toString();
     } else {
       return new StringBuilder("").toString();
@@ -1519,7 +1504,7 @@ public class Dstu2CdaFhirUtilities {
 
           for (CodingDt c : cds) {
 
-            if (!first) {
+            if (Boolean.FALSE.equals(first)) {
 
               val.append(CdaGeneratorConstants.SPACE)
                   .append(CdaGeneratorConstants.PIPE)
@@ -1636,7 +1621,7 @@ public class Dstu2CdaFhirUtilities {
 
         List<CodingDt> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXml(cds, elName);
+        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName);
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof CodeableConceptDt) {
@@ -1645,7 +1630,7 @@ public class Dstu2CdaFhirUtilities {
 
         List<CodingDt> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXml(cds, elName);
+        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName);
         else val += getCodingXmlForValue(cds, elName);
 
       } else if (dt instanceof QuantityDt) {
@@ -1677,12 +1662,14 @@ public class Dstu2CdaFhirUtilities {
       } else if (dt instanceof CodeDt) {
 
         CodeDt cd = (CodeDt) dt;
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForCD(elName, cd.getValue());
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForCD(elName, cd.getValue());
         else val += CdaGeneratorUtils.getXmlForValueString(cd.getValue());
       } else if (dt instanceof StringDt) {
 
         StringDt st = (StringDt) dt;
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
       }
 
@@ -1690,7 +1677,8 @@ public class Dstu2CdaFhirUtilities {
       return val;
     }
 
-    if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
+    if (Boolean.FALSE.equals(valFlag))
+      val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
 
     return val;
@@ -1750,7 +1738,8 @@ public class Dstu2CdaFhirUtilities {
 
         List<CodingDt> cds = new ArrayList<>();
         cds.add(cd);
-        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
+        if (Boolean.FALSE.equals(valFlag))
+          val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
         else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else if (dt instanceof CodeableConceptDt) {
@@ -1759,12 +1748,14 @@ public class Dstu2CdaFhirUtilities {
 
         List<CodingDt> cds = cd.getCoding();
 
-        if (!valFlag) val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
+        if (Boolean.FALSE.equals(valFlag))
+          val += getCodingXmlForCodeSystem(cds, elName, codeSystemUrl, csOptional, "");
         else val += getCodingXmlForValueForCodeSystem(cds, elName, codeSystemUrl, csOptional);
 
       } else {
 
-        if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
         else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
       }
 
@@ -1772,7 +1763,8 @@ public class Dstu2CdaFhirUtilities {
       return val;
     }
 
-    if (!valFlag) val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
+    if (Boolean.FALSE.equals(valFlag))
+      val += CdaGeneratorUtils.getXmlForNullCD(elName, CdaGeneratorConstants.NF_NI);
     else val += CdaGeneratorUtils.getNFXMLForValue(CdaGeneratorConstants.NF_NI);
 
     return val;

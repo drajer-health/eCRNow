@@ -133,7 +133,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
         return result.get(0).toString();
       } catch (Exception e2) {
         logger.error("Error in Getting the TokenEndpoint for the client: {}", url, e2);
-        throw e2;
+        throw e1;
       }
     }
   }

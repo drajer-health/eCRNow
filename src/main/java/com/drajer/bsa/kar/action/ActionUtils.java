@@ -21,6 +21,10 @@ public class ActionUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(ActionUtils.class);
 
+  private ActionUtils() {
+    throw new IllegalStateException("Action Util class");
+  }
+
   public static Meta getMeta(String version, String profile) {
 
     Meta m = new Meta();

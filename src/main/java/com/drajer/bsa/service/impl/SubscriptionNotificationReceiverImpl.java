@@ -15,6 +15,7 @@ import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.SubscriptionUtils;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +64,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       HttpServletResponse response,
       PatientLaunchContext launchContext) {
 
-    List<KarProcessingData> dataList = new ArrayList<KarProcessingData>();
+    List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");
 
     NotificationContext nc =
@@ -186,7 +187,6 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       HttpServletRequest request,
       HttpServletResponse response,
       PatientLaunchContext launchContext) {
-    // TODO Auto-generated method stub
-    return null;
+    return Collections.emptyList();
   }
 }

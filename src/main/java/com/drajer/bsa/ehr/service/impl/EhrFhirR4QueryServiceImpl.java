@@ -87,6 +87,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String EHR_ACCESS_TOKEN = "access_token";
   private static final String EHR_ACCESS_TOKEN_EXPIRES_IN = "expires_in";
   private static final String EHR_ACCESS_TOKEN_PROVIDER_ID = "uuid";
+  private static final String DATE_FORMAT = "yyy-MM-dd";
 
   // Variables for custom queries
   private static final String QUERY_FILE_EXT = "queries";
@@ -180,9 +181,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     logger.info(" Loading Query File {}", queryFile.getAbsolutePath());
 
-    InputStream input = null;
-    try {
-      input = FileUtils.openInputStream(queryFile);
+    try (InputStream input = FileUtils.openInputStream(queryFile)) {
+
       Properties prop = new Properties();
 
       prop.load(input);
@@ -202,7 +202,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     } catch (Exception e) {
 
-      logger.error(" Unable to load file for finalizing custom queries {}", e);
+      logger.error("Unable to load file for finalizing custom queries:{0}", e);
     }
   }
 
@@ -309,10 +309,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   @Override
   public Map<ResourceType, Set<Resource>> getFilteredData(
       KarProcessingData kd, List<DataRequirement> dRequirements) {
-    logger.info(" Getting FHIR Context for R4");
+    logger.info("Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info("Initializing FHIR Client");
+    logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
 
     // Get Patient by Id always
@@ -354,7 +354,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
           // get the resources
           Set<Resource> resources = kd.getResourcesByType(type.toString());
-          if (resources == null || resources.size() == 0) {
+          if (resources == null || resources.isEmpty()) {
             resources = fetchResources(client, context, url);
           }
           addFilteredResources(kd, entry, id, type, resources);
@@ -439,10 +439,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     hsDao.saveOrUpdate(data.getHealthcareSetting());
 
-    /*
-    data.getNotificationContext().setEhrAccessToken(accessToken);
-    data.getNotificationContext().setEhrAccessTokenExpiryDuration(expirationDuration);
-    data.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime)); */
+    /**
+     * data.getNotificationContext().setEhrAccessToken(accessToken);
+     * data.getNotificationContext().setEhrAccessTokenExpiryDuration(expirationDuration);
+     * data.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime));
+     */
 
     // Save both Notification Context and Healthcare Setting.
 
@@ -468,10 +469,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    */
   public void updateResource(KarProcessingData kd, Resource resource) {
 
-    logger.info(" Getting FHIR Context for R4");
+    logger.info("Getting FHIR Context for R4");
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
-    logger.info("Initializing FHIR Client");
+    logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
     client.update().resource(resource).execute();
   }
@@ -604,6 +605,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     logger.info(LOG_INIT_FHIR_CLIENT);
     IGenericClient client = getClient(kd, context);
+    logger.info("Client: {}", client);
 
     // Retrieve the DiagnosticReports and get their components
 
@@ -660,7 +662,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   public Set<Resource> fetchResources(
       IGenericClient genericClient, FhirContext context, String searchUrl) {
-    Set<Resource> resources = new HashSet<Resource>();
+    logger.info("FhirContext: {}", context);
+    Set<Resource> resources = new HashSet<>();
     try {
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
       getAllR4RecordsUsingPagination(genericClient, bundle);
@@ -908,13 +911,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       logger.info(" Substituted Query to be executed {}", queryToExecute);
 
-      if (isSearchQuery(queryToExecute)) {
+      if (Boolean.TRUE.equals(isSearchQuery(queryToExecute))) {
 
         String finalSearchQuery = createSearchUrl(data, queryToExecute);
 
         logger.info(
             " Run Search FHIR Query for resource {} with query {}",
-            query.getResourceType().toString(),
+            query.getResourceType(),
             finalSearchQuery);
         executeSearchQuery(data, dataReqId, query, finalSearchQuery);
 
@@ -935,6 +938,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private String createSearchUrl(KarProcessingData data, String queryToExecute) {
 
     String finalQuery = data.getNotificationContext().getFhirServerBaseUrl() + "/" + queryToExecute;
+    logger.info("Final serach Query URL:{}", finalQuery);
 
     return finalQuery;
   }
@@ -1026,7 +1030,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationRequest mreq = (MedicationRequest) res;
 
       // Retrieve any medications
-      if (mreq.getMedication() != null && mreq.getMedication() instanceof Reference) {
+      if (mreq.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mreq.getMedication();
         Resource secRes =
             getResourceById(
@@ -1048,7 +1052,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationAdministration mAdm = (MedicationAdministration) res;
 
       // Retrieve any medications
-      if (mAdm.getMedication() != null && mAdm.getMedication() instanceof Reference) {
+      if (mAdm.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mAdm.getMedication();
         Resource secRes =
             getResourceById(
@@ -1070,7 +1074,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationDispense mDisp = (MedicationDispense) res;
 
       // Retrieve any medications
-      if (mDisp.getMedication() != null && mDisp.getMedication() instanceof Reference) {
+      if (mDisp.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mDisp.getMedication();
         Resource secRes =
             getResourceById(
@@ -1147,7 +1151,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       int startThreshold =
           -1 * Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
-      int endThreshold = Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
+      int endThreshold = Integer.parseInt(data.getHealthcareSetting().getEncounterStartThreshold());
 
       Encounter enc = null;
 
@@ -1161,13 +1165,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
           startDate =
               DateFormatUtils.format(
-                  DateUtils.addHours(enc.getPeriod().getStart(), startThreshold), "yyy-MM-dd");
+                  DateUtils.addHours(enc.getPeriod().getStart(), startThreshold), DATE_FORMAT);
         }
 
         if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
           endDate =
               DateFormatUtils.format(
-                  DateUtils.addHours(enc.getPeriod().getEnd(), endThreshold), "yyy-MM-dd");
+                  DateUtils.addHours(enc.getPeriod().getEnd(), endThreshold), DATE_FORMAT);
         }
       }
 
@@ -1176,11 +1180,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             DateFormatUtils.format(
                 DateUtils.addHours(
                     data.getNotificationContext().getEncounterStartTime(), startThreshold),
-                "yyy-MM-dd");
+                DATE_FORMAT);
       }
 
       if (endDate == null) {
-        endDate = DateFormatUtils.format(new Date(), "yyy-MM-dd");
+        endDate = DateFormatUtils.format(new Date(), DATE_FORMAT);
       }
 
       substitutedQuery = substitutedQuery.replaceAll(ENCOUNTER_START_DATE_CONTEXT_PARAM, startDate);

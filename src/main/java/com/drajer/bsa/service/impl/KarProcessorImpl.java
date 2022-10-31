@@ -225,8 +225,9 @@ public class KarProcessorImpl implements KarProcessor {
 
               try {
 
-                if (!throttlingEnabled
-                    || loadManager.canExecuteJob(nc.getThrottleContext(), data.getJobType())) {
+                if (Boolean.TRUE.equals(!throttlingEnabled)
+                    || Boolean.TRUE.equals(
+                        loadManager.canExecuteJob(nc.getThrottleContext(), data.getJobType()))) {
 
                   logger.info(
                       " **** START Executing Action with id {} and type {} based on scheduled job notification. **** ",
@@ -294,14 +295,16 @@ public class KarProcessorImpl implements KarProcessor {
       NotificationContext nc, KarProcessingData data) {
 
     Map<String, String> searchParams = new HashMap<>();
-    searchParams.put(phDao.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
-    searchParams.put(phDao.PATIENT_ID, nc.getPatientId());
-    searchParams.put(phDao.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
-    searchParams.put(phDao.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
-    searchParams.put(phDao.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
+    searchParams.put(PublicHealthMessagesDaoImpl.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
+    searchParams.put(PublicHealthMessagesDaoImpl.PATIENT_ID, nc.getPatientId());
+    searchParams.put(
+        PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
+    searchParams.put(
+        PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
+    searchParams.put(PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
     List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
 
-    if (messages != null && messages.size() >= 1) return messages.get(0);
+    if (messages != null && !messages.isEmpty()) return messages.get(0);
     else return null;
   }
 }

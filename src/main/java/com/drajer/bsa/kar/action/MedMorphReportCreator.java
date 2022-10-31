@@ -46,14 +46,8 @@ public class MedMorphReportCreator extends ReportCreator {
   @Override
   public Resource createReport(
       KarProcessingData kd, EhrQueryService ehrService, String id, String profile, BsaAction act) {
-    Set<Resource> resources = new HashSet<Resource>();
-    kd.getFhirInputDataByType()
-        .entrySet()
-        .stream()
-        .forEach(
-            (es) -> {
-              resources.addAll(es.getValue());
-            });
+    Set<Resource> resources = new HashSet<>();
+    kd.getFhirInputDataByType().entrySet().stream().forEach(es -> resources.addAll(es.getValue()));
     return createReport(kd, ehrService, resources, id, profile, act);
   }
 
@@ -168,7 +162,7 @@ public class MedMorphReportCreator extends ReportCreator {
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, CONTENT_BUNDLE_PROFILE));
     returnBundle.setTimestamp(Date.from(Instant.now()));
 
-    List<BundleEntryComponent> becs = new ArrayList<BundleEntryComponent>();
+    List<BundleEntryComponent> becs = new ArrayList<>();
     for (Resource resource : inputData) {
       String id = resource.getId();
       String resourceType = resource.getResourceType().toString();

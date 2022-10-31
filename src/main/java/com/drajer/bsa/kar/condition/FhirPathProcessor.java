@@ -44,6 +44,9 @@ import org.slf4j.LoggerFactory;
 public class FhirPathProcessor implements BsaConditionProcessor {
 
   private final Logger logger = LoggerFactory.getLogger(FhirPathProcessor.class);
+  public static final String PARAM = "return";
+  public static final String CPG_PARAM_DEFINITION =
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
   ExpressionEvaluator expressionEvaluator;
 
@@ -76,7 +79,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Parameters result =
         (Parameters)
             expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value = (BooleanType) result.getParameter("return");
+    BooleanType value = (BooleanType) result.getParameter(PARAM);
 
     if (value != null) {
       return value.getValue();
@@ -97,10 +100,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     if (cond instanceof BsaFhirPathCondition) {
       logger.info(" Found a FhirPath Condition ");
+      logger.info(" Bsa Action :{}", act);
 
       List<Expression> expressions = ((BsaFhirPathCondition) cond).getVariables();
 
-      if (expressions != null && expressions.size() > 0) {
+      if (expressions != null && !expressions.isEmpty()) {
 
         for (Expression exp : expressions) {
 
@@ -128,7 +132,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             } else {
 
-              Type value = variableResult.getParameter("return");
+              Type value = variableResult.getParameter(PARAM);
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);
 
@@ -153,9 +157,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public String resolveContextVariables(
       String exp, EhrQueryService ehrService, KarProcessingData kd) {
 
-    String expr = ehrService.substituteContextParams(kd, exp);
-
-    return expr;
+    return ehrService.substituteContextParams(kd, exp);
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
@@ -326,6 +328,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       Map<String, Set<Resource>> res,
       Resource resourceMatched,
       Boolean valElem) {
+    logger.info("valElem:{}", valElem);
 
     List<DataRequirementCodeFilterComponent> drcfs = dr.getCodeFilter();
 
@@ -402,7 +405,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           ParametersParameterComponent parameter =
               new ParametersParameterComponent().setName("%" + String.format("%s", name));
           parameter.addExtension(
-              "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+              CPG_PARAM_DEFINITION,
               new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
           params.addParameter(parameter);
         } else {
@@ -412,7 +415,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
                 ParametersParameterComponent parameter =
                     new ParametersParameterComponent().setName("%" + String.format("%s", name));
                 parameter.addExtension(
-                    "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+                    CPG_PARAM_DEFINITION,
                     new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
                 parameter.setResource(resource);
                 params.addParameter(parameter);
@@ -435,7 +438,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             ParametersParameterComponent parameter =
                 new ParametersParameterComponent().setName("%" + String.format("%s", name));
             parameter.addExtension(
-                "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+                CPG_PARAM_DEFINITION,
                 new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
             parameter.setResource(res);
             params.addParameter(parameter);
@@ -444,7 +447,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
           ParametersParameterComponent parameter =
               new ParametersParameterComponent().setName("%" + String.format("%s", name));
           parameter.addExtension(
-              "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",
+              CPG_PARAM_DEFINITION,
               new ParameterDefinition().setMax(limit).setName("%" + name).setType(fhirType));
           params.addParameter(parameter);
         }
@@ -484,7 +487,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Parameters result =
         (Parameters)
             expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value = (BooleanType) result.getParameter("return");
+    BooleanType value = (BooleanType) result.getParameter(PARAM);
 
     if (value != null) {
       return value.getValue();

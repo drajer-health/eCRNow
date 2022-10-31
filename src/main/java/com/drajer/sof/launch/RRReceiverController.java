@@ -23,7 +23,7 @@ public class RRReceiverController {
   @Autowired EicrRRService rrReceieverService;
 
   @CrossOrigin
-  @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
+  @PostMapping(value = "/api/rrReceiver")
   public ResponseEntity<String> rrReceiver(
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
@@ -52,7 +52,7 @@ public class RRReceiverController {
             data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
 
       } else {
-        logger.info(" Received RR as expected on the RR API ");
+        logger.info(" Received RR as expected on the RR API. ");
 
         // Handle RR and optionally save to EHR.
         rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
@@ -70,9 +70,7 @@ public class RRReceiverController {
   }
 
   @CrossOrigin
-  @RequestMapping(
-      value = "/api/reSubmitRR",
-      method = {RequestMethod.POST})
+  @PostMapping(value = "/api/reSubmitRR")
   public ResponseEntity<String> reSubmitRR(
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {

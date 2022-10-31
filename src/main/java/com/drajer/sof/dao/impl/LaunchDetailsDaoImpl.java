@@ -18,6 +18,7 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
     getSession().saveOrUpdate(authDetails);
+    logger.info("Launch Details data successfully inserted in DB");
     return authDetails;
   }
 

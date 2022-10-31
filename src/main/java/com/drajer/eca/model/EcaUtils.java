@@ -181,7 +181,7 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ecr.setLaunchDetailsId(details.getId());
-        ;
+
         if (details.getProviderUUID() != null) {
           ecr.setProviderUUID(details.getProviderUUID());
         }
@@ -218,7 +218,7 @@ public class EcaUtils {
 
     } catch (JsonProcessingException e) {
 
-      String msg = "Unable to update execution state";
+      String msg = "Unable to update execution state.";
       logger.error(msg, e);
       throw new RuntimeException(msg, e);
     }

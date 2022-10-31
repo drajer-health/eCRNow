@@ -111,7 +111,7 @@ public class CdaProblemGenerator {
         }
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));

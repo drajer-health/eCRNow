@@ -57,7 +57,7 @@ public class CheckTriggerCodeStatusList {
 
             // If any of the current ones do not match, then it is sufficient to continue
             // creation of a new message.
-            if (!isCodePresent(s, matchedPath)) {
+            if (Boolean.FALSE.equals(isCodePresent(s, matchedPath))) {
 
               logger.info(" Found new Code {} that matched for path {}", s, matchedPath);
               retVal = true;
