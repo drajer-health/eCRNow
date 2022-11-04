@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @Table(
     name = "launch_details",
     uniqueConstraints =
-        @UniqueConstraint(columnNames = {"ehr_server_url", "launch_patient_id", "encounter_id"}))
+        @UniqueConstraint(columnNames = {"ehr_server_url", "encounter_id", "launch_patient_id"}))
 @DynamicUpdate
 // @TypeDefs({ @TypeDef(name = "StringJsonObject", typeClass = JSONObjectUserType.class) })
 public class LaunchDetails {
