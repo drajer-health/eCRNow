@@ -15,6 +15,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 
 public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable {
 
@@ -126,9 +127,13 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
         .getRetryTemplate()
         .execute(
             retryContext -> {
-              retryCount.getAndIncrement();
-              logger.info("Retrying FHIR read. Count: {} ", retryCount);
-              return readExecutableParent.execute();
+              try {
+                retryCount.getAndIncrement();
+                logger.info("Retrying FHIR read. Count: {} ", retryCount);
+                return readExecutableParent.execute();
+              } catch (final Exception ex) {
+                throw client.handleException(ex, HttpMethod.GET.name());
+              }
             },
             null);
   }

@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.ExceptionClassifierRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
@@ -54,20 +52,9 @@ public class SpringConfiguration {
 
   @Bean(name = "FhirRetryTemplate")
   public RetryTemplate retryTemplate() {
-    FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
 
-    for (FHIRRetryTemplateConfig.HttpMethodType map :
-        fhirRetryTemplateConfig.getHttpMethodTypeMap().values()) {
-      backOffPolicy.setBackOffPeriod(map.getMaxRetries());
-    }
-    RetryTemplate template = new RetryTemplate();
-
-    ExceptionClassifierRetryPolicy policy = new ExceptionClassifierRetryPolicy();
     RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
-    policy.setExceptionClassifier(retryStatusCode.configureStatusCodeBasedRetryPolicy());
-
-    template.setRetryPolicy(policy);
-    template.setBackOffPolicy(backOffPolicy);
+    RetryTemplate template = retryStatusCode.configureRetryTemplate();
 
     return template;
   }

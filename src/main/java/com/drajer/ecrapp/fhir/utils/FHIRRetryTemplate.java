@@ -13,10 +13,16 @@ import org.springframework.stereotype.Component;
 public class FHIRRetryTemplate implements GenericRetryTemplate, InitializingBean {
 
   private static FHIRRetryTemplate fhirRetryTemplate;
-  // To make this class more generic, configure this rettry template inclass
+  // To make this class more generic, configure this retry template inclass
   @Autowired
   @Qualifier("FhirRetryTemplate")
   private RetryTemplate retryTemplate;
+
+  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+
+  public FHIRRetryTemplateConfig getFhirRetryTemplateConfig() {
+    return fhirRetryTemplateConfig;
+  }
 
   public void setRetryTemplate(RetryTemplate retryTemplate) {
     this.retryTemplate = retryTemplate;

@@ -4,13 +4,13 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -65,6 +65,10 @@ public class EcrFhirRetryableReadTest {
         new ArrayList<>(Arrays.asList(408, 429, 502, 503, 504, 500)));
 
     map.put("GET", httpMethodType);
+    fhirRetryTemplateConfig.setMaxRetries(3);
+    fhirRetryTemplateConfig.setRetryWaitTime(3000);
+    fhirRetryTemplateConfig.setRetryStatusCodes(
+        new ArrayList<>(Arrays.asList(408, 429, 502, 503, 504, 500)));
     fhirRetryTemplateConfig.setHttpMethodTypeMap(map);
 
     springConfiguration.setFhirRetryTemplateConfig(fhirRetryTemplateConfig);
@@ -80,13 +84,15 @@ public class EcrFhirRetryableReadTest {
     when(read.resource("Encounter")).thenReturn(readType);
     when(readType.withId(currentStateDetails.getEncounterId())).thenReturn(readExecutable);
     when(readExecutable.execute())
-        .thenThrow(new FhirClientConnectionException("INTERNAL_SERVER_ERROR"));
+        .thenThrow(new RetryableException("INTERNAL_SERVER_ERROR", 500, "GET"));
     try {
-      fhirretryTemplate.execute(
-          retryContext -> {
-            return readExecutable.execute();
-          },
-          null);
+      retryClient
+          .getRetryTemplate()
+          .execute(
+              retryContext -> {
+                return readExecutable.execute();
+              },
+              null);
     } catch (Exception e) {
       verify(readExecutable, times(3)).execute();
     }

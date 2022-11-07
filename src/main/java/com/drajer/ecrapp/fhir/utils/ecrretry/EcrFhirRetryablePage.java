@@ -13,6 +13,7 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 
 public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle> {
 
@@ -78,10 +79,14 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
         .getRetryTemplate()
         .execute(
             retryContext -> {
-              retryCount.getAndIncrement();
-              client.getHttpInterceptor().setRetryCount(retryContext.getRetryCount());
-              logger.info("Retrying FHIR page. Count: {}", retryCount);
-              return pageTyped.execute();
+              try {
+                retryCount.getAndIncrement();
+                client.getHttpInterceptor().setRetryCount(retryContext.getRetryCount());
+                logger.info("Retrying FHIR page. Count: {}", retryCount);
+                return pageTyped.execute();
+              } catch (final Exception ex) {
+                throw client.handleException(ex, HttpMethod.GET.name());
+              }
             },
             null);
   }

@@ -15,7 +15,7 @@ public class FHIRRetryTemplateConfig {
   private Map<String, HttpMethodType> httpMethodTypeMap;
 
   public int getMaxRetries() {
-    return maxRetries;
+    return (maxRetries >0 ? maxRetries : 0);
   }
 
   public void setMaxRetries(int maxRetries) {
@@ -23,7 +23,7 @@ public class FHIRRetryTemplateConfig {
   }
 
   public long getRetryWaitTime() {
-    return retryWaitTime;
+    return (retryWaitTime >0 ? retryWaitTime : 1);
   }
 
   public void setRetryWaitTime(long retryWaitTime) {
@@ -46,22 +46,13 @@ public class FHIRRetryTemplateConfig {
     this.httpMethodTypeMap = httpMethodTypeMap;
   }
 
-  public Boolean verifyStatusCode(int httpstatusCode) {
-    for (HttpMethodType map : httpMethodTypeMap.values()) {
-      for (int statusCode : map.retryStatusCodes) {
-        if (statusCode == httpstatusCode) return true;
-      }
-    }
-    return false;
-  }
-
   public static class HttpMethodType {
     private int maxRetries;
     private long retryWaitTime;
     private List<Integer> retryStatusCodes;
 
     public int getMaxRetries() {
-      return maxRetries;
+      return (maxRetries >0 ? maxRetries : 0);
     }
 
     public void setMaxRetries(int maxRetries) {
@@ -69,7 +60,7 @@ public class FHIRRetryTemplateConfig {
     }
 
     public long getRetryWaitTime() {
-      return retryWaitTime;
+      return (retryWaitTime >0 ? retryWaitTime : 1);
     }
 
     public void setRetryWaitTime(long retryWaitTime) {

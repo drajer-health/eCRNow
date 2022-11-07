@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 
 public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> {
   private IQuery<?> query;
@@ -92,9 +93,13 @@ public class EcrFhirRetryableSearch<K> implements IQuery, IUntypedQuery<IQuery> 
         .getRetryTemplate()
         .execute(
             context -> {
-              retryCount.getAndIncrement();
-              logger.info("Retrying FHIR search url {}. Count {} ", url, retryCount);
-              return query.execute();
+              try {
+                retryCount.getAndIncrement();
+                logger.info("Retrying FHIR search url {}. Count {} ", url, retryCount);
+                return query.execute();
+              } catch (final Exception ex) {
+                throw client.handleException(ex, HttpMethod.GET.name());
+              }
             },
             null);
   }

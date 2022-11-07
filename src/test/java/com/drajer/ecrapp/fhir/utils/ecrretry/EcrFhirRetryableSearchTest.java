@@ -4,11 +4,11 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.gclient.*;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -64,6 +64,8 @@ public class EcrFhirRetryableSearchTest {
 
     map.put("GET", httpMethodType);
     fhirRetryTemplateConfig.setHttpMethodTypeMap(map);
+    fhirRetryTemplateConfig.setMaxRetries(3);
+    fhirRetryTemplateConfig.setRetryWaitTime(3000);
 
     springConfiguration.setFhirRetryTemplateConfig(fhirRetryTemplateConfig);
     fhirretryTemplate.setRetryTemplate(springConfiguration.retryTemplate());
@@ -76,7 +78,7 @@ public class EcrFhirRetryableSearchTest {
     when(retryClient.search()).thenReturn(iUntypedQuery);
     when(iUntypedQuery.byUrl(url)).thenReturn(iQuery);
     when(iQuery.returnBundle(Bundle.class)).thenReturn(iQuery);
-    when(iQuery.execute()).thenThrow(new FhirClientConnectionException("NTERNAL_SERVER_ERROR"));
+    when(iQuery.execute()).thenThrow(new RetryableException("INTERNAL_SERVER_ERROR", 500, "GET"));
 
     try {
       retryClient
