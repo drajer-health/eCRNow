@@ -4,9 +4,13 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
+import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @ComponentScan(
@@ -26,6 +30,12 @@ public class SpringConfiguration {
 
   public static final FhirContext ctx = FhirContext.forR4();
 
+  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+
+  public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
+    this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
+  }
+
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {
     BearerTokenAuthInterceptor authInterceptor =
@@ -38,5 +48,14 @@ public class SpringConfiguration {
   @Bean(name = "jsonParser")
   public IParser getEsrdJsonParser() {
     return ctx.newJsonParser().setPrettyPrint(true);
+  }
+
+  @Bean(name = "FhirRetryTemplate")
+  public RetryTemplate retryTemplate() {
+
+    RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
+    RetryTemplate template = retryStatusCode.configureRetryTemplate();
+
+    return template;
   }
 }
