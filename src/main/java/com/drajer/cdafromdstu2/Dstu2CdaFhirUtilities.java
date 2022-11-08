@@ -118,28 +118,6 @@ public class Dstu2CdaFhirUtilities {
     return null;
   }
 
-  public static CodeableConceptDt getCodeableConceptExtension(
-      List<ExtensionDt> exts, String extUrl) {
-
-    if (exts != null && exts.size() > 0) {
-
-      for (ExtensionDt ext : exts) {
-
-        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
-
-          // if the top level extension has CodingDt then we will use it.
-          if (ext.getValue() != null && (ext.getValue() instanceof CodeableConceptDt)) {
-
-            logger.info(" Found Extension at top level ");
-            return (CodeableConceptDt) ext.getValue();
-          }
-        }
-      }
-    }
-
-    return null;
-  }
-
   public static CodingDt getCodingExtension(
       List<ExtensionDt> exts, String extUrl, String subextUrl) {
 

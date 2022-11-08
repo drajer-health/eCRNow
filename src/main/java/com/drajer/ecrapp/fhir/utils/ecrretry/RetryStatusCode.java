@@ -58,8 +58,9 @@ public class RetryStatusCode {
       }
     }
 
-    if (methodName == null && fhirRetryTemplateConfig.getRetryStatusCodes().contains(httpStatusCode)) {
-        return simpleRetryPolicy;
+    if (methodName == null
+        && fhirRetryTemplateConfig.getRetryStatusCodes().contains(httpStatusCode)) {
+      return simpleRetryPolicy;
     }
     return new NeverRetryPolicy();
   }

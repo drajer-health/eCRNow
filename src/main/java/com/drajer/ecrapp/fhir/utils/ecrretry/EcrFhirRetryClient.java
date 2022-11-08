@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IUntypedQuery;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
-import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.sof.utils.FhirClient;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -51,6 +50,6 @@ public class EcrFhirRetryClient extends FhirClient {
     if (e instanceof BaseServerResponseException) {
       httpStatusCode = ((BaseServerResponseException) e).getStatusCode();
     }
-      return new RetryableException(e, httpStatusCode, methodName);
+    return new RetryableException(e, httpStatusCode, methodName);
   }
 }
