@@ -89,6 +89,10 @@ public class NotificationContext {
   @Column(name = "x_request_id", nullable = true, columnDefinition = "TEXT")
   private String xRequestId;
 
+  /** The opaque throttle context to be passed to the EHR */
+  @Column(name = "throttle_context", nullable = true, columnDefinition = "TEXT")
+  private String throttleContext;
+
   /** The access token after authorization to the EHR */
   @Column(name = "ehr_access_token", nullable = true, columnDefinition = "TEXT")
   private String ehrAccessToken;
@@ -255,5 +259,13 @@ public class NotificationContext {
 
   public void setEncounterEndTime(Date encounterEndTime) {
     this.encounterEndTime = encounterEndTime;
+  }
+
+  public String getThrottleContext() {
+    return throttleContext;
+  }
+
+  public void setThrottleContext(String throttleContext) {
+    this.throttleContext = throttleContext;
   }
 }

@@ -51,12 +51,7 @@ public class LoadingQueryDstu2Bundle {
     logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            launchDetails.getEhrServerURL(),
-            launchDetails.getAccessToken(),
-            launchDetails.getxRequestId());
+    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
 
     // GET Patient Details and Add to Bundle
     try {
@@ -190,7 +185,9 @@ public class LoadingQueryDstu2Bundle {
 
       if (dstu2FhirData.getLabResultValueObservations() != null
           && !dstu2FhirData.getLabResultValueObservations().isEmpty()) {
-        logger.info(FILTERED_OBSERVATIONS, dstu2FhirData.getLabResultValueObservations().size());
+        logger.info(
+            "Filtered Value Observations----> {}",
+            dstu2FhirData.getLabResultValueObservations().size());
 
         for (Observation observation : dstu2FhirData.getLabResultValueObservations()) {
           Entry observationsEntry = new Entry().setResource(observation);
@@ -208,7 +205,9 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getPregnancyObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info(FILTERED_OBSERVATIONS, observationList.size());
+
+      logger.info("Filtered Pregnancy Observations----> {}", observationList.size());
+
       dstu2FhirData.setPregnancyObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -224,7 +223,9 @@ public class LoadingQueryDstu2Bundle {
       List<Observation> observationList =
           dstu2ResourcesData.getTravelObservationData(
               context, client, launchDetails, dstu2FhirData, encounter, start, end);
-      logger.info(FILTERED_OBSERVATIONS, observationList.size());
+
+      logger.info("Filtered Travel Observations----> {}", observationList.size());
+
       dstu2FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         Entry observationsEntry = new Entry().setResource(observation);
@@ -232,6 +233,34 @@ public class LoadingQueryDstu2Bundle {
       }
     } catch (Exception e) {
       logger.error("Error in getting Travel Observation Data", e);
+    }
+
+    // Get Social History Observations (Occupation)
+    try {
+      List<Observation> observationList =
+          dstu2ResourcesData.getSocialHistoryObservationDataOccupation(
+              context, client, launchDetails, dstu2FhirData, encounter, start, end);
+      dstu2FhirData.setOccupationObs(observationList);
+      for (Observation observation : observationList) {
+        Entry observationsEntry = new Entry().setResource(observation);
+        bundle.addEntry(observationsEntry);
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting Social History Observation(Occupation) Data", e);
+    }
+
+    // Get Pregnancy Conditions
+    try {
+      List<Condition> conditionList =
+          dstu2ResourcesData.getPregnancyConditions(
+              context, client, launchDetails, dstu2FhirData, encounter, start, end);
+      dstu2FhirData.setPregnancyConditions(conditionList);
+      for (Condition condition : conditionList) {
+        Entry conditionEntry = new Entry().setResource(condition);
+        bundle.addEntry(conditionEntry);
+      }
+    } catch (Exception e) {
+      logger.error("Error in getting Pregnancy Conditions", e);
     }
 
     // Get MedicationAdministration for Patients and laboratory category (Write a

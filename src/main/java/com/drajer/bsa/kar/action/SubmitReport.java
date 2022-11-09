@@ -22,6 +22,7 @@ import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
+import io.micrometer.core.instrument.util.StringUtils;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashSet;
@@ -137,7 +138,7 @@ public class SubmitReport extends BsaAction {
         submitFhirOutput(data, actStatus, ehrService);
       }
 
-      if (Boolean.TRUE.equals(conditionsMet(data))) {
+      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.
@@ -159,6 +160,7 @@ public class SubmitReport extends BsaAction {
 
   public boolean submitCdaOutput(
       KarProcessingData data, BsaActionStatus actStatus, HealthcareSetting hs) {
+    logger.info("Bsa Action Status:{}", actStatus);
 
     data.getSubmittedCdaData();
 
@@ -191,6 +193,7 @@ public class SubmitReport extends BsaAction {
             BsaTypes.ActionType.CHECK_RESPONSE,
             t,
             data.getxRequestId(),
+            data.getJobType(),
             MDC.getCopyOfContextMap());
 
         logger.info(" Finished scheduling timer for checking RR ");
@@ -201,12 +204,15 @@ public class SubmitReport extends BsaAction {
             " Reportability Response will not be ready, so no need to check when timers are ignored ");
       }
 
-    } else if (Boolean.TRUE.equals(hs.getIsRestAPI()) && restSubmitter != null) {
+    } else if (Boolean.TRUE.equals(hs.getIsRestAPI())
+        && restSubmitter != null
+        && !StringUtils.isEmpty(data.getSubmittedCdaData())) {
 
       logger.info(" Submitting to restful endpoint ");
       restSubmitter.sendEicrDataUsingRestfulApi(data);
 
     } else if (Boolean.TRUE.equals(hs.getIsXdr())) {
+      logger.info(" Submitting to XDR endpoint :TO DO");
 
     } else {
 
@@ -259,12 +265,12 @@ public class SubmitReport extends BsaAction {
       } else {
         Set<UriType> endpoints = data.getKar().getReceiverAddresses();
         logger.info("Sending data to endpoints {} ", endpoints);
-        if (endpoints.size() > 0) {
+        if (!endpoints.isEmpty()) {
           for (UriType uri : endpoints) {
             logger.info("Submitting resources to {}", uri);
             try {
               submitResources(resourcesToSubmit, data, ehrService, uri.getValueAsString());
-            } catch (Throwable th) {
+            } catch (Exception th) {
               logger.error("Error sending data to {} ", uri, th);
             }
           }
@@ -279,6 +285,7 @@ public class SubmitReport extends BsaAction {
       KarProcessingData data,
       EhrQueryService ehrService,
       String submissionEndpoint) {
+    logger.info("Ehr Query Service:{}", ehrService);
 
     logger.info("SubmitResources called: sending data to {}", submissionEndpoint);
     PublicHealthAuthority pha;
@@ -324,7 +331,6 @@ public class SubmitReport extends BsaAction {
           fhirContextInitializer.createClient(
               context, submissionEndpoint, token, data.getxRequestId());
 
-      // ((GenericClient) client).setDontValidateConformance(true);
       context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
 
       // All submissions are expected to be bundles
@@ -416,20 +422,26 @@ public class SubmitReport extends BsaAction {
     this.fhirContextInitializer = fhirContextInitializer;
   }
 
+  @Override
   public void printSummary() {
 
     logger.info(" **** START Printing Derived Action **** ({})", actionId);
 
     logger.info(" checkResponseActionId : {}", checkResponseActionId);
 
+    logger.info(" Submission End point : {}", submissionEndpoint);
+
     logger.info(" **** START Printing Derived Action **** ({})", actionId);
   }
 
+  @Override
   public void log() {
 
     logger.info(" **** START Printing Derived Action **** {}", actionId);
 
     logger.info(" checkResponseActionId : {}", checkResponseActionId);
+
+    logger.info(" Submission End point : {}", submissionEndpoint);
 
     logger.info(" **** END Printing Derived Action **** {}", actionId);
   }

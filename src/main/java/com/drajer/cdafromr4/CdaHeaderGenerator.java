@@ -129,6 +129,8 @@ public class CdaHeaderGenerator {
 
         eICRHeader.append(getCustodianXml(details, data));
 
+        eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
+
         eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
       } else {
         String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
@@ -144,6 +146,115 @@ public class CdaHeaderGenerator {
     }
 
     return eICRHeader.toString();
+  }
+
+  private static String getParticipantXml(LaunchDetails details, R4FhirData data, Patient patient) {
+
+    logger.info("LaunchDetails :{} R4FhirData:{}", details, data);
+
+    StringBuilder s = new StringBuilder("");
+    if (patient != null && patient.getContact() != null) {
+
+      List<ContactComponent> ccs = patient.getContact();
+
+      for (ContactComponent cc : ccs) {
+
+        if (cc.getRelationship() != null) {
+
+          Coding c = getTranslatableCodeableConceptCoding(cc.getRelationship());
+
+          if (c != null) {
+            s.append(getParticipantXml(cc, c));
+          }
+        }
+      }
+    }
+
+    return s.toString();
+  }
+
+  public static String getParticipantXml(ContactComponent cc, Coding c) {
+
+    StringBuilder s = new StringBuilder(200);
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+            CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_IND));
+
+    String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+            CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
+
+    if (cc.getAddress() != null) {
+      s.append(CdaFhirUtilities.getAddressXml(cc.getAddress()));
+    }
+
+    if (cc.getTelecom() != null) {
+      s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false));
+    }
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    List<HumanName> names = new ArrayList<>();
+    if (cc.getName() != null) {
+      names.add(cc.getName());
+    }
+    s.append(CdaFhirUtilities.getNameXml(names));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+
+    return s.toString();
+  }
+
+  public static Coding getTranslatableCodeableConceptCoding(List<CodeableConcept> cds) {
+
+    if (cds != null) {
+
+      for (CodeableConcept cd : cds) {
+
+        List<Coding> codes = cd.getCoding();
+
+        Coding c = getTranslatableCoding(codes);
+
+        if (c != null) {
+
+          return c;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  public static Coding getTranslatableCoding(List<Coding> codes) {
+
+    if (codes != null) {
+
+      for (Coding c : codes) {
+
+        if (c.getCode() != null) {
+
+          String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
+
+          if (relationship != null && !relationship.isEmpty()) {
+
+            return c;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   public static String getPractitionerXml(Practitioner pr) {
@@ -306,12 +417,16 @@ public class CdaHeaderGenerator {
 
   public static String getAuthorXml(
       R4FhirData data, Encounter en, HashMap<V3ParticipationType, List<Practitioner>> practMap) {
+    logger.info("R4FhirData in getAuthorXml :{}", data);
 
     StringBuilder sb = new StringBuilder(500);
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
-    if (en != null && en.getPeriod() != null && en.getPeriod().getStartElement() != null) {
+    if (en != null
+        && en.getPeriod() != null
+        && en.getPeriod().getStartElement() != null
+        && en.getPeriod().getStart() != null) {
       sb.append(
           CdaGeneratorUtils.getXmlForEffectiveTime(
               CdaGeneratorConstants.TIME_EL_NAME,
@@ -705,8 +820,10 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 
+    String nameUse = CdaFhirUtilities.getCodeForNameUse(p.getName());
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+        CdaGeneratorUtils.getXmlForStartElementWithAttribute(
+            CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
     patientDetails.append(CdaFhirUtilities.getNameXml(p.getName()));
     patientDetails.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
@@ -743,7 +860,7 @@ public class CdaHeaderGenerator {
             CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
-    if (race != null && race.getCode() != null) {
+    if (race != null && race.getCode() != null && !isCodingNullFlavor(race)) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.RACE_CODE_EL_NAME,
@@ -751,6 +868,10 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.RACE_CODE_SYSTEM,
               CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
               race.getDisplay()));
+    } else if (race != null && race.getCode() != null && isCodingNullFlavor(race)) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.RACE_CODE_EL_NAME, race.getCode()));
     } else {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForNullCD(
@@ -763,7 +884,7 @@ public class CdaHeaderGenerator {
             CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
 
-    if (ethnicity != null && ethnicity.getCode() != null) {
+    if (ethnicity != null && ethnicity.getCode() != null && !isCodingNullFlavor(ethnicity)) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ETHNIC_CODE_EL_NAME,
@@ -771,6 +892,10 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.RACE_CODE_SYSTEM,
               CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
               ethnicity.getDisplay()));
+    } else if (ethnicity != null && ethnicity.getCode() != null && isCodingNullFlavor(ethnicity)) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.ETHNIC_CODE_EL_NAME, ethnicity.getCode()));
     } else {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForNullCD(
@@ -788,11 +913,13 @@ public class CdaHeaderGenerator {
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
 
         // Add address if found
+        List<Address> addrs = new ArrayList<>();
         if (guardianContact.getAddress() != null) {
 
           logger.debug("Adding Address for Guardian");
-          List<Address> addrs = new ArrayList<>();
           addrs.add(guardianContact.getAddress());
+          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
+        } else {
           patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
         }
 
@@ -846,6 +973,15 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
 
     return patientDetails.toString();
+  }
+
+  private static boolean isCodingNullFlavor(Coding coding) {
+
+    if (coding != null
+        && coding.getCode() != null
+        && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
+      return true;
+    } else return false;
   }
 
   public static List<Address> getAddressDetails() {

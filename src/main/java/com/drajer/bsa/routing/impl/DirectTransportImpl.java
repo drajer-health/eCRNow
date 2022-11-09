@@ -269,6 +269,7 @@ public class DirectTransportImpl implements DataTransportInterface {
 
       String mId;
       logger.info("Reading mail..");
+      logger.info("coorleationId:{}", coorleationId);
 
       // Properties for Javamail
       Properties props = new Properties();

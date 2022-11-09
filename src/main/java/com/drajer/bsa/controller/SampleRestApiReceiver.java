@@ -35,7 +35,7 @@ public class SampleRestApiReceiver {
         request.getHeader("X-Request-ID"),
         request.getHeader("Authorization"));
 
-    // logger.info(" Payload is : {}", body.getPayload());
+    logger.info(" Payload is : {}", body.getPayload());
 
     JSONObject responseObject = new JSONObject();
     responseObject.put("status", "Success");

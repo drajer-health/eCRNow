@@ -9,6 +9,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import com.drajer.ecrapp.util.MDCUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +64,7 @@ public class CreateReport extends BsaAction {
       if (queries != null && !queries.isEmpty()) {
 
         logger.info(" Found Default/Custom Queries for execution ");
+
         // Try to execute the queries.
         queries.forEach((key, value) -> ehrService.executeQuery(data, key, value));
 
@@ -72,7 +74,13 @@ public class CreateReport extends BsaAction {
         // not specified.
         List<DataRequirement> inputRequirements = getInputData();
         ehrService.getFilteredData(data, inputRequirements);
-        inputRequirements.forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
+        inputRequirements
+            .stream()
+            .filter(
+                ir ->
+                    data.getResourcesById(ir.getId()) != null
+                        && !data.getResourcesById(ir.getId()).isEmpty())
+            .forEach(ir -> resources.addAll(data.getResourcesById(ir.getId())));
       }
 
       ehrService.loadJurisdicationData(data);
@@ -86,7 +94,7 @@ public class CreateReport extends BsaAction {
 
           for (CanonicalType ct : profiles) {
 
-            logger.info("Getting Report Creator for  {}", ct.asStringValue());
+            logger.info("Getting Report Creator for: {}", ct);
             ReportCreator rc = ReportCreator.getReportCreator(ct.asStringValue());
 
             if (rc != null) {
@@ -122,7 +130,7 @@ public class CreateReport extends BsaAction {
         }
       }
 
-      if (Boolean.TRUE.equals(conditionsMet(data))) {
+      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.
@@ -214,6 +222,11 @@ public class CreateReport extends BsaAction {
           // Save the data in the table.
           PublicHealthMessage phm = phDao.saveOrUpdate(msg);
           kd.setPhm(phm);
+          MDCUtils.addEicrDocId(msg.getSubmittedDataId());
+          logger.info(
+              "Public Health message created successfully with submittedDataId: {} version: {}",
+              msg.getSubmittedDataId(),
+              msg.getSubmittedVersionNumber());
 
         } // attachment not null
         else {

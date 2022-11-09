@@ -47,7 +47,6 @@ public class Authorization {
 
   public String createAuthUrl(
       LaunchDetails authDetailsObject, ClientDetails clientDetails, Integer state) {
-    // TODO Auto-generated method stub
     String authUrl = authDetailsObject.getAuthUrl();
     Map<String, String> params = new HashMap<>();
     params.put("response_type", "code");

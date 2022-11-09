@@ -4,7 +4,9 @@ import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.scheduler.BsaScheduler;
@@ -17,12 +19,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r5.model.Enumerations.QuantityComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -128,14 +133,15 @@ public abstract class BsaAction {
   /** The method that all actions have to implement to process data. */
   public abstract BsaActionStatus process(KarProcessingData data, EhrQueryService ehrservice);
 
-  public Boolean conditionsMet(KarProcessingData kd) {
+  public Boolean conditionsMet(KarProcessingData kd, EhrQueryService ehrService) {
 
     Boolean retVal = true;
 
     for (BsaCondition bc : conditions) {
 
       // If any of the conditions evaluate to be false, then the method returns false.
-      if (Boolean.FALSE.equals(bc.getConditionProcessor().evaluateExpression(bc, this, kd))) {
+      if (Boolean.FALSE.equals(
+          bc.getConditionProcessor().evaluateExpression(bc, this, kd, ehrService))) {
         logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
         retVal = false;
       }
@@ -173,34 +179,68 @@ public abstract class BsaAction {
           if (ract.getDuration() == null && ract.getAction() != null) {
 
             logger.info(
-                " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+                " **** Start Executing Related Action: {} **** ", ract.getRelatedActionId());
             ract.getAction().process(kd, ehrService);
-            logger.info(" **** Finished execuing the Related Action. **** ");
+            logger.info("**** Finished execuing the Related Action. **** ");
 
           } else if (ract.getDuration() != null && ract.getAction() != null) {
 
             logger.info(
                 " Found the Related Action, with a duration so need to setup a timer to execute later ");
 
-            // Save the execution state, before the scheduling of a job.
-            KarExecutionState st =
-                kd.getKarExecutionStateService().saveOrUpdate(kd.getKarExecutionState());
+            // Check if offhours is enabled.
+            if (Boolean.TRUE.equals(
+                    kd.getHealthcareSetting().getOffhoursEnabled()
+                        && ract.getDuration().hasComparator())
+                && Objects.equals(
+                    ract.getDuration().getComparator().toString(),
+                    QuantityComparator.LESS_OR_EQUAL.toString())) {
 
-            Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+              logger.info(" Off hours is enabled, so the timers have to be shifted ");
 
-            if (t != null && !ignoreTimers)
-              scheduler.scheduleJob(
-                  st.getId(),
-                  ract.getAction().getActionId(),
-                  ract.getAction().getType(),
-                  t,
-                  kd.getxRequestId(),
-                  MDC.getCopyOfContextMap());
-            else {
+              Instant t =
+                  ApplicationUtils.getInstantForOffHours(
+                      ract.getDuration(),
+                      kd.getHealthcareSetting().getOffHoursStart(),
+                      kd.getHealthcareSetting().getOffHoursEnd(),
+                      kd.getHealthcareSetting().getOffHoursTimezone());
+
+              if (t != null && !ignoreTimers) {
+
+                logger.info("Setting up timer to expire at: {}", t);
+                setupTimer(kd, t, ract);
+              } else {
+                t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+
+                if (t != null && !ignoreTimers) {
+
+                  logger.info(" Setting up timer to expire at: {}", t);
+                  setupTimer(kd, t, ract);
+                } else {
+                  logger.info(
+                      " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+                  ract.getAction().process(kd, ehrService);
+                  logger.info(" **** Finished execuing the Related Action. **** ");
+                }
+              }
+
+            } else {
+
               logger.info(
-                  " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
-              ract.getAction().process(kd, ehrService);
-              logger.info(" **** Finished execuing the Related Action. **** ");
+                  " Does not qualify for off hour timers, so the timers will be set as in the Knowledge Artifact. ");
+
+              Instant t = ApplicationUtils.convertDurationToInstant(ract.getDuration());
+
+              if (t != null && !ignoreTimers) {
+
+                logger.info(" Setting up timer to expire at: {}", t);
+                setupTimer(kd, t, ract);
+              } else {
+                logger.info(
+                    " **** Start Executing Related Action : {} **** ", ract.getRelatedActionId());
+                ract.getAction().process(kd, ehrService);
+                logger.info(" **** Finished execuing the Related Action. **** ");
+              }
             }
 
           } else {
@@ -220,7 +260,24 @@ public abstract class BsaAction {
     logger.info(" Finished Executing Related Action for action {}", this.getActionId());
   }
 
+  public void setupTimer(KarProcessingData kd, Instant t, BsaRelatedAction ract) {
+
+    logger.info(" Setting timer for Instant {}", t);
+
+    KarExecutionState st = kd.getKarExecutionStateService().saveOrUpdate(kd.getKarExecutionState());
+
+    scheduler.scheduleJob(
+        st.getId(),
+        ract.getAction().getActionId(),
+        ract.getAction().getType(),
+        t,
+        kd.getxRequestId(),
+        kd.getJobType(),
+        MDC.getCopyOfContextMap());
+  }
+
   public BsaActionStatusType processTimingData(KarProcessingData kd) {
+    logger.info("KarProcessingData:{}", kd);
 
     if (timingData != null && !timingData.isEmpty() && Boolean.FALSE.equals(ignoreTimers)) {
 
@@ -250,6 +307,19 @@ public abstract class BsaAction {
     }
 
     data.addParameters(actionId, params);
+  }
+
+  public void scheduleJob(
+      UUID karExecutionStateId,
+      String actionId,
+      ActionType actType,
+      Instant t,
+      String xRequestId,
+      BsaJobType jobtype,
+      Map<String, String> contextMap) {
+
+    scheduler.scheduleJob(
+        karExecutionStateId, actionId, actType, t, xRequestId, jobtype, contextMap);
   }
 
   protected BsaAction() {
@@ -496,13 +566,13 @@ public abstract class BsaAction {
     if (inputDataRequirementQueries != null)
       inputDataRequirementQueries.forEach(
           (key, value) -> {
-            logger.info(" DR Id: {}", key);
+            logger.info(" DR ID: {}", key);
             value.log();
           });
 
     if (inputDataIdToRelatedDataIdMap != null)
       inputDataIdToRelatedDataIdMap.forEach(
-          (key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
+          (key, value) -> logger.info(" DR Id : {}, Related Data Id {}", key, value));
 
     if (relatedActions != null && relatedActions.size() > 0) {
 
@@ -589,7 +659,8 @@ public abstract class BsaAction {
       logger.info(" Input Data Type : {}", inp.getType());
 
       if (inp.getProfile() != null && !inp.getProfile().isEmpty()) {
-        logger.info(" Input Data Profile : {}", inp.getProfile().get(0).asStringValue());
+        String inputDataProfile = inp.getProfile().get(0).asStringValue();
+        logger.info(" Input Data Profile : {}", inputDataProfile);
       }
 
       if (inp.hasCodeFilter()) {
@@ -618,14 +689,15 @@ public abstract class BsaAction {
       logger.info(" Output Data Type : {}", output.getType());
 
       if (output.getProfile() != null && !output.getProfile().isEmpty()) {
-        logger.info(" Output Data Profile : {}", output.getProfile().get(0).asStringValue());
+        String outputDataProfile = output.getProfile().get(0).asStringValue();
+        logger.info(" Output Data Profile : {}", outputDataProfile);
       }
     }
 
-    conditions.forEach(con -> con.log());
+    conditions.forEach(BsaCondition::log);
 
     if (relatedActions != null)
-      relatedActions.forEach((key, value) -> value.forEach(act -> act.log()));
+      relatedActions.forEach((key, value) -> value.forEach(BsaRelatedAction::log));
 
     if (inputDataRequirementQueries != null)
       inputDataRequirementQueries.forEach(
@@ -638,10 +710,10 @@ public abstract class BsaAction {
       inputDataIdToRelatedDataIdMap.forEach(
           (key, value) -> logger.info(" DR Id : {}, RelatedData Id {}", key, value));
 
-    timingData.forEach(td -> td.print());
+    timingData.forEach(TimingSchedule::print);
 
     logger.info(" Start Printing Sub Actions ");
-    subActions.forEach(act -> act.log());
+    subActions.forEach(BsaAction::log);
     logger.info(" Finished Printing Sub Actions ");
 
     logger.info(" **** END Printing Action **** {}", actionId);

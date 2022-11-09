@@ -32,13 +32,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
       "com.drajer.bsa.dao",
       "com.drajer.bsa.dao.impl",
       "org.hibernate",
-      "com.drajer.ecrapp.config"
+      "com.drajer.ecrapp.config",
+      "com.drajer.bsa.kar.model"
     })
 @EnableAutoConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BsaServiceUtilsTest {
   private static final Logger logger = LoggerFactory.getLogger(BsaServiceUtilsTest.class);
   @Autowired KarParser parser;
+
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   private static Set<Resource> resources = new HashSet<>();
 
@@ -65,8 +68,7 @@ public class BsaServiceUtilsTest {
   public void filterResourcesWithCodeTest() {
 
     KnowledgeArtifact kar =
-        KnowledgeArtifactRepositorySystem.getInstance()
-            .getById("cancer-specification-bundle-example");
+        knowledgeArtifactRepositorySystem.getById("cancer-specification-bundle-example");
     KarProcessingData kd = new KarProcessingData();
     kd.setKar(kar);
     DataRequirement dr = new DataRequirement();
@@ -88,8 +90,7 @@ public class BsaServiceUtilsTest {
   @Test
   public void filterResourcesWithValuesetTest() {
     KnowledgeArtifact kar =
-        KnowledgeArtifactRepositorySystem.getInstance()
-            .getById("bundle-ersd-specification-bundle|2");
+        knowledgeArtifactRepositorySystem.getById("bundle-ersd-specification-bundle|2");
     KarProcessingData kd = new KarProcessingData();
     kd.setKar(kar);
     DataRequirement dr = new DataRequirement();

@@ -3,6 +3,7 @@ package com.drajer.bsa.kar.model;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * This entity is used to store convenient information for operational evaluation of knowledge
@@ -13,10 +14,8 @@ import org.slf4j.LoggerFactory;
  * @author nbashyam
  * @since 2021-04-15
  */
+@Component
 public class KnowledgeArtifactRepositorySystem {
-
-  /** Singleton Instance for the Repository. */
-  private static KnowledgeArtifactRepositorySystem instance = null;
 
   private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactRepositorySystem.class);
 
@@ -50,13 +49,6 @@ public class KnowledgeArtifactRepositorySystem {
 
     if (artifacts != null && artifacts.containsKey(id)) return artifacts.get(id);
     else return null;
-  }
-
-  public static KnowledgeArtifactRepositorySystem getInstance() {
-
-    if (instance == null) instance = new KnowledgeArtifactRepositorySystem();
-
-    return instance;
   }
 
   public void log() {

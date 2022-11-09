@@ -120,13 +120,14 @@ public class EvaluateMeasure extends BsaAction {
 
       if (result != null) {
 
+        actStatus.setReport(result);
         data.addActionOutput(this.getActionId(), result);
 
         if (measureReportId != null && measureReportId.length() > 0)
           data.addActionOutputById(measureReportId, result);
       }
 
-      if (Boolean.TRUE.equals(conditionsMet(data))) {
+      if (Boolean.TRUE.equals(conditionsMet(data, ehrService))) {
         // Execute sub Actions
         executeSubActions(data, ehrService);
         // Execute Related Actions.

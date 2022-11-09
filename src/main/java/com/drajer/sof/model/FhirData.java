@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class FhirData {
+
+  private static Logger logger = LoggerFactory.getLogger(FhirData.class);
 
   List<CodeableConceptDt> conditionCodes;
   List<CodeableConceptDt> labResultCodes;
@@ -26,7 +30,7 @@ public abstract class FhirData {
   List<CodeableConcept> r4ImmunizationCodes;
   List<CodeableConcept> r4DiagnosticReportCodes;
 
-  public FhirData() {
+  protected FhirData() {
 
     conditionCodes = new ArrayList<>();
     labResultCodes = new ArrayList<>();
@@ -106,16 +110,47 @@ public abstract class FhirData {
   public List<CodeableConceptDt> getCodesForExpression(String expression) {
 
     if (expression.contains("Condition.code")) {
-      return conditionCodes;
+      List<CodeableConceptDt> returnCodes = new ArrayList<>();
+
+      logger.info(" Adding {} Condition Codes ", conditionCodes.size());
+      returnCodes.addAll(conditionCodes);
+
+      logger.info(" Adding {} Encounter Codes ", encounterCodes.size());
+      returnCodes.addAll(encounterCodes);
+      return returnCodes;
     } else if (expression.contains("MedicationAdministration.code")) {
+
+      logger.info(" Adding {} Medication Codes ", medicationCodes.size());
       return medicationCodes;
     } else if (expression.contains("Observation.code")) {
-      return labResultCodes;
+      List<CodeableConceptDt> returnCodes = new ArrayList<>();
+
+      logger.info("Adding {} Lab Result Codes ", labResultCodes.size());
+      returnCodes.addAll(labResultCodes);
+
+      logger.info("Adding {} Diagnostic Report Codes.. ", diagnosticReportCodes.size());
+      returnCodes.addAll(diagnosticReportCodes);
+      return returnCodes;
     } else if (expression.contains("Immunization.vaccineCode")) {
+
+      logger.info(" Adding {} Immunization Codes ", immuniationCodes.size());
       return immuniationCodes;
     } else if (expression.contains("ServiceRequest.code")) {
-      return diagnosticOrderCodes;
+      List<CodeableConceptDt> returnCodes = new ArrayList<>();
+
+      logger.info(" Adding {} Diagnostic Order Codes ", diagnosticOrderCodes.size());
+      returnCodes.addAll(diagnosticOrderCodes);
+
+      logger.info(" Adding {} Diagnostic Report Codes. ", diagnosticReportCodes.size());
+      returnCodes.addAll(diagnosticReportCodes);
+
+      logger.info(" Adding {} Lab Result Codes. ", labResultCodes.size());
+      returnCodes.addAll(labResultCodes);
+
+      return returnCodes;
     } else if (expression.contains("Observation.value")) {
+
+      logger.info(" Adding {} Lab Result Value Codes ", labResultValues.size());
       return labResultValues;
     } else {
       return Collections.emptyList();
@@ -125,16 +160,44 @@ public abstract class FhirData {
   public List<CodeableConcept> getR4CodesForExpression(String expression) {
 
     if (expression.contains("Condition.code")) {
-      return r4ConditionCodes;
+      List<CodeableConcept> returnCodes = new ArrayList<>();
+
+      logger.info(" Adding {} Condition Codes ", r4ConditionCodes.size());
+      returnCodes.addAll(r4ConditionCodes);
+
+      logger.info(" Adding {} Encounter Codes ", r4EncounterCodes.size());
+      returnCodes.addAll(r4EncounterCodes);
+      return returnCodes;
     } else if (expression.contains("MedicationAdministration.code")) {
+
+      logger.info(" Adding {} Medication Codes ", r4MedicationCodes.size());
       return r4MedicationCodes;
     } else if (expression.contains("Observation.code")) {
-      return r4LabResultCodes;
+      List<CodeableConcept> returnCodes = new ArrayList<>();
+
+      logger.info(" Adding {} Lab Result Codes ", r4LabResultCodes.size());
+      returnCodes.addAll(r4LabResultCodes);
+
+      logger.info(" Adding {} Diagnostic Report Codes ", r4DiagnosticReportCodes.size());
+      returnCodes.addAll(r4DiagnosticReportCodes);
+      return returnCodes;
     } else if (expression.contains("Immunization.vaccineCode")) {
+
+      logger.info(" Adding {} Immunization Codes ", r4ImmunizationCodes.size());
       return r4ImmunizationCodes;
     } else if (expression.contains("ServiceRequest.code")) {
-      return r4ServiceRequestCodes;
+      List<CodeableConcept> returnCodes = new ArrayList<>();
+
+      logger.info(" Adding {} Service Request Codes ", r4ServiceRequestCodes.size());
+      returnCodes.addAll(r4ServiceRequestCodes);
+      logger.info(" Adding {} Diagnostic Report Codes ", r4DiagnosticReportCodes.size());
+      returnCodes.addAll(r4DiagnosticReportCodes);
+      logger.info(" Adding {} Lab Result Codes ", r4LabResultCodes.size());
+      returnCodes.addAll(r4LabResultCodes);
+      return returnCodes;
     } else if (expression.contains("Observation.value")) {
+
+      logger.info(" Adding {} Lab Result Value Codes ", r4LabResultValues.size());
       return r4LabResultValues;
     } else {
       return Collections.emptyList();

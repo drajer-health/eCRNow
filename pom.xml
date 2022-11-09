@@ -20,7 +20,7 @@
 		<java.version>1.8</java.version>
 		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
-		<cql-evaluator.version>1.4.1</cql-evaluator.version>
+		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 	</properties>
 	
@@ -142,12 +142,6 @@
 			<version>${fhir.version}</version>
 		</dependency>
 
-		<!--  
- 		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-base</artifactId>
-			<version>${fhirpath.version}</version>
-		</dependency> -->
 
 
 		<dependency>
@@ -230,9 +224,20 @@
 
 		<!-- Java stuff -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.11.3</version>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>2.13.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>2.13.3</version>
+		</dependency>
+
+		<dependency>
+   			<groupId>com.fasterxml.jackson.core</groupId>
+   			<artifactId>jackson-databind</artifactId>
+   			<version>2.12.6.1</version>
 		</dependency>
 
 		<dependency>
@@ -381,30 +386,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.heroku</groupId>
-									<artifactId>webapp-runner</artifactId>
-									<version>9.0.30.0</version>
-									<destFileName>webapp-runner.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
+			</plugin>			
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -581,11 +563,10 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>3.0.0-M5</version>
 			</plugin>
 		</plugins>
 	</reporting>

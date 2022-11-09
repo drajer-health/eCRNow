@@ -84,7 +84,7 @@ public class MatchedTriggerCodes {
             && matchedCodes.contains(ApplicationUtils.getCodeAsStringForMatching(code, system))) {
 
           logger.info(" Found matched code for code: {}, system {}", code, system);
-          retVal = new Pair<String, String>(code, system);
+          retVal = new Pair<>(code, system);
         }
       }
     }
@@ -114,7 +114,7 @@ public class MatchedTriggerCodes {
 
       if (intersection != null && !intersection.isEmpty()) {
 
-        logger.debug("Number of Matched Codes = {}", intersection.size());
+        logger.info("Number of Matched Codes = {}", intersection.size());
 
         retval = intersection;
 
@@ -129,8 +129,7 @@ public class MatchedTriggerCodes {
 
   public Boolean containsMatch(ResourceType rt) {
 
-    if (hasMatchedTriggerCodes(rt.toString()) || hasMatchedTriggerValue(rt.toString())) return true;
-    else return false;
+    return (hasMatchedTriggerCodes(rt.toString()) || hasMatchedTriggerValue(rt.toString()));
   }
 
   public Boolean hasMatchedTriggerCodes(String type) {

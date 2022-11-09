@@ -221,7 +221,7 @@ public class EicrServiceImpl implements EicrRRService {
         saveOrUpdate(ecr);
 
       } else {
-        String errorMsg = "Unable to find Eicr for Doc Id: {} " + rrDocId.getRootValue();
+        String errorMsg = "Unable to find Eicr for EICR_DOC_ID: " + eicrDocId.getRootValue();
         logger.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -233,6 +233,7 @@ public class EicrServiceImpl implements EicrRRService {
   }
 
   private boolean submitRRXmlToRestAPI(String rrXml, Eicr ecr, LaunchDetails launchDetails) {
+    logger.info("Eicr in submitRRXmlToRestAPI:{}", ecr);
     boolean isSubmitSuccess = false;
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();

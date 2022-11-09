@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 @ServletComponentScan
 public class EcrApp extends SpringBootServletInitializer {
 
+  @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
     return application.sources(EcrApp.class);
   }

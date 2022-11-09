@@ -118,7 +118,7 @@ public class KnowledgeArtifactRepositoryController {
       } else {
         karStatus.setId(existingKarStatus.getId());
 
-        if (karStatus.getIsActive()) {
+        if (Boolean.TRUE.equals(karStatus.getIsActive())) {
           karStatus.setLastActivationDate(existingKarStatus.getLastActivationDate());
         } else {
           karStatus.setLastInActivationDate(existingKarStatus.getLastInActivationDate());

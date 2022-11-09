@@ -47,6 +47,8 @@ public interface EhrQueryService {
 
   Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd);
 
+  Map<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd);
+
   void createResource(KarProcessingData kd, Resource resource);
 
   void updateResource(KarProcessingData kd, Resource resource);
@@ -70,7 +72,9 @@ public interface EhrQueryService {
 
   JSONObject getAuthorizationToken(HealthcareSetting hs);
 
-  void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
+  public void executeQuery(KarProcessingData kd, String dataReqId, FhirQueryFilter query);
 
   public FhirContext getContext();
+
+  public String substituteContextParams(KarProcessingData data, String str);
 }

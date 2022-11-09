@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -53,7 +52,7 @@ public class LaunchControllerTest {
     clientDetails =
         (ClientDetails)
             TestUtils.getResourceAsObject(
-                "R4/Misc/ClientDetails/ClientDataEntry1.json", ClientDetails.class);
+                "R4/Misc/ClientDetails/ClientDetail_IT_FullECR.json", ClientDetails.class);
   }
 
   @Test
@@ -72,12 +71,8 @@ public class LaunchControllerTest {
 
     launchController.setStartAndEndDates(clientDetails, currentStateDetails, encounter);
 
-    assertEquals(
-        DateUtils.truncate(startDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getStartDate(), Calendar.SECOND));
-    assertEquals(
-        DateUtils.truncate(endDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getEndDate(), Calendar.SECOND));
+    assertTrue(Math.abs(currentStateDetails.getStartDate().getTime() - startDate.getTime()) < 2000);
+    assertTrue(Math.abs(currentStateDetails.getEndDate().getTime() - endDate.getTime()) < 2000);
   }
 
   @Test
@@ -144,12 +139,8 @@ public class LaunchControllerTest {
 
     launchController.setStartAndEndDates(clientDetails, currentStateDetails, r4Encounter);
 
-    assertEquals(
-        DateUtils.truncate(startDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getStartDate(), Calendar.SECOND));
-    assertEquals(
-        DateUtils.truncate(endDate, Calendar.SECOND),
-        DateUtils.truncate(currentStateDetails.getEndDate(), Calendar.SECOND));
+    assertTrue(Math.abs(currentStateDetails.getStartDate().getTime() - startDate.getTime()) < 2000);
+    assertTrue(Math.abs(currentStateDetails.getEndDate().getTime() - endDate.getTime()) < 2000);
   }
 
   @Test
@@ -195,12 +186,7 @@ public class LaunchControllerTest {
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
         .thenReturn(context);
 
-    when(fhirContextInitializer.createClient(
-            context,
-            currentStateDetails.getEhrServerURL(),
-            currentStateDetails.getAccessToken(),
-            currentStateDetails.getxRequestId()))
-        .thenReturn(client);
+    when(fhirContextInitializer.createClient(context, currentStateDetails)).thenReturn(client);
 
     when(client.read()).thenReturn(read);
     when(read.resource("Encounter")).thenReturn(readType);

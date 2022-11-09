@@ -1,6 +1,12 @@
 package com.drajer.bsa.model;
 
 public final class BsaTypes {
+  public static final String UNKNOWN = "Unknown";
+
+  public enum BsaJobType {
+    IMMEDIATE_REPORTING,
+    DELAYED_REPORTING
+  }
 
   public enum AuthenticationType {
     SYSTEM,
@@ -68,7 +74,7 @@ public final class BsaTypes {
     else if (nst == NotificationProcessingStatusType.SUSPENDED) return "SUSPENDED";
     else if (nst == NotificationProcessingStatusType.COMPLETED) return "COMPLETED";
     else if (nst == NotificationProcessingStatusType.CANCELLED) return "CANCELLED";
-    else return "Unknown";
+    else return UNKNOWN;
   }
 
   public static NotificationProcessingStatusType getNotificationProcessingStatusType(String s) {
@@ -146,7 +152,7 @@ public final class BsaTypes {
     else if (type == ActionType.CHECK_RESPONSE) return "check-response";
     else if (type == ActionType.TERMINATE_REPORTING_WORKFLOW) return "terminate-reporting-workflow";
     else if (type == ActionType.CANCEL_REPORT) return "cancel-report";
-    else return "unknown";
+    else return UNKNOWN;
   }
 
   public enum OutputContentType {
@@ -163,7 +169,7 @@ public final class BsaTypes {
     else if (t == OutputContentType.CDA_R11) return "CDA_R11";
     else if (t == OutputContentType.CDA_R30) return "CDA_R30";
     else if (t == OutputContentType.BOTH) return "Both";
-    else return "Unknown";
+    else return UNKNOWN;
   }
 
   public static OutputContentType getOutputContentType(String code) {
@@ -182,7 +188,7 @@ public final class BsaTypes {
     else if (t == AuthenticationType.USER_NAME_PWD) return "UserNamePwd";
     else if (t == AuthenticationType.SOF_BACKEND) return "SofBackend";
     else if (t == AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH) return "MultiTenantSystemLaunch";
-    else return "Unknown";
+    else return UNKNOWN;
   }
 
   public static AuthenticationType getAuthenticationType(String s) {

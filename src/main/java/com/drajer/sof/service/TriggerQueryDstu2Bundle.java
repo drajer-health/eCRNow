@@ -49,12 +49,7 @@ public class TriggerQueryDstu2Bundle {
     logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
-    IGenericClient client =
-        fhirContextInitializer.createClient(
-            context,
-            launchDetails.getEhrServerURL(),
-            launchDetails.getAccessToken(),
-            launchDetails.getxRequestId());
+    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
 
     // GET Patient Details and Add to Bundle
     try {
@@ -206,6 +201,7 @@ public class TriggerQueryDstu2Bundle {
       for (MedicationAdministration medAdministration : medAdministrationsList) {
         if (!medAdministration.getMedication().isEmpty()
             && medAdministration.getMedication() != null) {
+          logger.info("med Administration:{}", medAdministration.getMedication());
           if (medAdministration.getMedication() instanceof ResourceReferenceDt) {
             BaseResourceReferenceDt medRef =
                 (BaseResourceReferenceDt) medAdministration.getMedication();

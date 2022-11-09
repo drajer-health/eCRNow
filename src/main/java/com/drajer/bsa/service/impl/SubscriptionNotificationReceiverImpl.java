@@ -10,11 +10,15 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.KarProcessor;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
 import com.drajer.bsa.utils.SubscriptionUtils;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +48,8 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
   @Autowired KarProcessor karProcessor;
 
+  @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
+
   @Autowired
   @Qualifier("jsonParser")
   IParser jsonParser;
@@ -52,9 +58,13 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
   /** The method that processes the notification. */
   @Override
-  public void processNotification(
-      Bundle notificationBundle, HttpServletRequest request, HttpServletResponse response) {
+  public List<KarProcessingData> processNotification(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext) {
 
+    List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");
 
     NotificationContext nc =
@@ -64,6 +74,9 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
       logger.info(" Notification Context exists for processing the notification ");
       nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
+
+      if (launchContext != null && launchContext.getThrottleContext() != null)
+        nc.setThrottleContext(launchContext.getThrottleContext());
 
       ncDao.saveOrUpdate(nc);
 
@@ -98,8 +111,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                     " Processing KAR with Id {} and version {}", ks.getKarId(), ks.getKarVersion());
 
                 KnowledgeArtifact kar =
-                    KnowledgeArtifactRepositorySystem.getInstance()
-                        .getById(ks.getVersionUniqueKarId());
+                    knowledgeArtifactRepositorySystem.getById(ks.getVersionUniqueKarId());
 
                 if (kar != null) {
 
@@ -126,6 +138,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
                   }
 
                   karProcessor.applyKarForNotification(kd);
+                  dataList.add(kd);
                 } else {
 
                   logger.error(
@@ -165,5 +178,15 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     }
 
     logger.info(" End processing notification ");
+    return dataList;
+  }
+
+  @Override
+  public List<KarProcessingData> processRelaunchNotification(
+      Bundle notificationBundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      PatientLaunchContext launchContext) {
+    return Collections.emptyList();
   }
 }

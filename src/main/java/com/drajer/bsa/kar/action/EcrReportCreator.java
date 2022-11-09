@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.Composition.CompositionStatus;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Device;
@@ -45,7 +46,9 @@ import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
@@ -54,6 +57,7 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.codesystems.ObservationCategory;
+import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,7 +179,6 @@ public class EcrReportCreator extends ReportCreator {
       reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
 
       // Add the Content Bundle.
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle1));
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle2));
     }
 
@@ -282,6 +285,7 @@ public class EcrReportCreator extends ReportCreator {
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
+    logger.info("Ehr Query Service :{}", ehrService);
 
     Eicr ecr = new Eicr();
     Pair<R4FhirData, LaunchDetails> data =
@@ -289,7 +293,7 @@ public class EcrReportCreator extends ReportCreator {
 
     // Save data to File for debugging.
     String outputFileName =
-        kd.LOADING_QUERY_FILE_NAME
+        KarProcessingData.LOADING_QUERY_FILE_NAME
             + "_"
             + kd.getNotificationContext().getPatientId()
             + "_"
@@ -320,6 +324,7 @@ public class EcrReportCreator extends ReportCreator {
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
+    logger.info("Ehr Query Service:{}", ehrService);
 
     logger.info(" Creating Document Reference Resource ");
     Eicr ecr = new Eicr();
@@ -338,6 +343,7 @@ public class EcrReportCreator extends ReportCreator {
 
   public DocumentReference createR4DocumentReference(
       KarProcessingData kd, String xmlPayload, Eicr ecr, String dataRequirementId) {
+    logger.info("Data Requirement ID:{}", dataRequirementId);
 
     DocumentReference documentReference = new DocumentReference();
     documentReference.setId(ecr.getEicrDocId());
@@ -412,6 +418,7 @@ public class EcrReportCreator extends ReportCreator {
     returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
+    logger.info("Ehr Query Service:{}", ehrService);
 
     logger.info(" Creating Composition Resource ");
     Set<Resource> resourcesTobeAdded = new HashSet<>();
@@ -448,6 +455,9 @@ public class EcrReportCreator extends ReportCreator {
     Identifier val = new Identifier();
     val.setValue(comp.getId());
     comp.setIdentifier(val);
+
+    // Add status
+    comp.setStatus(CompositionStatus.FINAL);
 
     // Add Type
     comp.setType(
@@ -491,8 +501,23 @@ public class EcrReportCreator extends ReportCreator {
     comp.setDate(Date.from(Instant.now()));
 
     // Set Author
-    comp.getAuthorFirstRep().setResource(getDeviceAuthor());
+    List<Practitioner> practs = addAuthors(kd, comp);
+    if (practs != null && !practs.isEmpty()) resTobeAdded.addAll(practs);
 
+    // Add title
+    comp.setTitle(EICR_REPORT_LOINC_CODE_DISPLAY_NAME);
+
+    // Add Organization
+    Organization org = ReportCreationUtilities.getOrganization(kd);
+
+    if (org != null) {
+      Reference orgRef = new Reference();
+      orgRef.setResource(org);
+      comp.setCustodian(orgRef);
+      resTobeAdded.add(org);
+    }
+
+    // Add sections
     List<SectionComponent> scs = new ArrayList<>();
 
     // Add chief complaint section.
@@ -563,7 +588,31 @@ public class EcrReportCreator extends ReportCreator {
     // Finalize the sections.
     comp.setSection(scs);
 
+    // Add Locations
+    Set<Resource> locs = kd.getResourcesByType(ResourceType.Location);
+    if (locs != null && !locs.isEmpty()) {
+      resTobeAdded.addAll(locs);
+    }
+
     return comp;
+  }
+
+  public List<Practitioner> addAuthors(KarProcessingData kd, Composition comp) {
+
+    List<Practitioner> authors =
+        ReportCreationUtilities.getPractitioners(kd, V3ParticipationType.AUT);
+
+    if (authors != null && !authors.isEmpty()) {
+
+      Practitioner author = authors.get(0);
+      Reference authReference = new Reference();
+      authReference.setResource(author);
+      List<Reference> authRefs = new ArrayList<>();
+      authRefs.add(authReference);
+      comp.setAuthor(authRefs);
+    }
+
+    return authors;
   }
 
   public SectionComponent getSection(SectionTypeEnum st, KarProcessingData kd) {
@@ -723,6 +772,7 @@ public class EcrReportCreator extends ReportCreator {
   }
 
   public void populateChiefComplaintNarrative(SectionComponent sc, KarProcessingData kd) {
+    logger.info("KarProcessingData:{}", kd);
 
     Narrative val = new Narrative();
     val.setDivAsString("No Information");
@@ -844,14 +894,19 @@ public class EcrReportCreator extends ReportCreator {
       mtc = ctcs.getMatchedCode(cond.getCode());
 
     } else if (res instanceof Observation) {
+      logger.info(" Observation Resource ");
 
     } else if (res instanceof MedicationRequest) {
+      logger.info(" MedicationRequest Resource ");
 
     } else if (res instanceof ServiceRequest) {
+      logger.info(" ServiceRequest Resource ");
 
     } else if (res instanceof Immunization) {
 
+      logger.info(" Immunization Resource ");
     } else if (res instanceof Procedure) {
+      logger.info(" Procedure Resource ");
 
     } else {
 
@@ -875,6 +930,7 @@ public class EcrReportCreator extends ReportCreator {
             .getCodingFirstRep()
             .getCode()
             .contentEquals(FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE)) {
+      logger.info("ResultsSection");
       return true;
     }
 
@@ -895,6 +951,7 @@ public class EcrReportCreator extends ReportCreator {
             .getCodingFirstRep()
             .getCode()
             .contentEquals(FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE)) {
+      logger.info("VitalsSection");
       return true;
     }
 
@@ -915,6 +972,7 @@ public class EcrReportCreator extends ReportCreator {
             .getCodingFirstRep()
             .getCode()
             .contentEquals(FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE)) {
+      logger.info("SocialHistorySection");
       return true;
     }
 

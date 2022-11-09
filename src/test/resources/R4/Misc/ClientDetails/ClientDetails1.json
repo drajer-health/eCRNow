@@ -1,6 +1,7 @@
 {
   "isProvider": true,
   "isSystem": false,
+  "isMultiTenantSystemLaunch": false,
   "isUserAccountLaunch": false,
   "clientId": "d01295ef-5053-4333-b40f-fd44062c89f9",
   "clientSecret": null,
@@ -21,6 +22,7 @@
   "encounterEndThreshold": "2020-08-15T05:34:07.000+0000",
   "isCovid": true,
   "isFullEcr": false,
+  "isEmergentReportingEnabled": true,
   "isCreateDocRef": false,
   "isInvokeRestAPI": false,
   "isBoth": true,

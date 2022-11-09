@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ReportCreator {
 
-  private final Logger logger = LoggerFactory.getLogger(ReportCreator.class);
   private static final Logger logger2 = LoggerFactory.getLogger(ReportCreator.class);
 
   private static HashMap<String, ReportCreator> reportingClasses = new HashMap<>();

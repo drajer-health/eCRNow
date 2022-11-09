@@ -1,6 +1,7 @@
 package com.drajer.bsa.scheduler;
 
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class ScheduledJobData implements Serializable {
   transient Instant expirationTime;
   Map<String, String> mdcContext;
   String xRequestId;
+  BsaJobType jobType;
 
   ScheduledJobData(
       UUID id,
@@ -23,6 +25,7 @@ public class ScheduledJobData implements Serializable {
       Instant t,
       String job,
       String xReqId,
+      BsaJobType jobtype,
       Map<String, String> mdc) {
     karExecutionStateId = id;
     actionId = action;
@@ -30,6 +33,7 @@ public class ScheduledJobData implements Serializable {
     expirationTime = t;
     jobId = job;
     xRequestId = xReqId;
+    jobType = jobtype;
     mdcContext = mdc;
   }
 
@@ -87,5 +91,13 @@ public class ScheduledJobData implements Serializable {
 
   public void setxRequestId(String xRequestId) {
     this.xRequestId = xRequestId;
+  }
+
+  public BsaJobType getJobType() {
+    return jobType;
+  }
+
+  public void setJobType(BsaJobType jobType) {
+    this.jobType = jobType;
   }
 }

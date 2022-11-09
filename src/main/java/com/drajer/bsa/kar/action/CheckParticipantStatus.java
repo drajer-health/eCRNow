@@ -21,5 +21,6 @@ public class CheckParticipantStatus extends BsaActionStatus {
 
   public void setParticipantMatchStatus(Boolean participantMatchStatus) {
     this.participantMatchStatus = participantMatchStatus;
+    logger.info("Participant Match Status:{}", participantMatchStatus);
   }
 }

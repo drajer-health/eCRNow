@@ -18,7 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 @RunWith(Parameterized.class)
 @TestPropertySource(
     properties = {
-      "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefiltersCqlOnly",
+      "kar.directory=src/test/resources/Bsa/Scenarios/kars/rulefilters",
       "fhirpath.enabled=false"
     })
 public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
@@ -44,20 +44,20 @@ public class RuleFiltersERSDCQLOnlyTest extends BaseKarsTest {
   public static Collection<TestCaseInfo> data() {
 
     return Arrays.asList(
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_CqlOnly",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "Reportable",
-            REPORTED),
+        /*    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_CqlOnly",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "Reportable",
+        REPORTED),*/
         new TestCaseInfo(
             "PlanDefinition_eRSD_Instance_CqlOnly",
             "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
             "NotTriggered",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_CqlOnly",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "Triggered",
-            TRIGGERED_ONLY));
+            NOT_TRIGGERED));
+    /*    new TestCaseInfo(
+    "PlanDefinition_eRSD_Instance_CqlOnly",
+    "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+    "Triggered",
+    TRIGGERED_ONLY));*/
   }
 }

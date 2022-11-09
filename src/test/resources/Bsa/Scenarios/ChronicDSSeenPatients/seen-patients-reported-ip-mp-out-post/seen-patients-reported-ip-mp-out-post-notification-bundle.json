@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9010/fhir/Subscription/encounter-end"
+                "reference" : "http://localhost:9011/fhir/Subscription/encounter-end"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9010/fhir/Encounter/seen-patients-reported-ip-mp-out-post-enc",
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/seen-patients-reported-ip-mp-out-post-enc",
         "resource" : {
           "resourceType": "Encounter",
           "id": "seen-patients-reported-ip-mp-out-post-enc",
@@ -86,7 +86,7 @@
             }
           ],
           "subject": {
-            "reference": "Patient/seen-patients-reported-ip-mp-out-prior"
+            "reference": "Patient/seen-patients-reported-ip-mp-out-post"
           },
           "period": {
             "start": "2019-12-31T21:29:59.999-06:00",

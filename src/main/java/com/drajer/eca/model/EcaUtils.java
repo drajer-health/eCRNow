@@ -103,12 +103,12 @@ public class EcaUtils {
     boolean matchfound = false;
     Set<String> codesToMatchAgainst = null;
 
-    if (Boolean.TRUE.equals(details.getIsCovid())) {
+    if (details.getIsCovid() || details.getIsEmergentReportingEnabled()) {
 
       codesToMatchAgainst =
-          ValueSetSingleton.getInstance().getCovidValueSetsAsStringForGrouper(ad.getPath());
+          ValueSetSingleton.getInstance().getEmergentValueSetsAsStringForGrouper(ad.getPath());
       logger.debug(
-          "Total # of {} Codes in Trigger Code Value Set for matching for COVID-19",
+          "Total # of {} Codes in Trigger Code Value Set for matching for Emergent Reporting",
           codesToMatchAgainst.size());
     } else {
 
@@ -181,7 +181,7 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ecr.setLaunchDetailsId(details.getId());
-        ;
+
         if (details.getProviderUUID() != null) {
           ecr.setProviderUUID(details.getProviderUUID());
         }
@@ -218,7 +218,7 @@ public class EcaUtils {
 
     } catch (JsonProcessingException e) {
 
-      String msg = "Unable to update execution state";
+      String msg = "Unable to update execution state.";
       logger.error(msg, e);
       throw new RuntimeException(msg, e);
     }

@@ -46,6 +46,7 @@ public class CdaMedicationGenerator {
         || (medAdms != null && !medAdms.isEmpty())
         || (medReqs != null && !medReqs.isEmpty())) {
 
+      logger.info("Medications found for processing ");
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -107,7 +108,7 @@ public class CdaMedicationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
 
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
@@ -132,7 +133,8 @@ public class CdaMedicationGenerator {
                 null,
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
-                med));
+                med,
+                medList));
       }
 
       // Add Medication Administration
@@ -154,7 +156,7 @@ public class CdaMedicationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
 
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
@@ -180,11 +182,14 @@ public class CdaMedicationGenerator {
                 dose,
                 null,
                 CdaGeneratorConstants.MOOD_CODE_DEF,
-                medAdm));
+                medAdm,
+                medList));
       }
 
       // Add Medication Requests
       for (MedicationRequest medReq : medReqs) {
+
+        logger.info(" Adding medication requests ");
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (medReq.getMedication() != null) {
@@ -203,6 +208,10 @@ public class CdaMedicationGenerator {
           }
         }
 
+        if (startDate == null && medReq.getAuthoredOnElement() != null) {
+          startDate = medReq.getAuthoredOnElement();
+        }
+
         String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (startDate != null) {
           dt = CdaFhirUtilities.getDisplayStringForDateTimeType(startDate);
@@ -217,7 +226,7 @@ public class CdaMedicationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
 
         // Create the Med Entry for the Medication Request.
         String medstatus = "";
@@ -243,7 +252,8 @@ public class CdaMedicationGenerator {
                 null,
                 startDate,
                 moodCode,
-                medReq));
+                medReq,
+                medList));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -277,8 +287,10 @@ public class CdaMedicationGenerator {
       Quantity dose,
       DateTimeType startDate,
       String moodCode,
-      DomainResource res) {
+      DomainResource res,
+      List<Medication> medList) {
 
+    logger.info(" Adding medication entry ");
     StringBuilder sb = new StringBuilder();
 
     // add the Entries.
@@ -331,21 +343,19 @@ public class CdaMedicationGenerator {
 
         freqInHours = Integer.toString(dosage.getTiming().getRepeat().getFrequency());
       }
-    } else if (dose != null) {
-      ds =
-          CdaFhirUtilities.getQuantityXml(dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
     } else {
       ds =
           CdaFhirUtilities.getQuantityXml(dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
     }
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForPIVLWithTS(CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
+    if (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(freqInHours)) {
+      sb.append(
+          CdaGeneratorUtils.getXmlForPIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, freqInHours));
+    }
 
     // add Dose quantity
     sb.append(ds);
-    // sb.append(CdaGeneratorUtils.getXmlForQuantity(CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME,
-    // ds));
 
     // add the consumable presentation.
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
@@ -370,7 +380,8 @@ public class CdaMedicationGenerator {
             false,
             CdaGeneratorConstants.FHIR_RXNORM_URL,
             false,
-            res);
+            res,
+            medList);
 
     if (!codeXml.isEmpty()) {
       sb.append(codeXml);
@@ -443,7 +454,7 @@ public class CdaMedicationGenerator {
 
     if (data.getMedicationRequests() != null && !data.getMedicationRequests().isEmpty()) {
 
-      logger.debug(
+      logger.info(
           "Total num of Medication Requests available for Patient {}",
           data.getMedicationRequests().size());
 
@@ -454,6 +465,8 @@ public class CdaMedicationGenerator {
           Reference med = (Reference) m.getMedication();
 
           if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
+
+            logger.info(" Found a Contained Reference ");
             // Check contained.
             String refId = med.getReference().substring(1);
 
@@ -476,7 +489,7 @@ public class CdaMedicationGenerator {
                               cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
                     // Found the Medication that matters.
-                    logger.debug("Adding Med Req - due to code ");
+                    logger.info("Adding Med Req - due to code ");
                     cmeds.add(cmed);
                     mr.add(m);
                     break;
@@ -490,7 +503,7 @@ public class CdaMedicationGenerator {
 
                     for (MedicationIngredientComponent ing : ings) {
 
-                      logger.debug("starting to examine contained ingredients ");
+                      logger.info("starting to examine contained ingredients ");
                       if (ing.getItem() instanceof CodeableConcept) {
 
                         CodeableConcept cc = (CodeableConcept) ing.getItem();
@@ -501,7 +514,7 @@ public class CdaMedicationGenerator {
                                 CdaFhirUtilities.isCodingPresentForCodeSystem(
                                     cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
 
-                          logger.debug("Adding Med Req due to ingredient ");
+                          logger.info("Adding Med Req due to ingredient ");
                           cmeds.add(cmed);
                           mr.add(m);
                           found = true;
@@ -520,10 +533,72 @@ public class CdaMedicationGenerator {
           else {
 
             // Check the actual medication if desired in the future.
+            logger.info(" Found an External Medication Reference ");
 
-          }
+            if (cmeds != null) {
+
+              for (Medication emed : cmeds) {
+
+                if (emed.getIdElement()
+                    .getIdPart()
+                    .contentEquals(med.getReferenceElement().getIdPart())) {
+
+                  if (emed.getCode() != null
+                      && emed.getCode().getCoding() != null
+                      && !emed.getCode().getCoding().isEmpty()
+                      && Boolean.TRUE.equals(
+                          CdaFhirUtilities.isCodingPresentForCodeSystem(
+                              emed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
+
+                    // Found the Medication that matters.
+                    logger.info("Adding Medication and MedicationRequest - due to code ");
+                    mr.add(m);
+                    break;
+                  } // if code present
+
+                  // If code is absent check ingredient
+                  Boolean found = false;
+                  // Check Ingredients also.
+                  if (emed.getIngredient() != null) {
+
+                    List<MedicationIngredientComponent> ings = emed.getIngredient();
+
+                    for (MedicationIngredientComponent ing : ings) {
+
+                      logger.info("starting to examine contained ingredients ");
+                      if (ing.getItem() instanceof CodeableConcept) {
+
+                        CodeableConcept cc = (CodeableConcept) ing.getItem();
+
+                        if (cc.getCoding() != null
+                            && !cc.getCoding().isEmpty()
+                            && Boolean.TRUE.equals(
+                                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                                    cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
+
+                          logger.info("Adding Med Req due to ingredient ");
+                          mr.add(m);
+                          found = true;
+                          break;
+                        } // Code check.
+                      } // Ingredient is a Codeable Concept
+                    } // Ingredients present
+                  } // Ingredient present
+
+                  // break the outer loop.
+                  if (Boolean.TRUE.equals(found)) break;
+                } // if same reference
+              } // for all medications
+
+            } // if cmeds
+            else {
+              logger.info(" No cmeds to compare and extract medications ");
+            }
+          } // Else if it is an external reference
 
         } else if (m.getMedication() instanceof CodeableConcept) {
+
+          logger.info(" Found a medication codeable concept ");
 
           CodeableConcept cc = (CodeableConcept) m.getMedication();
 

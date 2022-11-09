@@ -33,6 +33,12 @@ public class LaunchDetails {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(LaunchDetails.class);
 
+  public enum ProcessingStatus {
+    In_Progress,
+    Completed,
+    Errors
+  }
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
@@ -141,6 +147,14 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid = true;
 
+  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isEmergentReportingEnabled = true;
+
+  @Column(name = "is_full_ecr", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isFullEcr = true;
+
   @Column(name = "rrprocessing_createdocRef", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
@@ -175,6 +189,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
+  @Column(name = "is_multi_tenant_system_launch", nullable = false)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isMultiTenantSystemLaunch;
+
   @Column(name = "is_user_account_launch", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch;
@@ -196,6 +214,9 @@ public class LaunchDetails {
 
   @Column(name = "launch_type", nullable = true)
   private String launchType;
+
+  @Column(name = "processing_status", nullable = true)
+  private String processingState;
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -298,7 +319,11 @@ public class LaunchDetails {
   }
 
   public String getAccessToken() {
-    if (this.getTokenExpiryDateTime() != null) {
+    if (Boolean.TRUE.equals(this.isMultiTenantSystemLaunch)) {
+      JSONObject accessTokenObj =
+          new RefreshTokenScheduler().getAccessTokenForMultiTenantLaunch(this);
+      return accessTokenObj.getString("access_token");
+    } else if (this.getTokenExpiryDateTime() != null) {
       // Retrieve Access token 3 minutes before it expires.
       // 3 minutes is enough buffer for Trigger or Loading query to complete.
       Instant currentInstant = new Date().toInstant().plusSeconds(180);
@@ -306,14 +331,15 @@ public class LaunchDetails {
       Date tokenExpiryTime = this.getTokenExpiryDateTime();
       int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
-        logger.info("AccessToken is Expired. Getting new AccessToken");
+        logger.info("AccessToken is Expired. Getting new AccessToken.");
         JSONObject accessTokenObj =
             new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
-        logger.info("AccessToken is Valid. No need to get new AccessToken");
+        logger.debug("AccessToken is Valid. No need to get new AccessToken.");
         return accessToken;
       }
+
     } else {
       return accessToken;
     }
@@ -535,6 +561,14 @@ public class LaunchDetails {
     this.rrDocRefMimeType = rrDocRefMimeType;
   }
 
+  public Boolean getIsMultiTenantSystemLaunch() {
+    return isMultiTenantSystemLaunch;
+  }
+
+  public void setIsMultiTenantSystemLaunch(Boolean isMultiTenantSystemLaunch) {
+    this.isMultiTenantSystemLaunch = isMultiTenantSystemLaunch;
+  }
+
   public Boolean getIsUserAccountLaunch() {
     return isUserAccountLaunch;
   }
@@ -613,5 +647,55 @@ public class LaunchDetails {
 
   public void setLaunchType(String launchType) {
     this.launchType = launchType;
+  }
+
+  public String getProcessingState() {
+    return processingState;
+  }
+
+  public void setProcessingState(String processingState) {
+    this.processingState = processingState;
+  }
+
+  public Boolean getIsEmergentReportingEnabled() {
+    return isEmergentReportingEnabled;
+  }
+
+  public void setIsEmergentReportingEnabled(Boolean isEmergentReportingEnabled) {
+    this.isEmergentReportingEnabled = isEmergentReportingEnabled;
+  }
+
+  public Boolean getIsFullEcr() {
+    return isFullEcr;
+  }
+
+  public void setIsFullEcr(Boolean isFullEcr) {
+    this.isFullEcr = isFullEcr;
+  }
+
+  public static String getString(ProcessingStatus status) {
+
+    if (status == ProcessingStatus.In_Progress) {
+      return "In_Progress";
+    } else if (status == ProcessingStatus.Completed) {
+      return "Completed";
+    } else if (status == ProcessingStatus.Errors) {
+      return "Errors";
+    } else {
+      return "Unknown";
+    }
+  }
+
+  public static ProcessingStatus getProcessingStatus(String status) {
+
+    if (status.contentEquals("In_Progress")) {
+      return ProcessingStatus.In_Progress;
+    } else if (status.contentEquals("Completed")) {
+      return ProcessingStatus.Completed;
+    } else if (status.contentEquals("Errors")) {
+      return ProcessingStatus.Errors;
+    } else {
+      return null;
+    }
   }
 }

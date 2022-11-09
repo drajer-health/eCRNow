@@ -6,6 +6,7 @@ import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.ActionType;
+import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.bsa.utils.BsaServiceUtils;
@@ -44,9 +45,9 @@ public class KarProcessingData {
     ALL_INFO
   }
 
-  public static String TRIGGER_QUERY_FILE_NAME = "TriggerQueryBundle";
-  public static String LOADING_QUERY_FILE_NAME = "LoadingQueryBundle";
-  public static String ALL_DATA_FILE_NAME = "AllDataFile";
+  public static final String TRIGGER_QUERY_FILE_NAME = "TriggerQueryBundle";
+  public static final String LOADING_QUERY_FILE_NAME = "LoadingQueryBundle";
+  public static final String ALL_DATA_FILE_NAME = "AllDataFile";
 
   /** The Knowledge Artifact to be processed. */
   KnowledgeArtifact kar;
@@ -160,6 +161,9 @@ public class KarProcessingData {
   /** The attribute holds the context encounter */
   private Encounter contextEncounter;
 
+  /** The type of job to be executed on the infrastructure */
+  private BsaJobType jobType;
+
   public void addActionOutput(String actionId, Resource res) {
 
     if (actionOutputData.containsKey(actionId)) {
@@ -186,13 +190,27 @@ public class KarProcessingData {
     }
   }
 
-  public void addNotifiedResource(String resId, Resource res) {}
+  public void addNotifiedResource(String resId, Resource res) {
+    logger.info("addNotifiedResource:TO DO:{}{}", resId, res);
+  }
 
   public Set<Resource> getResourcesByType(String type) {
 
     for (Map.Entry<ResourceType, Set<Resource>> entry : fhirInputDataByType.entrySet()) {
 
       if (entry.getKey().toString().contentEquals(type)) {
+        return entry.getValue();
+      }
+    }
+
+    return Collections.emptySet();
+  }
+
+  public Set<Resource> getResourcesByType(ResourceType type) {
+
+    for (Map.Entry<ResourceType, Set<Resource>> entry : fhirInputDataByType.entrySet()) {
+
+      if (entry.getKey() == type) {
         return entry.getValue();
       }
     }
@@ -253,7 +271,7 @@ public class KarProcessingData {
 
   public void addResourcesByType(ResourceType type, Set<Resource> res) {
 
-    if (res != null && res.size() > 0) {
+    if (res != null && !res.isEmpty()) {
 
       logger.info(" Resource Sizes : {}", res.size());
 
@@ -268,8 +286,27 @@ public class KarProcessingData {
     }
   }
 
+  public void addResourceByType(ResourceType type, Resource res) {
+
+    if (res != null) {
+
+      if (fhirInputDataByType.containsKey(type)) {
+        Set<Resource> resources = fhirInputDataByType.get(type);
+        resources.add(res);
+        Set<Resource> uniqueResources =
+            ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+
+        fhirInputDataByType.put(type, uniqueResources);
+      } else {
+        Set<Resource> resources = new HashSet<>();
+        resources.add(res);
+        fhirInputDataByType.put(type, resources);
+      }
+    }
+  }
+
   public void addResourcesById(String id, Set<Resource> res) {
-    if (res != null && res.size() > 0) {
+    if (res != null && !res.isEmpty()) {
       fhirInputDataById.put(id, res);
     }
   }
@@ -283,7 +320,7 @@ public class KarProcessingData {
           ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
       fhirInputDataById.put(dataReqId, uniqueResources);
     } else {
-      Set<Resource> resources = new HashSet<Resource>();
+      Set<Resource> resources = new HashSet<>();
       resources.add(res);
       fhirInputDataById.put(dataReqId, resources);
     }
@@ -583,6 +620,14 @@ public class KarProcessingData {
     this.previousTriggerMatchStatus = previousTriggerMatchStatus;
   }
 
+  public BsaJobType getJobType() {
+    return jobType;
+  }
+
+  public void setJobType(BsaJobType jobType) {
+    this.jobType = jobType;
+  }
+
   public boolean isDataAlreadyFetched(String dataReqId, String relatedDataId) {
 
     boolean returnVal = false;
@@ -616,6 +661,7 @@ public class KarProcessingData {
 
     if (tokenExpirationTime != null
         && (tokenExpirationTime.compareTo(expirationTimeThreshold) > 0)) {
+      logger.info("Access Token is Valid");
 
       return true;
 
@@ -650,8 +696,9 @@ public class KarProcessingData {
   public Set<Resource> getDataForId(String id, String relatedDataId) {
 
     Set<Resource> resources = null;
-    if (fhirInputDataById.containsKey(id)) {
-      resources = fhirInputDataById.get(id);
+    if (relatedDataId != null && actionOutputDataById.containsKey(relatedDataId)) {
+
+      resources = actionOutputDataById.get(relatedDataId);
     }
 
     if (resources == null) {
@@ -663,6 +710,10 @@ public class KarProcessingData {
           && fhirInputDataById.containsKey(finalRelatedDataId)) {
         resources = fhirInputDataById.get(finalRelatedDataId);
       }
+    }
+
+    if (resources == null && fhirInputDataById.containsKey(id)) {
+      resources = fhirInputDataById.get(id);
     }
 
     return resources;
@@ -754,7 +805,7 @@ public class KarProcessingData {
               + "_"
               + this.getNotificationContext().getNotificationResourceId();
 
-      logger.info(" Bundle Size for filename {} = ", outputFileName, bund.getEntry().size());
+      logger.info(" Bundle Size for filename {} {}= ", outputFileName, bund.getEntry().size());
 
       BsaServiceUtils.saveFhirResourceToFile(bund, outputFileName);
     }

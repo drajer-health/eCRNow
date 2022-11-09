@@ -20,6 +20,17 @@ public class PatientLaunchContext {
   /** This is to by pass all timers and validate the processing of various timers inline. */
   private Boolean validationMode;
 
+  /**
+   * This is to be used to check with the EHR on whether all the timers can be run or if they need
+   * to be throttled. This context parameter is something that is passed by the EHR vendor to be
+   * stored and then it will be passed back to the EHR for checking if throttling is required. So
+   * for e.g based on the size of the infrastruture an EHR may decide to allow 10 parallel requests.
+   * This context parameter may indicate the number of requests or the size of the infrastructure
+   * (like small/medium/large) etc using which the EHR may make a decision on whether to allow a
+   * timer to execute or not.
+   */
+  private String throttleContext;
+
   public String getFhirServerURL() {
     return fhirServerURL;
   }
@@ -50,5 +61,13 @@ public class PatientLaunchContext {
 
   public void setValidationMode(Boolean validationMode) {
     this.validationMode = validationMode;
+  }
+
+  public String getThrottleContext() {
+    return throttleContext;
+  }
+
+  public void setThrottleContext(String throttleContext) {
+    this.throttleContext = throttleContext;
   }
 }

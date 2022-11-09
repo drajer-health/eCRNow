@@ -59,8 +59,10 @@ import org.springframework.stereotype.Service;
 public class PlanDefinitionProcessor {
 
   public static final String COVID_SNOMED_USE_CONTEXT_CODE = "840539006";
-
   public static final String COVID_SNOMED_USE_CONTEXT_SYSTEM = "http://snomed.info/sct";
+  public static final String EMERGENT_USE_CONTEXT_CODE = "emergent";
+  public static final String EMERGENT_USE_CONTEXT_SYSTEM =
+      "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-usage-context";
 
   public static final String GROUPER_VALUE_SET_REFERENCE_1 = "plandefinition-ersd-instance";
   public static final String GROUPER_VALUE_SET_REFERENCE_2 = "plandefinition-ersd-skeleton";
@@ -96,7 +98,6 @@ public class PlanDefinitionProcessor {
 
     // Reading Bundle with Id 506 from ersd server.
     // Bundle esrdBundle =
-    // esrdClient.read().resource(Bundle.class).withId("506").execute();
 
     logger.info(" Reading ERSD Bundle File ");
     Bundle ersdBundle = readErsdBundleFromFile();
@@ -153,7 +154,7 @@ public class PlanDefinitionProcessor {
       PlanDefinition planDefinition = null;
       List<PlanDefinitionActionComponent> actions = null;
       List<TriggerDefinition> triggerDefinitionsList = null;
-      Set<ValueSet> covidValuesets = new HashSet<>();
+      Set<ValueSet> emergentValuesets = new HashSet<>();
       Set<ValueSet> valuesets = new HashSet<>();
       Set<ValueSet> grouperValueSets = new HashSet<>();
       Map<EventTypes.EcrActionTypes, Set<AbstractAction>> acts = new HashMap<>();
@@ -172,12 +173,12 @@ public class PlanDefinitionProcessor {
 
             valueSet = (ValueSet) bundleEntry.getResource();
 
-            if (ApplicationUtils.isACovidValueSet(valueSet)) {
+            if (ApplicationUtils.isAEmergentValueSet(valueSet)) {
 
-              logger.debug(" Found a COVID Value Set {}", valueSet.getId());
+              logger.debug(" Found a Emergent Value Set {}", valueSet.getId());
 
               valueSetService.createValueSet(valueSet);
-              covidValuesets.add(valueSet);
+              emergentValuesets.add(valueSet);
               valuesets.add(valueSet);
             } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {
 
@@ -204,13 +205,14 @@ public class PlanDefinitionProcessor {
         }
       }
 
-      ValueSetSingleton.getInstance().setCovidValueSets(covidValuesets);
+      ValueSetSingleton.getInstance().setEmergentValueSets(emergentValuesets);
       ValueSetSingleton.getInstance().setValueSets(valuesets);
       ValueSetSingleton.getInstance().setGrouperValueSets(grouperValueSets);
 
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
         if (Optional.ofNullable(bundleEntry).isPresent()) {
+          logger.info("Bundle exist");
 
           if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
             planDefinition = (PlanDefinition) bundleEntry.getResource();
