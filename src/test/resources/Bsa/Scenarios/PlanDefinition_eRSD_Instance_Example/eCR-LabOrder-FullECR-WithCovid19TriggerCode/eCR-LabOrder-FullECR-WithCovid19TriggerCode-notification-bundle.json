@@ -1,0 +1,1166 @@
+{
+    "resourceType": "Bundle",
+    "id": "e1eec9ad-95a0-496e-a55c-b6f8a82f3bb6",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest?patient=12765394"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/338238715",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "338238715",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2021-09-29T15:13:27Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: VTE Quality Measures</p><p><b>Occurrence</b>: Sep 29, 2021  3:13 P.M. UTC</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: SYSTEM, SYSTEM Cerner</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2515",
+                                "display": "Patient Care",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Patient Care"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "21278203",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "VTE Quality Measures"
+                },
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963532"
+                },
+                "occurrenceDateTime": "2021-09-29T15:13:27Z",
+                "authoredOn": "2021-09-29T15:13:27Z",
+                "requester": {
+                    "reference": "Practitioner/1",
+                    "display": "SYSTEM, SYSTEM Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347248719",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347248719",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T05:40:54Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Coronavirus Panel</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Mycobacterial pneumonia</li><li>Abscess at site of arterial duct</li><li>Arterial infection</li><li>Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Sputum, AM Draw (Inpatient Only) Collect, 02/09/22 3:30:00 CST, Once, Nurse collect, Abscess at site of arterial duct | Abscess at site of arterial duct | Mycobacterial pneumonia | Mendelian susceptibility to mycobacterial disease due to complete IFNg...</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2572357979",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94531-1",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Coronavirus Panel"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Sputum, AM Draw (Inpatient Only) Collect, 02/09/22 3:30:00 CST, Once, Nurse collect, Abscess at site of arterial duct | Abscess at site of arterial duct | Mycobacterial pneumonia | Mendelian susceptibility to mycobacterial disease due to complete IFNg..."
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T09:30:00Z",
+                            "end": "2022-02-09T09:30:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T05:40:23Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "A31.0",
+                                "display": "Pulmonary mycobacterial infection",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Mycobacterial pneumonia"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Abscess at site of arterial duct"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Arterial infection"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "D84.89",
+                                "display": "Other immunodeficiencies",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347248683",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347248683",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2022-02-24T02:00:22Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Arterial infection</li><li>Abscess at site of arterial duct</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Stat, 02/08/22 23:14:00 CST, Once, Abscess at site of arterial duct | Abscess at site of arterial duct</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 02/08/22 23:14:00 CST, Once, Abscess at site of arterial duct | Abscess at site of arterial duct"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T05:18:00Z",
+                            "end": "2022-02-09T06:15:38Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T05:14:44Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Arterial infection"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Abscess at site of arterial duct"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347247031",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347247031",
+                "meta": {
+                    "versionId": "2",
+                    "lastUpdated": "2022-02-24T02:00:22Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Reason</b>:</p><ul><li>Abscess at site of arterial duct</li><li>Arterial infection</li></ul><p><b>Status</b>: Revoked</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Blood, Routine, 02/08/22 22:14:00 CST, Once, Abscess at site of arterial duct | Abscess at site of arterial duct, Carter, Kristin Cerner</p></div>"
+                },
+                "status": "revoked",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Routine, 02/08/22 22:14:00 CST, Once, Abscess at site of arterial duct | Abscess at site of arterial duct, Carter, Kristin Cerner"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T04:16:00Z",
+                            "end": "2022-02-09T06:15:37Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T04:14:44Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Abscess at site of arterial duct"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Arterial infection"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347248727",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347248727",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T05:48:47Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Coronavirus (COVID-19) Screen</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Mycobacterial pneumonia</li><li>Abscess at site of arterial duct</li><li>Arterial infection</li><li>Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Sputum, Stat Collect, 02/08/22 23:48:00 CST, Once, Nurse collect, Abscess at site of arterial duct | Abscess at site of arterial duct | Mycobacterial pneumonia | Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2572357985",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94500-6",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Coronavirus (COVID-19) Screen"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Sputum, Stat Collect, 02/08/22 23:48:00 CST, Once, Nurse collect, Abscess at site of arterial duct | Abscess at site of arterial duct | Mycobacterial pneumonia | Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T05:48:00Z",
+                            "end": "2022-02-09T05:48:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T05:48:08Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "A31.0",
+                                "display": "Pulmonary mycobacterial infection",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Mycobacterial pneumonia"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Abscess at site of arterial duct"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Arterial infection"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "D84.89",
+                                "display": "Other immunodeficiencies",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347233437",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347233437",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T04:09:44Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Coronavirus Panel</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Abscess at site of arterial duct</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Throat, Stat Collect, 02/08/22 21:51:00 CST, Once, Nurse collect, Abscess at site of arterial duct, Carter, Kristin Cerner</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2572357979",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94531-1",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Coronavirus Panel"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Throat, Stat Collect, 02/08/22 21:51:00 CST, Once, Nurse collect, Abscess at site of arterial duct, Carter, Kristin Cerner"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T04:09:00Z",
+                            "end": "2022-02-09T04:09:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T03:51:44Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Abscess at site of arterial duct"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/347233439",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "347233439",
+                "meta": {
+                    "versionId": "0",
+                    "lastUpdated": "2022-02-09T04:09:47Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Coronavirus Panel</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Reason</b>:</p><ul><li>Arterial infection</li></ul><p><b>Status</b>: Active</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Physician - Hospitalist Cerner</p><p><b>Order Detail</b>: Throat, Stat Collect, 02/08/22 21:52:00 CST, Once, Nurse collect, Arterial infection</p></div>"
+                },
+                "status": "active",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2572357979",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://loinc.org",
+                            "code": "94531-1",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Coronavirus Panel"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Throat, Stat Collect, 02/08/22 21:52:00 CST, Once, Nurse collect, Arterial infection"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2022-02-09T04:09:00Z",
+                            "end": "2022-02-09T04:09:00Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2022-02-09T03:52:09Z",
+                "requester": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                                "code": "I77.89",
+                                "display": "Other specified disorders of arteries and arterioles",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Arterial infection"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339561003",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339561003",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-11-02T01:00:27Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Blood Culture</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: Routine</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Blood, Routine collect, 10/18/21 10:27:00 CDT, Once</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "routine",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31713873",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Blood Culture"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Routine collect, 10/18/21 10:27:00 CDT, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963532"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-18T16:08:00Z",
+                            "end": "2021-10-18T17:10:48Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-18T15:26:52Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339560999",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339560999",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-11-02T01:00:27Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Legionella Antigen Urine</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Urine, Stat Collect, 10/18/21 10:27:00 CDT, Once, Nurse collect</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "2921626",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Legionella Antigen Urine"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Urine, Stat Collect, 10/18/21 10:27:00 CDT, Once, Nurse collect"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963532"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-18T16:05:00Z",
+                            "end": "2021-10-18T16:25:35Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-18T15:26:52Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339560995",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339560995",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-11-02T01:00:27Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: CBC w/o Diff</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Blood, Stat, 10/18/21 10:26:00 CDT, Once</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "32413911",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "CBC w/o Diff"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 10/18/21 10:26:00 CDT, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963532"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-18T16:05:00Z",
+                            "end": "2021-10-18T16:25:02Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-18T15:26:52Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339560997",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339560997",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-11-02T01:00:27Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Mumps Antibody IgG</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Blood, Stat, 10/18/21 10:27:00 CDT, Once</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31559099",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Mumps Antibody IgG"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 10/18/21 10:27:00 CDT, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963532"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-18T16:05:00Z",
+                            "end": "2021-10-18T16:25:02Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-18T15:26:52Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/ServiceRequest/339561001",
+            "resource": {
+                "resourceType": "ServiceRequest",
+                "id": "339561001",
+                "meta": {
+                    "versionId": "4",
+                    "lastUpdated": "2021-11-02T01:00:27Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Service Request</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Code</b>: Streptococcus Pneumoniae Antigen</p><p><b>Occurrence</b>: Once</p><p><b>Priority</b>: STAT</p><p><b>Status</b>: Completed</p><p><b>Intent</b>: Order</p><p><b>Requester</b>: Cerner Test, Nurse Practitioner Cerner</p><p><b>Order Detail</b>: Blood, Stat, 10/18/21 10:27:00 CDT, Once</p></div>"
+                },
+                "status": "completed",
+                "intent": "order",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/6000",
+                                "code": "2513",
+                                "display": "Laboratory",
+                                "userSelected": true
+                            },
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "108252007",
+                                "display": "Laboratory procedure (procedure)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Laboratory"
+                    }
+                ],
+                "priority": "stat",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/200",
+                            "code": "31719357",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Streptococcus Pneumoniae Antigen"
+                },
+                "orderDetail": [
+                    {
+                        "text": "Blood, Stat, 10/18/21 10:27:00 CDT, Once"
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97963532"
+                },
+                "occurrenceTiming": {
+                    "repeat": {
+                        "boundsPeriod": {
+                            "start": "2021-10-18T16:05:00Z",
+                            "end": "2021-10-18T16:25:02Z"
+                        }
+                    },
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4003",
+                                "code": "696531",
+                                "display": "Once",
+                                "userSelected": true
+                            }
+                        ],
+                        "text": "Once"
+                    }
+                },
+                "authoredOn": "2021-10-18T15:26:52Z",
+                "requester": {
+                    "reference": "Practitioner/591924",
+                    "display": "Cerner Test, Nurse Practitioner Cerner"
+                }
+            }
+        }
+    ]
+}
