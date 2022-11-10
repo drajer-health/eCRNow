@@ -79,10 +79,14 @@ public class EcrReportCreator extends ReportCreator {
   public static final String EICR_REPORT_LOINC_CODE_DISPLAY_NAME = "Public Health Case Report";
   public static final String EICR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
   public static final String BUNDLE_REL_URL = "Bundle/";
+  public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
+	      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
+  public static final String MESSAGE_PROCESSING_CATEGORY_CODE =
+	      "notification";
   public static final String MESSAGE_HEADER_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
   public static final String MESSAGE_TYPE_URL =
-      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
+      "http://hl7.org/fhir/us/ecr/CodeSystem/us-ph-message-types-codesystem";
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
 
@@ -136,7 +140,16 @@ public class EcrReportCreator extends ReportCreator {
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+      BundleEntryComponent bec = new BundleEntryComponent();
+      bec.setResource(mh);
+      bec.setFullUrl(
+              kd.getNotificationContext().getFhirServerBaseUrl()
+                  + "/"
+                  + mh.getResourceType().toString()
+                  + "/"
+                  + mh.getIdElement().getIdPart());
+
+      reportingBundle.addEntry(bec);
 
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
@@ -149,7 +162,16 @@ public class EcrReportCreator extends ReportCreator {
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+      BundleEntryComponent bec = new BundleEntryComponent();
+      bec.setResource(mh);
+      bec.setFullUrl(
+              kd.getNotificationContext().getFhirServerBaseUrl()
+                  + "/"
+                  + mh.getResourceType().toString()
+                  + "/"
+                  + mh.getIdElement().getIdPart());
+
+      reportingBundle.addEntry(bec);
 
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
@@ -161,7 +183,16 @@ public class EcrReportCreator extends ReportCreator {
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);
 
       // Add the Message Header Resource
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+      BundleEntryComponent bec = new BundleEntryComponent();
+      bec.setResource(mh);
+      bec.setFullUrl(
+              kd.getNotificationContext().getFhirServerBaseUrl()
+                  + "/"
+                  + mh.getResourceType().toString()
+                  + "/"
+                  + mh.getIdElement().getIdPart());
+
+      reportingBundle.addEntry(bec);
 
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
@@ -176,7 +207,16 @@ public class EcrReportCreator extends ReportCreator {
       MessageHeader mh = createMessageHeader(kd, true, contentBundle1);
 
       // Add the Message Header Resource
-      reportingBundle.addEntry(new BundleEntryComponent().setResource(mh));
+      BundleEntryComponent bec = new BundleEntryComponent();
+      bec.setResource(mh);
+      bec.setFullUrl(
+              kd.getNotificationContext().getFhirServerBaseUrl()
+                  + "/"
+                  + mh.getResourceType().toString()
+                  + "/"
+                  + mh.getIdElement().getIdPart());
+
+      reportingBundle.addEntry(bec);
 
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle2));
@@ -192,6 +232,17 @@ public class EcrReportCreator extends ReportCreator {
 
     header.setId(UUID.randomUUID().toString());
     header.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, MESSAGE_HEADER_PROFILE));
+    
+    // Add extensions
+    Extension ext = new Extension();
+    ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
+    StringType st = new StringType();
+    st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
+    ext.setValue(st);
+    List<Extension> exts = new ArrayList<>();
+    exts.add(ext);
+    
+    header.setExtension(exts);
 
     // Set message type.
     Coding c = new Coding();
@@ -199,7 +250,7 @@ public class EcrReportCreator extends ReportCreator {
     if (Boolean.TRUE.equals(cdaFlag)) {
       c.setCode(BsaTypes.getMessageTypeString(MessageType.CDA_EICR_MESSAGE));
     } else {
-      c.setCode(BsaTypes.getMessageTypeString(MessageType.FHIR_EICR_MESSAGE));
+      c.setCode(BsaTypes.getMessageTypeString(MessageType.EICR_CASE_REPORT_MESSAGE));
     }
 
     header.setEvent(c);
@@ -226,6 +277,15 @@ public class EcrReportCreator extends ReportCreator {
     coding.setCode(kd.getNotificationContext().getTriggerEvent());
     codeCpt.addCoding(coding);
     header.setReason(codeCpt);
+    
+    // Add sender
+    Organization org = ReportCreationUtilities.getOrganization(kd);
+
+    if (org != null) {
+      Reference orgRef = new Reference();
+      orgRef.setResource(org);
+      header.setSender(orgRef);
+    }
 
     // Setup Message Header to Content Bundle Linkage.
     Reference ref = new Reference();
@@ -640,6 +700,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case REVIEW_OF_SYSTEMS:
@@ -648,6 +709,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PROBLEM:
@@ -656,6 +718,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROBLEM_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case MEDICAL_HISTORY:
@@ -664,6 +727,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case MEDICATION_ADMINISTERED:
@@ -672,6 +736,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case RESULTS:
@@ -680,6 +745,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.RESULTS_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PLAN_OF_TREATMENT:
@@ -688,6 +754,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case IMMUNIZATIONS:
@@ -696,6 +763,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PROCEDURES:
@@ -704,6 +772,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PROCEDURE_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case VITAL_SIGNS:
@@ -712,6 +781,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case SOCIAL_HISTORY:
@@ -720,6 +790,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case PREGNANCY:
@@ -728,6 +799,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       case EMERGENCY_OUTBREAK_SECTION:
@@ -736,6 +808,7 @@ public class EcrReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
         break;
 
       default:
@@ -778,6 +851,14 @@ public class EcrReportCreator extends ReportCreator {
     val.setDivAsString("No Information");
     sc.setText(val);
   }
+  
+  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
+	    logger.info("KarProcessingData:{}", kd);
+
+	    Narrative val = new Narrative();
+	    val.setDivAsString("Not Generated automatically in this version");
+	    sc.setText(val);
+	  }
 
   public void addEntries(
       ResourceType rt, KarProcessingData kd, SectionComponent sc, Set<Resource> resTobeAdded) {

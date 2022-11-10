@@ -495,7 +495,7 @@ public class ApplicationUtils {
     boolean retVal = false;
 
     if (v != null) {
-      logger.info("Value Set:{}", v);
+      logger.debug("Value Set:{}", v);
 
       if (v.getUseContextFirstRep() != null) {
 

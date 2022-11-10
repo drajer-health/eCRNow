@@ -63,7 +63,7 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
         Optional<String> value = matches.stream().findFirst();
         if (value.isPresent()) {
           String rcode = value.get();
-          String[] rcodes = rcode.split("|");
+          String[] rcodes = rcode.split("\\|");
 
           rc.setCode(rcodes[1]);
           rc.setCodeSystem(rcodes[0]);
@@ -71,8 +71,8 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
 
         rc.setAllMatches(matches);
 
-        rmtc.setAt0(true);
-        rmtc.setAt1(rc);
+        rmtc = rmtc.setAt0(true);
+        rmtc = rmtc.setAt1(rc);
 
         break;
       }

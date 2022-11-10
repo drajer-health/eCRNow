@@ -62,7 +62,7 @@ public final class BsaTypes {
     HEP_C_REPORT_MESSAGE,
     HEALTHCARE_SURVEY_REPORT_MESSAGE,
     CDA_EICR_MESSAGE,
-    FHIR_EICR_MESSAGE,
+    EICR_CASE_REPORT_MESSAGE,
     CDA_REPORTABILITY_RESPONSE_MESSAGE,
     FHIR_REPORTABILITY_RESPONSE_MESSAGE,
     MESSAGE_REPORT,
@@ -93,7 +93,7 @@ public final class BsaTypes {
     else if (t == MessageType.HEALTHCARE_SURVEY_REPORT_MESSAGE)
       return "healthcare-survey-report-message";
     else if (t == MessageType.CDA_EICR_MESSAGE) return "CdaEicrMessage";
-    else if (t == MessageType.FHIR_EICR_MESSAGE) return "FhirEicrMessage";
+    else if (t == MessageType.EICR_CASE_REPORT_MESSAGE) return "eicr-case-report-message";
     else if (t == MessageType.CDA_REPORTABILITY_RESPONSE_MESSAGE)
       return "CdaReportabilityResponseMessage";
     else if (t == MessageType.FHIR_REPORTABILITY_RESPONSE_MESSAGE)
@@ -197,6 +197,7 @@ public final class BsaTypes {
     else if (s.contentEquals("SofProvider")) return AuthenticationType.SOF_PROVIDER;
     else if (s.contentEquals("UserNamePwd")) return AuthenticationType.USER_NAME_PWD;
     else if (s.contentEquals("SofBackend")) return AuthenticationType.SOF_BACKEND;
+    else if (s.contentEquals("SofSystem")) return AuthenticationType.SOF_BACKEND;
     else if (s.contentEquals("MultiTenantSystemLaunch"))
       return AuthenticationType.MULTI_TENANT_SYSTEM_LAUNCH;
     else return AuthenticationType.UNKNOWN;

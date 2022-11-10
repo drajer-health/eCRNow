@@ -235,7 +235,7 @@ public class SubmitReport extends BsaAction {
     if (input != null) {
 
       for (DataRequirement dr : input) {
-        Set<Resource> resources = data.getOutputDataById(dr.getId());
+        Set<Resource> resources = data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
 
         resourcesToSubmit.addAll(resources);
       }
@@ -261,7 +261,7 @@ public class SubmitReport extends BsaAction {
             data.getHealthcareSetting().getTrustedThirdParty());
       } else if (submissionEndpoint != null && !submissionEndpoint.isEmpty()) {
         logger.info("Sending to submissionEndpoint {}", submissionEndpoint);
-        submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
+       // submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
       } else {
         Set<UriType> endpoints = data.getKar().getReceiverAddresses();
         logger.info("Sending data to endpoints {} ", endpoints);

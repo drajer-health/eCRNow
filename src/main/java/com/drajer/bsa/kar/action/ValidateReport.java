@@ -124,7 +124,7 @@ public class ValidateReport extends BsaAction {
 
         for (DataRequirement dr : input) {
 
-          Set<Resource> resources = data.getOutputDataById(dr.getId());
+          Set<Resource> resources = data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
           resourcesToValidate.addAll(resources);
         }
       }
@@ -151,6 +151,7 @@ public class ValidateReport extends BsaAction {
 
           // For now, go ahead and add the output as being valid.
           addValidatedOutputById(data, r);
+          data.addActionOutput(actionId, r);
 
         } else {
 
@@ -158,6 +159,7 @@ public class ValidateReport extends BsaAction {
 
           // For now, go ahead and add the output as being valid.
           addValidatedOutputById(data, r);
+          data.addActionOutput(actionId, r);
         }
       } // for
 

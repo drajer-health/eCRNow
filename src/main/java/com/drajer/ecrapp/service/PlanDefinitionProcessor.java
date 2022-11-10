@@ -212,7 +212,7 @@ public class PlanDefinitionProcessor {
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
         if (Optional.ofNullable(bundleEntry).isPresent()) {
-          logger.info("Bundle exist");
+          logger.debug("Bundle exist");
 
           if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
             planDefinition = (PlanDefinition) bundleEntry.getResource();
