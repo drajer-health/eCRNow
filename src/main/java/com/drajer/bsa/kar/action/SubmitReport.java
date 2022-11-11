@@ -33,11 +33,13 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Duration;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -261,7 +263,7 @@ public class SubmitReport extends BsaAction {
             data.getHealthcareSetting().getTrustedThirdParty());
       } else if (submissionEndpoint != null && !submissionEndpoint.isEmpty()) {
         logger.info("Sending to submissionEndpoint {}", submissionEndpoint);
-       // submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
+        submitResources(resourcesToSubmit, data, ehrService, submissionEndpoint);
       } else {
         Set<UriType> endpoints = data.getKar().getReceiverAddresses();
         logger.info("Sending data to endpoints {} ", endpoints);
@@ -310,6 +312,7 @@ public class SubmitReport extends BsaAction {
       logger.info(
           "Attempting to retrieve TOKEN from PHA {} or {}", pha.getTokenUrl(), pha.getTokenUrl());
       token = authorizationUtils.getToken(pha).getString("access_token");
+      logger.info(" Successfully retrieve token {}", token);
     } else {
       logger.warn("No PHA was found with submission endpoint {}", submissionEndpoint);
       logger.warn("Continuing without auth token");
@@ -341,10 +344,20 @@ public class SubmitReport extends BsaAction {
 
       headers.forEach((key, value) -> operation.withAdditionalHeader((String) key, (String) value));
 
+      
+      
       logger.info("Calling $processMessage operation");
       Bundle responseBundle;
       Object response = null;
       try {
+    	  OperationOutcome outcome = new OperationOutcome();
+    	  String request = jsonParser.encodeResourceToString(bundleToSubmit);
+    	  
+    	//  restTemplate.get.add("Authorization", "Bearer " + token);
+    	//  ResponseEntity<String> opresp =
+        //          restTemplate.po.postForEntity("https://cqpdvipcr3.execute-api.us-east-1.amazonaws.com/dev/$process-message", request, String.class);
+        //      logger.debug(opresp.getBody());
+         //     outcome = (OperationOutcome) jsonParser.parseResource(opresp.getBody());
         response = operation.encodedJson().execute();
         responseBundle = (Bundle) response;
       } catch (RuntimeException re) {
