@@ -68,6 +68,7 @@ public class FhirContextInitializer {
 
     if (accessToken != null && !accessToken.equalsIgnoreCase("")) {
       client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
+      // client.registerInterceptor(new LoggingInterceptor(true));
     } else {
       logger.debug("AccessToken not supplied for %{}", url);
     }

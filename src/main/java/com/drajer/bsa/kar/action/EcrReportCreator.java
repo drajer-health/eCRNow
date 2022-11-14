@@ -80,9 +80,8 @@ public class EcrReportCreator extends ReportCreator {
   public static final String EICR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
   public static final String BUNDLE_REL_URL = "Bundle/";
   public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
-	      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
-  public static final String MESSAGE_PROCESSING_CATEGORY_CODE =
-	      "notification";
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
+  public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
   public static final String MESSAGE_HEADER_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
   public static final String MESSAGE_TYPE_URL =
@@ -143,11 +142,11 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-              kd.getNotificationContext().getFhirServerBaseUrl()
-                  + "/"
-                  + mh.getResourceType().toString()
-                  + "/"
-                  + mh.getIdElement().getIdPart());
+          kd.getNotificationContext().getFhirServerBaseUrl()
+              + "/"
+              + mh.getResourceType().toString()
+              + "/"
+              + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
 
@@ -165,11 +164,11 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-              kd.getNotificationContext().getFhirServerBaseUrl()
-                  + "/"
-                  + mh.getResourceType().toString()
-                  + "/"
-                  + mh.getIdElement().getIdPart());
+          kd.getNotificationContext().getFhirServerBaseUrl()
+              + "/"
+              + mh.getResourceType().toString()
+              + "/"
+              + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
 
@@ -186,11 +185,11 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-              kd.getNotificationContext().getFhirServerBaseUrl()
-                  + "/"
-                  + mh.getResourceType().toString()
-                  + "/"
-                  + mh.getIdElement().getIdPart());
+          kd.getNotificationContext().getFhirServerBaseUrl()
+              + "/"
+              + mh.getResourceType().toString()
+              + "/"
+              + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
 
@@ -210,11 +209,11 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-              kd.getNotificationContext().getFhirServerBaseUrl()
-                  + "/"
-                  + mh.getResourceType().toString()
-                  + "/"
-                  + mh.getIdElement().getIdPart());
+          kd.getNotificationContext().getFhirServerBaseUrl()
+              + "/"
+              + mh.getResourceType().toString()
+              + "/"
+              + mh.getIdElement().getIdPart());
 
       reportingBundle.addEntry(bec);
 
@@ -232,7 +231,7 @@ public class EcrReportCreator extends ReportCreator {
 
     header.setId(UUID.randomUUID().toString());
     header.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, MESSAGE_HEADER_PROFILE));
-    
+
     // Add extensions
     Extension ext = new Extension();
     ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
@@ -241,7 +240,7 @@ public class EcrReportCreator extends ReportCreator {
     ext.setValue(st);
     List<Extension> exts = new ArrayList<>();
     exts.add(ext);
-    
+
     header.setExtension(exts);
 
     // Set message type.
@@ -277,7 +276,7 @@ public class EcrReportCreator extends ReportCreator {
     coding.setCode(kd.getNotificationContext().getTriggerEvent());
     codeCpt.addCoding(coding);
     header.setReason(codeCpt);
-    
+
     // Add sender
     Organization org = ReportCreationUtilities.getOrganization(kd);
 
@@ -851,14 +850,14 @@ public class EcrReportCreator extends ReportCreator {
     val.setDivAsString("No Information");
     sc.setText(val);
   }
-  
-  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
-	    logger.info("KarProcessingData:{}", kd);
 
-	    Narrative val = new Narrative();
-	    val.setDivAsString("Not Generated automatically in this version");
-	    sc.setText(val);
-	  }
+  public void populateDefaultNarrative(SectionComponent sc, KarProcessingData kd) {
+    logger.info("KarProcessingData:{}", kd);
+
+    Narrative val = new Narrative();
+    val.setDivAsString("Not Generated automatically in this version");
+    sc.setText(val);
+  }
 
   public void addEntries(
       ResourceType rt, KarProcessingData kd, SectionComponent sc, Set<Resource> resTobeAdded) {

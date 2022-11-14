@@ -124,7 +124,8 @@ public class ValidateReport extends BsaAction {
 
         for (DataRequirement dr : input) {
 
-          Set<Resource> resources = data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
+          Set<Resource> resources =
+              data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
           resourcesToValidate.addAll(resources);
         }
       }

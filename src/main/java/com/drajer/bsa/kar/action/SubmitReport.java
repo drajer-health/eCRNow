@@ -2,6 +2,7 @@ package com.drajer.bsa.kar.action;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.gclient.IOperationProcessMsgMode;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
@@ -33,13 +34,11 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Duration;
-import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -237,7 +236,8 @@ public class SubmitReport extends BsaAction {
     if (input != null) {
 
       for (DataRequirement dr : input) {
-        Set<Resource> resources = data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
+        Set<Resource> resources =
+            data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
 
         resourcesToSubmit.addAll(resources);
       }
@@ -334,7 +334,8 @@ public class SubmitReport extends BsaAction {
           fhirContextInitializer.createClient(
               context, submissionEndpoint, token, data.getxRequestId());
 
-      context.getRestfulClientFactory().setSocketTimeout(30 * 1000);
+      context.getRestfulClientFactory().setSocketTimeout(120 * 1000);
+      context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 
       // All submissions are expected to be bundles
       Bundle bundleToSubmit = (Bundle) r;
@@ -344,20 +345,11 @@ public class SubmitReport extends BsaAction {
 
       headers.forEach((key, value) -> operation.withAdditionalHeader((String) key, (String) value));
 
-      
-      
-      logger.info("Calling $processMessage operation");
       Bundle responseBundle;
       Object response = null;
       try {
-    	  OperationOutcome outcome = new OperationOutcome();
-    	  String request = jsonParser.encodeResourceToString(bundleToSubmit);
-    	  
-    	//  restTemplate.get.add("Authorization", "Bearer " + token);
-    	//  ResponseEntity<String> opresp =
-        //          restTemplate.po.postForEntity("https://cqpdvipcr3.execute-api.us-east-1.amazonaws.com/dev/$process-message", request, String.class);
-        //      logger.debug(opresp.getBody());
-         //     outcome = (OperationOutcome) jsonParser.parseResource(opresp.getBody());
+
+        logger.info(" Trying to invoke $process-message");
         response = operation.encodedJson().execute();
         responseBundle = (Bundle) response;
       } catch (RuntimeException re) {
@@ -367,7 +359,7 @@ public class SubmitReport extends BsaAction {
         return;
       }
 
-      logger.info("Response is {}", responseBundle);
+      logger.debug("Response is {}", responseBundle);
       if (responseBundle != null) {
 
         data.addActionOutput(actionId, responseBundle);
