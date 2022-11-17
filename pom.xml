@@ -84,10 +84,24 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<dependency>
+<!--		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
 			<version>11.5</version>
+		</dependency>-->
+
+		<dependency>
+			<groupId>com.cerner.ipaas</groupId>
+			<artifactId>ipaas-db-scheduler</artifactId>
+			<version>0.0.2</version>
+			<classifier>cerner</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cerner.ipaas</groupId>
+			<artifactId>ipaas-db-scheduler</artifactId>
+			<version>0.0.2</version>
+			<classifier>spring-boot-starter</classifier>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
@@ -543,5 +557,40 @@
 			</dependencies>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>artifactory-maven-central-main</id>
+			<name>maven</name>
+			<url>https://cernerrepos.net/maven</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>artifactory-ais-release-local</id>
+			<name>AIS Release Artifact Repository</name>
+			<url>https://artifactory-corp.cerner.com/artifactory/ais-libs-release-local/</url>
+			<releases>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>artifactory-ais-snapshot-local</id>
+			<name>AIS Snapshot Artifact Repository</name>
+			<url>https://artifactory-corp.cerner.com/artifactory/ais-libs-snapshot-local/</url>
+			<releases>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 </project>
