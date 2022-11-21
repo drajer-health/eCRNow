@@ -24,7 +24,7 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
     String queryString = actionType + "_" + launchId + "_";
 
     criteria.add(Restrictions.eq(TASK_NAME, "EICRTask"));
-    criteria.add(Restrictions.ilike(TASK_INSTANCE, queryString, MatchMode.START));
+    criteria.add(Restrictions.ilike(TASK_INSTANCE, queryString, MatchMode.ANYWHERE));
 
     return criteria.list();
   }
