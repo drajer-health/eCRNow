@@ -219,7 +219,8 @@ public class EcrReportCreator extends ReportCreator {
 
       reportingBundle.addEntry(bec);
 
-      // Add the Content Bundle.
+      // Add the Content Bundles..
+      reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle1));
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle2));
     }
 
