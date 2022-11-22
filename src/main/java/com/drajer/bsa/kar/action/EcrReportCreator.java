@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -142,7 +144,7 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-          kd.getNotificationContext().getFhirServerBaseUrl()
+          StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
               + "/"
               + mh.getResourceType().toString()
               + "/"
@@ -164,7 +166,7 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-          kd.getNotificationContext().getFhirServerBaseUrl()
+    		  StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
               + "/"
               + mh.getResourceType().toString()
               + "/"
@@ -185,7 +187,7 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-          kd.getNotificationContext().getFhirServerBaseUrl()
+    		  StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
               + "/"
               + mh.getResourceType().toString()
               + "/"
@@ -209,7 +211,7 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(mh);
       bec.setFullUrl(
-          kd.getNotificationContext().getFhirServerBaseUrl()
+    		  StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
               + "/"
               + mh.getResourceType().toString()
               + "/"
@@ -359,10 +361,20 @@ public class EcrReportCreator extends ReportCreator {
             + kd.getNotificationContext().getNotificationResourceId();
 
     BsaServiceUtils.saveFhirResourceToFile(data.getValue0().getData(), outputFileName);
-
+    
     String eicr =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);
+    
+    String fileName =
+            "EICR_XML"
+                + "_"
+                + kd.getNotificationContext().getPatientId()
+                + "_"
+                + kd.getNotificationContext().getNotificationResourceId()
+                + ".xml";
+    
+    BsaServiceUtils.saveDataToFile(eicr, fileName);
 
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
     returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
@@ -490,7 +502,7 @@ public class EcrReportCreator extends ReportCreator {
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(res);
       bec.setFullUrl(
-          kd.getNotificationContext().getFhirServerBaseUrl()
+    		  StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
               + "/"
               + res.getResourceType().toString()
               + "/"
