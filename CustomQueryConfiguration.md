@@ -49,3 +49,29 @@ labTests=/Observation?patient=Patient/{{context.patientId}}&category=http://term
 # 3. Configuring the custom queries # 
 
 In order to specify the custom queries, the following variable is used
+
+custom-query.directory
+
+The directory is the location where custom query files can be placed.
+One custom query file can be created for each ERSD file.
+
+The file naming convention should conform to the following:
+
+[Bundle Id of the ERSD file ]-[Bundle.meta.versionId].queries
+
+For e.g for the following custom query file should be created for the Bundle info shown below.
+
+rctc-release-2022-07-13-Bundle-rctc-1.queries
+
+Sample_ERSD.json
+{
+    "resourceType": "Bundle",
+    "id": "rctc-release-2022-07-13-Bundle-rctc",  ### This is the Bundle Id
+    "meta":
+    {
+        "versionId": "1",                         ### This is the version Id
+        "lastUpdated": "2022-07-18T21:32:25.000+00:00",
+        "source": "#fsOSEUhB1HVhhCy9"
+    },
+    ...
+}

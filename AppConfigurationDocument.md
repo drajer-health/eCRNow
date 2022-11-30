@@ -1,10 +1,13 @@
-# 1. Introduction to Custom Query and Default Query #
+# 1. Introduction #
 
 The eCRNow App can be configured for a healthcare setting following the instructions in the document 
 
 https://github.com/drajer-health/eCRNow/blob/Release-3.0/documents/eCR%20Now%20App%20Configuration%20Guide_Release3.0.docx
 
 # 2. Application.Properties available for configuration #
+
+This section describes configuration properties typically performed for all health care settings and are not something that would be changed 
+through the UI or APIs.
 
 ## 2.1 DataBase configuration ##
 
@@ -85,5 +88,12 @@ However if you want to configure a query that removes the inactive or resolved c
 /Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active
 
 Read custom query configuration to further understand how to configure custom queries.
+
+## 2.11 Off Hour Configuration ##
+
+EHRs are used by Providers as part of the care delivery operations and there may be large amount of load on the EHRs during the day time and there may be a desire
+to reduce the load during the working hours or peak usage hours. 
+In these cases, it is beneficial if the eCRNow App can be configured to only process patients whose data has to be reported immediately and delay the processing of the other patients to 
+off hours (non peak hours). This kind of configuration can be achieved by the OffHour Configuration.
 
 
