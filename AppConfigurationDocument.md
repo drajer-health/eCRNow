@@ -1,52 +1,89 @@
 # 1. Introduction to Custom Query and Default Query #
 
-The eCRNow App invokes FHIR APIs to retrieve data from the EHR to examine, evaluate and create the eICR.
-The APIs used by the eCRNow App are externalized and can be configured.
+The eCRNow App can be configured for a healthcare setting following the instructions in the document 
 
-By default a query (API request) is provided for each data element to be extracted from the EHR as part of the ERSD file.
-This query is called a "DEFAULT QUERY".
+https://github.com/drajer-health/eCRNow/blob/Release-3.0/documents/eCR%20Now%20App%20Configuration%20Guide_Release3.0.docx
 
-An example to extract conditions is shown below:
+# 2. Application.Properties available for configuration #
 
-										"id": "conditions",
-                                        "extension":
-                                        [
-                                            {
-                                                "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension",
-                                                "valueString": "Condition?patient=Patient/{{context.patientId}}"
-                                            }
-                                        ],
-                                        
-The eCRNow App retrieves the Condition data from the EHR and populates the conditions list using the query provided in the valueString.
+## 2.1 DataBase configuration ##
 
-However if you want to optimize the query and only retrieve Conditions which are active, the following query would be better suited. 
+By default the eCRNow App uses the postgresql database, however it can be changed using the below properties to suit your environment.
 
-conditions=/Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active
+jdbc.driverClassName=org.postgresql.Driver
+jdbc.url=jdbc:postgresql://localhost:5432/postgres
+hibernate.dialect=org.hibernate.dialect.PostgreSQL95Dialect
+hibernate.show_sql=false
+hibernate.format_sql=false
+hibernate.hbm2ddl.auto=update
 
-In this example, we are retrieving only active Condition Resources and populating the variable called conditions.
+## 2.2 Changing Default Port of the App ##
 
-This kind of configured query is called a "CUSTOM QUERY".
+Use the property below to change the default port of the app from 8081 to another port.
 
-The custom queries are helpful to avoid large amounts of data and limit the number of API calls. For example, you may include medication resources
-with all MedicationRequest queries, or you can filter data by dates and times etc. 
+server.port=8081
 
-# 2. Context Variables: #
+## 2.3 Changing eCRNow Log File location ##
 
-In order to make custom queries work the following context variables are supported currently.
+Use the property below to change the log file location.
 
-patientId of the launchPatient.
-encounterId for which the patient was launched in the eCRNow App.
-encounterStartDate for timeboxing the start point for the data.
-encounterEndDate for timeboxing the end point for the data.
+logging.file.name=//users//nbashyam//Downloads//ecrNow.log
 
-The following are some examples of queries with these context variables.
+## 2.4 Configuring Schema and Schematron Validation ##
 
-patient=/Patient/{{context.patientId}}
-encounter=/Encounter/{{context.encounterId}}
-conditions=/Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active
-labTests=/Observation?patient=Patient/{{context.patientId}}&category=http://terminology.hl7.org/CodeSystem/observation-category|laboratory&date=ge{{context.encounterStartDate}
+Use the property below to configure the schema validation.
 
-# 3. Configuring the custom queries # 
+xsd.schemas.location=//users//nbashyam//Downloads//schemas//CDA_SDTC.xsd
 
-In order to specify the custom queries, the following variable is used
+Use the property below to configure the schematron validation.
+
+schematron.file.location=//users//nbashyam//Downloads//CDAR2_IG_PHCASERPT_R2_STU1.1_SCHEMATRON.sch
+
+## 2.5 Security Configuration for protecting your RESTful endpoints and the eCRNow APIs ##
+
+There are many instances where eCRNow may call a RESTful endpoint hosted by the EHR vendor to hand-off an eICR for submission 
+or for handling a Reportability Response. In these cases the EHR vendor may require a specific authorization token to invoke the API.
+In order to embed the required authorization token, the mechanisms identified in security configuration should be followed.
+
+Similarly there are instructions in the security configuration section on how to protect the eCRNow API endpoints with appropriate security tokens from your authorization server.
+
+## 2.6 Configuring number of retries for a timer during execution ##
+
+There are instances where a timer execution may fail and it needs to be retried.
+The number of retries can be configured using the property 
+
+timer.retries=2
+
+If the timers fail repeatedly, the timer will be removed from execution after the retry counts are exhausted.
+
+## 2.7 Configuring number of parallel eCRNow threads in a container ##
+
+In order to process more patients in container based on timers, the following property can be adjusted. 
+In this case, a default of 10 parallel patients can be processed by the expiring timers within the container.
+ 
+db-scheduler.threads=10
+
+## 2.8 Specifying the directory to save generated artifacts such as eICRs, TriggerQuery and Loading Query JSON files for debugging ##
+
+This is controlled by the bsa.output.directory property.
+
+You also have to set the save.debug.files=true if you want the files to be saved. If this is set to false, the files would not be saved.
+
+## 2.9 Throttling configuration ## 
+
+Sometimes the EHR server may be busy and cannot service requests from the eCRNow App. In order to avoid failures because the server is busy you can enable throttling of the eCRNow App.
+Follow the Throttling instructions to configure the app.
+
+## 2.10 Custom Queries ## 
+
+By default, the eCRNow app executes default queries present in the ERSD files. The default queries are based on 
+US Core 3.1.1 and may not be the most efficient way of getting data out from the EHRs. 
+
+For e.g the default query to retrieve Conditions for a Patient is /Condition?subject=Patient/123 which retrieves all Conditions.
+However if you want to configure a query that removes the inactive or resolved conditions you can do something like :
+
+/Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active
+
+Read custom query configuration to further understand how to configure custom queries.
+
 
