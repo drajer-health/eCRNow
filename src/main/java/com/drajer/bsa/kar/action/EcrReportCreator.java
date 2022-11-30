@@ -367,16 +367,6 @@ public class EcrReportCreator extends ReportCreator {
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(
             data.getValue0(), data.getValue1(), ecr);
     
-    String fileName =
-            "EICR_XML"
-                + "_"
-                + kd.getNotificationContext().getPatientId()
-                + "_"
-                + kd.getNotificationContext().getNotificationResourceId()
-                + ".xml";
-    
-    BsaServiceUtils.saveDataToFile(eicr, fileName);
-
     DocumentReference docref = createR4DocumentReference(kd, eicr, ecr, dataRequirementId);
     returnBundle.addEntry(new BundleEntryComponent().setResource(docref));
 

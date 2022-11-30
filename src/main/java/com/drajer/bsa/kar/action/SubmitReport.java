@@ -36,6 +36,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UriType;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -311,8 +312,17 @@ public class SubmitReport extends BsaAction {
     if (pha != null) {
       logger.info(
           "Attempting to retrieve TOKEN from PHA {} or {}", pha.getTokenUrl(), pha.getTokenUrl());
-      token = authorizationUtils.getToken(pha).getString("access_token");
-      logger.info(" Successfully retrieve token {}", token);
+      
+      JSONObject obj = authorizationUtils.getToken(pha);
+      
+      if(obj != null) {
+    	  token = obj.getString("access_token");
+          logger.info(" Successfully retrieve token {}", token);
+      }
+      else {
+    	  logger.error(" Unable to retrieve access token for PHA: {}", pha.getFhirServerBaseURL());
+      }
+      
     } else {
       logger.warn("No PHA was found with submission endpoint {}", submissionEndpoint);
       logger.warn("Continuing without auth token");

@@ -82,7 +82,7 @@ public class CdaImmunizationGenerator {
         }
 
         String dt = null;
-        if (imm.getOccurrenceDateTimeType() != null) {
+        if (imm.hasOccurrence() && imm.getOccurrenceDateTimeType() != null) {
           dt = imm.getOccurrenceDateTimeType().getValue().toString();
         }
 

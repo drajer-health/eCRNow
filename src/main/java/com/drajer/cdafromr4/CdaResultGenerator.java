@@ -463,9 +463,10 @@ public class CdaResultGenerator {
             getXmlForObservationComponent(
                 details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
 
-        if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
-
-        lrEntry.append(compString);
+        if (!compString.isEmpty()) {
+          foundComponent = true;
+          lrEntry.append(compString);
+        }
 
         rowNum++;
       }
