@@ -18,6 +18,8 @@ import com.drajer.cda.parser.RrParser;
 import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.sof.utils.FhirContextInitializer;
+import java.time.Instant;
+import java.util.Date;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
@@ -129,6 +131,7 @@ public class RrReceiverImpl implements RrReceiver {
         phm.setxRequestId(xRequestId);
         phm.setResponseDataId(rrDocId.getRootValue());
         phm.setResponseMessageType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
+        phm.setResponseReceivedTime(Date.from(Instant.now()));
 
         if (rrModel.getReportableStatus() != null
             && rrModel.getReportableStatus().getCode() != null) {

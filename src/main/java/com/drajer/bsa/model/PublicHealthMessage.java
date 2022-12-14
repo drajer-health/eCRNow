@@ -117,6 +117,11 @@ public class PublicHealthMessage {
   @Column(name = "submission_message_status", nullable = true, columnDefinition = "TEXT")
   private String submissionMessageStatus;
 
+  /** This attribute represents the submission time when the data was submitted. */
+  @Column(name = "submission_time", nullable = true)
+  @CreationTimestamp
+  private Date submissionTime;
+
   /**
    * The attribute represents the response data received from the TTP/PHA for the healthcare setting
    * in FHIR format.
@@ -177,6 +182,10 @@ public class PublicHealthMessage {
    */
   @Column(name = "response_processing_status", nullable = true, columnDefinition = "TEXT")
   private String responseProcessingStatus;
+
+  /** This attribute represents the response received time from the PHA. */
+  @Column(name = "response_received_time", nullable = true)
+  private Date responseReceivedTime;
 
   /**
    * The attribute represents the response that is persisted in the EHR as a document reference
@@ -448,5 +457,21 @@ public class PublicHealthMessage {
 
   public void setPatientLinkerId(String patientLinkerId) {
     this.patientLinkerId = patientLinkerId;
+  }
+
+  public Date getSubmissionTime() {
+    return submissionTime;
+  }
+
+  public void setSubmissionTime(Date submissionTime) {
+    this.submissionTime = submissionTime;
+  }
+
+  public Date getResponseReceivedTime() {
+    return responseReceivedTime;
+  }
+
+  public void setResponseReceivedTime(Date responseReceivedTime) {
+    this.responseReceivedTime = responseReceivedTime;
   }
 }

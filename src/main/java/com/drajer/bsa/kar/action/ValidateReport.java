@@ -27,6 +27,10 @@ public class ValidateReport extends BsaAction {
   private final Logger logger = LoggerFactory.getLogger(ValidateReport.class);
 
   private String validatorEndpoint;
+  
+  private Boolean validateCdaData;
+  
+  private Boolean validateFhirData;
 
   PublicHealthMessagesDao phDao;
 

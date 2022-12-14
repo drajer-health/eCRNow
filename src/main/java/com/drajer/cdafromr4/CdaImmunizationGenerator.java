@@ -81,8 +81,8 @@ public class CdaImmunizationGenerator {
           medDisplayName = imm.getVaccineCode().getCodingFirstRep().getDisplay();
         }
 
-        String dt = null;
-        if (imm.hasOccurrence() && imm.getOccurrenceDateTimeType() != null) {
+        String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
+        if (imm.hasOccurrenceDateTimeType() && imm.getOccurrenceDateTimeType() != null) {
           dt = imm.getOccurrenceDateTimeType().getValue().toString();
         }
 

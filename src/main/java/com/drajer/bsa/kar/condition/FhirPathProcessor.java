@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -60,16 +59,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       params = resolveInputParameters(act.getInputData(), kd, act);
     }
 
-    for (BundleEntryComponent entry : kd.getNotificationBundle().getEntry()) {
-      if (entry.hasResource()
-          && entry.getResource().getResourceType().equals(ResourceType.Encounter)) {
-        ParametersParameterComponent paramComponent = new ParametersParameterComponent();
-        paramComponent.setResource(entry.getResource());
-        paramComponent.setName("%encounter");
-        params.addParameter(paramComponent);
-      }
-    }
-
     logger.info(" Parameters size before resolving variables = {}", params.getParameter().size());
 
     resolveVariables(cond, params, kd, act, ehrService);
@@ -99,9 +88,10 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       EhrQueryService ehrService) {
 
     if (cond instanceof BsaFhirPathCondition) {
-      logger.info(" Found a FhirPath Condition ");
-      logger.info(" Bsa Action :{}", act);
 
+      logger.info(" Found a FhirPath Condition for action  {}", act.getActionId());
+
+      // Resolve conditions that are present at the PlanDefinition level.
       List<Expression> expressions = ((BsaFhirPathCondition) cond).getVariables();
 
       if (expressions != null && !expressions.isEmpty()) {
@@ -121,7 +111,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
             Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
 
             if (exp.getName().contentEquals("encounterStartDate")
-                || exp.getName().contentEquals("encounterEndDate")) {
+                || exp.getName().contentEquals("encounterEndDate")
+                || exp.getName().contentEquals("lastReportSubmissionDate")) {
 
               DateTimeType value = new DateTimeType(expr);
 
@@ -146,8 +137,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
         }
 
       } else {
-        logger.info(" No expressions to process ");
+        logger.info(" No Plan Definition Variables to resolve ");
       }
+
+      // Try to resolve any other context variables that are present at the expression level and are
+      // not resolved.
+
     } else {
 
       logger.info(" Not a FhirPath Condition, so ignored ");
@@ -328,7 +323,8 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       Map<String, Set<Resource>> res,
       Resource resourceMatched,
       Boolean valElem) {
-    logger.info("valElem:{}", valElem);
+
+    logger.debug("valElem:{}", valElem);
 
     List<DataRequirementCodeFilterComponent> drcfs = dr.getCodeFilter();
 

@@ -10,7 +10,9 @@ import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.util.MDCUtils;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -202,6 +204,7 @@ public class CreateReport extends BsaAction {
           msg.setSubmittedMessageType(header.getEventCoding().getCode());
           msg.setSubmittedDataId(docRef.getId());
           msg.setSubmittedMessageId(header.getId());
+          msg.setSubmissionTime(Date.from(Instant.now()));
           msg.setInitiatingAction(actionType);
           msg.setKarUniqueId(kd.getKar().getVersionUniqueId());
 

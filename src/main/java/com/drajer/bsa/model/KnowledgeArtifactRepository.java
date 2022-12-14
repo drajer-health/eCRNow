@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,10 @@ public class KnowledgeArtifactRepository {
    */
   @Column(name = "repo_name", nullable = false, unique = true)
   private String repoName;
+
+  @Column(name = "repo_status", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean repoStatus;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @Fetch(FetchMode.SELECT)

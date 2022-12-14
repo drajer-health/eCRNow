@@ -348,7 +348,10 @@ public class ApplicationUtils {
         totalHours = (24 - lowHours) + highHours;
       }
 
-      lowMin = 60 - lowMin;
+      if(lowMin != 0)
+    	  lowMin = 60 - lowMin;
+      else 
+    	  lowMin = 0;
 
       int totalOffHourMin = (totalHours * 60) - lowMin + highMin;
       int totalBusyHourMin = (24 * 60) - totalOffHourMin;

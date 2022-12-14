@@ -95,10 +95,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String ENCOUNTER_ID_CONTEXT_PARAM = "\\{\\{context.encounterId\\}\\}";
   private static final String ENCOUNTER_START_DATE_PARAM = "context.encounterStartDate";
   private static final String ENCOUNTER_END_DATE_PARAM = "context.encounterEndDate";
+  private static final String LAST_REPORT_SUBMISSION_DATE_PARAM =
+      "context.lastReportSubmissionDate";
   private static final String ENCOUNTER_START_DATE_CONTEXT_PARAM =
       "\\{\\{context.encounterStartDate\\}\\}";
   private static final String ENCOUNTER_END_DATE_CONTEXT_PARAM =
       "\\{\\{context.encounterEndDate\\}\\}";
+  private static final String LAST_REPORT_SUBMISSION_DATE_CONTEXT_PARAM =
+      "\\{\\{context.lastReportSubmissionDate\\}\\}";
   private static final String SEARCH_QUERY_CHARACTERS = "?";
 
   /**
@@ -394,7 +398,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     if (kd.hasValidAccessToken()) {
 
       accessToken = kd.getAccessToken();
-      logger.info(
+      logger.debug(
           " Reusing Valid Access Token: {}, Expiration Time: {}",
           accessToken,
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
@@ -403,7 +407,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       retrieveAndUpdateAccessToken(kd);
       accessToken = kd.getAccessToken();
-      logger.info(
+      logger.debug(
           " Generated New Access Token: {}, Expiration Time: {}",
           accessToken,
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
@@ -1184,7 +1188,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       }
 
       if (endDate == null) {
-        endDate = DateFormatUtils.format(new Date(), DATE_FORMAT);
+
+        if (data.getNotificationContext().getEncounterEndTime() != null) {
+          endDate =
+              DateFormatUtils.format(
+                  DateUtils.addHours(
+                      data.getNotificationContext().getEncounterStartTime(), endThreshold),
+                  DATE_FORMAT);
+        } else {
+          endDate = DateFormatUtils.format(new Date(), DATE_FORMAT);
+        }
       }
 
       substitutedQuery = substitutedQuery.replaceAll(ENCOUNTER_START_DATE_CONTEXT_PARAM, startDate);
@@ -1192,6 +1205,24 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       substitutedQuery = substitutedQuery.replaceAll(ENCOUNTER_END_DATE_CONTEXT_PARAM, endDate);
     }
 
+    String lastReportSubmissionDate = null;
+
+    if (substitutedQuery.contains(LAST_REPORT_SUBMISSION_DATE_PARAM)) {
+
+      if (data.getPhm() != null && data.getPhm().getSubmissionTime() != null) {
+
+        lastReportSubmissionDate =
+            DateFormatUtils.format(data.getPhm().getSubmissionTime(), DATE_FORMAT);
+      } else {
+        lastReportSubmissionDate = DateFormatUtils.format(new Date(), DATE_FORMAT);
+      }
+
+      substitutedQuery =
+          substitutedQuery.replaceAll(
+              LAST_REPORT_SUBMISSION_DATE_CONTEXT_PARAM, lastReportSubmissionDate);
+    }
+
+    logger.info(" Substituted Query for Context Variables {}", substitutedQuery);
     return substitutedQuery;
   }
 

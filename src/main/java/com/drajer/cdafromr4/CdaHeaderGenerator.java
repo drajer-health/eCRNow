@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -27,7 +26,6 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -982,21 +980,5 @@ public class CdaHeaderGenerator {
         && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
       return true;
     } else return false;
-  }
-
-  public static List<Address> getAddressDetails() {
-    List<Address> addrs = new ArrayList<>();
-    Address addr = new Address();
-    List<StringType> addrLine = new ArrayList<>();
-    addrLine.add(new StringType("0987 Facility Drive"));
-    addr.setLine(addrLine);
-    addr.setCity("alt Lake City");
-    addr.setState("UT");
-    addr.setCountry("US");
-    addr.setPostalCode("84101");
-    addr.setUse(AddressUse.WORK);
-    addrs.add(addr);
-
-    return addrs;
   }
 }

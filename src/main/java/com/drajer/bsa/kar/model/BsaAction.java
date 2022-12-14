@@ -144,6 +144,8 @@ public abstract class BsaAction {
           bc.getConditionProcessor().evaluateExpression(bc, this, kd, ehrService))) {
         logger.info(" Condition Processing evaluated to false for action {}", this.getActionId());
         retVal = false;
+      } else {
+        logger.info(" Condition Processing evaluated to true for action {}", this.getActionId());
       }
     }
 
@@ -152,20 +154,20 @@ public abstract class BsaAction {
 
   public void executeSubActions(KarProcessingData kd, EhrQueryService ehrService) {
 
-    logger.info(" Start Executing Sub Actions for action {}", this.getActionId());
+    logger.info(" *** Start Executing Sub Actions for action {}", this.getActionId());
 
     for (BsaAction act : subActions) {
 
-      logger.info(" Executing Action {}", act.getActionId());
+      logger.info(" **** Executing Action {}", act.getActionId());
       act.process(kd, ehrService);
     }
 
-    logger.info(" Finished Executing Sub Actions for action {}", this.getActionId());
+    logger.info(" *** Finished Executing Sub Actions for action {}", this.getActionId());
   }
 
   public void executeRelatedActions(KarProcessingData kd, EhrQueryService ehrService) {
 
-    logger.info(" Start Executing Related Action for action {}", this.getActionId());
+    logger.info(" *** Start Executing Related Action for action {}", this.getActionId());
 
     for (Map.Entry<ActionRelationshipType, Set<BsaRelatedAction>> entry :
         relatedActions.entrySet()) {
@@ -257,7 +259,7 @@ public abstract class BsaAction {
       }
     }
 
-    logger.info(" Finished Executing Related Action for action {}", this.getActionId());
+    logger.info(" *** Finished Executing Related Action for action {}", this.getActionId());
   }
 
   public void setupTimer(KarProcessingData kd, Instant t, BsaRelatedAction ract) {

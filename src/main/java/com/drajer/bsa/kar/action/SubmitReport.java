@@ -240,7 +240,7 @@ public class SubmitReport extends BsaAction {
         Set<Resource> resources =
             data.getDataForId(dr.getId(), this.getInputDataIdToRelatedDataIdMap());
 
-        resourcesToSubmit.addAll(resources);
+        if (resources != null) resourcesToSubmit.addAll(resources);
       }
 
     } else {
@@ -312,17 +312,16 @@ public class SubmitReport extends BsaAction {
     if (pha != null) {
       logger.info(
           "Attempting to retrieve TOKEN from PHA {} or {}", pha.getTokenUrl(), pha.getTokenUrl());
-      
+
       JSONObject obj = authorizationUtils.getToken(pha);
-      
-      if(obj != null) {
-    	  token = obj.getString("access_token");
-          logger.info(" Successfully retrieve token {}", token);
+
+      if (obj != null) {
+        token = obj.getString("access_token");
+        logger.info(" Successfully retrieve token {}", token);
+      } else {
+        logger.error(" Unable to retrieve access token for PHA: {}", pha.getFhirServerBaseURL());
       }
-      else {
-    	  logger.error(" Unable to retrieve access token for PHA: {}", pha.getFhirServerBaseURL());
-      }
-      
+
     } else {
       logger.warn("No PHA was found with submission endpoint {}", submissionEndpoint);
       logger.warn("Continuing without auth token");
