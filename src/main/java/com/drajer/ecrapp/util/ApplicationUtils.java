@@ -437,12 +437,19 @@ public class ApplicationUtils {
       if (isBefore) {
 
         newStart = offHoursStartTime;
+        logger.debug(" Adding Minutes to New Start Time = {}", newStart.getTime().toInstant());
         newStart.add(Calendar.MINUTE, newTimeOffset);
+
       } else {
 
         newStart = offHoursStartTime;
+        logger.debug(" Adding Day to New Start Time = {}", newStart.getTime().toInstant());
         newStart.add(Calendar.DATE, 1);
+        logger.debug(
+            " Adding Minutes to New Start Time + 1 day = {}", newStart.getTime().toInstant());
         newStart.add(Calendar.MINUTE, newTimeOffset);
+
+        logger.debug(" New Start Time = {}", newStart);
       }
 
       return newStart.getTime().toInstant();

@@ -137,7 +137,7 @@ public class ApplicationUtilsTest {
     assertTrue(
         t.atZone(ZoneOffset.UTC).getDayOfMonth()
             >= (ct.atZone(ZoneOffset.UTC).getDayOfMonth() + 1));
-    assertTrue(t.getEpochSecond() > (ct.getEpochSecond() + 86400));
+    assertTrue(t.getEpochSecond() >= (ct.getEpochSecond() + 86400));
   }
 
   @Test
@@ -202,7 +202,7 @@ public class ApplicationUtilsTest {
     Calendar st = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     st.add(Calendar.DATE, 1);
     st.set(Calendar.HOUR_OF_DAY, lowHours);
-    st.set(Calendar.MINUTE, lowMin);
+    st.set(Calendar.MINUTE, (60 - lowMin));
 
     Instant stTime = st.getTime().toInstant();
     assertTrue(t.getEpochSecond() >= stTime.getEpochSecond());
