@@ -93,10 +93,10 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<dependency>
+	  	<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
-			<version>9.2</version>
+			<version>11.6</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->

@@ -204,7 +204,9 @@ public abstract class BsaAction {
                   ApplicationUtils.getInstantForOffHours(
                       ract.getDuration(),
                       kd.getHealthcareSetting().getOffHoursStart(),
+                      kd.getHealthcareSetting().getOffHoursStartMin(),
                       kd.getHealthcareSetting().getOffHoursEnd(),
+                      kd.getHealthcareSetting().getOffHoursEndMin(),
                       kd.getHealthcareSetting().getOffHoursTimezone());
 
               if (t != null && !ignoreTimers) {

@@ -306,19 +306,27 @@ public class HealthcareSetting implements FhirServerDetails {
 
   /**
    * The attribute represents the time when the offhours timers can be scheduled for the healthcare
-   * setting
+   * setting. This is the hours component in 0 to 24 hour format.
    */
-  @Column(name = "off_hours_start", nullable = true, columnDefinition = "TEXT")
-  private String offHoursStart;
+  @Column(name = "off_hours_start", nullable = true, columnDefinition = "int")
+  private Integer offHoursStart;
+
+  /** The attribute represents the minutes component for the off hours start hour component. */
+  @Column(name = "off_hours_start_min", nullable = true, columnDefinition = "int")
+  private Integer offHoursStartMin;
 
   /**
    * The attribute represents the time when the offhours timers should end for the healthcare
-   * setting
+   * setting. This is the hours component in 0 to 24 hour format.
    */
-  @Column(name = "off_hours_end", nullable = true, columnDefinition = "TEXT")
-  private String offHoursEnd;
+  @Column(name = "off_hours_end", nullable = true, columnDefinition = "int")
+  private Integer offHoursEnd;
 
-  /** The attribute represents the timezone for the offhours. */
+  /** The attribute represents the minutes component for the off hours end hour component. */
+  @Column(name = "off_hours_end_min", nullable = true, columnDefinition = "int")
+  private Integer offHoursEndMin;
+
+  /** The attribute represents the timezone for the offhours. Currently only UTC is supported. */
   @Column(name = "off_hours_timezone", nullable = true, columnDefinition = "TEXT")
   private String offHoursTimezone;
 
@@ -736,22 +744,6 @@ public class HealthcareSetting implements FhirServerDetails {
     this.phaUrl = phaUrl;
   }
 
-  public String getOffHoursStart() {
-    return offHoursStart;
-  }
-
-  public void setOffHoursStart(String offHoursStart) {
-    this.offHoursStart = offHoursStart;
-  }
-
-  public String getOffHoursEnd() {
-    return offHoursEnd;
-  }
-
-  public void setOffHoursEnd(String offHoursEnd) {
-    this.offHoursEnd = offHoursEnd;
-  }
-
   public String getOffHoursTimezone() {
     return offHoursTimezone;
   }
@@ -766,6 +758,38 @@ public class HealthcareSetting implements FhirServerDetails {
 
   public void setOffhoursEnabled(Boolean offhoursEnabled) {
     this.offhoursEnabled = offhoursEnabled;
+  }
+
+  public Integer getOffHoursStartMin() {
+    return offHoursStartMin;
+  }
+
+  public void setOffHoursStartMin(Integer offHoursStartMin) {
+    this.offHoursStartMin = offHoursStartMin;
+  }
+
+  public Integer getOffHoursEnd() {
+    return offHoursEnd;
+  }
+
+  public void setOffHoursEnd(Integer offHoursEnd) {
+    this.offHoursEnd = offHoursEnd;
+  }
+
+  public Integer getOffHoursEndMin() {
+    return offHoursEndMin;
+  }
+
+  public void setOffHoursEndMin(Integer offHoursEndMin) {
+    this.offHoursEndMin = offHoursEndMin;
+  }
+
+  public Integer getOffHoursStart() {
+    return offHoursStart;
+  }
+
+  public void setOffHoursStart(Integer offHoursStart) {
+    this.offHoursStart = offHoursStart;
   }
 
   public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {

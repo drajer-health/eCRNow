@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -304,7 +305,12 @@ public class ApplicationUtils {
   }
 
   public static Instant getInstantForOffHours(
-      Duration d, String offhourStart, String offhourEnd, String tz) {
+      Duration d,
+      Integer offhourStart,
+      Integer offhoursStartMin,
+      Integer offhourEnd,
+      Integer offhoursEndMin,
+      String tz) {
     logger.info("OffHours Duration ={}", d);
 
     Instant t = null;
@@ -312,30 +318,33 @@ public class ApplicationUtils {
     logger.info(
         " OffHour Parameters: Start = {}, End = {} , Tz = {} ", offhourStart, offhourEnd, tz);
 
-    t = calculateNewTimeForTimer(offhourStart, offhourEnd, tz);
+    t =
+        calculateNewTimeForTimer(
+            offhourStart,
+            offhoursStartMin,
+            offhourEnd,
+            offhoursEndMin,
+            tz,
+            d,
+            (new Date().toInstant()));
 
     return t;
   }
 
   public static Instant calculateNewTimeForTimer(
-      String offhourStart, String offhourEnd, String tz) {
+      Integer lowHours,
+      Integer lowMin,
+      Integer highHours,
+      Integer highMin,
+      String tz,
+      Duration d,
+      Instant currentTime) {
 
-    if (offhourStart != null
-        && offhourEnd != null
-        && tz != null
-        && offhourStart.length() == 5
-        && offhourStart.contains(":")
-        && offhourEnd.length() == 5
-        && offhourEnd.contains(":")) {
+    if (lowHours != null && lowMin != null && highHours != null && highMin != null && tz != null) {
 
-      int lowHours = Integer.parseInt(offhourStart.split(":")[0]);
-      int lowMin = Integer.parseInt(offhourStart.split(":")[1]);
-
-      int highHours = Integer.parseInt(offhourEnd.split(":")[0]);
-      int highMin = Integer.parseInt(offhourEnd.split(":")[1]);
       int totalHours = 0;
 
-      logger.info(
+      logger.debug(
           " LowHours: {}, LowMin: {}, HighHours: {}, HighMin: {}",
           lowHours,
           lowMin,
@@ -357,30 +366,86 @@ public class ApplicationUtils {
       logger.info(
           " Total off Hour Min = {}, Total Busy Hour Min {}", totalOffHourMin, totalBusyHourMin);
 
-      Instant t = new Date().toInstant();
-      Calendar today = Calendar.getInstance();
-      today.set(Calendar.HOUR_OF_DAY, highHours);
-      today.set(Calendar.MINUTE, highMin);
-      Instant busyHourStart = today.getTime().toInstant();
+      Calendar offHoursStartTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+      offHoursStartTime.set(Calendar.HOUR_OF_DAY, lowHours);
+      offHoursStartTime.set(Calendar.MINUTE, lowMin);
 
-      long offsetMinutes = java.time.Duration.between(busyHourStart, t).abs().toMinutes();
+      Calendar offHoursEndTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+      if (highHours < lowHours) {
+
+        // The off hours start today at low hours and end tomorrow at high hours
+        offHoursEndTime.add(Calendar.DATE, 1);
+        offHoursEndTime.set(Calendar.HOUR_OF_DAY, highHours);
+        offHoursEndTime.set(Calendar.MINUTE, highMin);
+      } else {
+        offHoursEndTime.set(Calendar.HOUR_OF_DAY, highHours);
+        offHoursEndTime.set(Calendar.MINUTE, highMin);
+      }
+
+      logger.info(
+          " offHoursStart: {}, offHoursEnd {}, currentTime {}",
+          offHoursStartTime.getTime().toInstant().toString(),
+          offHoursEndTime.getTime().toInstant().toString(),
+          currentTime.toString());
+
+      Calendar busyHourStart = null;
+      Boolean isBefore = false;
+
+      // If the current time when the timer expired is between the offhours start and end,
+      // then return the current time.
+      if ((currentTime.isAfter(offHoursStartTime.getTime().toInstant())
+              || currentTime.equals(offHoursStartTime.getTime().toInstant()))
+          && (currentTime.isBefore(offHoursEndTime.getTime().toInstant())
+              || currentTime.equals(offHoursEndTime.getTime().toInstant()))) {
+
+        logger.info(" Returning the same instant for the next day ");
+        Calendar retVal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        retVal.add(Calendar.DATE, 1);
+
+        return retVal.getTime().toInstant();
+      } else {
+
+        if (currentTime.isBefore(offHoursStartTime.getTime().toInstant())) {
+
+          busyHourStart = offHoursEndTime;
+          busyHourStart.add(Calendar.DATE, -1);
+          isBefore = true;
+
+        } else {
+
+          busyHourStart = offHoursEndTime;
+        }
+      }
+
+      long offsetMinutes =
+          java.time.Duration.between(busyHourStart.getTime().toInstant(), currentTime)
+              .abs()
+              .toMinutes();
 
       // Calculate the new Instant
       int newTimeOffset = ((int) offsetMinutes * totalOffHourMin) / totalBusyHourMin;
 
       logger.info(
           " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}, newTimeOffset {}",
-          t,
-          busyHourStart,
+          currentTime.toString(),
+          busyHourStart.getTime().toInstant().toString(),
           offsetMinutes,
           newTimeOffset);
 
-      Calendar newTime = Calendar.getInstance();
-      newTime.set(Calendar.HOUR_OF_DAY, lowHours);
-      newTime.set(Calendar.MINUTE, lowMin);
-      newTime.add(Calendar.MINUTE, newTimeOffset);
+      Calendar newStart = null;
+      if (isBefore) {
 
-      return newTime.getTime().toInstant();
+        newStart = offHoursStartTime;
+        newStart.add(Calendar.MINUTE, newTimeOffset);
+      } else {
+
+        newStart = offHoursStartTime;
+        newStart.add(Calendar.DATE, 1);
+        newStart.add(Calendar.MINUTE, newTimeOffset);
+      }
+
+      return newStart.getTime().toInstant();
     }
 
     return null;
