@@ -394,7 +394,14 @@ public class CdaResultGenerator {
 
           String compString =
               getXmlForObservationComponent(
-                  details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
+                  details,
+                  cc,
+                  val,
+                  id.toString(),
+                  obs.getEffective(),
+                  interpretation,
+                  contentRef,
+                  null);
 
           if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
 
@@ -407,6 +414,7 @@ public class CdaResultGenerator {
       if (obs != null && Boolean.FALSE.equals(foundComponent)) {
 
         logger.info("No component found , so directly adding the observation code ");
+
         lrEntry.append(
             getXmlForObservationComponent(
                 details,
@@ -415,7 +423,8 @@ public class CdaResultGenerator {
                 obs.getId(),
                 obs.getEffective(),
                 obs.getInterpretation(),
-                contentRef));
+                contentRef,
+                rep.getCode()));
       }
     }
 
@@ -461,7 +470,14 @@ public class CdaResultGenerator {
 
         String compString =
             getXmlForObservationComponent(
-                details, cc, val, id.toString(), obs.getEffective(), interpretation, contentRef);
+                details,
+                cc,
+                val,
+                id.toString(),
+                obs.getEffective(),
+                interpretation,
+                contentRef,
+                null);
 
         if (!compString.isEmpty()) {
           foundComponent = true;
@@ -483,7 +499,8 @@ public class CdaResultGenerator {
               obs.getId(),
               obs.getEffective(),
               obs.getInterpretation(),
-              contentRef));
+              contentRef,
+              null));
     }
 
     logger.debug("Lr Entry = {}", lrEntry);
@@ -498,7 +515,8 @@ public class CdaResultGenerator {
       String id,
       Type effective,
       List<CodeableConcept> interpretation,
-      String contentRef) {
+      String contentRef,
+      CodeableConcept altCode) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -523,6 +541,11 @@ public class CdaResultGenerator {
 
     Pair<Boolean, String> obsCodeXml = getObservationCodeXml(details, cd, false, contentRef, paths);
 
+    Pair<Boolean, String> altObsCodeXml = null;
+    if (altCode != null) {
+      altObsCodeXml = getObservationCodeXml(details, altCode, false, contentRef, paths);
+    }
+
     Pair<Boolean, String> obsValueXml = null;
 
     if (val instanceof CodeableConcept) {
@@ -540,12 +563,23 @@ public class CdaResultGenerator {
           CdaGeneratorUtils.getXmlForTemplateId(
               CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
               CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
+    } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
+
+      // this will catch the case the DiagnosticReport.code is matched and the Observation.code does
+      // not exist
+      // or is not the same.
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
     }
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
     if (obsCodeXml != null) {
       lrEntry.append(obsCodeXml.getValue1());
+    } else if (altObsCodeXml != null) {
+      lrEntry.append(altObsCodeXml.getValue1());
     }
 
     lrEntry.append(
