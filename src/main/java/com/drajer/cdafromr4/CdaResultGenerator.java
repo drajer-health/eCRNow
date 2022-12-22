@@ -576,7 +576,11 @@ public class CdaResultGenerator {
 
     lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
-    if (obsCodeXml != null) {
+    if (obsCodeXml != null && obsCodeXml.getValue0()) {
+      lrEntry.append(obsCodeXml.getValue1());
+    } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
+      lrEntry.append(altObsCodeXml.getValue1());
+    } else if (obsCodeXml != null) {
       lrEntry.append(obsCodeXml.getValue1());
     } else if (altObsCodeXml != null) {
       lrEntry.append(altObsCodeXml.getValue1());
