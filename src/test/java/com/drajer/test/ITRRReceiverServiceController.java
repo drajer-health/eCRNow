@@ -83,7 +83,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     // Mock FHIR called.
-    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
@@ -100,7 +100,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     // Mock FHIR called.
-    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS2", eicr != null ? eicr.getResponseType() : null);
@@ -118,7 +118,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     // Mock FHIR not called (not reportable condition).
-    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
     assertEquals("RRVS3", eicr != null ? eicr.getResponseType() : null);
@@ -134,7 +134,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
     // Mock FHIR not called (not reportable condition).
-    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -169,7 +169,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ResponseEntity<String> response = postReportabilityResponse(rr, eicr, false);
 
     // Mock FHIR not called (reportable condition, but saveToEhr = false).
-    wireMockServer.verify(0, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
@@ -180,7 +180,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
 
     // Mock FHIR called.
-    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
@@ -200,7 +200,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     ResponseEntity<String> response = reSubmitRR(eicrReSubmit);
 
     // Mock FHIR called.
-    wireMockServer.verify(1, postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+    wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }

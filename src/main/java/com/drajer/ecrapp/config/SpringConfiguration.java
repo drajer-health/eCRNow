@@ -4,9 +4,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @ComponentScan(
@@ -19,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
     })
 public class SpringConfiguration {
 
+  @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
 
   public static final String AUTHORIZATION_TOKEN =
@@ -38,5 +42,13 @@ public class SpringConfiguration {
   @Bean(name = "jsonParser")
   public IParser getEsrdJsonParser() {
     return ctx.newJsonParser().setPrettyPrint(true);
+  }
+
+  @Bean(name = "ECRRetryTemplate")
+  public RetryTemplate retryTemplate() {
+
+    RetryTemplate template = retryStatusCode.configureRetryTemplate();
+
+    return template;
   }
 }
