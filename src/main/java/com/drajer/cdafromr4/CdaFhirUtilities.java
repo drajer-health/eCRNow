@@ -1231,14 +1231,15 @@ public class CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (dt != null && dt.getValue() != null) {
+    if (dt != null && dt.hasValue() && dt.getValue() != null) {
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
               elName, dt.getValue().toString(), dt.getUnit(), valFlag));
 
     } else {
-      sb.append(CdaGeneratorUtils.getXmlForNfQuantity(elName, CdaGeneratorConstants.NF_NI));
+      sb.append(
+          CdaGeneratorUtils.getXmlForNfQuantity(elName, CdaGeneratorConstants.NF_NI, valFlag));
     }
 
     return sb.toString();
