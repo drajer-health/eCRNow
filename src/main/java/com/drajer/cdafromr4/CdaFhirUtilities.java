@@ -1298,6 +1298,12 @@ public class CdaFhirUtilities {
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_FEMALE_CODE,
               CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+    } else if (gender == AdministrativeGender.UNKNOWN) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME, CdaGeneratorConstants.NF_UNK);
+
     } else if (gender != null) {
 
       s +=
