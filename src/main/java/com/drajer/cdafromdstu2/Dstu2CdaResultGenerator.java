@@ -381,6 +381,8 @@ public class Dstu2CdaResultGenerator {
 
       for (String s : matchedCodes) {
 
+        StringBuilder codeXmlTemp = new StringBuilder(200);
+        StringBuilder valXmlTemp = new StringBuilder(200);
         String[] parts = s.split("\\|");
 
         if (codeElements != null
@@ -390,7 +392,7 @@ public class Dstu2CdaResultGenerator {
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
           // For Connectathon, until we get the right test data finish testing.
-          codeXml.append(
+          codeXmlTemp.append(
               CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
                   CdaGeneratorConstants.CODE_EL_NAME,
                   parts[1],
@@ -405,7 +407,7 @@ public class Dstu2CdaResultGenerator {
         } else if (codeElements != null) {
 
           logger.info(" Setting code xml to just the value of the codings ");
-          codeXml.append(
+          codeXmlTemp.append(
               Dstu2CdaFhirUtilities.getCodingXml(codeElements, CdaGeneratorConstants.CODE_EL_NAME));
         }
 
@@ -417,7 +419,7 @@ public class Dstu2CdaResultGenerator {
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
           // For Connectathon, until we get the right test data finish testing.
-          valXml.append(
+          valXmlTemp.append(
               CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
                   parts[1],
                   csd.getValue0(),
@@ -430,12 +432,16 @@ public class Dstu2CdaResultGenerator {
         } else if (valElements != null) {
 
           logger.info(" No Matched Value Element so just encoding value element ");
-          valXml.append(
+          valXmlTemp.append(
               Dstu2CdaFhirUtilities.getCodingXmlForValue(
                   valElements, CdaGeneratorConstants.VAL_EL_NAME));
         }
 
-        if (matchFound) break;
+        if (Boolean.TRUE.equals(matchFound)) {
+          codeXml.append(codeXmlTemp);
+          valXml.append(valXmlTemp);
+          break;
+        }
       } // for
     }
 
