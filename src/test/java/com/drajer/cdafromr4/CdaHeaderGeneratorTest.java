@@ -1,11 +1,10 @@
 package com.drajer.cdafromr4;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.Date;
-
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -25,14 +24,14 @@ public class CdaHeaderGeneratorTest {
     String decXml = CdaHeaderGenerator.getDeceasedXml(p);
 
     assertTrue(decXml.contains("false"));
-    
+
     decXml = "";
     BooleanType btf = new BooleanType(false);
     p.setDeceased(btf);
-    
+
     decXml = CdaHeaderGenerator.getDeceasedXml(p);
     assertTrue(decXml.contains("false"));
-    
+
     BooleanType btt = new BooleanType(true);
     p.setDeceased(btt);
     decXml = CdaHeaderGenerator.getDeceasedXml(p);
@@ -40,30 +39,29 @@ public class CdaHeaderGeneratorTest {
     assertTrue(decXml.contains("sdtc:deceasedInd value="));
     assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
     assertTrue(decXml.contains("NI"));
-    
+
     DateTimeType dtt = new DateTimeType();
     dtt.setValue(Date.from(Instant.now()));
     p.setDeceased(dtt);
-    
+
     decXml = CdaHeaderGenerator.getDeceasedXml(p);
     assertTrue(decXml.contains("true"));
     assertTrue(decXml.contains("sdtc:deceasedInd value="));
     assertFalse(decXml.contains("sdtc:deceasedTime nullFlavor="));
     assertTrue(decXml.contains("sdtc:deceasedTime value="));
-    
+
     BooleanType st = new BooleanType();
     p.setDeceased(st);
     decXml = CdaHeaderGenerator.getDeceasedXml(p);
     assertTrue(decXml.contains("false"));
-    
+
     DateTimeType dtt1 = new DateTimeType();
     p.setDeceased(dtt1);
-    
+
     decXml = CdaHeaderGenerator.getDeceasedXml(p);
     assertTrue(decXml.contains("true"));
     assertTrue(decXml.contains("sdtc:deceasedInd value="));
     assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
-    
   }
 
   public Patient getPatientData() {

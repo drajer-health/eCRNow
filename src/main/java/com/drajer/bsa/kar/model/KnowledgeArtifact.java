@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * This entity is a simplified representation of the Knowledge Artifact. While we can use the FHIR
  * objects themselves, this is more of a simplified version for storing and processing. This
  * decision can be re-evaluated based on implementation experience. The originalKarBundle contains
- * the complete KnowledgeArtifact per the MedMorph FHIR IG.
+ * the complete KnowledgeArtifact per the eCR/MedMorph FHIR IGs.
  *
  * @author nbashyam
  * @since 2021-04-15
@@ -91,6 +91,10 @@ public class KnowledgeArtifact {
 
   /** This attribute represents the mapping between dataIds and RelatedDataIds for the artifact */
   private HashMap<String, String> dataIdRelatedDataIdMap;
+
+  private String rctcOid;
+
+  private String rctcVersion;
 
   public BsaAction getAction(String actionId) {
 
@@ -372,6 +376,22 @@ public class KnowledgeArtifact {
 
   public void setDataIdRelatedDataIdMap(HashMap<String, String> dataIdRelatedDataIdMap) {
     this.dataIdRelatedDataIdMap = dataIdRelatedDataIdMap;
+  }
+
+  public String getRctcOid() {
+    return rctcOid;
+  }
+
+  public void setRctcOid(String rctcOid) {
+    this.rctcOid = rctcOid;
+  }
+
+  public String getRctcVersion() {
+    return rctcVersion;
+  }
+
+  public void setRctcVersion(String rctcVersion) {
+    this.rctcVersion = rctcVersion;
   }
 
   public void printKarSummary() {

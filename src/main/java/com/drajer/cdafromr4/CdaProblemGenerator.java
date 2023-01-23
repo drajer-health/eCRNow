@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -367,14 +366,14 @@ public class CdaProblemGenerator {
                   logger.debug("Retrieved CSD Values");
                   logger.debug("Retrieved CSD Values {}, {}", csd.getValue0(), csd.getValue1());
 
-                  // Add Value SEt and ValueSEt Version
-                  String vs = CdaGeneratorConstants.RCTC_OID;
-                  String vsVersion = ActionRepo.getInstance().getRctcVersion();
-
-                  logger.debug("Retrieved RCTC Values: Vs {}, vsVersion {}", vs, vsVersion);
                   sb.append(
                       CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                          parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+                          parts[1],
+                          csd.getValue0(),
+                          csd.getValue1(),
+                          details.getRctcOid(),
+                          details.getRctcVersion(),
+                          ""));
                   logger.debug("Constructed Value CD");
                 });
 

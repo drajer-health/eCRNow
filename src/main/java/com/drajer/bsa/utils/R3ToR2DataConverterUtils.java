@@ -81,6 +81,12 @@ public class R3ToR2DataConverterUtils {
       details.setEncounterId(kd.getNotificationContext().getNotificationResourceId());
       details.setProviderUUID(kd.getHealthcareSetting().getDefaultProviderId());
       details.setSetId(details.getLaunchPatientId() + "|" + details.getEncounterId());
+
+      if (kd.getKar() != null) {
+        details.setRctcOid(kd.getKar().getRctcOid());
+        details.setRctcVersion(kd.getKar().getRctcVersion());
+      }
+
       if (kd.getPhm() != null) {
         details.setVersionNumber(kd.getPhm().getSubmittedVersionNumber() + 1);
       } else {

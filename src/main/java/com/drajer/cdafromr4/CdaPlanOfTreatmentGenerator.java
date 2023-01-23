@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
@@ -206,8 +205,8 @@ public class CdaPlanOfTreatmentGenerator {
                 mCd,
                 CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
                 CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-                CdaGeneratorConstants.RCTC_OID,
-                ActionRepo.getInstance().getRctcVersion(),
+                details.getRctcOid(),
+                details.getRctcVersion(),
                 "",
                 contentRef);
       } else {
@@ -307,8 +306,8 @@ public class CdaPlanOfTreatmentGenerator {
                 mCd,
                 CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
                 CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
-                CdaGeneratorConstants.RCTC_OID,
-                ActionRepo.getInstance().getRctcVersion(),
+                details.getRctcOid(),
+                details.getRctcVersion(),
                 "",
                 contentRef);
       } else {

@@ -34,6 +34,7 @@ import com.drajer.bsa.service.PublicHealthAuthorityService;
 import com.drajer.bsa.utils.BsaConstants;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.bsa.utils.SubscriptionUtils;
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.sof.utils.FhirContextInitializer;
 import java.io.File;
 import java.io.FileFilter;
@@ -59,6 +60,7 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Expression;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -103,6 +105,8 @@ public class KarParserImpl implements KarParser {
   /** */
   private static final String VARIABLE_EXTENSION_URL =
       "http://hl7.org/fhir/StructureDefinition/variable";
+
+  private static final String RCTC_DEFAULT_SYSTEM = "urn:ietf:rfc:3986";
 
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
@@ -356,11 +360,20 @@ public class KarParserImpl implements KarParser {
         } else if (Optional.ofNullable(comp).isPresent()
             && comp.getResource().getResourceType() == ResourceType.Library) {
           logger.info(" Processing Library");
+
+          Library lib = (Library) comp.getResource();
           if (art.getKarName() == null) {
-            art.setKarName(((Library) comp.getResource()).getName());
+            art.setKarName(lib.getName());
           }
           if (art.getKarPublisher() == null) {
-            art.setKarPublisher(((Library) comp.getResource()).getPublisher());
+            art.setKarPublisher(lib.getPublisher());
+          }
+
+          if (lib.getId().contains("rctc")) {
+
+            logger.info(" Adding Rctc Version to the Action Repo {}", lib.getVersion());
+            art.setRctcVersion(lib.getVersion());
+            art.setRctcOid(getRctcOid(lib));
           }
         } else if (Optional.ofNullable(comp).isPresent()) {
           logger.info(" Adding resource to dependencies");
@@ -382,6 +395,35 @@ public class KarParserImpl implements KarParser {
           " Bundle for Path : {} cannot be processed because it is either non existent or of the wrong bundle type.",
           kar);
     }
+  }
+
+  /**
+   * Method to extract the RCTC OID from the library.
+   *
+   * @param lib
+   * @return
+   */
+  private String getRctcOid(Library lib) {
+
+    if (lib != null && lib.getId().contains("rctc")) {
+
+      if (lib.hasIdentifier()) {
+
+        List<Identifier> ids = lib.getIdentifier();
+
+        for (Identifier id : ids) {
+
+          if (id.hasSystem()
+              && id.getSystem().contentEquals("RCTC_DEFAULT_SYSTEM")
+              && id.hasValue()) {
+
+            return id.getValue();
+          }
+        }
+      }
+    }
+
+    return CdaGeneratorConstants.RCTC_OID;
   }
 
   private KarProcessingData makeData(HealthcareSetting hs, KnowledgeArtifact art) {

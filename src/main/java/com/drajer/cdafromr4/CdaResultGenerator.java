@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -659,8 +658,8 @@ public class CdaResultGenerator {
                   matchedCode.getValue0(),
                   systemName.getValue0(),
                   systemName.getValue1(),
-                  CdaGeneratorConstants.RCTC_OID,
-                  ActionRepo.getInstance().getRctcVersion(),
+                  details.getRctcOid(),
+                  details.getRctcVersion(),
                   code,
                   CdaGeneratorConstants.FHIR_LOINC_URL,
                   contentRef,
@@ -678,8 +677,8 @@ public class CdaResultGenerator {
                   matchedCode.getValue0(),
                   systemName.getValue0(),
                   systemName.getValue1(),
-                  CdaGeneratorConstants.RCTC_OID,
-                  ActionRepo.getInstance().getRctcVersion(),
+                  details.getRctcOid(),
+                  details.getRctcVersion(),
                   code,
                   CdaGeneratorConstants.FHIR_SNOMED_URL,
                   contentRef,
@@ -789,11 +788,14 @@ public class CdaResultGenerator {
                     Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
                     // For Connectathon, until we get the right test data finish testing.
-                    String vs = CdaGeneratorConstants.RCTC_OID;
-                    String vsVersion = ActionRepo.getInstance().getRctcVersion();
                     lrEntry.append(
                         CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                            parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+                            parts[1],
+                            csd.getValue0(),
+                            csd.getValue1(),
+                            details.getRctcOid(),
+                            details.getRctcVersion(),
+                            ""));
 
                     // Adding one is sufficient and only one is possible according to Schema.
                   });

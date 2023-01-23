@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -2179,19 +2178,14 @@ public class CdaFhirUtilities {
                 code,
                 codeSystem,
                 codeSystemName,
-                CdaGeneratorConstants.RCTC_OID,
-                ActionRepo.getInstance().getRctcVersion(),
+                valueSet,
+                valuesetVersion,
                 dispName,
                 contentRef));
       } else if (Boolean.TRUE.equals(valueElem)) {
         retval.append(
             CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                code,
-                codeSystem,
-                codeSystemName,
-                CdaGeneratorConstants.RCTC_OID,
-                ActionRepo.getInstance().getRctcVersion(),
-                dispName));
+                code, codeSystem, codeSystemName, valueSet, valuesetVersion, dispName));
       }
     }
 
