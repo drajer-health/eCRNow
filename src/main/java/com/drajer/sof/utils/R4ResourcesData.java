@@ -1386,14 +1386,12 @@ public class R4ResourcesData {
                         context,
                         "Location",
                         locationReference.getReferenceElement().getIdPart());
-            if (locationResource != null) {
+            if (locationResource != null && locationResource.hasAddress()) {
               locationList.add(locationResource);
               BundleEntryComponent locationEntry =
                   new BundleEntryComponent().setResource(locationResource);
               bundle.addEntry(locationEntry);
-              if (locationResource.getAddress() != null) {
-                r4FhirData.setLocation(locationResource);
-              }
+              r4FhirData.setLocation(locationResource);
             }
           }
         }
