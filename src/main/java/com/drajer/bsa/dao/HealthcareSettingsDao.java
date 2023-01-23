@@ -1,5 +1,6 @@
 package com.drajer.bsa.dao;
 
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import java.util.List;
 
@@ -47,4 +48,12 @@ public interface HealthcareSettingsDao {
    * @return Returns the list of existing HealthcareSettings.
    */
   public List<HealthcareSetting> getAllHealthcareSettings();
+
+  /**
+   * Method to retrieve all active KARs per HeatlhcareSetting.
+   *
+   * @param id The HealthcareSetting Id for which Kars have to be retrieved based on the id.
+   * @return Returns the list of KnowledgeArtifactStatus by Healthcare Setting Id.
+   */
+  public List<KnowledgeArtifactStatus> getKarsActiveByHsId(Integer id);
 }

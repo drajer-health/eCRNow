@@ -113,7 +113,7 @@ public class KarParserImpl implements KarParser {
 
   @Autowired AutowireCapableBeanFactory beanFactory;
 
-  @Value("${kar.directory}")
+  @Value("${kar.directory:default}")
   String karDirectory;
 
   @Value("${ignore.timers}")
@@ -131,7 +131,7 @@ public class KarParserImpl implements KarParser {
   @Value("${fhirpath.enabled:true}")
   boolean fhirpathEnabled;
 
-  @Value("${bsa.output.directory}")
+  @Value("${bsa.output.directory:bsa-output}")
   String logDirectory;
 
   @Autowired BsaServiceUtils utils;
@@ -298,25 +298,29 @@ public class KarParserImpl implements KarParser {
 
     File[] files = folder.listFiles((FileFilter) FileFilterUtils.fileFileFilter());
 
-    for (File kar : files) {
+    if (files != null) {
+      for (File kar : files) {
 
-      if (kar.isFile() && JSON_KAR_EXT.contentEquals(FilenameUtils.getExtension(kar.getName()))) {
+        if (kar.isFile() && JSON_KAR_EXT.contentEquals(FilenameUtils.getExtension(kar.getName()))) {
 
-        logger.info(" Processing KAR {}", kar.getName());
-        processKar(kar, repoUrl, repoName);
-      } // For a File
+          logger.info(" Processing KAR {}", kar.getName());
+          processKar(kar, repoUrl, repoName);
+        } // For a File
+      }
     }
 
     // Recursively process the directories also.
     File[] dirs = folder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
 
-    for (File dir : dirs) {
+    if (dirs != null) {
+      for (File dir : dirs) {
 
-      logger.info(" About to process directory : {}", dir.getName());
-      String url = repoUrl + "/" + dir.getName();
-      String name = repoName + "-" + dir.getName();
+        logger.info(" About to process directory : {}", dir.getName());
+        String url = repoUrl + "/" + dir.getName();
+        String name = repoName + "-" + dir.getName();
 
-      loadKarsFromDirectory(dir.getPath(), url, name);
+        loadKarsFromDirectory(dir.getPath(), url, name);
+      }
     }
   }
 

@@ -907,37 +907,52 @@ public class R4ResourcesData {
                   .equals(encounter.getIdElement().getIdPart())) {
             immunizations.add(immunization);
             immunizationCodes.addAll(findImmunizationCodes(immunization));
+          } else {
+            populateImmunizationsWithoutEncounters(
+                bundle, immunizations, immunizationCodes, start, end);
           }
         }
         // If Encounter Id is not present using start and end dates to filter
         // Immunizations
       } else if (bundle != null) {
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          Immunization immunization = (Immunization) entry.getResource();
-          // Checking If Immunization DateTime is present in Immunization
-          // resource
-          if (immunization.getOccurrence().isDateTime()
-              && immunization.getOccurrenceDateTimeType() != null) {
-            if (isResourceWithinDateTime(
-                start, end, immunization.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
-              immunizations.add(immunization);
-              immunizationCodes.addAll(findImmunizationCodes(immunization));
-            }
-          }
-          // If Immunization Date is not present looking for LastUpdatedDate
-          else {
-            Date lastUpdatedDateTime = immunization.getMeta().getLastUpdated();
-            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
-              immunizations.add(immunization);
-              immunizationCodes.addAll(findImmunizationCodes(immunization));
-            }
-          }
-        }
+
+        populateImmunizationsWithoutEncounters(
+            bundle, immunizations, immunizationCodes, start, end);
       }
       r4FhirData.setR4ImmunizationCodes(immunizationCodes);
     }
     logger.info("Filtered Immunizations -----------> {}", immunizations.size());
     return immunizations;
+  }
+
+  private void populateImmunizationsWithoutEncounters(
+      Bundle b,
+      List<Immunization> immunizations,
+      List<CodeableConcept> immunizationCodes,
+      Date start,
+      Date end) {
+
+    for (BundleEntryComponent entry : b.getEntry()) {
+      Immunization immunization = (Immunization) entry.getResource();
+      // Checking If Immunization DateTime is present in Immunization
+      // resource
+      if (immunization.getOccurrence().isDateTime()
+          && immunization.getOccurrenceDateTimeType() != null) {
+        if (isResourceWithinDateTime(
+            start, end, immunization.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
+          immunizations.add(immunization);
+          immunizationCodes.addAll(findImmunizationCodes(immunization));
+        }
+      }
+      // If Immunization Date is not present looking for LastUpdatedDate
+      else {
+        Date lastUpdatedDateTime = immunization.getMeta().getLastUpdated();
+        if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+          immunizations.add(immunization);
+          immunizationCodes.addAll(findImmunizationCodes(immunization));
+        }
+      }
+    }
   }
 
   private List<CodeableConcept> findServiceRequestCodes(ServiceRequest serviceRequest) {

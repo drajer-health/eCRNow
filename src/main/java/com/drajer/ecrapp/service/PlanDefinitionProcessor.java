@@ -81,7 +81,7 @@ public class PlanDefinitionProcessor {
   @Qualifier("valueSetServiceImpl")
   ValueSetService valueSetService;
 
-  @Value("${ersd.file.location}")
+  @Value("${ersd.file.location:default.json}")
   String ersdFileLocation;
 
   @Value("${ersd.covid19}")

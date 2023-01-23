@@ -2,19 +2,13 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
-import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -113,50 +107,29 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
   private void setKars(HealthcareSetting hs) {
 
-    ObjectMapper mapper = new ObjectMapper();
-    HealthcareSettingOperationalKnowledgeArtifacts artifacts = null;
+    List<KnowledgeArtifactStatus> activeKars = getKarsActiveByHsId(hs.getId());
 
-    try {
-
-      // To be discussed at the connectathon, no operation defined to make this work currently.
-      if (hs.getKarsActive() != null) {
-        artifacts =
-            mapper.readValue(
-                hs.getKarsActive(), HealthcareSettingOperationalKnowledgeArtifacts.class);
-        hs.setKars(artifacts);
-      }
-
-      // Setup using Knowledge Artifact Repository temporarily as a work around.
-      logger.info(" TODO : Remove after finalizing approach at the Connectathon");
-
-      HashMap<String, KnowledgeArtifact> arts = knowledgeArtifactRepositorySystem.getArtifacts();
+    if (activeKars != null) {
 
       HealthcareSettingOperationalKnowledgeArtifacts opkars =
           new HealthcareSettingOperationalKnowledgeArtifacts();
       opkars.setId(hs.getId());
-      for (Map.Entry<String, KnowledgeArtifact> entry : arts.entrySet()) {
 
-        KnowledgeArtifactStatus stat = new KnowledgeArtifactStatus();
-        stat.setKarId(entry.getValue().getKarId());
-        stat.setKarVersion(entry.getValue().getKarVersion());
-        stat.setIsActive(true);
-        stat.setLastActivationDate(Date.from(Instant.now()));
-        stat.setVersionUniqueKarId(entry.getValue().getVersionUniqueId());
-
+      for (KnowledgeArtifactStatus stat : activeKars) {
+        logger.info(" Adding Kar Id {} to active Kars", stat.getVersionUniqueKarId());
         opkars.addArtifactStatus(stat);
       }
 
       hs.setKars(opkars);
-
-      logger.info(" Successfully set the KAR status ");
-    } catch (JsonMappingException e) {
-      logger.info(
-          org.slf4j.Marker.ANY_MARKER,
-          " JsonMappingException : Error reading Kars Active status from the database. {}",
-          e);
-    } catch (JsonProcessingException e) {
-      logger.info(
-          " JsonProcessingException:  Error reading Kars Active status from the database.", e);
     }
+  }
+
+  @Override
+  public List<KnowledgeArtifactStatus> getKarsActiveByHsId(Integer id) {
+
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
+    criteria.add(Restrictions.eq("hsId", id));
+
+    return criteria.list();
   }
 }

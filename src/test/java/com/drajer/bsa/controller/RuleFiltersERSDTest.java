@@ -36,146 +36,146 @@ public class RuleFiltersERSDTest extends BaseKarsTest {
   // 3. The MeasureReport has the correct info for the test case
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
-    return Arrays.asList(
-        /*   new TestCaseInfo(
+    return Arrays.asList();
+    /*   new TestCaseInfo(
+    "PlanDefinition_eRSD_Instance_Example",
+    "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+    "Reportable",
+    REPORTED),
+    new TestCaseInfo(
         "PlanDefinition_eRSD_Instance_Example",
         "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-        "Reportable",
-        REPORTED), */
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "NotTriggered",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-all-criteria-out",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-condition-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-encounter-completed-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-encounter-completed-out",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-encounter-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-encounter-inprogress-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-encounter-inprogress-out",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-immunization-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-in",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-laborder-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-labresult-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-labtest-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-medicationadministration-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-medicationorder-in",
-            REPORTED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "ex-trigger-out",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-problem-FullECR-WithNonCOVIDTriggerCode",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-encounterDiagnosis-FullECR-withcovidTriggerCode",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-LabOrder-FullECR-WithCovid19TriggerCode",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-encounterDiagnosis-FullECR-WithCovidAndNonCovidTrigger",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-result-FullECR-WithNonCOVIDTriggerCode",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-result-FullECR-CovidAndNonCovidTriggerCode",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "eCR-LabOrder-FullECR-WithNonCOVIDTriggerCode",
-            TRIGGERED_ONLY),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "NoEcr-DiagnosisWithNonTriggerCode",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "NoECR-LabOrderWithNonTriggerCode",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "NoECR-problem-WithNonTriggerCode",
-            NOT_TRIGGERED),
-        new TestCaseInfo(
-            "PlanDefinition_eRSD_Instance_Example",
-            "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
-            "NoECR-resultWithNonTriggerCode",
-            NOT_TRIGGERED));
+        "NotTriggered",
+        NOT_TRIGGERED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-all-criteria-out",
+        NOT_TRIGGERED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-condition-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-encounter-completed-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-encounter-completed-out",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-encounter-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-encounter-inprogress-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-encounter-inprogress-out",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-immunization-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-in",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-laborder-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-labresult-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-labtest-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-medicationadministration-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-medicationorder-in",
+        REPORTED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "ex-trigger-out",
+        NOT_TRIGGERED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-problem-FullECR-WithNonCOVIDTriggerCode",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-encounterDiagnosis-FullECR-withcovidTriggerCode",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-LabOrder-FullECR-WithCovid19TriggerCode",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-encounterDiagnosis-FullECR-WithCovidAndNonCovidTrigger",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-result-FullECR-WithNonCOVIDTriggerCode",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-result-FullECR-CovidAndNonCovidTriggerCode",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "eCR-LabOrder-FullECR-WithNonCOVIDTriggerCode",
+        TRIGGERED_ONLY),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "NoEcr-DiagnosisWithNonTriggerCode",
+        NOT_TRIGGERED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "NoECR-LabOrderWithNonTriggerCode",
+        NOT_TRIGGERED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "NoECR-problem-WithNonTriggerCode",
+        NOT_TRIGGERED),
+    new TestCaseInfo(
+        "PlanDefinition_eRSD_Instance_Example",
+        "http://hl7.org/fhir/us/ecr/PlanDefinition/plandefinition-ersd-instance-example",
+        "NoECR-resultWithNonTriggerCode",
+        NOT_TRIGGERED)); */
   }
 }

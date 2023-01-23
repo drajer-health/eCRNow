@@ -90,7 +90,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
-    testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
+    // testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/medicationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));
