@@ -459,6 +459,19 @@ public class CdaGeneratorUtils {
         + "\n";
   }
 
+  public static String getXmlForElementWithAttribute(
+      String elName, String attrName, String attrVal) {
+
+    return CdaGeneratorConstants.START_XMLTAG
+        + elName
+        + CdaGeneratorConstants.SPACE
+        + attrName
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + attrVal
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
   public static String getXmlForTextWithAttribute(
       String elName, String attrName, String attrVal, String text) {
 

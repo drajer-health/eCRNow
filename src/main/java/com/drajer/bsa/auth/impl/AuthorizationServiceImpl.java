@@ -81,7 +81,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(Objects.requireNonNull(response.getBody()));
 
-        logger.info("Received AccessToken: {}", tokenResponse);
+        logger.debug("Received AccessToken: {}", tokenResponse);
 
         return tokenResponse;
       } else {

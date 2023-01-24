@@ -443,7 +443,7 @@ public class LaunchController {
         currentLaunchDetails.setAuthorizationCode(code);
         JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
         if (accessTokenObject != null) {
-          logger.info("Received Access Token::::: {}", accessTokenObject.getString(ACCESS_TOKEN));
+          logger.debug("Received Access Token::::: {}", accessTokenObject.getString(ACCESS_TOKEN));
           if (accessTokenObject.get(PATIENT) != null && accessTokenObject.get(ENCOUNTER) != null) {
             isPatientLaunched =
                 checkWithExistingPatientAndEncounter(

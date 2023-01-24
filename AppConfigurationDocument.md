@@ -96,4 +96,19 @@ to reduce the load during the working hours or peak usage hours.
 In these cases, it is beneficial if the eCRNow App can be configured to only process patients whose data has to be reported immediately and delay the processing of the other patients to 
 off hours (non peak hours). This kind of configuration can be achieved by the OffHour Configuration.
 
+## 2.12 Configuring EHR Product Name and Version
 
+EHR implementers can configure the EHR Product name and version that the ecrNowApp interfaces with using the two application properties
+ehr.product.name and ehr.product.version.
+If these are present in the application.properties, then an author participant is added to the CDA eICR to convey this information.
+If it is not present, the author is not added. 
+
+## 2.12 Configuring ecrNow App Implementer Name and Version
+
+eCRNow App implementers can configure the their name and software version used for the integration. This is useful
+for system integrators and other vendors who are working on behalf of the healthcare organization and want to distinguish their eICRs 
+from other vendors and/or other healthcare organizations.
+These are configured using two application properties namely 
+ecrnow.implementer.name and ecrnow.implementer.version
+If these are present in the application.properties, then an author participant is added to the CDA eICR to convey this information.
+If it is not present, the author is not added. 

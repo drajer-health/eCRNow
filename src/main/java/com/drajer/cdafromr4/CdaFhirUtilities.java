@@ -1280,6 +1280,13 @@ public class CdaFhirUtilities {
     return s;
   }
 
+  public static String getMaritalStatusXml(CodeableConcept cd) {
+
+    String s = "";
+
+    return s;
+  }
+
   public static String getGenderXml(AdministrativeGender gender) {
 
     String s = "";

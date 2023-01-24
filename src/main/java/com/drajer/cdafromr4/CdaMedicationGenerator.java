@@ -93,12 +93,12 @@ public class CdaMedicationGenerator {
       for (MedicationStatement med : meds) {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (med.getMedication() != null) {
+        if (med.hasMedication() && med.getMedication() != null) {
           medDisplayName = CdaFhirUtilities.getStringForMedicationType(med);
         }
 
         String dt = null;
-        if (med.getEffective() != null) {
+        if (med.hasEffective() && med.getEffective() != null) {
           dt = CdaFhirUtilities.getStringForType(med.getEffective());
         }
 
@@ -112,7 +112,7 @@ public class CdaMedicationGenerator {
 
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
-        if (med.getStatus() != null) {
+        if (med.hasStatus() && med.getStatus() != null) {
           medstatus =
               CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(med.getStatus().toString());
         } else {
@@ -120,7 +120,7 @@ public class CdaMedicationGenerator {
         }
 
         Dosage dosage = null;
-        if (med.getDosageFirstRep() != null) dosage = med.getDosageFirstRep();
+        if (med.hasDosage() && med.getDosageFirstRep() != null) dosage = med.getDosageFirstRep();
 
         medEntries.append(
             getEntryForMedication(
@@ -141,12 +141,12 @@ public class CdaMedicationGenerator {
       for (MedicationAdministration medAdm : medAdms) {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (medAdm.getMedication() != null) {
+        if (medAdm.hasMedication() && medAdm.getMedication() != null) {
           medDisplayName = CdaFhirUtilities.getStringForMedicationType(medAdm);
         }
 
         String dt = null;
-        if (medAdm.getEffective() != null) {
+        if (medAdm.hasEffective() && medAdm.getEffective() != null) {
           dt = CdaFhirUtilities.getStringForType(medAdm.getEffective());
         }
 
@@ -160,7 +160,7 @@ public class CdaMedicationGenerator {
 
         // Create the Med Entry for the Medication Statement.
         String medstatus = "";
-        if (medAdm.getStatus() != null) {
+        if (medAdm.hasStatus() && medAdm.getStatus() != null) {
           medstatus =
               CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(medAdm.getStatus().toCode());
         } else {
@@ -168,8 +168,10 @@ public class CdaMedicationGenerator {
         }
 
         Quantity dose = null;
-        if (medAdm.getDosage() != null && medAdm.getDosage().getDose() != null)
-          dose = medAdm.getDosage().getDose();
+        if (medAdm.hasDosage()
+            && medAdm.getDosage() != null
+            && medAdm.getDosage().hasDose()
+            && medAdm.getDosage().getDose() != null) dose = medAdm.getDosage().getDose();
 
         medEntries.append(
             getEntryForMedication(
@@ -192,23 +194,30 @@ public class CdaMedicationGenerator {
         logger.info(" Adding medication requests ");
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (medReq.getMedication() != null) {
+        if (medReq.hasMedication() && medReq.getMedication() != null) {
           medDisplayName = CdaFhirUtilities.getStringForMedicationType(medReq);
         }
 
         DateTimeType startDate = null;
         Dosage dosage = null;
-        if (medReq.getDosageInstructionFirstRep() != null
+        if (medReq.hasDosageInstruction()
+            && medReq.getDosageInstructionFirstRep() != null
+            && medReq.getDosageInstructionFirstRep().hasTiming()
             && medReq.getDosageInstructionFirstRep().getTiming() != null) {
 
           dosage = medReq.getDosageInstructionFirstRep();
           Timing t = medReq.getDosageInstructionFirstRep().getTiming();
-          if (t != null && t.getRepeat() != null && t.getRepeat().getBoundsPeriod() != null) {
+          if (t != null
+              && t.hasRepeat()
+              && t.getRepeat() != null
+              && t.getRepeat().hasBoundsPeriod()
+              && t.getRepeat().getBoundsPeriod() != null
+              && t.getRepeat().getBoundsPeriod().hasStartElement()) {
             startDate = t.getRepeat().getBoundsPeriod().getStartElement();
           }
         }
 
-        if (startDate == null && medReq.getAuthoredOnElement() != null) {
+        if (startDate == null && medReq.hasAuthoredOn() && medReq.getAuthoredOnElement() != null) {
           startDate = medReq.getAuthoredOnElement();
         }
 
@@ -231,7 +240,7 @@ public class CdaMedicationGenerator {
         // Create the Med Entry for the Medication Request.
         String medstatus = "";
         String moodCode = CdaGeneratorConstants.MOOD_CODE_INT;
-        if (medReq.getStatus() != null) {
+        if (medReq.hasStatus() && medReq.getStatus() != null) {
           medstatus =
               CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes(medReq.getStatus().toString());
           if (medstatus.equalsIgnoreCase(COMPLETED)) {
@@ -331,7 +340,9 @@ public class CdaMedicationGenerator {
     String freqInHours = CdaGeneratorConstants.UNKNOWN_VALUE;
     if (dosage != null) {
 
-      if (dosage.getDoseAndRateFirstRep() != null
+      if (dosage.hasDoseAndRate()
+          && dosage.getDoseAndRateFirstRep() != null
+          && dosage.getDoseAndRateFirstRep().hasDose()
           && dosage.getDoseAndRateFirstRep().getDose() != null)
         ds =
             CdaFhirUtilities.getXmlForType(
@@ -339,7 +350,11 @@ public class CdaMedicationGenerator {
                 CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME,
                 false);
 
-      if (dosage.getTiming() != null && dosage.getTiming().getRepeat() != null) {
+      if (dosage.hasTiming()
+          && dosage.getTiming() != null
+          && dosage.getTiming().hasRepeat()
+          && dosage.getTiming().getRepeat() != null
+          && dosage.getTiming().getRepeat().hasFrequency()) {
 
         freqInHours = Integer.toString(dosage.getTiming().getRepeat().getFrequency());
       }
@@ -460,7 +475,7 @@ public class CdaMedicationGenerator {
 
       for (MedicationRequest m : data.getMedicationRequests()) {
 
-        if (m.getMedication() instanceof Reference) {
+        if (m.hasMedication() && m.getMedication() instanceof Reference) {
 
           Reference med = (Reference) m.getMedication();
 
@@ -470,7 +485,7 @@ public class CdaMedicationGenerator {
             // Check contained.
             String refId = med.getReference().substring(1);
 
-            if (m.getContained() != null) {
+            if (m.hasContained() && m.getContained() != null) {
               List<Resource> meds = m.getContained();
 
               for (Resource r : meds) {
@@ -497,14 +512,14 @@ public class CdaMedicationGenerator {
 
                   Boolean found = false;
                   // Check Ingredients also.
-                  if (cmed.getIngredient() != null) {
+                  if (cmed.hasIngredient() && cmed.getIngredient() != null) {
 
                     List<MedicationIngredientComponent> ings = cmed.getIngredient();
 
                     for (MedicationIngredientComponent ing : ings) {
 
                       logger.info("starting to examine contained ingredients ");
-                      if (ing.getItem() instanceof CodeableConcept) {
+                      if (ing.hasItem() && ing.getItem() instanceof CodeableConcept) {
 
                         CodeableConcept cc = (CodeableConcept) ing.getItem();
 
@@ -559,14 +574,14 @@ public class CdaMedicationGenerator {
                   // If code is absent check ingredient
                   Boolean found = false;
                   // Check Ingredients also.
-                  if (emed.getIngredient() != null) {
+                  if (emed.hasIngredient() && emed.getIngredient() != null) {
 
                     List<MedicationIngredientComponent> ings = emed.getIngredient();
 
                     for (MedicationIngredientComponent ing : ings) {
 
                       logger.info("starting to examine contained ingredients ");
-                      if (ing.getItem() instanceof CodeableConcept) {
+                      if (ing.hasItem() && ing.getItem() instanceof CodeableConcept) {
 
                         CodeableConcept cc = (CodeableConcept) ing.getItem();
 
@@ -596,7 +611,7 @@ public class CdaMedicationGenerator {
             }
           } // Else if it is an external reference
 
-        } else if (m.getMedication() instanceof CodeableConcept) {
+        } else if (m.hasMedication() && m.getMedication() instanceof CodeableConcept) {
 
           logger.info(" Found a medication codeable concept ");
 

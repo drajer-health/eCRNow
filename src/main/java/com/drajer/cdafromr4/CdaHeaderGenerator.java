@@ -6,10 +6,13 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
@@ -35,6 +38,29 @@ public class CdaHeaderGenerator {
   private CdaHeaderGenerator() {}
 
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
+
+  private static String SW_APP_VERSION = "Version 3.1.X";
+  private static String SW_APP_NAME = "ecrNowApp";
+
+  // Map to hold Application Properties
+  private static HashMap<String, String> appProps = new HashMap<>();
+
+  // Static block to load App properties file
+  static {
+    try (InputStream input =
+        CdaHeaderGenerator.class.getClassLoader().getResourceAsStream("application.properties")) {
+
+      Properties prop = new Properties();
+      prop.load(input);
+      prop.forEach(
+          (key, value) -> {
+            appProps.put((String) key, (String) value);
+          });
+
+    } catch (IOException ex) {
+      logger.error("Error while loading App properties files", ex);
+    }
+  }
 
   public static String createCdaHeader(R4FhirData data, LaunchDetails details, Eicr ecr) {
 
@@ -124,6 +150,28 @@ public class CdaHeaderGenerator {
         HashMap<V3ParticipationType, List<Practitioner>> prs = getSortedPractitionerList(data);
 
         eICRHeader.append(getAuthorXml(data, data.getEncounter(), prs));
+
+        // Add software version always
+        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
+
+        // Add EHR information if available
+        if (appProps != null
+            && appProps.containsKey("ehr.product.name")
+            && appProps.containsKey("ehr.product.version")) {
+          eICRHeader.append(
+              getAdditionalAuthorXml(
+                  appProps.get("ehr.product.name"), appProps.get("ehr.product.version")));
+        }
+
+        // Add System Integrator / Implementer information if available
+        if (appProps != null
+            && appProps.containsKey("ecrnow.implementer.name")
+            && appProps.containsKey("ecrnow.implementer.version")) {
+          eICRHeader.append(
+              getAdditionalAuthorXml(
+                  appProps.get("ecrnow.implementer.name"),
+                  appProps.get("ecrnow.implementer.version")));
+        }
 
         eICRHeader.append(getCustodianXml(details, data));
 
@@ -409,6 +457,42 @@ public class CdaHeaderGenerator {
       sb.append(CdaFhirUtilities.getAddressXml(addrs));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     }
+
+    return sb.toString();
+  }
+
+  public static String getAdditionalAuthorXml(String manufacturer, String swversion) {
+
+    StringBuilder sb = new StringBuilder(200);
+
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForEffectiveTime(
+            CdaGeneratorConstants.TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+    Address addr = null;
+    sb.append(CdaFhirUtilities.getAddressXml(addr));
+    sb.append(
+        CdaGeneratorUtils.getXmlForStartElement(
+            CdaGeneratorConstants.ASSIGNED_AUTHORING_DEVICE_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForElementWithAttribute(
+            CdaGeneratorConstants.MANU_MODEL_NAME_EL_NAME,
+            CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL,
+            manufacturer));
+    sb.append(
+        CdaGeneratorUtils.getXmlForElementWithAttribute(
+            CdaGeneratorConstants.SOFTWARE_NAME_EL_NAME,
+            CdaGeneratorConstants.DISPLAYNAME_WITH_EQUAL,
+            swversion));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForEndElement(
+            CdaGeneratorConstants.ASSIGNED_AUTHORING_DEVICE_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
     return sb.toString();
   }
@@ -827,6 +911,10 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
 
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
+
+    if (p.hasMaritalStatus()) {
+      patientDetails.append(CdaFhirUtilities.getMaritalStatusXml(p.getMaritalStatus()));
+    }
 
     patientDetails.append(
         CdaFhirUtilities.getDateTypeXml(

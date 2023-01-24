@@ -1036,12 +1036,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mreq.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mreq.getMedication();
-        Resource secRes =
-            getResourceById(
-                genericClient,
-                context,
-                ResourceType.Medication.toString(),
-                medRef.getReferenceElement().getIdPart());
+        Resource secRes = kd.getSecondaryResourceById(medRef.getReferenceElement().getIdPart());
+
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart());
+        }
 
         if (secRes != null) {
 
@@ -1049,6 +1053,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               " Adding secondary Medication resource for MedicationRequest with id {}",
               secRes.getId());
           kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.addSecondaryResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
     } else if (res != null && rType == ResourceType.MedicationAdministration) {
@@ -1058,12 +1063,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mAdm.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mAdm.getMedication();
-        Resource secRes =
-            getResourceById(
-                genericClient,
-                context,
-                ResourceType.Medication.toString(),
-                medRef.getReferenceElement().getIdPart());
+        Resource secRes = kd.getSecondaryResourceById(medRef.getReferenceElement().getIdPart());
+
+        if (secRes == null) {
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart());
+        }
 
         if (secRes != null) {
 
@@ -1071,6 +1080,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               " Adding secondary Medication resource for MedicationAdministration with id {}",
               secRes.getId());
           kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.addSecondaryResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
     } else if (res != null && rType == ResourceType.MedicationDispense) {
@@ -1080,12 +1090,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mDisp.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mDisp.getMedication();
-        Resource secRes =
-            getResourceById(
-                genericClient,
-                context,
-                ResourceType.Medication.toString(),
-                medRef.getReferenceElement().getIdPart());
+        Resource secRes = kd.getSecondaryResourceById(medRef.getReferenceElement().getIdPart());
+
+        if (secRes == null) {
+          getResourceById(
+              genericClient,
+              context,
+              ResourceType.Medication.toString(),
+              medRef.getReferenceElement().getIdPart());
+        }
 
         if (secRes != null) {
 
@@ -1093,6 +1106,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               " Adding secondary Medidcation resource for MedicationDispense with id {}",
               secRes.getId());
           kd.addResourceByType(secRes.getResourceType(), secRes);
+          kd.addSecondaryResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
@@ -1105,12 +1119,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         for (Reference r : components) {
 
-          Resource secRes =
-              getResourceById(
-                  genericClient,
-                  context,
-                  ResourceType.Observation.toString(),
-                  r.getReferenceElement().getIdPart());
+          Resource secRes = kd.getSecondaryResourceById(r.getReferenceElement().getIdPart());
+
+          if (secRes == null) {
+            getResourceById(
+                genericClient,
+                context,
+                ResourceType.Observation.toString(),
+                r.getReferenceElement().getIdPart());
+          }
 
           if (secRes != null) {
 
@@ -1118,6 +1135,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 " Adding secondary Observation resource for Diagnostic Report with id {}",
                 secRes.getId());
             kd.addResourceByType(secRes.getResourceType(), secRes);
+            kd.addSecondaryResourceById(r.getReferenceElement().getIdPart(), secRes);
           }
         }
       }
@@ -1155,7 +1173,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       int startThreshold =
           -1 * Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
-      int endThreshold = Integer.parseInt(data.getHealthcareSetting().getEncounterStartThreshold());
+      int endThreshold = Integer.parseInt(data.getHealthcareSetting().getEncounterEndThreshold());
 
       Encounter enc = null;
 

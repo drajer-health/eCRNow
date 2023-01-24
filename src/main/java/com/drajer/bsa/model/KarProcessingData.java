@@ -86,6 +86,13 @@ public class KarProcessingData {
   HashMap<String, Set<Resource>> fhirInputDataById;
 
   /**
+   * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
+   * Context Variable. These are typically the variable ids used for the Data Requirement classes
+   * specified in the PlanDefinition.
+   */
+  HashMap<String, Resource> secondaryResourcesById;
+
+  /**
    * The data to be used for specific condition evaluation. The map contains a mapping between the
    * actionId and the Parameters that will be used for evaluating the condition associated with the
    * action.
@@ -358,6 +365,23 @@ public class KarProcessingData {
     }
   }
 
+  public void addSecondaryResourceById(String id, Resource r) {
+
+    if (!secondaryResourcesById.containsKey(id)) {
+      secondaryResourcesById.put(id, r);
+    } else {
+      logger.debug(" Resource already exists with id {}", id);
+    }
+  }
+
+  public Resource getSecondaryResourceById(String id) {
+
+    if (secondaryResourcesById.containsKey(id)) {
+      return secondaryResourcesById.get(id);
+    }
+    return null;
+  }
+
   public KarProcessingData() {
 
     fhirInputDataByType = new HashMap<>();
@@ -366,6 +390,7 @@ public class KarProcessingData {
     actionOutputDataById = new HashMap<>();
     actionStatus = new HashMap<>();
     parametersForConditionEvaluation = new HashMap<>();
+    secondaryResourcesById = new HashMap<>();
   }
 
   /**
