@@ -12,6 +12,7 @@ import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.ecrretry.EcrFhirRetryClient;
 import com.drajer.sof.model.LaunchDetails;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -31,14 +32,16 @@ public class FhirContextInitializer {
   private static final String DSTU3 = "DSTU3";
   private static final String R4 = "R4";
   private static final String QUERY_PATIENT = "?patient=";
-
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
 
-  @Value("${eicr.fhir.paging.count.enabled:false}")
+  @Value("${ecr.fhir.paging.count.enabled:false}")
   private Boolean pagingCountEnabled;
 
-  @Value("${eicr.fhir.paging.count:500}")
+  @Value("${ecr.fhir.paging.count.value:500}")
   private Integer pagingCount;
+
+  @Value("${ecr.fhir.query-by-date.enabled:false}")
+  private Boolean queryByDateEnabled;
 
   @Autowired FHIRRetryTemplate retryTemplate;
 
@@ -178,11 +181,8 @@ public class FhirContextInitializer {
             + resourceName
             + QUERY_PATIENT
             + authDetails.getLaunchPatientId();
-    if (Boolean.TRUE.equals(pagingCountEnabled)) {
-      if (resourceName.matches("ServiceRequest|MedicationRequest")) {
-        url += "&_count=" + pagingCount;
-      }
-    }
+    url += getCustomQueryParameters(resourceName, authDetails);
+
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
@@ -202,10 +202,8 @@ public class FhirContextInitializer {
             + authDetails.getLaunchPatientId()
             + "&category="
             + category;
+    url += getCustomQueryParameters(resourceName, authDetails);
 
-    if (Boolean.TRUE.equals(pagingCountEnabled)) {
-      url += "&_count=" + pagingCount;
-    }
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
   }
@@ -335,5 +333,29 @@ public class FhirContextInitializer {
         }
       }
     }
+  }
+
+  private String getCustomQueryParameters(String resourceName, LaunchDetails launchDetails) {
+    String customQueryParam = "";
+
+    if (Boolean.TRUE.equals(pagingCountEnabled)) {
+      if (resourceName.matches("ServiceRequest|MedicationRequest|Observation|DiagnosticReport")) {
+        customQueryParam += "&_count=" + pagingCount;
+      }
+    }
+
+    if (Boolean.TRUE.equals(queryByDateEnabled)) {
+
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+      String encounterStartDate = formatter.format(launchDetails.getStartDate());
+
+      if (resourceName.matches("Observation|DiagnosticReport")) {
+        customQueryParam += "&date=gt" + encounterStartDate;
+      } else if (resourceName.matches("ServiceRequest|MedicationRequest")) {
+        customQueryParam += "&_lastUpdated=ge" + encounterStartDate + "T00:00:00.000Z";
+      }
+    }
+
+    return customQueryParam;
   }
 }
