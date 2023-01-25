@@ -4,7 +4,6 @@ import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.ecrapp.security.RequestMDCFilter;
 import com.drajer.ecrapp.security.SampleAuthorizationServiceImpl;
 import java.util.TimeZone;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

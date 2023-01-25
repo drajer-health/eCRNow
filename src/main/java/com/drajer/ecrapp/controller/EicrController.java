@@ -239,12 +239,11 @@ public class EicrController {
     }
   }
 
-
   @CrossOrigin
   @GetMapping(value = "/api/test2", produces = MediaType.APPLICATION_JSON_VALUE)
-  public String test2(@RequestParam(value = "waitFor") Integer waitFor) throws InterruptedException {
+  public String test2(@RequestParam(value = "waitFor") Integer waitFor)
+      throws InterruptedException {
     Thread.sleep(waitFor);
     return "Hello";
   }
-
 }
