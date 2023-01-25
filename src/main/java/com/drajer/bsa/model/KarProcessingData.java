@@ -846,4 +846,11 @@ public class KarProcessingData {
       BsaServiceUtils.saveFhirResourceToFile(bund, outputFileName);
     }
   }
+
+  public boolean containsResourceWithId(String resourceId) {
+
+    if (resourcesById.containsKey(resourceId)) {
+      return true;
+    } else return false;
+  }
 }

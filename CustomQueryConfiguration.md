@@ -75,3 +75,26 @@ Sample_ERSD.json
     },
     ...
 }
+
+# 4. Leveraging _include parameter in custom queries to improve performance
+
+In order to trigger and create an eICR, the eCRNow App makes FHIR queries to the EHR and receives data for processing.
+In doing so for certain types of Resources, related resource data has to be extracted from the EHR. These related resources are 
+extracted using the Resource Id, after retrieving the references to the resources from the initial query.
+
+For e.g the eCRNow App makes an initial query to retrieve the Encounter Resource using the query: /Encounter?patient=123
+Subsequently, the eCRNow App uses the data from the Encounter resource (namely the Practitioner references,
+location references, organization references) and retrieves them individually using the id of the resource.
+
+This pattern above is in-efficient and can be optimized using custom queries by the following:
+
+/Encounter?patient=123&_include=Location,Organization,Practitioner reducing the #of calls between the eCRNowApp and the EHR.
+
+The same pattern can be used to fetch
+
+DiagnosticReports with Observation results
+Medication[Request,Administration,Dispense] with Medication references. 
+
+It is strongly encouraged to use the customization capabilities to reduce the # of the queries between the eCRNow App and the EHR.
+
+

@@ -526,13 +526,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           if (participant.getIndividual() != null) {
             Reference practitionerReference = participant.getIndividual();
             String practitionerID = practitionerReference.getReferenceElement().getIdPart();
-            if (!practitionerMap.containsKey(practitionerID)) {
+            if (!practitionerMap.containsKey(practitionerID)
+                && !kd.containsResourceWithId(practitionerID)) {
               Practitioner practitioner =
                   (Practitioner)
                       getResourceById(
                           client, context, ResourceType.Practitioner.toString(), practitionerID);
               if (practitioner != null && !practitionerMap.containsKey(practitionerID)) {
                 practitioners.add(practitioner);
+                kd.storeResourceById(practitionerID, practitioner);
                 practitionerMap.put(practitionerID, ResourceType.Practitioner.toString());
               }
             }
@@ -543,7 +545,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Load Organizations
       if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
         Reference organizationReference = encounter.getServiceProvider();
-        if (organizationReference.hasReferenceElement()) {
+        if (organizationReference.hasReferenceElement()
+            && !kd.containsResourceWithId(
+                organizationReference.getReferenceElement().getIdPart())) {
           Organization organization =
               (Organization)
                   getResourceById(
@@ -553,6 +557,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                       organizationReference.getReferenceElement().getIdPart());
           if (organization != null) {
             organizations.add(organization);
+            kd.storeResourceById(
+                organizationReference.getReferenceElement().getIdPart(), organization);
           }
         }
       }
@@ -561,7 +567,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       if (Boolean.TRUE.equals(encounter.hasLocation())) {
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
         for (EncounterLocationComponent location : enocunterLocations) {
-          if (location.getLocation() != null) {
+          if (location.hasLocation()
+              && !kd.containsResourceWithId(
+                  location.getLocation().getReferenceElement().getIdPart())) {
             Reference locationReference = location.getLocation();
             Location locationResource =
                 (Location)
@@ -572,6 +580,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                         locationReference.getReferenceElement().getIdPart());
             if (locationResource != null) {
               locations.add(locationResource);
+              kd.storeResourceById(
+                  locationReference.getReferenceElement().getIdPart(), locationResource);
             }
           }
         }
