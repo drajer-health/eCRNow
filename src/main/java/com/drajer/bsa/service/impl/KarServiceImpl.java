@@ -54,7 +54,8 @@ public class KarServiceImpl implements KarService {
   }
 
   @Override
-  public KnowledgeArtifactStatus getKarStatusByKarIdAndKarVersion(String karId, String karVersion) {
-    return karDao.getKarStausByKarIdAndKarVersion(karId, karVersion);
+  public KnowledgeArtifactStatus getKarStatusByKarIdAndKarVersion(
+      String karId, String karVersion, Integer hsId) {
+    return karDao.getKarStausByKarIdAndKarVersion(karId, karVersion, hsId);
   }
 }

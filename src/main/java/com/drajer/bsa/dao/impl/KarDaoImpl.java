@@ -59,9 +59,11 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   }
 
   @Override
-  public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(String karId, String karVersion) {
+  public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
+      String karId, String karVersion, Integer hsId) {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
     criteria.add(Restrictions.eq("versionUniqueKarId", karId + "|" + karVersion));
+    criteria.add(Restrictions.eq("hsId", hsId));
     KnowledgeArtifactStatus kars = (KnowledgeArtifactStatus) criteria.uniqueResult();
     logger.info("Getting KAR Status by using karId and karVersion. ");
 

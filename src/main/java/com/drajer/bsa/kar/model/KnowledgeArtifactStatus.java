@@ -69,7 +69,7 @@ public class KnowledgeArtifactStatus {
    * The version unique id of the Knowledge Artifact as defined by the Public Health Agency or
    * Research Organization. This is a concatenation of Id and version.
    */
-  @Column(name = "map_versionid_karid", columnDefinition = "TEXT", unique = true, nullable = false)
+  @Column(name = "map_versionid_karid", columnDefinition = "TEXT", nullable = false)
   String versionUniqueKarId;
 
   /**

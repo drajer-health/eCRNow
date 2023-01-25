@@ -27,5 +27,6 @@ public interface KarDao {
 
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId);
 
-  public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(String karId, String karVersion);
+  public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
+      String karId, String karVersion, Integer hsId);
 }

@@ -112,7 +112,7 @@ public class KnowledgeArtifactRepositoryController {
     for (KnowledgeArtifactStatus karStatus : karStatuses) {
       KnowledgeArtifactStatus existingKarStatus =
           karService.getKarStatusByKarIdAndKarVersion(
-              karStatus.getKarId(), karStatus.getKarVersion());
+              karStatus.getKarId(), karStatus.getKarVersion(), karStatus.getHsId());
       if (existingKarStatus == null) {
         karService.saveOrUpdateKARStatus(karStatus);
       } else {

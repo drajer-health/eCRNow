@@ -18,5 +18,6 @@ public interface KarService {
 
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId);
 
-  public KnowledgeArtifactStatus getKarStatusByKarIdAndKarVersion(String karId, String karVersion);
+  public KnowledgeArtifactStatus getKarStatusByKarIdAndKarVersion(
+      String karId, String karVersion, Integer hsId);
 }
