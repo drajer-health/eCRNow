@@ -87,10 +87,10 @@ public class KarProcessingData {
 
   /**
    * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
-   * Context Variable. These are typically the variable ids used for the Data Requirement classes
-   * specified in the PlanDefinition.
+   * Context Variable. The HashMap stores the resourceId to the resource, so that we dont have to
+   * search for it again if needed.
    */
-  HashMap<String, Resource> secondaryResourcesById;
+  HashMap<String, Resource> resourcesById;
 
   /**
    * The data to be used for specific condition evaluation. The map contains a mapping between the
@@ -346,7 +346,18 @@ public class KarProcessingData {
           Set<Resource> uniqueResources =
               ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
           fhirInputDataById.put(entry.getKey(), uniqueResources);
-        } else fhirInputDataById.put(entry.getKey(), entry.getValue());
+
+          // store the resources by Id also so that we can retrieve faster.
+          for (Resource r : uniqueResources) {
+            storeResourceById(r.getIdElement().getIdPart(), r);
+          }
+        } else {
+          fhirInputDataById.put(entry.getKey(), entry.getValue());
+
+          for (Resource r : entry.getValue()) {
+            storeResourceById(r.getIdElement().getIdPart(), r);
+          }
+        }
       }
     }
   }
@@ -365,19 +376,19 @@ public class KarProcessingData {
     }
   }
 
-  public void addSecondaryResourceById(String id, Resource r) {
+  public void storeResourceById(String id, Resource r) {
 
-    if (!secondaryResourcesById.containsKey(id)) {
-      secondaryResourcesById.put(id, r);
+    if (!resourcesById.containsKey(id)) {
+      resourcesById.put(id, r);
     } else {
       logger.debug(" Resource already exists with id {}", id);
     }
   }
 
-  public Resource getSecondaryResourceById(String id) {
+  public Resource getResourceById(String id) {
 
-    if (secondaryResourcesById.containsKey(id)) {
-      return secondaryResourcesById.get(id);
+    if (resourcesById.containsKey(id)) {
+      return resourcesById.get(id);
     }
     return null;
   }
@@ -390,7 +401,7 @@ public class KarProcessingData {
     actionOutputDataById = new HashMap<>();
     actionStatus = new HashMap<>();
     parametersForConditionEvaluation = new HashMap<>();
-    secondaryResourcesById = new HashMap<>();
+    resourcesById = new HashMap<>();
   }
 
   /**

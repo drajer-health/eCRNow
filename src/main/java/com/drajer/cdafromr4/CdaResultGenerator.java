@@ -8,6 +8,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,6 +215,16 @@ public class CdaResultGenerator {
       StringBuilder sb,
       StringBuilder resultEntries) {
 
+    // Create a map of all Observations to ids for faster lookup
+    HashMap<String, Observation> observations = new HashMap<>();
+
+    allResults
+        .stream()
+        .forEach(
+            (obs) -> {
+              observations.put(obs.getIdElement().getIdPart(), obs);
+            });
+
     for (DiagnosticReport rep : reports) {
 
       StringBuilder displayAttr = new StringBuilder(200);
@@ -299,7 +310,7 @@ public class CdaResultGenerator {
       String compXml =
           getXmlForComponents(
               rep,
-              allResults,
+              observations,
               details,
               CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
               rowNum);
@@ -342,7 +353,7 @@ public class CdaResultGenerator {
 
   public static String getXmlForComponents(
       DiagnosticReport rep,
-      List<Observation> allObs,
+      HashMap<String, Observation> allObs,
       LaunchDetails details,
       String contentId,
       int row) {
@@ -358,7 +369,7 @@ public class CdaResultGenerator {
     for (Reference r : refs) {
 
       // Create an Observation for each entry.
-      Observation obs = findObservation(r, allObs);
+      Observation obs = allObs.get(r.getReferenceElement().getIdPart());
 
       if (obs != null && obs.getComponent() != null && !obs.getComponent().isEmpty()) {
 

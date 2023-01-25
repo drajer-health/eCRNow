@@ -979,10 +979,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
-      if (bundle.getEntry() != null) {
+      if (bundle.hasEntry() && bundle.getEntry().size() > 0) {
 
         logger.info(
-            "Total No of Entries for Resource {} retrieved : {}",
+            "Total No of Entries when searching for ResourceType: {} retrieved was: {}",
             resType,
             bundle.getEntry().size());
 
@@ -996,12 +996,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
           resources.add(comp.getResource());
 
+          sortResourcesByType(comp, resMapType);
           populateSecondaryResources(
               genericClient, context, comp.getResource(), kd, comp.getResource().getResourceType());
         }
 
         resMapById.put(dataReqId, resources);
-        resMapType.put(queryFilter.getResourceType(), resources);
         kd.addResourcesByType(resMapType);
         kd.addResourcesById(resMapById);
 
@@ -1023,6 +1023,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
   }
 
+  public void sortResourcesByType(
+      BundleEntryComponent comp, HashMap<ResourceType, Set<Resource>> resType) {
+
+    if (resType.containsKey(comp.getResource().getResourceType())) {
+      resType.get(comp.getResource().getResourceType()).add(comp.getResource());
+    } else {
+      Set<Resource> res = new HashSet<Resource>();
+      res.add(comp.getResource());
+      resType.put(comp.getResource().getResourceType(), res);
+    }
+  }
+
   private void populateSecondaryResources(
       IGenericClient genericClient,
       FhirContext context,
@@ -1036,7 +1048,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mreq.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mreq.getMedication();
-        Resource secRes = kd.getSecondaryResourceById(medRef.getReferenceElement().getIdPart());
+        Resource secRes = kd.getResourceById(medRef.getReferenceElement().getIdPart());
 
         if (secRes == null) {
           secRes =
@@ -1053,7 +1065,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               " Adding secondary Medication resource for MedicationRequest with id {}",
               secRes.getId());
           kd.addResourceByType(secRes.getResourceType(), secRes);
-          kd.addSecondaryResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
     } else if (res != null && rType == ResourceType.MedicationAdministration) {
@@ -1063,7 +1075,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mAdm.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mAdm.getMedication();
-        Resource secRes = kd.getSecondaryResourceById(medRef.getReferenceElement().getIdPart());
+        Resource secRes = kd.getResourceById(medRef.getReferenceElement().getIdPart());
 
         if (secRes == null) {
           secRes =
@@ -1080,7 +1092,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               " Adding secondary Medication resource for MedicationAdministration with id {}",
               secRes.getId());
           kd.addResourceByType(secRes.getResourceType(), secRes);
-          kd.addSecondaryResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
     } else if (res != null && rType == ResourceType.MedicationDispense) {
@@ -1090,7 +1102,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mDisp.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mDisp.getMedication();
-        Resource secRes = kd.getSecondaryResourceById(medRef.getReferenceElement().getIdPart());
+        Resource secRes = kd.getResourceById(medRef.getReferenceElement().getIdPart());
 
         if (secRes == null) {
           getResourceById(
@@ -1106,7 +1118,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               " Adding secondary Medidcation resource for MedicationDispense with id {}",
               secRes.getId());
           kd.addResourceByType(secRes.getResourceType(), secRes);
-          kd.addSecondaryResourceById(medRef.getReferenceElement().getIdPart(), secRes);
+          kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
@@ -1119,7 +1131,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         for (Reference r : components) {
 
-          Resource secRes = kd.getSecondaryResourceById(r.getReferenceElement().getIdPart());
+          Resource secRes = kd.getResourceById(r.getReferenceElement().getIdPart());
 
           if (secRes == null) {
             getResourceById(
@@ -1135,7 +1147,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 " Adding secondary Observation resource for Diagnostic Report with id {}",
                 secRes.getId());
             kd.addResourceByType(secRes.getResourceType(), secRes);
-            kd.addSecondaryResourceById(r.getReferenceElement().getIdPart(), secRes);
+            kd.storeResourceById(r.getReferenceElement().getIdPart(), secRes);
           }
         }
       }
