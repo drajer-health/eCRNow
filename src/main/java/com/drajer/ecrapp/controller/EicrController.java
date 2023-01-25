@@ -238,4 +238,13 @@ public class EicrController {
           ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
+  @CrossOrigin
+  @GetMapping(value = "/api/test2", produces = MediaType.APPLICATION_JSON_VALUE)
+  public String test2(@RequestParam(value = "waitFor") Integer waitFor) throws InterruptedException {
+    Thread.sleep(waitFor);
+    return "Hello";
+  }
+
 }

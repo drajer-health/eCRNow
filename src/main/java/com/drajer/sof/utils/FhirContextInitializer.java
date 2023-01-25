@@ -6,6 +6,7 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IRestfulClientFactory;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -18,6 +19,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,6 +32,21 @@ public class FhirContextInitializer {
   private static final String QUERY_PATIENT = "?patient=";
 
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
+
+  @Value("${socket.timeout}")
+  private Integer socketTimeout;
+
+  @Value("${connection.timeout}")
+  private Integer connectionTimeout;
+
+  @Value("${pool.max.per.route}")
+  private Integer poolMaxPerRoute;
+
+  @Value("${pool.max.total}")
+  private Integer poolMaxTotal;
+
+  @Value("${connection.request.time.out}")
+  private Integer connectionReqTimeOut;
 
   /**
    * Get FhirContext appropriate to fhirVersion
@@ -64,7 +81,13 @@ public class FhirContextInitializer {
       FhirContext context, String url, String accessToken, String requestId) {
     logger.trace("Initializing the Client");
     FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
-    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+
+    IRestfulClientFactory restfulClientFactory = context.getRestfulClientFactory();
+    restfulClientFactory.setSocketTimeout(socketTimeout * 1000);
+    restfulClientFactory.setConnectTimeout(connectionTimeout * 1000);
+    restfulClientFactory.setPoolMaxPerRoute(poolMaxPerRoute * 1000);
+    restfulClientFactory.setPoolMaxTotal(poolMaxTotal * 1000);
+    restfulClientFactory.setConnectionRequestTimeout(connectionReqTimeOut * 1000);
 
     if (accessToken != null && !accessToken.equalsIgnoreCase("")) {
       client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
