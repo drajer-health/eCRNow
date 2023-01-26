@@ -64,6 +64,7 @@ public class LaunchController {
   private static final String PATIENT = "patient";
   private static final String ENCOUNTER = "encounter";
   private static final String EXTENSION = "extension";
+  private static final String PROVIDER_UUID = "uuid";
 
   @Autowired LaunchService authDetailsService;
 
@@ -101,8 +102,10 @@ public class LaunchController {
     logger.info(" Saving Launch Context: {}", launchDetails);
     authDetailsService.saveOrUpdate(launchDetails);
 
-    logger.info("Scheduling refresh token job ");
-    tokenScheduler.scheduleJob(launchDetails);
+    if (Boolean.FALSE.equals(launchDetails.getIsMultiTenantSystemLaunch())) {
+      logger.info("Scheduling refresh token job ");
+      tokenScheduler.scheduleJob(launchDetails);
+    }
 
     String taskInstanceId = "";
     // Kick off the Launch Event Processing
@@ -202,36 +205,77 @@ public class LaunchController {
         for (int i = 0; i < innerExtension.length(); i++) {
           JSONObject urlExtension = innerExtension.getJSONObject(i);
           if (urlExtension.getString("url").equals("token")) {
-            logger.info("Token URL::::: {}", urlExtension.getString(VALUE_URI));
             tokenEndpoint = urlExtension.getString(VALUE_URI);
-            clientDetails.setTokenURL(tokenEndpoint);
+            if (clientDetails.getTokenURL() == null || clientDetails.getTokenURL().isEmpty()) {
+              logger.info(
+                  "Token URL not found in ClientDetails. So reading the Token URL from Metadata::::: {}",
+                  urlExtension.getString(VALUE_URI));
+              clientDetails.setTokenURL(tokenEndpoint);
+            }
           }
         }
       }
 
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      JSONObject tokenResponse = null;
+      if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())
+          && clientDetails.getTokenExpiryDateTime() != null
+          && clientDetails.getAccessToken() != null) {
+        // Retrieve Access token 3 minutes before it expires.
+        Instant currentInstant = new Date().toInstant().plusSeconds(180);
+        Date currentDate = Date.from(currentInstant);
+        Date tokenExpiryTime = clientDetails.getTokenExpiryDateTime();
+        int value = currentDate.compareTo(tokenExpiryTime);
+        if (value > 0) {
+          logger.info("AccessToken is Expired. Getting new AccessToken");
+          tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+          if (tokenResponse != null) {
+            clientDetails.setTokenExpiryDateTime(
+                getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+          }
+        } else {
+          logger.info("AccessToken is Valid. No need to get new AccessToken");
+          tokenResponse = new JSONObject();
+          tokenResponse.put(ACCESS_TOKEN, clientDetails.getAccessToken());
+          tokenResponse.put(EXPIRES_IN, clientDetails.getTokenExpiry());
+          // clientDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
+        }
+      } else {
+        tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
+        if (tokenResponse != null
+            && Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+          clientDetails.setTokenExpiryDateTime(
+              getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+        }
+      }
+
       if (tokenResponse != null) {
         if (systemLaunch.getPatientId() != null) {
-          if (!checkWithExistingPatientAndEncounter(
-              systemLaunch.getPatientId(),
-              systemLaunch.getEncounterId(),
-              systemLaunch.getFhirServerURL())) {
+          if (Boolean.FALSE.equals(
+              checkWithExistingPatientAndEncounter(
+                  systemLaunch.getPatientId(),
+                  systemLaunch.getEncounterId(),
+                  systemLaunch.getFhirServerURL()))) {
 
             LaunchDetails launchDetails = new LaunchDetails();
             launchDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
             launchDetails.setAssigningAuthorityId(clientDetails.getAssigningAuthorityId());
             launchDetails.setClientId(clientDetails.getClientId());
             launchDetails.setClientSecret(clientDetails.getClientSecret());
             launchDetails.setScope(clientDetails.getScopes());
             launchDetails.setDirectHost(clientDetails.getDirectHost());
             launchDetails.setDirectPwd(clientDetails.getDirectPwd());
+            launchDetails.setSmtpUrl(clientDetails.getSmtpUrl());
             launchDetails.setSmtpPort(clientDetails.getSmtpPort());
+            launchDetails.setImapUrl(clientDetails.getImapUrl());
             launchDetails.setImapPort(clientDetails.getImapPort());
             launchDetails.setDirectRecipient(clientDetails.getDirectRecipientAddress());
             launchDetails.setDirectUser(clientDetails.getDirectUser());
             launchDetails.setEhrServerURL(clientDetails.getFhirServerBaseURL());
             launchDetails.setEncounterId(systemLaunch.getEncounterId());
-            launchDetails.setExpiry(tokenResponse.getInt(EXPIRES_IN));
+            if (tokenResponse.has(PROVIDER_UUID)) {
+              launchDetails.setProviderUUID(tokenResponse.getString(PROVIDER_UUID));
+            }
             launchDetails.setFhirVersion(fhirVersion);
             launchDetails.setIsCovid(clientDetails.getIsCovid());
             launchDetails.setIsFullEcr(clientDetails.getIsFullEcr());
@@ -243,24 +287,44 @@ public class LaunchController {
                 systemLaunch.getPatientId() + "|" + systemLaunch.getEncounterId());
             launchDetails.setVersionNumber(1);
             launchDetails.setIsSystem(clientDetails.getIsSystem());
+            launchDetails.setIsMultiTenantSystemLaunch(
+                clientDetails.getIsMultiTenantSystemLaunch());
+            launchDetails.setIsUserAccountLaunch(clientDetails.getIsUserAccountLaunch());
             launchDetails.setDebugFhirQueryAndEicr(clientDetails.getDebugFhirQueryAndEicr());
             launchDetails.setRequireAud(clientDetails.getRequireAud());
             launchDetails.setRestAPIURL(clientDetails.getRestAPIURL());
+            launchDetails.setIsCreateDocRef(clientDetails.getIsCreateDocRef());
+            launchDetails.setIsInvokeRestAPI(clientDetails.getIsInvokeRestAPI());
+            launchDetails.setIsBoth(clientDetails.getIsBoth());
+            launchDetails.setRrRestAPIUrl(clientDetails.getRrRestAPIUrl());
+            launchDetails.setRrDocRefMimeType(clientDetails.getRrDocRefMimeType());
             launchDetails.setxRequestId(requestIdHeadervalue);
             launchDetails.setProcessingState(LaunchDetails.getString(ProcessingStatus.In_Progress));
             if (systemLaunch.getValidationMode() != null) {
               launchDetails.setValidationMode(systemLaunch.getValidationMode());
             }
+            if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {}
+
             if (tokenResponse.get(EXPIRES_IN) != null) {
-              Integer expiresInSec = (Integer) tokenResponse.get(EXPIRES_IN);
-              Instant expireInstantTime =
-                  new Date().toInstant().plusSeconds(new Long(expiresInSec));
-              launchDetails.setTokenExpiryDateTime(new Date().from(expireInstantTime));
+              if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+                clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+                clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN));
+                launchDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
+              } else {
+                launchDetails.setTokenExpiryDateTime(
+                    getTokenExpirationDateTime(tokenResponse.getInt(EXPIRES_IN)));
+              }
             }
             launchDetails.setLaunchType("SystemLaunch");
 
             IBaseResource encounter = getEncounterById(launchDetails);
             setStartAndEndDates(clientDetails, launchDetails, encounter);
+
+            /*
+             * if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
+             * clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
+             * clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN)); }
+             */
 
             clientDetailsService.saveOrUpdate(clientDetails);
 
@@ -593,6 +657,11 @@ public class LaunchController {
 
   private static Date getDate(String thresholdValue) {
     return DateUtils.addHours(new Date(), Integer.parseInt(thresholdValue));
+  }
+
+  private Date getTokenExpirationDateTime(Integer expiresIn) {
+    Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresIn));
+    return new Date().from(expireInstantTime);
   }
 
   @CrossOrigin

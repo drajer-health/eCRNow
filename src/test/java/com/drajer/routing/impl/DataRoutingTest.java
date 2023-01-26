@@ -53,6 +53,7 @@ public class DataRoutingTest {
     when(launchDetails.getDirectHost()).thenReturn("ett.healthit.gov");
     when(launchDetails.getDirectUser()).thenReturn("test@ett.healthit.gov");
     when(launchDetails.getDirectPwd()).thenReturn("test123");
+    when(launchDetails.getSmtpPort()).thenReturn("25");
     when(launchDetails.getDirectRecipient()).thenReturn("noone@somewhere.coms");
   }
 

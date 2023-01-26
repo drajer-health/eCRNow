@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.Dstu2FhirData;
@@ -13,10 +14,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
@@ -36,6 +36,8 @@ public class Dstu2CdaResultGenerator {
     List<Observation> results = data.getLabResults();
 
     if (results != null && results.size() > 0) {
+
+      logger.info(" Number of Lab Result Observations to process {}", results.size());
 
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
@@ -90,9 +92,11 @@ public class Dstu2CdaResultGenerator {
           } else if (!StringUtils.isEmpty(obs.getCode().getText())) {
             obsDisplayName = obs.getCode().getText();
           }
+        } else if (obs.getCode() != null && obs.getCode().getText() != null) {
+          obsDisplayName = obs.getCode().getText();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
         String val = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -179,7 +183,7 @@ public class Dstu2CdaResultGenerator {
             && (obs.getInterpretation().getCoding() != null)
             && (obs.getInterpretation().getCoding().size() > 0)) {
 
-          logger.info(" Adding Interpretaion Code ");
+          logger.info(" Adding Interpretation Code ");
           List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
           cdt.add(obs.getInterpretation());
           lrEntry.append(
@@ -192,10 +196,7 @@ public class Dstu2CdaResultGenerator {
             CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
 
-        if (!triggerCodesAdded) {
-          lrEntry.append(addTriggerCodes(data, details, obs, cds));
-          triggerCodesAdded = true;
-        }
+        lrEntry.append(addTriggerCodes(details, obs));
 
         // End Tags for Entries
         lrEntry.append(
@@ -229,8 +230,7 @@ public class Dstu2CdaResultGenerator {
     return hsb.toString();
   }
 
-  public static String addTriggerCodes(
-      Dstu2FhirData data, LaunchDetails details, Observation obs, List<CodingDt> cds) {
+  public static String addTriggerCodes(LaunchDetails details, Observation obs) {
 
     StringBuilder lrEntry = new StringBuilder();
 
@@ -259,84 +259,193 @@ public class Dstu2CdaResultGenerator {
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
+      StringBuilder codeXml = new StringBuilder(200);
+      StringBuilder valXml = new StringBuilder(200);
 
       if (mtc.hasMatchedTriggerCodes("Observation")) {
 
-        // Add the actual Result Observation
-        lrEntry.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForAct(
-                CdaGeneratorConstants.OBS_ACT_EL_NAME,
-                CdaGeneratorConstants.OBS_CLASS_CODE,
-                CdaGeneratorConstants.MOOD_CODE_DEF));
+        // Check if match was found and then include the rest.
+        Boolean matchFound = doesTriggerCodesMatchObservation(obs, mtc, codeXml, valXml);
 
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID));
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID,
-                CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForTemplateId(
-                CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID,
-                CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT));
+        logger.info(" code Xml {}", codeXml.toString());
+        logger.info(" value Xml {}", valXml.toString());
 
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), obs.getId().getIdPart()));
+        if (matchFound) {
 
-        lrEntry.append(Dstu2CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME));
-
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
-
-        lrEntry.append(
-            Dstu2CdaFhirUtilities.getIDataTypeXml(
-                obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
-
-        //	lrEntry.append(CdaFhirUtilities.getIDataTypeXml(obs.getValue(),
-        // CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
-
-        Set<String> matchedCodes = mtc.getMatchedCodes();
-
-        if (matchedCodes != null && matchedCodes.size() > 0) {
-
-          // Split the system and code.
-          matchedCodes
-              .stream()
-              .filter(Objects::nonNull)
-              .findFirst()
-              .ifPresent(
-                  matchCode -> {
-                    String[] parts = matchCode.split("\\|");
-
-                    Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
-
-                    // For Connectathon, until we get the right test data finish testing.
-                    String vs = "2.16.840.1.114222.4.11.7508";
-                    String vsVersion = "19/05/2016";
-                    lrEntry.append(
-                        CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                            parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
-
-                    // Adding one is sufficient and only one is possible according to Schema.
-                  });
+          lrEntry.append(addEntry(obs, details, codeXml.toString(), valXml.toString()));
+          break;
         }
-
-        // End Tag for Entry Relationship
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-        lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
-
-      } else {
-
-        logger.info(" Not adding matched Trigger codes as they are not present for Lab Result ");
       }
     }
 
     return lrEntry.toString();
+  }
+
+  public static String addEntry(
+      Observation obs, LaunchDetails details, String codeXml, String valXml) {
+
+    StringBuilder lrEntry = new StringBuilder();
+
+    // Add the actual Result Observation
+    lrEntry.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID));
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID,
+            CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID,
+            CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT));
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId().getIdPart()));
+
+    if (!StringUtils.isEmpty(codeXml)) {
+      lrEntry.append(codeXml);
+    } else {
+
+      lrEntry.append(Dstu2CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME));
+    }
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    lrEntry.append(
+        Dstu2CdaFhirUtilities.getIDataTypeXml(
+            obs.getEffective(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+
+    if (!StringUtils.isEmpty(valXml)) {
+      lrEntry.append(valXml);
+    } else {
+      lrEntry.append(
+          Dstu2CdaFhirUtilities.getIDataTypeXml(
+              obs.getValue(), CdaGeneratorConstants.VAL_EL_NAME, true));
+    }
+
+    // Add interpretation code.
+    if ((obs.getInterpretation() != null)
+        && (obs.getInterpretation().getCoding() != null)
+        && (obs.getInterpretation().getCoding().size() > 0)) {
+
+      logger.info(" Adding Interpretaion Code ");
+      List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
+      cdt.add(obs.getInterpretation());
+      lrEntry.append(
+          Dstu2CdaFhirUtilities.getCodeableConceptXml(
+              cdt, CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME, false));
+    }
+
+    // End Tag for Entry Relationship
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
+
+    return lrEntry.toString();
+  }
+
+  public static Boolean doesTriggerCodesMatchObservation(
+      Observation obs, MatchedTriggerCodes mtc, StringBuilder codeXml, StringBuilder valXml) {
+
+    Boolean matchFound = false;
+
+    Set<String> matchedCodes = mtc.getMatchedCodes();
+
+    List<CodingDt> codeElements = null;
+    List<CodingDt> valElements = null;
+
+    if (obs.getCode() != null
+        && obs.getCode().getCoding() != null
+        && obs.getCode().getCoding().size() > 0) {
+      codeElements = obs.getCode().getCoding();
+    }
+
+    if (obs.getValue() instanceof CodeableConceptDt) {
+      CodeableConceptDt valDt = (CodeableConceptDt) obs.getValue();
+
+      if (valDt.getCoding() != null && valDt.getCoding().size() > 0) {
+        valElements = valDt.getCoding();
+      }
+    }
+
+    if (matchedCodes != null && matchedCodes.size() > 0) {
+
+      logger.info(" Size of the Matched Codes {}", matchedCodes.size());
+
+      for (String s : matchedCodes) {
+
+        StringBuilder codeXmlTemp = new StringBuilder(200);
+        StringBuilder valXmlTemp = new StringBuilder(200);
+        String[] parts = s.split("\\|");
+
+        if (codeElements != null
+            && Dstu2CdaFhirUtilities.isCodePresentInCoding(parts[1], codeElements)) {
+
+          logger.info(" Code is present in the Codings {}", parts[1]);
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+
+          // For Connectathon, until we get the right test data finish testing.
+          codeXmlTemp.append(
+              CdaGeneratorUtils.getXmlForCDWithValueSetAndVersion(
+                  CdaGeneratorConstants.CODE_EL_NAME,
+                  parts[1],
+                  csd.getValue0(),
+                  csd.getValue1(),
+                  CdaGeneratorConstants.RCTC_OID,
+                  ActionRepo.getInstance().getRctcVersion(),
+                  "",
+                  ""));
+          matchFound = true;
+
+        } else if (codeElements != null) {
+
+          logger.info(" Setting code xml to just the value of the codings ");
+          codeXmlTemp.append(
+              Dstu2CdaFhirUtilities.getCodingXml(codeElements, CdaGeneratorConstants.CODE_EL_NAME));
+        }
+
+        // Check for values
+        if (valElements != null
+            && Dstu2CdaFhirUtilities.isCodePresentInCoding(parts[1], valElements)) {
+
+          logger.info(" Matched Value Element for triggering {}", parts[1]);
+          Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
+
+          // For Connectathon, until we get the right test data finish testing.
+          valXmlTemp.append(
+              CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
+                  parts[1],
+                  csd.getValue0(),
+                  csd.getValue1(),
+                  CdaGeneratorConstants.RCTC_OID,
+                  ActionRepo.getInstance().getRctcVersion(),
+                  ""));
+          matchFound = true;
+
+        } else if (valElements != null) {
+
+          logger.info(" No Matched Value Element so just encoding value element ");
+          valXmlTemp.append(
+              Dstu2CdaFhirUtilities.getCodingXmlForValue(
+                  valElements, CdaGeneratorConstants.VAL_EL_NAME));
+        }
+
+        if (Boolean.TRUE.equals(matchFound)) {
+          codeXml.append(codeXmlTemp);
+          valXml.append(valXmlTemp);
+          break;
+        }
+      } // for
+    }
+
+    return matchFound;
   }
 
   public static String generateEmptyLabResults() {

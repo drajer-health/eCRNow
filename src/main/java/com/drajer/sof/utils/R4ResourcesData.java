@@ -46,6 +46,8 @@ public class R4ResourcesData {
   private static final String ENCOUNTER_DIAGNOSIS_CONDITION = "encounter-diagnosis";
   private static final String PROBLEM_LIST_CONDITION = "problem-list-item";
 
+  private static final String ATTACHMENT_CONTENT_TYPE = "text/xml";
+
   private List<CodeableConcept> findEncounterCodes(Encounter encounter) {
     List<CodeableConcept> encounterCodes = new ArrayList<>();
     if (encounter != null && encounter.getType() != null) {
@@ -241,62 +243,74 @@ public class R4ResourcesData {
     List<CodeableConcept> observationCodes = new ArrayList<>();
     List<CodeableConcept> valueObservationCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
-      // Filter Observations based on Encounter Reference
-      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
-        bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          Observation observation = (Observation) entry.getResource();
-          if (!observation.getEncounter().isEmpty()
-              && observation
-                  .getEncounter()
-                  .getReferenceElement()
-                  .getIdPart()
-                  .equals(encounter.getIdElement().getIdPart())) {
-            observations.add(observation);
-            observationCodes.addAll(findLaboratoryCodes(observation));
-            findAllValueCodes(observation, valueObservations, valueObservationCodes);
-          }
-        }
-        // If Encounter Id is not present using start and end dates to filter
-        // Observations
-      } else {
-        bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          Observation observation = (Observation) entry.getResource();
-          // Checking If Issued Date is present in Observation resource
-          if (observation.getIssued() != null) {
-            if (isResourceWithinDateTime(start, end, observation.getIssued())) {
-              observations.add(observation);
-              observationCodes.addAll(findLaboratoryCodes(observation));
-              findAllValueCodes(observation, valueObservations, valueObservationCodes);
-            }
-            // If Issued date is not present, Checking for Effective Date
-          } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
-            Type effectiveDate = observation.getEffectiveDateTimeType();
-            Date effDate = effectiveDate.dateTimeValue().getValue();
-            if (isResourceWithinDateTime(start, end, effDate)) {
-              observations.add(observation);
-              observationCodes.addAll(findLaboratoryCodes(observation));
-              findAllValueCodes(observation, valueObservations, valueObservationCodes);
-            }
-            // If Issued and Effective Date are not present looking for LastUpdatedDate
-          } else {
-            Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
-            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
-              observations.add(observation);
-              observationCodes.addAll(findLaboratoryCodes(observation));
-              findAllValueCodes(observation, valueObservations, valueObservationCodes);
-            }
-          }
+
+      // Eliminate the resources which are not applicable in general for ECR Reporting.
+      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
+      for (BundleEntryComponent entry : bundle.getEntry()) {
+        Observation observation = (Observation) entry.getResource();
+
+        if (observationHasSameEncounter(encounter, observation)
+            || (isObservationWithinTimeRange(start, end, observation))) {
+
+          observations.add(observation);
+          observationCodes.addAll(findLaboratoryCodes(observation));
+          findAllValueCodes(observation, valueObservations, valueObservationCodes);
         }
       }
-      r4FhirData.setR4LabResultCodes(observationCodes);
-      r4FhirData.setR4LabResultValues(valueObservationCodes);
-      r4FhirData.setLabResultValueObservations(valueObservations);
     }
+
+    r4FhirData.setR4LabResultCodes(observationCodes);
+    r4FhirData.setR4LabResultValues(valueObservationCodes);
+    r4FhirData.setLabResultValueObservations(valueObservations);
+
     logger.info("Filtered Observations ----> {}", observations.size());
     logger.info("Filtered Observation Coded Values ----> {}", valueObservations.size());
     return observations;
+  }
+
+  public boolean observationHasSameEncounter(Encounter enc, Observation obs) {
+
+    if (enc != null
+        && obs.getEncounter() != null
+        && obs.getEncounter().getReferenceElement() != null
+        && obs.getEncounter().getReferenceElement().getIdPart() != null
+        && enc.getIdElement()
+            .getIdPart()
+            .contentEquals(obs.getEncounter().getReferenceElement().getIdPart())) {
+
+      logger.debug(" Filtering based on Encounter Reference {}", enc.getId());
+      return true;
+
+    } else return false;
+  }
+
+  public boolean isObservationWithinTimeRange(Date start, Date end, Observation obs) {
+
+    if (obs.getIssued() != null && isResourceWithinDateTime(start, end, obs.getIssued())) {
+
+      logger.debug(" Adding observation based on time thresholds compared to Issued Time ");
+      return true;
+    }
+
+    if (obs.getEffective() != null && !obs.getEffective().isEmpty()) {
+      Type effectiveDate = obs.getEffectiveDateTimeType();
+      Date effDate = effectiveDate.dateTimeValue().getValue();
+      if (isResourceWithinDateTime(start, end, effDate)) {
+
+        logger.debug(" Adding observation based on time thresholds compared to Effective Time ");
+        return true;
+      }
+    }
+
+    Date lastUpdatedDateTime = obs.getMeta().getLastUpdated();
+    if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+      logger.debug(" Adding observation based on time thresholds compared to Last Updated Time ");
+      return true;
+    }
+
+    logger.debug(
+        " Observation {} not being added as it is not within the time range ", obs.getId());
+    return false;
   }
 
   public void findAllValueCodes(
@@ -1307,7 +1321,7 @@ public class R4ResourcesData {
         }
       }
 
-      // Load Location
+      // Add Organization
       if (Boolean.TRUE.equals(encounter.hasServiceProvider())) {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()) {
@@ -1327,6 +1341,8 @@ public class R4ResourcesData {
           }
         }
       }
+
+      // Add Locations
       if (Boolean.TRUE.equals(encounter.hasLocation())) {
         List<Location> locationList = new ArrayList<>();
         List<EncounterLocationComponent> enocunterLocations = encounter.getLocation();
@@ -1353,6 +1369,10 @@ public class R4ResourcesData {
           }
         }
         r4FhirData.setLocationList(locationList);
+
+        if (locationList.size() > 0) {
+          r4FhirData.setLocation(locationList.get(0));
+        }
       }
     } else {
       logger.debug("Encounter is null, cannot fetch Practitioners");
@@ -1360,7 +1380,11 @@ public class R4ResourcesData {
   }
 
   public DocumentReference constructR4DocumentReference(
-      String rrXml, String patientId, String encounterID) {
+      String rrXml,
+      String patientId,
+      String encounterID,
+      String providerUUID,
+      String rrDocRefMimeType) {
     DocumentReference documentReference = new DocumentReference();
 
     // Set Doc Ref Status
@@ -1384,12 +1408,22 @@ public class R4ResourcesData {
     patientReference.setReference("Patient/" + patientId);
     documentReference.setSubject(patientReference);
 
+    // Set Author
+    if (providerUUID != null) {
+      List<Reference> authorRefList = new ArrayList<>();
+      Reference providerReference = new Reference();
+      providerReference.setReference("Practitioner/" + providerUUID);
+      authorRefList.add(providerReference);
+      documentReference.setAuthor(authorRefList);
+    }
+
     // Set Doc Ref Content
     List<DocumentReference.DocumentReferenceContentComponent> contentList = new ArrayList<>();
     DocumentReference.DocumentReferenceContentComponent contentComp =
         new DocumentReference.DocumentReferenceContentComponent();
     Attachment attachment = new Attachment();
-    attachment.setContentType(CdaParserConstants.RR_DOC_CONTENT_TYPE);
+    attachment.setTitle("EICR Reportability Response");
+    attachment.setContentType(rrDocRefMimeType);
 
     if (rrXml != null && !rrXml.isEmpty()) {
       attachment.setData(rrXml.getBytes());

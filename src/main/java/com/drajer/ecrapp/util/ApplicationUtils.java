@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.util;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.parser.IParser;
@@ -203,6 +204,7 @@ public class ApplicationUtils {
         valueSetExpansionContainsComponentList = valueSetExpansionComponent.getContains();
         for (ValueSetExpansionContainsComponent vscomp : valueSetExpansionContainsComponentList) {
           if (vscomp.getSystem() != null && vscomp.getCode() != null) {
+            logger.debug(" Code = {}", vscomp.getCode());
             retVal.add(vscomp.getSystem() + "|" + vscomp.getCode());
           }
         }
@@ -362,7 +364,7 @@ public class ApplicationUtils {
 
     boolean retVal = false;
 
-    if (v != null && v.getUseContext() != null) {
+    if (v != null && v.hasUseContext() && v.getUseContext() != null) {
 
       logger.debug("Checking Value Set Id {}", v.getId());
 
@@ -370,7 +372,7 @@ public class ApplicationUtils {
 
       for (UsageContext uc : ucs) {
 
-        if (uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
+        if (uc.hasValue() && uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
 
           CodeableConcept cc = (CodeableConcept) uc.getValue();
 
@@ -456,6 +458,39 @@ public class ApplicationUtils {
     } catch (Exception e) {
       logger.error("Exception Reading File", e);
     }
+    return bundle;
+  }
+
+  public ca.uhn.fhir.model.dstu2.resource.Bundle readDstu2BundleFromFile(String filename) {
+
+    logger.info("About to read File {}", filename);
+    ca.uhn.fhir.model.dstu2.resource.Bundle bundle = null;
+
+    FhirContext dstu2Context = FhirContext.forDstu2();
+
+    try (InputStream in = new FileInputStream(new File(filename))) {
+      logger.info("Reading File ");
+      bundle =
+          dstu2Context
+              .newJsonParser()
+              .parseResource(ca.uhn.fhir.model.dstu2.resource.Bundle.class, in);
+      logger.info("Completed Reading File");
+    } catch (Exception e) {
+      logger.error("Exception Reading File", e);
+    }
+    return bundle;
+  }
+
+  public ca.uhn.fhir.model.dstu2.resource.Bundle readDstu2BundleFromString(String data) {
+
+    logger.info("About to read String ");
+    ca.uhn.fhir.model.dstu2.resource.Bundle bundle = null;
+    FhirContext dstu2Context = FhirContext.forDstu2();
+    bundle =
+        dstu2Context
+            .newJsonParser()
+            .parseResource(ca.uhn.fhir.model.dstu2.resource.Bundle.class, data);
+
     return bundle;
   }
 

@@ -175,7 +175,6 @@ public class PlanDefinitionProcessor {
 
               logger.debug(" Found a Emergent Value Set {}", valueSet.getId());
 
-              // valueSetService.createValueSet(valueSet);
               emergentValuesets.add(valueSet);
               valuesets.add(valueSet);
             } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {

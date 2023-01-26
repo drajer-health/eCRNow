@@ -6,6 +6,7 @@ public final class EicrTypes {
 
     // These are the responses that need to be handled.
     FAILURE_MDN,
+    REPORTABILITY_RESPONSE,
     REPORTABLE,
     MAYBE_REPORTABLE,
     NO_RULE_MET,

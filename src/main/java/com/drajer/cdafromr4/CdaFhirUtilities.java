@@ -114,6 +114,29 @@ public class CdaFhirUtilities {
                         .equalsIgnoreCase(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME))) {
 
               return cc;
+            } else {
+              List<Coding> cs = cd.getCoding();
+
+              for (Coding c : cs) {
+
+                if (c.getSystem() != null
+                    && (c.getSystem()
+                            .contentEquals(
+                                CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM)
+                        || c.getSystem()
+                            .contentEquals(
+                                CdaGeneratorConstants.DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM))
+                    && c.getCode() != null
+                    && (c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_VALUE)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_EL_NAME)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.EMERGENCY_VALUE)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME)
+                        || c.getCode().contentEquals(CdaGeneratorConstants.FHIR_GUARDIAN_VALUE)
+                        || c.getCode()
+                            .contentEquals(CdaGeneratorConstants.FHIR_EMERGENCY_CONTACT_VALUE))) {
+                  return cc;
+                }
+              }
             }
           }
         }
@@ -265,7 +288,6 @@ public class CdaFhirUtilities {
       Address addr = addrs.get(0);
 
       logger.debug(" Found a valid address. ");
-
       String addrUse = null;
       if (addr.getUse() != null) {
         addrUse = CdaGeneratorConstants.getCodeForAddressUse(addr.getUse().toString());
@@ -1887,7 +1909,7 @@ public class CdaFhirUtilities {
       // Add each code as an entry relationship observation
       if (mtc.hasMatchedTriggerCodes(matchResourceType)) {
 
-        logger.debug("Found Matched Codes for Resource Type {}", matchResourceType);
+        logger.info("Found Matched Codes for Resource Type {}", matchResourceType);
 
         Set<String> matchedCodes = mtc.getMatchedCodes();
 

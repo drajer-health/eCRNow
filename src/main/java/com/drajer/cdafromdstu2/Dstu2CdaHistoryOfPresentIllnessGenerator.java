@@ -7,6 +7,7 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
           probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
         bodyvals.put(
             CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, probDisplayName);
 

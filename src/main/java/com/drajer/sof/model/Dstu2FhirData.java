@@ -27,12 +27,14 @@ public class Dstu2FhirData extends FhirData {
   private Location location;
   private Organization organization;
   private List<Condition> conditions;
+  private List<Condition> pregnancyConditions;
   private List<DiagnosticReport> diagReports;
   private List<DiagnosticOrder> diagOrders;
   private List<Observation> labResults;
   private List<Observation> labResultValueObservations;
   private List<Observation> travelObs;
   private List<Observation> pregnancyObs;
+  private List<Observation> occupationObs;
   private List<Immunization> immunizations;
   private List<MedicationStatement> medications;
   private List<MedicationAdministration> medicationAdministrations;
@@ -41,12 +43,14 @@ public class Dstu2FhirData extends FhirData {
   public Dstu2FhirData() {
 
     conditions = new ArrayList<>();
+    pregnancyConditions = new ArrayList<>();
     diagReports = new ArrayList<>();
     diagOrders = new ArrayList<>();
     labResults = new ArrayList<>();
     labResultValueObservations = new ArrayList<>();
     travelObs = new ArrayList<>();
     pregnancyObs = new ArrayList<>();
+    occupationObs = new ArrayList<>();
     immunizations = new ArrayList<>();
     medications = new ArrayList<>();
     medicationAdministrations = new ArrayList<>();
@@ -188,5 +192,21 @@ public class Dstu2FhirData extends FhirData {
 
   public void setLabResultValueObservations(List<Observation> labResultValueObservations) {
     this.labResultValueObservations = labResultValueObservations;
+  }
+
+  public List<Observation> getOccupationObs() {
+    return occupationObs;
+  }
+
+  public void setOccupationObs(List<Observation> occupationObs) {
+    this.occupationObs = occupationObs;
+  }
+
+  public List<Condition> getPregnancyConditions() {
+    return pregnancyConditions;
+  }
+
+  public void setPregnancyConditions(List<Condition> pregnancyConditions) {
+    this.pregnancyConditions = pregnancyConditions;
   }
 }
