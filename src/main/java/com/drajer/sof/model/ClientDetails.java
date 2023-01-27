@@ -40,7 +40,10 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem;
 
-  @Column(name = "is_multi_tenant_system_launch", nullable = true)
+  @Column(
+      name = "is_multi_tenant_system_launch",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isMultiTenantSystemLaunch;
 
@@ -136,15 +139,21 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isEmergentReportingEnabled;
 
-  @Column(name = "rrprocessing_createdocRef", nullable = false)
+  @Column(
+      name = "rrprocessing_createdocRef",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
 
-  @Column(name = "rrprocessing_invokerestapi", nullable = false)
+  @Column(
+      name = "rrprocessing_invokerestapi",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isInvokeRestAPI;
 
-  @Column(name = "rrprocessing_both", nullable = false)
+  @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isBoth;
 

@@ -155,15 +155,21 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr = true;
 
-  @Column(name = "rrprocessing_createdocRef", nullable = false)
+  @Column(
+      name = "rrprocessing_createdocRef",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
 
-  @Column(name = "rrprocessing_invokerestapi", nullable = false)
+  @Column(
+      name = "rrprocessing_invokerestapi",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isInvokeRestAPI;
 
-  @Column(name = "rrprocessing_both", nullable = false)
+  @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isBoth;
 
@@ -189,15 +195,24 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
-  @Column(name = "is_multi_tenant_system_launch", nullable = false)
+  @Column(
+      name = "is_multi_tenant_system_launch",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isMultiTenantSystemLaunch;
 
-  @Column(name = "is_user_account_launch", nullable = false)
+  @Column(
+      name = "is_user_account_launch",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch;
 
-  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
+  @Column(
+      name = "debug_fhir_query_and_eicr",
+      nullable = false,
+      columnDefinition = "boolean default false")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
