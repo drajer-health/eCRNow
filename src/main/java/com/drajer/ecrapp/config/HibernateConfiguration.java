@@ -21,9 +21,9 @@ public class HibernateConfiguration {
   @Autowired private Environment environment;
 
   @Bean
-  public LocalSessionFactoryBean sessionFactory() {
+  public LocalSessionFactoryBean sessionFactory(@Autowired DataSource dataSource) {
     LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-    sessionFactory.setDataSource(dataSource());
+    sessionFactory.setDataSource(dataSource);
     sessionFactory.setPackagesToScan(
         "com.drajer.ersd.model",
         "com.drajer.sof.model",
@@ -35,7 +35,7 @@ public class HibernateConfiguration {
     return sessionFactory;
   }
 
-  @Bean
+ /* @Bean
   public DataSource dataSource() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
     dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
@@ -43,7 +43,7 @@ public class HibernateConfiguration {
     dataSource.setUsername(environment.getRequiredProperty("jdbc.username"));
     dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
     return dataSource;
-  }
+  }*/
 
   private Properties hibernateProperties() {
     Properties properties = new Properties();
