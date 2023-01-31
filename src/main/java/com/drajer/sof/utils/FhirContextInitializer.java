@@ -350,7 +350,7 @@ public class FhirContextInitializer {
       String encounterStartDate = formatter.format(launchDetails.getStartDate());
 
       if (resourceName.matches("Observation|DiagnosticReport")) {
-        customQueryParam += "&date=gt" + encounterStartDate;
+        customQueryParam += "&date=ge" + encounterStartDate;
       } else if (resourceName.matches("ServiceRequest|MedicationRequest")) {
         customQueryParam += "&_lastUpdated=ge" + encounterStartDate + "T00:00:00.000Z";
       }
