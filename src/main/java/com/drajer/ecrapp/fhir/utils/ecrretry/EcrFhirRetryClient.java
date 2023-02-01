@@ -12,6 +12,7 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 
 public class EcrFhirRetryClient extends FhirClient {
 
+
   private FHIRRetryTemplate fhirRetryTemplate;
 
   public EcrFhirRetryClient(

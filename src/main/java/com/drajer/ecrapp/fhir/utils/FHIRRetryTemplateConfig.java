@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +41,7 @@ public class FHIRRetryTemplateConfig {
 
     public long getRetryWaitTimeInMillis() {
       return (retryWaitTimeInMillis > 0 ? retryWaitTimeInMillis : 1000);
+
     }
   }
 }

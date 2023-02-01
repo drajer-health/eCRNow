@@ -30,6 +30,12 @@ public class SpringConfiguration {
 
   public static final FhirContext ctx = FhirContext.forR4();
 
+  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+
+  public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
+    this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
+  }
+
   @Bean(name = "esrdGenericClient")
   public IGenericClient getEsrdFhirContext() {
     BearerTokenAuthInterceptor authInterceptor =
