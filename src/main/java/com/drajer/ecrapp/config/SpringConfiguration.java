@@ -31,8 +31,7 @@ public class SpringConfiguration {
 
   public static final FhirContext ctx = FhirContext.forR4();
 
-  @Autowired
-  FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
 
   public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
     this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
