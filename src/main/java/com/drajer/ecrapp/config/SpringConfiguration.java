@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,8 @@ public class SpringConfiguration {
 
   public static final FhirContext ctx = FhirContext.forR4();
 
-  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  @Autowired
+  FHIRRetryTemplateConfig fhirRetryTemplateConfig;
 
   public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
     this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
