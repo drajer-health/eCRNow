@@ -12,15 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class FHIRRetryTemplate implements GenericRetryTemplate, InitializingBean {
 
-
   // To make this class more generic, configure this retry template inclass
   @Autowired
   @Qualifier("ECRRetryTemplate")
-
   private RetryTemplate retryTemplate;
 
   @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
-
 
   @Value("${ecr.fhir.retry.enabled:false}")
   protected Boolean isRetryEnabled;
@@ -34,7 +31,6 @@ public class FHIRRetryTemplate implements GenericRetryTemplate, InitializingBean
   public FHIRRetryTemplateConfig getFhirRetryTemplateConfig() {
     return fhirRetryTemplateConfig;
   }
-
 
   public boolean isRetryEnabled() {
     return isRetryEnabled;

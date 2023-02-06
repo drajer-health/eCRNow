@@ -25,8 +25,8 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
       String patient, String encounter, String fhirServerUrl) {
     Criteria criteria = getSession().createCriteria(LaunchDetails.class);
     criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
-    criteria.add(Restrictions.eq("encounterId", encounter));
     criteria.add(Restrictions.eq("launchPatientId", patient));
+    criteria.add(Restrictions.eq("encounterId", encounter));
 
     return (LaunchDetails) criteria.uniqueResult();
   }
