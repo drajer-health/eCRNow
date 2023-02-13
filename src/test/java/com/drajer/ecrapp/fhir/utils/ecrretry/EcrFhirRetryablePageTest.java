@@ -58,17 +58,17 @@ public class EcrFhirRetryablePageTest {
     currentStateDetails.setFhirVersion("R4");
 
     httpMethodType.setMaxRetries(3);
-    httpMethodType.setRetryWaitTime(3000);
+    httpMethodType.setRetryWaitTimeInMillis(3000);
     httpMethodType.setRetryStatusCodes(
         new ArrayList<>(Arrays.asList(408, 429, 502, 503, 504, 500)));
 
     map.put("GET", httpMethodType);
     fhirRetryTemplateConfig.setHttpMethodTypeMap(map);
     fhirRetryTemplateConfig.setMaxRetries(3);
-    fhirRetryTemplateConfig.setRetryWaitTime(3000);
+    fhirRetryTemplateConfig.setRetryWaitTimeInMillis(3000);
 
-    springConfiguration.setFhirRetryTemplateConfig(fhirRetryTemplateConfig);
-    fhirretryTemplate.setRetryTemplate(springConfiguration.retryTemplate());
+    RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
+    fhirretryTemplate = new FHIRRetryTemplate(retryStatusCode.configureRetryTemplate());
     when(retryClient.getRetryTemplate()).thenReturn(fhirretryTemplate);
 
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))

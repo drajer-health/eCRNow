@@ -18,7 +18,7 @@ public class MatchTriggerAction extends AbstractAction {
   @Override
   public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
 
-    logger.info(" Executing Match Trigger Action ");
+    logger.info(" **** START Executing Match Trigger Action **** ");
 
     if (obj instanceof LaunchDetails) {
 
@@ -137,6 +137,9 @@ public class MatchTriggerAction extends AbstractAction {
 
       throw new RuntimeException(msg);
     }
+
+    logger.info(
+        " **** END Executing Match Trigger Action after completing normal execution. **** ");
   }
 
   @Override

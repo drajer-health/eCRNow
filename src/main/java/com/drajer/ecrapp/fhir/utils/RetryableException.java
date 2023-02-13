@@ -1,21 +1,24 @@
 package com.drajer.ecrapp.fhir.utils;
 
-import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+public class RetryableException extends RuntimeException {
 
-public class RetryableException extends BaseServerResponseException {
   private final String methodName;
   private final int httpResponseStatusCode;
 
   public RetryableException(
       final String message, final int httpResponseStatusCode, final String methodName) {
-    super(httpResponseStatusCode);
+
+    super(message);
+
     this.methodName = methodName;
     this.httpResponseStatusCode = httpResponseStatusCode;
   }
 
   public RetryableException(
       final Throwable cause, final int httpResponseStatusCode, final String methodName) {
-    super(httpResponseStatusCode, cause);
+
+    super(cause);
+
     this.methodName = methodName;
     this.httpResponseStatusCode = httpResponseStatusCode;
   }
@@ -25,7 +28,9 @@ public class RetryableException extends BaseServerResponseException {
       final Throwable cause,
       final int httpResponseStatusCode,
       final String methodName) {
-    super(httpResponseStatusCode, cause);
+
+    super(message, cause);
+
     this.methodName = methodName;
     this.httpResponseStatusCode = httpResponseStatusCode;
   }
