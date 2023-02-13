@@ -8,7 +8,6 @@ import ca.uhn.fhir.rest.gclient.IGetPageTyped;
 import ca.uhn.fhir.rest.gclient.IGetPageUntyped;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -38,51 +37,49 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public IGetPageTyped<IBaseBundle> andLogRequestAndResponse(boolean theLogRequestAndResponse) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> cacheControl(CacheControlDirective theCacheControlDirective) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> elementsSubset(String... theElements) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> encoded(EncodingEnum theEncoding) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> encodedJson() {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> encodedXml() {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> withAdditionalHeader(
       String theHeaderName, String theHeaderValue) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IBaseBundle execute() {
-    AtomicInteger retryCount = new AtomicInteger();
     return client
         .getRetryTemplate()
         .execute(
             retryContext -> {
               try {
-                retryCount.getAndIncrement();
                 client.getHttpInterceptor().setRetryCount(retryContext.getRetryCount());
-                logger.info("Retrying FHIR page. Count: {}", retryCount);
+                logger.info("Retrying FHIR page. Count: {}", retryContext.getRetryCount());
                 return pageTyped.execute();
               } catch (final Exception ex) {
                 throw client.handleException(ex, HttpMethod.GET.name());
@@ -93,28 +90,28 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public IGetPageTyped<IBaseBundle> preferResponseType(Class<? extends IBaseResource> theType) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> preferResponseTypes(
       List<Class<? extends IBaseResource>> theTypes) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> prettyPrint() {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> summaryMode(SummaryEnum theSummary) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageTyped<IBaseBundle> accept(String theHeaderValue) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
@@ -125,11 +122,11 @@ public class EcrFhirRetryablePage implements IGetPage, IGetPageTyped<IBaseBundle
 
   @Override
   public <T extends IBaseBundle> IGetPageTyped<T> previous(T theBundle) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IGetPageUntyped byUrl(String thePageUrl) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 }

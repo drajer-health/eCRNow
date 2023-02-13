@@ -10,7 +10,6 @@ import ca.uhn.fhir.rest.gclient.IReadIfNoneMatch;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
 import ca.uhn.fhir.rest.server.exceptions.NotImplementedOperationException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public <T extends IBaseResource> IReadTyped<T> resource(Class<T> theResourceType) {
-    return readParent.resource(theResourceType);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
@@ -61,75 +60,73 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IReadExecutable withIdAndVersion(String theId, String theVersion) {
-    return readTypedParent.withIdAndVersion(theId, theVersion);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IReadExecutable withId(Long theId) {
-    return readTypedParent.withId(theId);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IReadExecutable withId(IIdType theId) {
-    return readTypedParent.withId(theId);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IReadExecutable withUrl(String theUrl) {
-    return readTypedParent.withUrl(theUrl);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IReadExecutable withUrl(IIdType theUrl) {
-    return readTypedParent.withUrl(theUrl);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable andLogRequestAndResponse(boolean theLogRequestAndResponse) {
-    return readExecutableParent.andLogRequestAndResponse(theLogRequestAndResponse);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable cacheControl(CacheControlDirective theCacheControlDirective) {
 
-    return readExecutableParent.cacheControl(theCacheControlDirective);
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable elementsSubset(String... theElements) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable encoded(EncodingEnum theEncoding) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable encodedJson() {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable encodedXml() {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable withAdditionalHeader(String theHeaderName, String theHeaderValue) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public Object execute() {
-    AtomicInteger retryCount = new AtomicInteger();
     return client
         .getRetryTemplate()
         .execute(
             retryContext -> {
               try {
-                retryCount.getAndIncrement();
-                logger.info("Retrying FHIR read. Count: {} ", retryCount);
+                logger.info("Retrying FHIR read. Count: {} ", retryContext.getRetryCount());
                 return readExecutableParent.execute();
               } catch (final Exception ex) {
                 throw client.handleException(ex, HttpMethod.GET.name());
@@ -140,31 +137,31 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IClientExecutable preferResponseType(Class theType) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable preferResponseTypes(List theTypes) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable prettyPrint() {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable summaryMode(SummaryEnum theSummary) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IClientExecutable accept(String theHeaderValue) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 
   @Override
   public IReadIfNoneMatch ifVersionMatches(String theVersion) {
-    throw new NotImplementedOperationException("The request operation is not implemented");
+    throw new NotImplementedOperationException("The requested operation is not implemented");
   }
 }

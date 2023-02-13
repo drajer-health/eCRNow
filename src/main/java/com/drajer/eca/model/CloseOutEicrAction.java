@@ -222,6 +222,9 @@ public class CloseOutEicrAction extends AbstractAction {
 
       throw new ObjectDeletedException(msg, "0", "launchDetails");
     }
+
+    logger.info(
+        " **** END Executing Close Out Eicr Action after completing normal execution. **** ");
   }
 
   public void scheduleJob(

@@ -12,13 +12,11 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 
 public class EcrFhirRetryClient extends FhirClient {
 
-  private IGenericClient parent;
   private FHIRRetryTemplate fhirRetryTemplate;
 
   public EcrFhirRetryClient(
       IGenericClient parent, FHIRRetryTemplate fhirRetryTemplate, String requestId) {
     super(parent, requestId);
-    this.parent = parent;
     this.fhirRetryTemplate = fhirRetryTemplate;
   }
 
@@ -35,7 +33,7 @@ public class EcrFhirRetryClient extends FhirClient {
   @Override
   public IGetPage loadPage() {
     this.interceptor.incrementPageNum();
-    return new EcrFhirRetryablePage(parent.loadPage(), this);
+    return new EcrFhirRetryablePage(client.loadPage(), this);
   }
 
   @Override

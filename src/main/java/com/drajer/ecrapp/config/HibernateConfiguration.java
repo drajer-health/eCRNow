@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.hibernate.SessionFactory;
@@ -8,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -35,11 +35,23 @@ public class HibernateConfiguration {
 
   @Bean
   public DataSource dataSource() {
-    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
-    dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));
+    HikariDataSource dataSource = new HikariDataSource();
     dataSource.setUsername(environment.getRequiredProperty("jdbc.username"));
     dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
+    dataSource.setJdbcUrl(environment.getRequiredProperty("jdbc.url"));
+    dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
+    dataSource.setMaximumPoolSize(
+        Integer.parseInt(environment.getRequiredProperty("hikari.maximum_pool_size")));
+    dataSource.setMaxLifetime(
+        Long.parseLong(environment.getRequiredProperty("hikari.max_lifetime")));
+    dataSource.setIdleTimeout(
+        Long.parseLong(environment.getRequiredProperty("hikari.idle_timeout")));
+    dataSource.setConnectionTimeout(
+        Long.parseLong(environment.getRequiredProperty("hikari.connection_timeout")));
+    dataSource.setMinimumIdle(
+        Integer.parseInt(environment.getRequiredProperty("hikari.minimum_idle")));
+    dataSource.setValidationTimeout(
+        Integer.parseInt(environment.getRequiredProperty("hikari.validation_timeout")));
     return dataSource;
   }
 
@@ -50,6 +62,9 @@ public class HibernateConfiguration {
     properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
     properties.put(
         "hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+    properties.put(
+        "hibernate.id.new_generator_mappings",
+        environment.getRequiredProperty("hibernate.id.new_generator_mappings"));
     return properties;
   }
 

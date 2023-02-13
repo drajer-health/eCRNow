@@ -23,6 +23,7 @@ import org.springframework.retry.support.RetryTemplate;
     })
 public class SpringConfiguration {
 
+  @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
 
   public static final String AUTHORIZATION_TOKEN =
@@ -50,10 +51,9 @@ public class SpringConfiguration {
     return ctx.newJsonParser().setPrettyPrint(true);
   }
 
-  @Bean(name = "FhirRetryTemplate")
+  @Bean(name = "ECRRetryTemplate")
   public RetryTemplate retryTemplate() {
 
-    RetryStatusCode retryStatusCode = new RetryStatusCode(fhirRetryTemplateConfig);
     RetryTemplate template = retryStatusCode.configureRetryTemplate();
 
     return template;

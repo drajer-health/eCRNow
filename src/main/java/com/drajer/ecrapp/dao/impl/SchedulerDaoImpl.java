@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   private static final String TASK_INSTANCE = "task_instance";
+  private static final String TASK_NAME = "task_name";
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
@@ -22,7 +23,8 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
     String queryString = actionType + "_" + launchId + "_";
 
-    criteria.add(Restrictions.ilike(TASK_INSTANCE, "%" + queryString + "%", MatchMode.START));
+    criteria.add(Restrictions.eq(TASK_NAME, "EICRTask"));
+    criteria.add(Restrictions.ilike(TASK_INSTANCE, queryString, MatchMode.ANYWHERE));
 
     return criteria.list();
   }

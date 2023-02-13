@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class RetryStatusCode {
 
-  private SimpleRetryPolicy simpleRetryPolicy;
   private FHIRRetryTemplateConfig fhirRetryTemplateConfig;
+  private SimpleRetryPolicy simpleRetryPolicy;
   private RetryTemplate retryTemplate;
   private FixedBackOffPolicy backOffPolicy;
 
@@ -26,7 +26,7 @@ public class RetryStatusCode {
   public RetryTemplate configureRetryTemplate() {
     retryTemplate = new RetryTemplate();
     backOffPolicy = new FixedBackOffPolicy();
-    backOffPolicy.setBackOffPeriod(fhirRetryTemplateConfig.getRetryWaitTime());
+    backOffPolicy.setBackOffPeriod(fhirRetryTemplateConfig.getRetryWaitTimeInMillis());
     ExceptionClassifierRetryPolicy policy = new ExceptionClassifierRetryPolicy();
     policy.setExceptionClassifier(configureStatusCodeBasedRetryPolicy());
     retryTemplate.setBackOffPolicy(backOffPolicy);
@@ -53,7 +53,7 @@ public class RetryStatusCode {
           fhirRetryTemplateConfig.getHttpMethodTypeMap().get(methodName);
       if (httpMethodType.getRetryStatusCodes().contains(httpStatusCode)) {
         simpleRetryPolicy.setMaxAttempts(httpMethodType.getMaxRetries());
-        backOffPolicy.setBackOffPeriod(httpMethodType.getRetryWaitTime());
+        backOffPolicy.setBackOffPeriod(httpMethodType.getRetryWaitTimeInMillis());
         return simpleRetryPolicy;
       }
     }
