@@ -42,10 +42,9 @@ public class ClientDetails {
 
   @Column(
       name = "is_multi_tenant_system_launch",
-      nullable = false,
-      columnDefinition = "boolean default false")
+      nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isMultiTenantSystemLaunch;
+  private Boolean isMultiTenantSystemLaunch = false;
 
   @Column(name = "is_user_account_launch", nullable = true)
   @Type(type = "org.hibernate.type.NumericBooleanType")
