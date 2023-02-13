@@ -155,15 +155,11 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr = true;
 
-  @Column(
-      name = "rrprocessing_createdocRef",
-      nullable = false)
+  @Column(name = "rrprocessing_createdocRef", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef = false;
 
-  @Column(
-      name = "rrprocessing_invokerestapi",
-      nullable = false)
+  @Column(name = "rrprocessing_invokerestapi", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isInvokeRestAPI = false;
 
@@ -193,21 +189,15 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = false;
 
-  @Column(
-      name = "is_multi_tenant_system_launch",
-      nullable = false)
+  @Column(name = "is_multi_tenant_system_launch", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isMultiTenantSystemLaunch = false;
 
-  @Column(
-      name = "is_user_account_launch",
-      nullable = false)
+  @Column(name = "is_user_account_launch", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch = false;
 
-  @Column(
-      name = "debug_fhir_query_and_eicr",
-      nullable = false)
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
