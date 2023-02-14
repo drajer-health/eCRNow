@@ -40,9 +40,12 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem;
 
-  @Column(name = "is_multi_tenant_system_launch", nullable = false, columnDefinition = "int default 0")
+  @Column(
+      name = "is_multi_tenant_system_launch",
+      nullable = true,
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isMultiTenantSystemLaunch = false;
+  private Boolean isMultiTenantSystemLaunch;
 
   @Column(name = "is_user_account_launch", nullable = true)
   @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -66,8 +69,8 @@ public class ClientDetails {
   @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
   private String accessToken;
 
-  @Column(name = "token_expiry", nullable = true)
-  private int tokenExpiry;
+  @Column(name = "token_expiry", nullable = true, columnDefinition = "int default 0")
+  private Integer tokenExpiry;
 
   @Column(name = "token_expiry_date", nullable = true)
   @Temporal(TemporalType.TIMESTAMP)
@@ -132,21 +135,18 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
 
-  @Column(name = "is_emergent_reporting_enabled", nullable = false, columnDefinition = "int default 0")
+  @Column(
+      name = "is_emergent_reporting_enabled",
+      nullable = false,
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isEmergentReportingEnabled;
 
-  @Column(
-      name = "rrprocessing_createdocRef",
-      nullable = false,
-      columnDefinition = "int default 0")
+  @Column(name = "rrprocessing_createdocRef", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
 
-  @Column(
-      name = "rrprocessing_invokerestapi",
-      nullable = false,
-      columnDefinition = "int default 0")
+  @Column(name = "rrprocessing_invokerestapi", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isInvokeRestAPI;
 
@@ -282,11 +282,11 @@ public class ClientDetails {
     this.accessToken = accessToken;
   }
 
-  public int getTokenExpiry() {
+  public Integer getTokenExpiry() {
     return tokenExpiry;
   }
 
-  public void setTokenExpiry(int tokenExpiry) {
+  public void setTokenExpiry(Integer tokenExpiry) {
     this.tokenExpiry = tokenExpiry;
   }
 

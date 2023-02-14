@@ -31,7 +31,7 @@ public class ClientDetailsDTO {
 
   private String accessToken;
 
-  private int tokenExpiry;
+  private Integer tokenExpiry;
 
   private Date tokenExpiryDateTime;
 
@@ -181,11 +181,11 @@ public class ClientDetailsDTO {
     this.accessToken = accessToken;
   }
 
-  public int getTokenExpiry() {
+  public Integer getTokenExpiry() {
     return tokenExpiry;
   }
 
-  public void setTokenExpiry(int tokenExpiry) {
+  public void setTokenExpiry(Integer tokenExpiry) {
     this.tokenExpiry = tokenExpiry;
   }
 

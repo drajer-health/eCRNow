@@ -64,8 +64,8 @@ public class LaunchDetails {
   @Column(name = "user_id", nullable = true)
   private String userId;
 
-  @Column(name = "expiry", nullable = true)
-  private int expiry;
+  @Column(name = "expiry", nullable = true, columnDefinition = "int default 0")
+  private Integer expiry;
 
   @Column(name = "scope", nullable = true, columnDefinition = "TEXT")
   private String scope;
@@ -147,7 +147,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid = false;
 
-  @Column(name = "is_emergent_reporting_enabled", nullable = false, columnDefinition = "int default 0")
+  @Column(
+      name = "is_emergent_reporting_enabled",
+      nullable = false,
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isEmergentReportingEnabled = true;
 
@@ -189,7 +192,10 @@ public class LaunchDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem = true;
 
-  @Column(name = "is_multi_tenant_system_launch", nullable = false, columnDefinition = "int default 0")
+  @Column(
+      name = "is_multi_tenant_system_launch",
+      nullable = false,
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isMultiTenantSystemLaunch = false;
 
@@ -361,11 +367,11 @@ public class LaunchDetails {
     this.userId = userId;
   }
 
-  public int getExpiry() {
+  public Integer getExpiry() {
     return expiry;
   }
 
-  public void setExpiry(int expiry) {
+  public void setExpiry(Integer expiry) {
     this.expiry = expiry;
   }
 
