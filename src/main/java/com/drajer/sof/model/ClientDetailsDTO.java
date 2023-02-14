@@ -419,10 +419,10 @@ public class ClientDetailsDTO {
 
   public void print() {
 
-    logger.info(" **** Printing Client Details **** ");
+    logger.info(" ***** Printing Client Details ***** ");
 
     logger.info(" Id = {}", id);
-    logger.info(" Provider Launch = {}", isProvider);
+    logger.info("Provider Launch = {}", isProvider);
     logger.info(" System Launch = {}", isSystem);
     logger.info(" Client Id = {}", clientId);
     logger.info(" FHIR Server URL = {}", fhirServerBaseURL);
@@ -443,6 +443,6 @@ public class ClientDetailsDTO {
     logger.info(" Is Aud required = {}", requireAud);
     logger.info(" Debug Fhir Query And Eicr {}", debugFhirQueryAndEicr);
 
-    logger.info(" **** End Printing Client Details **** ");
+    logger.info(" ***** End Printing Client Details ***** ");
   }
 }

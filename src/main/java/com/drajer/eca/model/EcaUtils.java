@@ -182,7 +182,7 @@ public class EcaUtils {
         // Create the object for persistence.
         ecr.setEicrData(eICR);
         ecr.setLaunchDetailsId(details.getId());
-        ;
+
         if (details.getProviderUUID() != null) {
           ecr.setProviderUUID(details.getProviderUUID());
         }
@@ -219,7 +219,7 @@ public class EcaUtils {
 
     } catch (JsonProcessingException e) {
 
-      String msg = "Unable to update execution state";
+      String msg = "Unable to update execution state.";
       logger.error(msg, e);
       throw new RuntimeException(msg, e);
     }
@@ -248,8 +248,8 @@ public class EcaUtils {
 
     boolean retVal = false;
 
-    if (!oldState.getMatchTriggerStatus().getTriggerMatchStatus()
-        && newState.getMatchTriggerStatus().getTriggerMatchStatus()) {
+    if (Boolean.FALSE.equals(oldState.getMatchTriggerStatus().getTriggerMatchStatus())
+        && Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())) {
 
       logger.info(
           " No Previously Matched trigger codes, since there is a match now returning true ");

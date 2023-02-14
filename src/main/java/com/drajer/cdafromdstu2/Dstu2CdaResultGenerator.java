@@ -35,7 +35,7 @@ public class Dstu2CdaResultGenerator {
 
     List<Observation> results = data.getLabResults();
 
-    if (results != null && results.size() > 0) {
+    if (results != null && !results.isEmpty()) {
 
       logger.info(" Number of Lab Result Observations to process {}", results.size());
 
@@ -66,7 +66,7 @@ public class Dstu2CdaResultGenerator {
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
@@ -78,7 +78,7 @@ public class Dstu2CdaResultGenerator {
       hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
 
       int rowNum = 1;
-      Boolean triggerCodesAdded = false;
+
       for (Observation obs : results) {
 
         String obsDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -96,7 +96,7 @@ public class Dstu2CdaResultGenerator {
           obsDisplayName = obs.getCode().getText();
         }
 
-        Map<String, String> bodyvals = new LinkedHashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
 
         String val = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -181,10 +181,10 @@ public class Dstu2CdaResultGenerator {
         // Add interpretation code.
         if ((obs.getInterpretation() != null)
             && (obs.getInterpretation().getCoding() != null)
-            && (obs.getInterpretation().getCoding().size() > 0)) {
+            && (!obs.getInterpretation().getCoding().isEmpty())) {
 
           logger.info(" Adding Interpretation Code ");
-          List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
+          List<CodeableConceptDt> cdt = new ArrayList<>();
           cdt.add(obs.getInterpretation());
           lrEntry.append(
               Dstu2CdaFhirUtilities.getCodeableConceptXml(
@@ -243,12 +243,12 @@ public class Dstu2CdaResultGenerator {
       state = mapper.readValue(details.getStatus(), PatientExecutionState.class);
     } catch (JsonMappingException e1) {
 
-      String msg = "Unable to read/write execution state";
+      String msg = "Unable to read/write execution State";
       logger.error(msg);
       throw new RuntimeException(msg);
 
     } catch (JsonProcessingException e1) {
-      String msg = "Unable to read/write execution state";
+      String msg = "Unable to read/write execution state.";
       logger.error(msg);
 
       throw new RuntimeException(msg);
@@ -262,15 +262,15 @@ public class Dstu2CdaResultGenerator {
       StringBuilder codeXml = new StringBuilder(200);
       StringBuilder valXml = new StringBuilder(200);
 
-      if (mtc.hasMatchedTriggerCodes("Observation")) {
+      if (Boolean.TRUE.equals(mtc.hasMatchedTriggerCodes("Observation"))) {
 
         // Check if match was found and then include the rest.
         Boolean matchFound = doesTriggerCodesMatchObservation(obs, mtc, codeXml, valXml);
 
-        logger.info(" code Xml {}", codeXml.toString());
-        logger.info(" value Xml {}", valXml.toString());
+        logger.info(" code Xml {}", codeXml);
+        logger.info(" value Xml {}", valXml);
 
-        if (matchFound) {
+        if (Boolean.TRUE.equals(matchFound)) {
 
           lrEntry.append(addEntry(obs, details, codeXml.toString(), valXml.toString()));
           break;
@@ -334,10 +334,10 @@ public class Dstu2CdaResultGenerator {
     // Add interpretation code.
     if ((obs.getInterpretation() != null)
         && (obs.getInterpretation().getCoding() != null)
-        && (obs.getInterpretation().getCoding().size() > 0)) {
+        && (!obs.getInterpretation().getCoding().isEmpty())) {
 
       logger.info(" Adding Interpretaion Code ");
-      List<CodeableConceptDt> cdt = new ArrayList<CodeableConceptDt>();
+      List<CodeableConceptDt> cdt = new ArrayList<>();
       cdt.add(obs.getInterpretation());
       lrEntry.append(
           Dstu2CdaFhirUtilities.getCodeableConceptXml(
@@ -363,19 +363,19 @@ public class Dstu2CdaResultGenerator {
 
     if (obs.getCode() != null
         && obs.getCode().getCoding() != null
-        && obs.getCode().getCoding().size() > 0) {
+        && !obs.getCode().getCoding().isEmpty()) {
       codeElements = obs.getCode().getCoding();
     }
 
     if (obs.getValue() instanceof CodeableConceptDt) {
       CodeableConceptDt valDt = (CodeableConceptDt) obs.getValue();
 
-      if (valDt.getCoding() != null && valDt.getCoding().size() > 0) {
+      if (valDt.getCoding() != null && !valDt.getCoding().isEmpty()) {
         valElements = valDt.getCoding();
       }
     }
 
-    if (matchedCodes != null && matchedCodes.size() > 0) {
+    if (matchedCodes != null && !matchedCodes.isEmpty()) {
 
       logger.info(" Size of the Matched Codes {}", matchedCodes.size());
 

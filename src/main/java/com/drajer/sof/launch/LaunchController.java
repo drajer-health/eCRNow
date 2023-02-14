@@ -195,10 +195,10 @@ public class LaunchController {
         JSONObject sec = security.getJSONObject("security");
         JSONObject extension = (JSONObject) sec.getJSONArray(EXTENSION).get(0);
         JSONArray innerExtension = extension.getJSONArray(EXTENSION);
-        if (object.getString(FHIR_VERSION).matches("1.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).startsWith("1.")) {
           fhirVersion = FhirVersionEnum.DSTU2.toString();
         }
-        if (object.getString(FHIR_VERSION).matches("4.(.*).(.*)")) {
+        if (object.getString(FHIR_VERSION).startsWith("4.")) {
           fhirVersion = FhirVersionEnum.R4.toString();
         }
 
@@ -237,7 +237,6 @@ public class LaunchController {
           tokenResponse = new JSONObject();
           tokenResponse.put(ACCESS_TOKEN, clientDetails.getAccessToken());
           tokenResponse.put(EXPIRES_IN, clientDetails.getTokenExpiry());
-          // clientDetails.setTokenExpiryDateTime(clientDetails.getTokenExpiryDateTime());
         }
       } else {
         tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
@@ -319,12 +318,6 @@ public class LaunchController {
 
             IBaseResource encounter = getEncounterById(launchDetails);
             setStartAndEndDates(clientDetails, launchDetails, encounter);
-
-            /*
-             * if (Boolean.TRUE.equals(clientDetails.getIsMultiTenantSystemLaunch())) {
-             * clientDetails.setAccessToken(tokenResponse.getString(ACCESS_TOKEN));
-             * clientDetails.setTokenExpiry(tokenResponse.getInt(EXPIRES_IN)); }
-             */
 
             clientDetailsService.saveOrUpdate(clientDetails);
 
@@ -450,7 +443,7 @@ public class LaunchController {
         currentLaunchDetails.setAuthorizationCode(code);
         JSONObject accessTokenObject = authorization.getAccessToken(currentLaunchDetails);
         if (accessTokenObject != null) {
-          logger.info("Received Access Token::::: {}", accessTokenObject.getString(ACCESS_TOKEN));
+          logger.debug("Received Access Token::::: {}", accessTokenObject.getString(ACCESS_TOKEN));
           if (accessTokenObject.get(PATIENT) != null && accessTokenObject.get(ENCOUNTER) != null) {
             isPatientLaunched =
                 checkWithExistingPatientAndEncounter(
@@ -538,7 +531,7 @@ public class LaunchController {
     String fhirVersion = launchDetails.getFhirVersion();
     String encounterId = launchDetails.getEncounterId();
     IBaseResource encounterResource = null;
-    String EncounterError = "Error in getting Encounter resource by Id: " + encounterId;
+    String encounterError = "Error in getting Encounter resource by Id: " + encounterId;
 
     logger.info("Getting Encounter data by ID {}", encounterId);
 
@@ -590,18 +583,18 @@ public class LaunchController {
         }
       }
 
-      logger.error(EncounterError);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError);
+      logger.error(encounterError);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, encounterError);
 
     } catch (ResourceNotFoundException notFoundException) {
 
-      logger.error(EncounterError, notFoundException);
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, EncounterError, notFoundException);
+      logger.error(encounterError, notFoundException);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, encounterError, notFoundException);
 
     } catch (Exception e) {
 
-      logger.error(EncounterError, e);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EncounterError, e);
+      logger.error(encounterError, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, encounterError, e);
     }
   }
 

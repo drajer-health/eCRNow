@@ -85,14 +85,13 @@ public class CdaGeneratorConstants {
   // CCDA Header Related Information
   public static final String CDA_DOC_ROOT = "2.16.840.1.113883.1.3";
   public static final String CDA_DOC_EXT = "POCD_HD000040";
-  /** public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1"; */
+  public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1"; 
   public static final String US_REALM_HEADER_EXT = "2015-08-01";
 
   public static final String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2";
   public static final String PUBLIC_HEALTH_EXT = "2016-12-01";
   public static final String PH_DOC_CODE = "55751-2";
   public static final String PH_DOC_DISPLAY_NAME = "Initial Public Health Case Report";
-  /** public static final String PH_REPORT_TITLE = "Initial Public Health Case Report"; */
 
   // FHIR Types
 
@@ -898,6 +897,7 @@ public class CdaGeneratorConstants {
       "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
 
+  // Valueset Values
   public static final String FHIR_GUARDIAN_VALUE = "N";
   public static final String FHIR_EMERGENCY_CONTACT_VALUE = "E";
   public static final String EMERGENCY_VALUE = "emergency";
@@ -1031,6 +1031,24 @@ public class CdaGeneratorConstants {
       if (oidNameMap.containsKey(retVal.getValue0())) {
         return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
       } else return retVal;
+    } else if (url.startsWith("urn:oid:")) {
+
+      String oid = url.replace("urn:oid:", "");
+      if (oidMap.containsKey(oid)) {
+
+        Pair<String, String> oidUrlName = oidMap.get(oid);
+
+        if (oidNameMap.containsKey(oid)) {
+
+          return new Pair<>(oid, oidNameMap.get(oid));
+        } else {
+
+          return new Pair<>(oid, oidUrlName.getValue1());
+        }
+      }
+
+      return new Pair<>("", "");
+
     } else {
       return new Pair<>("", "");
     }
@@ -1138,10 +1156,10 @@ public class CdaGeneratorConstants {
 
     if (!StringUtils.isEmpty(val)) {
 
-      if (val.contentEquals("C") || val.contentEquals("emergency")) {
+      if (val.contentEquals("C") || val.contentEquals(EMERGENCY_VALUE)) {
         return "ECON";
       } else if (val.contentEquals("N")
-          || val.contentEquals("family")
+          || val.contentEquals(LAST_NAME_EL_NAME)
           || val.contentEquals("friend")
           || val.contentEquals("partner")
           || val.contentEquals("parent")) {

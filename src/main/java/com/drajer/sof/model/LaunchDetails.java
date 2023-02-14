@@ -1,7 +1,9 @@
 package com.drajer.sof.model;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import com.google.common.base.Strings;
 import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
@@ -224,6 +226,31 @@ public class LaunchDetails {
   @Column(name = "processing_status", nullable = true)
   private String processingState;
 
+  @Transient private String rctcVersion;
+
+  @Transient private String rctcOid;
+
+  public String getRctcVersion() {
+
+    if (!Strings.isNullOrEmpty(rctcVersion)) {
+      return rctcVersion;
+    } else return "UNKNOWN_VERSION";
+  }
+
+  public void setRctcVersion(String rctcVersion) {
+    this.rctcVersion = rctcVersion;
+  }
+
+  public String getRctcOid() {
+    if (!Strings.isNullOrEmpty(rctcOid)) {
+      return rctcOid;
+    } else return CdaGeneratorConstants.RCTC_OID;
+  }
+
+  public void setRctcOid(String rctcOid) {
+    this.rctcOid = rctcOid;
+  }
+
   public Boolean getIsCovid() {
     return isCovid;
   }
@@ -337,12 +364,12 @@ public class LaunchDetails {
       Date tokenExpiryTime = this.getTokenExpiryDateTime();
       int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
-        logger.info("AccessToken is Expired. Getting new AccessToken");
+        logger.info("AccessToken is Expired. Getting new AccessToken.");
         JSONObject accessTokenObj =
             new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
-        logger.debug("AccessToken is Valid. No need to get new AccessToken");
+        logger.debug("AccessToken is Valid. No need to get new AccessToken.");
         return accessToken;
       }
 

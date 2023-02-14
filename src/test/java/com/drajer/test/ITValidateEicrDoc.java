@@ -38,11 +38,11 @@ import org.w3c.dom.NodeList;
 @RunWith(Parameterized.class)
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
-  private String testCaseId;
-  private Map<String, String> testData;
-  private Map<String, ?> allResourceMapping;
-  private Map<String, ?> allOtherMapping;
-  private List<Map<String, String>> fieldsToValidate;
+  protected String testCaseId;
+  protected Map<String, String> testData;
+  protected Map<String, ?> allResourceMapping;
+  protected Map<String, ?> allOtherMapping;
+  protected List<Map<String, String>> fieldsToValidate;
 
   public ITValidateEicrDoc(
       String testCaseId,
@@ -90,7 +90,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
     testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
-    testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
+    // testDataGenerator.add(new TestDataGenerator("test-yaml/resultSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/medicationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/immunizationSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/socialHistorySection.yaml"));

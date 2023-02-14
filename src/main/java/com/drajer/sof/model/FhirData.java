@@ -2,6 +2,7 @@ package com.drajer.sof.model;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public abstract class FhirData {
   List<CodeableConcept> r4ImmunizationCodes;
   List<CodeableConcept> r4DiagnosticReportCodes;
 
-  public FhirData() {
+  protected FhirData() {
 
     conditionCodes = new ArrayList<>();
     labResultCodes = new ArrayList<>();
@@ -124,10 +125,10 @@ public abstract class FhirData {
     } else if (expression.contains("Observation.code")) {
       List<CodeableConceptDt> returnCodes = new ArrayList<>();
 
-      logger.info(" Adding {} Lab Result Codes ", labResultCodes.size());
+      logger.info("Adding {} Lab Result Codes ", labResultCodes.size());
       returnCodes.addAll(labResultCodes);
 
-      logger.info(" Adding {} Diagnostic Report Codes ", diagnosticReportCodes.size());
+      logger.info("Adding {} Diagnostic Report Codes.. ", diagnosticReportCodes.size());
       returnCodes.addAll(diagnosticReportCodes);
       return returnCodes;
     } else if (expression.contains("Immunization.vaccineCode")) {
@@ -140,10 +141,10 @@ public abstract class FhirData {
       logger.info(" Adding {} Diagnostic Order Codes ", diagnosticOrderCodes.size());
       returnCodes.addAll(diagnosticOrderCodes);
 
-      logger.info(" Adding {} Diagnostic Report Codes ", diagnosticReportCodes.size());
+      logger.info(" Adding {} Diagnostic Report Codes. ", diagnosticReportCodes.size());
       returnCodes.addAll(diagnosticReportCodes);
 
-      logger.info(" Adding {} Lab Result Codes ", labResultCodes.size());
+      logger.info(" Adding {} Lab Result Codes. ", labResultCodes.size());
       returnCodes.addAll(labResultCodes);
 
       return returnCodes;
@@ -152,7 +153,7 @@ public abstract class FhirData {
       logger.info(" Adding {} Lab Result Value Codes ", labResultValues.size());
       return labResultValues;
     } else {
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -199,7 +200,7 @@ public abstract class FhirData {
       logger.info(" Adding {} Lab Result Value Codes ", r4LabResultValues.size());
       return r4LabResultValues;
     } else {
-      return null;
+      return Collections.emptyList();
     }
   }
 

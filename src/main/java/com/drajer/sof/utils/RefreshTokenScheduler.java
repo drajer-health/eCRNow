@@ -25,7 +25,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-// TODO: Auto-generated Javadoc
 /** The Class RefreshTokenScheduler. */
 @Component
 public class RefreshTokenScheduler {
@@ -141,9 +140,10 @@ public class RefreshTokenScheduler {
             Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", authDetails.getScope());
-        if (Boolean.TRUE.equals(authDetails.getRequireAud()) && authDetails.getIsSystem()) {
+        map.add(GRANT_TYPE, CLIENT_CREDENTIALS);
+        map.add(SCOPE, authDetails.getScope());
+        if (Boolean.TRUE.equals(authDetails.getRequireAud())
+            && Boolean.TRUE.equals(authDetails.getIsSystem())) {
           logger.debug("Adding Aud Parameter while getting AccessToken");
           map.add("aud", authDetails.getEhrServerURL());
         }
@@ -152,7 +152,7 @@ public class RefreshTokenScheduler {
             resTemplate.exchange(
                 authDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(response.getBody());
-      } else if (authDetails.getIsUserAccountLaunch()) {
+      } else if (Boolean.TRUE.equals(authDetails.getIsUserAccountLaunch())) {
         headers.setBasicAuth(authDetails.getClientId(), authDetails.getClientSecret());
 
         String tokenUrl =
@@ -166,20 +166,21 @@ public class RefreshTokenScheduler {
                 + "="
                 + authDetails.getScope();
 
-        HttpEntity entity = new HttpEntity(headers);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<?> response =
             resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
-        String responseBody =
-            response
-                .getBody()
-                .toString()
-                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
-                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
-        tokenResponse = new JSONObject(responseBody);
+        String resBody = (String) response.getBody();
+        if (resBody != null) {
+          String responseBody =
+              resBody
+                  .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                  .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+          tokenResponse = new JSONObject(responseBody);
+        }
       }
       logger.trace("Received AccessToken for Client {}", authDetails.getClientId());
-      if (authDetails.getIsMultiTenantSystemLaunch()) {
+      if (Boolean.TRUE.equals(authDetails.getIsMultiTenantSystemLaunch())) {
         ClientDetails clientDetails =
             ActionRepo.getInstance()
                 .getClientDetailsService()
@@ -192,7 +193,7 @@ public class RefreshTokenScheduler {
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {}", authDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the Client: {}", authDetails.getClientId(), e);
     }
     return tokenResponse;
   }
@@ -279,8 +280,8 @@ public class RefreshTokenScheduler {
             Base64.getEncoder().encodeToString(authValues.getBytes(StandardCharsets.UTF_8));
         headers.add("Authorization", "Basic " + base64EncodedString);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(GRANT_TYPE, "client_credentials");
-        map.add("scope", clientDetails.getScopes());
+        map.add(GRANT_TYPE, CLIENT_CREDENTIALS);
+        map.add(SCOPE, clientDetails.getScopes());
         if (Boolean.TRUE.equals(clientDetails.getRequireAud())) {
           logger.debug("Adding Aud Parameter while getting Access token");
           map.add("aud", clientDetails.getFhirServerBaseURL());
@@ -306,17 +307,19 @@ public class RefreshTokenScheduler {
                 + "="
                 + clientDetails.getScopes();
 
-        HttpEntity entity = new HttpEntity(headers);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<?> response =
             resTemplate.exchange(tokenUrl, HttpMethod.GET, entity, String.class);
-        String responseBody =
-            response
-                .getBody()
-                .toString()
-                .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
-                .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
-        tokenResponse = new JSONObject(responseBody);
+        String resBody = (String) response.getBody();
+        logger.info(resBody);
+        if (resBody != null) {
+          String responseBody =
+              resBody
+                  .replace(ACCESS_TOKEN_CAMEL_CASE, ACCESS_TOKEN)
+                  .replace(EXPIRES_IN_CAMEL_CASE, EXPIRES_IN);
+          tokenResponse = new JSONObject(responseBody);
+        }
       }
 
       logger.trace("Received AccessToken for Client: {}", clientDetails.getClientId());

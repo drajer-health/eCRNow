@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class Dstu2CdaEncounterGenerator {
 
-  private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaProblemGenerator.class);
+  private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaEncounterGenerator.class);
 
   public static String generateEncounterSection(Dstu2FhirData data, LaunchDetails details) {
 
@@ -55,7 +55,7 @@ public class Dstu2CdaEncounterGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.ENC_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.ENC_TABLE_COL_2_TITLE);
 
@@ -91,7 +91,7 @@ public class Dstu2CdaEncounterGenerator {
             " Period is either null or the Period.DateTime has a null value or null timezone value ");
       }
 
-      Map<String, String> bodyvals = new LinkedHashMap<String, String>();
+      Map<String, String> bodyvals = new LinkedHashMap<>();
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 

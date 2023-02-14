@@ -201,6 +201,7 @@ public class TriggerQueryDstu2Bundle {
       for (MedicationAdministration medAdministration : medAdministrationsList) {
         if (!medAdministration.getMedication().isEmpty()
             && medAdministration.getMedication() != null) {
+          logger.info("med Administration:{}", medAdministration.getMedication());
           if (medAdministration.getMedication() instanceof ResourceReferenceDt) {
             BaseResourceReferenceDt medRef =
                 (BaseResourceReferenceDt) medAdministration.getMedication();

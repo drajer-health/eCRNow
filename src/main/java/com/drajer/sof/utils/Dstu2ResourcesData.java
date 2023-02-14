@@ -35,13 +35,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class Dstu2ResourcesData {
 
+  public static final String OBSERVATION = "Observation";
   @Autowired FhirContextInitializer resourceData;
 
-  private final Logger logger = LoggerFactory.getLogger(Dstu2ResourcesData.class);
+  private static final Logger logger = LoggerFactory.getLogger(Dstu2ResourcesData.class);
 
   private List<CodeableConceptDt> findEncounterCodes(Encounter encounter) {
     List<CodeableConceptDt> encounterCodes = new ArrayList<>();
-    if (encounter.getType() != null) {
+    if (encounter != null && encounter.getType() != null) {
       encounterCodes = encounter.getType();
     }
     return encounterCodes;
@@ -183,6 +184,7 @@ public class Dstu2ResourcesData {
       for (Entry entry : bundle.getEntry()) {
         Condition condition = (Condition) entry.getResource();
         if (!condition.getEncounter().isEmpty()) {
+          logger.info("Encounter in Condition Resource:{}", condition.getEncounter());
           if (condition
               .getEncounter()
               .getReference()
@@ -228,7 +230,7 @@ public class Dstu2ResourcesData {
     Bundle bundle =
         (Bundle)
             resourceData.getObservationByPatientId(
-                launchDetails, client, context, "Observation", "laboratory");
+                launchDetails, client, context, OBSERVATION, "laboratory");
     List<Observation> observations = new ArrayList<>();
     List<Observation> valueObservations = new ArrayList<>();
     List<CodeableConceptDt> observationCodes = new ArrayList<>();
@@ -240,9 +242,10 @@ public class Dstu2ResourcesData {
             .getResource()
             .getResourceName()
             .toLowerCase()
-            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
+            .equalsIgnoreCase(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
           Observation observation = (Observation) entry.getResource();
           if (!observation.getEncounter().isEmpty()) {
+            logger.info("Encounter in OBSERVATION Resource:{}", observation.getEncounter());
             if (observation
                 .getEncounter()
                 .getReference()
@@ -262,8 +265,7 @@ public class Dstu2ResourcesData {
         if (entry
             .getResource()
             .getResourceName()
-            .toLowerCase()
-            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
+            .equalsIgnoreCase(ResourceTypeEnum.OBSERVATION.toString())) {
           Observation observation = (Observation) entry.getResource();
           // Checking If Issued Date is present in Observation resource
           if (observation.getIssued() != null) {
@@ -303,7 +305,7 @@ public class Dstu2ResourcesData {
       List<Observation> valueObservations,
       List<CodeableConceptDt> valueObservationCodes) {
 
-    if (obs.getValue() != null && obs.getValue() instanceof CodeableConceptDt) {
+    if (obs.getValue() instanceof CodeableConceptDt) {
       CodeableConceptDt cd = (CodeableConceptDt) obs.getValue();
       valueObservationCodes.add(cd);
       valueObservations.add(obs);
@@ -318,18 +320,18 @@ public class Dstu2ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info("Dstu2FhirData in getPregnancyObservationData :{}", dstu2FhirData);
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,
-                "Observation",
+                OBSERVATION,
                 QueryConstants.PREGNANCY_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
-    List<Observation> observations = filterObservation(bundle, encounter, start, end);
 
-    return observations;
+    return filterObservation(bundle, encounter, start, end);
   }
 
   public List<Observation> getTravelObservationData(
@@ -340,13 +342,14 @@ public class Dstu2ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info("Dstu2FhirData in getTravelObservationData :{}", dstu2FhirData);
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientIdAndCode(
                 launchDetails,
                 client,
                 context,
-                "Observation",
+                OBSERVATION,
                 QueryConstants.TRAVEL_CODE,
                 QueryConstants.LOINC_CODE_SYSTEM);
     List<Observation> observations = filterObservation(bundle, encounter, start, end);
@@ -358,11 +361,13 @@ public class Dstu2ResourcesData {
                   launchDetails,
                   client,
                   context,
-                  "Observation",
+                  OBSERVATION,
                   travelSnomedCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
-      List<Observation> travelobs = new ArrayList<>();
-      travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
+
+      List<Observation> travelobs =
+          filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
+      logger.info("Observation:{}", travelobs);
 
       if (!travelobs.isEmpty()) {
         observations.addAll(travelobs);
@@ -380,6 +385,12 @@ public class Dstu2ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "Dstu2FhirData , Encounter , StartDate and EndDate in getSocialHistoryObservationDataOccupation:{} , {},{} and {}",
+        dstu2FhirData,
+        encounter,
+        start,
+        end);
     logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
     for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
@@ -389,7 +400,7 @@ public class Dstu2ResourcesData {
                   launchDetails,
                   client,
                   context,
-                  "Observation",
+                  OBSERVATION,
                   occupationCode,
                   QueryConstants.SNOMED_CODE_SYSTEM);
       if (occupationCodesbundle != null) {
@@ -407,7 +418,7 @@ public class Dstu2ResourcesData {
                   launchDetails,
                   client,
                   context,
-                  "Observation",
+                  OBSERVATION,
                   occupationCode,
                   QueryConstants.LOINC_CODE_SYSTEM);
 
@@ -430,6 +441,12 @@ public class Dstu2ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(
+        "Dstu2FhirData , Encounter , StartDate and EndDate in getPregnancyConditions:{} , {},{} and {}",
+        dstu2FhirData,
+        encounter,
+        start,
+        end);
     logger.trace("Get Pregnancy Conditions");
     List<Condition> conditions = new ArrayList<>();
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
@@ -459,10 +476,10 @@ public class Dstu2ResourcesData {
       LaunchDetails launchDetails,
       Dstu2FhirData dstu2FhirData,
       String medicationId) {
-    Medication medication =
-        (Medication)
-            resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
-    return medication;
+
+    logger.info("Dstu2FhirData in getMedicationData:{}", dstu2FhirData);
+    return (Medication)
+        resourceData.getResouceById(launchDetails, client, context, "Medication", medicationId);
   }
 
   public List<MedicationAdministration> getMedicationAdministrationData(
@@ -487,6 +504,9 @@ public class Dstu2ResourcesData {
           MedicationAdministration medAdministration =
               (MedicationAdministration) entry.getResource();
           if (!medAdministration.getEncounter().isEmpty()) {
+            logger.info(
+                "Encounter in MedicationAdministration Resource:{}",
+                medAdministration.getEncounter());
             if (medAdministration
                 .getEncounter()
                 .getReference()
@@ -536,6 +556,7 @@ public class Dstu2ResourcesData {
       Encounter encounter,
       Date start,
       Date end) {
+    logger.info(" Encounter in getPregnancyConditions:  {}", encounter);
     Bundle bundle =
         (Bundle)
             resourceData.getResourceByPatientId(
@@ -594,6 +615,7 @@ public class Dstu2ResourcesData {
         for (Entry entry : bundle.getEntry()) {
           DiagnosticOrder diagnosticOrder = (DiagnosticOrder) entry.getResource();
           if (!diagnosticOrder.getEncounter().isEmpty()) {
+            logger.info("Encounter in DiagnosticOrder:{}", diagnosticOrder.getEncounter());
             if (diagnosticOrder
                 .getEncounter()
                 .getReference()
@@ -656,6 +678,7 @@ public class Dstu2ResourcesData {
       for (Entry entry : bundle.getEntry()) {
         Immunization immunization = (Immunization) entry.getResource();
         if (!immunization.getEncounter().isEmpty()) {
+          logger.info(" Encounter in Immunization Resource:{}", immunization.getEncounter());
           if (immunization
               .getEncounter()
               .getReference()
@@ -712,6 +735,7 @@ public class Dstu2ResourcesData {
         for (Entry entry : bundle.getEntry()) {
           DiagnosticReport diagnosticReport = (DiagnosticReport) entry.getResource();
           if (!diagnosticReport.getEncounter().isEmpty()) {
+            logger.info(" Encounter in DiagnosticReport:{}", diagnosticReport.getEncounter());
             if (diagnosticReport
                 .getEncounter()
                 .getReference()
@@ -759,11 +783,10 @@ public class Dstu2ResourcesData {
   private Bundle filterObservationsBundleByCategory(
       Bundle bundle, String observationSocialHistory) {
     Bundle filteredBundle = new Bundle();
-    List<Entry> filteredEntryComponents = new ArrayList<>();
     for (Entry entryComp : bundle.getEntry()) {
       Observation observation = (Observation) entryComp.getResource();
 
-      if (isSocialHistoryObservation(observation)) {
+      if (Boolean.TRUE.equals(isSocialHistoryObservation(observation))) {
         filteredBundle.addEntry(entryComp);
       }
     }
@@ -798,10 +821,11 @@ public class Dstu2ResourcesData {
         if (entry
             .getResource()
             .getResourceName()
-            .toLowerCase()
-            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
+            .equalsIgnoreCase(ResourceTypeEnum.OBSERVATION.toString())) {
           Observation observation = (Observation) entry.getResource();
           if (observation.getEncounter() != null && !observation.getEncounter().isEmpty()) {
+            logger.info("Encounter in Observation Resource:{}", observation.getEncounter());
+
             if (observation
                 .getEncounter()
                 .getReference()
@@ -819,8 +843,7 @@ public class Dstu2ResourcesData {
         if (entry
             .getResource()
             .getResourceName()
-            .toLowerCase()
-            .equals(ResourceTypeEnum.OBSERVATION.toString().toLowerCase())) {
+            .equalsIgnoreCase(ResourceTypeEnum.OBSERVATION.toString())) {
           Observation observation = (Observation) entry.getResource();
           // Checking If Issued Date is present in Observation resource
           if (observation.getIssued() != null) {

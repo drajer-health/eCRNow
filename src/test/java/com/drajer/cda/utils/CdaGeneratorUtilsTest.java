@@ -558,8 +558,12 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForNfQuantityTest() {
     String expectedResult = "<elName nullFlavor=\"NF\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForNfQuantity("elName", "NF");
+    String result = CdaGeneratorUtils.getXmlForNfQuantity("elName", "NF", false);
     assertEquals(expectedResult, result);
+
+    String expectedResult2 = "<elName xsi:type=\"PQ\" nullFlavor=\"NF\"/>\n";
+    String result2 = CdaGeneratorUtils.getXmlForNfQuantity("elName", "NF", true);
+    assertEquals(expectedResult2, result2);
   }
 
   @Test
@@ -591,6 +595,10 @@ public class CdaGeneratorUtilsTest {
 
     String trimmedResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "+1(202)1021012", "WORK");
     assertEquals(expectedResult, trimmedResult);
+
+    String expectedResult2 = "<MOBILE value=\"tel:(555)555-5006\" use=\"WORK\"/>\n";
+    String trimmedResult2 = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "555-555-5006", "WORK");
+    assertEquals(expectedResult2, trimmedResult2);
 
     String noUseAttrResult = "<MOBILE value=\"tel:(202)102-1012\"/>\n";
     String noAttrResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "2021021012", "");

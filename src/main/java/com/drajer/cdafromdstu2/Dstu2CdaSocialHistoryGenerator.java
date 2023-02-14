@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import jline.internal.Log;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -47,12 +48,14 @@ public class Dstu2CdaSocialHistoryGenerator {
         || (occHistory != null && !occHistory.isEmpty())
         || (travelHistory != null && !travelHistory.isEmpty())) {
 
+      Log.info(" Generating Social History data ");
+
       sb.append(generateSocialHistorySectionHeader(""));
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_TITLE);
       sb.append(
@@ -107,7 +110,7 @@ public class Dstu2CdaSocialHistoryGenerator {
         }
       }
 
-      if (pregObs != null && pregObs.size() > 0) {
+      if (pregObs != null && !pregObs.isEmpty()) {
 
         logger.error(" Pregnancy Status Observation Found , translation not implemented ");
         // These are not available in FHIR right now reliably, so nothing to process until further
@@ -174,27 +177,27 @@ public class Dstu2CdaSocialHistoryGenerator {
 
       // Add entry
       if (!StringUtils.isEmpty(birthSexXml)) {
-        logger.info(" Birth Sex Xml {}", birthSexXml);
+        logger.debug(" Adding Birth Sex Xml {}", birthSexXml);
         sb.append(birthSexXml);
       }
 
       if (!StringUtils.isEmpty(pregCondXml)) {
-        logger.info(" Pregnancy Condition Xml {}", pregCondXml);
+        logger.debug(" Adding Pregnancy Condition Xml {}", pregCondXml);
         sb.append(pregCondXml);
       }
 
       if (!StringUtils.isEmpty(pregObsXml)) {
-        logger.info(" Pregnancy Observation Xml {}", pregObsXml);
+        logger.debug(" Adding Pregnancy Observation Xml {}", pregObsXml);
         sb.append(pregObsXml);
       }
 
-      if (!StringUtils.isEmpty(occHistoryXml)) {
-        logger.info(" Occupation History Xml {}", occHistoryXml);
+      if (!StringUtils.isEmpty(occHistoryXml.toString())) {
+        logger.debug(" Adding Occupation History Xml {}", occHistoryXml);
         sb.append(occHistoryXml);
       }
 
-      if (!StringUtils.isEmpty(travelHistoryXml)) {
-        logger.info(" Travel History Xml {}", travelHistoryXml);
+      if (!StringUtils.isEmpty(travelHistoryXml.toString())) {
+        logger.debug(" Adding Travel History Xml {}", travelHistoryXml);
         sb.append(travelHistoryXml);
       }
 
@@ -209,6 +212,7 @@ public class Dstu2CdaSocialHistoryGenerator {
 
   public static String generateBirthSexEntry(
       Dstu2FhirData data, LaunchDetails details, CodeDt birthSex) {
+    logger.info("Dstu2FhirData {} LaunchDetails {} in generateBirthSexEntry", data, details);
 
     StringBuilder sb = new StringBuilder();
 

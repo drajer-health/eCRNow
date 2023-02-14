@@ -1,0 +1,99 @@
+{
+    "resourceType" : "Bundle",
+    "id" : "report-numer-out-notification-bundle",
+    "meta" : {
+        "lastUpdated":"2021-05-07T04:54:11.358+00:00",
+      "profile" : [
+        "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscription-notification"
+      ]
+    },
+    "type" : "history",
+    "timestamp" : "2020-05-29T11:44:13.1882432-05:00",
+    "entry" : [
+      {
+        "fullUrl" : "urn:uuid:b21e4fae-ce73-45cb-8e37-1e203362b2ae",
+        "resource" : {
+          "resourceType" : "Parameters",
+          "id" : "b21e4fae-ce73-45cb-8e37-1e203362b2ae",
+          "meta" : {
+              "lastUpdated":"2021-05-07T04:54:11.358+00:00",
+            "profile" : [
+              "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscriptionstatus"
+            ]
+          },
+          "parameter" : [
+            {
+              "name" : "subscription",
+              "valueReference" : {
+                "reference" : "http://localhost:9011/fhir/Subscription/encounter-end"
+              }
+            },
+            {
+              "name" : "topic",
+              "valueCanonical" : "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-end"
+            },
+            {
+              "name" : "type",
+              "valueCode" : "event-notification"
+            },
+            {
+              "name" : "status",
+              "valueCode" : "active"
+            },
+            {
+              "name" : "events-since-subscription-start",
+              "valueUnsignedInt" : 310
+            },
+            {
+              "name" : "events-in-notification",
+              "valueUnsignedInt" : 1
+            }
+          ]
+        },
+        "request" : {
+          "method" : "GET",
+          "url" : "https://example.org/fhir/r4/Subscription/admission/$status"
+        },
+        "response" : {
+          "status" : "200"
+        }
+      },
+      {
+        "fullUrl" : "http://localhost:9011/fhir/Encounter/denom-CMS122-Encounter",
+        "resource" : {
+          "resourceType" : "Encounter",
+          "id": "diabetes-report-numer-out",
+          "text" : {
+          "status" : "generated"
+          },
+          "status" : "finished",
+          "type" : [
+          {
+              "coding" : [
+              {
+                  "system" : "http://www.ama-assn.org/go/cpt",
+                  "code" : "99202",
+                  "display" : "Office or other outpatient visit for the evaluation and management of a new patient, which requires a medically appropriate history and/or examination and straightforward medical decision making. When using time for code selection, 15-29 minutes of total time is spent on the date of the encounter."
+              }
+              ],
+              "text" : "Office Visit"
+          }
+          ],
+          "subject" : {
+          "reference" : "Patient/diabetes-report-numer-out"
+          },
+          "period" : {
+          "start" : "2019-01-16T08:30:00",
+          "end" : "2019-01-20T08:30:00"
+          }
+        },
+        "request" : {
+          "method" : "POST",
+          "url" : "Encounter"
+        },
+        "response" : {
+          "status" : "201"
+        }
+      }
+    ]
+  }

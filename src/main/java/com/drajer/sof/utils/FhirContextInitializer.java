@@ -1,10 +1,12 @@
 package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IRestfulClientFactory;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -43,11 +45,27 @@ public class FhirContextInitializer {
   @Value("${ecr.fhir.query-by-date.enabled:false}")
   private Boolean queryByDateEnabled;
 
-  @Autowired FHIRRetryTemplate retryTemplate;
+  @Value("${socket.timeout}")
+  private Integer socketTimeout;
 
+  @Value("${connection.timeout}")
+  private Integer connectionTimeout;
+
+  @Value("${pool.max.per.route}")
+  private Integer poolMaxPerRoute;
+
+  @Value("${pool.max.total}")
+  private Integer poolMaxTotal;
+
+  @Value("${connection.request.time.out}")
+  private Integer connectionReqTimeOut;
+  
+  @Autowired FHIRRetryTemplate retryTemplate;
+  
   public FhirContextInitializer(FHIRRetryTemplate retryTemplate) {
-    this.retryTemplate = retryTemplate;
-  }
+	    this.retryTemplate = retryTemplate;
+	  }
+
   /**
    * Get FhirContext appropriate to fhirVersion
    *
@@ -57,15 +75,15 @@ public class FhirContextInitializer {
   public FhirContext getFhirContext(String fhirVersion) {
     switch (fhirVersion) {
       case DSTU2:
-        return FhirContext.forDstu2();
+        return FhirContext.forCached(FhirVersionEnum.DSTU2);
       case DSTU2_1:
-        return FhirContext.forDstu2_1();
+        return FhirContext.forCached(FhirVersionEnum.DSTU2_1);
       case DSTU3:
-        return FhirContext.forDstu3();
+        return FhirContext.forCached(FhirVersionEnum.DSTU3);
       case R4:
-        return FhirContext.forR4();
+        return FhirContext.forCached(FhirVersionEnum.R4);
       default:
-        return FhirContext.forDstu2();
+        return FhirContext.forCached(FhirVersionEnum.DSTU2);
     }
   }
 
@@ -81,10 +99,21 @@ public class FhirContextInitializer {
       FhirContext context, String url, String accessToken, String requestId) {
     logger.trace("Initializing the Client");
     FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
-    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
 
-    client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
-    // client.setEncoding(EncodingEnum.JSON);
+    IRestfulClientFactory restfulClientFactory = context.getRestfulClientFactory();
+    restfulClientFactory.setSocketTimeout(socketTimeout * 1000);
+    restfulClientFactory.setConnectTimeout(connectionTimeout * 1000);
+    restfulClientFactory.setPoolMaxPerRoute(poolMaxPerRoute * 1000);
+    restfulClientFactory.setPoolMaxTotal(poolMaxTotal * 1000);
+    restfulClientFactory.setConnectionRequestTimeout(connectionReqTimeOut * 1000);
+
+    if (accessToken != null && !accessToken.equalsIgnoreCase("")) {
+      client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
+      // client.registerInterceptor(new LoggingInterceptor(true));
+    } else {
+      logger.debug("AccessToken not supplied for %{}", url);
+    }
+
     if (logger.isDebugEnabled()) {
       client.registerInterceptor(new LoggingInterceptor(true));
     }

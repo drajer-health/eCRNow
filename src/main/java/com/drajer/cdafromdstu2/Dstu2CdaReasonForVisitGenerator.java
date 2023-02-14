@@ -19,6 +19,7 @@ public class Dstu2CdaReasonForVisitGenerator {
       LoggerFactory.getLogger(Dstu2CdaReasonForVisitGenerator.class);
 
   public static String generateReasonForVisitSection(Dstu2FhirData data, LaunchDetails details) {
+    logger.info("LaunchDetails in generateReasonForVisitSection :{}", details);
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -51,12 +52,11 @@ public class Dstu2CdaReasonForVisitGenerator {
     // Add Narrative Text
     // Need to Discuss with vendors on how to best get this information.
     // sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.TEXT_EL_NAME,
-    //     "Reason Not Known"));
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
     // Create Table Header.
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     list.add(CdaGeneratorConstants.TEXT_EL_NAME);
     sb.append(
         CdaGeneratorUtils.getXmlForTableHeader(
@@ -79,7 +79,7 @@ public class Dstu2CdaReasonForVisitGenerator {
       }
     }
 
-    Map<String, String> bodyvals = new LinkedHashMap<String, String>();
+    Map<String, String> bodyvals = new LinkedHashMap<>();
     bodyvals.put(CdaGeneratorConstants.REASON_FOR_VISIT_BODY_CONTENT, text);
 
     sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));

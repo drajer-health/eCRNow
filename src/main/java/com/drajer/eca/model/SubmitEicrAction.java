@@ -22,8 +22,8 @@ public class SubmitEicrAction extends AbstractAction {
 
   private final Logger logger = LoggerFactory.getLogger(SubmitEicrAction.class);
 
-  public static int RR_TIMER_CHECK_DURATION = 5;
-  public static String RR_TIMER_CHECK_UNITS = "min";
+  public static final int RR_TIMER_CHECK_DURATION = 5;
+  public static final String RR_TIMER_CHECK_UNITS = "min";
 
   @Override
   public void execute(Object obj, WorkflowEvent launchType, String taskInstanceId) {
@@ -50,7 +50,7 @@ public class SubmitEicrAction extends AbstractAction {
             // check if the action is completed.
             String actionId = actn.getRelatedAction().getActionId();
 
-            if (!state.hasActionCompleted(actionId)) {
+            if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))) {
 
               logger.info("Action {} is not completed , hence this action has to wait", actionId);
             } else {
@@ -99,7 +99,10 @@ public class SubmitEicrAction extends AbstractAction {
 
       if (ecr != null) {
 
-        logger.info("Found eICR with Id {} to submit", id);
+        logger.info(
+            "Found eICR with Id {} to submit, correlation Id for Direct Message Id {}",
+            id,
+            ecr.getxCorrelationId());
 
         String data = ecr.getEicrData();
 
@@ -107,7 +110,19 @@ public class SubmitEicrAction extends AbstractAction {
           ActionRepo.getInstance().getRestTransport().sendEicrXmlDocument(details, data, ecr);
         } else if (!StringUtils.isBlank(details.getDirectHost())
             || !StringUtils.isBlank(details.getSmtpUrl())) {
-          ActionRepo.getInstance().getDirectTransport().sendData(details, data);
+          ActionRepo.getInstance()
+              .getDirectTransport()
+              .sendData(details, data, ecr.getxCorrelationId());
+
+          // Schedule a RR check since it is direct transport.
+          logger.info(" Schedule the job for RR Check after 5 minutes.");
+          Duration d = new Duration();
+          d.setValue(5);
+          d.setUnit("min");
+
+          WorkflowService.scheduleJob(
+              details.getId(), d, EcrActionTypes.RR_CHECK, details.getStartDate(), taskInstanceId);
+
         } else {
           String msg = "No Transport method specified to submit EICR.";
           logger.error(msg);
@@ -139,6 +154,6 @@ public class SubmitEicrAction extends AbstractAction {
 
         throw new RuntimeException(msg);
       }
-    }
+    } // for all eICRs
   }
 }

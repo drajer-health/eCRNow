@@ -49,43 +49,7 @@ public class Dstu2CdaEicrGenerator {
           } else if (ent.getResource() instanceof Organization) {
             logger.info(" Bundle contains Organization ");
             data.setOrganization((Organization) ent.getResource());
-          } /* else if (ent.getResource() instanceof Condition) {
-              logger.info(" Bundle contains Condition ");
-              data.getConditions().add((Condition) ent.getResource());
-            } else if (ent.getResource() instanceof Observation) {
-
-              Observation obs = (Observation) ent.getResource();
-              if (obs.getCategory() != null
-                  && obs.getCategory().getCodingFirstRep() != null
-                  && obs.getCategory().getCodingFirstRep().getCode() != null
-                  && obs.getCategory()
-                      .getCodingFirstRep()
-                      .getCode()
-                      .contentEquals(CdaGeneratorConstants.FHIR_LAB_RESULT_CATEGORY)) {
-
-                logger.info(" Bundle contains Lab Results ");
-                data.getLabResults().add((Observation) ent.getResource());
-              } else if (obs.getCategory() != null
-                  && obs.getCategory().getCodingFirstRep() != null
-                  && obs.getCategory().getCodingFirstRep().getCode() != null) {
-                logger.info(
-                    "Code for Observation Category =  "
-                        + obs.getCategory().getCodingFirstRep().getCode());
-              }
-
-            } else if (ent.getResource() instanceof DiagnosticReport) {
-              logger.info(" Bundle contains Diagnostic Report ");
-              data.getDiagReports().add((DiagnosticReport) ent.getResource());
-            } else if (ent.getResource() instanceof DiagnosticOrder) {
-              logger.info(" Bundle contains Diagnostic Order ");
-              data.getDiagOrders().add((DiagnosticOrder) ent.getResource());
-            } else if (ent.getResource() instanceof MedicationStatement) {
-              logger.info(" Bundle contains MedicationStatement ");
-              data.getMedications().add((MedicationStatement) ent.getResource());
-            } else if (ent.getResource() instanceof Immunization) {
-              logger.info(" Bundle contains Immunization ");
-              data.getImmunizations().add((Immunization) ent.getResource());
-            } */
+          }
         }
 
         eICR.append(Dstu2CdaHeaderGenerator.createCdaHeader(data, details, ecr));

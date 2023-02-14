@@ -147,13 +147,13 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - xPath: "author"
-        count: 1
+        count: 4
       # - xPath: "author/"
       #   'time/@value': "20200512"
       - xPath: "author/assignedAuthor/id"
-        count: 1
+        count: 4
       - xPath: "author/assignedAuthor/addr"
-        count: 1
+        count: 4
       - xPath: "author/assignedAuthor/telecom"
         count: 1
       - xPath: "author/assignedAuthor/"
@@ -202,7 +202,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - xPath: "author"
-        count: 1
+        count: 4
       # - xPath: "author/"
       #   'time/@value': "20200512"
       - xPath: "author/assignedAuthor/"

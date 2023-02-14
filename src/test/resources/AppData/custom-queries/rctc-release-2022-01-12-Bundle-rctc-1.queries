@@ -1,0 +1,2 @@
+patient=/Patient?patient={{context.patientId}}
+encounter=/Encounter?patient={{context.patientId}}

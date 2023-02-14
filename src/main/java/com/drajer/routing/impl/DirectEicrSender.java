@@ -9,6 +9,7 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.BodyPart;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -30,8 +31,27 @@ public class DirectEicrSender extends EicrSender {
 
   private static final String FILE_NAME = "eICR Report";
 
+  public class DirectMimeMessage extends MimeMessage {
+
+    Session session1;
+    String messageId;
+    String domain;
+
+    public DirectMimeMessage(Session sess, String id, String domainName) {
+      super(sess);
+      session1 = sess;
+      messageId = id;
+      domain = domainName;
+    }
+
+    @Override
+    protected void updateMessageID() throws MessagingException {
+      setHeader("Message-ID", "<" + messageId + "@" + domain + ">");
+    }
+  }
+
   @Override
-  public void sendData(Object context, String data) {
+  public void sendData(Object context, String data, String correlationId) {
 
     logger.info(" **** START Executing Direct SEND **** ");
 
@@ -55,7 +75,8 @@ public class DirectEicrSender extends EicrSender {
               details.getSmtpPort(),
               details.getDirectRecipient(),
               is,
-              DirectEicrSender.FILE_NAME);
+              DirectEicrSender.FILE_NAME,
+              correlationId);
         } else {
           logger.info("Using Direct Host to send:::::{}", details.getDirectHost());
           sendMail(
@@ -65,7 +86,8 @@ public class DirectEicrSender extends EicrSender {
               details.getSmtpPort(),
               details.getDirectRecipient(),
               is,
-              DirectEicrSender.FILE_NAME);
+              DirectEicrSender.FILE_NAME,
+              correlationId);
         }
 
       } catch (Exception e) {
@@ -85,22 +107,22 @@ public class DirectEicrSender extends EicrSender {
       String port,
       String receipientAddr,
       InputStream is,
-      String filename)
+      String filename,
+      String correlationId)
       throws Exception {
 
     Properties props = new Properties();
 
     props.put("mail.smtp.auth", "true");
-    //   props.put("mail.smtp.auth.mechanisms", "PLAIN");
+
     props.setProperty("mail.smtp.ssl.trust", "*");
-    //  props.setProperty("mail.smtp.starttls.enable","true");
     props.setProperty("mail.smtp.ssl.enable", "true");
 
     Session session = Session.getInstance(props, null);
 
     logger.info(" Retrieve Session instance for sending Direct mail ");
 
-    Message message = new MimeMessage(session);
+    DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host);
 
     logger.info("Setting From Address {}", username);
     message.setFrom(new InternetAddress(username));
@@ -120,7 +142,6 @@ public class DirectEicrSender extends EicrSender {
     messageBodyPart.setDataHandler(new DataHandler(source));
 
     messageBodyPart.setFileName(filename + "_eICRReport.xml");
-
     multipart.addBodyPart(messageBodyPart);
 
     // Send the complete message parts
