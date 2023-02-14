@@ -143,27 +143,27 @@ public class LaunchDetails {
   @Column(name = "rest_api_url", nullable = true) // RESTful API for integration
   private String restAPIURL;
 
-  @Column(name = "is_covid19", nullable = false)
+  @Column(name = "is_covid19", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isCovid = true;
+  private Boolean isCovid = false;
 
-  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Column(name = "is_emergent_reporting_enabled", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isEmergentReportingEnabled = true;
 
-  @Column(name = "is_full_ecr", nullable = false)
+  @Column(name = "is_full_ecr", nullable = false, columnDefinition = "int default 1")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr = true;
 
-  @Column(name = "rrprocessing_createdocRef", nullable = false)
+  @Column(name = "rrprocessing_createdocRef", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef = false;
 
-  @Column(name = "rrprocessing_invokerestapi", nullable = false)
+  @Column(name = "rrprocessing_invokerestapi", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isInvokeRestAPI = false;
 
-  @Column(name = "rrprocessing_both", nullable = false)
+  @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isBoth = false;
 
@@ -185,30 +185,30 @@ public class LaunchDetails {
   @Column(name = "auth_code", nullable = true)
   private String authorizationCode;
 
-  @Column(name = "is_system_launch", nullable = false)
+  @Column(name = "is_system_launch", nullable = false, columnDefinition = "int default 1")
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isSystem = false;
+  private Boolean isSystem = true;
 
-  @Column(name = "is_multi_tenant_system_launch", nullable = false)
+  @Column(name = "is_multi_tenant_system_launch", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isMultiTenantSystemLaunch = false;
 
-  @Column(name = "is_user_account_launch", nullable = false)
+  @Column(name = "is_user_account_launch", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch = false;
 
-  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
-  @Column(name = "require_aud", nullable = false)
+  @Column(name = "require_aud", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
 
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
 
-  @Column(name = "validation_mode", nullable = false)
+  @Column(name = "validation_mode", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean validationMode = false;
 

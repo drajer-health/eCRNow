@@ -32,15 +32,15 @@ public class ClientDetails {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @Column(name = "is_provider_launch", nullable = false)
+  @Column(name = "is_provider_launch", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isProvider;
 
-  @Column(name = "is_system_launch", nullable = false)
+  @Column(name = "is_system_launch", nullable = false, columnDefinition = "int default 1")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isSystem;
 
-  @Column(name = "is_multi_tenant_system_launch", nullable = false)
+  @Column(name = "is_multi_tenant_system_launch", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isMultiTenantSystemLaunch = false;
 
@@ -73,15 +73,15 @@ public class ClientDetails {
   @Temporal(TemporalType.TIMESTAMP)
   private Date tokenExpiryDateTime;
 
-  @Column(name = "is_direct", nullable = false)
+  @Column(name = "is_direct", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isDirect;
 
-  @Column(name = "is_xdr", nullable = false)
+  @Column(name = "is_xdr", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isXdr;
 
-  @Column(name = "is_restapi", nullable = false)
+  @Column(name = "is_restapi", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isRestAPI;
 
@@ -124,33 +124,33 @@ public class ClientDetails {
   @Column(name = "encounter_end_time", nullable = true)
   private String encounterEndThreshold;
 
-  @Column(name = "is_covid19", nullable = false)
+  @Column(name = "is_covid19", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCovid;
 
-  @Column(name = "is_full_ecr", nullable = false)
+  @Column(name = "is_full_ecr", nullable = false, columnDefinition = "int default 1")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr;
 
-  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Column(name = "is_emergent_reporting_enabled", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isEmergentReportingEnabled;
 
   @Column(
       name = "rrprocessing_createdocRef",
       nullable = false,
-      columnDefinition = "boolean default false")
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isCreateDocRef;
 
   @Column(
       name = "rrprocessing_invokerestapi",
       nullable = false,
-      columnDefinition = "boolean default false")
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isInvokeRestAPI;
 
-  @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "boolean default false")
+  @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isBoth;
 
@@ -160,11 +160,11 @@ public class ClientDetails {
   @Column(name = "rr_doc_ref_mime_type", nullable = true)
   private String rrDocRefMimeType;
 
-  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr;
 
-  @Column(name = "require_aud", nullable = false)
+  @Column(name = "require_aud", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
 
