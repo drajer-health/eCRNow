@@ -1,7 +1,9 @@
 package com.drajer.sof.model;
 
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import com.google.common.base.Strings;
 import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
@@ -64,8 +66,8 @@ public class LaunchDetails {
   @Column(name = "user_id", nullable = true)
   private String userId;
 
-  @Column(name = "expiry", nullable = true)
-  private int expiry;
+  @Column(name = "expiry", nullable = true, columnDefinition = "int default 0")
+  private Integer expiry;
 
   @Column(name = "scope", nullable = true, columnDefinition = "TEXT")
   private String scope;
@@ -98,6 +100,9 @@ public class LaunchDetails {
   @Column(name = "encounter_id", nullable = true)
   private String encounterId;
 
+  @Column(name = "provider_uuid", nullable = true)
+  private String providerUUID;
+
   @Column(
       name = "status",
       nullable = true,
@@ -122,8 +127,14 @@ public class LaunchDetails {
   @Column(name = "direct_pwd", nullable = true) // SMTP Pwd
   private String directPwd;
 
+  @Column(name = "smtp_url", nullable = true)
+  private String smtpUrl;
+
   @Column(name = "smtp_port", nullable = true)
   private String smtpPort;
+
+  @Column(name = "imap_url", nullable = true)
+  private String imapUrl;
 
   @Column(name = "imap_port", nullable = true)
   private String imapPort;
@@ -134,17 +145,38 @@ public class LaunchDetails {
   @Column(name = "rest_api_url", nullable = true) // RESTful API for integration
   private String restAPIURL;
 
-  @Column(name = "is_covid19", nullable = false)
+  @Column(name = "is_covid19", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isCovid = true;
+  private Boolean isCovid = false;
 
-  @Column(name = "is_emergent_reporting_enabled", nullable = false)
+  @Column(
+      name = "is_emergent_reporting_enabled",
+      nullable = false,
+      columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isEmergentReportingEnabled = true;
 
-  @Column(name = "is_full_ecr", nullable = false)
+  @Column(name = "is_full_ecr", nullable = false, columnDefinition = "int default 1")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isFullEcr = true;
+
+  @Column(name = "rrprocessing_createdocRef", nullable = false, columnDefinition = "int default 0")
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isCreateDocRef = false;
+
+  @Column(name = "rrprocessing_invokerestapi", nullable = false, columnDefinition = "int default 0")
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isInvokeRestAPI = false;
+
+  @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "int default 0")
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isBoth = false;
+
+  @Column(name = "rr_rest_api_url", nullable = true)
+  private String rrRestAPIUrl;
+
+  @Column(name = "rr_doc_ref_mime_type", nullable = true)
+  private String rrDocRefMimeType;
 
   @Column(name = "launch_id", nullable = true)
   private String launchId;
@@ -158,22 +190,33 @@ public class LaunchDetails {
   @Column(name = "auth_code", nullable = true)
   private String authorizationCode;
 
-  @Column(name = "is_system_launch", nullable = false)
+  @Column(name = "is_system_launch", nullable = false, columnDefinition = "int default 1")
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isSystem = false;
+  private Boolean isSystem = true;
 
-  @Column(name = "debug_fhir_query_and_eicr", nullable = false)
+  @Column(
+      name = "is_multi_tenant_system_launch",
+      nullable = false,
+      columnDefinition = "int default 0")
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isMultiTenantSystemLaunch = false;
+
+  @Column(name = "is_user_account_launch", nullable = false, columnDefinition = "int default 0")
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean isUserAccountLaunch = false;
+
+  @Column(name = "debug_fhir_query_and_eicr", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean debugFhirQueryAndEicr = false;
 
-  @Column(name = "require_aud", nullable = false)
+  @Column(name = "require_aud", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
 
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
 
-  @Column(name = "validation_mode", nullable = false)
+  @Column(name = "validation_mode", nullable = false, columnDefinition = "int default 0")
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean validationMode = false;
 
@@ -182,6 +225,31 @@ public class LaunchDetails {
 
   @Column(name = "processing_status", nullable = true)
   private String processingState;
+
+  @Transient private String rctcVersion;
+
+  @Transient private String rctcOid;
+
+  public String getRctcVersion() {
+
+    if (!Strings.isNullOrEmpty(rctcVersion)) {
+      return rctcVersion;
+    } else return "UNKNOWN_VERSION";
+  }
+
+  public void setRctcVersion(String rctcVersion) {
+    this.rctcVersion = rctcVersion;
+  }
+
+  public String getRctcOid() {
+    if (!Strings.isNullOrEmpty(rctcOid)) {
+      return rctcOid;
+    } else return CdaGeneratorConstants.RCTC_OID;
+  }
+
+  public void setRctcOid(String rctcOid) {
+    this.rctcOid = rctcOid;
+  }
 
   public Boolean getIsCovid() {
     return isCovid;
@@ -284,7 +352,11 @@ public class LaunchDetails {
   }
 
   public String getAccessToken() {
-    if (this.getTokenExpiryDateTime() != null) {
+    if (Boolean.TRUE.equals(this.isMultiTenantSystemLaunch)) {
+      JSONObject accessTokenObj =
+          new RefreshTokenScheduler().getAccessTokenForMultiTenantLaunch(this);
+      return accessTokenObj.getString("access_token");
+    } else if (this.getTokenExpiryDateTime() != null) {
       // Retrieve Access token 3 minutes before it expires.
       // 3 minutes is enough buffer for Trigger or Loading query to complete.
       Instant currentInstant = new Date().toInstant().plusSeconds(180);
@@ -292,13 +364,15 @@ public class LaunchDetails {
       Date tokenExpiryTime = this.getTokenExpiryDateTime();
       int value = currentDate.compareTo(tokenExpiryTime);
       if (value > 0) {
-        logger.info("AccessToken is Expired. Getting new AccessToken");
-        JSONObject accessTokenObj = new RefreshTokenScheduler().getAccessToken(this);
+        logger.info("AccessToken is Expired. Getting new AccessToken.");
+        JSONObject accessTokenObj =
+            new RefreshTokenScheduler().getAccessTokenUsingLaunchDetails(this);
         return accessTokenObj.getString("access_token");
       } else {
-        logger.debug("AccessToken is Valid. No need to get new AccessToken");
+        logger.debug("AccessToken is Valid. No need to get new AccessToken.");
         return accessToken;
       }
+
     } else {
       return accessToken;
     }
@@ -320,11 +394,11 @@ public class LaunchDetails {
     this.userId = userId;
   }
 
-  public int getExpiry() {
+  public Integer getExpiry() {
     return expiry;
   }
 
-  public void setExpiry(int expiry) {
+  public void setExpiry(Integer expiry) {
     this.expiry = expiry;
   }
 
@@ -400,6 +474,14 @@ public class LaunchDetails {
     this.encounterId = encounterId;
   }
 
+  public String getProviderUUID() {
+    return providerUUID;
+  }
+
+  public void setProviderUUID(String providerUUID) {
+    this.providerUUID = providerUUID;
+  }
+
   public void setStatus(String stat) {
     this.status = stat;
   }
@@ -472,12 +554,84 @@ public class LaunchDetails {
     this.isSystem = isSystem;
   }
 
+  public Boolean getIsCreateDocRef() {
+    return isCreateDocRef;
+  }
+
+  public void setIsCreateDocRef(Boolean isCreateDocRef) {
+    this.isCreateDocRef = isCreateDocRef;
+  }
+
+  public Boolean getIsInvokeRestAPI() {
+    return isInvokeRestAPI;
+  }
+
+  public void setIsInvokeRestAPI(Boolean isInvokeRestAPI) {
+    this.isInvokeRestAPI = isInvokeRestAPI;
+  }
+
+  public Boolean getIsBoth() {
+    return isBoth;
+  }
+
+  public void setIsBoth(Boolean isBoth) {
+    this.isBoth = isBoth;
+  }
+
+  public String getRrRestAPIUrl() {
+    return rrRestAPIUrl;
+  }
+
+  public void setRrRestAPIUrl(String rrRestAPIUrl) {
+    this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
+  }
+
+  public Boolean getIsMultiTenantSystemLaunch() {
+    return isMultiTenantSystemLaunch;
+  }
+
+  public void setIsMultiTenantSystemLaunch(Boolean isMultiTenantSystemLaunch) {
+    this.isMultiTenantSystemLaunch = isMultiTenantSystemLaunch;
+  }
+
+  public Boolean getIsUserAccountLaunch() {
+    return isUserAccountLaunch;
+  }
+
+  public void setIsUserAccountLaunch(Boolean isUserAccountLaunch) {
+    this.isUserAccountLaunch = isUserAccountLaunch;
+  }
+
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
   public String getSmtpPort() {
     return smtpPort;
   }
 
   public void setSmtpPort(String smtpPort) {
     this.smtpPort = smtpPort;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
   }
 
   public String getImapPort() {

@@ -75,7 +75,7 @@ public class EcrFhirRetryableRead implements IRead, IReadTyped, IReadExecutable 
 
   @Override
   public IReadExecutable withUrl(String theUrl) {
-    throw new NotImplementedOperationException("The requested operation is not implemented");
+	  return new EcrFhirRetryableRead(readTypedParent.withId(theUrl), this.client);
   }
 
   @Override

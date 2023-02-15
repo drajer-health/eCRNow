@@ -10,7 +10,7 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   public static final Logger logger = LoggerFactory.getLogger(ValidateErrorHandler.class);
 
-  private static boolean isException = false;
+  private boolean isException = false;
 
   public void warning(SAXParseException exception) throws SAXException {
     logMessage(exception);
@@ -23,6 +23,7 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   public void error(SAXParseException exception) throws SAXException {
     isException = true;
+    logger.info("error method called in ValidateErrorHandler");
     logMessage(exception);
   }
 
@@ -32,11 +33,9 @@ public class ValidateErrorHandler implements ErrorHandler {
 
   private static void logMessage(SAXParseException exception) {
     logger.warn(
-        "Message: Error validating XML Data at Line: "
-            + exception.getLineNumber()
-            + " Column: "
-            + exception.getColumnNumber()
-            + "; Message: "
-            + exception.getMessage());
+        "Message: Error validating XML Data at Line: {} Column: {} Message: {}",
+        exception.getLineNumber(),
+        exception.getColumnNumber(),
+        exception.getMessage());
   }
 }

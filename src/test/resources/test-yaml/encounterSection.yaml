@@ -46,7 +46,7 @@ testCase:
       - xPath: "text/table/tbody/tr/td"
         count: 2
       - xPath: "text/table/"
-        "thead/tr/th[1]": "Encounter Reason"
+        "thead/tr/th[1]": "Encounter Code"
         "thead/tr/th[2]": "Date of Encounter"
         "tbody/tr/td[1]/content": "inpatient encounter"
       #      'tbody/tr/td[2]/content': "20200512191056"
@@ -93,7 +93,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - xPath: "text/table/"
-        "thead/tr/th[1]": "Encounter Reason"
+        "thead/tr/th[1]": "Encounter Code"
         "thead/tr/th[2]": "Date of Encounter"
         "tbody/tr/td[1]/content": "inpatient encounter"
       #      'tbody/tr/td[2]/content': "20200512191056"
@@ -253,7 +253,7 @@ testCase:
       - xPath: "text/table/tbody/tr/td"
         count: 2
       - xPath: "text/table/"
-        "thead/tr/th[1]": "Encounter Reason"
+        "thead/tr/th[1]": "Encounter Code"
         "thead/tr/th[2]": "Date of Encounter"
        # "tbody/tr/td[1]/content": "Outpatient"
       - xPath: "entry/"
@@ -522,7 +522,7 @@ testCase:
       - xPath: "text/table/tbody/tr/td"
         count: 2
       - xPath: "text/table/"
-        "thead/tr/th[1]": "Encounter Reason"
+        "thead/tr/th[1]": "Encounter Code"
         "thead/tr/th[2]": "Date of Encounter"
         "tbody/tr/td[1]/content": "inpatient encounter"
       - xPath: "entry/"
@@ -666,7 +666,7 @@ testCase:
       - xPath: "text/table/tbody/tr/td"
         count: 2
       - xPath: "text/table/"
-        "thead/tr/th[1]": "Encounter Reason"
+        "thead/tr/th[1]": "Encounter Code"
         "thead/tr/th[2]": "Date of Encounter"
         "tbody/tr/td[1]/content": "inpatient encounter"
       - xPath: "entry/"
@@ -810,7 +810,7 @@ testCase:
       - xPath: "text/table/tbody/tr/td"
         count: 2
       - xPath: "text/table/"
-        "thead/tr/th[1]": "Encounter Reason"
+        "thead/tr/th[1]": "Encounter Code"
         "thead/tr/th[2]": "Date of Encounter"
        # "tbody/tr/td[1]/content": "Outpatient"
       - xPath: "entry/"

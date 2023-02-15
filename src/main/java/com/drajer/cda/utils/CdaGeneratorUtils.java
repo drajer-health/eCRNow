@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.javatuples.Pair;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CdaGeneratorUtils {
+
+  public static Pattern digitPattern = Pattern.compile("[^0-9]");
 
   private CdaGeneratorUtils() {
     throw new IllegalStateException("Utility class");
@@ -456,6 +459,19 @@ public class CdaGeneratorUtils {
         + "\n";
   }
 
+  public static String getXmlForElementWithAttribute(
+      String elName, String attrName, String attrVal) {
+
+    return CdaGeneratorConstants.START_XMLTAG
+        + elName
+        + CdaGeneratorConstants.SPACE
+        + attrName
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + attrVal
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
   public static String getXmlForTextWithAttribute(
       String elName, String attrName, String attrVal, String text) {
 
@@ -587,15 +603,32 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForNfQuantity(String elName, String nf) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + nf
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  public static String getXmlForNfQuantity(String elName, String nf, Boolean valFlag) {
+
+    if (Boolean.FALSE.equals(valFlag)) {
+      return CdaGeneratorConstants.START_XMLTAG
+          + elName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + nf
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    } else {
+      return CdaGeneratorConstants.START_XMLTAG
+          + elName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.XSI_TYPE
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.PQ_TYPE
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + nf
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
   }
 
   public static String getXmlForNullEffectiveTime(String elName, String value) {
@@ -610,13 +643,17 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForTelecom(String telName, String telNo, String use) {
-    String s = "";
-    String telNum = "";
 
-    if (!StringUtils.isEmpty(telNo)) {
-      telNum = telNo.replaceAll("[^0-9]", "");
+    String s = "";
+
+    String tel = digitPattern.matcher(telNo).replaceAll("");
+    String finalTel = tel;
+
+    if (tel.length() > 10) {
+      finalTel = tel.substring(tel.length() - 10);
     }
-    if (!StringUtils.isEmpty(use) && telNum.length() == 10) {
+
+    if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {
 
       s +=
           CdaGeneratorConstants.START_XMLTAG
@@ -625,11 +662,11 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + "tel:("
-              + telNum.substring(0, 3)
+              + finalTel.substring(0, 3)
               + ")"
-              + telNum.substring(3, 6)
+              + finalTel.substring(3, 6)
               + "-"
-              + telNum.substring(6, 10)
+              + finalTel.substring(6, 10)
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
               + "use="
@@ -637,7 +674,7 @@ public class CdaGeneratorUtils {
               + use
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
-    } else if (telNum.length() == 10) {
+    } else if (finalTel.length() == 10) {
 
       s +=
           CdaGeneratorConstants.START_XMLTAG
@@ -646,11 +683,22 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + "tel:("
-              + telNum.substring(0, 3)
+              + finalTel.substring(0, 3)
               + ")"
-              + telNum.substring(3, 6)
+              + finalTel.substring(3, 6)
               + "-"
-              + telNum.substring(6, 10)
+              + finalTel.substring(6, 10)
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    } else {
+
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + telName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.NF_NI
               + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.END_XMLTAG_NEWLN;
     }
@@ -813,7 +861,7 @@ public class CdaGeneratorUtils {
           + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
           + "\n";
 
-    } else if (includeNeg) {
+    } else if (Boolean.TRUE.equals(includeNeg)) {
       return CdaGeneratorConstants.START_XMLTAG
           + actName
           + CdaGeneratorConstants.SPACE
@@ -899,17 +947,36 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForValueIVLWithTS(String elName, String low, String high) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.XSI_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.IVL_TS_TYPE
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low)
-        + CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high)
-        + CdaGeneratorUtils.getXmlForEndElement(elName);
+
+    String retVal =
+        CdaGeneratorConstants.START_XMLTAG
+            + elName
+            + CdaGeneratorConstants.SPACE
+            + CdaGeneratorConstants.XSI_TYPE
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.IVL_TS_TYPE
+            + CdaGeneratorConstants.DOUBLE_QUOTE
+            + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
+
+    if (!StringUtils.isEmpty(low) && (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(low)))
+      retVal +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_LOW_EL_NAME, low);
+    else
+      retVal +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
+
+    if (!StringUtils.isEmpty(high) && (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(high)))
+      retVal +=
+          CdaGeneratorUtils.getXmlForEffectiveTime(CdaGeneratorConstants.TIME_HIGH_EL_NAME, high);
+    else
+      retVal +=
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NF_NI);
+
+    retVal += CdaGeneratorUtils.getXmlForEndElement(elName);
+
+    return retVal;
   }
 
   public static String getXmlForLowIVLWithTSWithNFHigh(String elName, String value) {
@@ -1994,7 +2061,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForQuantityWithUnits(
       String elName, String value, String units, Boolean valFlag) {
-    if (valFlag) {
+    if (Boolean.TRUE.equals(valFlag)) {
       return getXmlForValuePQ(value, units);
     }
 
@@ -2003,7 +2070,7 @@ public class CdaGeneratorUtils {
 
   public static String getXmlForQuantity(
       String elName, String value, String units, Boolean valFlag) {
-    if (valFlag) {
+    if (Boolean.TRUE.equals(valFlag)) {
       return getXmlForValuePQ(value, units);
     }
 

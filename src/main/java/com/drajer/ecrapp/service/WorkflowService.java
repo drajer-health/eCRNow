@@ -14,7 +14,9 @@ import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
+import com.drajer.routing.impl.DirectResponseReceiver;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -59,6 +61,8 @@ public class WorkflowService {
 
   @Autowired LaunchService launchService;
 
+  @Autowired ClientDetailsService clientDetailService;
+
   @Autowired ThreadPoolTaskScheduler taskScheduler;
 
   @Autowired EicrRRService eicrRRService;
@@ -66,6 +70,8 @@ public class WorkflowService {
   @Autowired DirectEicrSender directTansport;
 
   @Autowired RestApiSender restApiTransport;
+
+  @Autowired DirectResponseReceiver directReceiver;
 
   @Autowired ObjectMapper mapper;
 
@@ -95,10 +101,12 @@ public class WorkflowService {
     ActionRepo.getInstance().setLoadingQueryService(loadingQueryService);
     ActionRepo.getInstance().setTriggerQueryService(triggerQueryService);
     ActionRepo.getInstance().setLaunchService(launchService);
+    ActionRepo.getInstance().setClientDetailsService(clientDetailService);
     ActionRepo.getInstance().setTaskScheduler(taskScheduler);
     ActionRepo.getInstance().setEicrRRService(eicrRRService);
     ActionRepo.getInstance().setSchematronFileLocation(schematronFileLocation);
     ActionRepo.getInstance().setDirectTransport(directTansport);
+    ActionRepo.getInstance().setDirectReceiver(directReceiver);
     ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
     ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
     ActionRepo.getInstance().setRestTransport(restApiTransport);
@@ -116,10 +124,9 @@ public class WorkflowService {
 
       // Identify the appropriate actions and execute it from the Action Repo.
       logger.info(
-          " SOF Launch for Patient : "
-              + details.getLaunchPatientId()
-              + " and Encounter : "
-              + details.getEncounterId());
+          " SOF Launch for Patient : {} and Encounter : {}",
+          details.getLaunchPatientId(),
+          details.getEncounterId());
 
       // Setup Execution State.
       PatientExecutionState oldstate =
@@ -131,7 +138,7 @@ public class WorkflowService {
         logger.error("Error while handling SOF Launch workflow", e);
       }
 
-      logger.info("State = " + details.getStatus());
+      logger.info("State = {}", details.getStatus());
 
       String taskInstanceId = "";
       // Use Action Repo to get the events that we need to fire.
@@ -194,8 +201,10 @@ public class WorkflowService {
     logger.info("Execute Validate Eicr Action");
     executeActionsForType(details, EcrActionTypes.VALIDATE_EICR, launchType, taskInstanceId);
 
-    logger.info("Execute Submit Eicr Action");
-    executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType, taskInstanceId);
+    if (Boolean.FALSE.equals(details.getValidationMode())) {
+      logger.info("Execute Submit Eicr Action");
+      executeActionsForType(details, EcrActionTypes.SUBMIT_EICR, launchType, taskInstanceId);
+    }
 
     logger.info("Execute RR Check Action");
     executeActionsForType(details, EcrActionTypes.RR_CHECK, launchType, taskInstanceId);
@@ -263,6 +272,7 @@ public class WorkflowService {
         Integer launchDetailsId,
         EcrActionTypes actionType,
         Map<String, String> loggingDiagnosticContext) {
+      logger.info("loggingDiagnosticContext:{}", loggingDiagnosticContext);
       this.launchDetailsId = launchDetailsId;
       this.actionType = actionType;
       this.loggingDiagnosticContext = MDC.getCopyOfContextMap();
@@ -305,6 +315,7 @@ public class WorkflowService {
       EcrActionTypes actionType,
       Date timeRef,
       String taskInstanceId) {
+    logger.info("timeRef in scheduleJob:{}", timeRef);
 
     Instant t = ApplicationUtils.convertDurationToInstant(d);
 
@@ -316,6 +327,7 @@ public class WorkflowService {
 
   public static CommandLineRunner invokeScheduler(
       Integer launchDetailsId, EcrActionTypes actionType, Instant t, String taskInstanceId) {
+    logger.info("Task Instance Id:{}", taskInstanceId);
 
     Boolean timerAlreadyExists = false;
     CommandLineRunner task = null;
@@ -350,7 +362,7 @@ public class WorkflowService {
               .instance(
                   actionType.toString()
                       + "_"
-                      + String.valueOf(launchDetailsId)
+                      + launchDetailsId
                       + "_"
                       + java.util.UUID.randomUUID().toString(),
                   new TaskTimer(100L, launchDetailsId, actionType, t, MDC.getCopyOfContextMap())),
@@ -364,7 +376,6 @@ public class WorkflowService {
 
   public static Boolean checkIfTasksExists(List<ScheduledTasks> tasks, String taskInstanceId) {
 
-    Boolean retVal = false;
     int numOfTasksExisting = 0;
     if (tasks != null && !tasks.isEmpty()) {
 
@@ -385,8 +396,7 @@ public class WorkflowService {
       logger.info(" No tasks exist, so return false ");
     }
 
-    if (numOfTasksExisting > 1) return true;
-    else return false;
+    return (numOfTasksExisting > 1);
   }
 
   public static void cancelAllScheduledTasksForLaunch(

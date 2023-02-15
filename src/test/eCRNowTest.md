@@ -181,10 +181,48 @@ Resource names should match below list.
 * Immunization
 * ServiceRequest
 
+Need to add tests to CqlProcessor and FhirPathProcessor specifically
 *Note*: Timers in the src/test/resources/AppData/ersd.json is changed as below to make the test run faster. 
 So, whenever the new ersd is available replace it in src/test/resources/AppData/ersd.json and change the timers accordingly.
 
 * create-eicr offsetDuration value from 1 hour to 2 seconds.
 * periodic-update-eicr timingTiming & offsetDuration from 6 hours to 20 seconds.
 * close-out-eicr timingTiming from 24 hours to 10 seconds.
+
+For Bsa Scenario Tests (Chronic Disease and Condition Filtering)
+test/java/com/drajer/bsa/controller
+ As of right now the following tests are:
+ * Chronic BP
+ * Diabetes
+ * ERSDV2
+ * FhirPath
+ * RuleFiltersERSDCQLOnly
+ * RuleFiltersFhirPathOnly
+ * RuleFiltersERSD
+ * SeenPatients
+
+ Coverage includes
+
+ * checking whether a given notification results in a Not Triggered,
+  Triggered or an Eicr Report sent.
+
+ * Population results of a given Measure Evaluation
+
+At the Evaluation level there are tests for FhirPathProcesser and CqlProcessor specifically
+test/java/com/drajer/bsa/kar/condition
+
+(specific tests in progress...)
+
+Notes for eCRNow Tests:
+
+Dates in data will go stale must add a way to update stale test dates in the BaseTest
+
+A lot of the code is fragile and was rushed to get it to work, so should try to refactor as much as possible to make it "future proof"
+
+The create eicr to encounter-modified loop is not being tested at all.  
+	(reference https://build.fhir.org/ig/HL7/case-reporting/electronic_reporting_and_surveillance_distribution_ersd_transaction_and_profiles.html)
+
+We are not testing the eicr is created as expected.
+
+Cql is not thoroughly tested.
 

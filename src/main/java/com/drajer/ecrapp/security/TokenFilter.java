@@ -19,7 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 // @Component
 public class TokenFilter extends OncePerRequestFilter {
 
-  private final Logger logger = LoggerFactory.getLogger(TokenFilter.class);
+  private final Logger log = LoggerFactory.getLogger(TokenFilter.class);
 
   ClientDetailsService clientDetailsService;
 
@@ -36,25 +36,25 @@ public class TokenFilter extends OncePerRequestFilter {
         clientDetailsService = webApplicationContext.getBean(ClientDetailsService.class);
       }
     }
-    logger.info("Received Authorization Header========> {}", request.getHeader("Authorization"));
+    log.info("Received Authorization Header========> {}", request.getHeader("Authorization"));
 
     // Read the Request body from the Request
     String requestBody =
         request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
     requestBody = requestBody.replace("\n", "").replace("\r", "");
-    logger.info("RequestBody===========> {}", requestBody);
+    log.info("RequestBody===========> {}", requestBody);
 
     // Get the Client Details using fhirServerURL received in request body
     JSONObject requestBodyObj = new JSONObject(requestBody);
 
-    logger.info(requestBodyObj.getString("fhirServerURL"));
+    log.info(requestBodyObj.getString("fhirServerURL"));
 
     if (clientDetailsService != null) {
       ClientDetails clientDetails =
           clientDetailsService.getClientDetailsByUrl(requestBodyObj.getString("fhirServerURL"));
 
       // Read the Token Instrospection URL, Client Id and Client Secret from Client Details
-      // String tokenIntrospectionURL = clientDetails.getTokenIntrospectionURL();
+
       String clientId = clientDetails.getClientId();
       String clientSecret = clientDetails.getClientSecret();
 
@@ -66,6 +66,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
   // Validate the AccessToken Using Token Introspection URL
   private boolean validateAccessToken(String clientId, String clientSecret) {
+    log.info("Client Id:{} Client Secret:{}", clientId, clientSecret);
 
     // Enable the Below code when the Introspection URL is ready to test
     /**
@@ -75,7 +76,7 @@ public class TokenFilter extends OncePerRequestFilter {
      * Base64.getEncoder().encodeToString(auth.getBytes())); HttpEntity<String> request = new
      * HttpEntity<String>(headers);
      *
-     * <p>logger.info("Sending Token Intropsection request to Endpoint::::: {}",
+     * <p>log.info("Sending Token Intropsection request to Endpoint::::: {}",
      * tokenIntrospectionURL); ResponseEntity<String> response =
      * restTemplate.exchange(tokenIntrospectionURL, HttpMethod.POST, request, String.class); *
      */

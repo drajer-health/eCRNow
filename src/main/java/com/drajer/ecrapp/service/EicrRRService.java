@@ -105,8 +105,7 @@ public interface EicrRRService {
    * @param xRequestId
    * @param saveToEhr
    */
-  void handleReportabilityResponse(
-      ReportabilityResponse data, String xRequestId, boolean saveToEhr);
+  void handleReportabilityResponse(ReportabilityResponse data, String xRequestId);
 
   /**
    * The method is used to purge eICR tables as needed.

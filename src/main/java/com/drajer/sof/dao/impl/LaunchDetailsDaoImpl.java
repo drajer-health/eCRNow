@@ -5,6 +5,8 @@ import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDao {
 
+  private final Logger logger = LoggerFactory.getLogger(LaunchDetailsDaoImpl.class);
+
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
     getSession().saveOrUpdate(authDetails);
+    logger.info("Launch Details data successfully inserted in DB");
     return authDetails;
   }
 

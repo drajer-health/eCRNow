@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     logger.info("*******************************************************************");
     if (tokenFilterClassName != null && !tokenFilterClassName.isEmpty()) {
       logger.info("Token Filter class Name is not empty");
-      Class classInstance = Class.forName(tokenFilterClassName);
+      Class<?> classInstance = Class.forName(tokenFilterClassName);
       logger.info(classInstance.getDeclaredMethods()[0].getName());
       http.csrf()
           .disable()

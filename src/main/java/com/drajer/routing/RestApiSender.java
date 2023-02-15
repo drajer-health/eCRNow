@@ -76,7 +76,7 @@ public class RestApiSender {
       bundleResponse.put("status", response.getStatusCodeValue());
 
       if (logger.isInfoEnabled()) {
-        logger.info("Received response: {}", bundleResponse.toString());
+        logger.info("Received response: {}", bundleResponse);
       }
 
     } catch (Exception e) {
