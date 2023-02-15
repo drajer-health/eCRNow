@@ -1,0 +1,20 @@
+{
+  "resourceType": "Practitioner",
+  "id": "ex-trigger-all-criteria-out-prac-1",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-practitioner"
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://hl7.org/fhir/sid/us-npi",
+      "value": "ex-trigger-all-criteria-out"
+    }
+  ],
+  "name": [ 
+    {
+      "family": "ex-trigger-all-criteria-out-prac-1"
+    }
+  ]
+}

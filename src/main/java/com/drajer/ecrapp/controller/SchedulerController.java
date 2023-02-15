@@ -26,7 +26,7 @@ public class SchedulerController {
 
     logger.info(
         "Received request to get Scheduled Tasks by action:{} and launch:{}", actionType, launchId);
-    List<ScheduledTasks> tasksList = schedulerService.getScheduledTasks(actionType, launchId);
-    return tasksList;
+
+    return schedulerService.getScheduledTasks(actionType, launchId);
   }
 }

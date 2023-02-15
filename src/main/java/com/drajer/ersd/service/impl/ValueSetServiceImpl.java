@@ -90,8 +90,7 @@ public class ValueSetServiceImpl implements ValueSetService {
 
       grouperToEmergentValueSets = ApplicationUtils.getEmergentValueSetByIds(valueSetIdList);
 
-      logger.info(
-          " Size of Emergent Value Sets for Grouper : {}", grouperToEmergentValueSets.size());
+      logger.debug(" Size of Covid Value Sets for Grouper : {}", grouperToEmergentValueSets.size());
     }
 
     DataRequirement dataRequirement = triggerDefinition.getDataFirstRep();

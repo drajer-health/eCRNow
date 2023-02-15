@@ -27,10 +27,7 @@ public class EicrController {
   @Autowired EicrRRService eicrRRService;
 
   @CrossOrigin
-  @RequestMapping(
-      value = "/api/eicrData",
-      method = RequestMethod.GET,
-      produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/api/eicrData", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getEicrData(
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId,
@@ -96,10 +93,7 @@ public class EicrController {
   }
 
   @CrossOrigin
-  @RequestMapping(
-      value = "/api/responseData",
-      method = RequestMethod.GET,
-      produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/api/responseData", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> getRRData(
       @RequestParam(name = "responseDocId", required = false) String responseDocId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId,
@@ -160,7 +154,7 @@ public class EicrController {
   }
 
   @CrossOrigin
-  @RequestMapping(value = "/api/eicrAndRRData", method = RequestMethod.GET)
+  @GetMapping(value = "/api/eicrAndRRData")
   public ResponseEntity<Object> getEicrAndRRByRequestId(
       @RequestParam String xRequestId,
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
@@ -243,5 +237,13 @@ public class EicrController {
       return new ResponseEntity<>(
           ERROR_IN_PROCESSING_THE_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @CrossOrigin
+  @GetMapping(value = "/api/test2", produces = MediaType.APPLICATION_JSON_VALUE)
+  public String test2(@RequestParam(value = "waitFor") Integer waitFor)
+      throws InterruptedException {
+    Thread.sleep(waitFor);
+    return "Hello";
   }
 }

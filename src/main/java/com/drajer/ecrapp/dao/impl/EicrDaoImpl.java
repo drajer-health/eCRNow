@@ -21,6 +21,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   public static final String EICR_DOC_ID = "eicrDocId";
   public static final String RESPONSE_DOC_ID = "responseDocId";
   public static final String SET_ID = "setId";
+  public static final String X_REQUEST_ID = "xRequestId";
 
   public Eicr saveOrUpdate(Eicr eicr) {
     getSession().saveOrUpdate(eicr);
@@ -83,7 +84,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
   public List<Eicr> getEicrAndRRByXRequestId(String xRequestId) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq("xRequestId", xRequestId));
+    criteria.add(Restrictions.eq(X_REQUEST_ID, xRequestId));
     return criteria.addOrder(Order.desc("id")).list();
   }
 
@@ -115,8 +116,8 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     if (searchParams.get("version") != null) {
       criteria.add(Restrictions.eq("docVersion", Integer.parseInt(searchParams.get("version"))));
     }
-    if (searchParams.get("xRequestId") != null) {
-      criteria.add(Restrictions.eq("xRequestId", searchParams.get("xRequestId")));
+    if (searchParams.get(X_REQUEST_ID) != null) {
+      criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
     }
   }
 

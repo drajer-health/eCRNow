@@ -44,7 +44,7 @@ public class MatchTriggerAction extends AbstractAction {
                 .getTriggerQueryService()
                 .getData(details, details.getStartDate(), details.getEndDate());
 
-        if (data != null && data instanceof Dstu2FhirData) {
+        if (data instanceof Dstu2FhirData) {
 
           Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
 
@@ -78,7 +78,7 @@ public class MatchTriggerAction extends AbstractAction {
           state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
           EcaUtils.updateDetailStatus(details, state);
 
-        } else if (data != null && data instanceof R4FhirData) {
+        } else if (data instanceof R4FhirData) {
 
           R4FhirData r4Data = (R4FhirData) data;
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.9.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
+		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
 	<artifactId>ecr-now</artifactId>
@@ -19,6 +19,8 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<fhir.version>5.4.0</fhir.version>
+		<fhirpath.version>5.4.0</fhirpath.version>
+		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>true</skip.integration.tests>
 	</properties>
@@ -29,7 +31,21 @@
 			<url>${project.build.directory}/staging</url>
 		</site>
 	</distributionManagement>
-
+	
+	<repositories> 
+		<repository> 
+			<id>oss-sonatype</id> 
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url> 
+			<snapshots> 
+				<enabled>true</enabled> 
+			</snapshots> 
+		</repository> 
+		<repository> 
+			<id>oss-sonatype-public</id> 
+			<url>https://oss.sonatype.org/content/groups/public/</url> 
+		</repository> 
+	</repositories>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -85,10 +101,10 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<dependency>
+	  	<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
-			<version>9.2</version>
+			<version>11.6</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
@@ -102,15 +118,39 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
 			<optional>true</optional>
 		</dependency>
-
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+			<version>0.11.2</version>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- FHIR Dependencies -->
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
+
+
 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -134,6 +174,54 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-client</artifactId>
 			<version>${fhir.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.spring</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+	 	<dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.expression</artifactId>
+            <version>${cql-evaluator.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+        </dependency>
+        
+        <dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.measure-hapi</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -225,7 +313,7 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.9</version>
+			<version>1.13</version>
 		</dependency>
 
 		<dependency>
@@ -263,10 +351,10 @@
 
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
-			<artifactId>wiremock</artifactId>
-			<version>2.27.2</version>
+			<artifactId>wiremock-jre8</artifactId>
+			<version>2.31.0</version>
 			<scope>test</scope>
-		</dependency>
+		  </dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -311,7 +399,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>			
 
 			<plugin>
 				<groupId>org.jacoco</groupId>

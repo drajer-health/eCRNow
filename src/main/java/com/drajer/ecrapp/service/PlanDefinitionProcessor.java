@@ -81,7 +81,7 @@ public class PlanDefinitionProcessor {
   @Qualifier("valueSetServiceImpl")
   ValueSetService valueSetService;
 
-  @Value("${ersd.file.location}")
+  @Value("${ersd.file.location:default.json}")
   String ersdFileLocation;
 
   private final Logger logger = LoggerFactory.getLogger(PlanDefinitionProcessor.class);
@@ -95,7 +95,6 @@ public class PlanDefinitionProcessor {
 
     // Reading Bundle with Id 506 from ersd server.
     // Bundle esrdBundle =
-    // esrdClient.read().resource(Bundle.class).withId("506").execute();
 
     logger.info(" Reading ERSD Bundle File ");
     Bundle ersdBundle = readErsdBundleFromFile();
@@ -175,7 +174,6 @@ public class PlanDefinitionProcessor {
 
               logger.debug(" Found a Emergent Value Set {}", valueSet.getId());
 
-              // valueSetService.createValueSet(valueSet);
               emergentValuesets.add(valueSet);
               valuesets.add(valueSet);
             } else if (ApplicationUtils.isAGrouperValueSet(valueSet)) {
@@ -210,6 +208,7 @@ public class PlanDefinitionProcessor {
       for (BundleEntryComponent bundleEntry : bundleEntries) {
 
         if (Optional.ofNullable(bundleEntry).isPresent()) {
+          logger.debug("Bundle exist");
 
           if (bundleEntry.getResource().getResourceType().equals(ResourceType.PlanDefinition)) {
             planDefinition = (PlanDefinition) bundleEntry.getResource();

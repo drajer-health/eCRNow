@@ -1,0 +1,409 @@
+{
+    "resourceType": "Patient",
+    "id": "12765399",
+    "meta": {
+        "versionId": "3",
+        "lastUpdated": "2022-04-13T11:32:04.000Z"
+    },
+    "text": {
+        "status": "extensions",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: ECRTEST, EIGHT</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Oct  2, 1990</p><p><b>Birth Sex</b>: Female</p><p><b>Administrative Gender</b>: Female</p><p><b>Marital Status</b>: Unknown</p></div>"
+    },
+    "extension": [
+        {
+            "valueCode": "F",
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2076-8",
+                        "display": "Native Hawaiian or Other Pacific Islander",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "Native Hawaiian or Pacific Islander",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2186-5",
+                        "display": "Not Hispanic or Latino",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "Not Hispanic, Latino, or Spanish Origin",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+        }
+    ],
+    "identifier": [
+        {
+            "id": "CI-490424854-0",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2",
+                        "display": "Community Medical Record Number",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "Community Medical Record Number"
+            },
+            "system": "urn:oid:2.16.840.1.113883.3.787.0.0",
+            "value": "18450",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "18450",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-29T15:48:55.000Z"
+            }
+        },
+        {
+            "id": "CI-490424850-1",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "10",
+                        "display": "MRN",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "MRN"
+            },
+            "system": "urn:oid:2.16.840.1.113883.6.1000",
+            "value": "26447",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "00000026447",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-29T15:48:55.000Z"
+            }
+        },
+        {
+            "id": "CI-490424886-3",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2553236785",
+                        "display": "MIllennium Person Identifier",
+                        "userSelected": true
+                    }
+                ],
+                "text": "MIllennium Person Identifier"
+            },
+            "_system": {
+                "extension": [
+                    {
+                        "valueCode": "unknown",
+                        "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                    }
+                ]
+            },
+            "value": "34392",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "34392",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-29T15:48:57.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "id": "CI-12765399-0",
+            "use": "official",
+            "text": "ECRTEST, EIGHT",
+            "family": "ECRTEST",
+            "given": [
+                "EIGHT"
+            ],
+            "period": {
+                "start": "2021-09-29T15:48:55.000Z"
+            }
+        }
+    ],
+    "telecom": [
+        {
+            "id": "CI-PH-29885470-0",
+            "extension": [
+                {
+                    "valueUrl": "(555)555-2008",
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                }
+            ],
+            "system": "phone",
+            "value": "5555552008",
+            "use": "mobile",
+            "rank": 1,
+            "period": {
+                "start": "2021-09-29T15:48:55.000Z"
+            }
+        },
+        {
+            "id": "CI-EM-29885472-0",
+            "system": "email",
+            "value": "ECRTestEight@email.com",
+            "use": "home",
+            "rank": 1,
+            "period": {
+                "start": "2021-09-29T15:48:55.000Z"
+            }
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1990-10-02",
+    "address": [
+        {
+            "id": "CI-24385557-0",
+            "use": "home",
+            "text": "2222 Home Street\nLawrence, KS 66044\nUS",
+            "line": [
+                "2222 Home Street"
+            ],
+            "city": "Lawrence",
+            "state": "KS",
+            "postalCode": "66044",
+            "country": "US",
+            "period": {
+                "start": "2021-09-29T15:37:29.000Z"
+            }
+        }
+    ],
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+                "code": "309240",
+                "display": "Unknown",
+                "userSelected": true
+            },
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                "code": "UNK",
+                "display": "unknown",
+                "userSelected": false
+            }
+        ],
+        "text": "Unknown"
+    },
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12789533-0",
+                "use": "official",
+                "text": "EMER, CONTACT",
+                "family": "EMER",
+                "given": [
+                    "CONTACT"
+                ],
+                "period": {
+                    "start": "2022-04-13T11:32:05.000Z"
+                }
+            },
+            "period": {
+                "start": "2022-04-13T11:32:04.000Z"
+            }
+        },
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12779323-1",
+                "use": "official",
+                "text": "EMER, CONTACT",
+                "family": "EMER",
+                "given": [
+                    "CONTACT"
+                ],
+                "period": {
+                    "start": "2022-02-17T08:24:20.000Z"
+                }
+            },
+            "period": {
+                "start": "2022-02-17T08:24:20.000Z",
+                "end": "2022-04-13T11:32:05.000Z"
+            }
+        },
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12778198-2",
+                "use": "official",
+                "text": "EMER, CONTACT",
+                "family": "EMER",
+                "given": [
+                    "CONTACT"
+                ],
+                "period": {
+                    "start": "2022-02-10T09:26:37.000Z"
+                }
+            },
+            "period": {
+                "start": "2022-02-10T09:26:36.000Z",
+                "end": "2022-02-17T08:24:21.000Z"
+            }
+        },
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12765400-3",
+                "use": "official",
+                "text": "EMER, CONTACT",
+                "family": "EMER",
+                "given": [
+                    "CONTACT"
+                ],
+                "period": {
+                    "start": "2021-09-29T15:48:55.000Z"
+                }
+            },
+            "period": {
+                "start": "2021-09-29T15:48:55.000Z",
+                "end": "2022-02-10T09:26:37.000Z"
+            }
+        }
+    ],
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/36",
+                        "code": "151",
+                        "display": "English",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "en",
+                        "display": "English",
+                        "userSelected": false
+                    }
+                ],
+                "text": "English"
+            },
+            "preferred": true
+        }
+    ]
+}

@@ -9,6 +9,7 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.BodyPart;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -18,6 +19,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,8 +31,27 @@ public class DirectEicrSender extends EicrSender {
 
   private static final String FILE_NAME = "eICR Report";
 
+  public class DirectMimeMessage extends MimeMessage {
+
+    Session session1;
+    String messageId;
+    String domain;
+
+    public DirectMimeMessage(Session sess, String id, String domainName) {
+      super(sess);
+      session1 = sess;
+      messageId = id;
+      domain = domainName;
+    }
+
+    @Override
+    protected void updateMessageID() throws MessagingException {
+      setHeader("Message-ID", "<" + messageId + "@" + domain + ">");
+    }
+  }
+
   @Override
-  public void sendData(Object context, String data) {
+  public void sendData(Object context, String data, String correlationId) {
 
     logger.info(" **** START Executing Direct SEND **** ");
 
@@ -45,13 +66,29 @@ public class DirectEicrSender extends EicrSender {
 
         logger.info(
             " Sending Mail from {} to {}", details.getDirectUser(), details.getDirectRecipient());
-        sendMail(
-            details.getDirectHost(),
-            details.getDirectUser(),
-            details.getDirectPwd(),
-            details.getDirectRecipient(),
-            is,
-            DirectEicrSender.FILE_NAME);
+        if (details.getSmtpUrl() != null) {
+          logger.info("Using SMTP URL to send:::::{}", details.getSmtpUrl());
+          sendMail(
+              details.getSmtpUrl(),
+              details.getDirectUser(),
+              details.getDirectPwd(),
+              details.getSmtpPort(),
+              details.getDirectRecipient(),
+              is,
+              DirectEicrSender.FILE_NAME,
+              correlationId);
+        } else {
+          logger.info("Using Direct Host to send:::::{}", details.getDirectHost());
+          sendMail(
+              details.getDirectHost(),
+              details.getDirectUser(),
+              details.getDirectPwd(),
+              details.getSmtpPort(),
+              details.getDirectRecipient(),
+              is,
+              DirectEicrSender.FILE_NAME,
+              correlationId);
+        }
 
       } catch (Exception e) {
 
@@ -67,33 +104,44 @@ public class DirectEicrSender extends EicrSender {
       String host,
       String username,
       String password,
+      String port,
       String receipientAddr,
       InputStream is,
-      String filename)
+      String filename,
+      String correlationId)
       throws Exception {
 
     Properties props = new Properties();
 
     props.put("mail.smtp.auth", "true");
-    props.put("mail.smtp.auth.mechanisms", "PLAIN");
+
     props.setProperty("mail.smtp.ssl.trust", "*");
+    props.setProperty("mail.smtp.ssl.enable", "true");
 
     Session session = Session.getInstance(props, null);
 
     logger.info(" Retrieve Session instance for sending Direct mail ");
 
-    Message message = new MimeMessage(session);
+    DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host);
+
+    logger.info("Setting From Address {}", username);
     message.setFrom(new InternetAddress(username));
-    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receipientAddr));
+
+    String toAddr = StringUtils.deleteWhitespace(receipientAddr);
+    logger.info("Setting recipients {}, length : {}", toAddr, toAddr.length());
+    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddr));
+    logger.info("Finished setting recipients {}", toAddr);
+
     message.setSubject("eICR Report ");
     message.setText(FILE_NAME);
+
+    logger.info("Creating Message Body Part ");
     BodyPart messageBodyPart = new MimeBodyPart();
     Multipart multipart = new MimeMultipart();
     DataSource source = new ByteArrayDataSource(is, "application/xml; charset=UTF-8");
     messageBodyPart.setDataHandler(new DataHandler(source));
 
     messageBodyPart.setFileName(filename + "_eICRReport.xml");
-
     multipart.addBodyPart(messageBodyPart);
 
     // Send the complete message parts
@@ -101,8 +149,12 @@ public class DirectEicrSender extends EicrSender {
 
     logger.info(" Completed constructing the Message ");
     Transport transport = session.getTransport("smtp");
-    transport.connect(host, 25, username, password);
+    transport.connect(host, Integer.parseInt(port), username, password);
+
+    logger.info(" Connection successful to the direct host {}", host);
     transport.sendMessage(message, message.getAllRecipients());
+
+    logger.info("Finished sending Direct message successfully, closing connection ");
     transport.close();
 
     logger.info(" Finished sending Direct Message ");

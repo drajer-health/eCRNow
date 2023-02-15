@@ -15,7 +15,9 @@ import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.sof.model.ClientDetails;
+import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.ClientDetailsService;
+import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.utils.Authorization;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.R4ResourcesData;
@@ -30,8 +32,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -46,6 +54,8 @@ public class EicrServiceImpl implements EicrRRService {
   @Autowired EicrDao eicrDao;
 
   @Autowired ClientDetailsService clientDetailservice;
+
+  @Autowired LaunchService launchDetailsService;
 
   @Autowired RefreshTokenScheduler tokenScheduler;
 
@@ -111,18 +121,17 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  public void handleReportabilityResponse(
-      ReportabilityResponse data, String xRequestId, boolean saveToEhr) {
+  public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
 
     logger.debug(" Start processing RR");
 
     if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
 
-      logger.debug("Reportability Response: {}, saveToEhr: {}", data.getRrXml(), saveToEhr);
+      logger.debug("Reportability Response: {}", data.getRrXml());
 
-      final CdaRrModel rrModel = rrParser.parse(data.getRrXml());
-      final CdaIi rrDocId = rrModel.getRrDocId();
-      final CdaIi eicrDocId = rrModel.getEicrDocId();
+      final CdaRrModel cdaRrModel = rrParser.parse(data.getRrXml());
+      final CdaIi rrDocId = cdaRrModel.getRrDocId();
+      final CdaIi eicrDocId = cdaRrModel.getEicrDocId();
 
       if (rrDocId == null || StringUtils.isBlank(rrDocId.getRootValue())) {
         throw new IllegalArgumentException("Reportability response is missing RR_Doc_Id");
@@ -135,11 +144,14 @@ public class EicrServiceImpl implements EicrRRService {
       logger.info(
           "Processing RR_DOC_ID {} of type {} for EICR_DOC_ID {}",
           rrDocId.getRootValue(),
-          rrModel.getReportableType(),
+          cdaRrModel.getReportableType(),
           eicrDocId.getRootValue());
       final Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
 
       if (ecr != null) {
+
+        LaunchDetails launchDetails =
+            launchDetailsService.getAuthDetailsById(ecr.getLaunchDetailsId());
 
         logger.info(" Found the ecr for doc Id = {}", eicrDocId.getRootValue());
         ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
@@ -147,22 +159,27 @@ public class EicrServiceImpl implements EicrRRService {
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
 
-        if (rrModel.getReportableType() != null) ecr.setResponseType(rrModel.getReportableType());
+        if (cdaRrModel.getReportableType() != null)
+          ecr.setResponseType(cdaRrModel.getReportableType());
         else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        if (rrModel.getReportableType() != null && rrModel.getReportableStatus() != null)
+        if (cdaRrModel.getReportableType() != null && cdaRrModel.getReportableStatus() != null)
           ecr.setResponseTypeDisplay(
-              rrModel.getReportableType() + "-" + rrModel.getReportableStatus().getDisplayName());
-        else if (rrModel.getReportableType() != null)
-          ecr.setResponseTypeDisplay(rrModel.getReportableType());
-        else if (rrModel.getReportableStatus() != null)
-          ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
+              cdaRrModel.getReportableType()
+                  + "-"
+                  + cdaRrModel.getReportableStatus().getDisplayName());
+        else if (cdaRrModel.getReportableType() != null)
+          ecr.setResponseTypeDisplay(cdaRrModel.getReportableType());
+        else if (cdaRrModel.getReportableStatus() != null)
+          ecr.setResponseTypeDisplay(cdaRrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        if (saveToEhr) {
+        if (Boolean.TRUE.equals(launchDetails.getIsCreateDocRef())
+            || Boolean.TRUE.equals(launchDetails.getIsBoth())) {
           try {
             logger.info(" RR Xml and eCR is present hence create a document reference ");
-            DocumentReference docRef = constructDocumentReference(data, ecr);
+            DocumentReference docRef =
+                constructDocumentReference(data, ecr, launchDetails.getRrDocRefMimeType());
 
             if (docRef != null) {
 
@@ -174,6 +191,26 @@ public class EicrServiceImpl implements EicrRRService {
 
             logger.error(
                 " Error submitting Document Reference to EHR due to exception: {}", e.getMessage());
+            // Save the fact that we could not submit the message to the EHR.
+            ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
+            saveOrUpdate(ecr);
+            throw e;
+          }
+        }
+
+        if (Boolean.TRUE.equals(launchDetails.getIsInvokeRestAPI())
+            || Boolean.TRUE.equals(launchDetails.getIsBoth())) {
+          try {
+            logger.info("Submit RR Xml to Rest API endpoint");
+            boolean responseStatus = submitRRXmlToRestAPI(data.getRrXml(), ecr, launchDetails);
+            if (!responseStatus) {
+              ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
+              saveOrUpdate(ecr);
+            }
+          } catch (Exception e) {
+            logger.error(
+                " Error submitting RR Xml to Rest API endpoint due to exception: {}",
+                e.getMessage());
             // Save the fact that we could not submit the message to the EHR.
             ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
             saveOrUpdate(ecr);
@@ -195,6 +232,22 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
+  private boolean submitRRXmlToRestAPI(String rrXml, Eicr ecr, LaunchDetails launchDetails) {
+    logger.info("Eicr in submitRRXmlToRestAPI:{}", ecr);
+    boolean isSubmitSuccess = false;
+    RestTemplate restTemplate = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_XML);
+    HttpEntity<String> request = new HttpEntity<>(rrXml, headers);
+    ResponseEntity<?> response =
+        restTemplate.exchange(
+            launchDetails.getRrRestAPIUrl(), HttpMethod.POST, request, String.class);
+    if (response.getStatusCode().is2xxSuccessful()) {
+      isSubmitSuccess = true;
+    }
+    return isSubmitSuccess;
+  }
+
   public void submitDocRefToEhr(DocumentReference docRef, Eicr ecr) {
 
     final String fhirServerURL = ecr.getFhirServerUrl();
@@ -202,13 +255,14 @@ public class EicrServiceImpl implements EicrRRService {
     // Get ClientDetails using the FHIR Server URL
     ClientDetails clientDetails = clientDetailservice.getClientDetailsByUrl(fhirServerURL);
 
-    // Get the AccessToken using the Client Details and read the Metadata Information to know
+    // Get the AccessToken using the Client Details and read the Metadata
+    // Information to know
     // about the FHIR Server Version.
     if (clientDetails != null) {
 
       logger.info(" Found the Ehr Server Url ");
 
-      JSONObject tokenResponse = tokenScheduler.getSystemAccessToken(clientDetails);
+      JSONObject tokenResponse = tokenScheduler.getAccessTokenUsingClientDetails(clientDetails);
       if (tokenResponse == null) {
         throw new ResponseStatusException(
             HttpStatus.UNAUTHORIZED, "Error in getting Authorization");
@@ -263,13 +317,18 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
+  public DocumentReference constructDocumentReference(
+      ReportabilityResponse data, Eicr ecr, String rrDocRefMimeType) {
 
     if (ecr.getResponseType() != null
         && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
             || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
-          data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
+          data.getRrXml(),
+          ecr.getLaunchPatientId(),
+          ecr.getEncounterId(),
+          ecr.getProviderUUID(),
+          rrDocRefMimeType);
     } else {
       logger.info("Not posting RR to EHR as it is of type {}", ecr.getResponseType());
       return null;

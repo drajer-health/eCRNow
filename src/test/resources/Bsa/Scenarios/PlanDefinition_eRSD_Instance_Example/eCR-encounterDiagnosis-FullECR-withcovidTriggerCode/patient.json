@@ -1,0 +1,488 @@
+{
+    "resourceType": "Patient",
+    "id": "12748874",
+    "meta": {
+        "versionId": "0",
+        "lastUpdated": "2021-01-26T21:10:22.000Z"
+    },
+    "text": {
+        "status": "extensions",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: FHIRTEST, ECREIGHT</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Apr  5, 2010</p><p><b>Birth Sex</b>: Male</p><p><b>Administrative Gender</b>: Male</p><p><b>Marital Status</b>: Single</p></div>"
+    },
+    "extension": [
+        {
+            "valueCode": "M",
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2054-5",
+                        "display": "Black or African American",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "Black or African American",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+        },
+        {
+            "extension": [
+                {
+                    "valueString": "Patient Declined",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+        }
+    ],
+    "identifier": [
+        {
+            "id": "CI-490189182-0",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2",
+                        "display": "Community Medical Record Number",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "Community Medical Record Number"
+            },
+            "system": "urn:oid:2.16.840.1.113883.3.787.0.0",
+            "value": "3650",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "3650",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        },
+        {
+            "id": "CI-490189178-1",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "10",
+                        "display": "MRN",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "MRN"
+            },
+            "system": "urn:oid:2.16.840.1.113883.6.1000",
+            "value": "11652",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "00000011652",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        },
+        {
+            "id": "CI-490189239-3",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2553236785",
+                        "display": "MIllennium Person Identifier",
+                        "userSelected": true
+                    }
+                ],
+                "text": "MIllennium Person Identifier"
+            },
+            "_system": {
+                "extension": [
+                    {
+                        "valueCode": "unknown",
+                        "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                    }
+                ]
+            },
+            "value": "19114",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "19114",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-01-26T21:10:28.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "id": "CI-12748874-0",
+            "use": "official",
+            "text": "FHIRTEST, ECREIGHT",
+            "family": "FHIRTEST",
+            "given": [
+                "ECREIGHT"
+            ],
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        }
+    ],
+    "telecom": [
+        {
+            "id": "CI-PH-29845255-0",
+            "extension": [
+                {
+                    "valueUrl": "(913)555-2008",
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                }
+            ],
+            "system": "phone",
+            "value": "9135552008",
+            "use": "home",
+            "rank": 1,
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        },
+        {
+            "id": "CI-EM-29845257-0",
+            "system": "email",
+            "value": "ecreight@email.com",
+            "use": "home",
+            "rank": 1,
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        }
+    ],
+    "gender": "male",
+    "birthDate": "2010-04-05",
+    "address": [
+        {
+            "id": "CI-24348118-0",
+            "use": "home",
+            "text": "1239 Patient Street\nLawrence\nLawrence, KS 66044\nUS",
+            "line": [
+                "1239 Patient Street",
+                "Lawrence"
+            ],
+            "city": "Lawrence",
+            "state": "KS",
+            "postalCode": "66044",
+            "country": "US",
+            "period": {
+                "start": "2021-01-26T20:52:14.000Z"
+            }
+        }
+    ],
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+                "code": "309239",
+                "display": "Single",
+                "userSelected": true
+            },
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                "code": "S",
+                "display": "Never Married",
+                "userSelected": false
+            }
+        ],
+        "text": "Single"
+    },
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12748880-0",
+                "use": "official",
+                "text": "FHIRTEST, ECRMOTHER",
+                "family": "FHIRTEST",
+                "given": [
+                    "ECRMOTHER"
+                ],
+                "period": {
+                    "start": "2021-01-26T21:10:22.000Z"
+                }
+            },
+            "telecom": [
+                {
+                    "extension": [
+                        {
+                            "valueUrl": "(913)555-2010",
+                            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                        }
+                    ],
+                    "system": "phone",
+                    "value": "9135552010",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-01-26T21:10:22.000Z"
+                    }
+                },
+                {
+                    "system": "email",
+                    "value": "ecrmother@email.com",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-01-26T21:10:22.000Z"
+                    }
+                }
+            ],
+            "address": {
+                "use": "home",
+                "text": "1239 Patient Street\nLawrence\nLawrence, KS 66044\nUS",
+                "line": [
+                    "1239 Patient Street",
+                    "Lawrence"
+                ],
+                "city": "Lawrence",
+                "state": "KS",
+                "postalCode": "66044",
+                "country": "US",
+                "period": {
+                    "start": "2021-01-26T21:10:22.000Z"
+                }
+            },
+            "gender": "female",
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        },
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1153",
+                            "display": "Family Member",
+                            "userSelected": true
+                        }
+                    ],
+                    "text": "Family Member"
+                }
+            ],
+            "name": {
+                "id": "CI-12748881-1",
+                "use": "official",
+                "text": "FHIRTEST, ECRMOTHER",
+                "family": "FHIRTEST",
+                "given": [
+                    "ECRMOTHER"
+                ],
+                "period": {
+                    "start": "2021-01-26T21:10:22.000Z"
+                }
+            },
+            "telecom": [
+                {
+                    "extension": [
+                        {
+                            "valueUrl": "(913)555-2010",
+                            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                        }
+                    ],
+                    "system": "phone",
+                    "value": "9135552010",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-01-26T21:10:22.000Z"
+                    }
+                },
+                {
+                    "system": "email",
+                    "value": "ecrmother@email.com",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-01-26T21:10:22.000Z"
+                    }
+                }
+            ],
+            "address": {
+                "use": "home",
+                "text": "1239 Patient Street\nLawrence\nLawrence, KS 66044\nUS",
+                "line": [
+                    "1239 Patient Street",
+                    "Lawrence"
+                ],
+                "city": "Lawrence",
+                "state": "KS",
+                "postalCode": "66044",
+                "country": "US",
+                "period": {
+                    "start": "2021-01-26T21:10:22.000Z"
+                }
+            },
+            "gender": "female",
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        },
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1159",
+                            "display": "Next of Kin",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "N",
+                            "display": "Next-of-Kin",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Next of Kin"
+                }
+            ],
+            "name": {
+                "id": "CI-12748879-2",
+                "use": "official",
+                "text": "FHIRTEST, ECRMOTHER",
+                "family": "FHIRTEST",
+                "given": [
+                    "ECRMOTHER"
+                ],
+                "period": {
+                    "start": "2021-01-26T21:10:22.000Z"
+                }
+            },
+            "telecom": [
+                {
+                    "extension": [
+                        {
+                            "valueUrl": "(913)555-2010",
+                            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                        }
+                    ],
+                    "system": "phone",
+                    "value": "9135552010",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-01-26T21:10:22.000Z"
+                    }
+                },
+                {
+                    "system": "email",
+                    "value": "ecrmother@email.com",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-01-26T21:10:22.000Z"
+                    }
+                }
+            ],
+            "address": {
+                "use": "home",
+                "text": "1239 Patient Street\nLawrence\nLawrence, KS 66044\nUS",
+                "line": [
+                    "1239 Patient Street",
+                    "Lawrence"
+                ],
+                "city": "Lawrence",
+                "state": "KS",
+                "postalCode": "66044",
+                "country": "US",
+                "period": {
+                    "start": "2021-01-26T21:10:22.000Z"
+                }
+            },
+            "period": {
+                "start": "2021-01-26T21:10:22.000Z"
+            }
+        }
+    ],
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/36",
+                        "code": "2553237433",
+                        "display": "French",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "fr",
+                        "display": "French",
+                        "userSelected": false
+                    }
+                ],
+                "text": "French"
+            },
+            "preferred": true
+        }
+    ],
+    "generalPractitioner": [
+        {
+            "id": "CI-490189225-0",
+            "reference": "Practitioner/11817978",
+            "display": "Carter, Kristin Cerner"
+        }
+    ]
+}

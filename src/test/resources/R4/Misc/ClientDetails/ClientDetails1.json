@@ -1,6 +1,8 @@
 {
   "isProvider": true,
   "isSystem": false,
+  "isMultiTenantSystemLaunch": false,
+  "isUserAccountLaunch": false,
   "clientId": "d01295ef-5053-4333-b40f-fd44062c89f9",
   "clientSecret": null,
   "fhirServerBaseURL": "https://fhircreate-ehr.sandboxcerner.com/dstu2/0b8a0111-e8e6-4c26-a91c-5069cbc6b1ca",
@@ -21,6 +23,10 @@
   "isCovid": true,
   "isFullEcr": false,
   "isEmergentReportingEnabled": true,
+  "isCreateDocRef": false,
+  "isInvokeRestAPI": false,
+  "isBoth": true,
+  "rrRestAPIUrl":"http://localhost:port/rrRestAPI",
   "debugFhirQueryAndEicr": false,
   "lastUpdated": "2020-07-21T04:30:00.167+0000"
 }
