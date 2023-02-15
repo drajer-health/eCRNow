@@ -85,7 +85,7 @@ public class CdaGeneratorConstants {
   // CCDA Header Related Information
   public static final String CDA_DOC_ROOT = "2.16.840.1.113883.1.3";
   public static final String CDA_DOC_EXT = "POCD_HD000040";
-  public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1"; 
+  public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
   public static final String US_REALM_HEADER_EXT = "2015-08-01";
 
   public static final String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2";

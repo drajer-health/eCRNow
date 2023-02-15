@@ -547,7 +547,6 @@ public class Dstu2CdaFhirUtilities {
         Boolean found = false;
         Boolean first = true;
 
-
         for (CodingDt code : codings) {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(code.getSystem());

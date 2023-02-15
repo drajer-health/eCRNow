@@ -6,15 +6,15 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
+import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.support.RetryTemplate;
-import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.retry.support.RetryTemplate;
 
 @ComponentScan(
     basePackages = {
@@ -73,7 +73,7 @@ public class SpringConfiguration {
 
     return template;
   }
-  
+
   // Needed for the evaluator configuration
   @Bean
   public FhirContext fhirContext() {

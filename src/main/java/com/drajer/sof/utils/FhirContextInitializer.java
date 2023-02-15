@@ -45,26 +45,26 @@ public class FhirContextInitializer {
   @Value("${ecr.fhir.query-by-date.enabled:false}")
   private Boolean queryByDateEnabled;
 
-  @Value("${socket.timeout}")
+  @Value("${socket.timeout:3}")
   private Integer socketTimeout;
 
-  @Value("${connection.timeout}")
+  @Value("${connection.timeout:3}")
   private Integer connectionTimeout;
 
-  @Value("${pool.max.per.route}")
+  @Value("${pool.max.per.route:10}")
   private Integer poolMaxPerRoute;
 
-  @Value("${pool.max.total}")
+  @Value("${pool.max.total:100}")
   private Integer poolMaxTotal;
 
-  @Value("${connection.request.time.out}")
+  @Value("${connection.request.time.out:30}")
   private Integer connectionReqTimeOut;
-  
+
   @Autowired FHIRRetryTemplate retryTemplate;
-  
+
   public FhirContextInitializer(FHIRRetryTemplate retryTemplate) {
-	    this.retryTemplate = retryTemplate;
-	  }
+    this.retryTemplate = retryTemplate;
+  }
 
   /**
    * Get FhirContext appropriate to fhirVersion
