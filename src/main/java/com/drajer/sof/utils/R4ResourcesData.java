@@ -124,6 +124,24 @@ public class R4ResourcesData {
     return conditionCodes;
   }
 
+  public Boolean isConditionActive(Condition condition) {
+
+    Boolean retVal = true;
+    if (condition.hasAbatement() && condition.getAbatement() instanceof DateTimeType) {
+
+      DateTimeType d = (DateTimeType) condition.getAbatement();
+
+      DateTimeType current = new DateTimeType();
+      current.setValue(new Date(System.currentTimeMillis()));
+
+      if (d.before(current)) {
+        retVal = false;
+      }
+    }
+
+    return retVal;
+  }
+
   public List<Condition> getConditionData(
       FhirContext context,
       IGenericClient client,
@@ -159,7 +177,7 @@ public class R4ResourcesData {
                     .getCode()
                     .equals(ENTERED_IN_ERROR))) {
 
-          if (condition.getAbatement() == null && condition.hasCategory()) {
+          if (isConditionActive(condition) && condition.hasCategory()) {
             List<CodeableConcept> conditionCategory = condition.getCategory();
             for (CodeableConcept categoryCodeableConcept : conditionCategory) {
               List<Coding> categoryCodingList = categoryCodeableConcept.getCoding();
@@ -549,7 +567,7 @@ public class R4ResourcesData {
           List<Coding> conditionCodes = condition.getCode().getCoding();
           for (Coding conditionCoding : conditionCodes) {
             if (conditionCoding.getCode().equalsIgnoreCase(pregnancySnomedCode)
-                && (condition.getAbatement() == null)) {
+                && (isConditionActive(condition))) {
               conditions.add(condition);
             }
           }
