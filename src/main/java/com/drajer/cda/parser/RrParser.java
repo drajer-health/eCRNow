@@ -67,6 +67,12 @@ public class RrParser {
               ((model.getEicrDocId() != null) ? model.getEicrDocId().getRootValue() : null),
               ((model.getEicrDocId() != null) ? model.getEicrDocId().getExtValue() : null));
 
+          model.setSetId(
+              CdaParserUtilities.readTemplateIdList(
+                  (NodeList) CdaParserConstants.SET_ID_EXP.evaluate(nd, XPathConstants.NODESET)));
+          logger.info(
+              "SetID = {}", ((model.getSetId() != null) ? model.getSetId().getExtValue() : null));
+
           // Determine status
           Element rrstatusElem =
               (Element) CdaParserConstants.RR_STATUS_OBS_EXP.evaluate(doc, XPathConstants.NODE);
@@ -91,6 +97,24 @@ public class RrParser {
               }
             }
           }
+        }
+
+        if (model.getSetId() == null) {
+
+          model.setPatientId(
+              CdaParserUtilities.readTemplateIdList(
+                  (NodeList)
+                      CdaParserConstants.PATIENT_ID_EXP.evaluate(doc, XPathConstants.NODESET)));
+
+          model.setEncounterId(
+              CdaParserUtilities.readTemplateIdList(
+                  (NodeList)
+                      CdaParserConstants.ENCOUNTER_ID_EXP.evaluate(doc, XPathConstants.NODESET)));
+
+          logger.info(
+              "Patient Id = {}, Encounter Id = {}",
+              ((model.getPatientId() != null) ? model.getPatientId().getExtValue() : null),
+              ((model.getEncounterId() != null) ? model.getEncounterId().getExtValue() : null));
         }
 
       } catch (XPathExpressionException e) {

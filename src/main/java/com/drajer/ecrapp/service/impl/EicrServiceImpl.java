@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -56,6 +57,9 @@ public class EicrServiceImpl implements EicrRRService {
   @Autowired R4ResourcesData r4ResourcesData;
 
   RrParser rrParser;
+
+  @Value("${ecr.processorphanrr:false}")
+  private Boolean processOrphanRr;
 
   public EicrServiceImpl() {
     rrParser = new RrParser();
@@ -85,6 +89,10 @@ public class EicrServiceImpl implements EicrRRService {
 
   public Integer getMaxVersionId(Eicr eicr) {
     return eicrDao.getMaxVersionId(eicr);
+  }
+
+  public void setProcessOrphanRr(Boolean processOrphanRr) {
+    this.processOrphanRr = processOrphanRr;
   }
 
   public void handleFailureMdn(
@@ -137,7 +145,21 @@ public class EicrServiceImpl implements EicrRRService {
           rrDocId.getRootValue(),
           rrModel.getReportableType(),
           eicrDocId.getRootValue());
-      final Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
+      Eicr ecr = eicrDao.getEicrByDocId(eicrDocId.getRootValue());
+
+      if (ecr == null && Boolean.TRUE.equals(processOrphanRr)) {
+        logger.info("processOrphanRr is true, continue processing RR");
+        String patientId = rrModel.getPatId();
+        String encounterId = rrModel.getEnctId();
+        if (!StringUtils.isBlank(patientId) && !StringUtils.isBlank(encounterId)) {
+          ecr = new Eicr();
+          ecr.setLaunchPatientId(patientId);
+          ecr.setEncounterId(encounterId);
+          ecr.setEicrDocId(eicrDocId.getRootValue());
+          ecr.setSetId(patientId + "|" + encounterId);
+          ecr.setFhirServerUrl(data.getFhirUrl());
+        }
+      }
 
       if (ecr != null) {
 
@@ -248,6 +270,7 @@ public class EicrServiceImpl implements EicrRRService {
             outcome.getId().getIdPart());
         // Update the EHR Doc Ref Id in the eICR table if it was submitted successfully.
         ecr.setEhrDocRefId(outcome.getId().getIdPart());
+        ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.SUCCESSFULLY_PROCESSED.toString());
         saveOrUpdate(ecr);
 
       } else {
