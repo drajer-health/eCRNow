@@ -101,10 +101,10 @@ public class RRReceiverController {
         String errMsg =
             "Failed to resubmit the RR, Eicr row not found for EicrDocId "
                 + eicrDocId
-                + "or EicrId "
+                + " OR EicrId "
                 + eicrId;
         logger.info(errMsg);
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errMsg);
+        throw new IllegalArgumentException(errMsg);
       }
 
     } catch (IllegalArgumentException e) {
