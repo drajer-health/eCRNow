@@ -58,7 +58,7 @@ public class EicrServiceImpl implements EicrRRService {
 
   RrParser rrParser;
 
-  @Value("${ecr.processorphanrr:false}")
+  @Value("${ecr.rr.processorphanrr:false}")
   private Boolean processOrphanRr;
 
   public EicrServiceImpl() {

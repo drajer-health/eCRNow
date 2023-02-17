@@ -97,6 +97,14 @@ public class RRReceiverController {
 
         // Always save it to the EHR.
         rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId(), true);
+      } else {
+        String errMsg =
+            "Failed to resubmit the RR, Eicr row not found for EicrDocId "
+                + eicrDocId
+                + "or EicrId "
+                + eicrId;
+        logger.info(errMsg);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errMsg);
       }
 
     } catch (IllegalArgumentException e) {

@@ -38,7 +38,7 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | ecr.fhir.paging.count.enabled              | Setting this property to `true` will add `_count` parameter to supported FHIR resource calls. Default value is `true`.
 | ecr.fhir.paging.count.value                | This property is used only if `ecr.fhir.paging.count.enabled` is set to `true`. This property defines the number of items retreived per paging call. Default value is `500`. 
 | ecr.fhir.query-by-date.enabled             | Setting this property to `true` will add either `date` or `_lastUpdated` parameter to supported FHIR resource calls. Encounter start date will be used for the query. Default value is `true`. `Example: date=ge2014-09-24, _lastUpdated=ge2014-09-24T00:00:00.000Z`
-| ecr.processorphanrr                        | Setting this property to `true`, will enable processing of RRs to EHR which doesn't find match row in eicr table for eicr_doc_id. Default value is `false`.
+| ecr.rr.processorphanrr                     | Setting this property to `true`, will enable processing of RRs to EHR which doesn't find match row in eicr table for eicr_doc_id. Default value is `false`.
 | ecr.fhir.retry.enabled                     | Setting this property to `true` will allow FHIR calls to retry on failures. Default value is `true`.
 | ecrfhirretrytemplate.maxRetries            | Used when `ecr.fhir.retry.enabled` is `true`. Number of times to retry. Default value is `3`.
 | ecrfhirretrytemplate.retryWaitTimeInMillis | Used when `ecr.fhir.retry.enabled` is `true`. Time interval between retries in millseconds. Default value is `1000` millsec.
