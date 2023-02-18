@@ -347,45 +347,37 @@ public class R4ResourcesData {
       Date start,
       Date end) {
     logger.trace("Get Travel Observation Data");
-    Bundle bundle =
+
+    StringBuilder codeBuilder = new StringBuilder(2000);
+    for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
+      codeBuilder.append(QueryConstants.SNOMED_CODE_SYSTEM + "|" + travelSnomedCode + ",");
+    }
+    codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + QueryConstants.TRAVEL_CODE);
+    codeBuilder.trimToSize();
+    String codes = codeBuilder.toString();
+
+    String url =
+        launchDetails.getEhrServerURL()
+            + "/"
+            + OBSERVATION
+            + "?patient="
+            + launchDetails.getLaunchPatientId()
+            + "&code="
+            + codes;
+
+    Bundle travelCodeBundle =
         (Bundle)
-            resourceData.getResourceByPatientIdAndCode(
-                launchDetails,
-                client,
-                context,
-                OBSERVATION,
-                QueryConstants.TRAVEL_CODE,
-                QueryConstants.LOINC_CODE_SYSTEM);
+            FhirContextInitializer.getResourceBundleByUrl(
+                launchDetails, client, context, OBSERVATION, url);
+
     List<Observation> observations = new ArrayList<>();
-    if (bundle != null) {
-      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-      bundle = filterObservationsBundleByCategory(bundle, OBSERVATION_SOCIAL_HISTORY);
-      observations = filterObservation(bundle, encounter, start, end);
+    if (travelCodeBundle != null) {
+      travelCodeBundle = filterObservationByStatus(travelCodeBundle, ENTERED_IN_ERROR);
+      travelCodeBundle =
+          filterObservationsBundleByCategory(travelCodeBundle, OBSERVATION_SOCIAL_HISTORY);
+      observations = filterObservation(travelCodeBundle, encounter, start, end);
     }
 
-    for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
-      Bundle travelHisWithSNOMEDCodesbundle =
-          (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
-                  launchDetails,
-                  client,
-                  context,
-                  OBSERVATION,
-                  travelSnomedCode,
-                  QueryConstants.SNOMED_CODE_SYSTEM);
-      List<Observation> travelobs = new ArrayList<>();
-      if (travelHisWithSNOMEDCodesbundle != null) {
-        travelHisWithSNOMEDCodesbundle =
-            filterObservationByStatus(travelHisWithSNOMEDCodesbundle, ENTERED_IN_ERROR);
-        travelHisWithSNOMEDCodesbundle =
-            filterObservationsBundleByCategory(
-                travelHisWithSNOMEDCodesbundle, OBSERVATION_SOCIAL_HISTORY);
-        travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
-      }
-      if (!travelobs.isEmpty()) {
-        observations.addAll(travelobs);
-      }
-    }
     logger.info("Filtered Travel Observations ----> {}", observations.size());
     return observations;
   }
@@ -443,42 +435,40 @@ public class R4ResourcesData {
       Date end) {
     logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
+
+    StringBuilder codeBuilder = new StringBuilder(2000);
     for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
-      Bundle occupationCodesbundle =
-          (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
-                  launchDetails,
-                  client,
-                  context,
-                  OBSERVATION,
-                  occupationCode,
-                  QueryConstants.SNOMED_CODE_SYSTEM);
-      if (occupationCodesbundle != null) {
-        occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
-        for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-          observations.add((Observation) entryComp.getResource());
-        }
-      }
+      codeBuilder.append(QueryConstants.SNOMED_CODE_SYSTEM + "|" + occupationCode + ",");
     }
 
     for (String occupationCode : QueryConstants.getOccupationLoincCodes()) {
-      Bundle occupationCodesbundle =
-          (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
-                  launchDetails,
-                  client,
-                  context,
-                  OBSERVATION,
-                  occupationCode,
-                  QueryConstants.LOINC_CODE_SYSTEM);
+      codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + occupationCode + ",");
+    }
+    codeBuilder.trimToSize();
+    String codes =
+        codeBuilder.substring(0, codeBuilder.length() - 1); // Remove extra "," at the end.
 
-      if (occupationCodesbundle != null) {
-        occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
-        for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-          observations.add((Observation) entryComp.getResource());
-        }
+    String url =
+        launchDetails.getEhrServerURL()
+            + "/"
+            + OBSERVATION
+            + "?patient="
+            + launchDetails.getLaunchPatientId()
+            + "&code="
+            + codes;
+
+    Bundle occupationCodesbundle =
+        (Bundle)
+            FhirContextInitializer.getResourceBundleByUrl(
+                launchDetails, client, context, OBSERVATION, url);
+
+    if (occupationCodesbundle != null) {
+      occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
+      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+        observations.add((Observation) entryComp.getResource());
       }
     }
+
     logger.info("Filtered Social History Occupation Observations ----> {}", observations.size());
     return observations;
   }

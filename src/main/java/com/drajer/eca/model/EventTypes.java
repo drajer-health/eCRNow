@@ -88,6 +88,12 @@ public final class EventTypes {
     FAILED_EHR_SUBMISSION
   }
 
+  public enum QueryType {
+    NONE,
+    TRIGGER_QUERY,
+    LOADING_QUERY
+  }
+
   public EcrActionTypes getEcrActionTypes(String s) {
 
     if (s.equalsIgnoreCase("match-trigger")) return EcrActionTypes.MATCH_TRIGGER;

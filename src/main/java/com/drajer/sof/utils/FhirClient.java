@@ -24,6 +24,7 @@ import ca.uhn.fhir.rest.gclient.ITransaction;
 import ca.uhn.fhir.rest.gclient.IUntypedQuery;
 import ca.uhn.fhir.rest.gclient.IUpdate;
 import ca.uhn.fhir.rest.gclient.IValidate;
+import com.drajer.eca.model.EventTypes;
 import javax.annotation.Nonnull;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -31,11 +32,13 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 public class FhirClient implements IGenericClient {
   protected IGenericClient client;
   protected FhirHttpHeaderInterceptor interceptor;
+  protected EventTypes.QueryType queryType;
 
-  public FhirClient(@Nonnull IGenericClient client, String requestId) {
+  public FhirClient(@Nonnull IGenericClient client, String requestId, EventTypes.QueryType type) {
     this.interceptor = new FhirHttpHeaderInterceptor(requestId);
     this.client = client;
     this.client.registerInterceptor(this.interceptor);
+    this.queryType = type;
   }
 
   public FhirHttpHeaderInterceptor getHttpInterceptor() {

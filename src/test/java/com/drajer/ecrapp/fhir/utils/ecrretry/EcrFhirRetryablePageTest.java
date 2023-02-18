@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.gclient.*;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
@@ -74,7 +75,9 @@ public class EcrFhirRetryablePageTest {
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
         .thenReturn(context);
 
-    when(fhirContextInitializer.createClient(context, currentStateDetails)).thenReturn(retryClient);
+    when(fhirContextInitializer.createClient(
+            context, currentStateDetails, EventTypes.QueryType.NONE))
+        .thenReturn(retryClient);
 
     when(retryClient.loadPage()).thenReturn(loadPage);
     when(loadPage.next(bundle)).thenReturn(getPageTyped);

@@ -7,6 +7,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
@@ -75,7 +76,9 @@ public class EcrFhirRetryableReadTest {
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
         .thenReturn(context);
 
-    when(fhirContextInitializer.createClient(context, currentStateDetails)).thenReturn(retryClient);
+    when(fhirContextInitializer.createClient(
+            context, currentStateDetails, EventTypes.QueryType.NONE))
+        .thenReturn(retryClient);
 
     when(retryClient.read()).thenReturn(read);
     when(read.resource("Encounter")).thenReturn(readType);

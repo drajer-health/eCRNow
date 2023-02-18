@@ -9,10 +9,14 @@ import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
+import com.drajer.eca.model.EventTypes;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.ecrretry.EcrFhirRetryClient;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -42,6 +46,18 @@ public class FhirContextInitializer {
 
   @Value("${ecr.fhir.query-by-date.enabled:false}")
   private Boolean queryByDateEnabled;
+
+  @Value("${ecr.fhir.query-by-encounter.enabled:false}")
+  private Boolean queryByEncounterEnabled;
+
+  @Value("${ecr.fhir.skip.resources:}")
+  private String skipResource;
+
+  @Value("${ecr.fhir.query-by-last-trigger-date.enabled:false}")
+  private Boolean queryByLastTriggerDateEnabled;
+
+  @Value("${ecr.fhir.skip.triggerquery.resources:}")
+  private String skipTriggerResource;
 
   @Autowired FHIRRetryTemplate retryTemplate;
 
@@ -80,7 +96,8 @@ public class FhirContextInitializer {
   public IGenericClient createClient(
       FhirContext context, String url, String accessToken, String requestId) {
     logger.trace("Initializing the Client");
-    FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
+    FhirClient client =
+        new FhirClient(context.newRestfulGenericClient(url), requestId, EventTypes.QueryType.NONE);
     context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
 
     client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
@@ -91,19 +108,21 @@ public class FhirContextInitializer {
       logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
           client.getHttpInterceptor().getXReqId());
-      return new EcrFhirRetryClient(client, retryTemplate, requestId);
+      return new EcrFhirRetryClient(client, retryTemplate, requestId, EventTypes.QueryType.NONE);
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
     return client;
   }
 
-  public IGenericClient createClient(FhirContext context, LaunchDetails launchDetails) {
+  public IGenericClient createClient(
+      FhirContext context, LaunchDetails launchDetails, EventTypes.QueryType type) {
     logger.trace("Initializing the Client");
     FhirClient client =
         new FhirClient(
             context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
-            launchDetails.getxRequestId());
+            launchDetails.getxRequestId(),
+            type);
     context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
 
     BearerTokenAuthInterceptor bearerTokenAuthInterceptor =
@@ -117,7 +136,8 @@ public class FhirContextInitializer {
       logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
           client.getHttpInterceptor().getXReqId());
-      return new EcrFhirRetryClient(client, retryTemplate, client.getHttpInterceptor().getXReqId());
+      return new EcrFhirRetryClient(
+          client, retryTemplate, client.getHttpInterceptor().getXReqId(), type);
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
@@ -143,6 +163,11 @@ public class FhirContextInitializer {
       String resourceName,
       String resourceId) {
     IBaseResource resource = null;
+
+    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+      return resource;
+    }
+
     try {
       logger.info("Getting {} data by ID {}", resourceName, resourceId);
       resource =
@@ -175,13 +200,16 @@ public class FhirContextInitializer {
       FhirContext context,
       String resourceName) {
     IBaseBundle bundleResponse = null;
+    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+      return bundleResponse;
+    }
     String url =
         authDetails.getEhrServerURL()
             + "/"
             + resourceName
             + QUERY_PATIENT
             + authDetails.getLaunchPatientId();
-    url += getCustomQueryParameters(resourceName, authDetails);
+    url += getCustomQueryParameters(resourceName, authDetails, (FhirClient) genericClient);
 
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
@@ -194,6 +222,9 @@ public class FhirContextInitializer {
       String resourceName,
       String category) {
     IBaseBundle bundleResponse = null;
+    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+      return bundleResponse;
+    }
     String url =
         authDetails.getEhrServerURL()
             + "/"
@@ -202,7 +233,7 @@ public class FhirContextInitializer {
             + authDetails.getLaunchPatientId()
             + "&category="
             + category;
-    url += getCustomQueryParameters(resourceName, authDetails);
+    url += getCustomQueryParameters(resourceName, authDetails, (FhirClient) genericClient);
 
     bundleResponse = getResourceBundleByUrl(authDetails, genericClient, context, resourceName, url);
     return bundleResponse;
@@ -216,6 +247,9 @@ public class FhirContextInitializer {
       String code,
       String system) {
     IBaseBundle bundleResponse = null;
+    if (Boolean.TRUE.equals(checkSkipResource(resourceName, (FhirClient) genericClient))) {
+      return bundleResponse;
+    }
     String url =
         authDetails.getEhrServerURL()
             + "/"
@@ -335,7 +369,8 @@ public class FhirContextInitializer {
     }
   }
 
-  private String getCustomQueryParameters(String resourceName, LaunchDetails launchDetails) {
+  private String getCustomQueryParameters(
+      String resourceName, LaunchDetails launchDetails, FhirClient client) {
     String customQueryParam = "";
 
     if (Boolean.TRUE.equals(pagingCountEnabled)) {
@@ -345,17 +380,59 @@ public class FhirContextInitializer {
     }
 
     if (Boolean.TRUE.equals(queryByDateEnabled)) {
+      String queryDateTime = getQueryDateTime(launchDetails, client);
 
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-      String encounterStartDate = formatter.format(launchDetails.getStartDate());
-
-      if (resourceName.matches("Observation|DiagnosticReport")) {
-        customQueryParam += "&date=ge" + encounterStartDate;
+      if (resourceName.matches("Observation|DiagnosticReport|Immunization")) {
+        customQueryParam += "&date=ge" + queryDateTime;
       } else if (resourceName.matches("ServiceRequest|MedicationRequest")) {
-        customQueryParam += "&_lastUpdated=ge" + encounterStartDate + "T00:00:00.000Z";
+        customQueryParam += "&_lastUpdated=ge" + queryDateTime + "T00:00:00.000Z";
+      }
+    }
+
+    if (Boolean.TRUE.equals(queryByEncounterEnabled)) {
+      if (resourceName.matches("Condition|DiagnosticReport")) {
+        customQueryParam += "&encounter=" + launchDetails.getEncounterId();
       }
     }
 
     return customQueryParam;
+  }
+
+  private boolean checkSkipResource(String resourceName, FhirClient client) {
+    if (!skipResource.isEmpty() && skipResource.contains(resourceName)) {
+      logger.info("Resource {} is not called as it is configured to Skip", resourceName);
+      return true;
+    }
+    if (client.queryType.equals(EventTypes.QueryType.TRIGGER_QUERY)) {
+      return checkSkipTriggerResource(resourceName);
+    }
+    return false;
+  }
+
+  private boolean checkSkipTriggerResource(String resourceName) {
+    if (!skipTriggerResource.isEmpty() && skipTriggerResource.contains(resourceName)) {
+      logger.info(
+          "Resource {} is not called as it is configured to Skip for TriggerQuery", resourceName);
+      return true;
+    }
+    return false;
+  }
+
+  private String getQueryDateTime(LaunchDetails launchDetails, FhirClient client) {
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    String queryStartDate = formatter.format(launchDetails.getStartDate());
+
+    if (Boolean.TRUE.equals(queryByLastTriggerDateEnabled)
+        && client.queryType.equals(EventTypes.QueryType.TRIGGER_QUERY)) {
+      PatientExecutionState state = ApplicationUtils.getDetailStatus(launchDetails);
+      if (state != null) {
+        Date lastQueryDtTm = state.getMatchTriggerStatus().getTriggerLastExecutionDateTime();
+        if (lastQueryDtTm != null) {
+          queryStartDate = formatter.format(lastQueryDtTm);
+        }
+      }
+    }
+    return queryStartDate;
   }
 }

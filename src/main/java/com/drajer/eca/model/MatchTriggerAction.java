@@ -7,6 +7,7 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ public class MatchTriggerAction extends AbstractAction {
       LaunchDetails details = (LaunchDetails) obj;
 
       PatientExecutionState state = null;
+      Date triggerExecutionDateTime = new Date();
 
       state = ApplicationUtils.getDetailStatus(details);
       state.getMatchTriggerStatus().setActionId(getActionId());
@@ -76,6 +78,7 @@ public class MatchTriggerAction extends AbstractAction {
           // may elect to run the matching again
           // because data may be entered late even though the app was launched.
           state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+          state.getMatchTriggerStatus().setTriggerLastExecutionDateTime(triggerExecutionDateTime);
           EcaUtils.updateDetailStatus(details, state);
 
         } else if (data != null && data instanceof R4FhirData) {
@@ -110,6 +113,7 @@ public class MatchTriggerAction extends AbstractAction {
           // may elect to run the matching again
           // because data may be entered late even though the app was launched.
           state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
+          state.getMatchTriggerStatus().setTriggerLastExecutionDateTime(triggerExecutionDateTime);
           EcaUtils.updateDetailStatus(details, state);
 
         } else {

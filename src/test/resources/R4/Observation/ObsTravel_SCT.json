@@ -1,0 +1,867 @@
+{
+  "resourceType": "Bundle",
+  "id": "35722af3-8af8-4979-b651-2f845caf29b2",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742571&code=http%3A%2F%2Fsnomed.info%2Fsct%7C161085007%2Chttp%3A%2F%2Fsnomed.info%2Fsct%7C443846001%2Chttp%3A%2F%2Fsnomed.info%2Fsct%7C420008001%2Chttp%3A%2F%2Fsnomed.info%2Fsct%7C46521000175102%2Chttp%3A%2F%2Fsnomed.info%2Fsct%7C34831000175105%2Chttp%3A%2F%2Fsnomed.info%2Fsct%7C161086008%2Chttp%3A%2F%2Floinc.org%7C29762-2"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-203785063",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-203785063",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2023-02-09T12:19:38Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel Location</p><p><b>Result</b>: India, Italy</p><p><b>Effective Date</b>: Feb  9, 2023 12:15 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-203785063-2023020912151500"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "4154424",
+              "display": "Recent Travel Location",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "161086008",
+              "display": "Recent countries visited (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel Location"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2023-02-09T12:15:00Z",
+        "issued": "2023-02-09T12:15:04Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                  "code": "4154424",
+                  "display": "Recent Travel Location",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "161086008",
+                  "display": "Recent countries visited (observable entity)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Recent Travel Location"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223600005",
+                  "display": "India (geographic location)",
+                  "userSelected": false
+                }
+              ],
+              "text": "India"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                  "code": "4154424",
+                  "display": "Recent Travel Location",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "161086008",
+                  "display": "Recent countries visited (observable entity)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Recent Travel Location"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223668000",
+                  "display": "Italy (geographic location)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Italy"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-203785061",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-203785061",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2023-02-09T12:19:38Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel History</p><p><b>Result</b>: Last travel within 21 days</p><p><b>Effective Date</b>: Feb  9, 2023 12:15 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-203785061-2023020912151500"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "18751316",
+              "display": "Recent Travel History",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46521000175102",
+              "display": "Detail of recent history of travel (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel History"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2023-02-09T12:15:00Z",
+        "issued": "2023-02-09T12:15:04Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46541000175105",
+              "display": "History of travel within past twenty-one days (situation)",
+              "userSelected": false
+            }
+          ],
+          "text": "Last travel within 21 days"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-203785047",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-203785047",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2023-02-09T12:14:18Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel Location</p><p><b>Result</b>: India, Italy</p><p><b>Effective Date</b>: Feb  9, 2023 12:10 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-203785047-2023020912141800"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "4154424",
+              "display": "Recent Travel Location",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "161086008",
+              "display": "Recent countries visited (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel Location"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2023-02-09T12:10:00Z",
+        "issued": "2023-02-09T12:10:26Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                  "code": "4154424",
+                  "display": "Recent Travel Location",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "161086008",
+                  "display": "Recent countries visited (observable entity)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Recent Travel Location"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223600005",
+                  "display": "India (geographic location)",
+                  "userSelected": false
+                }
+              ],
+              "text": "India"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+                  "code": "4154424",
+                  "display": "Recent Travel Location",
+                  "userSelected": true
+                },
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "161086008",
+                  "display": "Recent countries visited (observable entity)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Recent Travel Location"
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223668000",
+                  "display": "Italy (geographic location)",
+                  "userSelected": false
+                }
+              ],
+              "text": "Italy"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-203785045",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-203785045",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2023-02-09T12:14:18Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel History</p><p><b>Result</b>: Last travel within 21 days</p><p><b>Effective Date</b>: Feb  9, 2023 12:10 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-203785045-2023020912141800"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "18751316",
+              "display": "Recent Travel History",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46521000175102",
+              "display": "Detail of recent history of travel (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel History"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2023-02-09T12:10:00Z",
+        "issued": "2023-02-09T12:10:26Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46541000175105",
+              "display": "History of travel within past twenty-one days (situation)",
+              "userSelected": false
+            }
+          ],
+          "text": "Last travel within 21 days"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-197424268",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-197424268",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2021-01-12T16:40:37Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel Location</p><p><b>Result</b>: Italy</p><p><b>Effective Date</b>: Jan 12, 2021  4:40 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197424268-2021011216403700"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "4154424",
+              "display": "Recent Travel Location",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "161086008",
+              "display": "Recent countries visited (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel Location"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-01-12T16:40:00Z",
+        "issued": "2021-01-12T16:40:23Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "223668000",
+              "display": "Italy (geographic location)",
+              "userSelected": false
+            }
+          ],
+          "text": "Italy"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-197424266",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-197424266",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2021-01-12T16:40:37Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Final</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel History</p><p><b>Result</b>: Last travel within 7 days</p><p><b>Effective Date</b>: Jan 12, 2021  4:40 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197424266-2021011216403700"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "18751316",
+              "display": "Recent Travel History",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46521000175102",
+              "display": "Detail of recent history of travel (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel History"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-01-12T16:40:00Z",
+        "issued": "2021-01-12T16:40:23Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46551000175107",
+              "display": "History of travel within past seven days (situation)",
+              "userSelected": false
+            }
+          ],
+          "text": "Last travel within 7 days"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-197424250",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-197424250",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2021-01-12T16:40:02Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Entered in Error</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel Location</p><p><b>Result</b>: China</p><p><b>Effective Date</b>: Jan 12, 2021  4:33 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197424250-2021011216345000"
+          }
+        ],
+        "status": "entered-in-error",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "4154424",
+              "display": "Recent Travel Location",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "161086008",
+              "display": "Recent countries visited (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel Location"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-01-12T16:33:00Z",
+        "issued": "2021-01-12T16:40:02Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "223581004",
+              "display": "China (geographic location)",
+              "userSelected": false
+            }
+          ],
+          "text": "China"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation/L-197424248",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "L-197424248",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2021-01-12T16:40:02Z"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Observation</b></p><p><b>Patient Id</b>: 12742571</p><p><b>Status</b>: Entered in Error</p><p><b>Categories</b>: Social History</p><p><b>Code</b>: Recent Travel History</p><p><b>Result</b>: Last travel within 7 days</p><p><b>Effective Date</b>: Jan 12, 2021  4:33 P.M. UTC</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "https://fhir.cerner.com/ceuuid",
+            "value": "CE87caf4b7-9397-4667-9897-702218017c9e-197424248-2021011216345000"
+          }
+        ],
+        "status": "entered-in-error",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History",
+                "userSelected": false
+              }
+            ],
+            "text": "Social History"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+              "code": "18751316",
+              "display": "Recent Travel History",
+              "userSelected": true
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46521000175102",
+              "display": "Detail of recent history of travel (observable entity)",
+              "userSelected": false
+            }
+          ],
+          "text": "Recent Travel History"
+        },
+        "subject": {
+          "reference": "Patient/12742571"
+        },
+        "encounter": {
+          "reference": "Encounter/97953900"
+        },
+        "effectiveDateTime": "2021-01-12T16:33:00Z",
+        "issued": "2021-01-12T16:40:02Z",
+        "performer": [
+          {
+            "extension": [
+              {
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF",
+                      "display": "primary performer"
+                    }
+                  ],
+                  "text": "primary performer"
+                },
+                "url": "http://hl7.org/fhir/StructureDefinition/event-performerFunction"
+              }
+            ],
+            "reference": "Practitioner/12398006"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "46551000175107",
+              "display": "History of travel within past seven days (situation)",
+              "userSelected": false
+            }
+          ],
+          "text": "Last travel within 7 days"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}
