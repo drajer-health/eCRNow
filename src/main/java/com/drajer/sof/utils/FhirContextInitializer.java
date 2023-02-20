@@ -38,22 +38,34 @@ public class FhirContextInitializer {
   private static final String QUERY_PATIENT = "?patient=";
   private static final Logger logger = LoggerFactory.getLogger(FhirContextInitializer.class);
 
-  @Value("${ecr.fhir.paging.count.enabled:false}")
+  @Value("${ecr.fhir.pagecount.enabled:false}")
   private Boolean pagingCountEnabled;
 
-  @Value("${ecr.fhir.paging.count.value:500}")
+  @Value("${ecr.fhir.pagecount.value:500}")
   private Integer pagingCount;
 
-  @Value("${ecr.fhir.query-by-date.enabled:false}")
+  @Value("${ecr.fhir.pagecount.resources:}")
+  private String pagingResource;
+
+  @Value("${ecr.fhir.query-by-period.enabled:false}")
   private Boolean queryByDateEnabled;
+
+  @Value("${ecr.fhir.query-by-period.date.resources:}")
+  private String dateResources;
+
+  @Value("${ecr.fhir.query-by-period.lastupdated.resources:}")
+  private String lastUpdatedResources;
 
   @Value("${ecr.fhir.query-by-encounter.enabled:false}")
   private Boolean queryByEncounterEnabled;
 
+  @Value("${ecr.fhir.query-by-encounter.resources:}")
+  private String resourcesByEncounter;
+
   @Value("${ecr.fhir.skip.resources:}")
   private String skipResource;
 
-  @Value("${ecr.fhir.query-by-last-trigger-date.enabled:false}")
+  @Value("${ecr.fhir.query-by-period.uselastquerytime:false}")
   private Boolean queryByLastTriggerDateEnabled;
 
   @Value("${ecr.fhir.skip.triggerquery.resources:}")
@@ -373,26 +385,23 @@ public class FhirContextInitializer {
       String resourceName, LaunchDetails launchDetails, FhirClient client) {
     String customQueryParam = "";
 
-    if (Boolean.TRUE.equals(pagingCountEnabled)) {
-      if (resourceName.matches("ServiceRequest|MedicationRequest|Observation|DiagnosticReport")) {
-        customQueryParam += "&_count=" + pagingCount;
-      }
+    if (Boolean.TRUE.equals(pagingCountEnabled) && resourceName.matches(pagingResource)) {
+      customQueryParam += "&_count=" + pagingCount;
     }
 
     if (Boolean.TRUE.equals(queryByDateEnabled)) {
       String queryDateTime = getQueryDateTime(launchDetails, client);
 
-      if (resourceName.matches("Observation|DiagnosticReport|Immunization")) {
+      if (resourceName.matches(dateResources)) {
         customQueryParam += "&date=ge" + queryDateTime;
-      } else if (resourceName.matches("ServiceRequest|MedicationRequest")) {
+      } else if (resourceName.matches(lastUpdatedResources)) {
         customQueryParam += "&_lastUpdated=ge" + queryDateTime + "T00:00:00.000Z";
       }
     }
 
-    if (Boolean.TRUE.equals(queryByEncounterEnabled)) {
-      if (resourceName.matches("Condition|DiagnosticReport")) {
-        customQueryParam += "&encounter=" + launchDetails.getEncounterId();
-      }
+    if (Boolean.TRUE.equals(queryByEncounterEnabled)
+        && resourceName.matches(resourcesByEncounter)) {
+      customQueryParam += "&encounter=" + launchDetails.getEncounterId();
     }
 
     return customQueryParam;
