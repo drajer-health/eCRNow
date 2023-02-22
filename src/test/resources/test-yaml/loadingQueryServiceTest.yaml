@@ -153,7 +153,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - Observation: 3
-        Condition: 1
+        Condition: 2
         TravelObservation: 0
         PregnancyObservation: 3
         Immunization: 2

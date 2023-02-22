@@ -145,15 +145,12 @@ public class R4ResourcesData {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Condition condition = (Condition) entry.getResource();
 
-        if ((condition.getVerificationStatus() == null)
-            || (condition.getVerificationStatus() != null
-                && condition.getVerificationStatus().getCodingFirstRep() != null
-                && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
-                && !condition
-                    .getVerificationStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .equals(ENTERED_IN_ERROR))) {
+        if ((!isVerificationStatusPresent(condition))
+            || (!condition
+                .getVerificationStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .equals(ENTERED_IN_ERROR))) {
 
           if (condition.getAbatement() == null && condition.hasCategory()) {
             List<CodeableConcept> conditionCategory = condition.getCategory();
@@ -1420,5 +1417,16 @@ public class R4ResourcesData {
       withinDateTime = true;
     }
     return withinDateTime;
+  }
+
+  private boolean isVerificationStatusPresent(Condition condition) {
+    boolean present = false;
+
+    if (condition.getVerificationStatus() != null
+        && condition.getVerificationStatus().getCodingFirstRep() != null
+        && condition.getVerificationStatus().getCodingFirstRep().getCode() != null) {
+      present = true;
+    }
+    return present;
   }
 }

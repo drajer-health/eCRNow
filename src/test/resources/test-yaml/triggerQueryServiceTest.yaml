@@ -68,7 +68,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - Observation: 3
-        Condition: 1
+        Condition: 2
         ServiceRequest: 2
   eCR-R4-Encounter-FetchByPatientId:
     testData:
