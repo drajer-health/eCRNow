@@ -10,6 +10,7 @@ import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
+import com.drajer.sof.utils.FhirContextInitializer;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +59,8 @@ public class ActionRepo {
   RestApiSender restTransport;
 
   DirectResponseReceiver directReceiver;
+
+  FhirContextInitializer fhirContextInitializer;
 
   String schematronFileLocation;
 
@@ -177,6 +180,14 @@ public class ActionRepo {
 
   public void setWorkflowService(WorkflowService workflowService) {
     this.workflowService = workflowService;
+  }
+
+  public FhirContextInitializer getFhirContextInitializer() {
+    return fhirContextInitializer;
+  }
+
+  public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
+    this.fhirContextInitializer = fhirContextInitializer;
   }
 
   public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {

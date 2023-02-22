@@ -22,7 +22,7 @@
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
-		<skip.integration.tests>true</skip.integration.tests>
+		<skip.integration.tests>false</skip.integration.tests>
 	</properties>
 
 	<distributionManagement>
