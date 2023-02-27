@@ -10,7 +10,6 @@ import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.ValueSetSingleton;
-import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -320,7 +319,7 @@ public class EcaUtils {
         && !details.getEncounterId().isEmpty()) {
 
       // Valid Encounter Id
-      FhirContextInitializer ci = new FhirContextInitializer(FHIRRetryTemplate.getInstance());
+      FhirContextInitializer ci = ActionRepo.getInstance().getFhirContextInitializer();
       FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
 
       IGenericClient client =

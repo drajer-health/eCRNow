@@ -100,10 +100,8 @@ public class ITBaseCustom extends BaseIntegrationTest {
     ResponseEntity<String> response =
         restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
     response.getStatusCode();
-    wireMockServer.verify(
-        moreThanOrExactly(1), getRequestedFor(urlEqualTo("/FHIR/Encounter?patient=12742571")));
-    wireMockServer.verify(
-        moreThanOrExactly(1), getRequestedFor(urlEqualTo("/FHIR/Patient?patient=12742571")));
+    wireMockServer.verify(1, getRequestedFor(urlEqualTo("/FHIR/Encounter?patient=12742571")));
+    wireMockServer.verify(1, getRequestedFor(urlEqualTo("/FHIR/Patient?patient=12742571")));
   }
 
   private void saveHealtcareSetting(String healthCareSettingsFile) throws IOException {

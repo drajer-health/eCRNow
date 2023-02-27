@@ -189,7 +189,7 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-      - Observation: 0
+      - Observation: 26
   eCR-R4-Observation-MultiplePagingQuery-3pages:
     testData:
       LaunchDetails: "R4/Misc/LaunchDetails/LaunchDetails.json"
@@ -224,4 +224,4 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
-      - Observation: 0
+      - Observation: 76
