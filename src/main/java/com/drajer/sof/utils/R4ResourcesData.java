@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -39,7 +40,7 @@ public class R4ResourcesData {
 
   private static final String OBSERVATION = "Observation";
   private static final String CONDITION = "Condition";
-
+  private static final String ENCOUNTER = "Encounter";
   private static final String OBSERVATION_SOCIAL_HISTORY = "social-history";
   private static final String ENTERED_IN_ERROR = "entered-in-error";
 
@@ -63,11 +64,15 @@ public class R4ResourcesData {
       Date end) {
     Encounter encounter = null;
     String encounterID = launchDetails.getEncounterId();
+
+    if (resourceData.checkSkipResource(ENCOUNTER, (FhirClient) client)) {
+      return encounter;
+    }
     // If Encounter Id is present in Launch Details
     if (encounterID != null) {
       try {
         logger.info("Getting Encounter data by ID {}", encounterID);
-        encounter = (Encounter) client.read().resource("Encounter").withId(encounterID).execute();
+        encounter = (Encounter) client.read().resource(ENCOUNTER).withId(encounterID).execute();
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
@@ -85,7 +90,7 @@ public class R4ResourcesData {
       // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
       // and Find the latest Encounter
       Bundle bundle =
-          (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Encounter");
+          (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, ENCOUNTER);
       Map<Encounter, Date> encounterMap = new HashMap<>();
       if (bundle != null && bundle.getEntry() != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
@@ -126,10 +131,7 @@ public class R4ResourcesData {
       FhirContext context,
       IGenericClient client,
       LaunchDetails launchDetails,
-      R4FhirData r4FhirData,
-      Encounter encounter,
-      Date start,
-      Date end) {
+      R4FhirData r4FhirData) {
 
     logger.trace("Getting Conditions Data");
     Bundle bundle =
@@ -225,7 +227,6 @@ public class R4ResourcesData {
       IGenericClient client,
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
-      Encounter encounter,
       Date start,
       Date end) {
     logger.trace("Get Observation Data");
@@ -239,16 +240,13 @@ public class R4ResourcesData {
     List<CodeableConcept> valueObservationCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
       // Filter Observations based on Encounter Reference
-      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+      String encounterId = launchDetails.getEncounterId();
+      if (StringUtils.isNotEmpty(encounterId)) {
         bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
         for (BundleEntryComponent entry : bundle.getEntry()) {
           Observation observation = (Observation) entry.getResource();
           if (!observation.getEncounter().isEmpty()
-              && observation
-                  .getEncounter()
-                  .getReferenceElement()
-                  .getIdPart()
-                  .equals(encounter.getIdElement().getIdPart())) {
+              && observation.getEncounter().getReferenceElement().getIdPart().equals(encounterId)) {
             observations.add(observation);
             observationCodes.addAll(findLaboratoryCodes(observation));
             findAllValueCodes(observation, valueObservations, valueObservationCodes);
@@ -339,7 +337,6 @@ public class R4ResourcesData {
       FhirContext context,
       IGenericClient client,
       LaunchDetails launchDetails,
-      R4FhirData r4FhirData,
       Encounter encounter,
       Date start,
       Date end) {
@@ -423,13 +420,7 @@ public class R4ResourcesData {
   }
 
   public List<Observation> getSocialHistoryObservationDataOccupation(
-      FhirContext context,
-      IGenericClient client,
-      LaunchDetails launchDetails,
-      R4FhirData r4FhirData,
-      Encounter encounter,
-      Date start,
-      Date end) {
+      FhirContext context, IGenericClient client, LaunchDetails launchDetails) {
     logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
 
@@ -471,13 +462,7 @@ public class R4ResourcesData {
   }
 
   public List<Condition> getPregnancyConditions(
-      FhirContext context,
-      IGenericClient client,
-      LaunchDetails launchDetails,
-      R4FhirData r4FhirData,
-      Encounter encounter,
-      Date start,
-      Date end) {
+      FhirContext context, IGenericClient client, LaunchDetails launchDetails) {
     logger.trace("Get Pregnancy Conditions");
     List<Condition> conditions = new ArrayList<>();
     for (String pregnancySnomedCode : QueryConstants.getPregnancySmtCodes()) {
@@ -899,7 +884,6 @@ public class R4ResourcesData {
       IGenericClient client,
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
-      Encounter encounter,
       Date start,
       Date end) {
     logger.trace("Get ServiceRequest Data");
@@ -910,7 +894,8 @@ public class R4ResourcesData {
     List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
       // Filter ServiceRequests based on Encounter Reference
-      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+      String encounterId = launchDetails.getEncounterId();
+      if (StringUtils.isNotEmpty(encounterId)) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
@@ -919,7 +904,7 @@ public class R4ResourcesData {
                   .getEncounter()
                   .getReferenceElement()
                   .getIdPart()
-                  .equals(encounter.getIdElement().getIdPart())) {
+                  .equals(encounterId)) {
             serviceRequests.add(serviceRequest);
             serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
           }
@@ -1057,8 +1042,7 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of ConditionCodes.
     try {
-      List<Condition> conditionsList =
-          getConditionData(context, client, launchDetails, r4FhirData, encounter, start, end);
+      List<Condition> conditionsList = getConditionData(context, client, launchDetails, r4FhirData);
       if (conditionsList != null && !conditionsList.isEmpty()) {
         // Already sorted and set in the getConditionData method
         for (Condition condition : conditionsList) {
@@ -1079,7 +1063,7 @@ public class R4ResourcesData {
     // also to the list of labResultCodes.
     try {
       List<Observation> observationList =
-          getObservationData(context, client, launchDetails, r4FhirData, encounter, start, end);
+          getObservationData(context, client, launchDetails, r4FhirData, start, end);
       if (observationList != null && !observationList.isEmpty()) {
         r4FhirData.setLabResults(observationList);
         for (Observation observation : observationList) {
@@ -1114,7 +1098,7 @@ public class R4ResourcesData {
 
     try {
       List<ServiceRequest> serviceRequestsList =
-          getServiceRequestData(context, client, launchDetails, r4FhirData, encounter, start, end);
+          getServiceRequestData(context, client, launchDetails, r4FhirData, start, end);
       if (serviceRequestsList != null && !serviceRequestsList.isEmpty()) {
         r4FhirData.setServiceRequests(serviceRequestsList);
         for (ServiceRequest serviceRequest : serviceRequestsList) {

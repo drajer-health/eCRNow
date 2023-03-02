@@ -21,6 +21,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition_NoEcr_WithNonTriggerCode.json"
       Observation:
         - params:

@@ -54,26 +54,27 @@ public class LoadingQueryR4Bundle {
     r4ResourcesData.loadMedicationsData(
         context, client, launchDetails, r4FhirData, encounter, bundle, start, end);
 
-    // Get Pregnancy Observations
-    try {
-      List<Observation> observationList =
-          r4ResourcesData.getPregnancyObservationData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
-      r4FhirData.setPregnancyObs(observationList);
-      for (Observation observation : observationList) {
-        BundleEntryComponent observationsEntry =
-            new BundleEntryComponent().setResource(observation);
-        bundle.addEntry(observationsEntry);
-      }
-    } catch (Exception e) {
-      logger.error("Error in getting Pregnancy Observation Data", e);
-    }
+    // Get Pregnancy Observations, will be used once support of pregnancy observation is added in
+    // Social History section.
+    //    try {
+    //      List<Observation> observationList =
+    //          r4ResourcesData.getPregnancyObservationData(
+    //              context, client, launchDetails, r4FhirData, encounter, start, end);
+    //      r4FhirData.setPregnancyObs(observationList);
+    //      for (Observation observation : observationList) {
+    //        BundleEntryComponent observationsEntry =
+    //            new BundleEntryComponent().setResource(observation);
+    //        bundle.addEntry(observationsEntry);
+    //      }
+    //    } catch (Exception e) {
+    //      logger.error("Error in getting Pregnancy Observation Data", e);
+    //    }
 
     // Get Travel Observations
     try {
       List<Observation> observationList =
           r4ResourcesData.getTravelObservationData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+              context, client, launchDetails, encounter, start, end);
       r4FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -87,8 +88,7 @@ public class LoadingQueryR4Bundle {
     // Get Social History Observations (Occupation)
     try {
       List<Observation> observationList =
-          r4ResourcesData.getSocialHistoryObservationDataOccupation(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+          r4ResourcesData.getSocialHistoryObservationDataOccupation(context, client, launchDetails);
       r4FhirData.setOccupationObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -102,8 +102,7 @@ public class LoadingQueryR4Bundle {
     // Get Pregnancy Conditions
     try {
       List<Condition> conditionList =
-          r4ResourcesData.getPregnancyConditions(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
+          r4ResourcesData.getPregnancyConditions(context, client, launchDetails);
       r4FhirData.setPregnancyConditions(conditionList);
       for (Condition condition : conditionList) {
         BundleEntryComponent conditionEntry = new BundleEntryComponent().setResource(condition);

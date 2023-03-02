@@ -404,10 +404,15 @@ public class FhirContextInitializer {
       customQueryParam += "&encounter=" + launchDetails.getEncounterId();
     }
 
+    if (resourceName.equalsIgnoreCase("Condition")) {
+      customQueryParam +=
+          "&category=problem-list-item,encounter-diagnosis&clinical-status=active,recurrence,relapse";
+    }
+
     return customQueryParam;
   }
 
-  private boolean checkSkipResource(String resourceName, FhirClient client) {
+  protected boolean checkSkipResource(String resourceName, FhirClient client) {
     if (!skipResource.isEmpty() && skipResource.contains(resourceName)) {
       logger.info("Resource {} is not called as it is configured to Skip", resourceName);
       return true;

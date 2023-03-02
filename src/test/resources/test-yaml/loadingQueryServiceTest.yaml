@@ -30,6 +30,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
         - params:
             patient: "12742571"
@@ -113,6 +115,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition_FilterByDtTm.json"
       Observation:
         - params:
@@ -155,7 +159,7 @@ testCase:
       - Observation: 3
         Condition: 2
         TravelObservation: 0
-        PregnancyObservation: 3
+        PregnancyObservation: 0
         Immunization: 2
         ServiceRequest: 2
         MedicationRequest: 0
