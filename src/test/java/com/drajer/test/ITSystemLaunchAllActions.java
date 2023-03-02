@@ -246,7 +246,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       validateCreateEICR(JobStatus.COMPLETED, true);
 
       // Periodic EICR Action
-      validatePeriodicEICR(JobStatus.NOT_STARTED, periodicUpdateStatus, false);
+      validatePeriodicEICR(JobStatus.SKIPPED, periodicUpdateStatus, false);
 
       // CloseOut EICR Action
       validateCloseOut(JobStatus.COMPLETED, true);

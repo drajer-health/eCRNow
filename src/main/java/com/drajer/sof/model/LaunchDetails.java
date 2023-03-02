@@ -36,7 +36,8 @@ public class LaunchDetails {
   public enum ProcessingStatus {
     In_Progress,
     Completed,
-    Errors
+    Errors,
+    Suspended
   }
 
   @Id
@@ -560,6 +561,8 @@ public class LaunchDetails {
       return "Completed";
     } else if (status == ProcessingStatus.Errors) {
       return "Errors";
+    } else if (status == ProcessingStatus.Suspended) {
+      return "Suspended";
     } else {
       return "Unknown";
     }
@@ -573,6 +576,8 @@ public class LaunchDetails {
       return ProcessingStatus.Completed;
     } else if (status.contentEquals("Errors")) {
       return ProcessingStatus.Errors;
+    } else if (status.contentEquals("Suspended")) {
+      return ProcessingStatus.Suspended;
     } else {
       return null;
     }

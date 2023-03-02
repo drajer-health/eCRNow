@@ -9,6 +9,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.eca.model.TimingSchedule;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.TaskConfiguration;
 import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -79,6 +80,8 @@ public class WorkflowService {
 
   @Autowired SchedulerService schedulerService;
 
+  @Autowired AppConfig appConfig;
+
   private static SchedulerService staticSchedulerService;
 
   @Value("${schematron.file.location}")
@@ -102,6 +105,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
     ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
     ActionRepo.getInstance().setRestTransport(restApiTransport);
+    ActionRepo.getInstance().setAppConfig(appConfig);
 
     workflowInstance = this;
     ActionRepo.getInstance().setWorkflowService(workflowInstance);

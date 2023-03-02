@@ -4,13 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.impl.EicrServiceImpl;
@@ -20,10 +19,8 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.test.util.TestUtils;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +54,7 @@ public class EcaUtilsTest {
   private Set<String> codesToMatch;
   private Set<String> codesToMatchAgainst;
   private MatchTriggerStatus matchTriggerStatus;
+  private AppConfig mockAppConfig;
 
   @Before
   public void setUp() {
@@ -68,6 +66,7 @@ public class EcaUtilsTest {
     mockR4Data = PowerMockito.mock(R4FhirData.class);
     mockQuerySrvc = PowerMockito.mock(LoadingQueryService.class);
     mockRRSrvc = PowerMockito.mock(EicrServiceImpl.class);
+    mockAppConfig = PowerMockito.mock(AppConfig.class);
 
     if (mockValueSet == null) {
 
@@ -248,6 +247,19 @@ public class EcaUtilsTest {
 
     boolean matchCodes = EcaUtils.hasNewTriggerCodeMatches(olState, nState);
     assertFalse(matchCodes);
+  }
+
+  @Test
+  public void testLongRunningEncounter() {
+
+    when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
+    when(ActionRepo.getInstance().getAppConfig()).thenReturn(mockAppConfig);
+    when(mockAppConfig.getSuspendThreshold()).thenReturn(45);
+    when(mockAppConfig.isEnableSuspend()).thenReturn(true);
+    Date startDate = DateUtils.addDays(new Date(), -90);
+    when(mockDetails.getStartDate()).thenReturn(startDate);
+    boolean checkLongRunningEncounters = EcaUtils.checkLongRunningEncounters(mockDetails);
+    assertTrue(checkLongRunningEncounters);
   }
 
   public void setupMockForMatchTrigger() {

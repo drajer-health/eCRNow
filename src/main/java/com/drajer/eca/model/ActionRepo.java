@@ -1,6 +1,7 @@
 package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
@@ -62,6 +63,8 @@ public class ActionRepo {
   String rctcOid;
 
   String rctcVersion;
+
+  AppConfig appConfig;
 
   private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
@@ -195,6 +198,14 @@ public class ActionRepo {
 
   public void setActions(Map<EcrActionTypes, Set<AbstractAction>> actions) {
     this.actions = actions;
+  }
+
+  public AppConfig getAppConfig() {
+    return appConfig;
+  }
+
+  public void setAppConfig(AppConfig appConfig) {
+    this.appConfig = appConfig;
   }
 
   public void setupTriggerBasedActions() {

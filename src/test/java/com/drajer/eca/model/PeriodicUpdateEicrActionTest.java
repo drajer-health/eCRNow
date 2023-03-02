@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -35,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class})
+@PrepareForTest({EcaUtils.class, ApplicationUtils.class, WorkflowService.class, AppConfig.class})
 public class PeriodicUpdateEicrActionTest {
 
   private static final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrActionTest.class);

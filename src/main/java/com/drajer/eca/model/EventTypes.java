@@ -16,7 +16,9 @@ public final class EventTypes {
     SCHEDULED,
     IN_PROGRESS,
     COMPLETED,
-    ABORTED
+    ABORTED,
+    SKIPPED,
+    SUSPENDED
   }
 
   /*	public static enum ActionTriggerTypes {
