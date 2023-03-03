@@ -268,7 +268,7 @@ public class CdaFhirUtilities {
 
       String addrUse = null;
       if (addr.getUse() != null) {
-        addrUse = CdaGeneratorConstants.getCodeForAddressUse(addr.getUse().toString());
+        addrUse = CdaGeneratorConstants.getCodeForAddressUse(addr.getUse().toCode());
       }
 
       addrString.append(
@@ -1293,8 +1293,7 @@ public class CdaFhirUtilities {
 
             String nameQualifier = null;
             if (name.getUse() != null) {
-              nameQualifier =
-                  CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toString());
+              nameQualifier = CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toCode());
             }
 
             nameString.append(
@@ -2150,7 +2149,7 @@ public class CdaFhirUtilities {
         HumanName name = hName.get();
 
         if (name.getUse() != null) {
-          nameUse = CdaGeneratorConstants.getCodeForNameUse(name.getUse().toString());
+          nameUse = CdaGeneratorConstants.getCodeForNameUse(name.getUse().toCode());
         }
       }
     }
