@@ -323,6 +323,9 @@ public class WorkflowService {
 
     Boolean timerAlreadyExists = false;
     CommandLineRunner task = null;
+/* 
+
+ECRRPTG-866
     if (staticSchedulerService != null) {
 
       List<ScheduledTasks> tasks =
@@ -342,7 +345,7 @@ public class WorkflowService {
             launchDetailsId);
       }
     }
-
+*/
     if (Boolean.FALSE.equals(timerAlreadyExists)) {
 
       logger.info("Scheduling {} task to execute at {}", actionType, t);
