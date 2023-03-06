@@ -320,7 +320,7 @@ public class CdaHeaderGenerator {
         sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
       }
 
-      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress()));
+      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
       sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
 
       sb.append(
@@ -339,7 +339,7 @@ public class CdaHeaderGenerator {
       sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
 
       List<Address> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs));
+      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
 
       List<ContactPoint> cps = null;
       sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
@@ -399,7 +399,7 @@ public class CdaHeaderGenerator {
 
       List<Address> addrs = new ArrayList<>();
       addrs.add(loc.getAddress());
-      sb.append(CdaFhirUtilities.getAddressXml(addrs));
+      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
     } else if (org != null) {
@@ -434,10 +434,10 @@ public class CdaHeaderGenerator {
 
       if (org.getAddress() != null) {
         List<Address> addrs = org.getAddress();
-        sb.append(CdaFhirUtilities.getAddressXml(addrs));
+        sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
       } else {
         List<Address> addrs = null;
-        sb.append(CdaFhirUtilities.getAddressXml(addrs));
+        sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
       }
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
@@ -454,7 +454,7 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
       List<Address> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs));
+      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     }
 
@@ -588,7 +588,7 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
       sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), onlyOneTelecom));
-      sb.append(CdaFhirUtilities.getAddressXml(org.getAddress()));
+      sb.append(CdaFhirUtilities.getAddressXml(org.getAddress(), false));
 
     } else {
 
@@ -602,7 +602,7 @@ public class CdaHeaderGenerator {
       sb.append(CdaFhirUtilities.getTelecomXml(cps, onlyOneTelecom));
 
       List<Address> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs));
+      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
     }
 
     return sb.toString();
@@ -890,7 +890,7 @@ public class CdaHeaderGenerator {
     }
 
     // Add Address.
-    patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress()));
+    patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress(), true));
 
     // Add Telecom (Phone)
     patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false));
@@ -912,15 +912,23 @@ public class CdaHeaderGenerator {
 
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
 
-    if (p.hasMaritalStatus()) {
-      patientDetails.append(CdaFhirUtilities.getMaritalStatusXml(p.getMaritalStatus()));
-    }
-
     patientDetails.append(
         CdaFhirUtilities.getDateTypeXml(
             p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
 
     patientDetails.append(getDeceasedXml(p));
+
+    if (p.hasMaritalStatus()) {
+      patientDetails.append(CdaFhirUtilities.getMaritalStatusXml(p.getMaritalStatus()));
+    }
+
+    Coding religion =
+        CdaFhirUtilities.getCodingExtension(
+            p.getExtension(), CdaGeneratorConstants.FHIR_RELIGION_EXT_URL);
+
+    if (religion != null) {
+      patientDetails.append(CdaFhirUtilities.getReligiousAffiliationXml(religion));
+    }
 
     Coding race =
         CdaFhirUtilities.getCodingExtension(
@@ -986,9 +994,9 @@ public class CdaHeaderGenerator {
 
           logger.debug("Adding Address for Guardian");
           addrs.add(guardianContact.getAddress());
-          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
+          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs, false));
         } else {
-          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs));
+          patientDetails.append(CdaFhirUtilities.getAddressXml(addrs, false));
         }
 
         // Add Telecom

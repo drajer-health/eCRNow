@@ -202,6 +202,28 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static Coding getCodingExtension(List<Extension> exts, String extUrl) {
+
+    if (exts != null && !exts.isEmpty()) {
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          // if the top level extension has Coding then we will use it.
+          if (ext.getValue() instanceof Coding) {
+
+            logger.debug("Found Extension at top level ");
+            return (Coding) ext.getValue();
+          }
+        }
+      }
+    }
+
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extUrl);
+    return null;
+  }
+
   public static CodeType getCodeExtension(List<Extension> exts, String extUrl) {
 
     if (exts != null && !exts.isEmpty()) {
@@ -281,13 +303,18 @@ public class CdaFhirUtilities {
     return null;
   }
 
-  public static String getAddressXml(List<Address> addrs) {
+  public static String getAddressXml(List<Address> addrs, Boolean includeMultiples) {
 
     StringBuilder addrString = new StringBuilder(200);
 
     if (addrs != null && !addrs.isEmpty()) {
 
-      for (Address addr : addrs) {
+      if (includeMultiples) {
+        for (Address addr : addrs) {
+          addrString.append(getAddressXml(addr));
+        }
+      } else {
+        Address addr = addrs.get(0);
         addrString.append(getAddressXml(addr));
       }
     } else {
@@ -1283,6 +1310,60 @@ public class CdaFhirUtilities {
   public static String getMaritalStatusXml(CodeableConcept cd) {
 
     String s = "";
+
+    s =
+        getSingleCodingXmlForCodeSystem(
+            cd,
+            CdaGeneratorConstants.MARITAL_STATUS_CODE_EL_NAME,
+            CdaGeneratorConstants.FHIR_MARITAL_STATUS_URL);
+
+    return s;
+  }
+
+  public static String getReligiousAffiliationXml(Coding cd) {
+
+    String s = "";
+
+    s =
+        getSingleCodingXml(
+            cd,
+            CdaGeneratorConstants.RELIGION_CODE_EL_NAME,
+            CdaGeneratorConstants.FHIR_RELIGIOUS_AFFILIATION_URL);
+
+    return s;
+  }
+
+  public static String getSingleCodingXmlForCodeSystem(
+      CodeableConcept cd, String elName, String csUrl) {
+
+    String s = "";
+
+    if (cd != null) {
+
+      Coding c = getCodingForCodeSystem(cd, csUrl);
+
+      if (c != null && c.hasSystem()) {
+
+        s = getSingleCodingXml(c, elName, csUrl);
+      }
+    }
+    return s;
+  }
+
+  public static String getSingleCodingXml(Coding c, String elName, String csUrl) {
+
+    String s = "";
+
+    if (c != null && c.hasSystem() && c.hasCode()) {
+
+      Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
+
+      if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
+        s =
+            CdaGeneratorUtils.getXmlForCD(
+                elName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay());
+      }
+    }
 
     return s;
   }

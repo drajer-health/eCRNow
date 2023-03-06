@@ -117,6 +117,8 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
   public static final String FHIR_USCORE_BIRTHSEX_EXT_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex";
+  public static final String FHIR_RELIGION_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/patient-religion";
 
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
@@ -141,6 +143,11 @@ public class CdaGeneratorConstants {
   public static final String FHIR_CVX_URL = "http://hl7.org/fhir/sid/cvx";
   public static final String FHIR_RXNORM_URL = "http://www.nlm.nih.gov/research/umls/rxnorm";
   public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
+  public static final String FHIR_MARITAL_STATUS_URL =
+      "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus";
+  public static final String FHIR_RELIGIOUS_AFFILIATION_URL =
+      "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation";
+  public static final String FHIR_NF_URL = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String FHIR_ENCOUNTER_CLASS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ActCode";
   public static final String FHIR_PARTICIPANT_TYPE =

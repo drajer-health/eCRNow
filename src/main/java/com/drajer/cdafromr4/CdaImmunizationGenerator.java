@@ -152,6 +152,12 @@ public class CdaImmunizationGenerator {
                   CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
         }
 
+        if (imm.hasDoseQuantity()) {
+          sb.append(
+              CdaFhirUtilities.getQuantityXml(
+                  imm.getDoseQuantity(), CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false));
+        }
+
         // add the consumable presentation.
         sb.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
