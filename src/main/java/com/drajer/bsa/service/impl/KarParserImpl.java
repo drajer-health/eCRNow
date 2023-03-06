@@ -953,7 +953,7 @@ public class KarParserImpl implements KarParser {
     List<TriggerDefinition> triggers = ac.getTrigger();
 
     for (TriggerDefinition td : triggers) {
-      if (td.getType() == TriggerType.NAMEDEVENT) events.add(td.getId());
+      if (td.getType() == TriggerType.NAMEDEVENT) events.add(td.getName());
     }
 
     return events;

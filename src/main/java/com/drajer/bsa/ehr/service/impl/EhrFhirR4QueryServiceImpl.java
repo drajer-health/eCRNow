@@ -1268,25 +1268,33 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   private Encounter retrieveContextEncounter(KarProcessingData data) {
 
-    logger.info(" Retrieving Context Encounter ");
+    logger.debug(" Retrieving Context Encounter ");
     Encounter enc = null;
 
     if (data.getContextEncounter() != null) enc = data.getContextEncounter();
     else {
-      String encId = data.getContextEncounterId();
 
-      if (encId != null && !encId.isEmpty()) {
+      logger.info("Retrieving Context Encounter from EHR.");
+      enc = getContextEncounterFromEhr(data.getContextEncounterId(), data);
+    }
 
-        logger.info(LOG_FHIR_CTX_GET);
-        FhirContext context = fhirContextInitializer.getFhirContext(R4);
+    return enc;
+  }
 
-        logger.info(LOG_INIT_FHIR_CLIENT);
-        IGenericClient client = getClient(data, context);
+  private Encounter getContextEncounterFromEhr(String encId, KarProcessingData data) {
 
-        Resource res = getResourceById(client, context, ResourceType.Encounter.toString(), encId);
+    Encounter enc = null;
+    if (encId != null && !encId.isEmpty()) {
 
-        if (res != null) enc = (Encounter) res;
-      }
+      logger.debug(LOG_FHIR_CTX_GET);
+      FhirContext context = fhirContextInitializer.getFhirContext(R4);
+
+      logger.debug(LOG_INIT_FHIR_CLIENT);
+      IGenericClient client = getClient(data, context);
+
+      Resource res = getResourceById(client, context, ResourceType.Encounter.toString(), encId);
+
+      if (res != null) enc = (Encounter) res;
     }
 
     return enc;

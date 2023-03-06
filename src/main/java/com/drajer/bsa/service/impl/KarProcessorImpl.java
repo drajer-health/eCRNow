@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,6 +215,11 @@ public class KarProcessorImpl implements KarProcessor {
             Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
             kd.setNotificationBundle(nb);
             nc.setNotifiedResource(nb.getEntry().get(1).getResource());
+
+            // Setup context Encounter
+            if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
+              kd.setContextEncounter((Encounter) nc.getNotifiedResource());
+            }
 
             kd.setEhrQueryService(ehrInterface);
             kd.setKarExecutionStateService(karExecutionStateService);

@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -353,10 +355,21 @@ public class R3ToR2DataConverterUtils {
         ArrayList<Observation> socObsList = new ArrayList<>();
         if (socObs != null && !socObs.isEmpty()) {
 
+          List<Observation> occObs = new ArrayList<>();
+
           for (Resource r : socObs) {
-            socObsList.add((Observation) r);
+            Observation sochisObs = (Observation) r;
+            socObsList.add(sochisObs);
             data.addEntry(new BundleEntryComponent().setResource(r));
+
+            if (sochisObs.hasCode() && isOccupationObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Occupation History Observation ");
+              occObs.add(sochisObs);
+            }
           }
+
+          r4FhirData.setOccupationObs(occObs);
         }
 
       } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
@@ -380,6 +393,30 @@ public class R3ToR2DataConverterUtils {
     } else {
       logger.warn(" Cannot add null resources for type {}", type);
     }
+  }
+
+  public static Boolean isOccupationObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("11295-3")
+                    && c.getSystem().contentEquals("http://loinc.org"))
+                || (c.getCode().contentEquals("224362002")
+                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("364703007")
+                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
