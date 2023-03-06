@@ -287,9 +287,9 @@ public class CdaFhirUtilities {
 
     if (addrs != null && !addrs.isEmpty()) {
 
-      Address addr = addrs.get(0);
-
-      addrString.append(getAddressXml(addr));
+      for (Address addr : addrs) {
+        addrString.append(getAddressXml(addr));
+      }
     } else {
       Address addr = null;
       addrString.append(getAddressXml(addr));
