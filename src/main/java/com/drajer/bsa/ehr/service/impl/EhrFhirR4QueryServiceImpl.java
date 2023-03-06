@@ -12,6 +12,7 @@ import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStream;
@@ -919,29 +920,36 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       String queryToExecute = getQuery(data, dataReqId, query);
 
-      logger.info(" Query to be executed before parameter substitution {}", queryToExecute);
+      if (!StringUtils.isEmpty(queryToExecute)) {
 
-      queryToExecute = substituteContextParams(data, queryToExecute);
+        logger.info(" Query to be executed before parameter substitution {}", queryToExecute);
 
-      logger.info(" Substituted Query to be executed {}", queryToExecute);
+        queryToExecute = substituteContextParams(data, queryToExecute);
 
-      if (Boolean.TRUE.equals(isSearchQuery(queryToExecute))) {
+        logger.info(" Substituted Query to be executed {}", queryToExecute);
 
-        String finalSearchQuery = createSearchUrl(data, queryToExecute);
+        if (Boolean.TRUE.equals(isSearchQuery(queryToExecute))) {
 
-        logger.info(
-            " Run Search FHIR Query for resource {} with query {}",
-            query.getResourceType(),
-            finalSearchQuery);
-        executeSearchQuery(data, dataReqId, query, finalSearchQuery);
+          String finalSearchQuery = createSearchUrl(data, queryToExecute);
 
+          logger.info(
+              " Run Search FHIR Query for resource {} with query {}",
+              query.getResourceType(),
+              finalSearchQuery);
+          executeSearchQuery(data, dataReqId, query, finalSearchQuery);
+
+        } else {
+
+          logger.info(" Run Get Resource by Id for Query {}", queryToExecute);
+
+          Resource res = getResourceByUrl(data, query.getResourceType().toString(), queryToExecute);
+
+          addResourceToContext(data, res, dataReqId);
+        }
       } else {
-
-        logger.info(" Run Get Resource by Id for Query {}", queryToExecute);
-
-        Resource res = getResourceByUrl(data, query.getResourceType().toString(), queryToExecute);
-
-        addResourceToContext(data, res, dataReqId);
+        logger.info(
+            " Not executing Query for dataReqId : {} as it is not available in the EHR per the custom query definition",
+            dataReqId);
       }
     } else {
       logger.info(
