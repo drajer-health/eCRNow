@@ -344,10 +344,12 @@ public class EcaUtils {
         logger.info(" Found Encounter for checking encounter closure ");
 
         if (r4Encounter.getPeriod() != null) {
-          details.setStartDate(r4Encounter.getPeriod().getStart());
-          details.setEndDate(r4Encounter.getPeriod().getEnd());
-          if (r4Encounter.getPeriod().getEnd() != null) {
+          if (r4Encounter.getPeriod().getStart() != null) {
+            details.setStartDate(r4Encounter.getPeriod().getStart());
+          }
 
+          if (r4Encounter.getPeriod().getEnd() != null) {
+            details.setEndDate(r4Encounter.getPeriod().getEnd());
             logger.info(
                 " Encounter has an end date so it is considered closed {}",
                 r4Encounter.getPeriod().getEnd());
@@ -370,9 +372,12 @@ public class EcaUtils {
         logger.info(" Found Encounter for checking encounter closure ");
 
         if (dstu2Encounter.getPeriod() != null) {
-          details.setStartDate(dstu2Encounter.getPeriod().getStart());
-          details.setEndDate(dstu2Encounter.getPeriod().getEnd());
+          if (dstu2Encounter.getPeriod().getStart() != null) {
+            details.setStartDate(dstu2Encounter.getPeriod().getStart());
+          }
+
           if (dstu2Encounter.getPeriod().getEnd() != null) {
+            details.setEndDate(dstu2Encounter.getPeriod().getEnd());
             logger.info(
                 " Encounter has an end date so it is considered closed {}",
                 dstu2Encounter.getPeriod().getEnd());
@@ -398,7 +403,7 @@ public class EcaUtils {
     AppConfig appConfig = ActionRepo.getInstance().getAppConfig();
     if (appConfig.isEnableSuspend()) {
       Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
-      if (details.getStartDate().before(thresholdDate) && (details.getEndDate() == null)) {
+      if (details.getStartDate().before(thresholdDate)) {
         logger.info(
             " Suspending encounter {} as it is running since {} days",
             details.getEncounterId(),
