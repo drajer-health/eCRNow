@@ -403,7 +403,7 @@ public class EcaUtils {
     AppConfig appConfig = ActionRepo.getInstance().getAppConfig();
     if (appConfig.isEnableSuspend()) {
       Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
-      if (details.getStartDate().before(thresholdDate)) {
+      if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
         logger.info(
             " Suspending encounter {} as it is running since {} days",
             details.getEncounterId(),
