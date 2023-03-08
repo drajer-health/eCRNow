@@ -11,7 +11,6 @@ import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
-import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -311,7 +310,7 @@ public class EcaUtils {
         && !details.getEncounterId().isEmpty()) {
 
       // Valid Encounter Id
-      FhirContextInitializer ci = new FhirContextInitializer(FHIRRetryTemplate.getInstance());
+      FhirContextInitializer ci = ActionRepo.getInstance().getFhirContextInitializer();
       FhirContext ctx = ci.getFhirContext(details.getFhirVersion());
 
       IGenericClient client =
@@ -347,7 +346,6 @@ public class EcaUtils {
           if (r4Encounter.getPeriod().getStart() != null) {
             details.setStartDate(r4Encounter.getPeriod().getStart());
           }
-
           if (r4Encounter.getPeriod().getEnd() != null) {
             details.setEndDate(r4Encounter.getPeriod().getEnd());
             logger.info(
@@ -405,7 +403,7 @@ public class EcaUtils {
       Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
       if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
         logger.info(
-            " Suspending encounter {} as it is running since {} days",
+            " Suspending encounter {} as it is running more than {} days",
             details.getEncounterId(),
             appConfig.getSuspendThreshold());
         return true;

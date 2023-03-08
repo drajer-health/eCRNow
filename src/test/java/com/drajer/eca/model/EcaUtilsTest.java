@@ -6,11 +6,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.gclient.IRead;
+import ca.uhn.fhir.rest.gclient.IReadExecutable;
+import ca.uhn.fhir.rest.gclient.IReadTyped;
 import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
+import com.drajer.ecrapp.fhir.utils.ecrretry.EcrFhirRetryableRead;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -18,13 +24,18 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.service.LoadingQueryService;
+import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.test.util.TestUtils;
 import java.util.*;
 import org.apache.commons.lang3.time.DateUtils;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Period;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -48,6 +59,10 @@ public class EcaUtilsTest {
   private LoadingQueryService mockQuerySrvc;
   private EicrServiceImpl mockRRSrvc;
 
+  private Encounter mockr4Encounter;
+
+  private FhirContextInitializer mockFhirContextIntializer;
+
   private List<ActionData> codePaths;
   private List<CodeableConceptDt> ptCodes;
   private List<CodeableConcept> ptCodes1;
@@ -67,6 +82,8 @@ public class EcaUtilsTest {
     mockQuerySrvc = PowerMockito.mock(LoadingQueryService.class);
     mockRRSrvc = PowerMockito.mock(EicrServiceImpl.class);
     mockAppConfig = PowerMockito.mock(AppConfig.class);
+    mockr4Encounter = PowerMockito.mock(Encounter.class);
+    mockFhirContextIntializer = PowerMockito.mock(FhirContextInitializer.class);
 
     if (mockValueSet == null) {
 
@@ -258,8 +275,49 @@ public class EcaUtilsTest {
     when(mockAppConfig.isEnableSuspend()).thenReturn(true);
     Date startDate = DateUtils.addDays(new Date(), -90);
     when(mockDetails.getStartDate()).thenReturn(startDate);
+
     boolean checkLongRunningEncounters = EcaUtils.checkLongRunningEncounters(mockDetails);
     assertTrue(checkLongRunningEncounters);
+  }
+
+  @Test
+  public void testIfEncounterStartDateIsNull() throws Exception {
+    when(ActionRepo.getInstance()).thenReturn(mockActionRepo);
+    when(ActionRepo.getInstance().getFhirContextInitializer())
+        .thenReturn(mockFhirContextIntializer);
+    Date launchDetailsStartDate = DateUtils.addDays(new Date(), -20);
+    FhirContext mockContext = Mockito.mock(FhirContext.class);
+    IRead read = mock(EcrFhirRetryableRead.class);
+    IReadTyped<IBaseResource> readType = mock(EcrFhirRetryableRead.class);
+    IGenericClient mockClient = Mockito.mock(IGenericClient.class);
+    IReadExecutable readExecutable = mock((IReadExecutable.class));
+    when(mockDetails.getEncounterId()).thenReturn("123");
+    when(mockDetails.getFhirVersion()).thenReturn("R4");
+    when(mockDetails.getEhrServerURL()).thenReturn("");
+    when(mockDetails.getAccessToken()).thenReturn("");
+    when(mockDetails.getxRequestId()).thenReturn("");
+    when(mockDetails.getStartDate()).thenReturn(launchDetailsStartDate);
+    when(mockFhirContextIntializer.getFhirContext(mockDetails.getFhirVersion()))
+        .thenReturn(mockContext);
+    when(mockFhirContextIntializer.createClient(
+            mockContext,
+            mockDetails.getEhrServerURL(),
+            mockDetails.getAccessToken(),
+            mockDetails.getxRequestId()))
+        .thenReturn(mockClient);
+    Period period = new Period();
+    period.setStart(null);
+    period.setEnd(null);
+    when(mockClient.read()).thenReturn(read);
+    when(read.resource("Encounter")).thenReturn(readType);
+    when(readType.withId(mockDetails.getEncounterId())).thenReturn(readExecutable);
+    when(readExecutable.execute()).thenReturn(mockr4Encounter);
+    when(mockClient.read().resource("Encounter").withId(mockDetails.getEncounterId()).execute())
+        .thenReturn(mockr4Encounter);
+    when(mockr4Encounter.getPeriod()).thenReturn(period);
+    boolean checkEncounterClose = EcaUtils.checkEncounterClose(mockDetails);
+    assertTrue(mockr4Encounter.getPeriod().getStart() == null);
+    assertTrue(mockDetails.getStartDate() != null);
   }
 
   public void setupMockForMatchTrigger() {

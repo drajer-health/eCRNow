@@ -19,6 +19,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
+import com.drajer.sof.utils.FhirContextInitializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kagkarlsson.scheduler.CurrentlyExecuting;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.swing.*;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Duration;
 import org.slf4j.Logger;
@@ -82,6 +84,8 @@ public class WorkflowService {
 
   @Autowired AppConfig appConfig;
 
+  @Autowired FhirContextInitializer fhirContextInitializer;
+
   private static SchedulerService staticSchedulerService;
 
   @Value("${schematron.file.location}")
@@ -106,6 +110,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
     ActionRepo.getInstance().setRestTransport(restApiTransport);
     ActionRepo.getInstance().setAppConfig(appConfig);
+    ActionRepo.getInstance().setFhirContextInitializer(fhirContextInitializer);
 
     workflowInstance = this;
     ActionRepo.getInstance().setWorkflowService(workflowInstance);

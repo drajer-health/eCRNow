@@ -9,6 +9,7 @@ import com.drajer.routing.impl.DirectEicrSender;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
+import com.drajer.sof.utils.FhirContextInitializer;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,6 +66,8 @@ public class ActionRepo {
   String rctcVersion;
 
   AppConfig appConfig;
+
+  FhirContextInitializer fhirContextInitializer;
 
   private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
@@ -206,6 +209,14 @@ public class ActionRepo {
 
   public void setAppConfig(AppConfig appConfig) {
     this.appConfig = appConfig;
+  }
+
+  public FhirContextInitializer getFhirContextInitializer() {
+    return fhirContextInitializer;
+  }
+
+  public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
+    this.fhirContextInitializer = fhirContextInitializer;
   }
 
   public void setupTriggerBasedActions() {
