@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
+import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
