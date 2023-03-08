@@ -8,7 +8,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class Dstu2CdaEncounterGenerator {
 
-  private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaProblemGenerator.class);
+  private static final Logger logger = LoggerFactory.getLogger(Dstu2CdaEncounterGenerator.class);
 
   public static String generateEncounterSection(Dstu2FhirData data, LaunchDetails details) {
 
@@ -55,7 +55,7 @@ public class Dstu2CdaEncounterGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.ENC_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.ENC_TABLE_COL_2_TITLE);
 
@@ -91,7 +91,7 @@ public class Dstu2CdaEncounterGenerator {
             " Period is either null or the Period.DateTime has a null value or null timezone value ");
       }
 
-      Map<String, String> bodyvals = new HashMap<String, String>();
+      Map<String, String> bodyvals = new LinkedHashMap<>();
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_1_BODY_CONTENT, actDisplayName);
       bodyvals.put(CdaGeneratorConstants.ENC_TABLE_COL_2_BODY_CONTENT, dt);
 
@@ -145,6 +145,19 @@ public class Dstu2CdaEncounterGenerator {
       sb.append(
           Dstu2CdaFhirUtilities.getPeriodXml(
               encounter.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
+
+      if (encounter.getHospitalization() != null
+          && encounter.getHospitalization().getDischargeDisposition() != null) {
+
+        List<CodeableConceptDt> dds = new ArrayList<>();
+        dds.add(encounter.getHospitalization().getDischargeDisposition());
+
+        String ddxml =
+            Dstu2CdaFhirUtilities.getCodeableConceptXml(
+                dds, CdaGeneratorConstants.SDTC_DISCHARGE_DISPOSITION, false);
+
+        if (ddxml != null && !ddxml.isEmpty()) sb.append(ddxml);
+      }
 
       // End Entry Tags
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENC_ACT_EL_NAME));

@@ -85,14 +85,13 @@ public class CdaGeneratorConstants {
   // CCDA Header Related Information
   public static final String CDA_DOC_ROOT = "2.16.840.1.113883.1.3";
   public static final String CDA_DOC_EXT = "POCD_HD000040";
-  /** public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1"; */
+  public static final String US_REALM_HEADER_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.1.1";
   public static final String US_REALM_HEADER_EXT = "2015-08-01";
 
   public static final String PUBLIC_HEALTH_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2";
   public static final String PUBLIC_HEALTH_EXT = "2016-12-01";
   public static final String PH_DOC_CODE = "55751-2";
   public static final String PH_DOC_DISPLAY_NAME = "Initial Public Health Case Report";
-  /** public static final String PH_REPORT_TITLE = "Initial Public Health Case Report"; */
 
   // FHIR Types
 
@@ -118,6 +117,8 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
   public static final String FHIR_USCORE_BIRTHSEX_EXT_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex";
+  public static final String FHIR_RELIGION_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/patient-religion";
 
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
@@ -142,6 +143,11 @@ public class CdaGeneratorConstants {
   public static final String FHIR_CVX_URL = "http://hl7.org/fhir/sid/cvx";
   public static final String FHIR_RXNORM_URL = "http://www.nlm.nih.gov/research/umls/rxnorm";
   public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
+  public static final String FHIR_MARITAL_STATUS_URL =
+      "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus";
+  public static final String FHIR_RELIGIOUS_AFFILIATION_URL =
+      "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation";
+  public static final String FHIR_NF_URL = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String FHIR_ENCOUNTER_CLASS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ActCode";
   public static final String FHIR_PARTICIPANT_TYPE =
@@ -645,6 +651,7 @@ public class CdaGeneratorConstants {
   public static final String TABLE_ACTIVE_STATUS = "Active";
 
   // Default Attribute Values
+  public static final String TYPE_CODE_IND = "IND";
   public static final String TYPE_CODE_DEF = "DRIV";
   public static final String MOOD_CODE_DEF = "EVN";
   public static final String MOOD_CODE_INT = "INT";
@@ -760,6 +767,7 @@ public class CdaGeneratorConstants {
   public static final String ASSGND_CUST_EL_NAME = "assignedCustodian";
   public static final String REP_CUST_ORG_EL_NAME = "representedCustodianOrganization";
   public static final String ASSIGNED_PERSON_EL_NAME = "assignedPerson";
+  public static final String ASSOCIATED_PERSON_EL_NAME = "associatedPerson";
   public static final String REP_ORG_EL_NAME = "representedOrganization";
   public static final String ENCOMPASSING_ENC_EL_NAME = "encompassingEncounter";
   public static final String ENCOUNTER_PARTICIPANT_EL_NAME = "encounterParticipant";
@@ -825,7 +833,7 @@ public class CdaGeneratorConstants {
   // Table Values
   public static final int TABLE_BORDER = 1;
   public static final int TABLE_WIDTH = 100;
-  public static final String ENC_TABLE_COL_1_TITLE = "Encounter Reason";
+  public static final String ENC_TABLE_COL_1_TITLE = "Encounter Code";
   public static final String ENC_TABLE_COL_1_BODY_CONTENT = "encounter";
   public static final String ENC_TABLE_COL_2_TITLE = "Date of Encounter";
   public static final String ENC_TABLE_COL_2_BODY_CONTENT = "encounterDate";
@@ -895,6 +903,16 @@ public class CdaGeneratorConstants {
   public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS =
       "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
+
+  // Valueset Values
+  public static final String FHIR_GUARDIAN_VALUE = "N";
+  public static final String FHIR_EMERGENCY_CONTACT_VALUE = "E";
+  public static final String EMERGENCY_VALUE = "emergency";
+  public static final String GUARDIAN_VALUE = "GUARD";
+  public static final String FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
+      "http://terminology.hl7.org/CodeSystem/v2-0131";
+  public static final String DSTU2_FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =
+      "http://hl7.org/fhir/patient-contact-relationship";
 
   // OID to URI Mapping
   private static HashMap<String, Pair<String, String>> oidMap = new HashMap<>();
@@ -1020,6 +1038,24 @@ public class CdaGeneratorConstants {
       if (oidNameMap.containsKey(retVal.getValue0())) {
         return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
       } else return retVal;
+    } else if (url.startsWith("urn:oid:")) {
+
+      String oid = url.replace("urn:oid:", "");
+      if (oidMap.containsKey(oid)) {
+
+        Pair<String, String> oidUrlName = oidMap.get(oid);
+
+        if (oidNameMap.containsKey(oid)) {
+
+          return new Pair<>(oid, oidNameMap.get(oid));
+        } else {
+
+          return new Pair<>(oid, oidUrlName.getValue1());
+        }
+      }
+
+      return new Pair<>("", "");
+
     } else {
       return new Pair<>("", "");
     }
@@ -1121,6 +1157,29 @@ public class CdaGeneratorConstants {
 
     // Unable to translate Anonymous, Temp and Old which is present in FHIR but not in CDA
 
+  }
+
+  public static String getCodeForContactRelationship(String val) {
+
+    if (!StringUtils.isEmpty(val)) {
+
+      if (val.contentEquals("C") || val.contentEquals(EMERGENCY_VALUE)) {
+        return "ECON";
+      } else if (val.contentEquals("N")
+          || val.contentEquals(LAST_NAME_EL_NAME)
+          || val.contentEquals("friend")
+          || val.contentEquals("partner")
+          || val.contentEquals("parent")) {
+        return "NOK";
+      } else {
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    // Unable to translate other codes
   }
 
   private static String getSplitValueURL(Object theValue) {

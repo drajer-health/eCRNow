@@ -47,7 +47,6 @@ public class Authorization {
 
   public String createAuthUrl(
       LaunchDetails authDetailsObject, ClientDetails clientDetails, Integer state) {
-    // TODO Auto-generated method stub
     String authUrl = authDetailsObject.getAuthUrl();
     Map<String, String> params = new HashMap<>();
     params.put("response_type", "code");
@@ -73,7 +72,7 @@ public class Authorization {
 
   public JSONObject getAccessToken(LaunchDetails tokenDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: " + tokenDetails.getClientId());
+    logger.info("Getting AccessToken for Client: {}", tokenDetails.getClientId());
     try {
       RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();

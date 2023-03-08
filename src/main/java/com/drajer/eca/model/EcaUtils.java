@@ -147,59 +147,69 @@ public class EcaUtils {
 
   public static Eicr createEicr(LaunchDetails details) {
 
-    try {
-      Eicr ecr = new Eicr();
-      String errorMsg = null;
+    Eicr ecr = new Eicr();
 
-      if (ActionRepo.getInstance().getLoadingQueryService() != null) {
+    if (ActionRepo.getInstance().getLoadingQueryService() != null) {
 
-        logger.info("Getting necessary data from Loading Queries");
-        FhirData data =
-            ActionRepo.getInstance()
-                .getLoadingQueryService()
-                .getData(details, details.getStartDate(), details.getEndDate());
+      logger.info("Getting necessary data from Loading Queries");
+      FhirData data =
+          ActionRepo.getInstance()
+              .getLoadingQueryService()
+              .getData(details, details.getStartDate(), details.getEndDate());
 
-        String eICR = null;
+      String eICR = null;
 
-        if (data instanceof Dstu2FhirData) {
+      if (data instanceof Dstu2FhirData) {
 
-          logger.info("Creating eICR based on FHIR DSTU2");
-          Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
-          eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
+        logger.info("Creating eICR based on FHIR DSTU2");
+        Dstu2FhirData dstu2Data = (Dstu2FhirData) data;
+        eICR = Dstu2CdaEicrGenerator.convertDstu2FhirBundletoCdaEicr(dstu2Data, details, ecr);
 
-        } else if (data instanceof R4FhirData) {
+      } else if (data instanceof R4FhirData) {
 
-          logger.info("Creating eICR based on FHIR R4");
-          R4FhirData r4Data = (R4FhirData) data;
-          eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
-        }
+        logger.info("Creating eICR based on FHIR R4");
+        R4FhirData r4Data = (R4FhirData) data;
 
-        if (eICR != null && !eICR.isEmpty()) {
-          // Create the object for persistence.
-          ecr.setEicrData(eICR);
-          ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
-          MDCUtils.addEicrDocId(ecr.getEicrDocId());
-          logger.info(
-              "EICR created successfully with eICRDocID: {} version: {}",
-              ecr.getEicrDocId(),
-              ecr.getDocVersion());
-          return ecr;
-        } else {
-          errorMsg = "Failed to create EICR due to error";
-        }
+        eICR = CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, details, ecr);
 
       } else {
-        errorMsg =
-            "Failed to create EICR due to System Startup Issue, Spring Injection not functioning properly, loading service is null.";
+
+        String msg = "No Fhir Data retrieved to CREATE EICR.";
+        logger.error(msg);
+
+        throw new RuntimeException(msg);
       }
 
-      logger.error(errorMsg);
-      throw new RuntimeException(errorMsg);
+      if (eICR != null && !eICR.isEmpty()) {
+        // Create the object for persistence.
+        ecr.setEicrData(eICR);
+        ecr.setLaunchDetailsId(details.getId());
 
-    } catch (Exception e) {
-      logger.error("Failed to create EICR due to exception");
-      throw e;
+        if (details.getProviderUUID() != null) {
+          ecr.setProviderUUID(details.getProviderUUID());
+        }
+        ActionRepo.getInstance().getEicrRRService().saveOrUpdate(ecr);
+        MDCUtils.addEicrDocId(ecr.getEicrDocId());
+        logger.info(
+            "EICR created successfully with eICRDocID: {} version: {}",
+            ecr.getEicrDocId(),
+            ecr.getDocVersion());
+      } else {
+        String msg = "No Fhir Data retrieved to CREATE EICR.";
+        logger.error(msg);
+        throw new RuntimeException(msg);
+      }
+
+    } else {
+
+      String msg =
+          "System Startup Issue, Spring Injection not functioning properly, loading service is null.";
+      logger.error(msg);
+
+      throw new RuntimeException(msg);
     }
+
+    return ecr;
   }
 
   public static void updateDetailStatus(LaunchDetails details, PatientExecutionState state) {
@@ -209,7 +219,7 @@ public class EcaUtils {
 
     } catch (JsonProcessingException e) {
 
-      String msg = "Unable to update execution state";
+      String msg = "Unable to update execution state.";
       logger.error(msg, e);
       throw new RuntimeException(msg, e);
     }
@@ -238,8 +248,8 @@ public class EcaUtils {
 
     boolean retVal = false;
 
-    if (!oldState.getMatchTriggerStatus().getTriggerMatchStatus()
-        && newState.getMatchTriggerStatus().getTriggerMatchStatus()) {
+    if (Boolean.FALSE.equals(oldState.getMatchTriggerStatus().getTriggerMatchStatus())
+        && Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())) {
 
       logger.info(
           " No Previously Matched trigger codes, since there is a match now returning true ");

@@ -74,6 +74,12 @@ public class ClientDetailsController {
       }
       logger.info("Saving the Client Details");
       ClientDetails updateClientDetails = new ClientDetails();
+
+      if (clientDetailsDTO.getIsEmergentReportingEnabled() == null
+          && clientDetailsDTO.getIsCovid() != null) {
+        clientDetailsDTO.setIsEmergentReportingEnabled(clientDetailsDTO.getIsCovid());
+      }
+
       BeanUtils.copyProperties(clientDetailsDTO, updateClientDetails);
       clientDetailsService.saveOrUpdate(updateClientDetails);
       BeanUtils.copyProperties(updateClientDetails, clientDetailsDTO);

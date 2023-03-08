@@ -7,6 +7,7 @@ import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
 
   public static String generateHistoryOfPresentIllnessSection(
       Dstu2FhirData data, LaunchDetails details) {
+    logger.info("LaunchDetails in generateHistoryOfPresentIllnessSection.:{}", details);
 
     StringBuilder sb = new StringBuilder(2000);
 
@@ -51,7 +53,6 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
     // Add Narrative Text
     // Need to Discuss with vendors on how to best get this information.
     // sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.TEXT_EL_NAME,
-    //    "History of Present Illness Not Known"));
 
     // Add Narrative Text
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
@@ -59,7 +60,7 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
     List<Condition> conds = data.getConditions();
 
     // Create Table Header.
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     list.add(CdaGeneratorConstants.NARRATIVE_TEXT_EL_NAME);
     sb.append(
         CdaGeneratorUtils.getXmlForTableHeader(
@@ -71,7 +72,7 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
     String text = CdaGeneratorConstants.UNKNOWN_HISTORY_OF_PRESENT_ILLNESS;
     int rowNum = 1;
 
-    if (conds != null && conds.size() > 0) {
+    if (conds != null && !conds.isEmpty()) {
 
       // Add Body Rows
       for (Condition prob : conds) {
@@ -86,7 +87,7 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
           probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(
             CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, probDisplayName);
 
@@ -95,7 +96,7 @@ public class Dstu2CdaHistoryOfPresentIllnessGenerator {
       }
     } else {
 
-      Map<String, String> bodyvals = new HashMap<String, String>();
+      Map<String, String> bodyvals = new HashMap<>();
       bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, text);
 
       sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));

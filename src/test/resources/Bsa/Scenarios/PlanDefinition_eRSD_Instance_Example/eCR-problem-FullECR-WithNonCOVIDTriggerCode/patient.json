@@ -1,0 +1,305 @@
+{
+    "resourceType": "Patient",
+    "id": "12765387",
+    "meta": {
+        "versionId": "0",
+        "lastUpdated": "2021-09-29T14:11:11.000Z"
+    },
+    "text": {
+        "status": "extensions",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: ECRTEST, FOUR</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Dec 12, 1995</p><p><b>Birth Sex</b>: Female</p><p><b>Administrative Gender</b>: Female</p><p><b>Marital Status</b>: Single</p></div>"
+    },
+    "extension": [
+        {
+            "valueCode": "F",
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2106-3",
+                        "display": "White",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "White",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2186-5",
+                        "display": "Not Hispanic or Latino",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "Not Hispanic, Latino, or Spanish Origin",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+        }
+    ],
+    "identifier": [
+        {
+            "id": "CI-490424576-0",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2",
+                        "display": "Community Medical Record Number",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "Community Medical Record Number"
+            },
+            "system": "urn:oid:2.16.840.1.113883.3.787.0.0",
+            "value": "18442",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "18442",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-29T14:11:10.000Z"
+            }
+        },
+        {
+            "id": "CI-490424572-1",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "10",
+                        "display": "MRN",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "MRN"
+            },
+            "system": "urn:oid:2.16.840.1.113883.6.1000",
+            "value": "26439",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "00000026439",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-29T14:11:10.000Z"
+            }
+        },
+        {
+            "id": "CI-490424621-3",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2553236785",
+                        "display": "MIllennium Person Identifier",
+                        "userSelected": true
+                    }
+                ],
+                "text": "MIllennium Person Identifier"
+            },
+            "_system": {
+                "extension": [
+                    {
+                        "valueCode": "unknown",
+                        "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                    }
+                ]
+            },
+            "value": "34385",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "34385",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-29T14:11:13.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "id": "CI-12765387-0",
+            "use": "official",
+            "text": "ECRTEST, FOUR",
+            "family": "ECRTEST",
+            "given": [
+                "FOUR"
+            ],
+            "period": {
+                "start": "2021-09-29T14:11:11.000Z"
+            }
+        }
+    ],
+    "telecom": [
+        {
+            "id": "CI-PH-29885414-0",
+            "extension": [
+                {
+                    "valueUrl": "(555)555-2004",
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                }
+            ],
+            "system": "phone",
+            "value": "5555552004",
+            "use": "mobile",
+            "rank": 1,
+            "period": {
+                "start": "2021-09-29T14:11:10.000Z"
+            }
+        },
+        {
+            "id": "CI-EM-29885416-0",
+            "system": "email",
+            "value": "ECRTestFour@email.com",
+            "use": "home",
+            "rank": 1,
+            "period": {
+                "start": "2021-09-29T14:11:10.000Z"
+            }
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1995-12-12",
+    "address": [
+        {
+            "id": "CI-24385529-0",
+            "use": "home",
+            "text": "1234 Patient Street\nLawrence, KS 66044\nUS",
+            "line": [
+                "1234 Patient Street"
+            ],
+            "city": "Lawrence",
+            "state": "KS",
+            "postalCode": "66044",
+            "country": "US",
+            "period": {
+                "start": "2021-09-29T14:03:32.000Z"
+            }
+        }
+    ],
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+                "code": "309239",
+                "display": "Single",
+                "userSelected": true
+            },
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                "code": "S",
+                "display": "Never Married",
+                "userSelected": false
+            }
+        ],
+        "text": "Single"
+    },
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12765388-0",
+                "use": "official",
+                "text": "EMER, CONTACT",
+                "family": "EMER",
+                "given": [
+                    "CONTACT"
+                ],
+                "period": {
+                    "start": "2021-09-29T14:11:11.000Z"
+                }
+            },
+            "period": {
+                "start": "2021-09-29T14:11:10.000Z"
+            }
+        }
+    ],
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/36",
+                        "code": "151",
+                        "display": "English",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "en",
+                        "display": "English",
+                        "userSelected": false
+                    }
+                ],
+                "text": "English"
+            },
+            "preferred": true
+        }
+    ],
+    "generalPractitioner": [
+        {
+            "id": "CI-490424600-0",
+            "reference": "Practitioner/11817978",
+            "display": "Carter, Kristin Cerner"
+        }
+    ]
+}

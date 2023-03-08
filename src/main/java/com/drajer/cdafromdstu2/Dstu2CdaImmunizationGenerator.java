@@ -7,7 +7,7 @@ import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -21,15 +21,13 @@ public class Dstu2CdaImmunizationGenerator {
   public static String generateImmunizationSection(Dstu2FhirData data, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(2000);
-
     List<Immunization> imms = data.getImmunizations();
+    if (imms != null && !imms.isEmpty()) {
 
-    if (imms != null && imms.size() > 0) {
-
+      logger.info("Immunization list:{}", imms);
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
-
       sb.append(
           CdaGeneratorUtils.getXmlForTemplateId(
               CdaGeneratorConstants.IMMUNIZATION_SEC_TEMPLATE_ID));
@@ -55,7 +53,7 @@ public class Dstu2CdaImmunizationGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.IMM_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.IMM_TABLE_COL_2_TITLE);
 
@@ -83,13 +81,13 @@ public class Dstu2CdaImmunizationGenerator {
           dt = imm.getDate().toString();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_1_BODY_CONTENT, medDisplayName);
         bodyvals.put(CdaGeneratorConstants.IMM_TABLE_COL_2_BODY_CONTENT, dt);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -163,7 +161,7 @@ public class Dstu2CdaImmunizationGenerator {
         sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
         sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.MANU_MAT_EL_NAME));
 
-        List<CodeableConceptDt> cds = new ArrayList<CodeableConceptDt>();
+        List<CodeableConceptDt> cds = new ArrayList<>();
         cds.add(imm.getVaccineCode());
         sb.append(
             Dstu2CdaFhirUtilities.getCodeableConceptXml(

@@ -6,6 +6,8 @@ import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.routing.RestApiSender;
 import com.drajer.routing.impl.DirectEicrSender;
+import com.drajer.routing.impl.DirectResponseReceiver;
+import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.service.LoadingQueryService;
 import com.drajer.sof.service.TriggerQueryService;
@@ -43,6 +45,8 @@ public class ActionRepo {
 
   LoadingQueryService loadingQueryService;
 
+  ClientDetailsService clientDetailsService;
+
   LaunchService launchService;
 
   WorkflowService workflowService;
@@ -54,6 +58,10 @@ public class ActionRepo {
   DirectEicrSender directTransport;
 
   RestApiSender restTransport;
+
+  DirectResponseReceiver directReceiver;
+
+  FhirContextInitializer fhirContextInitializer;
 
   String schematronFileLocation;
 
@@ -163,12 +171,28 @@ public class ActionRepo {
     this.launchService = launchService;
   }
 
+  public ClientDetailsService getClientDetailsService() {
+    return clientDetailsService;
+  }
+
+  public void setClientDetailsService(ClientDetailsService clientDetailsService) {
+    this.clientDetailsService = clientDetailsService;
+  }
+
   public WorkflowService getWorkflowService() {
     return workflowService;
   }
 
   public void setWorkflowService(WorkflowService workflowService) {
     this.workflowService = workflowService;
+  }
+
+  public FhirContextInitializer getFhirContextInitializer() {
+    return fhirContextInitializer;
+  }
+
+  public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
+    this.fhirContextInitializer = fhirContextInitializer;
   }
 
   public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
@@ -217,6 +241,13 @@ public class ActionRepo {
 
   public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
     this.fhirContextInitializer = fhirContextInitializer;
+  }
+  public DirectResponseReceiver getDirectReceiver() {
+    return directReceiver;
+  }
+
+  public void setDirectReceiver(DirectResponseReceiver directReceiver) {
+    this.directReceiver = directReceiver;
   }
 
   public void setupTriggerBasedActions() {
@@ -294,7 +325,7 @@ public class ActionRepo {
 
         for (Map.Entry<EcrActionTypes, Set<AbstractAction>> ent : actions.entrySet()) {
 
-          logger.info(" Printing Eicr Action Type : {}", ent.getKey().toString());
+          logger.info(" Printing Eicr Action Type : {}", ent.getKey());
 
           Set<AbstractAction> aa = ent.getValue();
 
@@ -302,7 +333,7 @@ public class ActionRepo {
 
             for (AbstractAction a : aa) {
 
-              logger.info(" Action that will be executed {}", a.toString());
+              logger.info(" Action that will be executed {}", a);
             }
           }
         }
@@ -317,7 +348,7 @@ public class ActionRepo {
 
         for (Map.Entry<TriggerType, Set<AbstractAction>> ent : actionsByTriggers.entrySet()) {
 
-          logger.info(" Printing Trigger for Action {}", ent.getKey().toString());
+          logger.info(" Printing Trigger for Action {}", ent.getKey());
 
           Set<AbstractAction> aa = ent.getValue();
 
@@ -325,7 +356,7 @@ public class ActionRepo {
 
             for (AbstractAction a : aa) {
 
-              logger.info(" Action that will be executed {}", a.toString());
+              logger.info(" Action that will be executed {}", a);
             }
           }
         }

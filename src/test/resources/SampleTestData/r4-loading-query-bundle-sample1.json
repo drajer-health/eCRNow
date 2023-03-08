@@ -1,0 +1,883 @@
+{
+  "resourceType": "Bundle",
+  "entry": [ {
+    "resource": {
+      "resourceType": "Patient",
+      "id": "a-11287.E-4237",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-provider-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.PG-1"
+        }
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+        "valueCode": "UNK"
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        } ]
+      }, {
+        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+        "extension": [ {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2028-9",
+            "display": "Asian"
+          }
+        }, {
+          "url": "text",
+          "valueString": "Asian"
+        } ]
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-patient",
+        "value": "a-11287.E-4237"
+      }, {
+        "system": "http://hl7.org/fhir/sid/us-ssn",
+        "value": "025123334"
+      } ],
+      "name": [ {
+        "use": "official",
+        "family": "Test",
+        "given": [ "Jill" ],
+        "period": {
+          "start": "2022-09-19"
+        }
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "555-555-5006",
+        "use": "home"
+      }, {
+        "system": "phone",
+        "value": "555-555-5006",
+        "use": "mobile"
+      }, {
+        "system": "email",
+        "value": "jill@email.com"
+      } ],
+      "gender": "female",
+      "birthDate": "2020-10-27",
+      "address": [ {
+        "use": "home",
+        "line": [ "2221 HOME STREET" ],
+        "city": "SALT LAKE CITY",
+        "state": "UT",
+        "postalCode": "84101",
+        "country": "USA",
+        "period": {
+          "start": "2022-09-19"
+        }
+      }, {
+        "use": "billing",
+        "type": "postal",
+        "line": [ "2221 HOME STREET" ],
+        "city": "SALT LAKE CITY",
+        "state": "UT",
+        "postalCode": "84101",
+        "country": "USA",
+        "period": {
+          "start": "2022-09-19"
+        }
+      } ],
+      "maritalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+          "code": "S",
+          "display": "Never Married"
+        } ]
+      },
+      "communication": [ {
+        "language": {
+          "coding": [ {
+            "system": "urn:ietf:bcp:47",
+            "code": "en",
+            "display": "English"
+          } ],
+          "text": "English"
+        }
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "a-11287.StayDx-4277",
+      "meta": {
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "value": "a-11287.StayDx-4277"
+      } ],
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ],
+        "text": "Confirmed"
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        } ],
+        "text": "Encounter Diagnosis"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "186747009",
+          "display": "coronavirus infection"
+        } ],
+        "text": "coronavirus infection"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "encounter": {
+        "reference": "Encounter/a-11287.stay-9787"
+      },
+      "onsetDateTime": "2022-09-20",
+      "recordedDate": "2022-09-20T06:15:07-04:00"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "a-11287.Problem-8623",
+      "meta": {
+        "lastUpdated": "2022-09-20T06:16:13.000-04:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "value": "a-11287.Problem-8623"
+      } ],
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ],
+        "text": "Active"
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ],
+        "text": "Confirmed"
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "problem-list-item",
+          "display": "Problem List Item"
+        } ],
+        "text": "Problem List Item"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "386661006",
+          "display": "Fever"
+        } ],
+        "text": "Fever"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "onsetDateTime": "2022-09-20",
+      "recordedDate": "2022-09-20T06:16:12-04:00"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Condition",
+      "id": "a-11287.Problem-8624",
+      "meta": {
+        "lastUpdated": "2022-09-20T06:16:26.000-04:00",
+        "profile": [ "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition" ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "value": "a-11287.Problem-8624"
+      } ],
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ],
+        "text": "Active"
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ],
+        "text": "Confirmed"
+      },
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "problem-list-item",
+          "display": "Problem List Item"
+        } ],
+        "text": "Problem List Item"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "840539006",
+          "display": "COVID-19"
+        } ],
+        "text": "COVID-19"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "onsetDateTime": "2022-09-20",
+      "recordedDate": "2022-09-20T06:16:26-04:00"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Encounter",
+      "id": "a-11287.stay-9787",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-stay",
+        "value": "a-11287.stay-9787"
+      } ],
+      "status": "in-progress",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "IMP",
+        "display": "inpatient encounter"
+      },
+      "type": [ {
+        "coding": [ {
+          "system": "http://www.ama-assn.org/go/cpt",
+          "code": "99236",
+          "display": "HOSPITALIST ADMISSION/DISCHARGE SAME DAY"
+        } ],
+        "text": "HOSPITALIST ADMISSION/DISCHARGE SAME DAY"
+      } ],
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "participant": [ {
+        "type": [ {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "code": "ATND",
+            "display": "attender"
+          } ],
+          "text": "The practitioner that has responsibility for overseeing a patient's care during a patient encounter."
+        } ],
+        "period": {
+          "start": "2022-09-20T10:12:27Z"
+        },
+        "individual": {
+          "reference": "Practitioner/a-11287.Provider-84"
+        }
+      } ],
+      "period": {
+        "start": "2022-09-20T10:12:00Z"
+      },
+      "reasonCode": [ {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "186747009",
+          "display": "coronavirus infection"
+        } ],
+        "text": "coronavirus infection"
+      } ],
+      "hospitalization": {
+        "dischargeDisposition": {
+          "coding": [ {
+            "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+            "code": "home",
+            "display": "Home"
+          } ],
+          "text": "The patient was dicharged and has indicated that they are going to return home afterwards."
+        }
+      },
+      "location": [ {
+        "location": {
+          "reference": "Location/a-11287.Department-1"
+        }
+      } ],
+      "serviceProvider": {
+        "reference": "Organization/a-11287.Department-1"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "MedicationRequest",
+      "id": "a-11287.hospmedicationrequest-26903",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-medicationrequest",
+        "value": "a-11287.hospmedicationrequest-26903"
+      } ],
+      "status": "active",
+      "intent": "order",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+          "code": "inpatient",
+          "display": "Inpatient"
+        } ],
+        "text": "Inpatient"
+      } ],
+      "priority": "asap",
+      "reportedBoolean": false,
+      "medicationReference": {
+        "reference": "Medication/a-11287.hospmedication-26903",
+        "display": "Remdesivir IV"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "encounter": {
+        "reference": "Encounter/a-11287.stay-9787"
+      },
+      "authoredOn": "2022-09-20T06:17:23-04:00",
+      "requester": {
+        "reference": "Practitioner/a-11287.Provider-30"
+      },
+      "dosageInstruction": [ {
+        "timing": {
+          "repeat": {
+            "duration": 3,
+            "durationUnit": "d",
+            "frequency": 1,
+            "period": 1,
+            "periodUnit": "d"
+          }
+        },
+        "asNeededBoolean": false,
+        "route": {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "47625008",
+            "display": "Intravenous use"
+          } ],
+          "text": "Intravenous"
+        },
+        "doseAndRate": [ {
+          "doseQuantity": {
+            "value": 100,
+            "unit": "mg"
+          }
+        } ]
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Immunization",
+      "id": "a-11287.historical-3158",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-immunization",
+        "value": "a-11287.historical-3158"
+      } ],
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [ {
+          "system": "http://hl7.org/fhir/sid/cvx",
+          "code": "111",
+          "display": "influenza, live, intranasal"
+        } ],
+        "text": "influenza, live, intranasal"
+      },
+      "patient": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "occurrenceDateTime": "2022-09-20",
+      "primarySource": false,
+      "isSubpotent": false
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "a-11287.inptlabobservation-601",
+      "meta": {
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "NOPAT",
+          "display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-observation",
+        "value": "a-11287.inptlabobservation-601"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      } ],
+      "code": {
+        "text": "COVID (ORGANISM)"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "encounter": {
+        "reference": "Encounter/a-11287.stay-9787"
+      },
+      "effectiveDateTime": "2022-09-20T08:44:00-04:00",
+      "valueString": "COVID (organism)",
+      "interpretation": [ {
+        "text": "Abnormal"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "a-11287.inptlabobservation-601",
+      "meta": {
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "NOPAT",
+          "display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-observation",
+        "value": "a-11287.inptlabobservation-601"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      } ],
+      "code": {
+        "text": "COVID (ORGANISM)"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "encounter": {
+        "reference": "Encounter/a-11287.stay-9787"
+      },
+      "effectiveDateTime": "2022-09-20T08:44:00-04:00",
+      "valueString": "COVID (organism)",
+      "interpretation": [ {
+        "text": "Abnormal"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "a-11287.inptresultlab-1484",
+      "meta": {
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "NOPAT",
+          "display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+        }, {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+          "code": "SUBSETTED",
+          "display": "subsetted"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "status": "unknown",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "94308-4"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "effectiveDateTime": "2022-09-20T08:44:00-04:00",
+      "issued": "2022-09-20T06:25:52.000-04:00",
+      "performer": [ {
+        "reference": "Organization/a-1.CP-12651771"
+      } ],
+      "result": [ {
+        "reference": "Observation/a-11287.inptlabobservation-601"
+      } ],
+      "presentedForm": [ {
+        "contentType": "text/html",
+        "data": "U3BlY2ltZW46IExBQjsgSW50ZXJuYWwgbm90ZTogUiBBWElMTEE=",
+        "title": "Result Note"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "DiagnosticReport",
+      "id": "a-11287.inptresultlab-1484",
+      "meta": {
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "NOPAT",
+          "display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+        }, {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+          "code": "SUBSETTED",
+          "display": "subsetted"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "status": "unknown",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "LAB",
+          "display": "Laboratory"
+        } ]
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://loinc.org",
+          "code": "94308-4"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "effectiveDateTime": "2022-09-20T08:44:00-04:00",
+      "issued": "2022-09-20T06:25:52.000-04:00",
+      "performer": [ {
+        "reference": "Organization/a-1.CP-12651771"
+      } ],
+      "result": [ {
+        "reference": "Observation/a-11287.inptlabobservation-601"
+      } ],
+      "presentedForm": [ {
+        "contentType": "text/html",
+        "data": "U3BlY2ltZW46IExBQjsgSW50ZXJuYWwgbm90ZTogUiBBWElMTEE=",
+        "title": "Result Note"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "a-11287.Provider-84",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-provider-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.PG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://directory.athena.io/sid/provider",
+        "value": "11287.84"
+      } ],
+      "active": true,
+      "name": [ {
+        "text": "Henry Seven",
+        "family": "Seven",
+        "given": [ "Henry" ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "555-777-0123"
+      } ],
+      "address": [ {
+        "line": [ "1234 Provider Street" ],
+        "city": "Salt Lake City",
+        "state": "UT",
+        "postalCode": "84101-0001"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Location",
+      "id": "a-11287.Department-1",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-provider-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.PG-1"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "status": "active",
+      "name": "Utah Outpatient Clinic",
+      "type": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+          "code": "CHR",
+          "display": "Chronic Care Facility"
+        }, {
+          "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes/Place_of_Service_Code_Set",
+          "code": "21",
+          "display": "INPATIENT HOSPITAL"
+        } ]
+      } ],
+      "telecom": [ {
+        "system": "phone",
+        "value": "888-000-9999"
+      }, {
+        "system": "fax",
+        "value": "888-000-1111"
+      } ],
+      "address": {
+        "line": [ "0987 Facility Drive" ],
+        "city": "SALT LAKE CITY",
+        "state": "UT",
+        "postalCode": "84101-0001"
+      },
+      "managingOrganization": {
+        "reference": "Organization/a-11287.Department-1",
+        "type": "Organization"
+      }
+    }
+  }, {
+    "resource": {
+      "resourceType": "Organization",
+      "id": "a-11287.Department-1",
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-provider-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.PG-1"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "active": true,
+      "name": "Utah Outpatient Clinic",
+      "telecom": [ {
+        "system": "phone",
+        "value": "888-000-9999"
+      }, {
+        "system": "fax",
+        "value": "888-000-1111"
+      } ],
+      "address": [ {
+        "line": [ "0987 Facility Drive" ],
+        "city": "SALT LAKE CITY",
+        "state": "UT",
+        "postalCode": "84101-0001",
+        "country": "USA"
+      } ]
+    }
+  }, {
+    "resource": {
+      "resourceType": "Medication",
+      "id": "a-11287.hospmedication-26903",
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-medication",
+        "value": "a-11287.hospmedication-26903"
+      } ],
+      "code": {
+        "coding": [ {
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "code": "2284960",
+          "display": "remdesivir 100 MG Injection"
+        } ],
+        "text": "remdesivir 100 mg intravenous powder for solution"
+      },
+      "status": "active"
+    }
+  }, {
+    "resource": {
+      "resourceType": "Observation",
+      "id": "a-11287.inptlabobservation-601",
+      "meta": {
+        "security": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "NOPAT",
+          "display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+        } ]
+      },
+      "extension": [ {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+        "valueReference": {
+          "reference": "Organization/a-1.Practice-11287"
+        }
+      }, {
+        "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+        "valueReference": {
+          "reference": "Organization/a-11287.CSG-1"
+        }
+      } ],
+      "identifier": [ {
+        "system": "https://fhir.athena.io/sid/ah-observation",
+        "value": "a-11287.inptlabobservation-601"
+      } ],
+      "status": "final",
+      "category": [ {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        } ]
+      } ],
+      "code": {
+        "text": "COVID (ORGANISM)"
+      },
+      "subject": {
+        "reference": "Patient/a-11287.E-4237"
+      },
+      "encounter": {
+        "reference": "Encounter/a-11287.stay-9787"
+      },
+      "effectiveDateTime": "2022-09-20T08:44:00-04:00",
+      "valueString": "COVID (organism)",
+      "interpretation": [ {
+        "text": "Abnormal"
+      } ]
+    }
+  } ]
+}

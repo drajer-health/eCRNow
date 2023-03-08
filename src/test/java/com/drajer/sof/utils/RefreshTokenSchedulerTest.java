@@ -64,7 +64,7 @@ public class RefreshTokenSchedulerTest {
       stubFor(mappingBuilder.willReturn(response));
 
       // Test
-      JSONObject authresponse = token.getSystemAccessToken(clientDetails);
+      JSONObject authresponse = token.getAccessTokenUsingClientDetails(clientDetails);
 
       verify(postRequestedFor(urlEqualTo("/authorization")));
       assertEquals("eyJraWQiOiIy", authresponse.getString("access_token"));
@@ -86,7 +86,7 @@ public class RefreshTokenSchedulerTest {
       stubFor(mappingBuilder.willReturn(response));
 
       // Test
-      JSONObject authresponse = token.getSystemAccessToken(clientDetails);
+      JSONObject authresponse = token.getAccessTokenUsingClientDetails(clientDetails);
 
       verify(postRequestedFor(urlEqualTo("/authorization")));
       assertNull(authresponse);
