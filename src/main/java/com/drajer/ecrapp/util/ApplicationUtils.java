@@ -1,5 +1,6 @@
 package com.drajer.ecrapp.util;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.parser.IParser;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -45,6 +47,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ApplicationUtils {
+
+  public static final String EXCEPTION_READING_FILE = "Exception Reading File";
 
   @Autowired
   @Qualifier("jsonParser")
@@ -203,6 +207,7 @@ public class ApplicationUtils {
         valueSetExpansionContainsComponentList = valueSetExpansionComponent.getContains();
         for (ValueSetExpansionContainsComponent vscomp : valueSetExpansionContainsComponentList) {
           if (vscomp.getSystem() != null && vscomp.getCode() != null) {
+            logger.debug(" Code = {}", vscomp.getCode());
             retVal.add(vscomp.getSystem() + "|" + vscomp.getCode());
           }
         }
@@ -267,6 +272,7 @@ public class ApplicationUtils {
   }
 
   public static Instant convertTimingScheduleToInstant(TimingSchedule ts, Date timeRef) {
+    logger.info("Time Ref in convertTimingScheduleToInstant:{}", timeRef);
 
     Instant t = null;
 
@@ -298,48 +304,211 @@ public class ApplicationUtils {
     return t;
   }
 
-  public static Instant convertDurationToInstant(Duration d) {
+  public static Instant getInstantForOffHours(
+      Duration d,
+      Integer offhourStart,
+      Integer offhoursStartMin,
+      Integer offhourEnd,
+      Integer offhoursEndMin,
+      String tz) {
+    logger.info("OffHours Duration ={}", d);
 
     Instant t = null;
 
+    logger.info(
+        " OffHour Parameters: Start = {}, End = {} , Tz = {} ", offhourStart, offhourEnd, tz);
+
+    t =
+        calculateNewTimeForTimer(
+            offhourStart,
+            offhoursStartMin,
+            offhourEnd,
+            offhoursEndMin,
+            tz,
+            d,
+            (new Date().toInstant()));
+
+    return t;
+  }
+
+  public static Instant calculateNewTimeForTimer(
+      Integer lowHours,
+      Integer lowMin,
+      Integer highHours,
+      Integer highMin,
+      String tz,
+      Duration d,
+      Instant currentTime) {
+
+    if (lowHours != null && lowMin != null && highHours != null && highMin != null && tz != null) {
+
+      int totalHours = 0;
+
+      logger.debug(
+          " LowHours: {}, LowMin: {}, HighHours: {}, HighMin: {}",
+          lowHours,
+          lowMin,
+          highHours,
+          highMin);
+
+      if (lowHours < highHours) {
+        totalHours = highHours - lowHours;
+      } else {
+        totalHours = (24 - lowHours) + highHours;
+      }
+
+      if (lowMin != 0) lowMin = 60 - lowMin;
+      else lowMin = 0;
+
+      int totalOffHourMin = (totalHours * 60) - lowMin + highMin;
+      int totalBusyHourMin = (24 * 60) - totalOffHourMin;
+
+      logger.info(
+          " Total off Hour Min = {}, Total Busy Hour Min {}", totalOffHourMin, totalBusyHourMin);
+
+      Calendar offHoursStartTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+      offHoursStartTime.set(Calendar.HOUR_OF_DAY, lowHours);
+      offHoursStartTime.set(Calendar.MINUTE, lowMin);
+
+      Calendar offHoursEndTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+      if (highHours < lowHours) {
+
+        // The off hours start today at low hours and end tomorrow at high hours
+        offHoursEndTime.add(Calendar.DATE, 1);
+        offHoursEndTime.set(Calendar.HOUR_OF_DAY, highHours);
+        offHoursEndTime.set(Calendar.MINUTE, highMin);
+      } else {
+        offHoursEndTime.set(Calendar.HOUR_OF_DAY, highHours);
+        offHoursEndTime.set(Calendar.MINUTE, highMin);
+      }
+
+      logger.info(
+          " offHoursStart: {}, offHoursEnd {}, currentTime {}",
+          offHoursStartTime.getTime().toInstant().toString(),
+          offHoursEndTime.getTime().toInstant().toString(),
+          currentTime.toString());
+
+      Calendar busyHourStart = null;
+      Boolean isBefore = false;
+
+      // If the current time when the timer expired is between the offhours start and end,
+      // then return the current time.
+      if ((currentTime.isAfter(offHoursStartTime.getTime().toInstant())
+              || currentTime.equals(offHoursStartTime.getTime().toInstant()))
+          && (currentTime.isBefore(offHoursEndTime.getTime().toInstant())
+              || currentTime.equals(offHoursEndTime.getTime().toInstant()))) {
+
+        logger.info(" Returning the same instant for the next day ");
+        Calendar retVal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        retVal.add(Calendar.DATE, 1);
+
+        return retVal.getTime().toInstant();
+      } else {
+
+        if (currentTime.isBefore(offHoursStartTime.getTime().toInstant())) {
+
+          busyHourStart = offHoursEndTime;
+          busyHourStart.add(Calendar.DATE, -1);
+          isBefore = true;
+
+        } else {
+
+          busyHourStart = offHoursEndTime;
+        }
+      }
+
+      long offsetMinutes =
+          java.time.Duration.between(busyHourStart.getTime().toInstant(), currentTime)
+              .abs()
+              .toMinutes();
+
+      // Calculate the new Instant
+      int newTimeOffset = ((int) offsetMinutes * totalOffHourMin) / totalBusyHourMin;
+
+      logger.info(
+          " Current Time: {} , busyHourStart: {} , OffsetMinutes: {}, newTimeOffset {}",
+          currentTime.toString(),
+          busyHourStart.getTime().toInstant().toString(),
+          offsetMinutes,
+          newTimeOffset);
+
+      Calendar newStart = null;
+      if (isBefore) {
+
+        newStart = offHoursStartTime;
+        logger.debug(" Adding Minutes to New Start Time = {}", newStart.getTime().toInstant());
+        newStart.add(Calendar.MINUTE, newTimeOffset);
+
+      } else {
+
+        newStart = offHoursStartTime;
+        logger.debug(" Adding Day to New Start Time = {}", newStart.getTime().toInstant());
+        newStart.add(Calendar.DATE, 1);
+        logger.debug(
+            " Adding Minutes to New Start Time + 1 day = {}", newStart.getTime().toInstant());
+        newStart.add(Calendar.MINUTE, newTimeOffset);
+
+        logger.debug(" New Start Time = {}", newStart);
+      }
+
+      return newStart.getTime().toInstant();
+    }
+
+    return null;
+  }
+
+  public static Instant convertDurationToInstant(Duration d) {
+
+    Instant t = null;
+    String unit = "";
+
     if (d != null) {
 
-      if (d.getUnit().equalsIgnoreCase("a")) {
+      if (d.getCode() != null) {
+        unit = d.getCode();
+      } else if (d.getUnit() != null) {
+        unit = d.getUnit();
+      }
+
+      if (unit.equalsIgnoreCase("a")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.YEAR, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("mo")) {
+      } else if (unit.equalsIgnoreCase("mo")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("wk")) {
+      } else if (unit.equalsIgnoreCase("wk")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, (d.getValue().intValue() * 7));
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("d")) {
+      } else if (unit.equalsIgnoreCase("d")) {
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, d.getValue().intValue());
         t = c.toInstant();
 
-      } else if (d.getUnit().equalsIgnoreCase("h")) {
+      } else if (unit.equalsIgnoreCase("h")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60 * 60);
-      } else if (d.getUnit().equalsIgnoreCase("min")) {
+      } else if (unit.equalsIgnoreCase("min")) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue() * 60);
-      } else if (d.getUnit().equalsIgnoreCase("s")) {
+      } else if (unit.equalsIgnoreCase("s")) {
+
+        t = new Date().toInstant().plusSeconds(d.getValue().longValue());
+      } else if (d.getValue() != null) {
 
         t = new Date().toInstant().plusSeconds(d.getValue().longValue());
       } else {
-
-        t = new Date().toInstant().plusSeconds(d.getValue().longValue());
+        t = null;
       }
     }
 
@@ -362,7 +531,7 @@ public class ApplicationUtils {
 
     boolean retVal = false;
 
-    if (v != null && v.getUseContext() != null) {
+    if (v != null && v.hasUseContext() && v.getUseContext() != null) {
 
       logger.debug("Checking Value Set Id {}", v.getId());
 
@@ -370,7 +539,7 @@ public class ApplicationUtils {
 
       for (UsageContext uc : ucs) {
 
-        if (uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
+        if (uc.hasValue() && uc.getValue() != null && (uc.getValue() instanceof CodeableConcept)) {
 
           CodeableConcept cc = (CodeableConcept) uc.getValue();
 
@@ -397,6 +566,7 @@ public class ApplicationUtils {
     boolean retVal = false;
 
     if (v != null) {
+      logger.debug("Value Set:{}", v);
 
       if (v.getUseContextFirstRep() != null) {
 
@@ -404,7 +574,7 @@ public class ApplicationUtils {
 
         UsageContext uc = v.getUseContextFirstRep();
 
-        if (uc.getValue() != null && (uc.getValue() instanceof Reference)) {
+        if (uc.getValue() instanceof Reference) {
 
           logger.debug("Found Use Context Reference ");
 
@@ -454,8 +624,41 @@ public class ApplicationUtils {
       bundle = jsonParser.parseResource(Bundle.class, in);
       logger.info("Completed Reading File");
     } catch (Exception e) {
-      logger.error("Exception Reading File", e);
+      logger.error(EXCEPTION_READING_FILE, e);
     }
+    return bundle;
+  }
+
+  public ca.uhn.fhir.model.dstu2.resource.Bundle readDstu2BundleFromFile(String filename) {
+
+    logger.info("About to read File {}", filename);
+    ca.uhn.fhir.model.dstu2.resource.Bundle bundle = null;
+
+    FhirContext dstu2Context = FhirContext.forDstu2();
+
+    try (InputStream in = new FileInputStream(new File(filename))) {
+      logger.info("Reading File ");
+      bundle =
+          dstu2Context
+              .newJsonParser()
+              .parseResource(ca.uhn.fhir.model.dstu2.resource.Bundle.class, in);
+      logger.info("Completed Reading File");
+    } catch (Exception e) {
+      logger.error("Exception Reading File ", e);
+    }
+    return bundle;
+  }
+
+  public ca.uhn.fhir.model.dstu2.resource.Bundle readDstu2BundleFromString(String data) {
+
+    logger.info("About to read String ");
+    ca.uhn.fhir.model.dstu2.resource.Bundle bundle = null;
+    FhirContext dstu2Context = FhirContext.forDstu2();
+    bundle =
+        dstu2Context
+            .newJsonParser()
+            .parseResource(ca.uhn.fhir.model.dstu2.resource.Bundle.class, data);
+
     return bundle;
   }
 

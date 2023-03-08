@@ -3,10 +3,13 @@ package com.drajer.test;
 import static org.junit.Assert.*;
 
 import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,11 +38,11 @@ import org.w3c.dom.NodeList;
 @RunWith(Parameterized.class)
 public class ITValidateEicrDoc extends BaseIntegrationTest {
 
-  private String testCaseId;
-  private Map<String, String> testData;
-  private Map<String, ?> allResourceMapping;
-  private Map<String, ?> allOtherMapping;
-  private List<Map<String, String>> fieldsToValidate;
+  protected String testCaseId;
+  protected Map<String, String> testData;
+  protected Map<String, ?> allResourceMapping;
+  protected Map<String, ?> allOtherMapping;
+  protected List<Map<String, String>> fieldsToValidate;
 
   public ITValidateEicrDoc(
       String testCaseId,
@@ -83,6 +86,7 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
   public static Collection<Object[]> data() {
 
     List<TestDataGenerator> testDataGenerator = new ArrayList<>();
+
     testDataGenerator.add(new TestDataGenerator("test-yaml/headerSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/problemSection.yaml"));
     testDataGenerator.add(new TestDataGenerator("test-yaml/encounterSection.yaml"));
@@ -118,7 +122,6 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   @Test
   public void testEicrDocument() throws Exception {
-
     ResponseEntity<String> response = invokeSystemLaunch(testCaseId, systemLaunchPayload);
 
     assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
@@ -140,6 +143,17 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
           CdaValidatorUtil.validateEicrToSchematron(eICRXml));
 
       Document eicrXmlDoc = TestUtils.getXmlDocument(eICRXml);
+      String fileName =
+          ActionRepo.getInstance().getLogFileDirectory()
+              + "/"
+              + testCaseId
+              + "_"
+              + LocalDateTime.now().getHour()
+              + LocalDateTime.now().getMinute()
+              + LocalDateTime.now().getSecond()
+              + ".xml";
+      ApplicationUtils.saveDataToFile(eICRXml, fileName);
+
       validateXml(eicrXmlDoc);
     } else {
       fail("Eicr Not found");

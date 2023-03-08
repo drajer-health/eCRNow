@@ -68,8 +68,14 @@ public class Eicr {
   @Column(name = "launch_patient_id", nullable = true, columnDefinition = "TEXT")
   private String launchPatientId;
 
+  @Column(name = "launch_details_id", nullable = true, columnDefinition = "INTEGER")
+  private Integer launchDetailsId;
+
   @Column(name = "encounter_id", nullable = true, columnDefinition = "TEXT")
   private String encounterId;
+
+  @Column(name = "provider_uuid", nullable = true, columnDefinition = "TEXT")
+  private String providerUUID;
 
   @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
   private String ehrDocRefId;
@@ -191,12 +197,28 @@ public class Eicr {
     this.launchPatientId = launchPatientId;
   }
 
+  public Integer getLaunchDetailsId() {
+    return launchDetailsId;
+  }
+
+  public void setLaunchDetailsId(Integer launchDetailsId) {
+    this.launchDetailsId = launchDetailsId;
+  }
+
   public String getEncounterId() {
     return encounterId;
   }
 
   public void setEncounterId(String encounterId) {
     this.encounterId = encounterId;
+  }
+
+  public String getProviderUUID() {
+    return providerUUID;
+  }
+
+  public void setProviderUUID(String providerUUID) {
+    this.providerUUID = providerUUID;
   }
 
   public String getSetId() {

@@ -1,0 +1,315 @@
+{
+    "resourceType": "Patient",
+    "id": "12765336",
+    "meta": {
+        "versionId": "3",
+        "lastUpdated": "2022-02-10T04:53:49.000Z"
+    },
+    "text": {
+        "status": "extensions",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: ECRTEST, TWO</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Oct 27, 2002</p><p><b>Birth Sex</b>: Female</p><p><b>Administrative Gender</b>: Female</p><p><b>Marital Status</b>: Unknown</p></div>"
+    },
+    "extension": [
+        {
+            "valueCode": "F",
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2028-9",
+                        "display": "Asian",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "Asian",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+        },
+        {
+            "extension": [
+                {
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2186-5",
+                        "display": "Not Hispanic or Latino",
+                        "userSelected": false
+                    },
+                    "url": "ombCategory"
+                },
+                {
+                    "valueString": "Not Hispanic, Latino, or Spanish Origin",
+                    "url": "text"
+                }
+            ],
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+        }
+    ],
+    "identifier": [
+        {
+            "id": "CI-490423926-0",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2",
+                        "display": "Community Medical Record Number",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "Community Medical Record Number"
+            },
+            "system": "urn:oid:2.16.840.1.113883.3.787.0.0",
+            "value": "18400",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "18400",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-28T17:40:45.000Z"
+            }
+        },
+        {
+            "id": "CI-490423922-1",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "10",
+                        "display": "MRN",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number",
+                        "userSelected": false
+                    }
+                ],
+                "text": "MRN"
+            },
+            "system": "urn:oid:2.16.840.1.113883.6.1000",
+            "value": "26397",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "00000026397",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-28T17:40:45.000Z"
+            }
+        },
+        {
+            "id": "CI-490423952-3",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+                        "code": "2553236785",
+                        "display": "MIllennium Person Identifier",
+                        "userSelected": true
+                    }
+                ],
+                "text": "MIllennium Person Identifier"
+            },
+            "_system": {
+                "extension": [
+                    {
+                        "valueCode": "unknown",
+                        "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason"
+                    }
+                ]
+            },
+            "value": "34342",
+            "_value": {
+                "extension": [
+                    {
+                        "valueString": "34342",
+                        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value"
+                    }
+                ]
+            },
+            "period": {
+                "start": "2021-09-28T17:40:48.000Z"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "id": "CI-12765336-0",
+            "use": "official",
+            "text": "ECRTEST, TWO",
+            "family": "ECRTEST",
+            "given": [
+                "TWO"
+            ],
+            "period": {
+                "start": "2021-09-28T17:40:46.000Z"
+            }
+        }
+    ],
+    "telecom": [
+        {
+            "id": "CI-PH-29885241-0",
+            "extension": [
+                {
+                    "valueUrl": "(555)555-5006",
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                }
+            ],
+            "system": "phone",
+            "value": "5555555006",
+            "use": "mobile",
+            "rank": 1,
+            "period": {
+                "start": "2021-09-28T18:11:19.000Z"
+            }
+        }
+    ],
+    "gender": "female",
+    "birthDate": "2002-10-27",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "id": "CI-24385328-0",
+            "use": "home",
+            "text": "2221 Home Street\nLawrence, KS 66044\nUS",
+            "line": [
+                "2221 Home Street"
+            ],
+            "city": "Lawrence",
+            "state": "KS",
+            "postalCode": "66044",
+            "country": "US",
+            "period": {
+                "start": "2021-09-28T17:35:11.000Z"
+            }
+        }
+    ],
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+                "code": "309240",
+                "display": "Unknown",
+                "userSelected": true
+            },
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                "code": "UNK",
+                "display": "unknown",
+                "userSelected": false
+            }
+        ],
+        "text": "Unknown"
+    },
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+                            "code": "1152",
+                            "display": "Emergency Contact",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "C",
+                            "display": "Emergency Contact",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Emergency Contact"
+                }
+            ],
+            "name": {
+                "id": "CI-12765345-0",
+                "use": "official",
+                "text": "MUM, MARTHA",
+                "family": "MUM",
+                "given": [
+                    "MARTHA"
+                ],
+                "period": {
+                    "start": "2021-09-28T18:11:19.000Z"
+                }
+            },
+            "telecom": [
+                {
+                    "extension": [
+                        {
+                            "valueUrl": "(334)304-2665",
+                            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address"
+                        }
+                    ],
+                    "system": "phone",
+                    "value": "3343042665",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-09-28T18:11:19.000Z"
+                    }
+                },
+                {
+                    "system": "email",
+                    "value": "mmmum@email.com",
+                    "use": "home",
+                    "rank": 1,
+                    "period": {
+                        "start": "2021-09-28T18:11:19.000Z"
+                    }
+                }
+            ],
+            "period": {
+                "start": "2021-09-28T18:11:19.000Z"
+            }
+        }
+    ],
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/36",
+                        "code": "151",
+                        "display": "English",
+                        "userSelected": true
+                    },
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "en",
+                        "display": "English",
+                        "userSelected": false
+                    }
+                ],
+                "text": "English"
+            },
+            "preferred": true
+        }
+    ]
+}

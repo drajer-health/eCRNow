@@ -53,6 +53,7 @@ public class DataRoutingTest {
     when(launchDetails.getDirectHost()).thenReturn("ett.healthit.gov");
     when(launchDetails.getDirectUser()).thenReturn("test@ett.healthit.gov");
     when(launchDetails.getDirectPwd()).thenReturn("test123");
+    when(launchDetails.getSmtpPort()).thenReturn("25");
     when(launchDetails.getDirectRecipient()).thenReturn("noone@somewhere.coms");
   }
 
@@ -64,8 +65,9 @@ public class DataRoutingTest {
 
       when(mockSession.getTransport("smtp")).thenReturn(mockTransport);
 
+      String correlationId = "1234";
       // Test
-      directEicrSender.sendData(launchDetails, data);
+      directEicrSender.sendData(launchDetails, data, correlationId);
 
       // Validate
       verify(mockTransport, times(1)).sendMessage(any(Message.class), any());

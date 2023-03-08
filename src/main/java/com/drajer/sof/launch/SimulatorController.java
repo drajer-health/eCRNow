@@ -32,6 +32,6 @@ public class SimulatorController {
     JSONObject response = new JSONObject();
     response.put("message", "Success! The request is saved to file:::::" + fileName);
 
-    return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+    return new ResponseEntity<>(response.toString(), HttpStatus.OK);
   }
 }

@@ -34,7 +34,7 @@ public class ValueSetSingleton {
 
       for (Map.Entry<String, Set<ValueSet>> entry : grouperToValueSetMap.entrySet()) {
 
-        logger.info(" Key = " + entry.getKey());
+        logger.info(" Key ={}", entry.getKey());
 
         Set<ValueSet> vs = entry.getValue();
 
@@ -172,7 +172,6 @@ public class ValueSetSingleton {
       if (grouperToValueSetMap.containsKey(grouper)) {
 
         logger.info("Value sets for Grouper {} Size = {} is already added", grouper, vs.size());
-        // grouperToValueSetMap.get(grouper).addAll(vs);
 
       } else {
 
@@ -237,10 +236,10 @@ public class ValueSetSingleton {
       for (ValueSet g : grouperValueSet) {
         grouperId = g.getId();
         if (grouperId != null && getGrouperToValueSetMap() != null) {
-          Set<ValueSet> valueSets = getGrouperToValueSetMap().get(grouperId);
-          if (valueSets != null && !valueSets.isEmpty()) {
-            logger.debug("Found {} Value Sets for grouper {}", valueSets.size(), grouperId);
-            retVal.addAll(ApplicationUtils.convertValueSetsToString(valueSets));
+          Set<ValueSet> valueSet = getGrouperToValueSetMap().get(grouperId);
+          if (valueSet != null && !valueSet.isEmpty()) {
+            logger.debug("Found {} Value Sets for grouper {}", valueSet.size(), grouperId);
+            retVal.addAll(ApplicationUtils.convertValueSetsToString(valueSet));
           } else {
             logger.debug("Didn't find value sets for grouper {}", grouperId);
           }

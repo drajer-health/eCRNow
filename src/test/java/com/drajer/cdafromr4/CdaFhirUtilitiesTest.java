@@ -124,7 +124,7 @@ public class CdaFhirUtilitiesTest {
     ad1.setCountry("US");
     addrs.add(ad1);
 
-    String result = CdaFhirUtilities.getAddressXml(addrs);
+    String result = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result.contains("142 Example Drive"));
     assertTrue(result.contains("20874"));
@@ -145,7 +145,7 @@ public class CdaFhirUtilitiesTest {
     ad2.setCountry("US");
     addrs.add(ad2);
 
-    String result2 = CdaFhirUtilities.getAddressXml(addrs);
+    String result2 = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result2.contains("142 Example Drive"));
     assertTrue(result2.contains("20874"));
@@ -153,7 +153,7 @@ public class CdaFhirUtilitiesTest {
     assertTrue(result2.contains("Rockville"));
 
     addrs.clear();
-    String result3 = CdaFhirUtilities.getAddressXml(addrs);
+    String result3 = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result3.contains("nullFlavor=\"NI\""));
 
@@ -170,7 +170,7 @@ public class CdaFhirUtilitiesTest {
     ad3.setCountry("US");
     addrs.add(ad3);
 
-    String result4 = CdaFhirUtilities.getAddressXml(addrs);
+    String result4 = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result4.contains("142 Example Drive"));
     assertTrue(result4.contains("20874"));

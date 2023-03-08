@@ -6,6 +6,7 @@ import ca.uhn.fhir.model.dstu2.valueset.ConditionClinicalStatusCodesEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.Dstu2FhirData;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class Dstu2CdaProblemGenerator {
 
     List<Condition> conds = data.getConditions();
 
-    if (conds != null && conds.size() > 0) {
+    if (conds != null && !conds.isEmpty()) {
 
       // Generate the component and section end tags
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -65,7 +66,7 @@ public class Dstu2CdaProblemGenerator {
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
 
       // Create Table Header.
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_2_TITLE);
       sb.append(
@@ -87,7 +88,7 @@ public class Dstu2CdaProblemGenerator {
           probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
         }
 
-        Map<String, String> bodyvals = new HashMap<String, String>();
+        Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
 
         if (prob.getClinicalStatus() != null
@@ -105,7 +106,7 @@ public class Dstu2CdaProblemGenerator {
         }
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -162,13 +163,13 @@ public class Dstu2CdaProblemGenerator {
         Pair<Date, TimeZone> abatement = null;
         Pair<Date, TimeZone> recorded = null;
 
-        if (pr.getOnset() != null && pr.getOnset() instanceof DateTimeDt) {
+        if (pr.getOnset() instanceof DateTimeDt) {
 
           DateTimeDt dt = (DateTimeDt) pr.getOnset();
           onset = new Pair<>(dt.getValue(), dt.getTimeZone());
         }
 
-        if (pr.getAbatement() != null && pr.getAbatement() instanceof DateTimeDt) {
+        if (pr.getAbatement() instanceof DateTimeDt) {
 
           DateTimeDt dt = (DateTimeDt) pr.getAbatement();
           abatement = new Pair<>(dt.getValue(), dt.getTimeZone());
@@ -227,7 +228,7 @@ public class Dstu2CdaProblemGenerator {
             CdaGeneratorUtils.getXmlForIVLWithTS(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
 
-        List<CodeableConceptDt> cds = new ArrayList<CodeableConceptDt>();
+        List<CodeableConceptDt> cds = new ArrayList<>();
         cds.add(pr.getCode());
         sb.append(
             Dstu2CdaFhirUtilities.getCodeableConceptXml(
@@ -237,7 +238,7 @@ public class Dstu2CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
-        if (!triggerCodesAdded) {
+        if (Boolean.FALSE.equals(triggerCodesAdded)) {
           sb.append(addTriggerCodes(data, details, pr, onset, abatement));
           triggerCodesAdded = true;
         }
@@ -265,6 +266,7 @@ public class Dstu2CdaProblemGenerator {
       Condition cond,
       Pair<Date, TimeZone> onset,
       Pair<Date, TimeZone> abatement) {
+    logger.info("Dstu2FhirData in addTriggerCodes:{}", data);
 
     StringBuilder sb = new StringBuilder();
 
@@ -294,7 +296,7 @@ public class Dstu2CdaProblemGenerator {
 
       // Add each code as an entry relationship observation
 
-      if (mtc.hasMatchedTriggerCodes("Condition")) {
+      if (Boolean.TRUE.equals(mtc.hasMatchedTriggerCodes("Condition"))) {
 
         // Add the Problem Observation
         sb.append(
@@ -349,7 +351,7 @@ public class Dstu2CdaProblemGenerator {
 
         Set<String> matchedCodes = mtc.getMatchedCodes();
 
-        if (matchedCodes != null && matchedCodes.size() > 0) {
+        if (matchedCodes != null && !matchedCodes.isEmpty()) {
 
           // Split the system and code.
           matchedCodes
@@ -358,18 +360,21 @@ public class Dstu2CdaProblemGenerator {
               .findFirst()
               .ifPresent(
                   matchCode -> {
-                    logger.info(" Starting to add trigger code that was matched " + matchCode);
+                    logger.info(" Starting to add trigger code that was matched {}", matchCode);
 
                     String[] parts = matchCode.split("\\|");
 
                     Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(parts[0]);
 
                     // Add the right value set and version number.
-                    String vs = "2.16.840.1.114222.4.11.7508";
-                    String vsVersion = "19/05/2016";
                     sb.append(
                         CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                            parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+                            parts[1],
+                            csd.getValue0(),
+                            csd.getValue1(),
+                            CdaGeneratorConstants.RCTC_OID,
+                            ActionRepo.getInstance().getRctcVersion(),
+                            ""));
 
                     // Adding one is sufficient, wait for feedback from connectathon.
                   });

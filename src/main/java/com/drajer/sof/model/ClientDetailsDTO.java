@@ -15,6 +15,10 @@ public class ClientDetailsDTO {
 
   private Boolean isSystem;
 
+  private Boolean isMultiTenantSystemLaunch;
+
+  private Boolean isUserAccountLaunch;
+
   private String clientId;
 
   private String clientSecret;
@@ -24,6 +28,12 @@ public class ClientDetailsDTO {
   private String tokenURL;
 
   private String scopes;
+
+  private String accessToken;
+
+  private Integer tokenExpiry;
+
+  private Date tokenExpiryDateTime;
 
   private Boolean isDirect;
 
@@ -37,7 +47,11 @@ public class ClientDetailsDTO {
 
   private String directPwd;
 
+  private String smtpUrl;
+
   private String smtpPort;
+
+  private String imapUrl;
 
   private String imapPort;
 
@@ -55,9 +69,19 @@ public class ClientDetailsDTO {
 
   private Boolean isCovid;
 
+  private Boolean isEmergentReportingEnabled;
+
   private Boolean isFullEcr;
 
-  private Boolean isEmergentReportingEnabled;
+  private Boolean isCreateDocRef;
+
+  private Boolean isInvokeRestAPI;
+
+  private Boolean isBoth;
+
+  private String rrRestAPIUrl;
+
+  private String rrDocRefMimeType;
 
   private Boolean debugFhirQueryAndEicr;
 
@@ -89,6 +113,14 @@ public class ClientDetailsDTO {
     this.isSystem = isSystem;
   }
 
+  public Boolean getIsMultiTenantSystemLaunch() {
+    return isMultiTenantSystemLaunch;
+  }
+
+  public void setIsMultiTenantSystemLaunch(Boolean isMultiTenantSystemLaunch) {
+    this.isMultiTenantSystemLaunch = isMultiTenantSystemLaunch;
+  }
+
   public String getClientId() {
     return clientId;
   }
@@ -107,6 +139,14 @@ public class ClientDetailsDTO {
 
   public void setClientSecret(String clientSecret) {
     if (clientSecret != null) this.clientSecret = AESEncryption.encrypt(clientSecret);
+  }
+
+  public Boolean getIsUserAccountLaunch() {
+    return isUserAccountLaunch;
+  }
+
+  public void setIsUserAccountLaunch(Boolean isUserAccountLaunch) {
+    this.isUserAccountLaunch = isUserAccountLaunch;
   }
 
   public String getFhirServerBaseURL() {
@@ -131,6 +171,30 @@ public class ClientDetailsDTO {
 
   public void setScopes(String scopes) {
     this.scopes = scopes;
+  }
+
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public Integer getTokenExpiry() {
+    return tokenExpiry;
+  }
+
+  public void setTokenExpiry(Integer tokenExpiry) {
+    this.tokenExpiry = tokenExpiry;
+  }
+
+  public Date getTokenExpiryDateTime() {
+    return tokenExpiryDateTime;
+  }
+
+  public void setTokenExpiryDateTime(Date tokenExpiryDateTime) {
+    this.tokenExpiryDateTime = tokenExpiryDateTime;
   }
 
   public Boolean getIsDirect() {
@@ -201,6 +265,22 @@ public class ClientDetailsDTO {
     this.smtpPort = smtpPort;
   }
 
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  public void setSmtpUrl(String smtpUrl) {
+    this.smtpUrl = smtpUrl;
+  }
+
+  public String getImapUrl() {
+    return imapUrl;
+  }
+
+  public void setImapUrl(String imapUrl) {
+    this.imapUrl = imapUrl;
+  }
+
   public String getImapPort() {
     return imapPort;
   }
@@ -265,6 +345,46 @@ public class ClientDetailsDTO {
     this.isFullEcr = isFullEcr;
   }
 
+  public Boolean getIsCreateDocRef() {
+    return isCreateDocRef;
+  }
+
+  public void setIsCreateDocRef(Boolean isCreateDocRef) {
+    this.isCreateDocRef = isCreateDocRef;
+  }
+
+  public Boolean getIsInvokeRestAPI() {
+    return isInvokeRestAPI;
+  }
+
+  public void setIsInvokeRestAPI(Boolean isInvokeRestAPI) {
+    this.isInvokeRestAPI = isInvokeRestAPI;
+  }
+
+  public Boolean getIsBoth() {
+    return isBoth;
+  }
+
+  public void setIsBoth(Boolean isBoth) {
+    this.isBoth = isBoth;
+  }
+
+  public String getRrRestAPIUrl() {
+    return rrRestAPIUrl;
+  }
+
+  public void setRrRestAPIUrl(String rrRestAPIUrl) {
+    this.rrRestAPIUrl = rrRestAPIUrl;
+  }
+
+  public String getRrDocRefMimeType() {
+    return rrDocRefMimeType;
+  }
+
+  public void setRrDocRefMimeType(String rrDocRefMimeType) {
+    this.rrDocRefMimeType = rrDocRefMimeType;
+  }
+
   public Boolean getDebugFhirQueryAndEicr() {
     return debugFhirQueryAndEicr;
   }
@@ -299,10 +419,10 @@ public class ClientDetailsDTO {
 
   public void print() {
 
-    logger.info(" **** Printing Client Details **** ");
+    logger.info(" ***** Printing Client Details ***** ");
 
     logger.info(" Id = {}", id);
-    logger.info(" Provider Launch = {}", isProvider);
+    logger.info("Provider Launch = {}", isProvider);
     logger.info(" System Launch = {}", isSystem);
     logger.info(" Client Id = {}", clientId);
     logger.info(" FHIR Server URL = {}", fhirServerBaseURL);
@@ -323,6 +443,6 @@ public class ClientDetailsDTO {
     logger.info(" Is Aud required = {}", requireAud);
     logger.info(" Debug Fhir Query And Eicr {}", debugFhirQueryAndEicr);
 
-    logger.info(" **** End Printing Client Details **** ");
+    logger.info(" ***** End Printing Client Details ***** ");
   }
 }

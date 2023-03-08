@@ -1,0 +1,38 @@
+{
+  "resourceType": "MedicationAdministration",
+  "id": "ex-trigger-medicationadministration-in-medicationadministration-1",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-medicationrequest"
+    ]
+  },
+  "status": "completed",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+          "version": "4.0.1",
+          "code": "outpatient",
+          "display": "Outpatient"
+        }
+      ]
+    }
+  ],
+  "medicationCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "code": "809002",
+        "display": "Carbidopa 10 MG / Levodopa 100 MG Disintegrating Oral Tablet [Parcopa]"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "ex-trigger-medicationadministration-in"
+  },
+  "context": {
+    "reference": "ex-trigger-medicationadministration-in-encounter-1"
+  },
+  "effectiveDateTime": "2020-01-01T11:00:00-07:00"
+}

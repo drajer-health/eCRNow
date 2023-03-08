@@ -2,8 +2,11 @@ package com.drajer.cda.parser;
 
 import java.util.List;
 import org.springframework.util.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdaRrModel {
+  private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
 
   public static final String UNKONWN_RESPONSE_TYPE = "Unknown";
 
@@ -20,7 +23,9 @@ public class CdaRrModel {
   private CdaIi patientId;
   private CdaIi encounterId;
 
-  public CdaRrModel() {}
+  public CdaRrModel() {
+    logger.info("CdaRrModel initiated");
+  }
 
   public CdaIi getEicrDocId() {
     return eicrDocId;

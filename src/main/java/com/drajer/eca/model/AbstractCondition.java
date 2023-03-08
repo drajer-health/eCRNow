@@ -25,6 +25,6 @@ public abstract class AbstractCondition {
   public void printBase() {
 
     if (conditionType != null && logger.isInfoEnabled())
-      logger.info(" Condition Type = {}", conditionType.toString());
+      logger.info(" Condition Type = {}", conditionType);
   }
 }

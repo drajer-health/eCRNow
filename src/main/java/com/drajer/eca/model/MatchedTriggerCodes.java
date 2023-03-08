@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class MatchedTriggerCodes {
 
   public MatchedTriggerCodes() {
     matchedCodes = new HashSet<>();
+    matchedValues = new HashSet<>();
   }
 
   public Set<String> getMatchedCodes() {
@@ -82,7 +84,7 @@ public class MatchedTriggerCodes {
             && matchedCodes.contains(ApplicationUtils.getCodeAsStringForMatching(code, system))) {
 
           logger.info(" Found matched code for code: {}, system {}", code, system);
-          retVal = new Pair<String, String>(code, system);
+          retVal = new Pair<>(code, system);
         }
       }
     }
@@ -112,7 +114,7 @@ public class MatchedTriggerCodes {
 
       if (intersection != null && !intersection.isEmpty()) {
 
-        logger.debug("Number of Matched Codes = {}", intersection.size());
+        logger.info("Number of Matched Codes = {}", intersection.size());
 
         retval = intersection;
 
@@ -123,6 +125,11 @@ public class MatchedTriggerCodes {
     }
 
     return retval;
+  }
+
+  public Boolean containsMatch(ResourceType rt) {
+
+    return (hasMatchedTriggerCodes(rt.toString()) || hasMatchedTriggerValue(rt.toString()));
   }
 
   public Boolean hasMatchedTriggerCodes(String type) {
@@ -152,6 +159,16 @@ public class MatchedTriggerCodes {
     }
   }
 
+  public void addCode(String code) {
+
+    if (matchedCodes == null) matchedCodes = new HashSet<>();
+
+    if (code != null) {
+
+      matchedCodes.add(code);
+    }
+  }
+
   public void addValues(Set<String> values) {
 
     if (matchedValues == null) matchedValues = new HashSet<>();
@@ -161,5 +178,52 @@ public class MatchedTriggerCodes {
 
       matchedValues = union;
     }
+  }
+
+  public void addValue(String value) {
+
+    if (matchedValues == null) matchedValues = new HashSet<>();
+
+    if (value != null) {
+
+      matchedValues.add(value);
+    }
+  }
+
+  public void log() {
+
+    logger.info(" *** START Printing Matched Trigger Codes *** ");
+
+    logger.info(" Matched Path {}", matchedPath);
+    logger.info(" Matched ValueSet {}", valueSet);
+    logger.info(" Matched ValueSetVersion {}", valueSetVersion);
+
+    matchedCodes.forEach(matchedCode -> logger.info("Matched Code: {} ", matchedCode));
+    matchedValues.forEach(matchedValue -> logger.info("Matched Code: {} ", matchedValue));
+
+    logger.info(" *** END Printing Matched Trigger Codes *** ");
+  }
+
+  public boolean isCodePresent(String code, String mPath) {
+
+    for (String s : matchedCodes) {
+
+      if (s.contentEquals(code) && matchedPath.contentEquals(mPath)) {
+
+        logger.info(" Found Matched Code {} for Path {}", code, mPath);
+        return true;
+      }
+    }
+
+    for (String sv : matchedValues) {
+
+      if (sv.contentEquals(code) && matchedPath.contentEquals(mPath)) {
+
+        logger.info(" Found Matched Value {} for Path {}", code, mPath);
+        return true;
+      }
+    }
+
+    return false;
   }
 }

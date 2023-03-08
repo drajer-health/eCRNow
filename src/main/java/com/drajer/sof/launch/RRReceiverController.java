@@ -23,13 +23,12 @@ public class RRReceiverController {
   @Autowired EicrRRService rrReceieverService;
 
   @CrossOrigin
-  @RequestMapping(value = "/api/rrReceiver", method = RequestMethod.POST)
+  @PostMapping(value = "/api/rrReceiver")
   public ResponseEntity<String> rrReceiver(
       @RequestHeader(name = "X-Request-ID") String xRequestIdHttpHeaderValue,
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue,
       @RequestBody ReportabilityResponse data,
-      @RequestParam(name = "saveToEhr", required = false, defaultValue = "true") boolean saveToEhr,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
@@ -53,10 +52,10 @@ public class RRReceiverController {
             data, xCorrelationIdHttpHeaderValue, xRequestIdHttpHeaderValue);
 
       } else {
-        logger.info(" Received RR as expected on the RR API ");
+        logger.info(" Received RR as expected on the RR API. ");
 
         // Handle RR and optionally save to EHR.
-        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue, saveToEhr);
+        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
       }
 
     } catch (IllegalArgumentException e) {
@@ -71,9 +70,7 @@ public class RRReceiverController {
   }
 
   @CrossOrigin
-  @RequestMapping(
-      value = "/api/reSubmitRR",
-      method = {RequestMethod.POST})
+  @PostMapping(value = "/api/reSubmitRR")
   public ResponseEntity<String> reSubmitRR(
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
@@ -96,6 +93,7 @@ public class RRReceiverController {
         rr.setResponseType(eicr.getResponseType());
 
         // Always save it to the EHR.
+
         rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId(), true);
       } else {
         String errMsg =
@@ -105,6 +103,7 @@ public class RRReceiverController {
                 + eicrId;
         logger.info(errMsg);
         throw new IllegalArgumentException(errMsg);
+        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
       }
 
     } catch (IllegalArgumentException e) {
