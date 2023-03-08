@@ -75,8 +75,6 @@ public class ActionRepo {
 
   AppConfig appConfig;
 
-  FhirContextInitializer fhirContextInitializer;
-
   private final Logger logger = LoggerFactory.getLogger(ActionRepo.class);
 
   public static ActionRepo getInstance() {
@@ -187,14 +185,6 @@ public class ActionRepo {
     this.workflowService = workflowService;
   }
 
-  public FhirContextInitializer getFhirContextInitializer() {
-    return fhirContextInitializer;
-  }
-
-  public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
-    this.fhirContextInitializer = fhirContextInitializer;
-  }
-
   public Map<TriggerType, Set<AbstractAction>> getActionsByTriggers() {
     return actionsByTriggers;
   }
@@ -242,6 +232,7 @@ public class ActionRepo {
   public void setFhirContextInitializer(FhirContextInitializer fhirContextInitializer) {
     this.fhirContextInitializer = fhirContextInitializer;
   }
+
   public DirectResponseReceiver getDirectReceiver() {
     return directReceiver;
   }

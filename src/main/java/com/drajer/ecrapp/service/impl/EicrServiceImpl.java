@@ -158,8 +158,8 @@ public class EicrServiceImpl implements EicrRRService {
 
       if (ecr == null && Boolean.TRUE.equals(processOrphanRr)) {
         logger.info("processOrphanRr is true, continue processing RR");
-        String patientId = rrModel.getPatId();
-        String encounterId = rrModel.getEnctId();
+        String patientId = cdaRrModel.getPatId();
+        String encounterId = cdaRrModel.getEnctId();
         if (!StringUtils.isBlank(patientId) && !StringUtils.isBlank(encounterId)) {
           ecr = new Eicr();
           ecr.setLaunchPatientId(patientId);

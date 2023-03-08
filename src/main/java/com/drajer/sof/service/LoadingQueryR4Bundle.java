@@ -74,7 +74,7 @@ public class LoadingQueryR4Bundle {
     try {
       List<Observation> observationList =
           r4ResourcesData.getTravelObservationData(
-              context, client, launchDetails, encounter, start, end);
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       r4FhirData.setTravelObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -88,7 +88,8 @@ public class LoadingQueryR4Bundle {
     // Get Social History Observations (Occupation)
     try {
       List<Observation> observationList =
-          r4ResourcesData.getSocialHistoryObservationDataOccupation(context, client, launchDetails);
+          r4ResourcesData.getSocialHistoryObservationDataOccupation(
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       r4FhirData.setOccupationObs(observationList);
       for (Observation observation : observationList) {
         BundleEntryComponent observationsEntry =
@@ -102,7 +103,8 @@ public class LoadingQueryR4Bundle {
     // Get Pregnancy Conditions
     try {
       List<Condition> conditionList =
-          r4ResourcesData.getPregnancyConditions(context, client, launchDetails);
+          r4ResourcesData.getPregnancyConditions(
+              context, client, launchDetails, r4FhirData, encounter, start, end);
       r4FhirData.setPregnancyConditions(conditionList);
       for (Condition condition : conditionList) {
         BundleEntryComponent conditionEntry = new BundleEntryComponent().setResource(condition);

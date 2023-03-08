@@ -1,9 +1,9 @@
 package com.drajer.cda.parser;
 
 import java.util.List;
-import org.springframework.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 public class CdaRrModel {
   private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);

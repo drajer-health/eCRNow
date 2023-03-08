@@ -415,6 +415,7 @@ public class R4ResourcesData {
       FhirContext context,
       IGenericClient client,
       LaunchDetails launchDetails,
+      R4FhirData r4FhirData,
       Encounter encounter,
       Date start,
       Date end) {
@@ -1166,7 +1167,8 @@ public class R4ResourcesData {
     // As you are adding to the bundle within Fhir Data, add the codeable concept
     // also to the list of ConditionCodes.
     try {
-      List<Condition> conditionsList = getConditionData(context, client, launchDetails, r4FhirData);
+      List<Condition> conditionsList =
+          getConditionData(context, client, launchDetails, r4FhirData, encounter, start, end);
       if (conditionsList != null && !conditionsList.isEmpty()) {
         // Already sorted and set in the getConditionData method
         for (Condition condition : conditionsList) {

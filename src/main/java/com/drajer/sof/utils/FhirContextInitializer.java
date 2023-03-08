@@ -127,7 +127,8 @@ public class FhirContextInitializer {
       FhirContext context, String url, String accessToken, String requestId) {
     logger.trace("Initializing the Client");
 
-    FhirClient client = new FhirClient(context.newRestfulGenericClient(url), requestId);
+    FhirClient client =
+        new FhirClient(context.newRestfulGenericClient(url), requestId, EventTypes.QueryType.NONE);
 
     IRestfulClientFactory restfulClientFactory = context.getRestfulClientFactory();
     restfulClientFactory.setSocketTimeout(socketTimeout * 1000);
