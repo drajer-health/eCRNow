@@ -499,7 +499,8 @@ public class CdaHeaderGenerator {
 
   public static String getAuthorXml(
       R4FhirData data, Encounter en, HashMap<V3ParticipationType, List<Practitioner>> practMap) {
-    logger.info("R4FhirData in getAuthorXml :{}", data);
+
+    logger.debug("R4FhirData in getAuthorXml :{}", data);
 
     StringBuilder sb = new StringBuilder(500);
 
