@@ -89,7 +89,10 @@ public class CdaResultGenerator {
 
         String obsDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
         List<Coding> cds = null;
-        if (obs.getCode() != null && obs.getCode().getCodingFirstRep() != null) {
+        if (obs.hasCode()
+            && obs.getCode() != null
+            && obs.getCode().hasCoding()
+            && obs.getCode().getCodingFirstRep() != null) {
 
           cds = obs.getCode().getCoding();
 
@@ -97,8 +100,16 @@ public class CdaResultGenerator {
             obsDisplayName = obs.getCode().getCodingFirstRep().getDisplay();
           } else if (!StringUtils.isEmpty(obs.getCode().getText())) {
             obsDisplayName = obs.getCode().getText();
+          } else if (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getCode())
+              && (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getSystem()))) {
+            obsDisplayName =
+                obs.getCode().getCodingFirstRep().getSystem()
+                    + "|"
+                    + obs.getCode().getCodingFirstRep().getCode();
           }
-        } else if (obs.getCode() != null && !StringUtils.isEmpty(obs.getCode().getText())) {
+        } else if (obs.hasCode()
+            && obs.getCode() != null
+            && !StringUtils.isEmpty(obs.getCode().getText())) {
           obsDisplayName = obs.getCode().getText();
         }
 
@@ -230,7 +241,10 @@ public class CdaResultGenerator {
       StringBuilder displayAttr = new StringBuilder(200);
       String repDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
       List<Coding> cds = null;
-      if (rep.getCode() != null && rep.getCode().getCodingFirstRep() != null) {
+      if (rep.hasCode()
+          && rep.getCode() != null
+          && rep.getCode().hasCoding()
+          && rep.getCode().getCodingFirstRep() != null) {
 
         cds = rep.getCode().getCoding();
 
@@ -238,6 +252,12 @@ public class CdaResultGenerator {
           repDisplayName = rep.getCode().getCodingFirstRep().getDisplay();
         } else if (!StringUtils.isEmpty(rep.getCode().getText())) {
           repDisplayName = rep.getCode().getText();
+        } else if (!StringUtils.isEmpty(rep.getCode().getCodingFirstRep().getCode())
+            && (!StringUtils.isEmpty(rep.getCode().getCodingFirstRep().getSystem()))) {
+          repDisplayName =
+              rep.getCode().getCodingFirstRep().getSystem()
+                  + "|"
+                  + rep.getCode().getCodingFirstRep().getCode();
         }
       } else if (rep.getCode() != null && !StringUtils.isEmpty(rep.getCode().getText())) {
         repDisplayName = rep.getCode().getText();
@@ -371,7 +391,10 @@ public class CdaResultGenerator {
       // Create an Observation for each entry.
       Observation obs = allObs.get(r.getReferenceElement().getIdPart());
 
-      if (obs != null && obs.getComponent() != null && !obs.getComponent().isEmpty()) {
+      if (obs != null
+          && obs.hasComponent()
+          && obs.getComponent() != null
+          && !obs.getComponent().isEmpty()) {
 
         CodeableConcept cc = obs.getCode();
         logger.info("CodeableConcept :{}", cc);
@@ -879,7 +902,9 @@ public class CdaResultGenerator {
 
       for (Observation s : data.getLabResults()) {
 
-        if (s.getCode() != null
+        if (s.hasCode()
+            && s.getCode() != null
+            && s.getCode().hasCoding()
             && s.getCode().getCoding() != null
             && !s.getCode().getCoding().isEmpty()
             && Boolean.TRUE.equals(
@@ -888,6 +913,10 @@ public class CdaResultGenerator {
 
           logger.debug("Found a Lab Results with a LOINC code");
           sr.add(s);
+        } else {
+          logger.info(
+              " Ignoring observation with id {} because it is not coded with LOINC code",
+              s.getId());
         }
       }
     } else {
