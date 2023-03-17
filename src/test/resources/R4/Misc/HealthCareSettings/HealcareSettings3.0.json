@@ -28,7 +28,6 @@
   "assigningAuthorityId": "2.16.840.1.113883.1.1.1.1.1",
   "encounterStartThreshold": "72",
   "encounterEndThreshold": "30",
-  "karsActive": "{\"artifactStatus\":[{\"id\":null,\"hsId\":null,\"karId\":\"rctc-release-2022-01-12-Bundle-rctc\",\"karVersion\":\"1\",\"versionUniqueKarId\":\"rctc-release-2022-01-12-Bundle-rctc|1\",\"isActive\":true,\"lastActivationDate\":\"2022-08-15T13:14:03.278+00:00\",\"lastInActivationDate\":\"2022-08-15T13:14:03.271+00:00\",\"subscriptionsEnabled\":false,\"subscriptions\":null,\"covidOnly\":true,\"outputFormat\":\"CDA_R11\"}],\"id\":6}",
   "authType": "System",
   "ehrAccessToken": null,
   "ehrAccessTokenExpiryDuration": 60,
