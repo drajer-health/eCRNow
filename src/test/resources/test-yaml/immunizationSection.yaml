@@ -78,6 +78,8 @@ testCase:
         "id[1]/@root": "2.16.840.1.113883.1.1.1.1"
         #      'id[1]/@extension': "M197287364"
         "statusCode/@code": "completed"
+        "doseQuantity/@value": "1.25"
+        "doseQuantity/@unit": "mg"
       #      'effectiveTime/@value': "2014"
       - xPath: "entry[1]/substanceAdministration/consumable/manufacturedProduct/templateId"
         count: 2
@@ -108,6 +110,8 @@ testCase:
         "id[1]/@root": "2.16.840.1.113883.1.1.1.1"
         #      'id[1]/@extension': "M197287360"
         "statusCode/@code": "completed"
+        "doseQuantity/@value": "1.25"
+        "doseQuantity/@unit": "mg"
       #      'effectiveTime/@value': "2000"
       - xPath: "entry[2]/substanceAdministration/consumable/manufacturedProduct/templateId"
         count: 2
@@ -138,6 +142,8 @@ testCase:
         "id[1]/@root": "2.16.840.1.113883.1.1.1.1"
         #      'id[1]/@extension': "M197287356"
         "statusCode/@code": "completed"
+        "doseQuantity/@value": "1.25"
+        "doseQuantity/@unit": "mg"
       #      'effectiveTime/@value': "2019"
       - xPath: "entry[3]/substanceAdministration/consumable/manufacturedProduct/templateId"
         count: 2
