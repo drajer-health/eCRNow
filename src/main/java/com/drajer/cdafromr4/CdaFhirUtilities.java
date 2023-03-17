@@ -1195,7 +1195,7 @@ public class CdaFhirUtilities {
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
-              elName, dt.getValue().toString(), dt.getUnit(), valFlag));
+              elName, dt.getValue().toString(), dt.getCode(), valFlag));
 
     } else {
       sb.append(CdaGeneratorUtils.getXmlForNfQuantity(elName, CdaGeneratorConstants.NF_NI));
