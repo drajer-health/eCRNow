@@ -5,12 +5,10 @@ testCase:
     testData:
       HealcareSettingsFile: "R4/Misc/HealthCareSettings/HealcareSettings3.0.json"
       SystemLaunch3Payload: "R4/Misc/SystemLaunchPayload/systemLaunchRequest3.0.json"
+      KnowledgeArtifactStatusFile: "R4/Misc/KnowledgeArtifactStatusPayload/KnowledgeArtifactStatus3.0.json"
     resourceMappingData:
       Patient:
         - params: "12742571"
-          responseFilePath: "R4/Patient/Patient_12742571.json"
-        - params:
-            patient: "12742571"
           responseFilePath: "R4/Patient/Patient_12742571.json"
       Encounter:
         - params: "97953900"
@@ -23,4 +21,3 @@ testCase:
       token: "R4/Misc/AccessToken.json"
       default: "R4/Misc/NoDataFound_Default.json"
       
-  

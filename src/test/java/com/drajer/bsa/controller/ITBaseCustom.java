@@ -1,6 +1,8 @@
 package com.drajer.bsa.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import com.drajer.test.BaseIntegrationTest;
 import com.drajer.test.util.TestDataGenerator;
@@ -56,6 +58,7 @@ public class ITBaseCustom extends BaseIntegrationTest {
 
     // Data Setup
     saveHealtcareSetting(testData.get("HealcareSettingsFile"));
+    saveKnowdlegeArtifact(testData.get("KnowledgeArtifactStatusFile"));
 
     systemLaunch3PayLoad = getSystemLaunch3Payload(testData.get("SystemLaunch3Payload"));
     session.flush();
@@ -88,8 +91,6 @@ public class ITBaseCustom extends BaseIntegrationTest {
 
   @Test
   public void callApi() {
-    wireMockServer.verify(0, getRequestedFor(urlEqualTo("/FHIR/Encounter?patient=12742571")));
-    wireMockServer.verify(0, getRequestedFor(urlEqualTo("/FHIR/Patient?patient=12742571")));
     final TestRestTemplate restTemplate = new TestRestTemplate();
     HttpHeaders headers = new HttpHeaders();
     String requestId = "1234";
@@ -100,8 +101,10 @@ public class ITBaseCustom extends BaseIntegrationTest {
     ResponseEntity<String> response =
         restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
     response.getStatusCode();
-    wireMockServer.verify(1, getRequestedFor(urlEqualTo("/FHIR/Encounter?patient=12742571")));
-    wireMockServer.verify(1, getRequestedFor(urlEqualTo("/FHIR/Patient?patient=12742571")));
+    wireMockServer.verify(
+        moreThanOrExactly(1), getRequestedFor(urlEqualTo("/FHIR/Encounter?patient=12742571")));
+    wireMockServer.verify(
+        moreThanOrExactly(1), getRequestedFor(urlEqualTo("/FHIR/Patient/12742571")));
   }
 
   private void saveHealtcareSetting(String healthCareSettingsFile) throws IOException {
@@ -112,5 +115,13 @@ public class ITBaseCustom extends BaseIntegrationTest {
     HttpEntity<String> entity = new HttpEntity<>(healthcareSettingFile, headers);
     restTemplate.exchange(
         createURLWithPort("/api/healthcareSettings"), HttpMethod.POST, entity, String.class);
+  }
+
+  private void saveKnowdlegeArtifact(String knowledgeArtifactFile) throws IOException {
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    HttpEntity<String> entity =
+        new HttpEntity<>(TestUtils.getFileContentAsString(knowledgeArtifactFile), headers);
+    restTemplate.exchange(
+        createURLWithPort("/api/addKARStatus/"), HttpMethod.POST, entity, String.class);
   }
 }

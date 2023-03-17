@@ -201,20 +201,27 @@ public class CdaMedicationGenerator {
 
         DateTimeType startDate = null;
         Dosage dosage = null;
-        if (medReq.hasDosageInstruction()
-            && medReq.getDosageInstructionFirstRep() != null
-            && medReq.getDosageInstructionFirstRep().hasTiming()
-            && medReq.getDosageInstructionFirstRep().getTiming() != null) {
+        Quantity dose = null;
+        if (medReq.hasDosageInstruction() && medReq.getDosageInstructionFirstRep() != null) {
 
           dosage = medReq.getDosageInstructionFirstRep();
-          Timing t = medReq.getDosageInstructionFirstRep().getTiming();
-          if (t != null
-              && t.hasRepeat()
-              && t.getRepeat() != null
-              && t.getRepeat().hasBoundsPeriod()
-              && t.getRepeat().getBoundsPeriod() != null
-              && t.getRepeat().getBoundsPeriod().hasStartElement()) {
-            startDate = t.getRepeat().getBoundsPeriod().getStartElement();
+
+          if (dosage.hasTiming() && dosage.getTiming() != null) {
+            Timing t = medReq.getDosageInstructionFirstRep().getTiming();
+            if (t != null
+                && t.hasRepeat()
+                && t.getRepeat() != null
+                && t.getRepeat().hasBoundsPeriod()
+                && t.getRepeat().getBoundsPeriod() != null
+                && t.getRepeat().getBoundsPeriod().hasStartElement()) {
+              startDate = t.getRepeat().getBoundsPeriod().getStartElement();
+            }
+          }
+
+          if (dosage.hasDoseAndRate()
+              && dosage.getDoseAndRateFirstRep() != null
+              && dosage.getDoseAndRateFirstRep().hasDoseQuantity()) {
+            dose = dosage.getDoseAndRateFirstRep().getDoseQuantity();
           }
         }
 
@@ -259,7 +266,7 @@ public class CdaMedicationGenerator {
                 medstatus,
                 dosage,
                 details,
-                null,
+                dose,
                 startDate,
                 moodCode,
                 medReq,

@@ -215,6 +215,7 @@ public class R3ToR2DataConverterUtils {
         ArrayList<Condition> encDiagList = new ArrayList<>();
         if (!resources.isEmpty()) {
 
+          List<Condition> pregnancyConditions = new ArrayList<>();
           for (Resource r : resources) {
 
             Condition c = (Condition) r;
@@ -231,7 +232,12 @@ public class R3ToR2DataConverterUtils {
             }
 
             data.addEntry(new BundleEntryComponent().setResource(r));
+
+            if (c.hasCode() && isPregnancyCondition(c.getCode())) {
+              pregnancyConditions.add(c);
+            }
           }
+          r4FhirData.setPregnancyConditions(pregnancyConditions);
           r4FhirData.setConditions(conditionList);
           r4FhirData.addEncounterDiagnosisConditions(encDiagList);
         }
@@ -356,6 +362,8 @@ public class R3ToR2DataConverterUtils {
         if (socObs != null && !socObs.isEmpty()) {
 
           List<Observation> occObs = new ArrayList<>();
+          List<Observation> travelObs = new ArrayList<>();
+          List<Observation> pregnancyObs = new ArrayList<>();
 
           for (Resource r : socObs) {
             Observation sochisObs = (Observation) r;
@@ -367,9 +375,23 @@ public class R3ToR2DataConverterUtils {
               logger.info(" Found Occupation History Observation ");
               occObs.add(sochisObs);
             }
+
+            if (sochisObs.hasCode() && isTravelObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Occupation History Observation ");
+              travelObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isPregnancyObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Occupation History Observation ");
+              pregnancyObs.add(sochisObs);
+            }
           }
 
           r4FhirData.setOccupationObs(occObs);
+          r4FhirData.setTravelObs(travelObs);
+          r4FhirData.setPregnancyObs(pregnancyObs);
         }
 
       } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
@@ -411,6 +433,80 @@ public class R3ToR2DataConverterUtils {
                     && c.getSystem().contentEquals("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("364703007")
                     && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isTravelObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("29762-2")
+                    && c.getSystem().contentEquals("http://loinc.org"))
+                || (c.getCode().contentEquals("161085007")
+                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("161086008")
+                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("420008001")
+                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("46521000175102")
+                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("34831000175105")
+                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("443846001")
+                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPregnancyObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("90767-5")
+                    && c.getSystem().contentEquals("http://loinc.org"))
+                || (c.getCode().contentEquals("77386006")
+                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPregnancyCondition(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getCode().contentEquals("77386006")
+            && c.getSystem().contentEquals("http://snomed.info/sct")) {
           return true;
         }
       }
