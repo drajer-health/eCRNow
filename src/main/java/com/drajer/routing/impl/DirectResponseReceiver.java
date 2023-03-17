@@ -136,7 +136,7 @@ public class DirectResponseReceiver extends RRReceiver {
 
                 logger.debug(" RrXML : {}", data.getRrXml());
 
-                rrService.handleReportabilityResponse(data, mId);
+                rrService.handleReportabilityResponse(data, mId, true);
               }
             }
           }

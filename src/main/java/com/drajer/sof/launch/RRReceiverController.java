@@ -29,6 +29,7 @@ public class RRReceiverController {
       @RequestHeader(name = "X-Correlation-ID", required = false)
           String xCorrelationIdHttpHeaderValue,
       @RequestBody ReportabilityResponse data,
+      @RequestParam(name = "saveToEhr", required = false, defaultValue = "true") boolean saveToEhr,
       HttpServletRequest request,
       HttpServletResponse response) {
     try {
@@ -55,7 +56,7 @@ public class RRReceiverController {
         logger.info(" Received RR as expected on the RR API. ");
 
         // Handle RR and optionally save to EHR.
-        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue);
+        rrReceieverService.handleReportabilityResponse(data, xRequestIdHttpHeaderValue, saveToEhr);
       }
 
     } catch (IllegalArgumentException e) {
@@ -93,7 +94,7 @@ public class RRReceiverController {
         rr.setResponseType(eicr.getResponseType());
 
         // Always save it to the EHR.
-        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId());
+        rrReceieverService.handleReportabilityResponse(rr, eicr.getxRequestId(), true);
       } else {
         String errMsg =
             "Failed to resubmit the RR, Eicr row not found for EicrDocId "

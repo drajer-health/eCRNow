@@ -15,7 +15,6 @@ import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.ecrapp.service.EicrRRService;
 import com.drajer.sof.model.ClientDetails;
-import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.service.ClientDetailsService;
 import com.drajer.sof.service.LaunchService;
 import com.drajer.sof.utils.Authorization;
@@ -129,7 +128,8 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  public void handleReportabilityResponse(ReportabilityResponse data, String xRequestId) {
+  public void handleReportabilityResponse(
+      ReportabilityResponse data, String xRequestId, boolean saveToEhr) {
 
     logger.debug(" Start processing RR");
 
@@ -172,8 +172,8 @@ public class EicrServiceImpl implements EicrRRService {
 
       if (ecr != null) {
 
-        LaunchDetails launchDetails =
-            launchDetailsService.getAuthDetailsById(ecr.getLaunchDetailsId());
+        ClientDetails clientDetails =
+            clientDetailservice.getClientDetailsByUrl(ecr.getFhirServerUrl());
 
         logger.info(" Found the ecr for doc Id = {}", eicrDocId.getRootValue());
         ecr.setResponseType(EicrTypes.RrType.REPORTABLE.toString());
@@ -196,35 +196,38 @@ public class EicrServiceImpl implements EicrRRService {
           ecr.setResponseTypeDisplay(cdaRrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
-        if (Boolean.TRUE.equals(launchDetails.getIsCreateDocRef())
-            || Boolean.TRUE.equals(launchDetails.getIsBoth())) {
-          try {
-            logger.info(" RR Xml and eCR is present hence create a document reference ");
-            DocumentReference docRef =
-                constructDocumentReference(data, ecr, launchDetails.getRrDocRefMimeType());
+        if (Boolean.TRUE.equals(clientDetails.getIsCreateDocRef())
+            || Boolean.TRUE.equals(clientDetails.getIsBoth())) {
+          if (saveToEhr) {
+            try {
+              logger.info(" RR Xml and eCR is present hence create a document reference ");
+              DocumentReference docRef =
+                  constructDocumentReference(data, ecr, clientDetails.getRrDocRefMimeType());
 
-            if (docRef != null) {
+              if (docRef != null) {
 
-              logger.info(" Document Reference created successfully, submitting to Ehr ");
-              submitDocRefToEhr(docRef, ecr);
+                logger.info(" Document Reference created successfully, submitting to Ehr ");
+                submitDocRefToEhr(docRef, ecr);
+              }
+
+            } catch (Exception e) {
+
+              logger.error(
+                  " Error submitting Document Reference to EHR due to exception: {}",
+                  e.getMessage());
+              // Save the fact that we could not submit the message to the EHR.
+              ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
+              saveOrUpdate(ecr);
+              throw e;
             }
-
-          } catch (Exception e) {
-
-            logger.error(
-                " Error submitting Document Reference to EHR due to exception: {}", e.getMessage());
-            // Save the fact that we could not submit the message to the EHR.
-            ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
-            saveOrUpdate(ecr);
-            throw e;
           }
         }
 
-        if (Boolean.TRUE.equals(launchDetails.getIsInvokeRestAPI())
-            || Boolean.TRUE.equals(launchDetails.getIsBoth())) {
+        if (Boolean.TRUE.equals(clientDetails.getIsInvokeRestAPI())
+            || Boolean.TRUE.equals(clientDetails.getIsBoth())) {
           try {
             logger.info("Submit RR Xml to Rest API endpoint");
-            boolean responseStatus = submitRRXmlToRestAPI(data.getRrXml(), ecr, launchDetails);
+            boolean responseStatus = submitRRXmlToRestAPI(data.getRrXml(), ecr, clientDetails);
             if (!responseStatus) {
               ecr.setRrProcStatus(EventTypes.RrProcStatusEnum.FAILED_EHR_SUBMISSION.toString());
               saveOrUpdate(ecr);
@@ -254,7 +257,7 @@ public class EicrServiceImpl implements EicrRRService {
     }
   }
 
-  private boolean submitRRXmlToRestAPI(String rrXml, Eicr ecr, LaunchDetails launchDetails) {
+  private boolean submitRRXmlToRestAPI(String rrXml, Eicr ecr, ClientDetails clientDetails) {
     logger.info("Eicr in submitRRXmlToRestAPI:{}", ecr);
     boolean isSubmitSuccess = false;
     RestTemplate restTemplate = new RestTemplate();
@@ -263,7 +266,7 @@ public class EicrServiceImpl implements EicrRRService {
     HttpEntity<String> request = new HttpEntity<>(rrXml, headers);
     ResponseEntity<?> response =
         restTemplate.exchange(
-            launchDetails.getRrRestAPIUrl(), HttpMethod.POST, request, String.class);
+            clientDetails.getRrRestAPIUrl(), HttpMethod.POST, request, String.class);
     if (response.getStatusCode().is2xxSuccessful()) {
       isSubmitSuccess = true;
     }
