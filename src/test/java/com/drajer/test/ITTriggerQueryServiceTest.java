@@ -1,5 +1,6 @@
 package com.drajer.test;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -73,7 +74,7 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       String launchDetailJson = TestUtils.getFileContentAsString(launchDetailsFile);
       launchDetailJson = launchDetailJson.replace(":port", ":" + wireMockHttpPort);
       launchDetails = mapper.readValue(launchDetailJson, LaunchDetails.class);
-
+      wireMockServer.resetRequests();
       stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
       logger.info("Creating WireMock stubs..");
       stubHelper.stubResources(allResourceMapping);
@@ -126,6 +127,8 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       fail(e.getMessage() + " Fix the test data to pass correct datetime");
     }
     assertNotNull("Failed to generate r4Data", r4FhirData);
+    /* count should be 0 since disable server validation (don't pull the server's metadata first) is set */
+    wireMockServer.verify(exactly(0), getRequestedFor(urlEqualTo("/FHIR/metadata")));
     validateBundle(r4FhirData);
   }
 

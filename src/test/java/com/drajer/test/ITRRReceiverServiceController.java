@@ -47,6 +47,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       eicrReSubmit = createEicrForReSubmit();
       session.flush();
       tx.commit();
+      wireMockServer.resetRequests();
     } catch (IOException e) {
       logger.error("Error setting up the test data:", e);
       fail("Fix the exception: " + e.getMessage());
@@ -94,6 +95,8 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertEquals("197477086", eicr.getEhrDocRefId());
+    /* count should be 1 since getMetadata is called explicitly*/
+    wireMockServer.verify(exactly(1), getRequestedFor(urlEqualTo("/FHIR/metadata")));
   }
 
   @Test

@@ -78,7 +78,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
-
+    wireMockServer.resetRequests();
     // Setup wireMock and mock FHIR call as per yaml file.
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
@@ -219,6 +219,8 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
       assertEquals(rr.getRrXml(), eicr != null ? eicr.getResponseData() : null);
       assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : "");
+      /* Count should be 2 since 2 metadata call explicitly 1:SystemLaunch 2:SubmitEicr(handleReportablityResponse) */
+      wireMockServer.verify(exactly(2), getRequestedFor(urlEqualTo("/FHIR/metadata")));
     }
   }
 

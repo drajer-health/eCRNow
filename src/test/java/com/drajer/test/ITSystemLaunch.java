@@ -1,5 +1,6 @@
 package com.drajer.test;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
 
 import com.drajer.eca.model.PatientExecutionState;
@@ -59,7 +60,7 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     systemLaunchPayLoad = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
-
+    wireMockServer.resetRequests();
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
@@ -97,6 +98,8 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     if (createEicr != null) {
       assertNotNull(createEicr.getEicrData());
       assertFalse(createEicr.getEicrData().isEmpty());
+      /* count should be 1 since getMetadata is called explicitly*/
+      wireMockServer.verify(exactly(1), getRequestedFor(urlEqualTo("/FHIR/metadata")));
     }
   }
 
