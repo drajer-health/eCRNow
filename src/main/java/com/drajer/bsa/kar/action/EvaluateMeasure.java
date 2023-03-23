@@ -6,6 +6,8 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.function.Supplier;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
@@ -19,7 +21,7 @@ public class EvaluateMeasure extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private R4MeasureProcessor measureProcessor;
+  private Supplier<R4MeasureProcessor> measureProcessor;
 
   private String periodStart;
   private String periodEnd;
@@ -50,11 +52,11 @@ public class EvaluateMeasure extends BsaAction {
     this.measureReportId = measureReportId;
   }
 
-  public R4MeasureProcessor getMeasureProcessor() {
+  public Supplier<R4MeasureProcessor> getMeasureProcessorSupplier() {
     return measureProcessor;
   }
 
-  public void setMeasureProcessor(R4MeasureProcessor measureProcessor) {
+  public void setMeasureProcessorSupplier(Supplier<R4MeasureProcessor> measureProcessor) {
     this.measureProcessor = measureProcessor;
   }
 
@@ -105,7 +107,7 @@ public class EvaluateMeasure extends BsaAction {
       // Evaluate Measure by passing the required parameters
       // Set up and evaluate the measure.
       MeasureReport result =
-          measureProcessor.evaluateMeasure(
+          measureProcessor.get().evaluateMeasure(
               measureUri,
               periodStart,
               periodEnd,

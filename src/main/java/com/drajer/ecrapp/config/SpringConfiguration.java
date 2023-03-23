@@ -6,10 +6,17 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
+
+import java.util.function.Supplier;
+
+import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
+import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
+import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -78,5 +85,20 @@ public class SpringConfiguration {
   @Bean
   public FhirContext fhirContext() {
     return ctx;
+  }
+
+  @Bean
+  public Supplier<ExpressionEvaluator> expressionEvaluator(ApplicationContext appCtx) {
+    return () -> appCtx.getBean(ExpressionEvaluator.class);
+  }
+
+  @Bean
+  public Supplier<LibraryEvaluator> libraryEvaluator(ApplicationContext appCtx) {
+    return () -> appCtx.getBean(LibraryEvaluator.class);
+  }
+
+  @Bean
+  public Supplier<R4MeasureProcessor> measureProcessor(ApplicationContext appCtx) {
+    return () -> appCtx.getBean(R4MeasureProcessor.class);
   }
 }
