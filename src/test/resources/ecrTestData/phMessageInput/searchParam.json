@@ -1,0 +1,12 @@
+{
+  "encounterId": "3",
+  "xRequestId": "32",
+  "fhirServerBaseUrl": "6",
+  "submittedDataId": "25",
+  "responseDataId": "15",
+  "responseProcessingInstruction": "19",
+  "patientId": "13",
+  "notifiedResourceId": "11",
+  "notifiedResourceType": "12",
+  "karUniqueId": "8"
+}

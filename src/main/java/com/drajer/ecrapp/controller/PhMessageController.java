@@ -2,6 +2,10 @@ package com.drajer.ecrapp.controller;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.service.PhMessageService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,23 +19,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @RestController
 public class PhMessageController {
 
   public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
   private final Logger logger = LoggerFactory.getLogger(PhMessageController.class);
 
-  @Autowired
-  PhMessageService phMessageService;
+  @Autowired PhMessageService phMessageService;
 
   @CrossOrigin
   @GetMapping(value = "/api/phMessage", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> getEicrData(
+  public ResponseEntity<Object> getPhMessageDeatils(
       @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
       @RequestParam(name = "patientId", required = false) String patientId,
       @RequestParam(name = "encounterId", required = false) String encounterId,
@@ -39,7 +37,8 @@ public class PhMessageController {
       @RequestParam(name = "submittedDataId", required = false) String submittedDataId,
       @RequestParam(name = "version", required = false) String version,
       @RequestParam(name = "responseDataId", required = false) String responseDataId,
-      @RequestParam(name = "responseProcessingInstruction", required = false) String responseProcessingInstruction,
+      @RequestParam(name = "responseProcessingInstruction", required = false)
+          String responseProcessingInstruction,
       @RequestParam(name = "notifiedResourceId", required = false) String notifiedResourceId,
       @RequestParam(name = "notifiedResourceType", required = false) String notifiedResourceType,
       @RequestParam(name = "karUniqueId", required = false) String karUniqueId,
@@ -60,19 +59,18 @@ public class PhMessageController {
               + "notifiedResourceType = {}\n"
               + "karUniqueId = {}\n"
               + "notificationId = {}\n",
-
-              fhirServerBaseUrl,
-              patientId,
-              encounterId,
-              xRequestId,
-              submittedDataId,
-              version,
-              responseDataId,
-              responseProcessingInstruction,
-              notifiedResourceId,
-              notifiedResourceType,
-              karUniqueId,
-              notificationId);
+          fhirServerBaseUrl,
+          patientId,
+          encounterId,
+          xRequestId,
+          submittedDataId,
+          version,
+          responseDataId,
+          responseProcessingInstruction,
+          notifiedResourceId,
+          notifiedResourceType,
+          karUniqueId,
+          notificationId);
 
       Map<String, String> searchParams = new HashMap<>();
       if (fhirServerBaseUrl != null && !fhirServerBaseUrl.isEmpty()) {
@@ -136,5 +134,4 @@ public class PhMessageController {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
     }
   }
-
 }
