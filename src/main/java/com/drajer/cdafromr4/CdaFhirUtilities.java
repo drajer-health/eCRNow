@@ -256,13 +256,33 @@ public class CdaFhirUtilities {
     return null;
   }
 
-  public static String getAddressXml(List<Address> addrs) {
+  public static String getAddressXml(List<Address> addrs, Boolean includeMultiples) {
 
     StringBuilder addrString = new StringBuilder(200);
 
     if (addrs != null && !addrs.isEmpty()) {
 
-      Address addr = addrs.get(0);
+      if (includeMultiples) {
+        for (Address addr : addrs) {
+          addrString.append(getAddressXml(addr));
+        }
+      } else {
+        Address addr = addrs.get(0);
+        addrString.append(getAddressXml(addr));
+      }
+    } else {
+      Address addr = null;
+      addrString.append(getAddressXml(addr));
+    }
+
+    return addrString.toString();
+  }
+
+  public static String getAddressXml(Address addr) {
+
+    StringBuilder addrString = new StringBuilder(200);
+
+    if (addr != null && !addr.isEmpty()) {
 
       logger.debug(" Found a valid address. ");
 

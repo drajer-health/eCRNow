@@ -124,7 +124,7 @@ public class CdaFhirUtilitiesTest {
     ad1.setCountry("US");
     addrs.add(ad1);
 
-    String result = CdaFhirUtilities.getAddressXml(addrs);
+    String result = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result.contains("142 Example Drive"));
     assertTrue(result.contains("20874"));
@@ -145,7 +145,7 @@ public class CdaFhirUtilitiesTest {
     ad2.setCountry("US");
     addrs.add(ad2);
 
-    String result2 = CdaFhirUtilities.getAddressXml(addrs);
+    String result2 = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result2.contains("142 Example Drive"));
     assertTrue(result2.contains("20874"));
@@ -153,7 +153,7 @@ public class CdaFhirUtilitiesTest {
     assertTrue(result2.contains("Rockville"));
 
     addrs.clear();
-    String result3 = CdaFhirUtilities.getAddressXml(addrs);
+    String result3 = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result3.contains("nullFlavor=\"NI\""));
 
@@ -170,12 +170,59 @@ public class CdaFhirUtilitiesTest {
     ad3.setCountry("US");
     addrs.add(ad3);
 
-    String result4 = CdaFhirUtilities.getAddressXml(addrs);
+    String result4 = CdaFhirUtilities.getAddressXml(addrs, false);
 
     assertTrue(result4.contains("142 Example Drive"));
     assertTrue(result4.contains("20874"));
     assertTrue(result4.contains("MD"));
     assertTrue(result4.contains("Rockville"));
+  }
+
+  @Test
+  public void testMultipleGetAddressXml() {
+
+    List<Address> addrs = new ArrayList<Address>();
+    Address ad1 = new Address();
+    ad1.setUse(AddressUse.HOME);
+    StringType line = new StringType();
+    line.setValue("142 Example Drive");
+    List<StringType> lines = new ArrayList<StringType>();
+    lines.add(line);
+    ad1.setLine(lines);
+    ad1.setCity("Rockville");
+    ad1.setState("MD");
+    ad1.setPostalCode("20874");
+    ad1.setCountry("US");
+    addrs.add(ad1);
+    Address ad2 = new Address();
+    ad1.setUse(AddressUse.BILLING);
+    StringType line2 = new StringType();
+    line2.setValue("185 Example Drive");
+    List<StringType> lines2 = new ArrayList<StringType>();
+    lines2.add(line2);
+    ad2.setLine(lines2);
+    ad2.setCity("Ashton");
+    ad2.setState("ND");
+    ad2.setPostalCode("30874");
+    ad2.setCountry("US");
+    addrs.add(ad2);
+    Address ad3 = new Address();
+    StringType line3 = new StringType();
+    line3.setValue("108 Example Drive");
+    List<StringType> lines3 = new ArrayList<StringType>();
+    lines3.add(line3);
+    ad3.setLine(lines3);
+    ad3.setCity("Neterhart");
+    ad3.setState("SD");
+    ad3.setPostalCode("40874");
+    ad3.setCountry("US");
+    addrs.add(ad3);
+
+    String result = CdaFhirUtilities.getAddressXml(addrs, true);
+
+    assertTrue(result.contains("142 Example Drive"));
+    assertTrue(result.contains("185 Example Drive"));
+    assertTrue(result.contains("108 Example Drive"));
   }
 
   @Test
