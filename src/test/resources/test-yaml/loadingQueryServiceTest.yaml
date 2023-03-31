@@ -30,6 +30,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Diagnosis-WithTwoCovidTriggerCodes.json"
         - params:
             patient: "12742571"
@@ -42,12 +44,12 @@ testCase:
           responseFilePath: "R4/Observation/ObservationWithMultipleEntries.json"
         - params:
             patient: "12742571"
-            code: "http%3A//snomed.info/sct%7C34831000175105"
-          responseFilePath: "R4/Observation/ObsTravel_SCT_34831000175105.json"
+            code: "http%3A//snomed.info/sct%7C224362002,http%3A//snomed.info/sct%7C364703007,http%3A//loinc.org%7C11295-3"
+          responseFilePath: "R4/Observation/ObsOccupation_SCT_224362002.json"
         - params:
             patient: "12742571"
-            code: "http%3A//snomed.info/sct%7C224362002"
-          responseFilePath: "R4/Observation/ObsOccupation_SCT_224362002.json"
+            code: "http%3A//snomed.info/sct%7C161085007,http%3A//snomed.info/sct%7C443846001,http%3A//snomed.info/sct%7C420008001,http%3A//snomed.info/sct%7C46521000175102,http%3A//snomed.info/sct%7C34831000175105,http%3A//snomed.info/sct%7C161086008,http%3A//loinc.org%7C29762-2"
+          responseFilePath: "R4/Observation/ObsTravel_SCT.json"
       #      - params:
       #          patient: "12742571"
       #          code: "http%3A%2F%2Floinc.org%7C90767-5"
@@ -90,7 +92,7 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - Observation: 26
-        TravelObservation: 0
+        TravelObservation: 6
         OccupationObservation: 3
         Organization: 1
         Condition: 2
@@ -113,6 +115,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition_FilterByDtTm.json"
       Observation:
         - params:
@@ -153,9 +157,9 @@ testCase:
       default: "R4/Misc/NoDataFound_Default.json"
     validate:
       - Observation: 3
-        Condition: 1
+        Condition: 2
         TravelObservation: 0
-        PregnancyObservation: 3
+        PregnancyObservation: 0
         Immunization: 2
         ServiceRequest: 2
         MedicationRequest: 0

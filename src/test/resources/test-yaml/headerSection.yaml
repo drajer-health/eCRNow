@@ -22,6 +22,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
@@ -39,6 +41,7 @@ testCase:
       - xPath: ""
         "id/@root": "2.16.840.1.113883.6.1000"
         "id/@extension": "490056856"
+        "addr/@use": "HP"
         "addr/streetAddressLine[1]": "2801 ROCK CREEK PKWY"
         "addr/streetAddressLine[2]": "Downtown"
         "addr/streetAddressLine[3]": "Old street road"
@@ -57,6 +60,7 @@ testCase:
       - xPath: "patient/"
         "administrativeGenderCode/@code": "M"
         "administrativeGenderCode/@codeSystem": "2.16.840.1.113883.5.1"
+        "name/@use": "L"
         "name/given": "COVIDONE"
         "name/family": "FHIRTest"
         "birthTime/@value": "19700102"
@@ -79,14 +83,16 @@ testCase:
       - xPath: "patient/guardian/guardianPerson/name"
         count: 1
       - xPath: "patient/guardian/"
+        "addr/@use": "HP"
         "addr/streetAddressLine": "2802 ROCK CREEK PKWY"
         "addr/city": "KANSAS CITY"
         "addr/state": "MO"
         "addr/postalCode": "64117"
         "addr/country": "US"
         "telecom[1]/@value": "tel:(212)555-5553"
-        #'telecom[1]/@use': "HP"
+        'telecom[1]/@use': "HP"
         "telecom[2]/@value": "mailto:dharris@gmail.com"
+        "guardianPerson/name/given/@qualifier": "PR"
         "guardianPerson/name/given": "DANA"
         "guardianPerson/name/family": "HARRIS"
   eCR-patient-deceased:
@@ -110,6 +116,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
@@ -140,6 +148,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
@@ -195,6 +205,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
@@ -251,6 +263,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"
@@ -295,6 +309,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
     otherMappingData:
       metadata: "R4/Misc/MetaData_r4.json"

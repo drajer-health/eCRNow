@@ -2,6 +2,7 @@ package com.drajer.eca.model;
 
 import com.drajer.eca.model.EventTypes.JobStatus;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ public class MatchTriggerStatus extends EicrStatus {
   private EventTypes.JobStatus jobStatus;
   private Boolean triggerMatchStatus; // Did anything match or not
   private List<MatchedTriggerCodes> matchedCodes;
+  private Date triggerLastExecutionDateTime;
 
   public String getActionId() {
     return actionId;
@@ -55,6 +57,14 @@ public class MatchTriggerStatus extends EicrStatus {
     }
 
     return null;
+  }
+
+  public Date getTriggerLastExecutionDateTime() {
+    return triggerLastExecutionDateTime;
+  }
+
+  public void setTriggerLastExecutionDateTime(Date triggerLastExecutionDateTime) {
+    this.triggerLastExecutionDateTime = triggerLastExecutionDateTime;
   }
 
   public void addMatchedCodes(

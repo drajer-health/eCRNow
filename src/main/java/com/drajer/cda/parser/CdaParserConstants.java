@@ -19,6 +19,9 @@ public class CdaParserConstants {
   public static final XPathExpression REL_ID_EXP;
   public static final XPathExpression RR_STATUS_OBS_EXP;
   public static final XPathExpression REL_VAL_EXP;
+  public static final XPathExpression SET_ID_EXP;
+  public static final XPathExpression PATIENT_ID_EXP;
+  public static final XPathExpression ENCOUNTER_ID_EXP;
 
   static {
     try {
@@ -32,6 +35,10 @@ public class CdaParserConstants {
           cdaXPath.compile(
               "//observation[not(@nullFlavor) and ./templateId[@root='2.16.840.1.113883.10.20.15.2.3.19']]");
       REL_VAL_EXP = cdaXPath.compile("./value[not(@nullFlavor)]");
+      SET_ID_EXP = cdaXPath.compile("./setId[not(@nullFlavor)]");
+      PATIENT_ID_EXP =
+          cdaXPath.compile("/ClinicalDocument/recordTarget/patientRole/id[not(@nullFlavor)]");
+      ENCOUNTER_ID_EXP = cdaXPath.compile("//encompassingEncounter/id[not(@nullFlavor)]");
     } catch (XPathExpressionException e) {
       logger.error("Failed to resolve CDA xPath", e);
       throw new IllegalStateException(e);

@@ -3,6 +3,7 @@ package com.drajer.sof.service;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
@@ -37,7 +38,9 @@ public class LoadingQueryR4Bundle {
 
     logger.trace("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
-    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context, launchDetails, EventTypes.QueryType.LOADING_QUERY);
 
     Bundle bundle =
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);
@@ -51,20 +54,21 @@ public class LoadingQueryR4Bundle {
     r4ResourcesData.loadMedicationsData(
         context, client, launchDetails, r4FhirData, encounter, bundle, start, end);
 
-    // Get Pregnancy Observations
-    try {
-      List<Observation> observationList =
-          r4ResourcesData.getPregnancyObservationData(
-              context, client, launchDetails, r4FhirData, encounter, start, end);
-      r4FhirData.setPregnancyObs(observationList);
-      for (Observation observation : observationList) {
-        BundleEntryComponent observationsEntry =
-            new BundleEntryComponent().setResource(observation);
-        bundle.addEntry(observationsEntry);
-      }
-    } catch (Exception e) {
-      logger.error("Error in getting Pregnancy Observation Data", e);
-    }
+    // Get Pregnancy Observations, will be used once support of pregnancy observation is added in
+    // Social History section.
+    //    try {
+    //      List<Observation> observationList =
+    //          r4ResourcesData.getPregnancyObservationData(
+    //              context, client, launchDetails, r4FhirData, encounter, start, end);
+    //      r4FhirData.setPregnancyObs(observationList);
+    //      for (Observation observation : observationList) {
+    //        BundleEntryComponent observationsEntry =
+    //            new BundleEntryComponent().setResource(observation);
+    //        bundle.addEntry(observationsEntry);
+    //      }
+    //    } catch (Exception e) {
+    //      logger.error("Error in getting Pregnancy Observation Data", e);
+    //    }
 
     // Get Travel Observations
     try {

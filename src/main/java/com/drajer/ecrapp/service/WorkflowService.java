@@ -9,6 +9,7 @@ import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.eca.model.TaskTimer;
 import com.drajer.eca.model.TimingSchedule;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.TaskConfiguration;
 import com.drajer.ecrapp.model.ScheduledTasks;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.swing.*;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Duration;
 import org.slf4j.Logger;
@@ -86,6 +88,8 @@ public class WorkflowService {
 
   @Autowired SchedulerService schedulerService;
 
+  @Autowired AppConfig appConfig;
+
   @Autowired FhirContextInitializer fhirContextInitializer;
 
   private static SchedulerService staticSchedulerService;
@@ -113,6 +117,7 @@ public class WorkflowService {
     ActionRepo.getInstance().setLogFileDirectory(logFileLocation);
     ActionRepo.getInstance().setXsdSchemasLocation(xsdSchemasLocation);
     ActionRepo.getInstance().setRestTransport(restApiTransport);
+    ActionRepo.getInstance().setAppConfig(appConfig);
     ActionRepo.getInstance().setFhirContextInitializer(fhirContextInitializer);
 
     workflowInstance = this;

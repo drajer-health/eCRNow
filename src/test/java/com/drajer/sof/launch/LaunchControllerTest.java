@@ -11,6 +11,7 @@ import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.gclient.IReadTyped;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.sof.model.ClientDetails;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.utils.FhirContextInitializer;
@@ -186,7 +187,9 @@ public class LaunchControllerTest {
     when(fhirContextInitializer.getFhirContext(currentStateDetails.getFhirVersion()))
         .thenReturn(context);
 
-    when(fhirContextInitializer.createClient(context, currentStateDetails)).thenReturn(client);
+    when(fhirContextInitializer.createClient(
+            context, currentStateDetails, EventTypes.QueryType.NONE))
+        .thenReturn(client);
 
     when(client.read()).thenReturn(read);
     when(read.resource("Encounter")).thenReturn(readType);

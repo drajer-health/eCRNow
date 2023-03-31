@@ -22,6 +22,8 @@ testCase:
       Condition:
         - params:
             patient: "12742571"
+            category: "problem-list-item,encounter-diagnosis"
+            clinical-status: "active,recurrence,relapse"
           responseFilePath: "R4/Condition/Condition-Problem-WithCovidTriggerCode.json"
         - params:
             patient: "12742571"
@@ -30,12 +32,12 @@ testCase:
       Observation:
         - params:
             patient: "12742571"
-            code: "http%3A//snomed.info/sct%7C34831000175105"
-          responseFilePath: "R4/Observation/ObsTravel_SCT_34831000175105.json"
+            code: "http%3A//snomed.info/sct%7C224362002,http%3A//snomed.info/sct%7C364703007,http%3A//loinc.org%7C11295-3"
+          responseFilePath: "R4/Observation/ObsOccupation_SCT_224362002.json"
         - params:
             patient: "12742571"
-            code: "http%3A//snomed.info/sct%7C224362002"
-          responseFilePath: "R4/Observation/ObsOccupation_SCT_224362002.json"
+            code: "http%3A//snomed.info/sct%7C161085007,http%3A//snomed.info/sct%7C443846001,http%3A//snomed.info/sct%7C420008001,http%3A//snomed.info/sct%7C46521000175102,http%3A//snomed.info/sct%7C34831000175105,http%3A//snomed.info/sct%7C161086008,http%3A//loinc.org%7C29762-2"
+          responseFilePath: "R4/Observation/ObsTravel_SCT_34831000175105.json"
     #      - params:
     #          patient: "12742571"
     #          code: "http%3A%2F%2FLOINC%7C90767-5"
