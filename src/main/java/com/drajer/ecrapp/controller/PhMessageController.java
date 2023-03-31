@@ -29,7 +29,7 @@ public class PhMessageController {
 
   @CrossOrigin
   @GetMapping(value = "/api/phMessage", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> getPhMessageDeatils(
+  public ResponseEntity<Object> getPhMessageDetails(
       @RequestParam(name = "fhirServerBaseUrl", required = false) String fhirServerBaseUrl,
       @RequestParam(name = "patientId", required = false) String patientId,
       @RequestParam(name = "encounterId", required = false) String encounterId,

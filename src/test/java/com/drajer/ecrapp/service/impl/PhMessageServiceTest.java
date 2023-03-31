@@ -30,12 +30,12 @@ public class PhMessageServiceTest {
 
 	private Map<String, String> searchParam;
 
-	private List<PublicHealthMessage> exceptedPublicHealthMessageDetails;
+	private List<PublicHealthMessage> expectedPublicHealthMessageDetails;
 
 	@BeforeEach
 	public void setUp() throws IOException {
 
-		exceptedPublicHealthMessageDetails = (List<PublicHealthMessage>) TestUtils.readFileContents(
+		expectedPublicHealthMessageDetails = (List<PublicHealthMessage>) TestUtils.readFileContents(
 				"ecrTestData/PhMessageOutput/PhMessage.json", new TypeReference<List<PublicHealthMessage>>() {
 				});
 
@@ -49,11 +49,11 @@ public class PhMessageServiceTest {
 	public void testGetPhMessageData() throws IOException {
 
 		Mockito.lenient().when(phMessageDao.getPhMessageData(searchParam))
-				.thenReturn(exceptedPublicHealthMessageDetails);
+				.thenReturn(expectedPublicHealthMessageDetails);
 
 		List<PublicHealthMessage> result = phMessageServiceImpl.getPhMessageData(searchParam);
 
-		assertEquals(exceptedPublicHealthMessageDetails, result);
+		assertEquals(expectedPublicHealthMessageDetails, result);
 
 	}
 }

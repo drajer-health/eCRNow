@@ -38,12 +38,12 @@ public class PhMessageDaoTest {
 
 	private Map<String, String> searchParam;
 
-	private List<PublicHealthMessage> exceptedPublicHealthMessageDetails;
+	private List<PublicHealthMessage> expectedPublicHealthMessageDetails;
 
 	@BeforeEach
 	public void setUp() throws IOException {
 
-		exceptedPublicHealthMessageDetails = (List<PublicHealthMessage>) TestUtils.readFileContents(
+		expectedPublicHealthMessageDetails = (List<PublicHealthMessage>) TestUtils.readFileContents(
 				"ecrTestData/PhMessageOutput/PhMessage.json", new TypeReference<List<PublicHealthMessage>>() {
 				});
 
@@ -59,8 +59,8 @@ public class PhMessageDaoTest {
 
 		List<PublicHealthMessage> result = phMessageDaoImpl.getPhMessageData(searchParam);
 
-		assertThat(result.size()).isEqualTo(exceptedPublicHealthMessageDetails.size());
-		assertEquals(TestUtils.toJsonString(exceptedPublicHealthMessageDetails), TestUtils.toJsonString(result));
+		assertThat(result.size()).isEqualTo(expectedPublicHealthMessageDetails.size());
+		assertEquals(TestUtils.toJsonString(expectedPublicHealthMessageDetails), TestUtils.toJsonString(result));
 
 	}
 }

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @ExtendWith(MockitoExtension.class)
 public class PhMessageControllerTest {
 
-	private List<PublicHealthMessage> exceptedPublicHealthMessageDetails;
+	private List<PublicHealthMessage> expectedPublicHealthMessageDetails;
 
 	@InjectMocks
 	private PhMessageController phMessageController;
@@ -35,7 +35,7 @@ public class PhMessageControllerTest {
 	@BeforeEach
 	public void setUp() throws IOException {
 
-		exceptedPublicHealthMessageDetails = TestUtils.readFileContents("ecrTestData/PhMessageOutput/PhMessage.json",
+		expectedPublicHealthMessageDetails = TestUtils.readFileContents("ecrTestData/PhMessageOutput/PhMessage.json",
 				new TypeReference<List<PublicHealthMessage>>() {
 				});
 
@@ -44,19 +44,19 @@ public class PhMessageControllerTest {
 	@ParameterizedTest
 	@CsvSource({ "fhirServerBaseUrl1, 13, 3, 32, 25, null, 15, 19, 11, '', 12, 8",
 			"null, '', 3, 32, 25, '', 15, 19, 11, null, 12, 8" })
-	public void testGetPhMessageDeatils(String fhirServerBaseUrl, String patientId, String encounterId,
+	public void testGetPhMessageDetails(String fhirServerBaseUrl, String patientId, String encounterId,
 			String xRequestId, String submittedDataId, String version, String responseDataId,
 			String responseProcessingInstruction, String notifiedResourceId, String notificationId,
 			String notifiedResourceType, String karUniqueId) {
 
-		Mockito.when(phMessageService.getPhMessageData(any())).thenReturn(exceptedPublicHealthMessageDetails);
+		Mockito.when(phMessageService.getPhMessageData(any())).thenReturn(expectedPublicHealthMessageDetails);
 
-		ResponseEntity<Object> actualResponse = phMessageController.getPhMessageDeatils(fhirServerBaseUrl, patientId,
+		ResponseEntity<Object> actualResponse = phMessageController.getPhMessageDetails(fhirServerBaseUrl, patientId,
 				encounterId, xRequestId, submittedDataId, version, responseDataId, responseProcessingInstruction,
 				notifiedResourceId, notificationId, notifiedResourceType, karUniqueId);
 
 		// Assert
-		assertEquals(TestUtils.toJsonString(exceptedPublicHealthMessageDetails),
+		assertEquals(TestUtils.toJsonString(expectedPublicHealthMessageDetails),
 				TestUtils.toJsonString(actualResponse.getBody()));
 	}
 
