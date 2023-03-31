@@ -5,7 +5,7 @@
   "link": [
     {
       "relation": "self",
-      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742540&code=http%3A%2F%2Fsnomed.info%2Fsct%7C224362002"
+      "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Observation?patient=12742540&code=http%3A%2F%2Fsnomed.info%2Fsct%7C224362002%2Chttp%3A%2F%2Fsnomed.info%2Fsct%7C364703007%2Chttp%3A%2F%2Floinc.org%7C11295-3"
     }
   ],
   "entry": [

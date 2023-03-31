@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
+import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 
 public class ITRRReceiverServiceController extends BaseIntegrationTest {
@@ -37,6 +39,8 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
 
   private LaunchDetails launchDetails;
   private LaunchDetails launchDetailsWithRRProcessingType;
+
+  @Autowired private EicrServiceImpl eicrService;
 
   @Before
   public void setUp() throws Throwable {
@@ -226,6 +230,32 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
   }
 
   @Test
+  public void testReSubmitRR_OrphanRR() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    eicrService.setProcessOrphanRr(true);
+    // Setting different DocID then in DB
+    if (rr != null) {
+      String rrXml =
+          rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
+      rr.setRrXml(rrXml);
+      String fhirUrl = "http://localhost:" + wireMockHttpPort + "/FHIR";
+      rr.setFhirUrl(fhirUrl);
+      ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+      wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+
+      Eicr eicr = new Eicr();
+      eicr.setEicrDocId("WrongXCorrelationID");
+
+      response = reSubmitRR(eicr);
+      // Mock FHIR called.
+      wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+  }
+
+  @Test
   public void testRRReceiver_WithRR_WrongDocID() {
     ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
     // Setting different DocID then in DB
@@ -282,6 +312,40 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
       ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
 
       assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+  }
+
+  @Test
+  public void testRRReceiver_OrphanRR_WithSetId() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest.json");
+    eicrService.setProcessOrphanRr(true);
+    // Setting different DocID then in DB
+    if (rr != null) {
+      String rrXml =
+          rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
+      rr.setRrXml(rrXml);
+      String fhirUrl = "http://localhost:" + wireMockHttpPort + "/FHIR";
+      rr.setFhirUrl(fhirUrl);
+      ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+      wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+  }
+
+  @Test
+  public void testRRReceiver_OrphanRR_WithoutSetId() {
+    ReportabilityResponse rr = getReportabilityResponse("R4/Misc/rrTest_RRVS2.json");
+    eicrService.setProcessOrphanRr(true);
+    // Setting different DocID then in DB
+    if (rr != null) {
+      String rrXml =
+          rr.getRrXml().replace("69550923-8b72-475c-b64b-5f7c44a78e4f", "WrongXCorrelationID");
+      rr.setRrXml(rrXml);
+      String fhirUrl = "http://localhost:" + wireMockHttpPort + "/FHIR";
+      rr.setFhirUrl(fhirUrl);
+      ResponseEntity<String> response = postReportabilityResponse(rr, eicr);
+      wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
+      assertEquals(HttpStatus.OK, response.getStatusCode());
     }
   }
 
@@ -443,7 +507,9 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     URIBuilder ub;
     try {
       ub = new URIBuilder(createURLWithPort("/api/reSubmitRR"));
-      ub.addParameter("eicrId", String.valueOf(eicr.getId()));
+      if (eicr.getId() != null) {
+        ub.addParameter("eicrId", String.valueOf(eicr.getId()));
+      }
       ub.addParameter("eicrDocId", eicr.getEicrDocId());
       logger.info("Constructed URL:::::" + ub.toString());
       return restTemplate.postForEntity(ub.toString(), null, String.class);

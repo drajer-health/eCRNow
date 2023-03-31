@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.gclient.IGetPage;
 import ca.uhn.fhir.rest.gclient.IRead;
 import ca.uhn.fhir.rest.gclient.IUntypedQuery;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.sof.utils.FhirClient;
@@ -15,8 +16,11 @@ public class EcrFhirRetryClient extends FhirClient {
   private FHIRRetryTemplate fhirRetryTemplate;
 
   public EcrFhirRetryClient(
-      IGenericClient parent, FHIRRetryTemplate fhirRetryTemplate, String requestId) {
-    super(parent, requestId);
+      IGenericClient parent,
+      FHIRRetryTemplate fhirRetryTemplate,
+      String requestId,
+      EventTypes.QueryType type) {
+    super(parent, requestId, type);
     this.fhirRetryTemplate = fhirRetryTemplate;
   }
 

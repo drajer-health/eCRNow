@@ -6,7 +6,7 @@ For more information on electronic case reporting please refer to the following 
 
 * [More background information on ecrNow FHIR App](https://ecr.aimsplatform.org/ecr-now-fhir-app)
 
-# 2. App Architecture # 
+# 2. App Architecture #
 The app is architected as a Java Spring Boot app using Java Spring framework for the application layer, Hibernate and PostgreSQL for the backend technologies and ReactJS for the front end. The app can be instantiated as a micro service and containerized using Docker or other technologies for deployments.
 
 The app components are as described below:
@@ -19,18 +19,41 @@ This module has the ability to collect patient and encounter context for the eCR
 This module ingests the trigger code definitions and timing parameter definitions for eCR reporting. These definitions are published using the Electronic Reporting and Surveillance Distribution (eRSD) transactions and profiles which are outlined and described in the [eCR FHIR IG version 1.0.0](https://hl7.org/fhir/us/ecr/). The ERSD module uses FHIR Release 4.
 
 ## 2.3 ECA Module: ##
-The ECA module implements a very primitive light weight Event, Condition, Action model to handle the different events in the eCR reporting workflows. The current workflows handle the following events and actions. 
+The ECA module implements a very primitive light weight Event, Condition, Action model to handle the different events in the eCR reporting workflows. The current workflows handle the following events and actions.
 * Matching Trigger Codes
 * Create eICR
-* Close Out eICR 
+* Close Out eICR
 * Validate eICR
 * Submit eICR
 
 ## 2.4 HL7 CDA Generator Module: ##
-The HL7 CDA Generator module is a very simple set of transforms to create a eICR report following the [HL7 CDA® R2 Implementation Guide: Public Health Case Report, Release 2: the Electronic Initial Case Report (eICR), Release 1, STU Release 1.1 - US Realm](https://www.hl7.org/implement/standards/product_brief.cfm?product_id=436). The reason for using the above version is to leverage the existing infrastructure that is being used by the AIMS APHL shared services platform, the CSTE / CDC RCKMS decision support engine and the infrastructure at, and connecting, the public health agencies. In the future as we migrate to newer versions of the implementation guides including FHIR output as well. 
+The HL7 CDA Generator module is a very simple set of transforms to create a eICR report following the [HL7 CDA® R2 Implementation Guide: Public Health Case Report, Release 2: the Electronic Initial Case Report (eICR), Release 1, STU Release 1.1 - US Realm](https://www.hl7.org/implement/standards/product_brief.cfm?product_id=436). The reason for using the above version is to leverage the existing infrastructure that is being used by the AIMS APHL shared services platform, the CSTE / CDC RCKMS decision support engine and the infrastructure at, and connecting, the public health agencies. In the future as we migrate to newer versions of the implementation guides including FHIR output as well.
 
 ## 2.5 Routing Module: ##
-The routing module is used to submit/transmit the eICR created to the public health agencies. Currently the Direct Transport is integrated into the app. Future versions will add other modes of submission which may include IHE XDR, HL7 FHIR among others. 
+The routing module is used to submit/transmit the eICR created to the public health agencies. Currently the Direct Transport is integrated into the app. Future versions will add other modes of submission which may include IHE XDR, HL7 FHIR among others.
+
+## 2.6 Properties
+| Properties                                   | Description                                                                                                                                                                                                                                                                                    |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ecr.fhir.pagecount.enabled                   | Setting this property to `true` will add `_count` parameter to supported FHIR resource calls. Default value is `true`.                                                                                                                                                                         
+| ecr.fhir.pagecount.value                     | This property is used only if `ecr.fhir.pagecount.enabled` is set to `true`. This property defines the number of items retreived per paging call. Default value is `500`.                                                                                                                      
+| ecr.fhir.pagecount.resources                 | This property is used only if `ecr.fhir.pagecount.enabled` is set to `true`. List of resources for which `_count` parameter should be added. Resources should be sepearted by pipe character.
+| ecr.fhir.query-by-period.enabled             | Setting this property to `true` will add either `date` or `_lastUpdated` parameter to supported FHIR resource calls. Encounter start date will be used for the query. Default value is `true`. `Example: date=ge2014-09-24, _lastUpdated=ge2014-09-24T00:00:00.000Z`                           
+| ecr.fhir.query-by-period.uselastquerytime    | This property is used only if `ecr.fhir.query-by-period.enabled` is `true`.  This will use the last match trigger query date time instead of encounter start date durig the TrigggerQuery.                                                                                                       
+| ecr.fhir.query-by-period.date.resources      | This property is used only if `ecr.fhir.query-by-period.enabled` is `true`. List of resources for which `date` parameter should be added. Resources should be sepearted by pipe character.
+| ecr.fhir.query-by-period.lastupdated.resources| This property is used only if `ecr.fhir.query-by-period.enabled` is `true`. List of resources for which `_lastUpdated` parameter should be added. Resources should be sepearted by pipe character.
+| ecr.fhir.query-by-encounter.enabled          | Setting this property to `true` will add `encounter` parameter to supported FHIR resources. Default value is `true`.                                                                                                                                                                           
+| ecr.fhir.query-by-encounter.resources        | This property is used only if `ecr.fhir.query-by-encounter.enabled` is `true`. List of resources for which `encounter` parameter should be added. Resources should be sepearted by pipe character.
+| ecr.fhir.skip.resources                      | Skips the FHIR calls for resources mentioned. Resources should be seperated by pipe character.                                                                                                                                                                                                     
+| ecr.fhir.skip.triggerquery.resources         | Skips the FHIR calls for resources during Trigger query. Resources should be seperated by pipe character                                                                                                                                                                                           
+| ecr.rr.processorphanrr                       | Setting this property to `true`, will enable processing of RRs to EHR which doesn't find match row in eicr table for eicr_doc_id. Default value is `false`.                                                                                                                                    
+| ecr.fhir.retry.enabled                       | Setting this property to `true` will allow FHIR calls to retry on failures. Default value is `true`.                                                                                                                                                                                           
+| ecrfhirretrytemplate.maxRetries              | Used when `ecr.fhir.retry.enabled` is `true`. Number of times to retry. Default value is `3`.                                                                                                                                                                                                  
+| ecrfhirretrytemplate.retryWaitTimeInMillis   | Used when `ecr.fhir.retry.enabled` is `true`. Time interval between retries in millseconds. Default value is `1000` millsec.                                                                                                                                                                   
+| ecrfhirretrytemplate.retryStatusCodes        | Used when `ecr.fhir.retry.enabled` is `true`. Httpstatus codes for which to retry, onlyfailure with these codes will be retried.Default values is `408, 429, 502, 503, 504, 500`.                                                                                                              
+| ecrfhirretrytemplate.httpMethodTypeMap.      | Above retry properties can be set at different Httpmethod level. `Example: ecrfhirretrytemplate.httpMethodTypeMap.GET.maxRetries=3 ecrfhirretrytemplate.httpMethodTypeMap.GET.retryWaitTimeInMillis=1000 ecrfhirretrytemplate.httpMethodTypeMap.GET.retryStatusCodes=408, 429, 502, 503, 504, 500`
+| longencounter.enableSuspend                  | Setting this property to `true` will suspend the long running encounter. Default value is false
+| longencounter.suspendThreshold               | Used when `longencounter.enableSuspend` is `true`. Threshold day to suspend long running encounter. Default value is `45` days
 
 # 3. eCRNow-UI Project and its relationship to eCRNow:
 The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.
@@ -57,19 +80,19 @@ The following technologies should have been installed on your machine where you 
 
 ```$ createdb -h <host> -p <port> -U <user> <database_name>```
   You can also use a tool like pgAdmin that gives a nice user interface to create the database.
-  
-3. Configuration Changes: 
 
-**Backend:** 
+3. Configuration Changes:
+
+**Backend:**
 
 File: src/main/resources/application.properties
 
-Change the database user name, password to reflect the database that was created in step 2 above. 
+Change the database user name, password to reflect the database that was created in step 2 above.
 
 *ERSD FILE LOCATION*
 
 Change the ERSD File location to reflect where to find the eRSD file that contains the trigger code definitions.
-The ERSD file can be downloaded by registering for an account at : https://ersd.aimsplatform.org 
+The ERSD file can be downloaded by registering for an account at : https://ersd.aimsplatform.org
 Currently this link only works state-side and if you are out of country, please contact us to figure out how we can get you a copy of it through the right means.
 
 
@@ -80,12 +103,12 @@ Currently this link only works state-side and if you are out of country, please 
 *SCHEMATRON FILE LOCATION*
 
 Change the Schematron File location to reflect where to find the actual eICR Schematron.
-The schematron file can be downloaded from https://gforge.hl7.org/gf/project/pher/scmsvn/?action=browse&path=%2Ftrunk%2FPHCASERPT_eICR%2Fschematron%2F with the appropriate HL7 authorization. 
+The schematron file can be downloaded from https://gforge.hl7.org/gf/project/pher/scmsvn/?action=browse&path=%2Ftrunk%2FPHCASERPT_eICR%2Fschematron%2F with the appropriate HL7 authorization.
 
 *SCHEMA FILE LOCATION*
 
 Change the Schematron File location to reflect where to find the actual CDA Schema which has SDTC extensions. The schema has to be downloaded from HL7 as part of the CDA.
-The attribute ```xsd.schemas.location``` has to be set to the CDA XSD with SDTC extensions. 
+The attribute ```xsd.schemas.location``` has to be set to the CDA XSD with SDTC extensions.
 
 Change the logfile location to reflect where you want to log the data.
 
@@ -114,7 +137,7 @@ Only after the app is configured, you will be able to use it for reporting.
 The app supports three different launch mechanisms.
 1. Regular SMART on FHIR ehr launch with a UI splash page that can be customized.
 2. Regular SMART on FHIR ehr launch with no UI (Headless launch) that can be configured with the backend launch and redirect URIs in the controllers.
-3. API based launch along with System Account access which can be used to integrate with systems which generate patient/encounter lists throughout the day and can report on these patients/encounters at the end of the day. Once such integration uses the ADT feeds. 
+3. API based launch along with System Account access which can be used to integrate with systems which generate patient/encounter lists throughout the day and can report on these patients/encounters at the end of the day. Once such integration uses the ADT feeds.
 
 ## 4.3 Verification Steps: ##
 To check if you have downloaded the app properly and are being able to run it, follow the steps below.
@@ -130,9 +153,9 @@ This normally finishes in less than 10 seconds.
 2. Verification of a SMART App Launch
 
 Register for a client id in an EHR development sandbox and follow the eCR App Configuation step to reflect the client ids, the scopes and the app urls as described previously.
-Once you launch the app with a Patient and Encounter context, the app will kick off its proessing and go through various steps and produce an eICR. 
+Once you launch the app with a Patient and Encounter context, the app will kick off its proessing and go through various steps and produce an eICR.
 
-You can verify that the eICR is produced by checking the eICR table in the database. 
+You can verify that the eICR is produced by checking the eICR table in the database.
 
 **Note:** For testing purposes, we are allowing the same patient and encounter to be used multiple times to help debug, similarly the timing schedules are shortened to about 10 seconds, and the trigger code matching logic will allow the next step (Creating an eICR for testing purposes) to execute even if the test data does not match the value sets.
 
@@ -141,4 +164,3 @@ Organizations implementing in production settings should consider the following:
 1. Properly securing the app user interface if it is used within the enterprise and protecting access.
 2. Implement organization policies around database settings (ports), schemas, encryption.
 3. Implement other security best practices.
-

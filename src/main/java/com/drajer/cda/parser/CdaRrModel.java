@@ -3,6 +3,7 @@ package com.drajer.cda.parser;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 public class CdaRrModel {
   private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
@@ -18,6 +19,9 @@ public class CdaRrModel {
   private String reportableType;
 
   private String errors;
+  private CdaIi setId;
+  private CdaIi patientId;
+  private CdaIi encounterId;
 
   public CdaRrModel() {
     logger.info("CdaRrModel initiated");
@@ -56,13 +60,13 @@ public class CdaRrModel {
   }
 
   public void setRrDocId(List<CdaIi> rrdocids) {
-    if (rrdocids != null && !rrdocids.isEmpty()) {
+    if (!CollectionUtils.isEmpty(rrdocids)) {
       this.rrDocId = rrdocids.get(0);
     }
   }
 
   public void setEicrDocId(List<CdaIi> eicrdocids) {
-    if (eicrdocids != null && !eicrdocids.isEmpty()) {
+    if (!CollectionUtils.isEmpty(eicrdocids)) {
       this.eicrDocId = eicrdocids.get(0);
     }
   }
@@ -73,5 +77,69 @@ public class CdaRrModel {
 
   public void setReportableStatus(CdaCode reportableStatus) {
     this.reportableStatus = reportableStatus;
+  }
+
+  public CdaIi getSetId() {
+    return setId;
+  }
+
+  public void setSetId(List<CdaIi> setIds) {
+    if (!CollectionUtils.isEmpty(setIds)) {
+      this.setId = setIds.get(0);
+    }
+  }
+
+  public CdaIi getPatientId() {
+    return patientId;
+  }
+
+  public void setPatientId(List<CdaIi> patientIds) {
+    if (!CollectionUtils.isEmpty(patientIds)) {
+      this.patientId = patientIds.get(0);
+    }
+  }
+
+  public CdaIi getEncounterId() {
+    return encounterId;
+  }
+
+  public void setEncounterId(List<CdaIi> encounterIds) {
+    if (!CollectionUtils.isEmpty(encounterIds)) {
+      this.encounterId = encounterIds.get(0);
+    }
+  }
+
+  public String getPatId() {
+
+    String patId = null;
+    if (setId != null) {
+      String[] ids = setId.getExtValue().split("\\|");
+      patId = ids[0];
+    } else if (patientId != null) {
+      if (patientId.getExtValue().contains("Patient/")) {
+        String[] ids = patientId.getExtValue().split("/");
+        patId = ids[1];
+      } else {
+        patId = patientId.getExtValue();
+      }
+    }
+    return patId;
+  }
+
+  public String getEnctId() {
+
+    String enctId = null;
+    if (setId != null) {
+      String[] ids = setId.getExtValue().split("\\|");
+      enctId = ids[1];
+    } else if (encounterId != null) {
+      if (encounterId.getExtValue().contains("Encounter/")) {
+        String[] ids = encounterId.getExtValue().split("/");
+        enctId = ids[1];
+      } else {
+        enctId = encounterId.getExtValue();
+      }
+    }
+    return enctId;
   }
 }

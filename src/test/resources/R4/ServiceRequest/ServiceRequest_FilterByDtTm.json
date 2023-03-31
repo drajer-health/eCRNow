@@ -123,7 +123,7 @@
           "display": "FHIRTest, COVIDONE"
         },
         "encounter": {
-          "reference": "Encounter/97953900"
+          "reference": "Encounter/979539000"
         },
         "authoredOn": "2020-04-28T14:33:32.000-05:00",
         "requester": {

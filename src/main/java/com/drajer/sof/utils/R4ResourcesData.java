@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -39,7 +40,7 @@ public class R4ResourcesData {
 
   private static final String OBSERVATION = "Observation";
   private static final String CONDITION = "Condition";
-
+  private static final String ENCOUNTER = "Encounter";
   private static final String OBSERVATION_SOCIAL_HISTORY = "social-history";
   private static final String ENTERED_IN_ERROR = "entered-in-error";
 
@@ -65,11 +66,15 @@ public class R4ResourcesData {
       Date end) {
     Encounter encounter = null;
     String encounterID = launchDetails.getEncounterId();
+
+    if (resourceData.checkSkipResource(ENCOUNTER, (FhirClient) client)) {
+      return encounter;
+    }
     // If Encounter Id is present in Launch Details
     if (encounterID != null) {
       try {
         logger.info("Getting Encounter data by ID {}", encounterID);
-        encounter = (Encounter) client.read().resource("Encounter").withId(encounterID).execute();
+        encounter = (Encounter) client.read().resource(ENCOUNTER).withId(encounterID).execute();
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
@@ -87,7 +92,7 @@ public class R4ResourcesData {
       // If Encounter Id is not Present in Launch Details Get Encounters by Patient Id
       // and Find the latest Encounter
       Bundle bundle =
-          (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, "Encounter");
+          (Bundle) resourceData.getResourceByPatientId(launchDetails, client, context, ENCOUNTER);
       Map<Encounter, Date> encounterMap = new HashMap<>();
       if (bundle != null && bundle.getEntry() != null) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
@@ -167,15 +172,12 @@ public class R4ResourcesData {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         Condition condition = (Condition) entry.getResource();
 
-        if ((condition.getVerificationStatus() == null)
-            || (condition.getVerificationStatus() != null
-                && condition.getVerificationStatus().getCodingFirstRep() != null
-                && condition.getVerificationStatus().getCodingFirstRep().getCode() != null
-                && !condition
-                    .getVerificationStatus()
-                    .getCodingFirstRep()
-                    .getCode()
-                    .equals(ENTERED_IN_ERROR))) {
+        if ((!isVerificationStatusPresent(condition))
+            || (!condition
+                .getVerificationStatus()
+                .getCodingFirstRep()
+                .getCode()
+                .equals(ENTERED_IN_ERROR))) {
 
           if (isConditionActive(condition) && condition.hasCategory()) {
             List<CodeableConcept> conditionCategory = condition.getCategory();
@@ -250,7 +252,6 @@ public class R4ResourcesData {
       IGenericClient client,
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
-      Encounter encounter,
       Date start,
       Date end) {
     logger.trace("Get Observation Data");
@@ -263,18 +264,50 @@ public class R4ResourcesData {
     List<CodeableConcept> observationCodes = new ArrayList<>();
     List<CodeableConcept> valueObservationCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
-
-      // Eliminate the resources which are not applicable in general for ECR Reporting.
-      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-      for (BundleEntryComponent entry : bundle.getEntry()) {
-        Observation observation = (Observation) entry.getResource();
-
-        if (observationHasSameEncounter(encounter, observation)
-            || (isObservationWithinTimeRange(start, end, observation))) {
-
-          observations.add(observation);
-          observationCodes.addAll(findLaboratoryCodes(observation));
-          findAllValueCodes(observation, valueObservations, valueObservationCodes);
+      // Filter Observations based on Encounter Reference
+      String encounterId = launchDetails.getEncounterId();
+      if (StringUtils.isNotEmpty(encounterId)) {
+        bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Observation observation = (Observation) entry.getResource();
+          if (!observation.getEncounter().isEmpty()
+              && observation.getEncounter().getReferenceElement().getIdPart().equals(encounterId)) {
+            observations.add(observation);
+            observationCodes.addAll(findLaboratoryCodes(observation));
+            findAllValueCodes(observation, valueObservations, valueObservationCodes);
+          }
+        }
+        // If Encounter Id is not present using start and end dates to filter
+        // Observations
+      } else {
+        bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
+        for (BundleEntryComponent entry : bundle.getEntry()) {
+          Observation observation = (Observation) entry.getResource();
+          // Checking If Issued Date is present in Observation resource
+          if (observation.getIssued() != null) {
+            if (isResourceWithinDateTime(start, end, observation.getIssued())) {
+              observations.add(observation);
+              observationCodes.addAll(findLaboratoryCodes(observation));
+              findAllValueCodes(observation, valueObservations, valueObservationCodes);
+            }
+            // If Issued date is not present, Checking for Effective Date
+          } else if (observation.getEffective() != null && !observation.getEffective().isEmpty()) {
+            Type effectiveDate = observation.getEffectiveDateTimeType();
+            Date effDate = effectiveDate.dateTimeValue().getValue();
+            if (isResourceWithinDateTime(start, end, effDate)) {
+              observations.add(observation);
+              observationCodes.addAll(findLaboratoryCodes(observation));
+              findAllValueCodes(observation, valueObservations, valueObservationCodes);
+            }
+            // If Issued and Effective Date are not present looking for LastUpdatedDate
+          } else {
+            Date lastUpdatedDateTime = observation.getMeta().getLastUpdated();
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+              observations.add(observation);
+              observationCodes.addAll(findLaboratoryCodes(observation));
+              findAllValueCodes(observation, valueObservations, valueObservationCodes);
+            }
+          }
         }
       }
     }
@@ -393,45 +426,37 @@ public class R4ResourcesData {
         start,
         end);
     logger.trace("Get Travel Observation Data");
-    Bundle bundle =
+
+    StringBuilder codeBuilder = new StringBuilder(2000);
+    for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
+      codeBuilder.append(QueryConstants.SNOMED_CODE_SYSTEM + "|" + travelSnomedCode + ",");
+    }
+    codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + QueryConstants.TRAVEL_CODE);
+    codeBuilder.trimToSize();
+    String codes = codeBuilder.toString();
+
+    String url =
+        launchDetails.getEhrServerURL()
+            + "/"
+            + OBSERVATION
+            + "?patient="
+            + launchDetails.getLaunchPatientId()
+            + "&code="
+            + codes;
+
+    Bundle travelCodeBundle =
         (Bundle)
-            resourceData.getResourceByPatientIdAndCode(
-                launchDetails,
-                client,
-                context,
-                OBSERVATION,
-                QueryConstants.TRAVEL_CODE,
-                QueryConstants.LOINC_CODE_SYSTEM);
+            FhirContextInitializer.getResourceBundleByUrl(
+                launchDetails, client, context, OBSERVATION, url);
+
     List<Observation> observations = new ArrayList<>();
-    if (bundle != null) {
-      bundle = filterObservationByStatus(bundle, ENTERED_IN_ERROR);
-      bundle = filterObservationsBundleByCategory(bundle, OBSERVATION_SOCIAL_HISTORY);
-      observations = filterObservation(bundle, encounter, start, end);
+    if (travelCodeBundle != null) {
+      travelCodeBundle = filterObservationByStatus(travelCodeBundle, ENTERED_IN_ERROR);
+      travelCodeBundle =
+          filterObservationsBundleByCategory(travelCodeBundle, OBSERVATION_SOCIAL_HISTORY);
+      observations = filterObservation(travelCodeBundle, encounter, start, end);
     }
 
-    for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
-      Bundle travelHisWithSNOMEDCodesbundle =
-          (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
-                  launchDetails,
-                  client,
-                  context,
-                  OBSERVATION,
-                  travelSnomedCode,
-                  QueryConstants.SNOMED_CODE_SYSTEM);
-      List<Observation> travelobs = new ArrayList<>();
-      if (travelHisWithSNOMEDCodesbundle != null) {
-        travelHisWithSNOMEDCodesbundle =
-            filterObservationByStatus(travelHisWithSNOMEDCodesbundle, ENTERED_IN_ERROR);
-        travelHisWithSNOMEDCodesbundle =
-            filterObservationsBundleByCategory(
-                travelHisWithSNOMEDCodesbundle, OBSERVATION_SOCIAL_HISTORY);
-        travelobs = filterObservation(travelHisWithSNOMEDCodesbundle, encounter, start, end);
-      }
-      if (!travelobs.isEmpty()) {
-        observations.addAll(travelobs);
-      }
-    }
     logger.info("Filtered Travel Observations ----> {}", observations.size());
     return observations;
   }
@@ -495,42 +520,40 @@ public class R4ResourcesData {
         end);
     logger.trace("Get Social History Observation Data (Occupation)");
     List<Observation> observations = new ArrayList<>();
+
+    StringBuilder codeBuilder = new StringBuilder(2000);
     for (String occupationCode : QueryConstants.getOccupationSmtCodes()) {
-      Bundle occupationCodesbundle =
-          (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
-                  launchDetails,
-                  client,
-                  context,
-                  OBSERVATION,
-                  occupationCode,
-                  QueryConstants.SNOMED_CODE_SYSTEM);
-      if (occupationCodesbundle != null) {
-        occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
-        for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-          observations.add((Observation) entryComp.getResource());
-        }
-      }
+      codeBuilder.append(QueryConstants.SNOMED_CODE_SYSTEM + "|" + occupationCode + ",");
     }
 
     for (String occupationCode : QueryConstants.getOccupationLoincCodes()) {
-      Bundle occupationCodesbundle =
-          (Bundle)
-              resourceData.getResourceByPatientIdAndCode(
-                  launchDetails,
-                  client,
-                  context,
-                  OBSERVATION,
-                  occupationCode,
-                  QueryConstants.LOINC_CODE_SYSTEM);
+      codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + occupationCode + ",");
+    }
+    codeBuilder.trimToSize();
+    String codes =
+        codeBuilder.substring(0, codeBuilder.length() - 1); // Remove extra "," at the end.
 
-      if (occupationCodesbundle != null) {
-        occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
-        for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
-          observations.add((Observation) entryComp.getResource());
-        }
+    String url =
+        launchDetails.getEhrServerURL()
+            + "/"
+            + OBSERVATION
+            + "?patient="
+            + launchDetails.getLaunchPatientId()
+            + "&code="
+            + codes;
+
+    Bundle occupationCodesbundle =
+        (Bundle)
+            FhirContextInitializer.getResourceBundleByUrl(
+                launchDetails, client, context, OBSERVATION, url);
+
+    if (occupationCodesbundle != null) {
+      occupationCodesbundle = filterObservationByStatus(occupationCodesbundle, ENTERED_IN_ERROR);
+      for (BundleEntryComponent entryComp : occupationCodesbundle.getEntry()) {
+        observations.add((Observation) entryComp.getResource());
       }
     }
+
     logger.info("Filtered Social History Occupation Observations ----> {}", observations.size());
     return observations;
   }
@@ -986,7 +1009,6 @@ public class R4ResourcesData {
       IGenericClient client,
       LaunchDetails launchDetails,
       R4FhirData r4FhirData,
-      Encounter encounter,
       Date start,
       Date end) {
     logger.trace("Get ServiceRequest Data");
@@ -997,7 +1019,8 @@ public class R4ResourcesData {
     List<CodeableConcept> serviceRequestCodes = new ArrayList<>();
     if (bundle != null && bundle.getEntry() != null) {
       // Filter ServiceRequests based on Encounter Reference
-      if (encounter != null && !encounter.getIdElement().getValue().isEmpty()) {
+      String encounterId = launchDetails.getEncounterId();
+      if (StringUtils.isNotEmpty(encounterId)) {
         for (BundleEntryComponent entry : bundle.getEntry()) {
           ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
@@ -1006,7 +1029,7 @@ public class R4ResourcesData {
                   .getEncounter()
                   .getReferenceElement()
                   .getIdPart()
-                  .equals(encounter.getIdElement().getIdPart())) {
+                  .equals(encounterId)) {
             serviceRequests.add(serviceRequest);
             serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
           }
@@ -1166,7 +1189,7 @@ public class R4ResourcesData {
     // also to the list of labResultCodes.
     try {
       List<Observation> observationList =
-          getObservationData(context, client, launchDetails, r4FhirData, encounter, start, end);
+          getObservationData(context, client, launchDetails, r4FhirData, start, end);
       if (observationList != null && !observationList.isEmpty()) {
         r4FhirData.setLabResults(observationList);
         for (Observation observation : observationList) {
@@ -1201,7 +1224,7 @@ public class R4ResourcesData {
 
     try {
       List<ServiceRequest> serviceRequestsList =
-          getServiceRequestData(context, client, launchDetails, r4FhirData, encounter, start, end);
+          getServiceRequestData(context, client, launchDetails, r4FhirData, start, end);
       if (serviceRequestsList != null && !serviceRequestsList.isEmpty()) {
         r4FhirData.setServiceRequests(serviceRequestsList);
         for (ServiceRequest serviceRequest : serviceRequestsList) {
@@ -1524,5 +1547,16 @@ public class R4ResourcesData {
       withinDateTime = true;
     }
     return withinDateTime;
+  }
+
+  private boolean isVerificationStatusPresent(Condition condition) {
+    boolean present = false;
+
+    if (condition.getVerificationStatus() != null
+        && condition.getVerificationStatus().getCodingFirstRep() != null
+        && condition.getVerificationStatus().getCodingFirstRep().getCode() != null) {
+      present = true;
+    }
+    return present;
   }
 }

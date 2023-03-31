@@ -3,6 +3,7 @@ package com.drajer.sof.service;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
@@ -29,7 +30,9 @@ public class TriggerQueryR4Bundle {
 
     logger.trace("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
-    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context, launchDetails, EventTypes.QueryType.TRIGGER_QUERY);
 
     Bundle bundle =
         r4ResourcesData.getCommonResources(r4FhirData, start, end, launchDetails, client, context);

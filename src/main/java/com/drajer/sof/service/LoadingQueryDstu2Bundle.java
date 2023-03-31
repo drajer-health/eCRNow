@@ -22,6 +22,7 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.eca.model.ActionRepo;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -51,7 +52,9 @@ public class LoadingQueryDstu2Bundle {
     logger.info("Initializing FHIR Context for Version:::: {}", launchDetails.getFhirVersion());
     FhirContext context = fhirContextInitializer.getFhirContext(launchDetails.getFhirVersion());
     logger.info("Initializing Client");
-    IGenericClient client = fhirContextInitializer.createClient(context, launchDetails);
+    IGenericClient client =
+        fhirContextInitializer.createClient(
+            context, launchDetails, EventTypes.QueryType.LOADING_QUERY);
 
     // GET Patient Details and Add to Bundle
     try {

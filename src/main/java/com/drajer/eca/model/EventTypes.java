@@ -16,7 +16,9 @@ public final class EventTypes {
     SCHEDULED,
     IN_PROGRESS,
     COMPLETED,
-    ABORTED
+    ABORTED,
+    SKIPPED,
+    SUSPENDED
   }
 
   public enum EcrActionTypes {
@@ -56,6 +58,12 @@ public final class EventTypes {
     SUCCESSFULLY_PROCESSED,
     FAILED_CORRELATION,
     FAILED_EHR_SUBMISSION
+  }
+
+  public enum QueryType {
+    NONE,
+    TRIGGER_QUERY,
+    LOADING_QUERY
   }
 
   public EcrActionTypes getEcrActionTypes(String s) {

@@ -29,6 +29,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
       LaunchDetails details = (LaunchDetails) obj;
       PatientExecutionState state = null;
+      boolean longRunningEncounter = false;
       PeriodicUpdateEicrStatus status = new PeriodicUpdateEicrStatus();
 
       state = ApplicationUtils.getDetailStatus(details);
@@ -43,10 +44,13 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       conditionsMet = matchCondition(details);
       boolean encounterClosed = EcaUtils.checkEncounterClose(details);
       logger.info(" Encounter is closed = {}", encounterClosed);
-
+      if (!encounterClosed) {
+        longRunningEncounter = EcaUtils.checkLongRunningEncounters(details);
+      }
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (Boolean.TRUE.equals(conditionsMet) && !encounterClosed) {
+
+      if (Boolean.TRUE.equals(conditionsMet) && !encounterClosed && !longRunningEncounter) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -211,9 +215,21 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
         }
 
       } else if (encounterClosed) {
-
         logger.info(" Encounter is closed, hence EICR will not be created. ");
+        status.setEicrUpdated(false);
+        status.seteICRId("0");
+        status.setJobStatus(JobStatus.SKIPPED);
+        state.getPeriodicUpdateStatus().add(status);
         state.setPeriodicUpdateJobStatus(JobStatus.COMPLETED);
+        EcaUtils.updateDetailStatus(details, state);
+      } else if (longRunningEncounter) {
+        logger.info(" Encounter is Suspended, hence EICR will not be created. ");
+        status.setEicrUpdated(false);
+        status.seteICRId("0");
+        status.setJobStatus(JobStatus.SKIPPED);
+        state.getPeriodicUpdateStatus().add(status);
+        state.setPeriodicUpdateJobStatus(JobStatus.SUSPENDED);
+        details.setProcessingState(JobStatus.SUSPENDED.toString());
         EcaUtils.updateDetailStatus(details, state);
       } else {
 

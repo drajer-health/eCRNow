@@ -9,6 +9,7 @@ import com.drajer.cdafromdstu2.Dstu2CdaEicrGenerator;
 import com.drajer.cdafromr4.CdaEicrGeneratorFromR4;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
+import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
@@ -21,11 +22,13 @@ import com.drajer.sof.model.R4FhirData;
 import com.drajer.sof.utils.FhirContextInitializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterStatus;
@@ -211,9 +214,7 @@ public class EcaUtils {
 
   public static void updateDetailStatus(LaunchDetails details, PatientExecutionState state) {
     ObjectMapper mapper = new ObjectMapper();
-
     try {
-
       details.setStatus(mapper.writeValueAsString(state));
 
     } catch (JsonProcessingException e) {
@@ -351,11 +352,17 @@ public class EcaUtils {
       if (r4Encounter != null) {
         logger.info(" Found Encounter for checking encounter closure ");
 
-        if (r4Encounter.getPeriod() != null && r4Encounter.getPeriod().getEnd() != null) {
-          logger.info(
-              " Encounter has an end date so it is considered closed {}",
-              r4Encounter.getPeriod().getEnd());
-          retVal = true;
+        if (r4Encounter.getPeriod() != null) {
+          if (r4Encounter.getPeriod().getStart() != null) {
+            details.setStartDate(r4Encounter.getPeriod().getStart());
+          }
+          if (r4Encounter.getPeriod().getEnd() != null) {
+            details.setEndDate(r4Encounter.getPeriod().getEnd());
+            logger.info(
+                " Encounter has an end date so it is considered closed {}",
+                r4Encounter.getPeriod().getEnd());
+            retVal = true;
+          }
         }
         if (r4Encounter.getStatus() != null
             && (r4Encounter.getStatus() == EncounterStatus.CANCELLED
@@ -372,11 +379,18 @@ public class EcaUtils {
       if (dstu2Encounter != null) {
         logger.info(" Found Encounter for checking encounter closure ");
 
-        if (dstu2Encounter.getPeriod() != null && dstu2Encounter.getPeriod().getEnd() != null) {
-          logger.info(
-              " Encounter has an end date so it is considered closed {}",
-              dstu2Encounter.getPeriod().getEnd());
-          retVal = true;
+        if (dstu2Encounter.getPeriod() != null) {
+          if (dstu2Encounter.getPeriod().getStart() != null) {
+            details.setStartDate(dstu2Encounter.getPeriod().getStart());
+          }
+
+          if (dstu2Encounter.getPeriod().getEnd() != null) {
+            details.setEndDate(dstu2Encounter.getPeriod().getEnd());
+            logger.info(
+                " Encounter has an end date so it is considered closed {}",
+                dstu2Encounter.getPeriod().getEnd());
+            retVal = true;
+          }
         }
         if (dstu2Encounter.getStatus() != null
             && (dstu2Encounter.getStatus().equals(EncounterStatus.CANCELLED.toString())
@@ -391,5 +405,20 @@ public class EcaUtils {
     }
 
     return retVal;
+  }
+
+  public static boolean checkLongRunningEncounters(LaunchDetails details) {
+    AppConfig appConfig = ActionRepo.getInstance().getAppConfig();
+    if (appConfig.isEnableSuspend()) {
+      Date thresholdDate = DateUtils.addDays(new Date(), -appConfig.getSuspendThreshold());
+      if (details.getStartDate() != null && details.getStartDate().before(thresholdDate)) {
+        logger.info(
+            " Suspending encounter {} as it is running more than {} days",
+            details.getEncounterId(),
+            appConfig.getSuspendThreshold());
+        return true;
+      }
+    }
+    return false;
   }
 }

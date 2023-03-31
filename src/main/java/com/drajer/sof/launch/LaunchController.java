@@ -7,6 +7,7 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.model.dstu2.resource.Encounter;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.PatientExecutionState;
@@ -538,7 +539,9 @@ public class LaunchController {
     try {
       FhirContext fhirContext = fhirContextInitializer.getFhirContext(fhirVersion);
 
-      IGenericClient fhirClient = fhirContextInitializer.createClient(fhirContext, launchDetails);
+      IGenericClient fhirClient =
+          fhirContextInitializer.createClient(
+              fhirContext, launchDetails, EventTypes.QueryType.NONE);
 
       if (!StringUtils.isEmpty(encounterId)) {
         return fhirClient.read().resource("Encounter").withId(encounterId).execute();
