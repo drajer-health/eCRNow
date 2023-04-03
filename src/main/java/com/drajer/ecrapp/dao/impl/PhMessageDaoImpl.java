@@ -27,6 +27,12 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   public static final String KAR_UNIQUE_ID = "karUniqueId";
   public static final String NOTIFICATION_ID = "notificationId";
 
+  @Override
+  public PublicHealthMessage saveOrUpdate(PublicHealthMessage publicHealthMessage) {
+    getSession().saveOrUpdate(publicHealthMessage);
+    return publicHealthMessage;
+  }
+
   public List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
 

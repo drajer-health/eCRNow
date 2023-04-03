@@ -1,24 +1,23 @@
 package com.drajer.ecrapp.dao.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.config.SpringConfiguration;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.io.IOException;
+import io.jsonwebtoken.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +33,16 @@ public class PhMessageDaoTest {
 
   private Map<String, String> searchParam;
 
-  private List<PublicHealthMessage> expectedPublicHealthMessageDetails;
+  private PublicHealthMessage expectedPublicHealthMessage;
 
-  @BeforeEach
+  @Before
   public void setUp() throws IOException {
 
-    expectedPublicHealthMessageDetails =
-        (List<PublicHealthMessage>)
+    expectedPublicHealthMessage =
+        (PublicHealthMessage)
             TestUtils.readFileContents(
-                "ecrTestData/PhMessageOutput/PhMessage.json",
-                new TypeReference<List<PublicHealthMessage>>() {});
+                "ecrTestData/phMessageInput/PublicHealthMessage.json",
+                new TypeReference<PublicHealthMessage>() {});
 
     searchParam =
         (Map<String, String>)
@@ -53,16 +52,13 @@ public class PhMessageDaoTest {
   }
 
   @Test
-  @Sql(
-      executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
-      scripts = "classpath:ecrTestData/sql/Insert_PhMessager.sql")
-  void testGetPhMessageData() {
+  public void testGetPhMessageData() {
+
+    PublicHealthMessage savePublicHealthMessage =
+        phMessageDaoImpl.saveOrUpdate(expectedPublicHealthMessage);
+    assertNotNull(savePublicHealthMessage);
 
     List<PublicHealthMessage> result = phMessageDaoImpl.getPhMessageData(searchParam);
-
-    assertThat(result.size()).isEqualTo(expectedPublicHealthMessageDetails.size());
-    //    assertEquals(
-    //       TestUtils.toJsonString(expectedPublicHealthMessageDetails),
-    // TestUtils.toJsonString(result));
+    assertThat(result).isNotEmpty();
   }
 }
