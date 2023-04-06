@@ -54,9 +54,9 @@ public class PhMessageDaoTest {
   @Test
   public void testGetPhMessageData() {
 
-    PublicHealthMessage savePublicHealthMessage =
+    PublicHealthMessage savedPublicHealthMessage =
         phMessageDaoImpl.saveOrUpdate(expectedPublicHealthMessage);
-    assertNotNull(savePublicHealthMessage);
+    assertNotNull(savedPublicHealthMessage);
 
     List<PublicHealthMessage> result = phMessageDaoImpl.getPhMessageData(searchParam);
     assertThat(result).isNotEmpty();
