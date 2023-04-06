@@ -6,5 +6,7 @@ import java.util.Map;
 
 public interface PhMessageDao {
 
+  PublicHealthMessage saveOrUpdate(PublicHealthMessage publicHealthMessage);
+
   List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams);
 }
