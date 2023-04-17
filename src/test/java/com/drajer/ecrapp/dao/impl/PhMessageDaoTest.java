@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.config.SpringConfiguration;
+import com.drajer.ecrapp.dao.PhMessageDao;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
@@ -33,7 +34,7 @@ public class PhMessageDaoTest {
   private static final String PH_MESSAGE_FILE = "ecrTestData/PhMessageOutput/PhMessage.json";
   private static final String SEARCH_PARAM_FILE = "ecrTestData/phMessageInput/searchParam.json";
 
-  @Autowired private PhMessageDaoImpl phMessageDao;
+  @Autowired private PhMessageDao phMessageDao;
 
   private Map<String, String> searchParams;
 
