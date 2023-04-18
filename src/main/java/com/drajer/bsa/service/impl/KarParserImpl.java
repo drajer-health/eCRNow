@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
@@ -144,13 +143,13 @@ public class KarParserImpl implements KarParser {
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   // Autowired to pass to action processors.
-  @Autowired Supplier<R4MeasureProcessor> measureProcessor;
+  @Autowired R4MeasureProcessor measureProcessor;
 
   // Autowired to pass to CqlProcessors.
-  @Autowired Supplier<ExpressionEvaluator> expressionEvaluator;
+  @Autowired ExpressionEvaluator expressionEvaluator;
 
   // Autowired to pass to FhirPathProcessors.
-  @Autowired Supplier<LibraryProcessor> libraryProcessor;
+  @Autowired LibraryProcessor libraryProcessor;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
@@ -746,7 +745,7 @@ public class KarParserImpl implements KarParser {
           }
 
           // setup the Measure Processor
-          em.setMeasureProcessorSupplier(measureProcessor);
+          em.setMeasureProcessor(measureProcessor);
         }
       }
     }
@@ -871,7 +870,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(exp);
-          bc.setExpressionEvaluatorSupplier(expressionEvaluator);
+          bc.setExpressionEvaluator(expressionEvaluator);
           action.addCondition(bc);
         } else if (con.getExpression() != null
             && (fromCode(con.getExpression().getLanguage())
@@ -884,7 +883,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(con.getExpression());
-          bc.setExpressionEvaluatorSupplier(expressionEvaluator);
+          bc.setExpressionEvaluator(expressionEvaluator);
           action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
@@ -900,7 +899,7 @@ public class KarParserImpl implements KarParser {
           bc.setVariables(planVariableExpressions);
         }
         bc.setLogicExpression(con.getExpression());
-        bc.setExpressionEvaluatorSupplier(expressionEvaluator);
+        bc.setExpressionEvaluator(expressionEvaluator);
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");

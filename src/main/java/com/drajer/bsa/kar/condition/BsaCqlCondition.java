@@ -2,8 +2,6 @@ package com.drajer.bsa.kar.condition;
 
 import com.drajer.bsa.kar.model.BsaCondition;
 
-import java.util.function.Supplier;
-
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
@@ -75,11 +73,11 @@ public class BsaCqlCondition extends BsaCondition {
     setConditionProcessor(new CqlProcessor());
   }
 
-  public Supplier<LibraryProcessor> getLibraryProcessor() {
-    return ((CqlProcessor) this.getConditionProcessor()).getLibraryProcessorSupplier();
+  public LibraryProcessor getLibraryProcessor() {
+    return ((CqlProcessor) this.getConditionProcessor()).getLibraryProcessor();
   }
 
-  public void setLibraryProcessor(Supplier<LibraryProcessor> libraryProcessor) {
-    ((CqlProcessor) this.getConditionProcessor()).setLibraryProcessorSupplier(libraryProcessor);
+  public void setLibraryProcessor(LibraryProcessor libraryProcessor) {
+    ((CqlProcessor) this.getConditionProcessor()).setLibraryProcessor(libraryProcessor);
   }
 }

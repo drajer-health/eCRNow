@@ -2,7 +2,6 @@ package com.drajer.bsa.kar.condition;
 
 import com.drajer.bsa.kar.model.BsaCondition;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.hl7.fhir.r4.model.Expression;
 import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
@@ -15,7 +14,6 @@ import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 public class BsaFhirPathCondition extends BsaCondition {
 
   public BsaFhirPathCondition() {
-
     setConditionProcessor(new FhirPathProcessor());
   }
 
@@ -39,11 +37,11 @@ public class BsaFhirPathCondition extends BsaCondition {
     this.variableExpression = variableExpression;
   }
 
-  public Supplier<ExpressionEvaluator> getExpressionEvaluatorSupplier() {
-    return ((FhirPathProcessor) this.getConditionProcessor()).getExpressionEvaluatorSupplier();
+  public ExpressionEvaluator getExpressionEvaluatorSupplier() {
+    return ((FhirPathProcessor) this.getConditionProcessor()).getExpressionEvaluator();
   }
 
-  public void setExpressionEvaluatorSupplier(Supplier<ExpressionEvaluator> expressionEvaluator) {
-    ((FhirPathProcessor) this.getConditionProcessor()).setExpressionEvaluatorSupplier(expressionEvaluator);
+  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
+    ((FhirPathProcessor) this.getConditionProcessor()).setExpressionEvaluator(expressionEvaluator);
   }
 }

@@ -6,7 +6,6 @@ import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class CqlProcessor implements BsaConditionProcessor {
   private static final Logger logger = LoggerFactory.getLogger(CqlProcessor.class);
 
-  private Supplier<LibraryProcessor> libraryProcessor;
+  private LibraryProcessor libraryProcessor;
 
   @Override
   public Boolean evaluateExpression(
@@ -44,7 +43,7 @@ public class CqlProcessor implements BsaConditionProcessor {
     }
     Parameters result =
         (Parameters)
-            this.libraryProcessor.get().evaluate(
+            this.libraryProcessor.evaluate(
                 cqlCondition.getUrl(),
                 cqlCondition.getPatientId(),
                 parameters,
@@ -60,11 +59,11 @@ public class CqlProcessor implements BsaConditionProcessor {
     return value.getValue();
   }
 
-  public Supplier<LibraryProcessor> getLibraryProcessorSupplier() {
+  public LibraryProcessor getLibraryProcessor() {
     return libraryProcessor;
   }
 
-  public void setLibraryProcessorSupplier(Supplier<LibraryProcessor> libraryProcessor) {
+  public void setLibraryProcessor(LibraryProcessor libraryProcessor) {
     this.libraryProcessor = libraryProcessor;
   }
 

@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -48,7 +47,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  Supplier<ExpressionEvaluator> expressionEvaluator;
+  ExpressionEvaluator expressionEvaluator;
 
   @Override
   public Boolean evaluateExpression(
@@ -68,7 +67,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            expressionEvaluator.get().evaluate(cond.getLogicExpression().getExpression(), params);
+            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter(PARAM);
 
     if (value != null) {
@@ -109,7 +108,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             logger.info(" Expression after resolution {}", expr);
 
-            Parameters variableResult = (Parameters) expressionEvaluator.get().evaluate(expr, null);
+            Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -453,11 +452,11 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     return params;
   }
 
-  public Supplier<ExpressionEvaluator> getExpressionEvaluatorSupplier() {
+  public ExpressionEvaluator getExpressionEvaluator() {
     return expressionEvaluator;
   }
 
-  public void setExpressionEvaluatorSupplier(Supplier<ExpressionEvaluator> expressionEvaluator) {
+  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
     this.expressionEvaluator = expressionEvaluator;
   }
 
@@ -483,7 +482,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            expressionEvaluator.get().evaluate(cond.getLogicExpression().getExpression(), params);
+            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter(PARAM);
 
     if (value != null) {
