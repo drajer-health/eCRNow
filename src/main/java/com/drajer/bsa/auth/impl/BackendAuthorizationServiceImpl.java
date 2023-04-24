@@ -18,6 +18,9 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.nio.file.*;
+import java.security.*;
+import java.security.spec.*;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.json.JSONObject;
@@ -61,7 +64,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   String alias;
 
   @Value("${backendauth.privatekey.thumbprint}")
-  String thumbprintString;
+  String thumbprint;
 
   @Value("${backendauth.privatekey.path}")
   String path;
@@ -152,13 +155,8 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    */
   public String generateJwt(String clientId, String aud) throws KeyStoreException {
 
-    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-    char[] passwordChar = password.toCharArray();
     try {
-      InputStream store = new FileInputStream(jwksLocation);
-      ks.load(store, passwordChar);
-      store.close();
-      Key key = ks.getKey(alias, passwordChar);
+      PrivateKey key = getPrivateKey(path);
 
       return Jwts.builder()
           .setIssuer(clientId)
@@ -168,14 +166,30 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
               new Date(
                   System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
           .setId(UUID.randomUUID().toString())
+          .setHeaderParam("x5t", thumbprint)
           .signWith(key)
           .compact();
     } catch (IOException
         | NoSuchAlgorithmException
-        | CertificateException
-        | UnrecoverableKeyException e) {
+        | InvalidKeySpecException e) {
       logger.error("Exception Occurred: ", e);
     }
     return null;
   }
+
+  /**
+   * @param path String representation of the path to the private key
+   * @return a private key file's contents
+   * @throws IOException
+   * @throws InvalidKeySpecException
+   * @throws NoSuchAlgorithmException
+   */
+  public static PrivateKey getPrivateKey(String path)
+      throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
+      byte[] keyBytes = Files.readAllBytes(Paths.get(path));
+
+      PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+      KeyFactory kf = KeyFactory.getInstance("RSA");
+      return kf.generatePrivate(spec);
+    }
 }
