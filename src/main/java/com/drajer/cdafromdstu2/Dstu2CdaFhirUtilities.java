@@ -907,21 +907,21 @@ public class Dstu2CdaFhirUtilities {
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.CODE_EL_NAME,
               CdaGeneratorConstants.CDA_AMBULATORY_ENCOUNTER_CLASS,
-              CdaGeneratorConstants.ACT_ENCOUNTER_CODE_SYSTEM);
+              CdaGeneratorConstants.ACT_CODE_SYSTEM);
     } else if (encClass != null && (encClass.getValueAsEnum() == EncounterClassEnum.INPATIENT)) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.CODE_EL_NAME,
               CdaGeneratorConstants.CDA_INPATIENT_ENCOUNTER_CLASS,
-              CdaGeneratorConstants.ACT_ENCOUNTER_CODE_SYSTEM);
+              CdaGeneratorConstants.ACT_CODE_SYSTEM);
     } else if (encClass != null && (encClass.getValueAsEnum() == EncounterClassEnum.EMERGENCY)) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.CODE_EL_NAME,
               CdaGeneratorConstants.CDA_EMERGENCY_ENCOUNTER_CLASS,
-              CdaGeneratorConstants.ACT_ENCOUNTER_CODE_SYSTEM);
+              CdaGeneratorConstants.ACT_CODE_SYSTEM);
     } else {
 
       logger.info(" Did not find the encounter class for the patient ");

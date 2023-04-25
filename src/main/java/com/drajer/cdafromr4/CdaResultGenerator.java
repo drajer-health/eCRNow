@@ -41,6 +41,8 @@ public class CdaResultGenerator {
     StringBuilder resultEntries = new StringBuilder();
 
     List<Observation> allResults = data.getLabResults();
+
+    // Check if there is a LOINC code for the observation to be translated.
     List<Observation> results = getValidLabResults(data);
     List<DiagnosticReport> reports = getValidDiagnosticReports(data);
 
@@ -474,7 +476,7 @@ public class CdaResultGenerator {
 
     Boolean foundComponent = false;
 
-    if (obs.getComponent() != null && !obs.getComponent().isEmpty()) {
+    if (obs.hasComponent() && obs.getComponent() != null) {
 
       CodeableConcept cc = obs.getCode();
       Type val = obs.getValue();
@@ -897,8 +899,7 @@ public class CdaResultGenerator {
 
     if (data.getLabResults() != null && !data.getLabResults().isEmpty()) {
 
-      logger.debug(
-          "Total num of Lab Results available for Patient {}", data.getLabResults().size());
+      logger.info("Total num of Lab Results available for Patient {}", data.getLabResults().size());
 
       for (Observation s : data.getLabResults()) {
 
@@ -946,12 +947,16 @@ public class CdaResultGenerator {
                 CdaFhirUtilities.isCodingPresentForCodeSystem(
                     dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
-          logger.info("Found a DiagnosticReport with a LOINC code");
+          logger.debug("Found a DiagnosticReport with a LOINC code");
           drs.add(dr);
+        } else {
+          logger.info(
+              " Ignoring Diagnostic Report with id {} since the data cannot be used to create an Organizer or POT Observation ",
+              dr.getId());
         }
       }
     } else {
-      logger.debug("No Valid DiagnosticReport in the bundle to process");
+      logger.info("No Valid DiagnosticReport in the bundle to process");
     }
 
     return drs;

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -120,6 +121,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
               paramComponent.setValue(value);
 
               logger.info(" Adding Resolved Parameter {} with value {}", exp.getName(), value);
+
+            } else if (exp.getName().contentEquals("encounterClass")) {
+
+              CodeType val = new CodeType(expr);
+              paramComponent.setName("%" + exp.getName());
+              paramComponent.setValue(val);
 
             } else {
 

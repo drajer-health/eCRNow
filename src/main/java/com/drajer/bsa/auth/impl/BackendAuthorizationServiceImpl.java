@@ -151,7 +151,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     try {
       InputStream store = new FileInputStream(jwksLocation);
       ks.load(store, passwordChar);
-      store.close();
+      // store.close();
       Key key = ks.getKey(alias, passwordChar);
 
       return Jwts.builder()

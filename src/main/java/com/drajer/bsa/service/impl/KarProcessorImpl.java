@@ -214,11 +214,15 @@ public class KarProcessorImpl implements KarProcessor {
             // Setup Notification Data
             Bundle nb = (Bundle) jsonParser.parseResource(nc.getNotificationData());
             kd.setNotificationBundle(nb);
-            nc.setNotifiedResource(nb.getEntry().get(1).getResource());
+            // nc.setNotifiedResource(nb.getEntry().get(1).getResource());
 
             // Setup context Encounter
             if (nc.getNotifiedResource().getResourceType() == ResourceType.Encounter) {
-              kd.setContextEncounter((Encounter) nc.getNotifiedResource());
+              kd.setContextEncounter(
+                  (Encounter)
+                      ehrInterface.getResourceById(
+                          kd, "Encounter", nc.getNotificationResourceId()));
+              nc.setNotifiedResource(kd.getContextEncounter());
             }
 
             kd.setEhrQueryService(ehrInterface);
