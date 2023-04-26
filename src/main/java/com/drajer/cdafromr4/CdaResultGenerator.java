@@ -573,6 +573,7 @@ public class CdaResultGenerator {
     List<String> paths = new ArrayList<>();
     paths.add("Observation.code");
     paths.add("DiagnosticReport.code");
+    paths.add("Observation.value");
 
     Pair<Boolean, String> obsCodeXml = getObservationCodeXml(details, cd, false, contentRef, paths);
 
