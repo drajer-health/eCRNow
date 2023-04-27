@@ -1,0 +1,473 @@
+{
+    "resourceType": "Bundle",
+    "id": "b0a1101a-bdcb-4eda-a00c-b8dd9f7e5674",
+    "type": "searchset",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition?patient=12765394"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/p73289179",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "p73289179",
+                "meta": {
+                    "versionId": "73289179",
+                    "lastUpdated": "2022-02-14T12:13:18.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Problem</b>: Dyspnea, unspecified, Dyspnea, unspecified</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "problem-list-item",
+                                "display": "Problem List Item"
+                            }
+                        ],
+                        "text": "Problem List Item"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "R06.00",
+                            "display": "Dyspnea, unspecified",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "267036007",
+                            "display": "Dyspnea (finding)",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Dyspnea, unspecified"
+                },
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97969067"
+                },
+                "recordedDate": "2022-02-14T18:00:00.000Z",
+                "recorder": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574441665",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "d2574441665",
+                "meta": {
+                    "versionId": "2574441665",
+                    "lastUpdated": "2022-02-09T04:09:44.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Diagnosis</b>: Arterial infection, Infection of artery (disorder)</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Feb  8, 2022</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "234016006",
+                            "display": "Infection of artery (disorder)",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "I77.89",
+                            "display": "Other specified disorders of arteries and arterioles",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Arterial infection"
+                },
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "onsetDateTime": "2022-02-08",
+                "recordedDate": "2022-02-09T04:09:44.000Z",
+                "recorder": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574441685",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "d2574441685",
+                "meta": {
+                    "versionId": "2574441685",
+                    "lastUpdated": "2022-02-09T05:06:25.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Diagnosis</b>: Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency, Mendelian susceptibility to mycobacterial disease due to complete interferon gamma receptor 2 deficiency (disorder)</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Feb  8, 2022</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "721876004",
+                            "display": "Mendelian susceptibility to mycobacterial disease due to complete interferon gamma receptor 2 deficiency (disorder)",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "D84.89",
+                            "display": "Other immunodeficiencies",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Mendelian susceptibility to mycobacterial disease due to complete IFNgammaR2 deficiency"
+                },
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "onsetDateTime": "2022-02-08",
+                "recordedDate": "2022-02-09T05:06:26.000Z",
+                "recorder": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574441667",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "d2574441667",
+                "meta": {
+                    "versionId": "2574441687",
+                    "lastUpdated": "2022-02-09T05:18:05.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Diagnosis</b>: Abscess at site of arterial duct, Abscess at site of ductus arteriosus (disorder)</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Feb  8, 2022</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "459179000",
+                            "display": "Abscess at site of ductus arteriosus (disorder)",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "I77.89",
+                            "display": "Other specified disorders of arteries and arterioles",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Abscess at site of arterial duct"
+                },
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "onsetDateTime": "2022-02-08",
+                "recordedDate": "2022-02-09T04:09:44.000Z",
+                "recorder": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "fullUrl": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2574441683",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "d2574441683",
+                "meta": {
+                    "versionId": "2574441683",
+                    "lastUpdated": "2022-02-09T05:00:15.000Z"
+                },
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Condition</b></p><p><b>Patient</b>: ECRTEST, SIX</p><p><b>Diagnosis</b>: Mycobacterial pneumonia, Mycobacterial pneumonia (disorder)</p><p><b>Category Classification</b>: Medical</p><p><b>Clinical Status</b>: Active</p><p><b>Verification Status</b>: Confirmed</p><p><b>Onset</b>: Feb  8, 2022</p></div>"
+                },
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ],
+                    "text": "Active"
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Confirmed"
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ],
+                        "text": "Encounter Diagnosis"
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "74188005",
+                                "display": "Medical (qualifier value)",
+                                "userSelected": false
+                            }
+                        ],
+                        "text": "Medical"
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://snomed.info/sct",
+                            "code": "233618000",
+                            "display": "Mycobacterial pneumonia (disorder)",
+                            "userSelected": true
+                        },
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "A31.0",
+                            "display": "Pulmonary mycobacterial infection",
+                            "userSelected": false
+                        }
+                    ],
+                    "text": "Mycobacterial pneumonia"
+                },
+                "subject": {
+                    "reference": "Patient/12765394",
+                    "display": "ECRTEST, SIX"
+                },
+                "encounter": {
+                    "reference": "Encounter/97968821"
+                },
+                "onsetDateTime": "2022-02-08",
+                "recordedDate": "2022-02-09T05:00:15.000Z",
+                "recorder": {
+                    "reference": "Practitioner/4122622",
+                    "display": "Cerner Test, Physician - Hospitalist Cerner"
+                }
+            },
+            "search": {
+                "mode": "match"
+            }
+        }
+    ]
+}

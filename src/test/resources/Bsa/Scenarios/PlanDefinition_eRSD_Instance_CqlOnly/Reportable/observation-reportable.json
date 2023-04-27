@@ -1,0 +1,43 @@
+{
+    "resourceType": "Observation",
+    "id": "observation-reportable",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/observation"
+        ]
+      },
+    "status": "final",
+    "code": {
+        "coding": [
+            {
+                "system": "http://loinc.org",
+                "code": "14461-8",
+                "display": "Chlamydia trachomatis [Presence] in Blood by Organism specific culture"
+            }
+        ]
+    },
+    "valueCodeableConcept": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "131194007",
+          "display": "Non-Reactive (qualifier value)"
+        }
+      ]
+    },
+    "interpretation": [
+        {
+            "coding": [
+                {
+                    "system": "http://snomed.info/sct",
+                    "code": "280414007",
+                    "display": "Equivocal result (qualifier value)"
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "Patient/reportable"
+    },
+    "effectiveDateTime": "2019-11-01T00:00:00"
+}

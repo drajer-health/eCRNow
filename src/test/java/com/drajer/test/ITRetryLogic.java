@@ -66,7 +66,7 @@ public class ITRetryLogic extends BaseIntegrationTest {
 
     String response = TestUtils.getFileContentAsString("R4/Patient/Patient_12742571.json");
     wireMockServer.stubFor(
-        post(urlEqualTo("http://localhost:9010/FHIR/Encounter?patient=12742571"))
+        post(urlEqualTo("http://localhost:9011/FHIR/Encounter?patient=12742571"))
             .atPriority(1)
             .willReturn(aResponse().withStatus(202).withBody(response)));
   }

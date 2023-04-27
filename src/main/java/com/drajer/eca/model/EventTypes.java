@@ -21,20 +21,6 @@ public final class EventTypes {
     SUSPENDED
   }
 
-  /*	public static enum ActionTriggerTypes {
-
-  	// These are based on FHIR Trigger Types
-  	// named-event | periodic | data-changed | data-added | data-modified | data-removed | data-accessed | data-access-ended
-  	NAMED_EVENT,
-  	PERIODIC,
-  	DATA_CHANGED,
-  	DATA_ADDED,
-  	DATA_MODIFIED,
-  	DATA_REMOVED,
-  	DATA_ACCESSED,
-  	DATA_ACCESS_ENDED
-  } */
-
   public enum EcrActionTypes {
 
     // These are the actions that can happen for eCR reporting.
@@ -48,22 +34,6 @@ public final class EventTypes {
     RR_CHECK,
     UNKNOWN
   }
-
-  /*	public static enum ActionRelationshipType {
-
-  	// Maps to FHIR Related Actions
-  	// before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end
-
-  	BEFORE_START,
-  	BEFORE,
-  	BEFORE_END,
-  	CONCURRENT_WITH_START,
-  	CONCURRENT,
-  	CONCURRENT_WITH_END,
-  	AFTER_START,
-  	AFTER,
-  	AFTER_END
-  }*/
 
   public enum ConditionType {
 

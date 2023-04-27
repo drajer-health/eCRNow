@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class PeriodicUpdateEicrAction extends AbstractAction {
 
+  public static final String CREATE_A_JOB_BASED_ON_TIMING_DATA =
+      "Timing Data is present , so create a job based on timing data.";
   private final Logger logger = LoggerFactory.getLogger(PeriodicUpdateEicrAction.class);
 
   @Override
@@ -46,7 +48,8 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       }
       // PreConditions Met, then process related actions.
       Boolean relatedActsDone = true;
-      if (conditionsMet && !encounterClosed && !longRunningEncounter) {
+
+      if (Boolean.TRUE.equals(conditionsMet) && !encounterClosed && !longRunningEncounter) {
 
         logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -62,7 +65,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // check if the action is completed.
               String actionId = actn.getRelatedAction().getActionId();
 
-              if (!state.hasActionCompleted(actionId)) {
+              if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))) {
 
                 logger.info(
                     " Action {} is not completed , hence this action has to wait ", actionId);
@@ -107,7 +110,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
         // Check Timing Data , No need to check if the state is already scheduled meaning the
         // job was scheduled already.
-        if (relatedActsDone) {
+        if (Boolean.TRUE.equals(relatedActsDone)) {
 
           logger.info(" All Related Actions are completed ");
 
@@ -119,7 +122,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
             if (getTimingData() != null && !getTimingData().isEmpty()) {
 
-              logger.info(" Timing Data is present , so create a job based on timing data.");
+              logger.info(CREATE_A_JOB_BASED_ON_TIMING_DATA);
               scheduleJob(details, state, taskInstanceId);
               return;
             } else {
@@ -137,10 +140,10 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
             PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
             boolean dataChanged = EcaUtils.hasNewTriggerCodeMatches(state, newState);
 
-            if (newState.getMatchTriggerStatus().getTriggerMatchStatus()
+            if (Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())
                 && newState.getMatchTriggerStatus().getMatchedCodes() != null
                 && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()
-                && (dataChanged || !state.hasEicrBeenCreated())) {
+                && (dataChanged || Boolean.FALSE.equals(state.hasEicrBeenCreated()))) {
 
               logger.info(
                   "Creating the EICR for {} action as new trigger code is matched",
@@ -181,7 +184,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
               // Schedule job again.
               if (getTimingData() != null && !getTimingData().isEmpty()) {
 
-                logger.info(" Timing Data is present , so create a job based on timing data.");
+                logger.info(CREATE_A_JOB_BASED_ON_TIMING_DATA);
                 scheduleJob(details, state, taskInstanceId);
               }
 
@@ -196,7 +199,7 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                   && getTimingData() != null
                   && !getTimingData().isEmpty()) {
 
-                logger.info(" Timing Data is present , so create a job based on timing data.");
+                logger.info(CREATE_A_JOB_BASED_ON_TIMING_DATA);
                 scheduleJob(details, state, taskInstanceId);
                 status.setEicrUpdated(false);
                 status.seteICRId("0");

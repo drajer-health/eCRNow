@@ -152,6 +152,19 @@ public class CdaEncounterGenerator {
           CdaFhirUtilities.getPeriodXml(
               encounter.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
 
+      if (encounter.getHospitalization() != null
+          && encounter.getHospitalization().getDischargeDisposition() != null) {
+
+        List<CodeableConcept> dds = new ArrayList<>();
+        dds.add(encounter.getHospitalization().getDischargeDisposition());
+
+        String ddxml =
+            CdaFhirUtilities.getCodeableConceptXml(
+                dds, CdaGeneratorConstants.SDTC_DISCHARGE_DISPOSITION, false);
+
+        if (ddxml != null && !ddxml.isEmpty()) sb.append(ddxml);
+      }
+
       String encDiagXml = generateEncounterDiagnosisXml(data, details);
 
       if (encDiagXml != null && !encDiagXml.isEmpty()) {

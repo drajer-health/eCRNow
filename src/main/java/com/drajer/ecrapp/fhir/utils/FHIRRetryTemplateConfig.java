@@ -41,5 +41,45 @@ public class FHIRRetryTemplateConfig {
     public long getRetryWaitTimeInMillis() {
       return (retryWaitTimeInMillis > 0 ? retryWaitTimeInMillis : 1000);
     }
+
+    public List<Integer> getRetryStatusCodes() {
+      return retryStatusCodes;
+    }
+
+    public void setMaxRetries(int maxRetries) {
+      this.maxRetries = maxRetries;
+    }
+
+    public void setRetryWaitTimeInMillis(long retryWaitTimeInMillis) {
+      this.retryWaitTimeInMillis = retryWaitTimeInMillis;
+    }
+
+    public void setRetryStatusCodes(List<Integer> retryStatusCodes) {
+      this.retryStatusCodes = retryStatusCodes;
+    }
+  }
+
+  public List<Integer> getRetryStatusCodes() {
+    return retryStatusCodes;
+  }
+
+  public void setRetryStatusCodes(List<Integer> retryStatusCodes) {
+    this.retryStatusCodes = retryStatusCodes;
+  }
+
+  public Map<String, HttpMethodType> getHttpMethodTypeMap() {
+    return httpMethodTypeMap;
+  }
+
+  public void setHttpMethodTypeMap(Map<String, HttpMethodType> httpMethodTypeMap) {
+    this.httpMethodTypeMap = httpMethodTypeMap;
+  }
+
+  public void setMaxRetries(int maxRetries) {
+    this.maxRetries = maxRetries;
+  }
+
+  public void setRetryWaitTimeInMillis(long retryWaitTimeInMillis) {
+    this.retryWaitTimeInMillis = retryWaitTimeInMillis;
   }
 }

@@ -1,0 +1,53 @@
+{
+  "resourceType": "Condition",
+  "id": "diabetes-trigger-condition-in",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+    ]
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+        "code": "active",
+        "display": "Active"
+      }
+    ]
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+        "code": "confirmed",
+        "display": "Confirmed"
+      }
+    ]
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "version": "2020",
+        "code": "E10.11",
+        "display": "Type 1 diabetes mellitus with ketoacidosis with coma"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/diabetes-trigger-condition-in"
+  },
+  "onsetDateTime": "2019-03-23T11:01:33-06:00",
+  "recordedDate": "2019-03-23T11:01:33-06:00"
+}

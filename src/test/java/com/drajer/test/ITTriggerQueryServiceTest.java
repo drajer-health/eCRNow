@@ -74,7 +74,12 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       String launchDetailJson = TestUtils.getFileContentAsString(launchDetailsFile);
       launchDetailJson = launchDetailJson.replace(":port", ":" + wireMockHttpPort);
       launchDetails = mapper.readValue(launchDetailJson, LaunchDetails.class);
+
       wireMockServer.resetRequests();
+
+      session.flush();
+      tx.commit();
+
       stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
       logger.info("Creating WireMock stubs..");
       stubHelper.stubResources(allResourceMapping);
@@ -84,9 +89,6 @@ public class ITTriggerQueryServiceTest extends BaseIntegrationTest {
       logger.error("Exception setting up triggerQuery", e);
       fail(e.getMessage() + "This exception is not expected fix test");
     }
-
-    session.flush();
-    tx.commit();
   }
 
   @Parameters(name = "{0}")

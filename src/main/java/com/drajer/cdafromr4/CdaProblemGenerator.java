@@ -2,7 +2,6 @@ package com.drajer.cdafromr4;
 
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
-import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
@@ -90,28 +89,33 @@ public class CdaProblemGenerator {
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
 
-        if (prob.getClinicalStatus() != null
+        if (prob.hasClinicalStatus()
+            && prob.getClinicalStatus().hasCoding()
             && prob.getClinicalStatus().getCodingFirstRep() != null
             && !StringUtils.isEmpty(prob.getClinicalStatus().getCodingFirstRep().getCode())
             && (prob.getClinicalStatus()
                     .getCodingFirstRep()
                     .getCode()
-                    .contentEquals(ConditionClinical.ACTIVE.toCode())
+                    .contentEquals(ConditionClinical.RESOLVED.toCode())
                 || prob.getClinicalStatus()
                     .getCodingFirstRep()
                     .getCode()
-                    .contentEquals(ConditionClinical.RELAPSE.toCode()))) {
-          bodyvals.put(
-              CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
-              CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
-        } else {
+                    .contentEquals(ConditionClinical.INACTIVE.toCode())
+                || prob.getClinicalStatus()
+                    .getCodingFirstRep()
+                    .getCode()
+                    .contentEquals(ConditionClinical.REMISSION.toCode()))) {
           bodyvals.put(
               CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
               CdaGeneratorConstants.TABLE_RESOLVED_STATUS);
+        } else {
+          bodyvals.put(
+              CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
+              CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
         }
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -147,26 +151,30 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.HL7_ACT_CLASS_NAME,
                 CdaGeneratorConstants.PROB_CONC_ACT_NAME));
 
-        if (pr.getClinicalStatus() != null
+        if (pr.hasClinicalStatus()
+            && pr.getClinicalStatus().hasCoding()
             && pr.getClinicalStatus().getCodingFirstRep() != null
             && !StringUtils.isEmpty(pr.getClinicalStatus().getCodingFirstRep().getCode())
             && (pr.getClinicalStatus()
                     .getCodingFirstRep()
                     .getCode()
-                    .contentEquals(ConditionClinical.ACTIVE.toCode())
+                    .contentEquals(ConditionClinical.RESOLVED.toCode())
                 || pr.getClinicalStatus()
                     .getCodingFirstRep()
                     .getCode()
-                    .contentEquals(ConditionClinical.RELAPSE.toCode()))) {
-
-          sb.append(
-              CdaGeneratorUtils.getXmlForCD(
-                  CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
-        } else {
+                    .contentEquals(ConditionClinical.INACTIVE.toCode())
+                || pr.getClinicalStatus()
+                    .getCodingFirstRep()
+                    .getCode()
+                    .contentEquals(ConditionClinical.REMISSION.toCode()))) {
           sb.append(
               CdaGeneratorUtils.getXmlForCD(
                   CdaGeneratorConstants.STATUS_CODE_EL_NAME,
                   CdaGeneratorConstants.COMPLETED_STATUS));
+        } else {
+          sb.append(
+              CdaGeneratorUtils.getXmlForCD(
+                  CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
         }
 
         Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
@@ -367,14 +375,14 @@ public class CdaProblemGenerator {
                   logger.debug("Retrieved CSD Values");
                   logger.debug("Retrieved CSD Values {}, {}", csd.getValue0(), csd.getValue1());
 
-                  // Add Value SEt and ValueSEt Version
-                  String vs = CdaGeneratorConstants.RCTC_OID;
-                  String vsVersion = ActionRepo.getInstance().getRctcVersion();
-
-                  logger.debug("Retrieved RCTC Values: Vs {}, vsVersion {}", vs, vsVersion);
                   sb.append(
                       CdaGeneratorUtils.getXmlForValueCDWithValueSetAndVersion(
-                          parts[1], csd.getValue0(), csd.getValue1(), vs, vsVersion, ""));
+                          parts[1],
+                          csd.getValue0(),
+                          csd.getValue1(),
+                          details.getRctcOid(),
+                          details.getRctcVersion(),
+                          ""));
                   logger.debug("Constructed Value CD");
                 });
 

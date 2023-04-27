@@ -757,5 +757,4 @@ testCase:
         #"code/@valueSetVersion": "2020-07-09"
         "statusCode/@code": "active"
   #      'effectiveTime/@value': "20200501014501"
-  
-         
+

@@ -2,25 +2,44 @@ package com.drajer.test.util;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.context.api.BundleInclusionRule;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
+import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.BundleLinks;
+import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import com.drajer.test.model.StubVO;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WireMockHelper {
   private String baseUrl = "/FHIR";
   private int wireMockPort;
+  private FhirContext fhirContext;
+
   WireMockServer wireMockServer;
 
   private static final Logger logger = LoggerFactory.getLogger(WireMockHelper.class);
 
-  public WireMockHelper(WireMockServer wireMockSvr, int port) {
+  public WireMockHelper(WireMockServer wireMockSvr, int port, FhirContext fhirContext) {
     this.wireMockServer = wireMockSvr;
     this.wireMockPort = port;
+    this.fhirContext = fhirContext;
+  }
+
+  public WireMockHelper(WireMockServer wireMockSvr, int port) {
+    this(wireMockSvr, port, FhirContext.forCached(FhirVersionEnum.R4));
   }
 
   public void stubResources(Map<String, ?> stubMapping) {
@@ -125,5 +144,115 @@ public class WireMockHelper {
         logger.info("Stub Created for AccessToken uri: {}", url);
       }
     }
+  }
+
+  public void mockFhirRead(IBaseResource resource) {
+    String resourcePath = "/" + resource.fhirType() + "/" + resource.getIdElement().getIdPart();
+    mockFhirInteraction(resourcePath, resource);
+  }
+
+  public void mockFhirRead(String path, IBaseResource resource) {
+    mockFhirRead(path, resource, 200);
+  }
+
+  public void mockFhirRead(String path, IBaseResource resource, int statusCode) {
+    MappingBuilder builder = get(urlEqualTo(path));
+    mockFhirInteraction(builder, resource, statusCode);
+  }
+
+  public void mockFhirSearch(String path, List<IBaseResource> resources) {
+    MappingBuilder builder = get(urlEqualTo(path));
+    mockFhirInteraction(builder, makeBundle(resources));
+  }
+
+  public void mockFhirSearch(String path, IBaseResource... resources) {
+    MappingBuilder builder = get(urlEqualTo(path));
+    mockFhirInteraction(builder, makeBundle(resources));
+  }
+
+  public void mockFhirPost(String path, IBaseResource resource) {
+    mockFhirInteraction(post(urlEqualTo(path)), resource, 200);
+  }
+
+  public void mockFhirInteraction(String path, IBaseResource resource) {
+    mockFhirRead(path, resource, 200);
+  }
+
+  public void mockFhirInteraction(MappingBuilder builder, IBaseResource resource) {
+    mockFhirInteraction(builder, resource, 200);
+  }
+
+  public void mockFhirInteraction(MappingBuilder builder, IBaseResource resource, int statusCode) {
+    String body = null;
+    if (resource != null) {
+      body = this.getFhirParser().encodeResourceToString(resource);
+    }
+
+    wireMockServer.stubFor(
+        builder.willReturn(
+            aResponse()
+                .withStatus(statusCode)
+                .withHeader("Content-Type", "application/json")
+                .withBody(body)));
+  }
+
+  public void mockTokenResponse(String path, String body) {
+    MappingBuilder builder = post(urlEqualTo(path));
+    wireMockServer.stubFor(
+        builder.willReturn(
+            aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(body)));
+  }
+
+  public void mockProcessMessageBundle(IBaseBundle bundle) {
+    String path = "/fhir/$process-message";
+    MappingBuilder builder = post(urlEqualTo(path));
+    wireMockServer.stubFor(
+        builder.willReturn(
+            aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(getFhirParser().encodeResourceToString(bundle))));
+  }
+
+  public void mockReceiveEicr(IBaseBundle bundle) {
+    String path = "/api/receiveEicr";
+    MappingBuilder builder = post(urlEqualTo(path));
+    wireMockServer.stubFor(
+        builder.willReturn(
+            aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(getFhirParser().encodeResourceToString(bundle))));
+  }
+
+  public IBaseBundle makeBundle(List<? extends IBaseResource> resources) {
+    return makeBundle(resources.toArray(new IBaseResource[resources.size()]));
+  }
+
+  public IBaseBundle makeBundle(IBaseResource... resources) {
+    IVersionSpecificBundleFactory bf = this.fhirContext.newBundleFactory();
+    bf.addRootPropertiesToBundle(
+        UUID.randomUUID().toString(),
+        new BundleLinks(
+            "http://localhost:" + wireMockPort + "/" + baseUrl,
+            null,
+            true,
+            BundleTypeEnum.SEARCHSET),
+        resources.length,
+        null);
+    bf.addResourcesToBundle(
+        Arrays.asList(resources),
+        BundleTypeEnum.SEARCHSET,
+        "http://localhost:" + wireMockPort + "/" + baseUrl,
+        BundleInclusionRule.BASED_ON_INCLUDES,
+        null);
+    return (IBaseBundle) bf.getResourceBundle();
+  }
+
+  protected IParser getFhirParser() {
+    return this.fhirContext.newJsonParser();
   }
 }
