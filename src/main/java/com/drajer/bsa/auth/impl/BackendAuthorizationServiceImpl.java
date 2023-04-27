@@ -5,24 +5,25 @@ import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.Key;
-import java.security.KeyStore;
+import java.io.Reader;
+import java.io.StringReader;
+import java.nio.file.*;
+import java.security.*;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
+import java.security.spec.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.nio.file.*;
-import java.security.*;
-import java.security.spec.*;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
+import org.bouncycastle.util.io.pem.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,9 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   @Value("${backendauth.privatekey.path}")
   String path;
 
+  @Value("${cdc.audience.url}")
+  String cdcaud;
+
   /**
    * @param url base url of ehr
    * @param fsd knowledge artifact data
@@ -85,8 +89,10 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     }
     String clientId = fsd.getClientId();
     String scopes = fsd.getScopes();
+    System.out.println(clientId + " " + scopes);
     String jwt = generateJwt(clientId, tokenEndpoint);
 
+    logger.info("JWT Token ===========> ", jwt);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -158,20 +164,23 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     try {
       PrivateKey key = getPrivateKey(path);
 
+      Map<String, Object> map = new HashMap<>();
+
+      map.put("x5t", thumbprint);
+      map.put("alg", "RSA384");
+
       return Jwts.builder()
           .setIssuer(clientId)
           .setSubject(clientId)
-          .setAudience(aud)
+          .setAudience(cdcaud)
           .setExpiration(
               new Date(
                   System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
           .setId(UUID.randomUUID().toString())
-          .setHeaderParam("x5t", thumbprint)
+          .setHeaderParams(map)
           .signWith(key)
           .compact();
-    } catch (IOException
-        | NoSuchAlgorithmException
-        | InvalidKeySpecException e) {
+    } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       logger.error("Exception Occurred: ", e);
     }
     return null;
@@ -186,10 +195,41 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    */
   public static PrivateKey getPrivateKey(String path)
       throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
-      byte[] keyBytes = Files.readAllBytes(Paths.get(path));
+    String pkey = getPrivateKeyAsString(path);
+    /* String formattedPKey =
+    pkey.replace("-----BEGIN RSA PRIVATE KEY-----", "")
+        .replaceAll("\\n", "")
+        .replace("-----END RSA PRIVATE KEY-----", ""); */
+    Reader reader = new StringReader(pkey);
+    PemReader pemReader = new PemReader(reader);
+    PemObject pemObject = pemReader.readPemObject();
+    byte[] keyBytes = pemObject.getContent();
+    System.out.println(pkey);
+    KeyFactory kf = KeyFactory.getInstance("RSA");
+    PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+    return kf.generatePrivate(spec);
+  }
 
-      PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-      KeyFactory kf = KeyFactory.getInstance("RSA");
-      return kf.generatePrivate(spec);
+  /**
+   * @param filePath
+   * @return private key as a String
+   */
+  private static String getPrivateKeyAsString(String filePath) {
+    StringBuilder builder = new StringBuilder();
+
+    try (BufferedReader buffer = new BufferedReader(new FileReader(filePath))) {
+
+      String str;
+
+      while ((str = buffer.readLine()) != null) {
+
+        builder.append(str).append("\n");
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+
+    // Returning a string
+    return builder.toString();
+  }
 }

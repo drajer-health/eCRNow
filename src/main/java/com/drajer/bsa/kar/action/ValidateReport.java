@@ -9,6 +9,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.cda.utils.CdaValidatorUtil;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import io.micrometer.core.instrument.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ public class ValidateReport extends BsaAction {
   private Boolean validateCdaData;
 
   private Boolean validateFhirData;
+
+  @Autowired ApplicationUtils applicationUtils;
 
   PublicHealthMessagesDao phDao;
 
@@ -145,6 +149,7 @@ public class ValidateReport extends BsaAction {
               restTemplate.postForEntity(validatorEndpoint, request, String.class);
           logger.debug(response.getBody());
           outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
+          ApplicationUtils.saveDataToFile(response.getBody(), "Operation_Outcome.json");
         } else {
           logger.warn("No validation endpoint set. Skipping validation");
         }
@@ -153,7 +158,7 @@ public class ValidateReport extends BsaAction {
 
           logger.error(
               " Total # of issues found in the Operation Outcome {}", outcome.getIssue().size());
-
+          // applicationUtils.saveDataToFile(outcome.toString(), "Operation_Outcome");
           // For now, go ahead and add the output as being valid.
           addValidatedOutputById(data, r);
           data.addActionOutput(actionId, r);
