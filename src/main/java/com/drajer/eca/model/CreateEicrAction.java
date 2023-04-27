@@ -156,9 +156,10 @@ public class CreateEicrAction extends AbstractAction {
               // Check Trigger Codes again in case the data has changed.
               PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 
-              if (newState.getMatchTriggerStatus().getTriggerMatchStatus()
-                  && newState.getMatchTriggerStatus().getMatchedCodes() != null
-                  && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
+              if ((state.getMatchTriggerStatus().getTriggerMatchStatus()
+                      && !CollectionUtils.isEmpty(state.getMatchTriggerStatus().getMatchedCodes())
+                  || (newState.getMatchTriggerStatus().getTriggerMatchStatus()
+                      && !CollectionUtils.isEmpty(newState.getMatchTriggerStatus().getMatchedCodes())) {
 
                 logger.info(
                     "Creating the EICR for {} action as new trigger code is matched",
