@@ -113,7 +113,8 @@ public class MatchTriggerAction extends AbstractAction {
           // may elect to run the matching again
           // because data may be entered late even though the app was launched.
           state.getMatchTriggerStatus().setJobStatus(JobStatus.COMPLETED);
-          state.getMatchTriggerStatus().setTriggerLastExecutionDateTime(triggerExecutionDateTime);
+          if (!r4Data.hasTriggerQueryFailed())
+            state.getMatchTriggerStatus().setTriggerLastExecutionDateTime(triggerExecutionDateTime);
           EcaUtils.updateDetailStatus(details, state);
 
         } else {

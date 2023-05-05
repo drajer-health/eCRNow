@@ -1051,6 +1051,7 @@ public class R4ResourcesData {
         }
       }
     } catch (Exception e) {
+      r4FhirData.setTriggerQueryFailed(true);
       logger.error("Error in getting Condition Data", e);
     }
 
@@ -1084,6 +1085,7 @@ public class R4ResourcesData {
       }
 
     } catch (Exception e) {
+      r4FhirData.setTriggerQueryFailed(true);
       logger.error("Error in getting Observation Data", e);
     }
 
@@ -1108,6 +1110,7 @@ public class R4ResourcesData {
         }
       }
     } catch (Exception e) {
+      r4FhirData.setTriggerQueryFailed(true);
       logger.error("Error in getting the ServiceRequest Data", e);
     }
     return bundle;
