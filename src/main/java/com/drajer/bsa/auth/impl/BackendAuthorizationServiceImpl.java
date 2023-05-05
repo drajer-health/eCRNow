@@ -89,7 +89,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     }
     String clientId = fsd.getClientId();
     String scopes = fsd.getScopes();
-    System.out.println(clientId + " " + scopes);
     String jwt = generateJwt(clientId, tokenEndpoint);
 
     logger.info("JWT Token ===========> ", jwt);
@@ -204,7 +203,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     PemReader pemReader = new PemReader(reader);
     PemObject pemObject = pemReader.readPemObject();
     byte[] keyBytes = pemObject.getContent();
-    System.out.println(pkey);
     KeyFactory kf = KeyFactory.getInstance("RSA");
     PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
     return kf.generatePrivate(spec);

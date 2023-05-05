@@ -20,6 +20,9 @@ public class PatientLaunchContext {
   /** This is to by pass all timers and validate the processing of various timers inline. */
   private Boolean validationMode;
 
+  /** This is to get the type of survey - Flu-Net or HCS. */
+  private String survey;
+
   /**
    * This is to be used to check with the EHR on whether all the timers can be run or if they need
    * to be throttled. This context parameter is something that is passed by the EHR vendor to be
@@ -69,5 +72,13 @@ public class PatientLaunchContext {
 
   public void setThrottleContext(String throttleContext) {
     this.throttleContext = throttleContext;
+  }
+
+  public String getSurvey() {
+    return survey;
+  }
+
+  public void setSurvey(String survey) {
+    this.survey = survey;
   }
 }

@@ -154,12 +154,13 @@ public class PatientLaunchController {
       HttpServletResponse response) {
 
     logger.info(
-        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}, survey: {}",
         launchContext.getFhirServerURL(),
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
         request.getHeader(X_REQUEST_ID),
-        launchContext.getThrottleContext());
+        launchContext.getThrottleContext(),
+        launchContext.getSurvey());
 
     logger.info(FHIR_VERSION);
 
@@ -232,13 +233,13 @@ public class PatientLaunchController {
       // Add Subscription
       logger.info(" Adding events for launchPatient ");
       Reference subsRef = new Reference();
-      String url = context.getFhirServerURL() + "/Subscription/encounter-start";
+      String url = context.getFhirServerURL() + "/Subscription/" + context.getSurvey();
       subsRef.setReference(url);
       params.addParameter("subscription", subsRef);
 
       // Add topic
       CanonicalType topicRef = new CanonicalType();
-      String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start";
+      String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/" + context.getSurvey();
       topicRef.setValue(topicUrl);
       params.addParameter("topic", topicRef);
     } else {

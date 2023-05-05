@@ -135,9 +135,9 @@
                 "actionId": "check-participant-registration",
                 "relationship": "before-start",
                 "offsetDuration": {
-                  "value": 5,
+                  "value": 60,
                   "system": "http://unitsofmeasure.org",
-                  "code": "min"
+                  "code": "s"
                 }
               }
             ]
@@ -156,15 +156,6 @@
                     ]
                   }
                 ],
-                "condition": [
-                  {
-                    "kind": "applicability",
-                    "expression": {
-                      "language": "text/fhirpath",
-                      "expression": "closedEncounter.participant.individual.identifier.where(system = 'http://hl7.org/fhir/sid/us-npi).value.subsetOf(participantGroup.member.entity.identifier.where(system = 'http://hl7.org/fhir/sid/us-npi).value)'"
-                    }
-                  }
-                ],
                 "input": [
                   {
                     "id": "closedEncounter",
@@ -172,15 +163,6 @@
                     "profile": [
                       
                         "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
-                      
-                    ]
-                  },
-                  {
-                    "id": "participantGroup",
-                    "type": "Group",
-                    "profile": [
-                      
-                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-survey-practitioner-group"
                       
                     ]
                   }
@@ -208,6 +190,12 @@
             ],
             "input": [
               {
+                  "extension": [
+                                    {
+                                        "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension",
+                                        "valueString": "Patient/{{context.patientId}}"
+                                    }
+                                ],
                     "id": "patient",
                     "type": "Patient",
                     "profile": [
@@ -217,7 +205,13 @@
                     ]
               },
               {
-                "id": "condition",
+                "extension": [
+                                            {
+                                                "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension",
+                                                "valueString": "Condition?patient=Patient/{{context.patientId}}"
+                                            }
+                                        ],
+                "id": "conditions",
                     "type": "Condition",
                     "profile": [
                       
@@ -226,6 +220,12 @@
                     ]
               },
               {
+                "extension": [
+                                    {
+                                        "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension",
+                                        "valueString": "Encounter/{{context.encounterId}}"
+                                    }
+                                ],
                 "id": "encounter",
                     "type": "Encounter",
                     "profile": [
@@ -235,6 +235,12 @@
                     ]
               },
               {
+                "extension": [
+                                    {
+                                        "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
+                                        "valueString": "medicationOrders"
+                                    }
+                                ],
                 "id": "mr",
                     "type": "MedicationRequest",
                     "profile": [
@@ -253,6 +259,12 @@
                     ]
               },
               {
+                "extension": [
+                                            {
+                                                "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension",
+                                                "valueString": "Observation?patient=Patient/{{context.patientId}}"
+                                            }
+                                        ],
                 "id": "labs",
                     "type": "Observation",
                     "profile": [
@@ -296,7 +308,13 @@
             ],
             "input": [
               {
-                "id": "%hcs-report",
+                "extension": [
+                                    {
+                                        "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
+                                        "valueString": "hcs-report"
+                                    }
+                                ],
+                "id": "generatedhcsreport",
                     "type": "Bundle",
                     "profile": [
                       
@@ -307,7 +325,7 @@
             ],
             "output": [
               {
-                "id": "%hcs-report",
+                "id": "validatedhcsreport",
                     "type": "Bundle",
                     "profile": [
                       
@@ -339,7 +357,24 @@
             ],
             "input": [
               {
-                "id": "%hcs-report",
+                "extension": [
+                                    {
+                                        "url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension",
+                                        "valueString": "validatedhcsreport"
+                                    }
+                                ],
+                "id": "valid-hcs-report",
+                    "type": "Bundle",
+                    "profile": [
+                      
+                        "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-reporting-bundle"
+                      
+                    ]
+              }
+            ],
+            "output": [
+              {
+                "id": "submittedhcsreport",
                     "type": "Bundle",
                     "profile": [
                       
