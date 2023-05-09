@@ -898,7 +898,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     docContextComp.setPeriod(period);
     documentReference.setContext(docContextComp);
 
-    String docRef = FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+    String docRef = getContext().newJsonParser().encodeResourceToString(documentReference);
 
     logger.debug("DocumentReference Object===========> {}", docRef);
 

@@ -1,6 +1,7 @@
 package com.drajer.bsa.kar.action;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.gclient.IOperationProcessMsgMode;
@@ -52,7 +53,7 @@ public class SubmitReport extends BsaAction {
   private static final int RR_CHECK_TIME = 60;
   private static final String RR_CHECK_TIME_UNITS = "s";
 
-  private static final FhirContext context = FhirContext.forR4();
+  private static final FhirContext context = FhirContext.forCached(FhirVersionEnum.R4);
 
   private BsaServiceUtils bsaServiceUtils;
 

@@ -1,6 +1,7 @@
 package com.drajer.ecrapp.config;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
@@ -58,7 +59,7 @@ public class SpringConfiguration {
   public static final String AUTHORIZATION_TOKEN =
       "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde";
 
-  public static final FhirContext ctx = FhirContext.forR4();
+  public static final FhirContext ctx = FhirContext.forCached(FhirVersionEnum.R4);
 
   @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
 

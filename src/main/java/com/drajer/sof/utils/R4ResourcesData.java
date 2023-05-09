@@ -1,6 +1,7 @@
 package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
@@ -1507,8 +1508,7 @@ public class R4ResourcesData {
     docContextComp.setPeriod(period);
     documentReference.setContext(docContextComp);
 
-    String docReference =
-        FhirContext.forR4().newJsonParser().encodeResourceToString(documentReference);
+    String docReference = fhirContextInitializer.getFhirContext("R4").newJsonParser().encodeResourceToString(documentReference);
     logger.debug("DocumentReference Object===========> {}", docReference);
 
     return documentReference;

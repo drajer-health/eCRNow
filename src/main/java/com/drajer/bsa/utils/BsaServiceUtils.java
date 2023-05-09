@@ -1,6 +1,7 @@
 package com.drajer.bsa.utils;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
@@ -80,7 +81,7 @@ public class BsaServiceUtils {
   private static boolean SAVE_DEBUG_TO_FILES;
 
   private static final String FHIR_PATH_VARIABLE_PREFIX = "%";
-  private static IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forR4());
+  private static final IFhirPath FHIR_PATH = new FhirPathR4(FhirContext.forCached(FhirVersionEnum.R4));
 
   @PostConstruct
   public void initialize() {
