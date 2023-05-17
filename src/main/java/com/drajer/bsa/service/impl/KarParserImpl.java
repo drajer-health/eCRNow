@@ -201,7 +201,7 @@ public class KarParserImpl implements KarParser {
   private static final String PH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
 
-  private static HashMap<String, String> actionClasses = new HashMap<>();
+  private static final Map<String, String> actionClasses = new HashMap<>();
 
   // Load the Topic to Named Event Map.
   static {
@@ -386,7 +386,7 @@ public class KarParserImpl implements KarParser {
         }
       }
 
-      /**
+      /*
        * for (HealthcareSetting healthcareSetting : allHealthcareSettings) { KarProcessingData kd =
        * makeData(healthcareSetting, art); subscriptionGeneratorService.createSubscriptions(kd); }
        */
@@ -485,7 +485,7 @@ public class KarParserImpl implements KarParser {
     art.setKarPublisher(plan.getPublisher());
     processExtensions(plan, art);
 
-    /**
+    /*
      * if (plan.hasExtension(VARIABLE_EXTENSION_URL)) { Extension variableExtension =
      * plan.getExtensionByUrl(VARIABLE_EXTENSION_URL); Type variable = variableExtension.getValue();
      * if (variable instanceof Expression) { planVariableExpression = (Expression) variable;
@@ -589,7 +589,7 @@ public class KarParserImpl implements KarParser {
         }
       }
 
-      /**
+      /*
        * Extension ext = plan.getExtensionByUrl(RECEIVER_ADDRESS_URL);
        *
        * <p>if (ext != null && ext.hasValue()) {

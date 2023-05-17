@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -92,18 +91,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   // Variables for custom queries
   private static final String QUERY_FILE_EXT = "queries";
-  private static final String PATIENT_ID_CONTEXT_PARAM = "\\{\\{context.patientId\\}\\}";
-  private static final String ENCOUNTER_ID_CONTEXT_PARAM = "\\{\\{context.encounterId\\}\\}";
+  private static final String PATIENT_ID_CONTEXT_PARAM = "\\{\\{context.patientId}}";
+  private static final String ENCOUNTER_ID_CONTEXT_PARAM = "\\{\\{context.encounterId}}";
   private static final String ENCOUNTER_START_DATE_PARAM = "context.encounterStartDate";
   private static final String ENCOUNTER_END_DATE_PARAM = "context.encounterEndDate";
   private static final String LAST_REPORT_SUBMISSION_DATE_PARAM =
       "context.lastReportSubmissionDate";
   private static final String ENCOUNTER_START_DATE_CONTEXT_PARAM =
-      "\\{\\{context.encounterStartDate\\}\\}";
+      "\\{\\{context.encounterStartDate}}";
   private static final String ENCOUNTER_END_DATE_CONTEXT_PARAM =
-      "\\{\\{context.encounterEndDate\\}\\}";
+      "\\{\\{context.encounterEndDate}}";
   private static final String LAST_REPORT_SUBMISSION_DATE_CONTEXT_PARAM =
-      "\\{\\{context.lastReportSubmissionDate\\}\\}";
+      "\\{\\{context.lastReportSubmissionDate}}";
   private static final String SEARCH_QUERY_CHARACTERS = "?";
 
   /**
@@ -120,7 +119,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * the queries using some mechanism. So we have chosen the file name to be used to apply the
    * queries.
    */
-  private HashMap<String, HashMap<String, String>> customQueries;
+  private Map<String, Map<String, String>> customQueries;
 
   /** The Authorization utils class enables the BSA to get an access token. */
   @Autowired AuthorizationUtils authUtils;
@@ -181,7 +180,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private void processQueryFile(File queryFile) {
 
     // Retrieve the properties.
-    HashMap<String, String> queries = new HashMap<>();
+    Map<String, String> queries = new HashMap<>();
     String filenameWithoutExt = FilenameUtils.getBaseName(queryFile.getName());
 
     logger.info(" Loading Query File {}", queryFile.getAbsolutePath());
@@ -226,7 +225,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
 
     // Get Patient by Id always
     Resource res =
@@ -318,7 +317,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
 
     // Get Patient by Id always
     Resource res =
@@ -331,7 +330,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       Set<Resource> resources = new HashSet<>();
       resources.add(res);
-      HashMap<ResourceType, Set<Resource>> resMap = new HashMap<>();
+      Map<ResourceType, Set<Resource>> resMap = new HashMap<>();
       resMap.put(res.getResourceType(), resources);
       kd.addResourcesByType(resMap);
     }
@@ -388,24 +387,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   /**
-   * @param kd The data object for getting the healthcareSetting and notification context from
-   * @param context The HAPI FHIR context for making a FHIR client with
-   * @return
+   * @param kd The data object for getting the healthcareSetting
+   * @return Client used to access EHR patient records
    */
-  public IGenericClient getClient(KarProcessingData kd, FhirContext context) {
+  public IGenericClient getClient(KarProcessingData kd) {
 
     String accessToken = null;
 
-    if (kd.hasValidAccessToken()) {
-
-      accessToken = kd.getAccessToken();
-      logger.debug(
-          " Reusing Valid Access Token: {}, Expiration Time: {}",
-          accessToken,
-          kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
-
-    } else {
-
+    if (!kd.hasValidAccessToken()) {
       retrieveAndUpdateAccessToken(kd);
       accessToken = kd.getAccessToken();
       logger.debug(
@@ -414,11 +403,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
     }
 
-    return fhirContextInitializer.createClient(
-        context,
-        kd.getHealthcareSetting().getFhirServerBaseURL(),
-        accessToken,
-        kd.getNotificationContext().getxRequestId());
+    return kd.getClient(fhirContextInitializer, accessToken);
   }
 
   private void retrieveAndUpdateAccessToken(KarProcessingData data) {
@@ -444,7 +429,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     hsDao.saveOrUpdate(data.getHealthcareSetting());
 
-    /**
+    /*
      * data.getNotificationContext().setEhrAccessToken(accessToken);
      * data.getNotificationContext().setEhrAccessTokenExpiryDuration(expirationDuration);
      * data.getNotificationContext().setEhrAccessTokenExpirationTime(Date.from(expirationInstantTime));
@@ -459,12 +444,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * @param resource the resource to create on the fhir server
    */
   public void createResource(KarProcessingData kd, Resource resource) {
-
     logger.info(LOG_FHIR_CTX_GET);
-    FhirContext context = fhirContextInitializer.getFhirContext(R4);
-
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
     client.create().resource(resource).execute();
   }
 
@@ -473,12 +455,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * @param resource the resource (with ID) to update on the fhir server
    */
   public void updateResource(KarProcessingData kd, Resource resource) {
-
     logger.info("Getting FHIR Context for R4");
-    FhirContext context = fhirContextInitializer.getFhirContext(R4);
-
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
     client.update().resource(resource).execute();
   }
 
@@ -488,22 +467,19 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
    * @param id The logical ID of the resource to be deleted
    */
   public void deleteResource(KarProcessingData kd, ResourceType resourceType, String id) {
-
     logger.info(LOG_FHIR_CTX_GET);
-    FhirContext context = fhirContextInitializer.getFhirContext(R4);
-
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
     client.delete().resourceById(resourceType.toString(), id).execute();
   }
 
-  public HashMap<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd) {
+  public Map<ResourceType, Set<Resource>> loadJurisdicationData(KarProcessingData kd) {
 
     logger.info(LOG_FHIR_CTX_GET);
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
 
     // Retrieve the encounter
     kd.getContextEncounterId();
@@ -613,13 +589,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputDataByType();
   }
 
-  public HashMap<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd) {
-
+  public Map<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd) {
     logger.info(LOG_FHIR_CTX_GET);
-    FhirContext context = fhirContextInitializer.getFhirContext(R4);
-
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
     logger.info("Client: {}", client);
 
     // Retrieve the DiagnosticReports and get their components
@@ -636,7 +609,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
 
     return getResourceByUrl(client, context, resourceName, url, kd);
   }
@@ -699,7 +672,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
+    IGenericClient client = getClient(kd);
 
     return getResourceById(client, context, resourceName, resourceId);
   }
@@ -771,8 +744,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
             resources.add(comp.getResource());
           }
-          Set<Resource> uniqueResources =
-              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+          Set<Resource> uniqueResources = new HashSet<>(ResourceUtils.deduplicate(resources));
           resMap.put(resType, uniqueResources);
           resMapById.put(id, uniqueResources);
           kd.addResourcesByType(resMap);
@@ -972,7 +944,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
     logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(data, context);
+    IGenericClient client = getClient(data);
 
     getResourcesFromSearch(client, context, queryToExecute, data, query, dataReqId);
   }
@@ -997,7 +969,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
-      if (bundle.hasEntry() && bundle.getEntry().size() > 0) {
+      if (bundle.hasEntry() && !bundle.getEntry().isEmpty()) {
 
         logger.info(
             "Total No of Entries when searching for ResourceType: {} retrieved was: {}",
@@ -1042,12 +1014,12 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   }
 
   public void sortResourcesByType(
-      BundleEntryComponent comp, HashMap<ResourceType, Set<Resource>> resType) {
+      BundleEntryComponent comp, Map<ResourceType, Set<Resource>> resType) {
 
     if (resType.containsKey(comp.getResource().getResourceType())) {
       resType.get(comp.getResource().getResourceType()).add(comp.getResource());
     } else {
-      Set<Resource> res = new HashSet<Resource>();
+      Set<Resource> res = new HashSet<>();
       res.add(comp.getResource());
       resType.put(comp.getResource().getResourceType(), res);
     }
@@ -1202,7 +1174,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         || substitutedQuery.contains(ENCOUNTER_END_DATE_PARAM)) {
 
       int startThreshold =
-          -1 * Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
+          -1 * Integer.parseInt(data.getHealthcareSetting().getEncounterStartThreshold());
       int endThreshold = Integer.parseInt(data.getHealthcareSetting().getEncounterEndThreshold());
 
       Encounter enc = null;
@@ -1298,7 +1270,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       FhirContext context = fhirContextInitializer.getFhirContext(R4);
 
       logger.debug(LOG_INIT_FHIR_CLIENT);
-      IGenericClient client = getClient(data, context);
+      IGenericClient client = getClient(data);
 
       Resource res = getResourceById(client, context, ResourceType.Encounter.toString(), encId);
 

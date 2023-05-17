@@ -1,5 +1,6 @@
 package com.drajer.bsa.model;
 
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
@@ -10,9 +11,17 @@ import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.bsa.service.KarExecutionStateService;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.ResourceUtils;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -76,21 +85,21 @@ public class KarProcessingData {
    * The data accessed and collected from the healthcare setting for applying the KAR by Resource
    * type.
    */
-  HashMap<ResourceType, Set<Resource>> fhirInputDataByType;
+  Map<ResourceType, Set<Resource>> fhirInputDataByType;
 
   /**
    * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
    * Context Variable. These are typically the variable ids used for the Data Requirement classes
    * specified in the PlanDefinition.
    */
-  HashMap<String, Set<Resource>> fhirInputDataById;
+  Map<String, Set<Resource>> fhirInputDataById;
 
   /**
    * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
    * Context Variable. The HashMap stores the resourceId to the resource, so that we dont have to
    * search for it again if needed.
    */
-  HashMap<String, Resource> resourcesById;
+  Map<String, Resource> resourcesById;
 
   /**
    * The data to be used for specific condition evaluation. The map contains a mapping between the
@@ -104,24 +113,24 @@ public class KarProcessingData {
    * variables. (For e.g an encounter received via Subscription notification would be called
    * %encounter)
    */
-  HashMap<String, Resource> notificationContextResources;
+  Map<String, Resource> notificationContextResources;
 
   /**
    * The output produced by applying the KAR actions. The Key for the outer map is the Action Id
    * that produced the data. The Key for the inner map is the Resource Id of the Resource produced
    * by the Action
    */
-  HashMap<String, HashMap<String, Resource>> actionOutputData;
+  Map<String, Map<String, Resource>> actionOutputData;
 
   /**
    * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
    * Context Variable. These are typically the variable ids used for the Data Requirement classes
    * specified in the PlanDefinition.
    */
-  HashMap<String, Set<Resource>> actionOutputDataById;
+  Map<String, Set<Resource>> actionOutputDataById;
 
   /** The current status of each Action after its execution. */
-  HashMap<String, List<BsaActionStatus>> actionStatus;
+  Map<String, List<BsaActionStatus>> actionStatus;
 
   /** The previous status of the actions that can be used for comparison */
   KarExecutionState previousState;
@@ -285,8 +294,7 @@ public class KarProcessingData {
       if (fhirInputDataByType.containsKey(type)) {
         Set<Resource> resources = fhirInputDataByType.get(type);
         resources.addAll(res);
-        Set<Resource> uniqueResources =
-            ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+        Set<Resource> uniqueResources = new HashSet<>(ResourceUtils.deduplicate(resources));
 
         fhirInputDataByType.put(type, uniqueResources);
       } else fhirInputDataByType.put(type, res);
@@ -300,8 +308,7 @@ public class KarProcessingData {
       if (fhirInputDataByType.containsKey(type)) {
         Set<Resource> resources = fhirInputDataByType.get(type);
         resources.add(res);
-        Set<Resource> uniqueResources =
-            ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+        Set<Resource> uniqueResources = new HashSet<>(ResourceUtils.deduplicate(resources));
 
         fhirInputDataByType.put(type, uniqueResources);
       } else {
@@ -323,8 +330,7 @@ public class KarProcessingData {
     if (fhirInputDataById.containsKey(dataReqId)) {
       Set<Resource> resources = fhirInputDataById.get(dataReqId);
       resources.add(res);
-      Set<Resource> uniqueResources =
-          ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+      Set<Resource> uniqueResources = new HashSet<>(ResourceUtils.deduplicate(resources));
       fhirInputDataById.put(dataReqId, uniqueResources);
     } else {
       Set<Resource> resources = new HashSet<>();
@@ -333,7 +339,7 @@ public class KarProcessingData {
     }
   }
 
-  public void addResourcesById(HashMap<String, Set<Resource>> res) {
+  public void addResourcesById(Map<String, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
 
@@ -343,8 +349,7 @@ public class KarProcessingData {
         if (fhirInputDataById.containsKey(entry.getKey())) {
           Set<Resource> resources = fhirInputDataById.get(entry.getKey());
           resources.addAll(entry.getValue());
-          Set<Resource> uniqueResources =
-              ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
+          Set<Resource> uniqueResources = new HashSet<>(ResourceUtils.deduplicate(resources));
           fhirInputDataById.put(entry.getKey(), uniqueResources);
 
           // store the resources by Id also so that we can retrieve faster.
@@ -362,7 +367,7 @@ public class KarProcessingData {
     }
   }
 
-  public void resetResourcesById(HashMap<String, Set<Resource>> res) {
+  public void resetResourcesById(Map<String, Set<Resource>> res) {
 
     if (res != null && res.size() > 0) {
 
@@ -453,19 +458,19 @@ public class KarProcessingData {
     this.kar = kar;
   }
 
-  public HashMap<String, HashMap<String, Resource>> getActionOutputData() {
+  public Map<String, Map<String, Resource>> getActionOutputData() {
     return actionOutputData;
   }
 
-  public void setActionOutputData(HashMap<String, HashMap<String, Resource>> actionOutputData) {
+  public void setActionOutputData(Map<String, Map<String, Resource>> actionOutputData) {
     this.actionOutputData = actionOutputData;
   }
 
-  public HashMap<String, List<BsaActionStatus>> getActionStatus() {
+  public Map<String, List<BsaActionStatus>> getActionStatus() {
     return actionStatus;
   }
 
-  public void setActionStatus(HashMap<String, List<BsaActionStatus>> actionStatus) {
+  public void setActionStatus(Map<String, List<BsaActionStatus>> actionStatus) {
     this.actionStatus = actionStatus;
   }
 
@@ -493,19 +498,19 @@ public class KarProcessingData {
     this.notificationBundle = notificationBundle;
   }
 
-  public HashMap<ResourceType, Set<Resource>> getFhirInputDataByType() {
+  public Map<ResourceType, Set<Resource>> getFhirInputDataByType() {
     return fhirInputDataByType;
   }
 
-  public void setFhirInputDataByType(HashMap<ResourceType, Set<Resource>> fhirInputDataByType) {
+  public void setFhirInputDataByType(Map<ResourceType, Set<Resource>> fhirInputDataByType) {
     this.fhirInputDataByType = fhirInputDataByType;
   }
 
-  public HashMap<String, Set<Resource>> getFhirInputDataById() {
+  public Map<String, Set<Resource>> getFhirInputDataById() {
     return fhirInputDataById;
   }
 
-  public void setFhirInputDataById(HashMap<String, Set<Resource>> fhirInputDataById) {
+  public void setFhirInputDataById(Map<String, Set<Resource>> fhirInputDataById) {
     this.fhirInputDataById = fhirInputDataById;
   }
 
@@ -565,12 +570,11 @@ public class KarProcessingData {
     this.scheduledJobData = scheduledJobData;
   }
 
-  public HashMap<String, Resource> getNotificationContextResources() {
+  public Map<String, Resource> getNotificationContextResources() {
     return this.notificationContextResources;
   }
 
-  public void setNotificationContextResources(
-      HashMap<String, Resource> notificationContextResources) {
+  public void setNotificationContextResources(Map<String, Resource> notificationContextResources) {
     this.notificationContextResources = notificationContextResources;
   }
 
@@ -759,16 +763,15 @@ public class KarProcessingData {
     return parametersForConditionEvaluation;
   }
 
-  public void setParametersForConditionEvaluation(
-      Map<String, Parameters> parametersForConditionEvaluation) {
+  public void setParametersForConditionEvaluation(Map<String, Parameters> parametersForConditionEvaluation) {
     this.parametersForConditionEvaluation = parametersForConditionEvaluation;
   }
 
-  public HashMap<String, Set<Resource>> getActionOutputDataById() {
+  public Map<String, Set<Resource>> getActionOutputDataById() {
     return actionOutputDataById;
   }
 
-  public void setActionOutputDataById(HashMap<String, Set<Resource>> actionOutputDataById) {
+  public void setActionOutputDataById(Map<String, Set<Resource>> actionOutputDataById) {
     this.actionOutputDataById = actionOutputDataById;
   }
 
@@ -792,7 +795,7 @@ public class KarProcessingData {
 
   public Boolean hasNewTriggerCodeMatches() {
 
-    Boolean retVal = false;
+    Boolean retVal;
 
     if (currentTriggerMatchStatus != null && previousTriggerMatchStatus == null) {
       logger.info(" New Matches Found where as there were no matches previously");
@@ -852,5 +855,24 @@ public class KarProcessingData {
     if (resourcesById.containsKey(resourceId)) {
       return true;
     } else return false;
+  }
+
+  private IGenericClient client;
+  public IGenericClient getClient(FhirContextInitializer fhirContextInitializer, String accessToken) {
+    if (client == null || accessToken != null) {
+      if (accessToken == null) {
+        accessToken = this.getAccessToken();
+        logger.debug(
+                " Reusing Valid Access Token: {}, Expiration Time: {}",
+                this.getAccessToken(),
+                getHealthcareSetting().getEhrAccessTokenExpirationTime());
+      }
+      client = fhirContextInitializer.createClient(
+              fhirContextInitializer.getFhirContext("R4"),
+              getHealthcareSetting().getFhirServerBaseURL(),
+              accessToken,
+              getNotificationContext().getxRequestId());
+    }
+    return client;
   }
 }

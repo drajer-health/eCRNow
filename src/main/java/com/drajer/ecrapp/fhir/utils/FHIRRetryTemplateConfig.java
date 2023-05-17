@@ -19,7 +19,7 @@ public class FHIRRetryTemplateConfig {
   private Map<String, HttpMethodType> httpMethodTypeMap;
 
   public int getMaxRetries() {
-    return (maxRetries > 0 ? maxRetries : 0);
+    return (Math.max(maxRetries, 0));
   }
 
   public long getRetryWaitTimeInMillis() {
@@ -35,7 +35,7 @@ public class FHIRRetryTemplateConfig {
     private List<Integer> retryStatusCodes;
 
     public int getMaxRetries() {
-      return (maxRetries > 0 ? maxRetries : 0);
+      return (Math.max(maxRetries, 0));
     }
 
     public long getRetryWaitTimeInMillis() {

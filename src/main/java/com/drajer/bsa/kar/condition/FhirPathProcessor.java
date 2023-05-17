@@ -108,8 +108,6 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             logger.info(" Expression after resolution {}", expr);
 
-            Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
-
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
                 || exp.getName().contentEquals("lastReportSubmissionDate")) {
@@ -123,6 +121,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             } else {
 
+              Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
               Type value = variableResult.getParameter(PARAM);
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);

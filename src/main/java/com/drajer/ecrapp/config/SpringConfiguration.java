@@ -5,10 +5,13 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplateConfig;
 import com.drajer.ecrapp.fhir.utils.ecrretry.RetryStatusCode;
 
 import java.util.function.Supplier;
+
+import com.drajer.sof.utils.FhirContextInitializer;
 import org.opencds.cqf.cql.evaluator.builder.CqlEvaluatorBuilder;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
@@ -21,7 +24,6 @@ import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -48,27 +50,28 @@ import org.springframework.retry.support.RetryTemplate;
       "com.drajer.bsa.interfaces",
       "com.drajer.bsa"
     })
-@Import(EvaluatorConfiguration.class)
+@Import({ EvaluatorConfiguration.class, FHIRRetryTemplateConfig.class })
 @Configuration
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
-
-  @Autowired RetryStatusCode retryStatusCode;
   public static final String ERSD_FHIR_BASE_SERVER = "https://ersd.aimsplatform.org/api/fhir";
 
   public static final String AUTHORIZATION_TOKEN =
       "d94874a5b6d848ae921e75b9bf202feb97905791ff890a6e189614053a8032c6f298662299dea42df6cef59fde";
 
-  public static final FhirContext ctx = FhirContext.forCached(FhirVersionEnum.R4);
+  // Needed for the evaluator configuration
+  @Bean
+  public FhirContext fhirContext() {
+    return FhirContext.forCached(FhirVersionEnum.R4);
+  }
 
-  @Autowired FHIRRetryTemplateConfig fhirRetryTemplateConfig;
-
-  public void setFhirRetryTemplateConfig(FHIRRetryTemplateConfig fhirRetryTemplateConfig) {
-    this.fhirRetryTemplateConfig = fhirRetryTemplateConfig;
+  @Bean
+  public FhirContextInitializer fhirContextInitializer(FHIRRetryTemplate fhirRetryTemplate) {
+    return new FhirContextInitializer(fhirRetryTemplate);
   }
 
   @Bean(name = "esrdGenericClient")
-  public IGenericClient getEsrdFhirContext() {
+  public IGenericClient getEsrdFhirContext(FhirContext ctx) {
     BearerTokenAuthInterceptor authInterceptor =
         new BearerTokenAuthInterceptor(AUTHORIZATION_TOKEN);
     IGenericClient genericClient = ctx.newRestfulGenericClient(ERSD_FHIR_BASE_SERVER);
@@ -77,22 +80,13 @@ public class SpringConfiguration {
   }
 
   @Bean(name = "jsonParser")
-  public IParser getEsrdJsonParser() {
+  public IParser getEsrdJsonParser(FhirContext ctx) {
     return ctx.newJsonParser().setPrettyPrint(true);
   }
 
   @Bean(name = "ECRRetryTemplate")
-  public RetryTemplate retryTemplate() {
-
-    RetryTemplate template = retryStatusCode.configureRetryTemplate();
-
-    return template;
-  }
-
-  // Needed for the evaluator configuration
-  @Bean
-  public FhirContext fhirContext() {
-    return ctx;
+  public RetryTemplate retryTemplate(RetryStatusCode retryStatusCode) {
+    return retryStatusCode.configureRetryTemplate();
   }
 
   @Bean

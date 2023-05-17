@@ -131,13 +131,13 @@ public class KarProcessorImpl implements KarProcessor {
    */
   public void saveDataForDebug(KarProcessingData kd) {
 
-    HashMap<String, HashMap<String, Resource>> res = kd.getActionOutputData();
+    Map<String, Map<String, Resource>> res = kd.getActionOutputData();
 
-    for (Map.Entry<String, HashMap<String, Resource>> entry : res.entrySet()) {
+    for (Map.Entry<String, Map<String, Resource>> entry : res.entrySet()) {
 
       logger.info("Saving data to file for {}", entry.getKey());
 
-      HashMap<String, Resource> resOutput = entry.getValue();
+      Map<String, Resource> resOutput = entry.getValue();
 
       for (Map.Entry<String, Resource> resEnt : resOutput.entrySet()) {
 
@@ -201,7 +201,7 @@ public class KarProcessorImpl implements KarProcessor {
 
           for (KnowledgeArtifactStatus ks : stat) {
 
-            if (ks.getIsActive().booleanValue()
+            if (ks.getIsActive()
                 && ks.getVersionUniqueKarId().contentEquals(state.getKarUniqueId())) {
 
               logger.info(" Found unique Kar Status for KarId {}", state.getKarUniqueId());
