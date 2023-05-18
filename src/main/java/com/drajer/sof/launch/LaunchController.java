@@ -31,10 +31,7 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -172,13 +169,21 @@ public class LaunchController {
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,
       HttpServletResponse response)
-      throws IOException {
+      throws IOException, ParseException {
 
     logger.info(
         "System launch request received for patientId: {} and encounterId: {}",
         systemLaunch.getPatientId(),
         systemLaunch.getEncounterId());
-
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    Date startDate =
+        StringUtils.isNotBlank(systemLaunch.getEncounterStartDateTime())
+            ? formatter.parse(systemLaunch.getEncounterStartDateTime())
+            : null;
+    Date endDate =
+        StringUtils.isNotBlank(systemLaunch.getEncounterEndDateTime())
+            ? formatter.parse(systemLaunch.getEncounterEndDateTime())
+            : null;
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
     String requestIdHeadervalue = request.getHeader("X-Request-ID");
@@ -260,9 +265,21 @@ public class LaunchController {
             }
             launchDetails.setLaunchType("SystemLaunch");
 
-            IBaseResource encounter = getEncounterById(launchDetails);
-            setStartAndEndDates(clientDetails, launchDetails, encounter);
-
+            if (Objects.nonNull(startDate)) {
+              launchDetails.setStartDate(startDate);
+              if (Objects.nonNull(endDate)) {
+                launchDetails.setEndDate(endDate);
+              } else {
+                launchDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
+              }
+              logger.debug(
+                  "Found start Date {} and end date {} in System Launch Request",
+                  startDate,
+                  endDate);
+            } else {
+              IBaseResource encounter = getEncounterById(launchDetails);
+              setStartAndEndDates(clientDetails, launchDetails, encounter);
+            }
             clientDetailsService.saveOrUpdate(clientDetails);
 
             saveLaunchDetails(launchDetails);

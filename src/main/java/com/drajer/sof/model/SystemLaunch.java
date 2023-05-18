@@ -7,6 +7,10 @@ public class SystemLaunch {
   private String encounterId;
   private Boolean validationMode;
 
+  private String organizationId;
+  private String encounterStartDateTime;
+  private String encounterEndDateTime;
+
   public String getFhirServerURL() {
     return fhirServerURL;
   }
@@ -37,5 +41,29 @@ public class SystemLaunch {
 
   public void setValidationMode(Boolean validationMode) {
     this.validationMode = validationMode;
+  }
+
+  public String getOrganizationId() {
+    return organizationId;
+  }
+
+  public void setOrganizationId(final String organizationId) {
+    this.organizationId = organizationId;
+  }
+
+  public String getEncounterStartDateTime() {
+    return encounterStartDateTime;
+  }
+
+  public void setEncounterStartDateTime(final String encounterStartDateTime) {
+    this.encounterStartDateTime = encounterStartDateTime;
+  }
+
+  public String getEncounterEndDateTime() {
+    return encounterEndDateTime;
+  }
+
+  public void setEncounterEndDateTime(final String encounterEndDateTime) {
+    this.encounterEndDateTime = encounterEndDateTime;
   }
 }
