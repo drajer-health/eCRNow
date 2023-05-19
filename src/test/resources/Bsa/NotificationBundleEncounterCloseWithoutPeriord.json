@@ -72,10 +72,6 @@
           "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
           "code": "VR"
         },
-        "period": {
-          "start": "2020-05-12T13:40:56.000Z",
-          "end": "2021-05-12T13:40:56.000Z"
-        },
         "subject": {
           "reference": "https://example.org/fhir/r4/Patient/46db3334-dbf5-43f3-868f-93ae0883cce1",
           "display": "Example Patient"
