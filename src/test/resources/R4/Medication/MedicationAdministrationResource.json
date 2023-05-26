@@ -1,0 +1,64 @@
+{
+  "resourceType": "MedicationAdministration",
+  "id": "medadminexample03",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: MedicationAdministration</b><a name=\"medadminexample03\"> </a></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource MedicationAdministration &quot;medadminexample03&quot; </p></div><p><b>status</b>: on-hold</p><p><b>statusReason</b>: Administration of medication not done due to a contraindication (situation) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#373147003)</span></p><h3>Medications</h3><table class=\"grid\"><tr><td>-</td><td><b>Reference</b></td></tr><tr><td>*</td><td><a name=\"med0303\"> </a><blockquote><p/><p><a name=\"med0303\"> </a></p><p><b>code</b>: Alemtuzumab 10mg/ml (Lemtrada) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/5.1.0/CodeSystem-v3-rxNorm.html\">RxNorm</a>#1594660)</span></p></blockquote></td></tr></table><p><b>subject</b>: <a href=\"patient-example-a.html\">Patient/pat1: Donald Duck</a> &quot;Donald DUCK&quot;</p><p><b>encounter</b>: <a href=\"encounter-example-f001-heart.html\">Encounter/f001</a></p><p><b>supportingInformation</b>: <a href=\"condition-example-f204-renal.html\">Condition/f204</a></p><p><b>occurence</b>: 2015-01-15T14:30:00+01:00 --&gt; 2015-01-15T14:30:00+01:00</p><p><b>request</b>: <a href=\"medicationrequest0317.html\">MedicationRequest/medrx0317</a></p><p><b>note</b>: Patient started Bupropion this morning - will administer in a reduced dose tomorrow</p></div>"
+  },
+  "contained": [
+    {
+      "resourceType": "Medication",
+      "id": "med0303",
+      "code": {
+        "coding": [
+          {
+            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+            "code": "1594660",
+            "display": "Alemtuzumab 10mg/ml (Lemtrada)"
+          }
+        ]
+      }
+    }
+  ],
+  "status": "on-hold",
+  "statusReason": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "373147003",
+          "display": "Administration of medication not done due to a contraindication (situation)"
+        }
+      ]
+    }
+  ],
+  "medication": {
+    "reference": {
+      "reference": "#med0303"
+    }
+  },
+  "subject": {
+    "reference": "Patient/pat1",
+    "display": "Donald Duck"
+  },
+  "encounter": {
+    "reference": "Encounter/f001"
+  },
+  "supportingInformation": [
+    {
+      "reference": "Condition/f204"
+    }
+  ],
+  "occurencePeriod": {
+    "start": "2015-01-15T14:30:00+01:00",
+    "end": "2015-01-15T14:30:00+01:00"
+  },
+  "request": {
+    "reference": "MedicationRequest/medrx0317"
+  },
+  "note": [
+    {
+      "text": "Patient started Bupropion this morning - will administer in a reduced dose tomorrow"
+    }
+  ]
+}
