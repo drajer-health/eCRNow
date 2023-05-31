@@ -111,7 +111,6 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(exactly(1), getRequestedFor(urlEqualTo("/FHIR/metadata")));
 
     wireMockServer.resetAll();
-
   }
 
   @Test
