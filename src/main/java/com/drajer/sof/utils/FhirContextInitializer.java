@@ -2,11 +2,13 @@ package com.drajer.sof.utils;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.IRestfulClientFactory;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -94,6 +96,10 @@ public class FhirContextInitializer {
     this.retryTemplate = retryTemplate;
   }
 
+  public void setRetryTemplate(final FHIRRetryTemplate retryTemplate) {
+    this.retryTemplate = retryTemplate;
+  }
+
   /**
    * Get FhirContext appropriate to fhirVersion
    *
@@ -130,6 +136,10 @@ public class FhirContextInitializer {
     FhirClient client =
         new FhirClient(context.newRestfulGenericClient(url), requestId, EventTypes.QueryType.NONE);
 
+    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+    context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+    context.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
+
     IRestfulClientFactory restfulClientFactory = context.getRestfulClientFactory();
     restfulClientFactory.setSocketTimeout(socketTimeout * 1000);
     restfulClientFactory.setConnectTimeout(connectionTimeout * 1000);
@@ -161,6 +171,8 @@ public class FhirContextInitializer {
   public IGenericClient createClient(
       FhirContext context, LaunchDetails launchDetails, EventTypes.QueryType type) {
     logger.trace("Initializing the Client");
+    context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+    context.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
     FhirClient client =
         new FhirClient(
             context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
@@ -184,6 +196,7 @@ public class FhirContextInitializer {
     }
     logger.trace(
         "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
+
     return client;
   }
 

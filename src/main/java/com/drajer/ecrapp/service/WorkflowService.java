@@ -340,6 +340,7 @@ public class WorkflowService {
 
     Boolean timerAlreadyExists = false;
     CommandLineRunner task = null;
+
     if (staticSchedulerService != null) {
 
       List<ScheduledTasks> tasks =

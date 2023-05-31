@@ -150,23 +150,22 @@ public class PatientExecutionState {
   public Boolean hasEicrBeenCreated() {
 
     Boolean retVal = false;
-    if (createEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
+    if (createEicrStatus.getJobStatus() == JobStatus.COMPLETED
+        && createEicrStatus.getEicrCreated()) {
       logger.info(" Eicr has been creatd via Create Eicr Timer ");
       retVal = true;
-    } else if (closeOutEicrStatus.getJobStatus() == JobStatus.COMPLETED) {
+    } else if (closeOutEicrStatus.getJobStatus() == JobStatus.COMPLETED
+        && closeOutEicrStatus.getEicrClosed()) {
       logger.info(" Eicr has been creatd via Close Out Eicr Timer ");
       retVal = true;
     } else {
-
       for (PeriodicUpdateEicrStatus pd : periodicUpdateStatus) {
-
-        if (pd.getJobStatus() == JobStatus.COMPLETED) {
+        if (pd.getJobStatus() == JobStatus.COMPLETED && pd.getEicrUpdated()) {
           logger.info(" Found a Eicr created via Periodic timer");
           retVal = true;
         }
       }
     }
-
     return retVal;
   }
 
