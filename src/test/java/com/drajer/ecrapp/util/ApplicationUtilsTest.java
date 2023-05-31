@@ -134,9 +134,6 @@ public class ApplicationUtilsTest {
 
     assertTrue(t.isAfter(ct));
 
-    assertTrue(
-        t.atZone(ZoneOffset.UTC).getDayOfMonth()
-            >= (ct.atZone(ZoneOffset.UTC).getDayOfMonth() + 1));
     assertTrue(t.getEpochSecond() >= (ct.getEpochSecond() + 86400));
   }
 

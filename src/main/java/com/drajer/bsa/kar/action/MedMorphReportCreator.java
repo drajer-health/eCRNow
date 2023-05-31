@@ -18,12 +18,14 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.UriType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,9 @@ public class MedMorphReportCreator extends ReportCreator {
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
+  public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
+  public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
 
   @Override
   public Resource createReport(
@@ -121,10 +126,21 @@ public class MedMorphReportCreator extends ReportCreator {
     header.setId(UUID.randomUUID().toString());
     header.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, MESSAGE_HEADER_PROFILE));
 
+    // Add extensions
+    Extension ext = new Extension();
+    ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
+    StringType st = new StringType();
+    st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
+    ext.setValue(st);
+    List<Extension> exts = new ArrayList<>();
+    exts.add(ext);
+
+    header.setExtension(exts);
+
     // Set message type.
     Coding c = new Coding();
     c.setSystem(MESSAGE_TYPE);
-    c.setCode(BsaTypes.getMessageTypeString(MessageType.CANCER_REPORT_MESSAGE));
+    c.setCode(BsaTypes.getMessageTypeString(MessageType.HEALTHCARE_SURVEY_REPORT_MESSAGE));
     header.setEvent(c);
 
     // set destination
@@ -135,6 +151,7 @@ public class MedMorphReportCreator extends ReportCreator {
       mdc.setEndpoint(i.asStringValue());
       mdcs.add(mdc);
     }
+
     header.setDestination(mdcs);
 
     // Set source.
