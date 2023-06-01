@@ -1502,6 +1502,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         lastReportSubmissionDate = DateFormatUtils.format(new Date(), DATE_FORMAT);
       }
 
+      logger.info(" Last Report Submission time {}", lastReportSubmissionDate);
+
       substitutedQuery =
           substitutedQuery.replaceAll(
               LAST_REPORT_SUBMISSION_DATE_CONTEXT_PARAM, lastReportSubmissionDate);

@@ -67,6 +67,8 @@ public class EicrServiceImpl implements EicrRRService {
 
   RrParser rrParser;
 
+  @Autowired RestTemplate restTemplate;
+
   @Value("${ecr.rr.processorphanrr:false}")
   private Boolean processOrphanRr;
 
@@ -260,7 +262,7 @@ public class EicrServiceImpl implements EicrRRService {
   private boolean submitRRXmlToRestAPI(String rrXml, Eicr ecr, ClientDetails clientDetails) {
     logger.info("Eicr in submitRRXmlToRestAPI:{}", ecr);
     boolean isSubmitSuccess = false;
-    RestTemplate restTemplate = new RestTemplate();
+    //    RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_XML);
     HttpEntity<String> request = new HttpEntity<>(rrXml, headers);

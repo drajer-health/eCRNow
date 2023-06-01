@@ -294,10 +294,10 @@
             "doseAndRate": [
               {
                 "doseQuantity": {
-                  "value": 1.25,
-                  "unit": "mg",
+                  "value": 8,
+                  "unit": "caps",
                   "system": "http://unitsofmeasure.org",
-                  "code": "mg"
+                  "code": "{Capsule}"
                 }
               }
             ]

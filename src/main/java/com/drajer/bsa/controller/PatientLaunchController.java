@@ -97,7 +97,7 @@ public class PatientLaunchController {
 
       if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs, true);
+        Bundle nb = getNotificationBundle(launchContext, hs);
 
         notificationReceiver.processNotification(nb, request, response, launchContext);
 
@@ -172,7 +172,7 @@ public class PatientLaunchController {
 
       if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs, false);
+        Bundle nb = getNotificationBundle(launchContext, hs);
 
         notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
 
@@ -187,12 +187,12 @@ public class PatientLaunchController {
           HttpStatus.BAD_REQUEST, "Unrecognized healthcare setting FHIR URL ");
     }
     logger.info(
-        " Patient re-launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+        " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
         request.getHeader("X-Request-ID"));
 
-    return "Patient Instance re-launched for processing successfully";
+    return "Patient Instance launched for processing successfully";
   }
 
   /**
@@ -200,8 +200,7 @@ public class PatientLaunchController {
    *
    * @return
    */
-  public Bundle getNotificationBundle(
-      PatientLaunchContext context, HealthcareSetting hs, Boolean launchFlag) {
+  public Bundle getNotificationBundle(PatientLaunchContext context, HealthcareSetting hs) {
 
     Bundle nb = new Bundle();
 
@@ -228,32 +227,17 @@ public class PatientLaunchController {
         "http://hl7.org/fhir/uv/subscriptions-backport/StructureDefinition/backport-subscriptionstatus");
     params.setMeta(paramMeta);
 
-    if (launchFlag) {
-      // Add Subscription
-      logger.info(" Adding events for launchPatient ");
-      Reference subsRef = new Reference();
-      String url = context.getFhirServerURL() + "/Subscription/encounter-start";
-      subsRef.setReference(url);
-      params.addParameter("subscription", subsRef);
+    // Add Subscription
+    Reference subsRef = new Reference();
+    String url = context.getFhirServerURL() + "/Subscription/encounter-start";
+    subsRef.setReference(url);
+    params.addParameter("subscription", subsRef);
 
-      // Add topic
-      CanonicalType topicRef = new CanonicalType();
-      String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start";
-      topicRef.setValue(topicUrl);
-      params.addParameter("topic", topicRef);
-    } else {
-      logger.info(" Adding events for re-launchPatient ");
-      Reference subsRef = new Reference();
-      String url = context.getFhirServerURL() + "/Subscription/encounter-modified";
-      subsRef.setReference(url);
-      params.addParameter("subscription", subsRef);
-
-      // Add topic
-      CanonicalType topicRef = new CanonicalType();
-      String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-modified";
-      topicRef.setValue(topicUrl);
-      params.addParameter("topic", topicRef);
-    }
+    // Add topic
+    CanonicalType topicRef = new CanonicalType();
+    String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start";
+    topicRef.setValue(topicUrl);
+    params.addParameter("topic", topicRef);
 
     // Add Type and Status
     CodeType ev = new CodeType();

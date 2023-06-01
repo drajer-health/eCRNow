@@ -1182,7 +1182,7 @@ public class CdaGeneratorConstants {
     // Unable to translate other codes
   }
 
-  private static String getSplitValueURL(Object theValue) {
+  public static String getSplitValueURL(Object theValue) {
     String name = "";
     try {
       String[] values = ((String) theValue).trim().split("\\s*\\|\\s*");
