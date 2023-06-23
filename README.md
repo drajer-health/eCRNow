@@ -54,7 +54,7 @@ The routing module is used to submit/transmit the eICR created to the public hea
 | ecrfhirretrytemplate.httpMethodTypeMap.      | Above retry properties can be set at different Httpmethod level. `Example: ecrfhirretrytemplate.httpMethodTypeMap.GET.maxRetries=3 ecrfhirretrytemplate.httpMethodTypeMap.GET.retryWaitTimeInMillis=1000 ecrfhirretrytemplate.httpMethodTypeMap.GET.retryStatusCodes=408, 429, 502, 503, 504, 500`
 | longencounter.enableSuspend                  | Setting this property to `true` will suspend the long running encounter. Default value is false
 | longencounter.suspendThreshold               | Used when `longencounter.enableSuspend` is `true`. Threshold day to suspend long running encounter. Default value is `45` days
-
+| ecr.fhir.connection.socket.timeout           | Used to set read timeout value for the given HTTP  connection.
 # 3. eCRNow-UI Project and its relationship to eCRNow:
 The eCRNow-UI project and application is used to configure the eCRNow App. Although the UI is not mandatory to be used, it is preferrable as it makes it easier to configure the eCRNow App. The eCRNow-UI repository can be found here: https://github.com/drajer-health/eCRNow-UI. The instructions to build, deploy and start the eCRNow-UI is present in the eCRNow-UI project. The eCRNow App Configuration Guide is present in the eCRNow App documents folder which contains the instructions on how to configure the eCRNow App.
 
