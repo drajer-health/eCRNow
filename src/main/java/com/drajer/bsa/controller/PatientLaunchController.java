@@ -97,7 +97,7 @@ public class PatientLaunchController {
 
       if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs);
+        Bundle nb = getNotificationBundle(launchContext, hs, false);
 
         notificationReceiver.processNotification(nb, request, response, launchContext);
 
@@ -172,7 +172,7 @@ public class PatientLaunchController {
 
       if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs);
+        Bundle nb = getNotificationBundle(launchContext, hs, true);
 
         notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
 
@@ -200,7 +200,8 @@ public class PatientLaunchController {
    *
    * @return
    */
-  public Bundle getNotificationBundle(PatientLaunchContext context, HealthcareSetting hs) {
+  public Bundle getNotificationBundle(
+      PatientLaunchContext context, HealthcareSetting hs, Boolean relaunch) {
 
     Bundle nb = new Bundle();
 
@@ -228,16 +229,29 @@ public class PatientLaunchController {
     params.setMeta(paramMeta);
 
     // Add Subscription
-    Reference subsRef = new Reference();
-    String url = context.getFhirServerURL() + "/Subscription/encounter-start";
-    subsRef.setReference(url);
-    params.addParameter("subscription", subsRef);
+    if (!relaunch) {
+      Reference subsRef = new Reference();
+      String url = context.getFhirServerURL() + "/Subscription/encounter-start";
+      subsRef.setReference(url);
+      params.addParameter("subscription", subsRef);
 
-    // Add topic
-    CanonicalType topicRef = new CanonicalType();
-    String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start";
-    topicRef.setValue(topicUrl);
-    params.addParameter("topic", topicRef);
+      // Add topic
+      CanonicalType topicRef = new CanonicalType();
+      String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-start";
+      topicRef.setValue(topicUrl);
+      params.addParameter("topic", topicRef);
+    } else {
+      Reference subsRef = new Reference();
+      String url = context.getFhirServerURL() + "/Subscription/encounter-modified";
+      subsRef.setReference(url);
+      params.addParameter("subscription", subsRef);
+
+      // Add topic
+      CanonicalType topicRef = new CanonicalType();
+      String topicUrl = "http://hl7.org/fhir/us/medmorph/SubscriptionTopic/encounter-modified";
+      topicRef.setValue(topicUrl);
+      params.addParameter("topic", topicRef);
+    }
 
     // Add Type and Status
     CodeType ev = new CodeType();
