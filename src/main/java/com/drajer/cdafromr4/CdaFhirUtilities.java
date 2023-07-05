@@ -1797,7 +1797,7 @@ public class CdaFhirUtilities {
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
 
     String val = "";
-    if (dt != null) {
+    if (dt != null && !dt.hasExtension(CdaGeneratorConstants.FHIR_DATA_ABSENT_REASON_EXT_URL)) {
 
       if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
@@ -1866,7 +1866,7 @@ public class CdaFhirUtilities {
 
     if (Boolean.FALSE.equals(valFlag))
       val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
-    else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
+    else val += CdaGeneratorUtils.getXmlForValueString(CdaGeneratorConstants.NO_VALUE);
 
     return val;
   }

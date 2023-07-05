@@ -243,10 +243,7 @@ public class CdaResultGenerator {
       StringBuilder displayAttr = new StringBuilder(200);
       String repDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
       List<Coding> cds = null;
-      if (rep.hasCode()
-          && rep.getCode() != null
-          && rep.getCode().hasCoding()
-          && rep.getCode().getCodingFirstRep() != null) {
+      if (rep.hasCode() && rep.getCode().hasCoding() && rep.getCode().getCodingFirstRep() != null) {
 
         cds = rep.getCode().getCoding();
 
@@ -409,7 +406,10 @@ public class CdaResultGenerator {
         for (ObservationComponentComponent oc : obs.getComponent()) {
 
           logger.debug("Found Observation Components ");
-          if (oc.getCode() != null && oc.getCode().getCoding() != null) {
+          if (oc.hasCode()
+              && oc.getCode().hasCoding()
+              && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                  oc.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
             cc = oc.getCode();
           } else {
             // use diagnostic report code instead
@@ -448,12 +448,22 @@ public class CdaResultGenerator {
 
       if (obs != null && Boolean.FALSE.equals(foundComponent)) {
 
+        CodeableConcept cc = null;
         logger.info("No component found , so directly adding the observation code ");
+        if (obs.hasCode()
+            && obs.getCode().hasCoding()
+            && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                obs.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+          cc = obs.getCode();
+        } else {
+          // use diagnostic report code instead
+          cc = rep.getCode();
+        }
 
         lrEntry.append(
             getXmlForObservationComponent(
                 details,
-                (obs.getCode() != null ? obs.getCode() : rep.getCode()),
+                cc,
                 obs.getValue(),
                 obs.getId(),
                 obs.getEffective(),
@@ -939,10 +949,10 @@ public class CdaResultGenerator {
 
       for (DiagnosticReport dr : data.getDiagReports()) {
 
-        if (dr.getCode() != null
-            && dr.getCode().getCoding() != null
+        if (dr.hasCode()
+            && dr.getCode().hasCoding()
             && !dr.getCode().getCoding().isEmpty()
-            && dr.getResult() != null
+            && dr.hasResult()
             && !dr.getResult().isEmpty()
             && Boolean.TRUE.equals(
                 CdaFhirUtilities.isCodingPresentForCodeSystem(
