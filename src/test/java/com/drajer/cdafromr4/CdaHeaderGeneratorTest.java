@@ -16,88 +16,88 @@ import org.junit.Test;
 
 public class CdaHeaderGeneratorTest {
 
-    @Test
-    public void testGetDeceasedXml() {
+  @Test
+  public void testGetDeceasedXml() {
 
-        Patient p = getPatientData();
+    Patient p = getPatientData();
 
-        String decXml = CdaHeaderGenerator.getDeceasedXml(p);
+    String decXml = CdaHeaderGenerator.getDeceasedXml(p);
 
-        assertTrue(decXml.contains("false"));
+    assertTrue(decXml.contains("false"));
 
-        decXml = "";
-        BooleanType btf = new BooleanType(false);
-        p.setDeceased(btf);
+    decXml = "";
+    BooleanType btf = new BooleanType(false);
+    p.setDeceased(btf);
 
-        decXml = CdaHeaderGenerator.getDeceasedXml(p);
-        assertTrue(decXml.contains("false"));
+    decXml = CdaHeaderGenerator.getDeceasedXml(p);
+    assertTrue(decXml.contains("false"));
 
-        BooleanType btt = new BooleanType(true);
-        p.setDeceased(btt);
-        decXml = CdaHeaderGenerator.getDeceasedXml(p);
-        assertTrue(decXml.contains("true"));
-        assertTrue(decXml.contains("sdtc:deceasedInd value="));
-        assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
-        assertTrue(decXml.contains("NI"));
+    BooleanType btt = new BooleanType(true);
+    p.setDeceased(btt);
+    decXml = CdaHeaderGenerator.getDeceasedXml(p);
+    assertTrue(decXml.contains("true"));
+    assertTrue(decXml.contains("sdtc:deceasedInd value="));
+    assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
+    assertTrue(decXml.contains("NI"));
 
-        DateTimeType dtt = new DateTimeType();
-        dtt.setValue(Date.from(Instant.now()));
-        p.setDeceased(dtt);
+    DateTimeType dtt = new DateTimeType();
+    dtt.setValue(Date.from(Instant.now()));
+    p.setDeceased(dtt);
 
-        decXml = CdaHeaderGenerator.getDeceasedXml(p);
-        assertTrue(decXml.contains("true"));
-        assertTrue(decXml.contains("sdtc:deceasedInd value="));
-        assertFalse(decXml.contains("sdtc:deceasedTime nullFlavor="));
-        assertTrue(decXml.contains("sdtc:deceasedTime value="));
+    decXml = CdaHeaderGenerator.getDeceasedXml(p);
+    assertTrue(decXml.contains("true"));
+    assertTrue(decXml.contains("sdtc:deceasedInd value="));
+    assertFalse(decXml.contains("sdtc:deceasedTime nullFlavor="));
+    assertTrue(decXml.contains("sdtc:deceasedTime value="));
 
-        BooleanType st = new BooleanType();
-        p.setDeceased(st);
-        decXml = CdaHeaderGenerator.getDeceasedXml(p);
-        assertTrue(decXml.contains("false"));
+    BooleanType st = new BooleanType();
+    p.setDeceased(st);
+    decXml = CdaHeaderGenerator.getDeceasedXml(p);
+    assertTrue(decXml.contains("false"));
 
-        DateTimeType dtt1 = new DateTimeType();
-        p.setDeceased(dtt1);
+    DateTimeType dtt1 = new DateTimeType();
+    p.setDeceased(dtt1);
 
-        decXml = CdaHeaderGenerator.getDeceasedXml(p);
-        assertTrue(decXml.contains("true"));
-        assertTrue(decXml.contains("sdtc:deceasedInd value="));
-        assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
-    }
+    decXml = CdaHeaderGenerator.getDeceasedXml(p);
+    assertTrue(decXml.contains("true"));
+    assertTrue(decXml.contains("sdtc:deceasedInd value="));
+    assertTrue(decXml.contains("sdtc:deceasedTime nullFlavor="));
+  }
 
-    public Patient getPatientData() {
+  public Patient getPatientData() {
 
-        Patient p = new Patient();
+    Patient p = new Patient();
 
-        p.setId("5474974");
+    p.setId("5474974");
 
-        Extension ext1 = new Extension();
-        ext1.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
+    Extension ext1 = new Extension();
+    ext1.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-race");
 
-        Extension subext1 = new Extension();
-        subext1.setUrl("ombCategory");
+    Extension subext1 = new Extension();
+    subext1.setUrl("ombCategory");
 
-        Coding st1 = new Coding();
-        st1.setSystem("http://hl7.org/fhir/v3/NullFlavor");
-        st1.setCode("UNK");
-        st1.setDisplay("Unknown");
+    Coding st1 = new Coding();
+    st1.setSystem("http://hl7.org/fhir/v3/NullFlavor");
+    st1.setCode("UNK");
+    st1.setDisplay("Unknown");
 
-        Type tp1 = (Type) st1;
-        subext1.setValue(tp1);
-        ext1.addExtension(subext1);
+    Type tp1 = (Type) st1;
+    subext1.setValue(tp1);
+    ext1.addExtension(subext1);
 
-        Extension ext = new Extension();
-        ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
-        Extension subext = new Extension();
-        subext.setUrl("text");
+    Extension ext = new Extension();
+    ext.setUrl("http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity");
+    Extension subext = new Extension();
+    subext.setUrl("text");
 
-        StringType st = new StringType("Unavailable");
-        Type tp = (Type) st;
-        subext.setValue(tp);
-        ext.addExtension(subext);
+    StringType st = new StringType("Unavailable");
+    Type tp = (Type) st;
+    subext.setValue(tp);
+    ext.addExtension(subext);
 
-        p.addExtension(ext1);
-        p.addExtension(ext);
+    p.addExtension(ext1);
+    p.addExtension(ext);
 
-        return p;
-    }
+    return p;
+  }
 }
