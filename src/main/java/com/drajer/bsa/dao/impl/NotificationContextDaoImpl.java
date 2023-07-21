@@ -3,23 +3,14 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 import java.util.UUID;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- *
- * <h1>NotificationContextDaoImpl</h1>
- *
- * The NotificationContextDaoImpl class implements the Create, Read, Update service methods for
- * NotificationContext.
- *
- * @author nbashyam
- * @since 2021-04-15
- */
 @Repository
 @Transactional
 public class NotificationContextDaoImpl extends AbstractDao implements NotificationContextDao {
@@ -55,8 +46,14 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
    */
   @Override
   public NotificationContext getNotificationContextByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(NotificationContext.class);
-    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
-    return (NotificationContext) criteria.uniqueResult();
+    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+    CriteriaQuery<NotificationContext> query =
+        criteriaBuilder.createQuery(NotificationContext.class);
+    Root<NotificationContext> root = query.from(NotificationContext.class);
+
+    Predicate condition = criteriaBuilder.equal(root.get("fhirServerBaseURL"), url);
+    query.select(root).where(condition);
+
+    return getSession().createQuery(query).uniqueResult();
   }
 }

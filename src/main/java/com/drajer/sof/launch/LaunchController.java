@@ -26,6 +26,8 @@ import com.drajer.sof.utils.FhirContextInitializer;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.ParseException;
@@ -35,8 +37,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
@@ -656,7 +656,7 @@ public class LaunchController {
   }
 
   private Date getTokenExpirationDateTime(Integer expiresIn) {
-    Instant expireInstantTime = new Date().toInstant().plusSeconds(new Long(expiresIn));
+    Instant expireInstantTime = new Date().toInstant().plusSeconds(expiresIn);
     return new Date().from(expireInstantTime);
   }
 

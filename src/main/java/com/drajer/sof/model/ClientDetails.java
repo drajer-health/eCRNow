@@ -2,21 +2,13 @@ package com.drajer.sof.model;
 
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
+import org.hibernate.type.NumericBooleanConverter;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,22 +25,22 @@ public class ClientDetails {
   private Integer id;
 
   @Column(name = "is_provider_launch", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isProvider;
 
   @Column(name = "is_system_launch", nullable = false, columnDefinition = "int default 1")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isSystem;
 
   @Column(
       name = "is_multi_tenant_system_launch",
       nullable = true,
       columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isMultiTenantSystemLaunch;
 
   @Column(name = "is_user_account_launch", nullable = true)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isUserAccountLaunch;
 
   @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
@@ -77,15 +69,15 @@ public class ClientDetails {
   private Date tokenExpiryDateTime;
 
   @Column(name = "is_direct", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isDirect;
 
   @Column(name = "is_xdr", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isXdr;
 
   @Column(name = "is_restapi", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isRestAPI;
 
   @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
@@ -128,30 +120,30 @@ public class ClientDetails {
   private String encounterEndThreshold;
 
   @Column(name = "is_covid19", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isCovid;
 
   @Column(name = "is_full_ecr", nullable = false, columnDefinition = "int default 1")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isFullEcr;
 
   @Column(
       name = "is_emergent_reporting_enabled",
       nullable = false,
       columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isEmergentReportingEnabled;
 
   @Column(name = "rrprocessing_createdocRef", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isCreateDocRef;
 
   @Column(name = "rrprocessing_invokerestapi", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isInvokeRestAPI;
 
   @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean isBoth;
 
   @Column(name = "rr_rest_api_url", nullable = true)
@@ -161,11 +153,11 @@ public class ClientDetails {
   private String rrDocRefMimeType;
 
   @Column(name = "debug_fhir_query_and_eicr", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean debugFhirQueryAndEicr;
 
   @Column(name = "require_aud", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = NumericBooleanConverter.class)
   private Boolean requireAud = false;
 
   @Column(name = "last_updated_ts", nullable = false)

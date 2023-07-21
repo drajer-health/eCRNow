@@ -1,13 +1,10 @@
 package com.drajer.ecrapp.model;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.VarbinaryJdbcType;
 
 @Entity
 @Table(name = "scheduled_tasks")
@@ -23,7 +20,7 @@ public class ScheduledTasks implements Serializable {
 
   @Lob
   @Column(name = "task_data", length = 1000000)
-  @Type(type = "org.hibernate.type.BinaryType")
+  @JdbcType(VarbinaryJdbcType.class)
   private byte[] task_data;
 
   @Column(name = "execution_time")

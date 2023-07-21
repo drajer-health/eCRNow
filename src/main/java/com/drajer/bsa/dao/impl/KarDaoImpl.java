@@ -4,10 +4,11 @@ import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -32,15 +33,26 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactRepository getKARByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
-    criteria.add(Restrictions.eq("fhirServerURL", url));
-    return (KnowledgeArtifactRepository) criteria.uniqueResult();
+    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactRepository> query =
+        criteriaBuilder.createQuery(KnowledgeArtifactRepository.class);
+    Root<KnowledgeArtifactRepository> root = query.from(KnowledgeArtifactRepository.class);
+
+    query.select(root).where(criteriaBuilder.equal(root.get("fhirServerURL"), url));
+
+    return getSession().createQuery(query).uniqueResult();
   }
 
   @Override
   public List<KnowledgeArtifactRepository> getAllKARs() {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
-    return criteria.addOrder(Order.desc("id")).list();
+    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactRepository> query =
+        criteriaBuilder.createQuery(KnowledgeArtifactRepository.class);
+    Root<KnowledgeArtifactRepository> root = query.from(KnowledgeArtifactRepository.class);
+
+    query.select(root).orderBy(criteriaBuilder.desc(root.get("id")));
+
+    return getSession().createQuery(query).getResultList();
   }
 
   @Override
@@ -51,22 +63,29 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
-    criteria.add(Restrictions.eq("hsId", hsId));
-    List<KnowledgeArtifactStatus> kars = criteria.list();
-    logger.info("Getting KAR Status by hsId. ");
-    return kars;
+    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactStatus> query =
+        criteriaBuilder.createQuery(KnowledgeArtifactStatus.class);
+    Root<KnowledgeArtifactStatus> root = query.from(KnowledgeArtifactStatus.class);
+
+    query.select(root).where(criteriaBuilder.equal(root.get("hsId"), hsId));
+
+    return getSession().createQuery(query).getResultList();
   }
 
   @Override
   public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
       String karId, String karVersion, Integer hsId) {
-    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
-    criteria.add(Restrictions.eq("versionUniqueKarId", karId + "|" + karVersion));
-    criteria.add(Restrictions.eq("hsId", hsId));
-    KnowledgeArtifactStatus kars = (KnowledgeArtifactStatus) criteria.uniqueResult();
-    logger.info("Getting KAR Status by using karId and karVersion. ");
+    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
+    CriteriaQuery<KnowledgeArtifactStatus> query =
+        criteriaBuilder.createQuery(KnowledgeArtifactStatus.class);
+    Root<KnowledgeArtifactStatus> root = query.from(KnowledgeArtifactStatus.class);
 
-    return kars;
+    Predicate karIdVersionPredicate =
+        criteriaBuilder.equal(root.get("versionUniqueKarId"), karId + "|" + karVersion);
+    Predicate hsIdPredicate = criteriaBuilder.equal(root.get("hsId"), hsId);
+    query.select(root).where(criteriaBuilder.and(karIdVersionPredicate, hsIdPredicate));
+
+    return getSession().createQuery(query).uniqueResult();
   }
 }

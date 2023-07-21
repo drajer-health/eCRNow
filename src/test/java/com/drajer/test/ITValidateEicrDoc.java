@@ -9,6 +9,9 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +24,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -162,9 +163,15 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      //      Criteria criteria = session.createCriteria(LaunchDetails.class);
+      //      criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      //      launchDetails = (LaunchDetails) criteria.uniqueResult();
+
+      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+      CriteriaQuery<LaunchDetails> query = criteriaBuilder.createQuery(LaunchDetails.class);
+      Root<LaunchDetails> phMessageEntity = query.from(LaunchDetails.class);
+      query.where(criteriaBuilder.equal(phMessageEntity.get("xRequestId"), "testCaseId"));
+      launchDetails = session.createQuery(query).getSingleResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);
