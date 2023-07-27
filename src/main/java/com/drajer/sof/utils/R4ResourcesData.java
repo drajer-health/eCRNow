@@ -26,6 +26,7 @@ import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,9 @@ public class R4ResourcesData {
   @Autowired FhirContextInitializer resourceData;
 
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Value("${ecr.fhir.exclude.loinctravelcode:false}")
+  private Boolean excludeLoincTravelCode;
 
   private final Logger logger = LoggerFactory.getLogger(R4ResourcesData.class);
 
@@ -346,7 +350,12 @@ public class R4ResourcesData {
     for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
       codeBuilder.append(QueryConstants.SNOMED_CODE_SYSTEM + "|" + travelSnomedCode + ",");
     }
-    codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + QueryConstants.TRAVEL_CODE);
+    if (excludeLoincTravelCode) {
+      // removing comma from last character from codebuilder
+      codeBuilder.deleteCharAt(codeBuilder.length() - 1);
+    } else {
+      codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + QueryConstants.TRAVEL_CODE);
+    }
     codeBuilder.trimToSize();
     String codes = codeBuilder.toString();
 
@@ -358,7 +367,6 @@ public class R4ResourcesData {
             + launchDetails.getLaunchPatientId()
             + "&code="
             + codes;
-
     Bundle travelCodeBundle =
         (Bundle)
             FhirContextInitializer.getResourceBundleByUrl(
