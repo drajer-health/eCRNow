@@ -17,7 +17,7 @@
 	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<fhir.version>5.4.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
