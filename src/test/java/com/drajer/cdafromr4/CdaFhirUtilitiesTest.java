@@ -1320,15 +1320,24 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     Quantity quantity = new Quantity();
     quantity.setValue(100);
 
-    quantity.setCode("med");
+    quantity.setCode("mg");
 
     quantity.setSystemElement(new UriType("http://snomed.info/sct"));
 
-    quantity.setUnit("mg");
+    quantity.setUnit("milligrams");
     quantity.setValueElement(new DecimalType(100));
 
     String expectedResult = "100|http://snomed.info/sct|mg";
     String actualResult = CdaFhirUtilities.getStringForQuantity(quantity);
+    assertEquals(expectedResult, actualResult);
+
+    // Check No code
+    Quantity quantity1 = new Quantity();
+    quantity1.setValue(100);
+    quantity1.setValueElement(new DecimalType(100));
+
+    expectedResult = "100";
+    actualResult = CdaFhirUtilities.getStringForQuantity(quantity1);
     assertEquals(expectedResult, actualResult);
 
     // passing null quantity
@@ -1810,7 +1819,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
     assertEquals(expectedValue.trim(), actualValue.trim());
 
-    expectedValue = "<value xsi:type=\"ST\" nullFlavor=\"NI\"/>";
+    expectedValue = "<value xsi:type=\"ST\">No Value</value>";
     actualValue = CdaFhirUtilities.getXmlForType(null, CdaGeneratorConstants.CODE_EL_NAME, true);
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
     assertEquals(expectedValue.trim(), actualValue.trim());
