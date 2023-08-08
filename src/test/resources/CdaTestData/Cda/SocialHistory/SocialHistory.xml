@@ -1,0 +1,293 @@
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+<code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+<title>SOCIAL HISTORY</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Social History Observation</th>
+<th>Social History Observation Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="socContent0">Birth Sex</content>
+</td>
+<td>
+<content ID="socObservationResult0">UNK</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent1">Pregnancy Condition</content>
+</td>
+<td>
+<content ID="socObservationResult1">Suspected disease caused by 2019-nCoV</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent2">Pregnancy Condition</content>
+</td>
+<td>
+<content ID="socObservationResult2">Patient currently pregnant (finding)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent3">Pregnancy Condition</content>
+</td>
+<td>
+<content ID="socObservationResult3">Mixed anxiety and depressive disorder (disorder)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent4">Pregnancy Condition</content>
+</td>
+<td>
+<content ID="socObservationResult4">Seasonal allergy (disorder)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent5">Pregnancy Condition</content>
+</td>
+<td>
+<content ID="socObservationResult5">Disease caused by 2019-nCoV</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent6">Occupation History</content>
+</td>
+<td>
+<content ID="socObservationResult6">Software Engineer</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent7">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult7">Recent countries visited (observable entity)-</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent8">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult8">Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent9">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult9">Recent countries visited (observable entity)-</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent10">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult10">Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent11">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult11">Recent countries visited (observable entity)-Italy (geographic location)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent12">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult12">Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent13">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult13">Recent countries visited (observable entity)-China (geographic location)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent14">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult14">Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.200" extension="2016-06-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76689-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Birth Sex"/>
+<statusCode code="completed"/>
+<value xsi:type="CD" nullFlavor="UNK"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20200428201200+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="840544004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Suspected disease caused by 2019-nCoV"><translation code="Z20.828" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="Contact with and (suspected) exposure to other viral communicable diseases"/>
+</value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20200101"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="231504006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Mixed anxiety and depressive disorder (disorder)"></value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="444316004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Seasonal allergy (disorder)"></value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20200428201200+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Disease caused by 2019-nCoV"><translation code="U07.1" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="2019-nCoV acute respiratory disease"/>
+</value>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.38" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="364703007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Employment Detail"><translation code="11295-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Current employment - Reported"/>
+<translation code="74174-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Occupation history"></translation>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20220515123000+0000"/>
+<value xsi:type="ST">Software Engineer</value>
+</observation>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Recent countries visited (observable entity)-</text>
+<statusCode code="completed"/>
+<effectiveTime value="20230209121500+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</text>
+<statusCode code="completed"/>
+<effectiveTime value="20230209121500+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Recent countries visited (observable entity)-</text>
+<statusCode code="completed"/>
+<effectiveTime value="20230209121000+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</text>
+<statusCode code="completed"/>
+<effectiveTime value="20230209121000+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Recent countries visited (observable entity)-Italy (geographic location)</text>
+<statusCode code="completed"/>
+<effectiveTime value="20210112164000+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</text>
+<statusCode code="completed"/>
+<effectiveTime value="20210112164000+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Recent countries visited (observable entity)-China (geographic location)</text>
+<statusCode code="completed"/>
+<effectiveTime value="20210112163300+0000"/>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</text>
+<statusCode code="completed"/>
+<effectiveTime value="20210112163300+0000"/>
+</act>
+</entry>
+</section>
+</component>

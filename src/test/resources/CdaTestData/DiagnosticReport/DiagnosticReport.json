@@ -1,0 +1,157 @@
+{
+	"resourceType": "Bundle",
+	"entry": [
+		{
+			"resource": {
+				"resourceType": "DiagnosticReport",
+				"id": "a-11287.inptresultlab-1484",
+				"meta": {
+					"security": [
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+							"code": "NOPAT",
+							"display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+						},
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+							"code": "SUBSETTED",
+							"display": "subsetted"
+						}
+					]
+				},
+				"extension": [
+					{
+						"url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+						"valueReference": {
+							"reference": "Organization/a-1.Practice-11287"
+						}
+					},
+					{
+						"url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+						"valueReference": {
+							"reference": "Organization/a-11287.CSG-1"
+						}
+					}
+				],
+				"status": "unknown",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+								"code": "LAB",
+								"display": "Laboratory"
+							}
+						]
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "94308-4"
+						}
+					]
+				},
+				"subject": {
+					"reference": "Patient/a-11287.E-4237"
+				},
+				"effectiveDateTime": "2022-09-20T08:44:00-04:00",
+				"issued": "2022-09-20T06:25:52.000-04:00",
+				"performer": [
+					{
+						"reference": "Organization/a-1.CP-12651771"
+					}
+				],
+				"result": [
+					{
+						"reference": "Observation/a-11287.inptlabobservation-601"
+					}
+				],
+				"presentedForm": [
+					{
+						"contentType": "text/html",
+						"data": "U3BlY2ltZW46IExBQjsgSW50ZXJuYWwgbm90ZTogUiBBWElMTEE=",
+						"title": "Result Note"
+					}
+				]
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "DiagnosticReport",
+				"id": "a-11287.inptresultlab-1484",
+				"meta": {
+					"security": [
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+							"code": "NOPAT",
+							"display": "no disclosure to patient, family or caregivers without attending provider's authorization"
+						},
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+							"code": "SUBSETTED",
+							"display": "subsetted"
+						}
+					]
+				},
+				"extension": [
+					{
+						"url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+						"valueReference": {
+							"reference": "Organization/a-1.Practice-11287"
+						}
+					},
+					{
+						"url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+						"valueReference": {
+							"reference": "Organization/a-11287.CSG-1"
+						}
+					}
+				],
+				"status": "unknown",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+								"code": "LAB",
+								"display": "Laboratory"
+							}
+						]
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "94308-4"
+						}
+					]
+				},
+				"subject": {
+					"reference": "Patient/a-11287.E-4237"
+				},
+				"effectiveDateTime": "2022-09-20T08:44:00-04:00",
+				"issued": "2022-09-20T06:25:52.000-04:00",
+				"performer": [
+					{
+						"reference": "Organization/a-1.CP-12651771"
+					}
+				],
+				"result": [
+					{
+						"reference": "Observation/a-11287.inptlabobservation-601"
+					}
+				],
+				"presentedForm": [
+					{
+						"contentType": "text/html",
+						"data": "U3BlY2ltZW46IExBQjsgSW50ZXJuYWwgbm90ZTogUiBBWElMTEE=",
+						"title": "Result Note"
+					}
+				]
+			}
+		}
+	]
+}
