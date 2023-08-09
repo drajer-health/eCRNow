@@ -96,12 +96,6 @@ public class LaunchController {
   @PostMapping(value = "/api/launchDetails")
   public LaunchDetails saveLaunchDetails(@RequestBody LaunchDetails launchDetails) {
 
-    logger.info(" Saving Launch Context: {}", launchDetails);
-    authDetailsService.saveOrUpdate(launchDetails);
-
-    logger.info("Scheduling refresh token job ");
-    tokenScheduler.scheduleJob(launchDetails);
-
     String taskInstanceId = "";
     // Kick off the Launch Event Processing
     scheduleJob(launchDetails, taskInstanceId);
@@ -113,7 +107,9 @@ public class LaunchController {
 
     try {
       if (launchDetails.getEncounterId() != null && launchDetails.getStartDate() != null) {
+
         logger.info("Scheduling the job based on Encounter period.start time:::::");
+
         // Setup Execution State.
         PatientExecutionState state =
             new PatientExecutionState(
@@ -121,14 +117,21 @@ public class LaunchController {
 
         launchDetails.setStatus(mapper.writeValueAsString(state));
         authDetailsService.saveOrUpdate(launchDetails);
+
+        logger.info("Scheduling refresh token job ");
+        tokenScheduler.scheduleJob(launchDetails);
+
         Instant t = launchDetails.getStartDate().toInstant();
         workflowService.invokeScheduler(
             launchDetails.getId(), EcrActionTypes.MATCH_TRIGGER, t, taskInstanceId);
       } else {
         logger.info("Invoking SOF Launch workflow event handler ");
+        authDetailsService.saveOrUpdate(launchDetails);
+        tokenScheduler.scheduleJob(launchDetails);
         workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
       }
     } catch (JsonProcessingException e) {
+      authDetailsService.saveOrUpdate(launchDetails);
       logger.error("Error in Scheduling the Job", e);
     }
   }
