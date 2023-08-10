@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -23,9 +24,6 @@
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
-		<argLine>--add-opens=java.base/java.util=ALL-UNNAMED
-			--add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
-
 	</properties>
 
 	<distributionManagement>
@@ -34,21 +32,21 @@
 			<url>${project.build.directory}/staging</url>
 		</site>
 	</distributionManagement>
-	
-	<repositories> 
-		<repository> 
-			<id>oss-sonatype</id> 
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url> 
-			<snapshots> 
-				<enabled>true</enabled> 
-			</snapshots> 
-		</repository> 
-		<repository> 
-			<id>oss-sonatype-public</id> 
-			<url>https://oss.sonatype.org/content/groups/public/</url> 
-		</repository> 
+
+	<repositories>
+		<repository>
+			<id>oss-sonatype</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>oss-sonatype-public</id>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</repository>
 	</repositories>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -91,7 +89,7 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-		<!--mssql-->
+		<!--mssql -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
@@ -104,7 +102,7 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-	  	<dependency>
+		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
 			<version>11.6</version>
@@ -202,20 +200,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-	 	<dependency>
-            <groupId>org.opencds.cqf.cql</groupId>
-            <artifactId>evaluator.expression</artifactId>
-            <version>${cql-evaluator.version}</version>
-            <exclusions>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.expression</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
 				<exclusion>
 					<groupId>javax</groupId>
 					<artifactId>javaee-api</artifactId>
 				</exclusion>
 			</exclusions>
-        </dependency>
-        
-        <dependency>
+		</dependency>
+
+		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.measure-hapi</artifactId>
 			<version>${cql-evaluator.version}</version>
@@ -250,8 +248,8 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.12.6.1</version>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -270,14 +268,14 @@
 			<version>4.4</version>
 		</dependency>
 
-		<!--  Schematron Validator -->
+		<!-- Schematron Validator -->
 		<dependency>
 			<groupId>com.helger</groupId>
 			<artifactId>ph-schematron-validator</artifactId>
 			<version>5.6.0</version>
 		</dependency>
 
-		<!--  Direct Dependencies -->
+		<!-- Direct Dependencies -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
@@ -364,7 +362,7 @@
 			<artifactId>wiremock-jre8</artifactId>
 			<version>2.31.0</version>
 			<scope>test</scope>
-		  </dependency>
+		</dependency>
 
 
 		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
@@ -418,7 +416,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -470,7 +468,7 @@
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
 						</configuration>
 					</execution>
-					<!--  Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
+					<!-- Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
 					<execution>
 						<id>jacoco-merge-report-verify</id>
 						<phase>verify</phase>
@@ -601,6 +599,17 @@
 	</reporting>
 
 	<profiles>
+		<!-- Profile for Java 17 -->
+		<profile>
+			<id>java17-profile</id>
+			<activation>
+				<jdk>[17,)</jdk>
+			</activation>
+			<properties>
+				<argLine>--add-opens=java.base/java.util=ALL-UNNAMED
+					--add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+			</properties>
+		</profile>
 		<profile>
 			<id>eCRNow</id>
 			<activation>
