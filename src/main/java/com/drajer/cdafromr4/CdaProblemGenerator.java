@@ -67,6 +67,7 @@ public class CdaProblemGenerator {
       List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.PROB_TABLE_COL_3_TITLE);
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
               list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
@@ -113,6 +114,18 @@ public class CdaProblemGenerator {
               CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
               CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
         }
+
+        // Add dates
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(prob.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(prob.getAbatement());
+        Pair<Date, TimeZone> recordedDate = null;
+        if (prob.hasRecordedDateElement()) {
+          recordedDate =
+              new Pair<>(prob.getRecordedDate(), prob.getRecordedDateElement().getTimeZone());
+        }
+
+        String probDates = CdaFhirUtilities.getStringForDates(onset, abatement, recordedDate);
+        bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_3_BODY_CONTENT, probDates);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum;
@@ -180,7 +193,7 @@ public class CdaProblemGenerator {
         Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
         Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
         Pair<Date, TimeZone> recordedDate = null;
-        if (pr.getRecordedDateElement() != null) {
+        if (pr.hasRecordedDateElement()) {
           recordedDate =
               new Pair<>(pr.getRecordedDate(), pr.getRecordedDateElement().getTimeZone());
         }

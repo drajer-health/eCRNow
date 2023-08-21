@@ -233,11 +233,11 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElementWithClassCode(
             CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
 
-    if (cc.getAddress() != null) {
+    if (cc.hasAddress()) {
       s.append(CdaFhirUtilities.getAddressXml(cc.getAddress()));
     }
 
-    if (cc.getTelecom() != null) {
+    if (cc.hasTelecom()) {
       s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false));
     }
 
@@ -432,7 +432,7 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      if (org.getAddress() != null) {
+      if (org.hasAddress()) {
         List<Address> addrs = org.getAddress();
         sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
       } else {
@@ -617,7 +617,7 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, true));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
@@ -896,9 +896,6 @@ public class CdaHeaderGenerator {
     // Add Telecom (Phone)
     patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false));
 
-    // Add Telecom (Email)
-    patientDetails.append(CdaFhirUtilities.getEmailXml(p.getTelecom()));
-
     // Add patient
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
@@ -1002,7 +999,6 @@ public class CdaHeaderGenerator {
 
         // Add Telecom
         patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false));
-        patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));

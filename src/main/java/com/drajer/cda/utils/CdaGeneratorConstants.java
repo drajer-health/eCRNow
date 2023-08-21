@@ -843,6 +843,9 @@ public class CdaGeneratorConstants {
   public static final String PROB_TABLE_COL_1_BODY_CONTENT = "problem";
   public static final String PROB_TABLE_COL_2_TITLE = "Problem Status";
   public static final String PROB_TABLE_COL_2_BODY_CONTENT = "problemStatus";
+  public static final String PROB_TABLE_COL_3_TITLE =
+      "Problem Recorded Date|Onset Date|Resolved Date";
+  public static final String PROB_TABLE_COL_3_BODY_CONTENT = "problemDate";
   public static final String HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT = "historyOfPresentIllness";
   public static final String REASON_FOR_VISIT_BODY_CONTENT = "reasonForVisit";
   public static final String ALLERGY_TABLE_COL_1_TITLE = "Allergy Substance";

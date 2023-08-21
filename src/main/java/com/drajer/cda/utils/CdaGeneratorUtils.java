@@ -642,7 +642,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForTelecom(String telName, String telNo, String use) {
+  public static String getXmlForTelecom(String telName, String telNo, String use, Boolean fax) {
 
     String s = "";
 
@@ -653,6 +653,12 @@ public class CdaGeneratorUtils {
       finalTel = tel.substring(tel.length() - 10);
     }
 
+    String telprefix = "tel:(";
+
+    if (fax) {
+      telprefix = "fax:(";
+    }
+
     if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {
 
       s +=
@@ -661,7 +667,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
+              + telprefix
               + finalTel.substring(0, 3)
               + ")"
               + finalTel.substring(3, 6)
@@ -682,7 +688,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
+              + telprefix
               + finalTel.substring(0, 3)
               + ")"
               + finalTel.substring(3, 6)

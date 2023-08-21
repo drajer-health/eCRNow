@@ -314,8 +314,17 @@ public class CdaFhirUtilities {
           addrString.append(getAddressXml(addr));
         }
       } else {
-        Address addr = addrs.get(0);
-        addrString.append(getAddressXml(addr));
+
+        Address addres = null;
+        for (Address addr : addrs) {
+          if (addr.hasUse() && addr.getUseElement().getValue() == Address.AddressUse.WORK) {
+            addres = addr;
+            break;
+          }
+        }
+
+        if (addres == null) addres = addrs.get(0);
+        addrString.append(getAddressXml(addres));
       }
     } else {
       Address addr = null;
@@ -451,7 +460,31 @@ public class CdaFhirUtilities {
 
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
+                  CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, false));
+
+          if (onlyOne) break;
+        } else if (tel.getSystem() != null
+            && tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL
+            && !StringUtils.isEmpty(tel.getValue())) {
+
+          logger.debug("Found Email address ");
+          String use = "";
+
+          telString.append(
+              CdaGeneratorUtils.getXmlForEmail(
                   CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use));
+
+          if (onlyOne) break;
+        } else if (tel.getSystem() != null
+            && tel.getSystem() == ContactPoint.ContactPointSystem.FAX
+            && !StringUtils.isEmpty(tel.getValue())) {
+
+          logger.debug("Found Fax address ");
+          String use = "";
+
+          telString.append(
+              CdaGeneratorUtils.getXmlForTelecom(
+                  CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, true));
 
           if (onlyOne) break;
         }
@@ -1269,6 +1302,15 @@ public class CdaFhirUtilities {
 
     if (dt != null && dt.hasValue() && dt.getValue() != null) {
 
+      String units = (dt.hasCode()?dt.getCode():CdaGeneratorConstants.UNKNOWN_VALUE);
+      
+      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && dt.hasUnit()) {
+          units = dt.getUnit();
+        }
+      else {
+    	  units = "";
+      }
+      
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
               elName, dt.getValue().toString(), dt.getCode(), valFlag));
@@ -1532,16 +1574,14 @@ public class CdaFhirUtilities {
     String val = "";
 
     if (qt != null
-        && qt.getValueElement() != null
-        && qt.getSystemElement() != null
-        && (qt.getUnit() != null || qt.getCode() != null)) {
+        && qt.hasValueElement()
+        && qt.hasSystemElement()
+        && (qt.hasUnit() || qt.hasCode())) {
 
-      String units = (qt.getUnit() != null ? qt.getUnit() : CdaGeneratorConstants.UNKNOWN_VALUE);
+      String units = (qt.hasCode() ? qt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
 
-      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE)
-          && qt.getCode() != null
-          && !qt.getCode().isEmpty()) {
-        units = qt.getCode();
+      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && qt.hasUnit()) {
+        units = qt.getUnit();
       }
 
       val +=
@@ -1550,6 +1590,8 @@ public class CdaFhirUtilities {
               + qt.getSystemElement().getValueAsString()
               + CdaGeneratorConstants.PIPE
               + units;
+    } else if (qt != null && qt.hasValueElement()) {
+      val += qt.getValueElement().getValueAsString();
     } else {
       val += CdaGeneratorConstants.UNKNOWN_VALUE;
     }
@@ -1749,7 +1791,7 @@ public class CdaFhirUtilities {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val.append(d.getValueAsString());
+        val.append(CdaGeneratorUtils.getStringForDateTime(d.getValue(), d.getTimeZone()));
 
       } else if (dt instanceof Timing) {
 
@@ -1767,12 +1809,23 @@ public class CdaFhirUtilities {
         Period pt = (Period) dt;
 
         logger.debug("Found the Period element for creating string");
-        if (pt.getStart() != null && pt.getEnd() != null) {
-          val.append(pt.getStart().toString())
+        if (pt.hasStart() && pt.hasEnd()) {
+
+          val.append(
+                  CdaGeneratorUtils.getStringForDateTime(
+                      pt.getStart(), pt.getStartElement().getTimeZone()))
               .append(CdaGeneratorConstants.PIPE)
-              .append(pt.getEnd().toString());
-        } else if (pt.getStart() != null) {
-          val.append(pt.getStart().toString());
+              .append(
+                  CdaGeneratorUtils.getStringForDateTime(
+                      pt.getEnd(), pt.getEndElement().getTimeZone()));
+        } else if (pt.hasStart()) {
+          val.append(
+              CdaGeneratorUtils.getStringForDateTime(
+                  pt.getStart(), pt.getStartElement().getTimeZone()));
+        } else if (pt.hasEnd()) {
+          val.append(
+              CdaGeneratorUtils.getStringForDateTime(
+                  pt.getEnd(), pt.getEndElement().getTimeZone()));
         } else {
           val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
         }
@@ -1792,6 +1845,32 @@ public class CdaFhirUtilities {
       return val.toString();
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getStringForDates(
+      Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
+
+    String val = "";
+
+    if (recorded != null && recorded.getValue0() != null) {
+      val += recorded.getValue0().toString();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    if (onset != null && onset.getValue0() != null) {
+      val += onset.getValue0().toString();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    if (abatement != null && abatement.getValue0() != null) {
+      val += abatement.getValue0().toString();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    return val;
   }
 
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {

@@ -1478,7 +1478,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           endDate =
               DateFormatUtils.format(
                   DateUtils.addHours(
-                      data.getNotificationContext().getEncounterStartTime(), endThreshold),
+                      data.getNotificationContext().getEncounterEndTime(), endThreshold),
                   DATE_FORMAT);
         } else {
           endDate = DateFormatUtils.format(new Date(), DATE_FORMAT);

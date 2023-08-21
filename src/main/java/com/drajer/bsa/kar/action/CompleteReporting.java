@@ -7,6 +7,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.utils.BsaServiceUtils;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -69,6 +70,9 @@ public class CompleteReporting extends BsaAction {
           data.getNotificationContext().getId());
       data.getNotificationContext()
           .setNotificationProcessingStatus(NotificationProcessingStatusType.COMPLETED.toString());
+
+      // Set the end time of NC as current time when we are completing the Encounter.
+      data.getNotificationContext().setEncounterEndTime(new Date());
 
     } else {
 
