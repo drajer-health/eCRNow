@@ -165,7 +165,7 @@ testCase:
       - xPath: "author/assignedAuthor/addr"
         count: 4
       - xPath: "author/assignedAuthor/telecom"
-        count: 1
+        count: 3
       - xPath: "author/assignedAuthor/"
         "id/@root": "2.16.840.1.113883.4.6"
         "id/@extension": "123456789"
@@ -174,8 +174,13 @@ testCase:
         "addr/state/@nullFlavor": "NI"
         "addr/postalCode": "64113"
         "addr/country": "US"
-        "telecom/@value": "tel:(212)212-2211"
-        "telecom/@use": "WP"
+        "telecom[1]/@value": "mailto:kcarter@gmail.com"
+        "telecom[1]/@use": ""
+        "telecom[2]/@value": "tel:(212)212-2211"
+        "telecom[2]/@use": "WP"
+        "telecom[3]/@value": "fax:(232)222-3333"
+        "telecom[3]/@use": ""
+        
       - xPath: "author/assignedAuthor/assignedPerson/name"
         count: 1
       - xPath: "author/assignedAuthor/assignedPerson/name/given"
@@ -335,7 +340,7 @@ testCase:
       - xPath: "responsibleParty/assignedEntity/addr"
         count: 1
       - xPath: "responsibleParty/assignedEntity/telecom"
-        count: 1
+        count: 3
       - xPath: "responsibleParty/assignedEntity/"
         "id/@root": "2.16.840.1.113883.4.6"
         "id/@extension": "123456789"
@@ -344,8 +349,12 @@ testCase:
         "addr/state/@nullFlavor": "NI"
         "addr/postalCode": "64113"
         "addr/country": "US"
-        "telecom/@value": "tel:(212)212-2211"
-        "telecom/@use": "WP"
+        "telecom[1]/@value": "mailto:kcarter@gmail.com"
+        "telecom[1]/@use": ""
+        "telecom[2]/@value": "tel:(212)212-2211"
+        "telecom[2]/@use": "WP"
+        "telecom[3]/@value": "fax:(232)222-3333"
+        "telecom[3]/@use": ""
       - xPath: "responsibleParty/assignedEntity/assignedPerson/name"
         count: 1
       - xPath: "responsibleParty/assignedEntity/assignedPerson/name/given"

@@ -1302,15 +1302,14 @@ public class CdaFhirUtilities {
 
     if (dt != null && dt.hasValue() && dt.getValue() != null) {
 
-      String units = (dt.hasCode()?dt.getCode():CdaGeneratorConstants.UNKNOWN_VALUE);
-      
+      String units = (dt.hasCode() ? dt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
+
       if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && dt.hasUnit()) {
-          units = dt.getUnit();
-        }
-      else {
-    	  units = "";
+        units = dt.getUnit();
+      } else {
+        units = "";
       }
-      
+
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
               elName, dt.getValue().toString(), dt.getCode(), valFlag));

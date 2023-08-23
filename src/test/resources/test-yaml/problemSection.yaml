@@ -40,16 +40,18 @@ testCase:
         "code/@displayName": "PROBLEM LIST"
         "title": "PROBLEMS - DIAGNOSES"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 1
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
+        "thead/tr/th[3]": "Problem Recorded Date|Onset Date|Resolved Date"
         "tbody/tr[1]/td[1]/content": "Disease caused by 2019-nCoV"
         "tbody/tr[1]/td[2]/content": "Active"
+        "tbody/tr[1]/td[3]/content": "Thu May 14 00:34:28 IST 2020Thu May 14 00:34:00 IST 2020Unknown"
       - xPath: "entry"
         count: 1
       - xPath: "entry[1]/"
@@ -492,11 +494,11 @@ testCase:
         "code/@displayName": "PROBLEM LIST"
         "title": "PROBLEMS - DIAGNOSES"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 1
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
@@ -622,11 +624,11 @@ testCase:
         "code/@displayName": "PROBLEM LIST"
         "title": "PROBLEMS - DIAGNOSES"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 1
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
@@ -761,11 +763,11 @@ testCase:
         "code/@displayName": "PROBLEM LIST"
         "title": "PROBLEMS - DIAGNOSES"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 1
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
@@ -905,11 +907,11 @@ testCase:
         "code/@displayName": "PROBLEM LIST"
         "title": "PROBLEMS - DIAGNOSES"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 2
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
@@ -1140,11 +1142,11 @@ testCase:
         "code/@displayName": "PROBLEM LIST"
         "title": "PROBLEMS - DIAGNOSES"
       - xPath: "text/table/thead/tr/th"
-        count: 2
+        count: 3
       - xPath: "text/table/tbody/tr"
         count: 2
       - xPath: "text/table/tbody/tr[1]/td"
-        count: 2
+        count: 3
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"

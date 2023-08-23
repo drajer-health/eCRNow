@@ -18,7 +18,7 @@
 <content ID="potObsContent1">Coronavirus Panel</content>
 </td>
 <td>
-<content ID="potObsDate1">Thu Apr 30 08:15:00 UTC 2020|Thu Apr 30 20:29:23 UTC 2020</content>
+<content ID="potObsDate1">20200430031500-0500|20200430152923-0500</content>
 </td>
 </tr>
 <tr>
@@ -26,7 +26,7 @@
 <content ID="potObsContent2">Complete blood count (hemogram) panel - Blood by Automated count</content>
 </td>
 <td>
-<content ID="potObsDate2">2011-03-04T08:30:00+11:00</content>
+<content ID="potObsDate2">20110304083000+1100</content>
 </td>
 </tr>
 </tbody>
