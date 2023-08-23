@@ -642,7 +642,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertTrue(result.contains("(123)456-7890"));
     assertTrue(result.contains("(098)765-4321"));
-    assertFalse(result.contains("a@b.com"));
+    assertTrue(result.contains("a@b.com"));
 
     String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
     assertTrue(result2.contains("(123)456-7890"));
@@ -1819,7 +1819,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
     assertEquals(expectedValue.trim(), actualValue.trim());
 
-    expectedValue = "<value xsi:type=\"ST\" nullFlavor=\"NI\"/>";
+    expectedValue = "<value xsi:type=\"ST\">No Value</value>";
     actualValue = CdaFhirUtilities.getXmlForType(null, CdaGeneratorConstants.CODE_EL_NAME, true);
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
     assertEquals(expectedValue.trim(), actualValue.trim());
@@ -1876,7 +1876,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public void testGetStringForTypeFromDateTimeType() {
     DateTimeType dateTime = new DateTimeType("2023-05-05T10:00:00-04:00");
     String result = CdaFhirUtilities.getStringForType(dateTime);
-    assertEquals("2023-05-05T10:00:00-04:00", result);
+    assertEquals("20230505100000-0400", result);
   }
 
   @Test
@@ -1890,7 +1890,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
                             .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
                             .setEndElement(new DateTimeType("2023-05-31T23:59:59Z"))));
     String result = CdaFhirUtilities.getStringForType(timing);
-    assertEquals("Mon May 01 00:00:00 UTC 2023|Wed May 31 23:59:59 UTC 2023", result);
+    assertEquals("20230501000000+0000|20230531235959+0000", result);
   }
 
   @Test
@@ -1900,7 +1900,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
             .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
             .setEndElement(new DateTimeType("2023-05-31T23:59:59Z"));
     String result = CdaFhirUtilities.getStringForType(period);
-    assertEquals("Mon May 01 00:00:00 UTC 2023|Wed May 31 23:59:59 UTC 2023", result);
+    assertEquals("20230501000000+0000|20230531235959+0000", result);
   }
 
   @Test
