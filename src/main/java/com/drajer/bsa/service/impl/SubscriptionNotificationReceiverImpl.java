@@ -7,6 +7,7 @@ import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
+import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
@@ -202,6 +203,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
 
       logger.info(" Notification Context exists for processing the notification ");
       nc.setNotificationData(jsonParser.encodeResourceToString(notificationBundle));
+      nc.setNotificationProcessingStatus(NotificationProcessingStatusType.RELAUNCHED.toString());
 
       if (launchContext != null && launchContext.getThrottleContext() != null)
         nc.setThrottleContext(launchContext.getThrottleContext());

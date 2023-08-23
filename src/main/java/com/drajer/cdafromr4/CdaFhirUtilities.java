@@ -286,16 +286,33 @@ public class CdaFhirUtilities {
     return null;
   }
 
-  public static Coding getLanguageForCodeSystem(
+  public static Pair<Coding, Boolean> getLanguageForCodeSystem(
       List<PatientCommunicationComponent> comms, String codeSystemUrl) {
 
+    Coding prefCoding = null;
+    Coding altCoding = null;
     if (comms != null && !comms.isEmpty()) {
 
       for (PatientCommunicationComponent comm : comms) {
 
-        Coding c = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+        if (comm.hasPreferred() && comm.getPreferred()) {
 
-        if (c != null) return c;
+          prefCoding = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+          break;
+        } else if (comm.hasLanguage()
+            && comm.getLanguage().hasCoding()
+            && comm.getLanguage().getCodingFirstRep().hasCode()) {
+
+          // Assign the alternate coding.
+          altCoding = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+        }
+      }
+
+      // Found preferred language.
+      if (prefCoding != null) {
+        return new Pair<>(prefCoding, true);
+      } else if (altCoding != null) {
+        return new Pair<>(altCoding, false);
       }
     }
 
@@ -1302,18 +1319,17 @@ public class CdaFhirUtilities {
 
     if (dt != null && dt.hasValue() && dt.getValue() != null) {
 
-      String units = (dt.hasCode()?dt.getCode():CdaGeneratorConstants.UNKNOWN_VALUE);
-      
+      String units = (dt.hasCode() ? dt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
+
       if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && dt.hasUnit()) {
-          units = dt.getUnit();
-        }
-      else {
-    	  units = "";
+        units = dt.getUnit();
+      } else {
+        units = "";
       }
-      
+
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
-              elName, dt.getValue().toString(), dt.getCode(), valFlag));
+              elName, dt.getValue().toString(), units, valFlag));
 
     } else {
       sb.append(

@@ -26,6 +26,7 @@ import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu2.model.BooleanType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -617,26 +618,7 @@ public class Dstu2CdaHeaderGenerator {
         Dstu2CdaFhirUtilities.getDateTypeXml(
             p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
 
-    if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
-    } else {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
-
-      if (p.getDeceased() instanceof DateTimeDt) {
-        DateTimeDt d = (DateTimeDt) p.getDeceased();
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue().toString()));
-      } else {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForNullEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
-      }
-    }
+    patientDetails.append(getDeceasedXml(p));
 
     CodingDt race =
         Dstu2CdaFhirUtilities.getCodingExtension(
@@ -770,4 +752,43 @@ public class Dstu2CdaHeaderGenerator {
 
     return patientDetails.toString();
   }
+  
+  public static String getDeceasedXml(Patient p) {
+
+	    StringBuilder patientDetails = new StringBuilder(200);
+
+	    if (p.getDeceased() != null) {
+
+	      if (p.getDeceased() instanceof BooleanType 
+	          && Boolean.TRUE.equals(((BooleanType)p.getDeceased()).getValue())) {
+
+	        patientDetails.append(
+	            CdaGeneratorUtils.getXmlForValue(
+	                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+
+	        patientDetails.append(
+	            CdaGeneratorUtils.getXmlForNullEffectiveTime(
+	                CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
+	      } else if (p.getDeceased() instanceof DateTimeDt) {
+
+	        patientDetails.append(
+	            CdaGeneratorUtils.getXmlForValue(
+	                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+
+	        DateTimeDt d = (DateTimeDt) p.getDeceased();
+	        patientDetails.append(
+	            Dstu2CdaFhirUtilities.getDateTimeTypeXml(d, CdaGeneratorConstants.SDTC_DECEASED_TIME));
+	      } else {
+	        patientDetails.append(
+	            CdaGeneratorUtils.getXmlForValue(
+	                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
+	      }
+	    } else if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
+	      patientDetails.append(
+	          CdaGeneratorUtils.getXmlForValue(
+	              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
+	    }
+
+	    return patientDetails.toString();
+	  }
 }

@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hl7.fhir.r4.model.Resource;
@@ -29,7 +30,16 @@ import org.slf4j.LoggerFactory;
  * @since 2021-04-15
  */
 @Entity
-@Table(name = "notification_context")
+@Table(
+    name = "notification_context",
+    uniqueConstraints =
+        @UniqueConstraint(
+            columnNames = {
+              "fhir_server_base_url",
+              "patient_id",
+              "notification_resource_id",
+              "notification_resource_type"
+            }))
 @DynamicUpdate
 public class NotificationContext {
 
@@ -57,6 +67,10 @@ public class NotificationContext {
   /** The attribute represents the resource type which is received as part of the notification. */
   @Column(name = "notification_resource_type", nullable = false, columnDefinition = "TEXT")
   private String notificationResourceType;
+
+  /** The attribute represents the notification data received for a re-launch request */
+  @Column(name = "relaunch_notification_data", nullable = true, columnDefinition = "TEXT")
+  private String relaunchNotificationData;
 
   /**
    * The attribute represents the status of the notification processing. IN_PROGRESS - Will be
@@ -282,5 +296,13 @@ public class NotificationContext {
 
   public void setEncounterClass(String encounterclass) {
     this.encounterClass = encounterClass;
+  }
+
+  public String getRelaunchNotificationData() {
+    return relaunchNotificationData;
+  }
+
+  public void setRelaunchNotificationData(String relaunchNotificationData) {
+    this.relaunchNotificationData = relaunchNotificationData;
   }
 }

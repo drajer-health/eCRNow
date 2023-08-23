@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1022,14 +1023,22 @@ public class CdaHeaderGenerator {
 
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
-    Coding language =
+    Pair<Coding, Boolean> language =
         CdaFhirUtilities.getLanguageForCodeSystem(
             p.getCommunication(), CdaGeneratorConstants.FHIR_LANGUAGE_CODESYSTEM_URL);
 
-    if (language != null && language.getCode() != null) {
+    if (language != null
+        && language.getValue0() != null
+        && language.getValue0().getCode() != null) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getCode()));
+              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getValue0().getCode()));
+
+      // Add preferred indicator.
+      if (language.getValue1()) {
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.LANGUAGE_PREF_IND, "true"));
+      }
     } else {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForNullCD(

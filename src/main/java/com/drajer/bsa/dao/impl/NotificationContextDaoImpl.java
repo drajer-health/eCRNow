@@ -59,4 +59,31 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     criteria.add(Restrictions.eq("fhirServerBaseURL", url));
     return (NotificationContext) criteria.uniqueResult();
   }
+
+  /**
+   * Method to retrieve a NotificationContext by Url, patient_id, notification_resource_id,
+   * notification_resource_type
+   *
+   * @param url The url to retrieve the notification context.
+   * @param patientId The patient Id to retrieve the notification context.
+   * @param notificationResourceId The Notification Resource Id to retrieve the notification
+   *     context.
+   * @param notificationResourceType The Notification Resource Type to retieve the notification
+   *     context.
+   * @return Returns the NotificationContext for the provided unique constraints.
+   */
+  @Override
+  public NotificationContext getNotificationContextByUniqueConstraints(
+      String url,
+      String patientId,
+      String notificationResourceId,
+      String notificationResourceType) {
+    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+
+    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
+    criteria.add(Restrictions.eq("patientId", patientId));
+    criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
+    criteria.add(Restrictions.eq("notificationResourceType", notificationResourceType));
+    return (NotificationContext) criteria.uniqueResult();
+  }
 }

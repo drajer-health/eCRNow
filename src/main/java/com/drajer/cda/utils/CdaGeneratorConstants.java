@@ -697,6 +697,7 @@ public class CdaGeneratorConstants {
   public static final String VERSION_EL_NAME = "versionNumber";
   public static final String CONFIDENTIALITY_EL_NAME = "confidentialityCode";
   public static final String LANGUAGE_CODE_EL_NAME = "languageCode";
+  public static final String LANGUAGE_PREF_IND = "preferenceInd";
   public static final String RECORD_TARGET_EL_NAME = "recordTarget";
   public static final String GUARDIAN_EL_NAME = "guardian";
   public static final String GUARDIAN_PERSON_EL_NAME = "guardianPerson";

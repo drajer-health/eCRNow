@@ -612,10 +612,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     patientCommunication.setLanguage(languageCodeableConcept);
     comms.add(patientCommunication);
 
-    Coding result =
+    Pair<Coding, Boolean> result =
         CdaFhirUtilities.getLanguageForCodeSystem(comms, "http://hl7.org/fhir/ValueSet/languages");
     assertNotNull(result);
-    assertEquals(language, result);
+    assertEquals(language, result.getValue0());
   }
 
   @Test

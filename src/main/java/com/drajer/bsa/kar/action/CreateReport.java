@@ -219,16 +219,16 @@ public class CreateReport extends BsaAction {
           msg.setSubmittedDataId(docRef.getId());
           msg.setSubmittedMessageId(header.getId());
           msg.setSubmissionTime(Date.from(Instant.now()));
-          msg.setInitiatingAction(actionType);
+          msg.setInitiatingAction(actionType + kd.getScheduledJobData().getJobId());
           msg.setKarUniqueId(kd.getKar().getVersionUniqueId());
 
           // Update Version and Matched Trigger Status
           msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
           msg.setTriggerMatchStatus(
-              BsaServiceUtils.getEncodedTriggerMatchStatus(kd.getCurrentTriggerMatchStatus()));
+              BsaServiceUtils.getEncodedTriggerMatchStatus(
+                  kd.getCurrentTriggerMatchStatus(), kd, docRef.getId()));
 
           // Create BitSet for MessageStatus and add attribute.
-
           logger.info(" TODO : Enable saving only by Healthcare Setting ");
           logger.debug("Saving data to file {}", fileName);
           BsaServiceUtils.saveDataToFile(payload, fileName);

@@ -195,9 +195,10 @@ public class BsaServiceUtilsTest {
 
   @Test
   public void getEncodedTriggerMatchStatus() throws Exception {
+    KarProcessingData kd = new KarProcessingData();
     CheckTriggerCodeStatusList expectedcheckTriggerList = Utility.getCheckTriggerCodeStatusList();
     String actualcheckTriggerList =
-        bsaServiceUtils.getEncodedTriggerMatchStatus(expectedcheckTriggerList);
+        bsaServiceUtils.getEncodedTriggerMatchStatus(expectedcheckTriggerList, kd, "1234");
     assertNotNull(actualcheckTriggerList);
   }
 

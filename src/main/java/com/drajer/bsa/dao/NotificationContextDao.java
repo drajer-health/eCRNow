@@ -39,4 +39,19 @@ public interface NotificationContextDao {
    * @return Returns the NotificationContext for the provided url.
    */
   public NotificationContext getNotificationContextByUrl(String url);
+
+  /**
+   * Method to retrieve a NotificationContext by Url, patient_id, notification_resource_id,
+   * notification_resource_type
+   *
+   * @param url The url to retrieve the notification context.
+   * @param patientId The patient Id to retrieve the notification context.
+   * @param notificationResourceId The Notification Resource Id to retrieve the notification
+   *     context.
+   * @param notificationResourceType The Notification Resource Type to retieve the notification
+   *     context.
+   * @return Returns the NotificationContext for the provided unique constraints.
+   */
+  public NotificationContext getNotificationContextByUniqueConstraints(
+      String url, String patientId, String notificationResourceId, String notificationResourceType);
 }
