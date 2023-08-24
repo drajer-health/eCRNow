@@ -1321,12 +1321,11 @@ public class CdaFhirUtilities {
 
       String units = "";
 
-      if(dt.hasCode()) {
-    	  units = dt.getCode();
-      }
-      else if (units.isEmpty() && dt.hasUnit()) {
+      if (dt.hasCode()) {
+        units = dt.getCode();
+      } else if (units.isEmpty() && dt.hasUnit()) {
         units = dt.getUnit();
-      } 
+      }
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(

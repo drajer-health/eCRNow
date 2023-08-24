@@ -8,7 +8,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -96,7 +95,9 @@ public class BsaServiceUtilsTest {
         FileUtils.readFileToString(
             new File("src/test/resources/Bsa/NotificationBundleEncounterClose.json"),
             Charset.defaultCharset());
-    when(iParser.encodeResourceToString(Mockito.any())).thenReturn(notificationBundle);
+    Mockito.lenient()
+        .when(iParser.encodeResourceToString(Mockito.any()))
+        .thenReturn(notificationBundle);
 
     fhirContext = FhirContext.forR4();
     bundle =
@@ -114,7 +115,8 @@ public class BsaServiceUtilsTest {
               resources.add(e.getResource());
             });
     InputStream inputStreamMock = Mockito.mock(InputStream.class);
-    Mockito.when(iParser.parseResource(Mockito.eq(Bundle.class), Mockito.any(InputStream.class)))
+    Mockito.lenient()
+        .when(iParser.parseResource(Mockito.eq(Bundle.class), Mockito.any(InputStream.class)))
         .thenReturn(bundle);
   }
 
@@ -195,10 +197,10 @@ public class BsaServiceUtilsTest {
 
   @Test
   public void getEncodedTriggerMatchStatus() throws Exception {
-    KarProcessingData kd = new KarProcessingData();
+    KarProcessingData kd = Utility.karProcessingData();
     CheckTriggerCodeStatusList expectedcheckTriggerList = Utility.getCheckTriggerCodeStatusList();
     String actualcheckTriggerList =
-        bsaServiceUtils.getEncodedTriggerMatchStatus(expectedcheckTriggerList, kd, "1234");
+        bsaServiceUtils.getEncodedTriggerMatchStatus(expectedcheckTriggerList, kd, "763845684756");
     assertNotNull(actualcheckTriggerList);
   }
 

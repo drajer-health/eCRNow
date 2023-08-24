@@ -441,7 +441,7 @@
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
-<doseQuantity value="100"/>
+<doseQuantity value="100" unit="mg"/>
 <consumable>
 <manufacturedProduct classCode="MANU">
 <templateId root="2.16.840.1.113883.10.20.22.4.23"/>

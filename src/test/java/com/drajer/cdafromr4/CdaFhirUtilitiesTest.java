@@ -49,7 +49,6 @@ import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
@@ -266,8 +265,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<BundleEntryComponent> entries = new ArrayList<BundleEntryComponent>();
     entries.add(bundleEntry);
     Encounter en = new Encounter();
-    List<EncounterLocationComponent> locationList =
-        new ArrayList<Encounter.EncounterLocationComponent>();
+    List<EncounterLocationComponent> locationList = new ArrayList<EncounterLocationComponent>();
     locationList.add(loc);
     en.setLocation(locationList);
 
@@ -289,8 +287,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<BundleEntryComponent> entries = new ArrayList<BundleEntryComponent>();
     entries.add(bundleEntry);
     Encounter en = new Encounter();
-    List<EncounterLocationComponent> locationList =
-        new ArrayList<Encounter.EncounterLocationComponent>();
+    List<EncounterLocationComponent> locationList = new ArrayList<EncounterLocationComponent>();
     locationList.add(loc);
     en.setLocation(locationList);
 
@@ -432,7 +429,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     relationship.addCoding(coding);
     guardianContact.setRelationship(Collections.singletonList(relationship));
     contacts.add(guardianContact);
-    Patient.ContactComponent result = CdaFhirUtilities.getGuardianContact(contacts);
+    ContactComponent result = CdaFhirUtilities.getGuardianContact(contacts);
     assertEquals(guardianContact, result);
   }
 
@@ -554,7 +551,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetLanguage() {
-    List<Patient.PatientCommunicationComponent> comms = new ArrayList<>();
+    List<PatientCommunicationComponent> comms = new ArrayList<>();
     PatientCommunicationComponent patientCommunication = new PatientCommunicationComponent();
 
     CodeableConcept languageCodeableConcept = new CodeableConcept();
@@ -596,7 +593,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetLanguageForCodeSystem() {
-    List<Patient.PatientCommunicationComponent> comms = new ArrayList<>();
+    List<PatientCommunicationComponent> comms = new ArrayList<>();
     PatientCommunicationComponent patientCommunication = new PatientCommunicationComponent();
 
     CodeableConcept languageCodeableConcept = new CodeableConcept();
@@ -1119,7 +1116,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedXml.trim(), actualXml.trim());
 
     Quantity quantity1 = new Quantity(10.5);
-    String expectedXm1 = "<value xsi:type=\"PQ\" value=\"10.5\" unit=\"null\"/>" + "";
+    String expectedXm1 = "<value xsi:type=\"PQ\" value=\"10.5\" unit=\"1\"/>";
     String actualXml1 = CdaFhirUtilities.getQuantityXml(quantity1, "doseQuantity", true);
     assertEquals(expectedXm1.trim(), actualXml1.trim());
   }

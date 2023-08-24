@@ -2084,6 +2084,9 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForValuePQ(String value, String units) {
+    String defaultUnits = StringUtils.isNotBlank(units) ? units : "1";
+    String escapedUnits = StringEscapeUtils.escapeXml10(defaultUnits);
+
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.VAL_EL_NAME
         + CdaGeneratorConstants.SPACE
@@ -2099,7 +2102,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.UNIT_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
-        + StringEscapeUtils.escapeXml10(units)
+        + escapedUnits
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
