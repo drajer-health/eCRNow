@@ -1,4 +1,4 @@
-FROM maven:3.8.1-adoptopenjdk-11 AS builder
+FROM maven:3.9.3-amazoncorretto-11 AS builder
 WORKDIR /build
 COPY pom.xml .
 RUN mvn -U dependency:resolve dependency:resolve-plugins
