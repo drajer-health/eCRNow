@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,7 +44,10 @@ public class PhMessageController {
       @RequestParam(name = "notifiedResourceId", required = false) String notifiedResourceId,
       @RequestParam(name = "notifiedResourceType", required = false) String notifiedResourceType,
       @RequestParam(name = "karUniqueId", required = false) String karUniqueId,
-      @RequestParam(name = "notificationId", required = false) String notificationId) {
+      @RequestParam(name = "notificationId", required = false) String notificationId,
+      @RequestParam(name = "correlationId", required = false) String correlationId,
+      @RequestParam(name = "startTime", required = false) String startTime,
+      @RequestParam(name = "endTime", required = false) String endTime) {
     List<JSONObject> phMessageData = new ArrayList<>();
     try {
       logger.info(
@@ -120,6 +125,18 @@ public class PhMessageController {
         searchParams.put("notificationId", notificationId);
       }
 
+      if (correlationId != null && !correlationId.isEmpty()) {
+        searchParams.put("correlationId", correlationId);
+      }
+
+      if (startTime != null) {
+        searchParams.put("submissionTime", startTime);
+      }
+
+      if (endTime != null) {
+        searchParams.put("responseReceivedTime", endTime);
+      }
+
       List<PublicHealthMessage> phMessage = phMessageService.getPhMessageData(searchParams);
 
       if (phMessage != null) {
@@ -133,5 +150,39 @@ public class PhMessageController {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
     }
+  }
+
+  @PostMapping("/api/phMessage/batch")
+  public ResponseEntity<Object> getByBatchXRequestIds(
+      @RequestBody Map<String, Object> requestBody) {
+    try {
+      List<String> xRequestIds = extractXRequestIds(requestBody);
+
+      List<PublicHealthMessage> phMessage =
+          phMessageService.getPhMessageDataByXRequestIds(xRequestIds);
+
+      if (phMessage != null && !phMessage.isEmpty()) {
+        return ResponseEntity.ok(phMessage);
+      } else {
+        return ResponseEntity.notFound().build();
+      }
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+  }
+
+  private List<String> extractXRequestIds(Map<String, Object> requestBody) {
+    List<String> xRequestIds = (List<String>) requestBody.get("xRequestIds");
+
+    if (xRequestIds == null || xRequestIds.isEmpty() || xRequestIds.size() > 20) {
+      throw new IllegalArgumentException(
+          "The provided Xrequest IDs are out of range. "
+              + "Please ensure that the number of Xrequest IDs is greater than 0 and does not exceed 20.");
+    }
+
+    return xRequestIds;
   }
 }

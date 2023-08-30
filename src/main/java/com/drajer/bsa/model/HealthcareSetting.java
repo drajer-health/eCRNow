@@ -101,7 +101,7 @@ public class HealthcareSetting implements FhirServerDetails {
    */
   @Column(name = "is_xdr", nullable = false)
   @Type(type = "org.hibernate.type.NumericBooleanType")
-  private Boolean isXdr;
+  private Boolean isXdr = false;
 
   /*
    * The flag that indicates that RESTful API has to be used.

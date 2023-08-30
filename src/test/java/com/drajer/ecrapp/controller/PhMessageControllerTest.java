@@ -39,8 +39,8 @@ public class PhMessageControllerTest {
 
   @ParameterizedTest
   @CsvSource({
-    "fhirServerBaseUrl1, 13, 3, 32, 25, null, 15, 19, 11, '', 12, 8",
-    "null, '', 3, 32, 25, '', 15, 19, 11, null, 12, 8"
+    "fhirServerBaseUrl1, 13, 3, 32, 25, null, 15, 19, 11, '', 12, 8, 6534236, 2023-07-04, 2023-08-04",
+    "null, '', 3, 32, 25, '', 15, 19, 11, null, 12, 8, 6534236, 2023-07-04, 2023-08-04"
   })
   public void testGetPhMessageDetails(
       String fhirServerBaseUrl,
@@ -54,7 +54,10 @@ public class PhMessageControllerTest {
       String notifiedResourceId,
       String notificationId,
       String notifiedResourceType,
-      String karUniqueId) {
+      String karUniqueId,
+      String correlationId,
+      String startTime,
+      String endTime) {
 
     Mockito.when(phMessageService.getPhMessageData(any()))
         .thenReturn(expectedPublicHealthMessageDetails);
@@ -72,7 +75,10 @@ public class PhMessageControllerTest {
             notifiedResourceId,
             notificationId,
             notifiedResourceType,
-            karUniqueId);
+            karUniqueId,
+            correlationId,
+            startTime,
+            endTime);
 
     // Assert
     assertEquals(

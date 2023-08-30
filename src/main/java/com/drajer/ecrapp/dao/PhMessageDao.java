@@ -7,4 +7,6 @@ import java.util.Map;
 public interface PhMessageDao {
 
   List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams);
+
+  List<PublicHealthMessage> getPhMessageByXRequestIds(List<String> xRequestId);
 }

@@ -3,16 +3,30 @@ package com.drajer.ecrapp.dao.impl;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.PhMessageDao;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
+
+  private static final Logger logger = LoggerFactory.getLogger(PhMessageDaoImpl.class);
 
   public static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";
   public static final String PATIENT_ID = "patientId";
@@ -26,12 +40,20 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   public static final String NOTIFIED_RESOURCE_TYPE = "notifiedResourceType";
   public static final String KAR_UNIQUE_ID = "karUniqueId";
   public static final String NOTIFICATION_ID = "notificationId";
+  public static final String CORRELATION_ID = "correlationId";
+  public static final String SUBMISSION_TIME = "submissionTime";
+  public static final String RESPONSE_RECEIVED_TIME = "responseReceivedTime";
 
   public List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+    List<String> selectedProperties = getSelectedProperties();
+    ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
+
+    criteria.setProjection(projectionList);
 
     prepareCriteria(criteria, searchParams);
 
+    criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
     List<PublicHealthMessage> phMessage = criteria.list();
 
     if (phMessage != null) {
@@ -81,5 +103,92 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     if (searchParams.get(NOTIFICATION_ID) != null) {
       criteria.add(Restrictions.eq(NOTIFICATION_ID, searchParams.get(NOTIFICATION_ID)));
     }
+    if (searchParams.get(CORRELATION_ID) != null) {
+      criteria.add(Restrictions.eq(CORRELATION_ID, searchParams.get(CORRELATION_ID)));
+    }
+    if (searchParams.get(SUBMISSION_TIME) != null
+        && searchParams.get(RESPONSE_RECEIVED_TIME) != null) {
+
+      Conjunction conjunction1 = Restrictions.conjunction();
+      Conjunction conjunction2 = Restrictions.conjunction();
+      Disjunction disjunction = Restrictions.disjunction();
+
+      String submissionTimeString = searchParams.get(SUBMISSION_TIME);
+      String responseReceivedTimeString = searchParams.get(RESPONSE_RECEIVED_TIME);
+      Date submissionTimeDate = null;
+      Date responseReceivedTimeDate = null;
+      try {
+        submissionTimeDate = new SimpleDateFormat("yyyy-MM-dd").parse(submissionTimeString);
+        responseReceivedTimeDate =
+            new SimpleDateFormat("yyyy-MM-dd").parse(responseReceivedTimeString);
+      } catch (ParseException e) {
+        logger.error("Exception while converting into date format", e);
+      }
+      conjunction1.add(Restrictions.ge(SUBMISSION_TIME, submissionTimeDate));
+      conjunction1.add(Restrictions.le(SUBMISSION_TIME, responseReceivedTimeDate));
+
+      conjunction2.add(Restrictions.ge(RESPONSE_RECEIVED_TIME, submissionTimeDate));
+      conjunction2.add(Restrictions.le(RESPONSE_RECEIVED_TIME, responseReceivedTimeDate));
+
+      disjunction.add(conjunction1);
+      disjunction.add(conjunction2);
+
+      criteria.add(disjunction);
+    }
+  }
+
+  @Override
+  public List<PublicHealthMessage> getPhMessageByXRequestIds(List<String> xRequestIds) {
+    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+
+    List<String> selectedProperties = getSelectedProperties();
+    ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
+
+    criteria.setProjection(projectionList);
+    criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
+    criteria.add(Restrictions.in(X_REQUEST_ID, xRequestIds));
+    return criteria.addOrder(Order.desc("id")).list();
+  }
+
+  private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
+    ProjectionList projectionList = Projections.projectionList();
+    for (String propertyName : selectedProperties) {
+      projectionList.add(Projections.property(propertyName), propertyName);
+    }
+    return projectionList;
+  }
+
+  private List<String> getSelectedProperties() {
+    return Arrays.asList(
+        "id",
+        "fhirServerBaseUrl",
+        "patientId",
+        "encounterId",
+        "notifiedResourceId",
+        "notifiedResourceType",
+        "karUniqueId",
+        "notificationId",
+        "xCorrelationId",
+        "xRequestId",
+        "submittedFhirData",
+        "submittedMessageType",
+        "submittedDataId",
+        "submittedVersionNumber",
+        "submittedMessageId",
+        "submissionMessageStatus",
+        "submissionTime",
+        "fhirResponseData",
+        "failureResponseData",
+        "responseMessageType",
+        "responseDataId",
+        "responseMessageId",
+        "responseProcessingInstruction",
+        "responseProcessingStatus",
+        "responseReceivedTime",
+        "responseEhrDocRefId",
+        "initiatingAction",
+        "triggerMatchStatus",
+        "patientLinkerId",
+        "lastUpdated");
   }
 }

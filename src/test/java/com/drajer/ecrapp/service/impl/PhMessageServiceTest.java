@@ -7,6 +7,7 @@ import com.drajer.ecrapp.dao.PhMessageDao;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +53,20 @@ public class PhMessageServiceTest {
         .thenReturn(expectedPublicHealthMessageDetails);
 
     List<PublicHealthMessage> result = phMessageServiceImpl.getPhMessageData(searchParam);
+
+    assertEquals(expectedPublicHealthMessageDetails, result);
+  }
+
+  @Test
+  public void testGetPhMessageDataByXRequestIds() throws IOException {
+    List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
+
+    Mockito.lenient()
+        .when(phMessageDao.getPhMessageByXRequestIds(xRequestIds))
+        .thenReturn(expectedPublicHealthMessageDetails);
+
+    List<PublicHealthMessage> result =
+        phMessageServiceImpl.getPhMessageDataByXRequestIds(xRequestIds);
 
     assertEquals(expectedPublicHealthMessageDetails, result);
   }
