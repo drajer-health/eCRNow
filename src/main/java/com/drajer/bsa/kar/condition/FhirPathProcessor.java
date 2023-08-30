@@ -159,7 +159,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public String resolveContextVariables(
       String exp, EhrQueryService ehrService, KarProcessingData kd) {
 
-    return ehrService.substituteContextParams(kd, exp);
+    return ehrService.substituteContextParams(kd, exp, true);
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> filterResources(
