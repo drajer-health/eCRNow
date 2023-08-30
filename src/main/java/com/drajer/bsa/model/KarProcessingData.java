@@ -87,10 +87,10 @@ public class KarProcessingData {
 
   /**
    * The data accessed and collected from the healthcare setting for applying the KAR by FHIR Path
-   * Context Variable. The HashMap stores the resourceId to the resource, so that we dont have to
-   * search for it again if needed.
+   * Context Variable. The HashMap stores the ResourceType, to Pair of <ResourceId, Resource>, so
+   * that we dont have to search for it again if needed.
    */
-  HashMap<String, Resource> resourcesById;
+  HashMap<ResourceType, HashMap<String, Resource>> resourcesById;
 
   /**
    * The data to be used for specific condition evaluation. The map contains a mapping between the
@@ -378,18 +378,27 @@ public class KarProcessingData {
 
   public void storeResourceById(String id, Resource r) {
 
-    if (!resourcesById.containsKey(id)) {
-      resourcesById.put(id, r);
+    if (resourcesById.containsKey(r.getResourceType())) {
+      if (!resourcesById.get(r.getResourceType()).containsKey(id)) {
+        resourcesById.get(r.getResourceType()).put(id, r);
+      } else {
+        logger.debug(" Resource already exists with id {}", id);
+      }
     } else {
-      logger.debug(" Resource already exists with id {}", id);
+      HashMap<String, Resource> resources = new HashMap<>();
+      resources.put(id, r);
+      resourcesById.put(r.getResourceType(), resources);
     }
   }
 
-  public Resource getResourceById(String id) {
+  public Resource getResourceById(String id, ResourceType type) {
 
-    if (resourcesById.containsKey(id)) {
-      return resourcesById.get(id);
+    if (resourcesById.containsKey(type)) {
+      if (resourcesById.get(type).containsKey(id)) {
+        return resourcesById.get(type).get(id);
+      }
     }
+
     return null;
   }
 
