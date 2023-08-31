@@ -63,16 +63,18 @@ public class ValidateReport extends BsaAction {
 
       if (artStatus != null
           && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-              || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
+              || artStatus.getOutputFormat() == OutputContentType.TEST_CDAR30_NOT_FOR_PRODUCTION)) {
 
         logger.info(" Validating CDA Output ");
         validateCdaOutput(data, actStatus);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
+      } else if (artStatus != null
+          && artStatus.getOutputFormat() == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION) {
 
         logger.info(" Validating FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
         validateFhirOutput(data, actStatus);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
+      } else if (artStatus != null
+          && artStatus.getOutputFormat() == OutputContentType.TEST_BOTH_NOT_FOR_PRODUCTION) {
 
         logger.info(" Validating Both CDA and FHIR Output ");
         validateCdaOutput(data, actStatus);
@@ -174,7 +176,7 @@ public class ValidateReport extends BsaAction {
 
       outcome
           .addIssue()
-          .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
+          .setSeverity(OperationOutcome.IssueSeverity.ERROR)
           .setDiagnostics(
               "Failed to parse request body as JSON resource. Error was: {}" + e.getMessage());
     }

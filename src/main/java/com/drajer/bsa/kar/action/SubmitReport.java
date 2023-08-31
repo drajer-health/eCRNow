@@ -122,18 +122,19 @@ public class SubmitReport extends BsaAction {
       KnowledgeArtifactStatus artStatus =
           data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
 
-      if (artStatus != null
-          && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-              || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
+      if (artStatus != null && (artStatus.getOutputFormat() == OutputContentType.CDA_R11)
+          || artStatus.getOutputFormat() == OutputContentType.TEST_CDAR30_NOT_FOR_PRODUCTION) {
 
         logger.info(" Submitting CDA Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
+      } else if (artStatus != null
+          && artStatus.getOutputFormat() == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION) {
 
         logger.info(" Submitting FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
         submitFhirOutput(data, actStatus, ehrService);
-      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
+      } else if (artStatus != null
+          && artStatus.getOutputFormat() == OutputContentType.TEST_BOTH_NOT_FOR_PRODUCTION) {
 
         logger.info(" Submitting Both CDA and FHIR Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
