@@ -23,6 +23,7 @@
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
+		 <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 	</properties>
 
 	<distributionManagement>
@@ -66,7 +67,11 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-
+		<dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback-encoder.version}</version>
+        </dependency>
 		<!-- jpa, crud repository -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
