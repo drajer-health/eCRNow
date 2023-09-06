@@ -82,7 +82,10 @@ public class EcrReportCreator extends ReportCreator {
   public static final String BUNDLE_REL_URL = "Bundle/";
   public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
+  public static final String REPORT_INITIATION_TYPE_EXT_URL =
+      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-report-initiation-types";
   public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
+  public static final String REPORT_INITIATION_TYPE_CODE = "manually-initiated";
   public static final String MESSAGE_HEADER_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
   public static final String MESSAGE_TYPE_URL =
@@ -240,8 +243,14 @@ public class EcrReportCreator extends ReportCreator {
     StringType st = new StringType();
     st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
     ext.setValue(st);
+    Extension ext2 = new Extension();
+    ext2.setUrl(REPORT_INITIATION_TYPE_EXT_URL);
+    StringType st2 = new StringType();
+    st2.setValue(REPORT_INITIATION_TYPE_CODE);
+    ext2.setValue(st2);
     List<Extension> exts = new ArrayList<>();
     exts.add(ext);
+    exts.add(ext2);
 
     header.setExtension(exts);
 
@@ -306,7 +315,7 @@ public class EcrReportCreator extends ReportCreator {
     identifier.setValue("Sample Value");
 
     returnBundle.setId(UUID.randomUUID().toString());
-    returnBundle.setType(BundleType.MESSAGE);
+    returnBundle.setType(BundleType.DOCUMENT);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, profile));
     returnBundle.setTimestamp(Date.from(Instant.now()));
     returnBundle.setIdentifier(identifier);
@@ -939,6 +948,7 @@ public class EcrReportCreator extends ReportCreator {
     List<BsaActionStatus> status = kd.getActionStatusByType(ActionType.CHECK_TRIGGER_CODES);
 
     if (status != null && !status.isEmpty()) {
+      System.out.println(status.get(0));
 
       CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) (status.get(0));
 
