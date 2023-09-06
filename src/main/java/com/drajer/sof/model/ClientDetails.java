@@ -51,22 +51,22 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isUserAccountLaunch;
 
-  @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "clientId", nullable = false, columnDefinition = "nvarchar(max)")
   private String clientId;
 
-  @Column(name = "clientSecret", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "clientSecret", nullable = true, columnDefinition = "nvarchar(max)")
   private String clientSecret;
 
   @Column(name = "fhir_server_base_url", nullable = false, unique = true)
   private String fhirServerBaseURL;
 
-  @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "token_url", nullable = true, columnDefinition = "nvarchar(max)")
   private String tokenURL;
 
-  @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "scopes", nullable = false, columnDefinition = "nvarchar(max)")
   private String scopes;
 
-  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "access_token", nullable = true, columnDefinition = "nvarchar(max)")
   private String accessToken;
 
   @Column(name = "token_expiry", nullable = true, columnDefinition = "int default 0")
@@ -88,7 +88,7 @@ public class ClientDetails {
   @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isRestAPI;
 
-  @Column(name = "direct_host", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "direct_host", nullable = true, columnDefinition = "nvarchar(max)")
   private String directHost;
 
   @Column(name = "direct_user", nullable = true)

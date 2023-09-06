@@ -19,7 +19,7 @@ public class ValueSetModel {
   @Column(name = "id")
   private String valueSetId;
 
-  @Column(name = "data", columnDefinition = "TEXT")
+  @Column(name = "data", columnDefinition = "nvarchar(max)")
   private String data;
 
   @Column(name = "last_updated_ts")

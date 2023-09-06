@@ -62,14 +62,14 @@ public class KnowledgeArtifactStatus {
    * The Version of the Knowledge Artifact as defined by the Public Health Agency or Research
    * Organization.
    */
-  @Column(name = "kar_version", columnDefinition = "TEXT", nullable = false)
+  @Column(name = "kar_version", columnDefinition = "nvarchar(max)", nullable = false)
   String karVersion;
 
   /**
    * The version unique id of the Knowledge Artifact as defined by the Public Health Agency or
    * Research Organization. This is a concatenation of Id and version.
    */
-  @Column(name = "map_versionid_karid", columnDefinition = "TEXT", nullable = false)
+  @Column(name = "map_versionid_karid", columnDefinition = "nvarchar(max)", nullable = false)
   String versionUniqueKarId;
 
   /**
@@ -102,7 +102,7 @@ public class KnowledgeArtifactStatus {
    * The list of subscriptions that have been enabled by the KnowledgeArtifact for the specific
    * HealthcareSetting.
    */
-  @Column(name = "subscriptions", columnDefinition = "TEXT")
+  @Column(name = "subscriptions", columnDefinition = "nvarchar(max)")
   @Type(type = "SetOfStringsUserType")
   Set<String> subscriptions;
 
@@ -116,7 +116,7 @@ public class KnowledgeArtifactStatus {
    * produced for the KAR.
    */
   @Enumerated(EnumType.STRING)
-  @Column(name = "output_format", columnDefinition = "TEXT")
+  @Column(name = "output_format", columnDefinition = "nvarchar(max)")
   OutputContentType outputFormat;
 
   public KnowledgeArtifactStatus() {

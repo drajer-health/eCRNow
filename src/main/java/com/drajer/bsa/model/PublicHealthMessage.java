@@ -33,57 +33,57 @@ public class PublicHealthMessage {
   @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the base FHIR Server URL from which the notification was received. */
-  @Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "nvarchar(max)")
   private String fhirServerBaseUrl;
 
   /** The attribute represents the patient id for whom the trigger event was received. */
-  @Column(name = "patient_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "patient_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String patientId;
 
   /** The attribute represents the encounter id if the notified resource type was an encounter. */
-  @Column(name = "encounter_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "encounter_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String encounterId;
 
   /** The attribute represents the id of the resource received in the notification. */
-  @Column(name = "notified_resource_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "notified_resource_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String notifiedResourceId;
 
   /** The attribute represents the type of the resource in the received notification */
-  @Column(name = "notified_resource_type", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "notified_resource_type", nullable = false, columnDefinition = "nvarchar(max)")
   private String notifiedResourceType;
 
   /** The attribute represents the KAR that gave rise to the message */
-  @Column(name = "kar_unique_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "kar_unique_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String karUniqueId;
 
   /**
    * The attribute represents the id of the notification table which resulted in the messages to be
    * submitted.
    */
-  @Column(name = "notification_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "notification_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String notificationId;
 
   /**
    * This attribute is used to correlate across APIs and processes as the data moves along for
    * submission.
    */
-  @Column(name = "correlation_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "correlation_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String xCorrelationId;
 
   /** This attribute tracks the API Request Ids when present for submitted data */
-  @Column(name = "x_request_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "x_request_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String xRequestId;
 
   /** The attribute represents the submitted data to the TTP/PHA in FHIR format. */
-  @Column(name = "submitted_fhir_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "submitted_fhir_data", nullable = true, columnDefinition = "nvarchar(max)")
   private String submittedFhirData;
 
   /** The attribute represents the submitted data to the TTP/PHA in CDA format. */
-  @Column(name = "submitted_cda_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "submitted_cda_data", nullable = true, columnDefinition = "nvarchar(max)")
   private String submittedCdaData;
 
   /** The attribute represents the format of data submitted to the TTP/PHA. */
-  @Column(name = "submitted_message_type", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "submitted_message_type", nullable = true, columnDefinition = "nvarchar(max)")
   private String submittedMessageType;
 
   /**
@@ -91,7 +91,7 @@ public class PublicHealthMessage {
    * coorrelation between the Submitted data and the Response data. For FHIR payloads, this would be
    * the ID of the Content Bundle. For Cda Payload this would be the docId of the CDA document.
    */
-  @Column(name = "submitted_data_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "submitted_data_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String submittedDataId;
 
   /**
@@ -107,14 +107,14 @@ public class PublicHealthMessage {
    * FHIR payloads this will be the Message ID in the Message Header Resource of the Reporting
    * Bundle.
    */
-  @Column(name = "submitted_message_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "submitted_message_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String submittedMessageId;
 
   /**
    * The attribute represents the status of the actions after the message is created, for e.g if the
    * validation or submission fails, it would be recorded for future processing.
    */
-  @Column(name = "submission_message_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "submission_message_status", nullable = true, columnDefinition = "nvarchar(max)")
   private String submissionMessageStatus;
 
   /** This attribute represents the submission time when the data was submitted. */
@@ -126,28 +126,28 @@ public class PublicHealthMessage {
    * The attribute represents the response data received from the TTP/PHA for the healthcare setting
    * in FHIR format.
    */
-  @Column(name = "fhir_response_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "fhir_response_data", nullable = true, columnDefinition = "nvarchar(max)")
   private String fhirResponseData;
 
   /**
    * The attribute represents the response data received from the TTP/PHA for the healthcare setting
    * in CDA format.
    */
-  @Column(name = "cda_response_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "cda_response_data", nullable = true, columnDefinition = "nvarchar(max)")
   private String cdaResponseData;
 
   /**
    * The attribute represents the response data received from the TTP/PHA for the healthcare setting
    * when the messages fail due to any reason. This will hold information such as FailureMDNs etc.
    */
-  @Column(name = "failure_response_data", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "failure_response_data", nullable = true, columnDefinition = "nvarchar(max)")
   private String failureResponseData;
 
   /**
    * The attribute represents the format of the response message from the TTP/PHA to the healthcare
    * setting.
    */
-  @Column(name = "response_message_type", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_message_type", nullable = true, columnDefinition = "nvarchar(max)")
   private String responseMessageType;
 
   /**
@@ -155,7 +155,7 @@ public class PublicHealthMessage {
    * would be the ID of the Content Bundle received. For Cda Payload this would be the docId of the
    * received CDA document.
    */
-  @Column(name = "response_data_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_data_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String responseDataId;
 
   /**
@@ -163,7 +163,7 @@ public class PublicHealthMessage {
    * FHIR payloads this will be the Message ID in the Message Header Resource of the Reporting
    * Bundle.
    */
-  @Column(name = "response_message_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_message_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String responseMessageId;
 
   /**
@@ -171,7 +171,7 @@ public class PublicHealthMessage {
    * response. For e.g in the case of eICRs, the status will be set using the EicrTypes.rrType that
    * will guide whether something needs to be reported to the provider or to the admin.
    */
-  @Column(name = "response_processing_instruction", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_processing_instruction", nullable = true, columnDefinition = "nvarchar(max)")
   private String responseProcessingInstruction;
 
   /**
@@ -180,7 +180,7 @@ public class PublicHealthMessage {
    * to be retried. So the status of failure would be recorded. that will determine what needs to be
    * done to the response.
    */
-  @Column(name = "response_processing_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "response_processing_status", nullable = true, columnDefinition = "nvarchar(max)")
   private String responseProcessingStatus;
 
   /** This attribute represents the response received time from the PHA. */
@@ -191,15 +191,15 @@ public class PublicHealthMessage {
    * The attribute represents the response that is persisted in the EHR as a document reference
    * object.
    */
-  @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "ehr_doc_ref_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String responseEhrDocRefId;
 
   /** Log the initiating action for debugging purposes. */
-  @Column(name = "initiating_action", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "initiating_action", nullable = true, columnDefinition = "nvarchar(max)")
   private String initiatingAction;
 
   /** Stores the trigger matches if any that resulted in the message to be submitted. */
-  @Column(name = "trigger_match_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "trigger_match_status", nullable = true, columnDefinition = "nvarchar(max)")
   private String triggerMatchStatus;
 
   /**
@@ -207,7 +207,7 @@ public class PublicHealthMessage {
    * de-identified, this Id is passed to the PHA and the PHA may want to link back to the Patient.
    * In these cases the this Id can be used to re-identify the specific patient.
    */
-  @Column(name = "patient_linker_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "patient_linker_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String patientLinkerId;
 
   /** This attribute represents the last time when the object was updated. */

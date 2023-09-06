@@ -39,23 +39,23 @@ public class NotificationContext {
   @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the trigger event (Medmorph Named Event) for processing. */
-  @Column(name = "trigger_event", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "trigger_event", nullable = false, columnDefinition = "nvarchar(max)")
   private String triggerEvent;
 
   /** The attribute represents the base FHIR Server URL from which the notification was received. */
-  @Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "fhir_server_base_url", nullable = false, columnDefinition = "nvarchar(max)")
   private String fhirServerBaseUrl;
 
   /** The attribute represents the patient id for whom the trigger event was received. */
-  @Column(name = "patient_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "patient_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String patientId;
 
   /** The attribute represents the resource id which is received as part of the notification. */
-  @Column(name = "notification_resource_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "notification_resource_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String notificationResourceId;
 
   /** The attribute represents the resource type which is received as part of the notification. */
-  @Column(name = "notification_resource_type", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "notification_resource_type", nullable = false, columnDefinition = "nvarchar(max)")
   private String notificationResourceType;
 
   /**
@@ -65,7 +65,7 @@ public class NotificationContext {
    * reached). COMPLETED - Completed based on the status of the timers. CANCELLED - Launch Request
    * was cancelled.
    */
-  @Column(name = "notification_processing_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "notification_processing_status", nullable = true, columnDefinition = "nvarchar(max)")
   private String notificationProcessingStatus;
 
   /**
@@ -78,23 +78,23 @@ public class NotificationContext {
    * The attribute represents the data received as part of the notification. This is a FHIR Bundle,
    * stored as part of the table.
    */
-  @Column(name = "notification_data", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "notification_data", nullable = false, columnDefinition = "nvarchar(max)")
   private String notificationData;
 
   /** This attribute is used to correlate across APIs and processes as the data moves along. */
-  @Column(name = "correlation_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "correlation_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String xCorrelationId;
 
   /** This attribute tracks the API Request Ids when present. */
-  @Column(name = "x_request_id", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "x_request_id", nullable = true, columnDefinition = "nvarchar(max)")
   private String xRequestId;
 
   /** The opaque throttle context to be passed to the EHR */
-  @Column(name = "throttle_context", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "throttle_context", nullable = true, columnDefinition = "nvarchar(max)")
   private String throttleContext;
 
   /** The access token after authorization to the EHR */
-  @Column(name = "ehr_access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "ehr_access_token", nullable = true, columnDefinition = "nvarchar(max)")
   private String ehrAccessToken;
 
   /** The expiry duration in seconds for the EHR Access Token */

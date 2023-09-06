@@ -49,7 +49,7 @@ public class KarExecutionState {
   @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the key to retrieve the notification context for executing the Kar */
-  @Column(name = "nc_id", nullable = false, columnDefinition = "uuid")
+  @Column(name = "nc_id", nullable = false, columnDefinition = "uniqueidentifier")
   private UUID ncId;
 
   /** The attribute links back to the Notification Context */
@@ -61,21 +61,21 @@ public class KarExecutionState {
    * The attribute represents the key to retrieve the health care setting information for executing
    * the Kar
    */
-  @Column(name = "hs_fhir_server_url", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "hs_fhir_server_url", nullable = false, columnDefinition = "nvarchar(max)")
   private String hsFhirServerUrl;
 
   /**
    * The attribute represents the key to retrieve the Knowledge Artifact information for executing
    * the Kar
    */
-  @Column(name = "kar_unique_id", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "kar_unique_id", nullable = false, columnDefinition = "nvarchar(max)")
   private String karUniqueId;
 
   /**
    * The attribute represents the state of the execution for the various actions that have been
    * completed during a single execution either due to a timer or due to a notification.
    */
-  @Column(name = "action_status", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "action_status", nullable = true, columnDefinition = "nvarchar(max)")
   private String actionStatus;
 
   /**

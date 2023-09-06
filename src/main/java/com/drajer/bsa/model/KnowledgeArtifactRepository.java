@@ -45,7 +45,7 @@ public class KnowledgeArtifactRepository {
   private Integer id;
 
   /** The attribute represents the FHIR Server URL which hosts the Knowledge Artifact. */
-  @Column(name = "repo_fhir_url", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "repo_fhir_url", nullable = false, columnDefinition = "nvarchar(max)")
   private String fhirServerURL;
 
   /**

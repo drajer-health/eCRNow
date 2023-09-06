@@ -55,13 +55,13 @@ public class LaunchDetails {
   @Column(name = "ehr_server_url", nullable = true)
   private String ehrServerURL;
 
-  @Column(name = "auth_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "auth_url", nullable = true, columnDefinition = "nvarchar(max)")
   private String authUrl;
 
-  @Column(name = "token_url", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "token_url", nullable = true, columnDefinition = "nvarchar(max)")
   private String tokenUrl;
 
-  @Column(name = "access_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "access_token", nullable = true, columnDefinition = "nvarchar(max)")
   private String accessToken;
 
   @Column(name = "user_id", nullable = true)
@@ -70,7 +70,7 @@ public class LaunchDetails {
   @Column(name = "expiry", nullable = true, columnDefinition = "int default 0")
   private Integer expiry;
 
-  @Column(name = "scope", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "scope", nullable = true, columnDefinition = "nvarchar(max)")
   private String scope;
 
   @Column(name = "last_updated_ts", nullable = false)
@@ -89,7 +89,7 @@ public class LaunchDetails {
   @Temporal(TemporalType.TIMESTAMP)
   private Date tokenExpiryDateTime;
 
-  @Column(name = "refresh_token", nullable = true, columnDefinition = "TEXT")
+  @Column(name = "refresh_token", nullable = true, columnDefinition = "nvarchar(max)")
   private String refreshToken;
 
   @Column(name = "launch_patient_id", nullable = true)
@@ -107,7 +107,7 @@ public class LaunchDetails {
   @Column(
       name = "status",
       nullable = true,
-      columnDefinition = "TEXT") // Status can be active or completed.
+      columnDefinition = "nvarchar(max)") // Status can be active or completed.
   private String status;
 
   @Column(name = "aa_id", nullable = true) // AA ID for creating CDA.

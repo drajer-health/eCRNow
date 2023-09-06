@@ -26,24 +26,24 @@ public class PublicHealthAuthority implements FhirServerDetails {
   private Integer id;
 
   /** The attribute represents the client id that is to be used for SMART on FHIR Authorization. */
-  @Column(name = "clientId", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "clientId", nullable = false, columnDefinition = "nvarchar(max)")
   private String clientId;
 
   /**
    * The attribute represents the client secret that is to be used for SMART on FHIR Authorization.
    */
-  @Column(name = "clientSecret", columnDefinition = "TEXT")
+  @Column(name = "clientSecret", columnDefinition = "nvarchar(max)")
   private String clientSecret;
 
   /** The attribute represents a username that may be used with password-based Authorization. */
-  @Column(name = "username", columnDefinition = "TEXT")
+  @Column(name = "username", columnDefinition = "nvarchar(max)")
   private String username;
 
   /**
    * The attribute represents a password associated with the username for password-based
    * authorization.
    */
-  @Column(name = "password", columnDefinition = "TEXT")
+  @Column(name = "password", columnDefinition = "nvarchar(max)")
   private String password;
 
   /**
@@ -61,14 +61,14 @@ public class PublicHealthAuthority implements FhirServerDetails {
    * The attribute represents the Token URL for requesting access tokens as part of SMART on FHIR
    * Authorization. This is provided to override what is present in the CapabilityStatement.
    */
-  @Column(name = "token_url", columnDefinition = "TEXT")
+  @Column(name = "token_url", columnDefinition = "nvarchar(max)")
   private String tokenUrl;
 
   /**
    * The attribute represents the scopes for which permission is requested during the SMART on FHIR
    * Authorization. This is provided to override what is present in the CapabilityStatement.
    */
-  @Column(name = "scopes", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "scopes", nullable = false, columnDefinition = "nvarchar(max)")
   private String scopes;
 
   @Column(name = "require_aud", nullable = false)
@@ -78,7 +78,7 @@ public class PublicHealthAuthority implements FhirServerDetails {
   /**
    * This attribute represents the type of authentication to be used by the public health authority.
    */
-  @Column(name = "auth_type", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "auth_type", nullable = false, columnDefinition = "nvarchar(max)")
   private String authType;
 
   /** This attribute represents the last time when the object was updated. */

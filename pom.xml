@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
-			<version>8.2.2.jre8</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- PostgreSQL -->
