@@ -120,6 +120,13 @@ public class NotificationContext {
   @Column(name = "encounter_end_time", nullable = true)
   private Date encounterEndTime;
 
+  /**
+   * This attribute represents the encounter class (AMB/IMP) which is used for choosing different
+   * execution paths in the ERSD.
+   */
+  @Column(name = "encounter_class", nullable = true)
+  private String encounterClass;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -267,5 +274,13 @@ public class NotificationContext {
 
   public void setThrottleContext(String throttleContext) {
     this.throttleContext = throttleContext;
+  }
+
+  public String getEncounterClass() {
+    return encounterClass;
+  }
+
+  public void setEncounterClass(String encounterclass) {
+    this.encounterClass = encounterClass;
   }
 }

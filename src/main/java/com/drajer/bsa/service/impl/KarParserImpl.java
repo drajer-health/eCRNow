@@ -571,6 +571,9 @@ public class KarParserImpl implements KarParser {
                     art.getDependentResource(ResourceType.Endpoint, ((Reference) t).getReference());
             if (endpoint != null && endpoint.hasAddressElement()) {
               art.addReceiverAddress(endpoint.getAddressElement());
+            } else {
+              Reference r = (Reference) t;
+              art.addReceiverAddress(new UriType(r.getReference()));
             }
           }
         } else if (ext.hasValue() && ext.getUrl().contentEquals(VARIABLE_EXTENSION_URL)) {
@@ -587,21 +590,6 @@ public class KarParserImpl implements KarParser {
           }
         }
       }
-
-      /**
-       * Extension ext = plan.getExtensionByUrl(RECEIVER_ADDRESS_URL);
-       *
-       * <p>if (ext != null && ext.hasValue()) {
-       *
-       * <p>Type t = ext.getValue(); if (t instanceof PrimitiveType) { PrimitiveType<?> i =
-       * (PrimitiveType<?>) t; if (i instanceof UriType) {
-       *
-       * <p>logger.info(" Found Receiver Address {}", i.getValueAsString());
-       * art.addReceiverAddress((UriType) i); } } else if (t instanceof Reference) { Endpoint
-       * endpoint = (Endpoint) art.getDependentResource(ResourceType.Endpoint, ((Reference)
-       * t).getReference()); if (endpoint != null && endpoint.hasAddressElement()) {
-       * art.addReceiverAddress(endpoint.getAddressElement()); } } }
-       */
     }
   }
 

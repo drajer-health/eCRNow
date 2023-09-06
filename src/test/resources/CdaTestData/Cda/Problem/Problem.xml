@@ -1,0 +1,56 @@
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+<code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+<title>PROBLEMS - DIAGNOSES</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Problem or Diagnosis</th>
+<th>Problem Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="problem1">Disease caused by 2019-nCoV</content>
+</td>
+<td>
+<content ID="problemStatus1">Active</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20200513190428+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2572364249/_history/2572364249"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20200513190400+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Disease caused by 2019-nCoV"><translation code="U07.1" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="2019-nCoV acute respiratory disease"/>
+</value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+</section>
+</component>

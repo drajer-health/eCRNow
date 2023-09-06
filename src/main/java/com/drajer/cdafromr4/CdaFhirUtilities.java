@@ -937,6 +937,7 @@ public class CdaFhirUtilities {
     if (codes != null && !codes.isEmpty()) {
 
       Boolean first = true;
+      Boolean found = false;
       for (Coding c : codes) {
 
         if (Boolean.TRUE.equals(first)) {
@@ -945,6 +946,7 @@ public class CdaFhirUtilities {
 
           if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
             first = false;
+            found = true;
             sb.append(
                 CdaGeneratorUtils.getXmlForCDWithoutEndTag(
                     cdName, c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
@@ -968,7 +970,8 @@ public class CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      if (!sb.toString().isEmpty()) sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
+      if (!sb.toString().isEmpty() && found)
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(cdName));
       else sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
     } else {
       sb.append(CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI));
@@ -1104,20 +1107,24 @@ public class CdaFhirUtilities {
     if (!codes.isEmpty()) {
 
       Boolean first = true;
+      Boolean found = false;
       for (Coding c : codes) {
 
         if (Boolean.TRUE.equals(first)) {
 
-          first = false;
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
-          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty())
+          if (!csd.getValue0().isEmpty() && !csd.getValue1().isEmpty()) {
+            first = false;
+            found = true;
             sb.append(
                 CdaGeneratorUtils.getXmlForValueCDWithoutEndTag(
                     c.getCode(), csd.getValue0(), csd.getValue1(), c.getDisplay()));
 
-          if (contentRef != null && !contentRef.isEmpty())
-            sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
+            if (contentRef != null && !contentRef.isEmpty())
+              sb.append(CdaGeneratorUtils.getXmlForOriginalTextWithReference(contentRef));
+          }
+
         } else {
 
           Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
@@ -1134,7 +1141,9 @@ public class CdaFhirUtilities {
       }
 
       // At least one code is there so...close the tag
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
+      if (found && !sb.toString().isEmpty())
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.VAL_EL_NAME));
+      else sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     } else {
       sb.append(CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI));
     }
@@ -1262,7 +1271,7 @@ public class CdaFhirUtilities {
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
-              elName, dt.getValue().toString(), dt.getUnit(), valFlag));
+              elName, dt.getValue().toString(), dt.getCode(), valFlag));
 
     } else {
       sb.append(
@@ -1525,14 +1534,22 @@ public class CdaFhirUtilities {
     if (qt != null
         && qt.getValueElement() != null
         && qt.getSystemElement() != null
-        && qt.getUnit() != null) {
+        && (qt.getUnit() != null || qt.getCode() != null)) {
+
+      String units = (qt.getUnit() != null ? qt.getUnit() : CdaGeneratorConstants.UNKNOWN_VALUE);
+
+      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE)
+          && qt.getCode() != null
+          && !qt.getCode().isEmpty()) {
+        units = qt.getCode();
+      }
 
       val +=
           qt.getValueElement().getValueAsString()
               + CdaGeneratorConstants.PIPE
               + qt.getSystemElement().getValueAsString()
               + CdaGeneratorConstants.PIPE
-              + qt.getUnit();
+              + units;
     } else {
       val += CdaGeneratorConstants.UNKNOWN_VALUE;
     }
@@ -1780,7 +1797,7 @@ public class CdaFhirUtilities {
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
 
     String val = "";
-    if (dt != null) {
+    if (dt != null && !dt.hasExtension(CdaGeneratorConstants.FHIR_DATA_ABSENT_REASON_EXT_URL)) {
 
       if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
@@ -1795,7 +1812,10 @@ public class CdaFhirUtilities {
 
         CodeableConcept cd = (CodeableConcept) dt;
 
-        List<Coding> cds = cd.getCoding();
+        List<Coding> cds = new ArrayList<>();
+        if (cd.hasCoding()) {
+          cds.addAll(cd.getCoding());
+        }
 
         if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName, "");
         else val += getCodingXmlForValue(cds, elName, null);
@@ -1846,7 +1866,7 @@ public class CdaFhirUtilities {
 
     if (Boolean.FALSE.equals(valFlag))
       val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
-    else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
+    else val += CdaGeneratorUtils.getXmlForValueString(CdaGeneratorConstants.NO_VALUE);
 
     return val;
   }

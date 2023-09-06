@@ -100,19 +100,20 @@ public class CreateReport extends BsaAction {
             ReportCreator rc = ReportCreator.getReportCreator(ct.asStringValue());
             if (data.getFhirInputDataByType() != null) {
 
-              logger.info(" Resources By Type {}", data.getFhirInputDataByType().size());
+            /* if(data.getFhirInputDataByType() != null) {
+            	logger.info(" Resources By Type {}", data.getFhirInputDataByType().size());
 
-              for (Map.Entry<ResourceType, Set<Resource>> ent :
-                  data.getFhirInputDataByType().entrySet()) {
+            	for(Map.Entry<ResourceType, Set<Resource>> ent: data.getFhirInputDataByType().entrySet()) {
 
-                Set<Resource> inputResources = ent.getValue();
+            		Set<Resource> inputResources = ent.getValue();
 
-                if (inputResources != null) {
+            		if(inputResources != null) {
+            			resources.addAll(inputResources);
+            		}
 
-                  resources.addAll(inputResources);
-                }
-              }
+            	}*/
             }
+
             if (rc != null) {
 
               logger.info("Start creating report");

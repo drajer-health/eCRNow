@@ -174,6 +174,16 @@ public class SubscriptionUtils {
                 logger.debug(" Initializing Encounter Start time as current time ");
                 nc.setEncounterStartTime(new Date());
               }
+
+              if (enc.hasClass_()
+                  && enc.getClass_().hasCode()
+                  && enc.getClass_().getCode().contentEquals("AMB")) {
+                logger.info("Setting Encounter Class as Ambulatory ");
+                nc.setEncounterClass("AMB");
+              } else {
+                logger.info("Setting Encounter Class as Inpatient ");
+                nc.setEncounterClass("IMP");
+              }
             }
 
             String xRequestId = request.getHeader("X-Request-ID");

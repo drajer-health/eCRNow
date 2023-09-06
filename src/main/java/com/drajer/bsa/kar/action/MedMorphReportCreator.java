@@ -171,6 +171,7 @@ public class MedMorphReportCreator extends ReportCreator {
       mdc.setEndpoint(i.asStringValue());
       mdcs.add(mdc);
     }
+
     header.setDestination(mdcs);
 
     // Set source.

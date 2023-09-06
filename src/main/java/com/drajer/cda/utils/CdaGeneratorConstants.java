@@ -119,6 +119,8 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex";
   public static final String FHIR_RELIGION_EXT_URL =
       "http://hl7.org/fhir/StructureDefinition/patient-religion";
+  public static final String FHIR_DATA_ABSENT_REASON_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
 
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
@@ -900,6 +902,7 @@ public class CdaGeneratorConstants {
   public static final String DEVICE_TABLE_COL_2_TITLE = "Device Date";
   public static final String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
   public static final String UNKNOWN_VALUE = "Unknown";
+  public static final String NO_VALUE = "No Value";
   public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS =
       "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
@@ -1182,7 +1185,7 @@ public class CdaGeneratorConstants {
     // Unable to translate other codes
   }
 
-  private static String getSplitValueURL(Object theValue) {
+  public static String getSplitValueURL(Object theValue) {
     String name = "";
     try {
       String[] values = ((String) theValue).trim().split("\\s*\\|\\s*");

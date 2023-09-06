@@ -6,13 +6,12 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.eca.model.EcaUtils;
 import com.drajer.eca.model.EventTypes.JobStatus;
 import com.drajer.eca.model.MatchTriggerStatus;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -73,9 +72,9 @@ public class R3ToR2DataConverterUtils {
 
     if (kd != null) {
 
-      setPatientStateInLaunchDetails(kd, details);
-
       logger.debug(" KarProcessingData is not null, to be converted ");
+      setPatientStateInLaunchDetails(kd, details);
+      logger.info(" Patient State created from KarProcessingData is : {}", details.getStatus());
 
       details.setEhrServerURL(kd.getNotificationContext().getFhirServerBaseUrl());
       details.setAssigningAuthorityId(kd.getHealthcareSetting().getAssigningAuthorityId());
@@ -533,6 +532,8 @@ public class R3ToR2DataConverterUtils {
     for (BsaActionStatus entry : statuses) {
 
       CheckTriggerCodeStatus ctcs = (CheckTriggerCodeStatus) entry;
+
+      logger.info(" CTCS Matched Codes size");
       MatchTriggerStatus mts = new MatchTriggerStatus();
 
       mts.setActionId(ctcs.getActionId());
@@ -542,18 +543,7 @@ public class R3ToR2DataConverterUtils {
       state.setMatchTriggerStatus(mts);
     }
 
-    ObjectMapper mapper = new ObjectMapper();
-
-    try {
-
-      details.setStatus(mapper.writeValueAsString(state));
-
-    } catch (JsonProcessingException e) {
-
-      String msg = "Unable to update execution state";
-      logger.error(msg, e);
-      throw new RuntimeException(msg, e);
-    }
+    EcaUtils.updateDetailStatus(details, state);
   }
 
   private static JobStatus getJobStatusForActionStatus(BsaActionStatusType status) {

@@ -41,6 +41,8 @@ public class CdaResultGenerator {
     StringBuilder resultEntries = new StringBuilder();
 
     List<Observation> allResults = data.getLabResults();
+
+    // Check if there is a LOINC code for the observation to be translated.
     List<Observation> results = getValidLabResults(data);
     List<DiagnosticReport> reports = getValidDiagnosticReports(data);
 
@@ -241,10 +243,7 @@ public class CdaResultGenerator {
       StringBuilder displayAttr = new StringBuilder(200);
       String repDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
       List<Coding> cds = null;
-      if (rep.hasCode()
-          && rep.getCode() != null
-          && rep.getCode().hasCoding()
-          && rep.getCode().getCodingFirstRep() != null) {
+      if (rep.hasCode() && rep.getCode().hasCoding() && rep.getCode().getCodingFirstRep() != null) {
 
         cds = rep.getCode().getCoding();
 
@@ -407,7 +406,10 @@ public class CdaResultGenerator {
         for (ObservationComponentComponent oc : obs.getComponent()) {
 
           logger.debug("Found Observation Components ");
-          if (oc.getCode() != null && oc.getCode().getCoding() != null) {
+          if (oc.hasCode()
+              && oc.getCode().hasCoding()
+              && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                  oc.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
             cc = oc.getCode();
           } else {
             // use diagnostic report code instead
@@ -446,12 +448,22 @@ public class CdaResultGenerator {
 
       if (obs != null && Boolean.FALSE.equals(foundComponent)) {
 
+        CodeableConcept cc = null;
         logger.info("No component found , so directly adding the observation code ");
+        if (obs.hasCode()
+            && obs.getCode().hasCoding()
+            && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                obs.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+          cc = obs.getCode();
+        } else {
+          // use diagnostic report code instead
+          cc = rep.getCode();
+        }
 
         lrEntry.append(
             getXmlForObservationComponent(
                 details,
-                (obs.getCode() != null ? obs.getCode() : rep.getCode()),
+                cc,
                 obs.getValue(),
                 obs.getId(),
                 obs.getEffective(),
@@ -474,7 +486,7 @@ public class CdaResultGenerator {
 
     Boolean foundComponent = false;
 
-    if (obs.getComponent() != null && !obs.getComponent().isEmpty()) {
+    if (obs.hasComponent() && obs.getComponent() != null) {
 
       CodeableConcept cc = obs.getCode();
       Type val = obs.getValue();
@@ -571,6 +583,7 @@ public class CdaResultGenerator {
     List<String> paths = new ArrayList<>();
     paths.add("Observation.code");
     paths.add("DiagnosticReport.code");
+    paths.add("Observation.value");
 
     Pair<Boolean, String> obsCodeXml = getObservationCodeXml(details, cd, false, contentRef, paths);
 
@@ -897,8 +910,7 @@ public class CdaResultGenerator {
 
     if (data.getLabResults() != null && !data.getLabResults().isEmpty()) {
 
-      logger.debug(
-          "Total num of Lab Results available for Patient {}", data.getLabResults().size());
+      logger.info("Total num of Lab Results available for Patient {}", data.getLabResults().size());
 
       for (Observation s : data.getLabResults()) {
 
@@ -937,21 +949,25 @@ public class CdaResultGenerator {
 
       for (DiagnosticReport dr : data.getDiagReports()) {
 
-        if (dr.getCode() != null
-            && dr.getCode().getCoding() != null
+        if (dr.hasCode()
+            && dr.getCode().hasCoding()
             && !dr.getCode().getCoding().isEmpty()
-            && dr.getResult() != null
+            && dr.hasResult()
             && !dr.getResult().isEmpty()
             && Boolean.TRUE.equals(
                 CdaFhirUtilities.isCodingPresentForCodeSystem(
                     dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
-          logger.info("Found a DiagnosticReport with a LOINC code");
+          logger.debug("Found a DiagnosticReport with a LOINC code");
           drs.add(dr);
+        } else {
+          logger.info(
+              " Ignoring Diagnostic Report with id {} since the data cannot be used to create an Organizer or POT Observation ",
+              dr.getId());
         }
       }
     } else {
-      logger.debug("No Valid DiagnosticReport in the bundle to process");
+      logger.info("No Valid DiagnosticReport in the bundle to process");
     }
 
     return drs;

@@ -1,0 +1,593 @@
+<?xml version="1.0"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="urn:hl7-org:v3"
+ xmlns:cda="urn:hl7-org:v3"
+ xmlns:sdtc="urn:hl7-org:sdtc">
+<realmCode code="US"/>
+<typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+<templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+<templateId root="2.16.840.1.113883.10.20.15.2" extension="2016-12-01"/>
+<id root="d5d04894-e345-4571-afc5-56db664e2678"/>
+<code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
+<title>Initial Public Health Case Report</title>
+<effectiveTime value="20230508134408+0530"/>
+<confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+<languageCode code="en-US"/>
+<setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
+<versionNumber value="43"/>
+<recordTarget>
+<patientRole>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Patient/a-11287.E-4237"/>
+<addr use="HP">
+<streetAddressLine>2221 HOME STREET</streetAddressLine>
+<city>SALT LAKE CITY</city>
+<state>UT</state>
+<postalCode>84101</postalCode>
+<country>USA</country>
+</addr>
+<addr>
+<streetAddressLine>2221 HOME STREET</streetAddressLine>
+<city>SALT LAKE CITY</city>
+<state>UT</state>
+<postalCode>84101</postalCode>
+<country>USA</country>
+</addr>
+<telecom value="tel:(555)555-5006" use="HP"/>
+<telecom value="tel:(555)555-5006" use="MC"/>
+<telecom value="mailto:jill@email.com"/>
+<patient>
+<name use="L">
+<given qualifier="PR">Jill</given>
+<family>Test</family>
+</name>
+<administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1"/>
+<birthTime value="20201027"/>
+<sdtc:deceasedInd value="false"/>
+<maritalStatusCode code="S" codeSystem="2.16.840.1.113883.5.2" codeSystemName="v3-MaritalStatus" displayName="Never Married"/>
+<raceCode code="2028-9" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="Asian"/>
+<ethnicGroupCode code="2186-5" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="Not Hispanic or Latino"/>
+<languageCommunication>
+<languageCode code="en"/>
+</languageCommunication>
+</patient>
+</patientRole>
+</recordTarget>
+<author>
+<time value="20220920101200+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<telecom nullFlavor="NI"/>
+<assignedPerson>
+<name>
+<given nullFlavor="NI"/>
+<family nullFlavor="NI"/>
+</name>
+</assignedPerson>
+</assignedAuthor>
+</author>
+<author>
+<time value="20230508134408+0530"/>
+<assignedAuthor>
+<id root="12219cbd-8006-43a1-b933-dfdcb989c0e4"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<assignedAuthoringDevice>
+<manufacturerModelName displayName="ecrNowApp"/>
+<softwareName displayName="Version 3.1.X"/>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<author>
+<time value="20230508134408+0530"/>
+<assignedAuthor>
+<id root="99055c5f-819d-402d-b12e-db78ddf23080"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<assignedAuthoringDevice>
+<manufacturerModelName displayName="Example-Ehr"/>
+<softwareName displayName="1.0.0"/>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<author>
+<time value="20230508134408+0530"/>
+<assignedAuthor>
+<id root="ba1de91b-a307-4e39-84fd-4009f15501a8"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<assignedAuthoringDevice>
+<manufacturerModelName displayName="System-Integrator"/>
+<softwareName displayName="1.0.0"/>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<custodian>
+<assignedCustodian>
+<representedCustodianOrganization>
+<id nullFlavor="NI"/>
+<name>Unknown</name>
+<telecom nullFlavor="NI"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+</representedCustodianOrganization>
+</assignedCustodian>
+</custodian>
+<componentOf>
+<encompassingEncounter>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Encounter/a-11287.stay-9787"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.stay-9787"/>
+<code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"></code>
+<effectiveTime>
+<low value="20220920101200+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<responsibleParty>
+<assignedEntity>
+<id root="2.16.840.1.113883.4.6"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<telecom nullFlavor="NI"/>
+<assignedPerson>
+<name>
+<given nullFlavor="NI"/>
+<family nullFlavor="NI"/>
+</name>
+</assignedPerson>
+<representedOrganization>
+<id nullFlavor="NI"/>
+<name>Unknown</name>
+<telecom nullFlavor="NI"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+</representedOrganization>
+</assignedEntity>
+</responsibleParty>
+<location>
+<healthCareFacility>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Location/a-11287.Department-1"/>
+<code code="CHR" codeSystem="2.16.840.1.113883.5.111" codeSystemName="v3-RoleCode" displayName="Chronic Care Facility"></code>
+<location>
+<addr>
+<streetAddressLine>0987 Facility Drive</streetAddressLine>
+<city>SALT LAKE CITY</city>
+<state>UT</state>
+<postalCode>84101-0001</postalCode>
+<country nullFlavor="NI"/>
+</addr>
+</location>
+<serviceProviderOrganization>
+<id nullFlavor="NI"/>
+<name>Unknown</name>
+<telecom nullFlavor="NI"/>
+<addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+</serviceProviderOrganization>
+</healthCareFacility>
+</location>
+</encompassingEncounter>
+</componentOf><component>
+<structuredBody>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+<code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+<title>PROBLEMS - DIAGNOSES</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Problem or Diagnosis</th>
+<th>Problem Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="problem1">coronavirus infection</content>
+</td>
+<td>
+<content ID="problemStatus1">Active</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="problem2">Fever</content>
+</td>
+<td>
+<content ID="problemStatus2">Active</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="problem3">COVID-19</content>
+</td>
+<td>
+<content ID="problemStatus3">Active</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20220920061507-0400"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Condition/a-11287.StayDx-4277"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20220920"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="186747009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="coronavirus infection"></value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20220920061612-0400"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Condition/a-11287.Problem-8623"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20220920"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="386661006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Fever"></value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20220920061626-0400"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Condition/a-11287.Problem-8624"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20220920"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="COVID-19"></value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.22.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.22.1" extension="2015-08-01"/>
+<code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Encounters"/>
+<title>ENCOUNTERS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Encounter Code</th>
+<th>Date of Encounter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="encounter1">inpatient encounter</content>
+</td>
+<td>
+<content ID="encounterDate1">20220920101200+0000</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<encounter classCode="ENC" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.49"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.49" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Encounter/a-11287.stay-9787"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.stay-9787"/>
+<code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"><originalText>
+<reference value="#encounter1"/>
+</originalText>
+</code>
+<effectiveTime>
+<low value="20220920101200+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<sdtc:dischargeDispositionCode code="home" codeSystem="2.16.840.1.113883.4.642.4.1093" codeSystemName="discharge-disposition" displayName="Home"></sdtc:dischargeDispositionCode>
+</encounter>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+<code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+<title>RESULTS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Lab Test Name</th>
+<th>Lab Test Result Value</th>
+<th>Lab Test Result Date</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</text>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
+<code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+<title>Medications Administered</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Medication Name</th>
+<th>Medication Start Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="medication1">Unknown</content>
+</td>
+<td>
+<content ID="medicationDate1">20220920061723-0400</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<substanceAdministration classCode="SBADM" moodCode="INT">
+<templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="MedicationRequest/a-11287.hospmedicationrequest-26903"/>
+<statusCode code="active"/>
+<effectiveTime value="20220920061723-0400"/>
+<effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+<period value="1" unit="h"/>
+</effectiveTime>
+<doseQuantity value="100"/>
+<consumable>
+<manufacturedProduct classCode="MANU">
+<templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+<code code="2284960" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="remdesivir 100 MG Injection"></code>
+</manufacturedMaterial>
+</manufacturedProduct>
+</consumable>
+</substanceAdministration>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>
+<code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+<title>IMMUNIZATIONS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Vaccine Name</th>
+<th>Vaccination Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="vaccine1">influenza, live, intranasal</content>
+</td>
+<td>
+<content ID="vaccinationDate1">Tue Sep 20 00:00:00 UTC 2022</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
+<templateId root="2.16.840.1.113883.10.20.22.4.52"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="Immunization/a-11287.historical-3158"/>
+<statusCode code="completed"/>
+<effectiveTime value="20220920"/>
+<consumable>
+<manufacturedProduct classCode="MANU">
+<templateId root="2.16.840.1.113883.10.20.22.4.54"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+<code code="111" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="influenza, live, intranasal"></code>
+</manufacturedMaterial>
+</manufacturedProduct>
+</consumable>
+</substanceAdministration>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+<code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+<title>SOCIAL HISTORY</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Social History Observation</th>
+<th>Social History Observation Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="socContent0">Birth Sex</content>
+</td>
+<td>
+<content ID="socObservationResult0">UNK</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.200" extension="2016-06-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76689-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Birth Sex"/>
+<statusCode code="completed"/>
+<value xsi:type="CD" nullFlavor="UNK"/>
+</observation>
+</entry>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+<code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+<title>Plan of Treatment</title>
+<text>No Plan Of Treatment Information</text>
+</section>
+</component>
+<component>
+<section>
+<templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.4"/>
+<code code="10164-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Present Illness"/>
+<title>History of Present Illness</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Narrative Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="historyOfPresentIllness1">Unknown History of Present Illness</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.12"/>
+<code code="29299-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Reason For Visit"/>
+<title>Reason For Visit</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="text1">coronavirus infection</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+</section>
+</component>
+</structuredBody>
+</component>
+</ClinicalDocument>

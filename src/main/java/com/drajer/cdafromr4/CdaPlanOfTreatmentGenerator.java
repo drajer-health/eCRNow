@@ -13,7 +13,6 @@ import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,7 +185,7 @@ public class CdaPlanOfTreatmentGenerator {
     String codeXml = "";
     // Add Trigger code template if the code matched the Url in the Service Request.
     if (matchedTriggerCodes != null && !matchedTriggerCodes.isEmpty()) {
-      logger.debug("Found a Matched Code that is for Service Request");
+      logger.info("Found a Matched Code that is for Service Request");
 
       String mCd =
           CdaFhirUtilities.getMatchingCodeFromCodeableConceptForCodeSystem(
@@ -210,7 +209,7 @@ public class CdaPlanOfTreatmentGenerator {
                 "",
                 contentRef);
       } else {
-        logger.debug(
+        logger.info(
             "Did not find the code value in the matched codes, make it a regular Planned Observation");
       }
     }
@@ -379,16 +378,18 @@ public class CdaPlanOfTreatmentGenerator {
             && !s.getCode().getCoding().isEmpty()
             && Boolean.TRUE.equals(
                 CdaFhirUtilities.isCodingPresentForCodeSystem(
-                    s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))
-            && s.getStatus() != null
-            && s.getStatus() == ServiceRequestStatus.ACTIVE) {
+                    s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
           logger.debug("Found a Service Request with a LOINC code");
           sr.add(s);
+        } else {
+          logger.info(
+              " Ignoring Service Request with id {} as it is not having a loinc code ",
+              s.getIdElement().getIdPart());
         }
       }
     } else {
-      logger.debug("No Valid Service Requests in the bundle to process");
+      logger.info("No Valid Service Requests in the bundle to process");
     }
 
     return sr;
@@ -458,6 +459,10 @@ public class CdaPlanOfTreatmentGenerator {
 
           logger.debug("Found a DiagnosticReport with a LOINC code with no result");
           drs.add(dr);
+        } else {
+          logger.info(
+              " Ignoring Diagnostic Report with id {} as it is not having a loinc code ",
+              dr.getIdElement().getIdPart());
         }
       }
     } else {

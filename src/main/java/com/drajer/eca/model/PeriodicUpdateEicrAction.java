@@ -31,7 +31,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
       PatientExecutionState state = null;
       boolean longRunningEncounter = false;
       PeriodicUpdateEicrStatus status = new PeriodicUpdateEicrStatus();
-
       state = ApplicationUtils.getDetailStatus(details);
       status.setActionId(getActionId());
 
@@ -90,7 +89,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
                       details.getStartDate(),
                       taskInstanceId);
                   state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
-
                   EcaUtils.updateDetailStatus(details, state);
                   // No need to continue as the job will take over execution.
                   logger.info(" **** End Executing Periodic Update Eicr Action **** ");
@@ -203,6 +201,11 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
 
                 logger.info(CREATE_A_JOB_BASED_ON_TIMING_DATA);
                 scheduleJob(details, state, taskInstanceId);
+                status.setEicrUpdated(false);
+                status.seteICRId("0");
+                status.setJobStatus(JobStatus.COMPLETED);
+                state.getPeriodicUpdateStatus().add(status);
+                EcaUtils.updateDetailStatus(details, state);
                 return;
               }
             }
@@ -264,7 +267,6 @@ public class PeriodicUpdateEicrAction extends AbstractAction {
           EcrActionTypes.PERIODIC_UPDATE_EICR,
           details.getStartDate(),
           taskInstanceId);
-
       state.setPeriodicUpdateJobStatus(JobStatus.SCHEDULED);
 
       EcaUtils.updateDetailStatus(details, state);

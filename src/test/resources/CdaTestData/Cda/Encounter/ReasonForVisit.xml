@@ -1,0 +1,23 @@
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.12"/>
+<code code="29299-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Reason For Visit"/>
+<title>Reason For Visit</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="text1">COVID-19 Symptoms</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+</section>
+</component>

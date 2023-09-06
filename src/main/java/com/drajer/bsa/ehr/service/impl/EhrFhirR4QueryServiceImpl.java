@@ -39,23 +39,38 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Medication;
 import org.hl7.fhir.r4.model.MedicationAdministration;
+import org.hl7.fhir.r4.model.MedicationAdministration.MedicationAdministrationStatus;
 import org.hl7.fhir.r4.model.MedicationDispense;
 import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestStatus;
+import org.hl7.fhir.r4.model.MedicationStatement;
+import org.hl7.fhir.r4.model.MedicationStatement.MedicationStatementStatus;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Procedure.ProcedureStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,14 +113,20 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private static final String ENCOUNTER_END_DATE_PARAM = "context.encounterEndDate";
   private static final String LAST_REPORT_SUBMISSION_DATE_PARAM =
       "context.lastReportSubmissionDate";
+  private static final String ENCOUNTER_CLASS_PARAM = "context.encounterClass";
   private static final String ENCOUNTER_START_DATE_CONTEXT_PARAM =
       "\\{\\{context.encounterStartDate\\}\\}";
   private static final String ENCOUNTER_END_DATE_CONTEXT_PARAM =
       "\\{\\{context.encounterEndDate\\}\\}";
   private static final String LAST_REPORT_SUBMISSION_DATE_CONTEXT_PARAM =
       "\\{\\{context.lastReportSubmissionDate\\}\\}";
+  private static final String ENCOUNTER_CLASS_CONTEXT_PARAM = "\\{\\{context.encounterClass\\}\\}";
   private static final String SEARCH_QUERY_CHARACTERS = "?";
 
+  private static final String CONDITION_CLINICAL_STATUS_SYSTEM_URL =
+      "http://terminology.hl7.org/CodeSystem/condition-clinical";
+  private static final String CONDITION_VERIFICATION_STATUS_SYSTEM_URL =
+      "http://terminology.hl7.org/CodeSystem/condition-ver-status";
   /**
    * The attribute stores the custom queries for each KAR.
    *
@@ -1012,11 +1033,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         for (BundleEntryComponent comp : bc) {
 
           logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
-          resources.add(comp.getResource());
 
-          sortResourcesByType(comp, resMapType);
-          populateSecondaryResources(
-              genericClient, context, comp.getResource(), kd, comp.getResource().getResourceType());
+          if (isValidResource(comp)) {
+            resources.add(comp.getResource());
+
+            sortResourcesByType(comp, resMapType);
+            populateSecondaryResources(
+                genericClient,
+                context,
+                comp.getResource(),
+                kd,
+                comp.getResource().getResourceType());
+          }
         }
 
         resMapById.put(dataReqId, resources);
@@ -1039,6 +1067,215 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     } catch (Exception e) {
       logger.info("Error in getting {} resource using search query {}", resType, searchUrl, e);
     }
+  }
+
+  public Boolean isValidResource(BundleEntryComponent comp) {
+
+    Boolean retVal = true;
+
+    if (comp.getResource().getResourceType() == ResourceType.Observation) {
+
+      Observation obs = (Observation) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (obs.getStatus() != null
+          && (obs.getStatus() == ObservationStatus.CANCELLED
+              || obs.getStatus() == ObservationStatus.ENTEREDINERROR
+              || obs.getStatus() == ObservationStatus.ENTEREDINERROR)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+    } else if (comp.getResource().getResourceType() == ResourceType.Condition) {
+
+      Condition cond = (Condition) comp.getResource();
+
+      // Ignore conditions based on clinical status that should not be included.
+      if (cond.hasClinicalStatus()
+          && cond.getClinicalStatus() != null
+          && (doesCodeableConceptContain(
+                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "inactive", cond.getClinicalStatus())
+              || doesCodeableConceptContain(
+                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "resolved", cond.getClinicalStatus())
+              || doesCodeableConceptContain(
+                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "remission", cond.getClinicalStatus())
+              || doesCodeableConceptContain(
+                  CONDITION_CLINICAL_STATUS_SYSTEM_URL, "unknown", cond.getClinicalStatus()))) {
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+
+      // Ignore conditions based on verification status
+      if (cond.hasVerificationStatus()
+          && cond.getVerificationStatus() != null
+          && (doesCodeableConceptContain(
+                  CONDITION_VERIFICATION_STATUS_SYSTEM_URL, "refuted", cond.getVerificationStatus())
+              || doesCodeableConceptContain(
+                  CONDITION_CLINICAL_STATUS_SYSTEM_URL,
+                  "entered-in-error",
+                  cond.getVerificationStatus()))) {
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+    } else if (comp.getResource().getResourceType() == ResourceType.ServiceRequest) {
+
+      ServiceRequest sr = (ServiceRequest) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (sr.getStatus() != null
+          && (sr.getStatus() == ServiceRequestStatus.REVOKED
+              || sr.getStatus() == ServiceRequestStatus.ENTEREDINERROR
+              || sr.getStatus() == ServiceRequestStatus.UNKNOWN)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+
+    } else if (comp.getResource().getResourceType() == ResourceType.MedicationRequest) {
+
+      MedicationRequest mr = (MedicationRequest) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (mr.getStatus() != null
+          && (mr.getStatus() == MedicationRequestStatus.ENTEREDINERROR
+              || mr.getStatus() == MedicationRequestStatus.CANCELLED
+              || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+
+    } else if (comp.getResource().getResourceType() == ResourceType.MedicationAdministration) {
+
+      MedicationAdministration ma = (MedicationAdministration) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (ma.getStatus() != null
+          && (ma.getStatus() == MedicationAdministrationStatus.ENTEREDINERROR
+              || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+
+    } else if (comp.getResource().getResourceType() == ResourceType.MedicationStatement) {
+
+      MedicationStatement ms = (MedicationStatement) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (ms.getStatus() != null && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+    } else if (comp.getResource().getResourceType() == ResourceType.DiagnosticReport) {
+
+      DiagnosticReport dr = (DiagnosticReport) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (dr.getStatus() != null
+          && (dr.getStatus() == DiagnosticReportStatus.ENTEREDINERROR
+              || dr.getStatus() == DiagnosticReportStatus.CANCELLED
+              || dr.getStatus() == DiagnosticReportStatus.UNKNOWN)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+
+    } else if (comp.getResource().getResourceType() == ResourceType.Immunization) {
+
+      Immunization imm = (Immunization) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (imm.getStatus() != null
+          && (imm.getStatus() == ImmunizationStatus.ENTEREDINERROR
+              || imm.getStatus() == ImmunizationStatus.NOTDONE)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+    } else if (comp.getResource().getResourceType() == ResourceType.Procedure) {
+
+      Procedure pr = (Procedure) comp.getResource();
+
+      // Ignore observations that should not be included.
+      if (pr.getStatus() != null
+          && (pr.getStatus() == ProcedureStatus.ENTEREDINERROR
+              || pr.getStatus() == ProcedureStatus.STOPPED
+              || pr.getStatus() == ProcedureStatus.UNKNOWN)) {
+
+        logger.info(
+            " Ignoring {} resource with id {}",
+            comp.getResource().getResourceType().toString(),
+            comp.getResource().getIdElement().getIdPart());
+        retVal = false;
+      }
+
+    } else if (comp.getResource().getResourceType() == ResourceType.Medication) {
+
+      Medication m = (Medication) comp.getResource();
+
+      // Ignore observations that should not be included.
+      /*  if(m.getStatus() != null &&
+        (m.getStatus() == MedicationStatus.ENTEREDINERROR ||
+         m.getStatus() == MedicationStatus.INACTIVE) ) {
+
+       logger.info(" Ignoring {} resource with id {}", comp.getResource().getResourceType().toString(), comp.getResource().getIdElement().getIdPart());
+       retVal = false;
+      } */
+
+    } else retVal = true;
+
+    return retVal;
+  }
+
+  public Boolean doesCodeableConceptContain(String system, String code, CodeableConcept cd) {
+
+    Boolean retVal = false;
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.getSystem() != null
+            && c.getSystem().contentEquals(system)
+            && c.getCode() != null
+            && c.getCode().contentEquals(code)) {
+          return true;
+        }
+      }
+    }
+
+    return retVal;
   }
 
   public void sortResourcesByType(
@@ -1265,9 +1502,23 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         lastReportSubmissionDate = DateFormatUtils.format(new Date(), DATE_FORMAT);
       }
 
+      logger.info(" Last Report Submission time {}", lastReportSubmissionDate);
+
       substitutedQuery =
           substitutedQuery.replaceAll(
               LAST_REPORT_SUBMISSION_DATE_CONTEXT_PARAM, lastReportSubmissionDate);
+    }
+
+    String encounterClass = "IMP";
+
+    if (substitutedQuery.contains(ENCOUNTER_CLASS_PARAM)) {
+
+      if (data.getNotificationContext().getEncounterClass() != null) {
+        logger.info(" Setting up the variable for encounter class");
+        encounterClass = data.getNotificationContext().getEncounterClass();
+      }
+
+      substitutedQuery = substitutedQuery.replaceAll(ENCOUNTER_CLASS_CONTEXT_PARAM, encounterClass);
     }
 
     logger.info(" Substituted Query for Context Variables {}", substitutedQuery);

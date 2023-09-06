@@ -1,0 +1,49 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://example.com/Observation/123",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "123",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "74174-5",
+              "display": "Occupation history"
+            }
+          ],
+          "text": "Occupation history"
+        },
+        "subject": {
+          "reference": "Patient/789",
+          "display": "John Doe"
+        },
+        "valueString": "Software Engineer",
+        "effectiveDateTime": "2022-05-15T12:30:00+00:00",
+        "issued": "2022-05-15T12:30:00+00:00"
+      }
+    },
+    {
+      "fullUrl": "http://example.com/Patient/789",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "789",
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "John"
+            ],
+            "prefix": [
+              "Mr."
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
