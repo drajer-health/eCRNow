@@ -138,9 +138,21 @@ public class CreateReport extends BsaAction {
                 } else {
 
                   // Save FHIR Data to PH messages
-                  logger.info(" ToDO : Add FHIR output to PH Messages ");
+                  String fileName =
+                      logDirectory
+                          + BsaTypes.getActionString(type)
+                          + "_"
+                          + data.getNotificationContext().getPatientId()
+                          + "_"
+                          + data.getNotificationContext().getNotificationResourceId()
+                          + ".json";
+                  saveReportToFile(jsonParser.encodeResourceToString(output), fileName);
                 }
+              } else {
+                logger.error(" No report created, hence nothing do ");
               }
+            } else {
+              logger.error(" No Report creator for type ", ct.asStringValue());
             }
           }
         }
@@ -163,6 +175,11 @@ public class CreateReport extends BsaAction {
 
     data.addActionStatus(data.getExecutionSequenceId(), actStatus);
     return actStatus;
+  }
+
+  public void saveReportToFile(String payload, String fileName) {
+
+    BsaServiceUtils.saveDataToFile(payload, fileName);
   }
 
   public void createPublicHealthMessageForCda(
@@ -229,7 +246,6 @@ public class CreateReport extends BsaAction {
                   kd.getCurrentTriggerMatchStatus(), kd, docRef.getId()));
 
           // Create BitSet for MessageStatus and add attribute.
-          logger.info(" TODO : Enable saving only by Healthcare Setting ");
           logger.debug("Saving data to file {}", fileName);
           BsaServiceUtils.saveDataToFile(payload, fileName);
 
