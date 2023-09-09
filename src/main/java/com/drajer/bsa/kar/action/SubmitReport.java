@@ -360,11 +360,12 @@ public class SubmitReport extends BsaAction {
 
         logger.info(" Trying to invoke $process-message");
         response = operation.encodedJson().execute();
+        logger.info(" Response Received = ", response);
         responseBundle = (Bundle) response;
       } catch (RuntimeException re) {
 
         logger.error("Error calling $process-message endpoint", re);
-        logger.info("Response Object was {}", response);
+        logger.info("Response Object was {}", re);
         return;
       }
 

@@ -351,12 +351,17 @@ public class CdaMedicationGenerator {
       if (dosage.hasDoseAndRate()
           && dosage.getDoseAndRateFirstRep() != null
           && dosage.getDoseAndRateFirstRep().hasDose()
-          && dosage.getDoseAndRateFirstRep().getDose() != null)
+          && dosage.getDoseAndRateFirstRep().getDose() != null) {
         ds =
             CdaFhirUtilities.getXmlForType(
                 dosage.getDoseAndRateFirstRep().getDose(),
                 CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME,
                 false);
+      } else {
+        ds =
+            CdaFhirUtilities.getQuantityXml(
+                dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
+      }
 
       if (dosage.hasTiming()
           && dosage.getTiming() != null

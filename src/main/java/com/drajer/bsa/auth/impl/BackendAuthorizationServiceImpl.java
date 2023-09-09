@@ -7,6 +7,8 @@ import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -15,6 +17,9 @@ import java.security.*;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.*;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +29,9 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.bouncycastle.util.io.pem.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
+import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,6 +110,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     map.add("client_assertion", jwt);
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
     ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
+    logger.info(" Response Body = ",response.getBody());
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 
@@ -160,30 +168,30 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    */
   public String generateJwt(String clientId, String aud) throws KeyStoreException {
 
-    try {
-      PrivateKey key = getPrivateKey(path);
+      try {
+        PrivateKey key = getPrivateKey(path);
 
-      Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
-      map.put("x5t", thumbprint);
-      map.put("alg", "RSA384");
+        map.put("x5t", thumbprint);
+        map.put("alg", "RSA384");
 
-      return Jwts.builder()
-          .setIssuer(clientId)
-          .setSubject(clientId)
-          .setAudience(cdcaud)
-          .setExpiration(
-              new Date(
-                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-          .setId(UUID.randomUUID().toString())
-          .setHeaderParams(map)
-          .signWith(key)
-          .compact();
-    } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-      logger.error("Exception Occurred: ", e);
+        return Jwts.builder()
+            .setIssuer(clientId)
+            .setSubject(clientId)
+            .setAudience(cdcaud)
+            .setExpiration(
+                new Date(
+                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+            .setId(UUID.randomUUID().toString())
+            .setHeaderParams(map)
+            .signWith(key)
+            .compact();
+      } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+        logger.error("Exception Occurred: ", e);
+      }
+      return null;
     }
-    return null;
-  }
 
   /**
    * @param path String representation of the path to the private key

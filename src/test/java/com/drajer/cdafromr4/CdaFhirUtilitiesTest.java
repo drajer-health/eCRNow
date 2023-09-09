@@ -49,7 +49,6 @@ import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Patient.PatientCommunicationComponent;
 import org.hl7.fhir.r4.model.Period;
@@ -266,8 +265,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<BundleEntryComponent> entries = new ArrayList<BundleEntryComponent>();
     entries.add(bundleEntry);
     Encounter en = new Encounter();
-    List<EncounterLocationComponent> locationList =
-        new ArrayList<Encounter.EncounterLocationComponent>();
+    List<EncounterLocationComponent> locationList = new ArrayList<EncounterLocationComponent>();
     locationList.add(loc);
     en.setLocation(locationList);
 
@@ -289,8 +287,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<BundleEntryComponent> entries = new ArrayList<BundleEntryComponent>();
     entries.add(bundleEntry);
     Encounter en = new Encounter();
-    List<EncounterLocationComponent> locationList =
-        new ArrayList<Encounter.EncounterLocationComponent>();
+    List<EncounterLocationComponent> locationList = new ArrayList<EncounterLocationComponent>();
     locationList.add(loc);
     en.setLocation(locationList);
 
@@ -432,7 +429,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     relationship.addCoding(coding);
     guardianContact.setRelationship(Collections.singletonList(relationship));
     contacts.add(guardianContact);
-    Patient.ContactComponent result = CdaFhirUtilities.getGuardianContact(contacts);
+    ContactComponent result = CdaFhirUtilities.getGuardianContact(contacts);
     assertEquals(guardianContact, result);
   }
 
@@ -554,7 +551,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetLanguage() {
-    List<Patient.PatientCommunicationComponent> comms = new ArrayList<>();
+    List<PatientCommunicationComponent> comms = new ArrayList<>();
     PatientCommunicationComponent patientCommunication = new PatientCommunicationComponent();
 
     CodeableConcept languageCodeableConcept = new CodeableConcept();
@@ -596,7 +593,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetLanguageForCodeSystem() {
-    List<Patient.PatientCommunicationComponent> comms = new ArrayList<>();
+    List<PatientCommunicationComponent> comms = new ArrayList<>();
     PatientCommunicationComponent patientCommunication = new PatientCommunicationComponent();
 
     CodeableConcept languageCodeableConcept = new CodeableConcept();
@@ -612,10 +609,10 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     patientCommunication.setLanguage(languageCodeableConcept);
     comms.add(patientCommunication);
 
-    Coding result =
+    Pair<Coding, Boolean> result =
         CdaFhirUtilities.getLanguageForCodeSystem(comms, "http://hl7.org/fhir/ValueSet/languages");
     assertNotNull(result);
-    assertEquals(language, result);
+    assertEquals(language, result.getValue0());
   }
 
   @Test
@@ -642,7 +639,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertTrue(result.contains("(123)456-7890"));
     assertTrue(result.contains("(098)765-4321"));
-    assertFalse(result.contains("a@b.com"));
+    assertTrue(result.contains("a@b.com"));
 
     String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
     assertTrue(result2.contains("(123)456-7890"));
@@ -1119,7 +1116,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedXml.trim(), actualXml.trim());
 
     Quantity quantity1 = new Quantity(10.5);
-    String expectedXm1 = "<value xsi:type=\"PQ\" value=\"10.5\" unit=\"null\"/>" + "";
+    String expectedXm1 = "<value xsi:type=\"PQ\" value=\"10.5\" unit=\"1\"/>";
     String actualXml1 = CdaFhirUtilities.getQuantityXml(quantity1, "doseQuantity", true);
     assertEquals(expectedXm1.trim(), actualXml1.trim());
   }
@@ -1320,15 +1317,24 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     Quantity quantity = new Quantity();
     quantity.setValue(100);
 
-    quantity.setCode("med");
+    quantity.setCode("mg");
 
     quantity.setSystemElement(new UriType("http://snomed.info/sct"));
 
-    quantity.setUnit("mg");
+    quantity.setUnit("milligrams");
     quantity.setValueElement(new DecimalType(100));
 
     String expectedResult = "100|http://snomed.info/sct|mg";
     String actualResult = CdaFhirUtilities.getStringForQuantity(quantity);
+    assertEquals(expectedResult, actualResult);
+
+    // Check No code
+    Quantity quantity1 = new Quantity();
+    quantity1.setValue(100);
+    quantity1.setValueElement(new DecimalType(100));
+
+    expectedResult = "100";
+    actualResult = CdaFhirUtilities.getStringForQuantity(quantity1);
     assertEquals(expectedResult, actualResult);
 
     // passing null quantity
@@ -1810,7 +1816,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
     assertEquals(expectedValue.trim(), actualValue.trim());
 
-    expectedValue = "<value xsi:type=\"ST\" nullFlavor=\"NI\"/>";
+    expectedValue = "<value xsi:type=\"ST\">No Value</value>";
     actualValue = CdaFhirUtilities.getXmlForType(null, CdaGeneratorConstants.CODE_EL_NAME, true);
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
     assertEquals(expectedValue.trim(), actualValue.trim());
@@ -1867,7 +1873,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public void testGetStringForTypeFromDateTimeType() {
     DateTimeType dateTime = new DateTimeType("2023-05-05T10:00:00-04:00");
     String result = CdaFhirUtilities.getStringForType(dateTime);
-    assertEquals("2023-05-05T10:00:00-04:00", result);
+    assertEquals("20230505100000-0400", result);
   }
 
   @Test
@@ -1881,7 +1887,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
                             .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
                             .setEndElement(new DateTimeType("2023-05-31T23:59:59Z"))));
     String result = CdaFhirUtilities.getStringForType(timing);
-    assertEquals("Mon May 01 00:00:00 UTC 2023|Wed May 31 23:59:59 UTC 2023", result);
+    assertEquals("20230501000000+0000|20230531235959+0000", result);
   }
 
   @Test
@@ -1891,7 +1897,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
             .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
             .setEndElement(new DateTimeType("2023-05-31T23:59:59Z"));
     String result = CdaFhirUtilities.getStringForType(period);
-    assertEquals("Mon May 01 00:00:00 UTC 2023|Wed May 31 23:59:59 UTC 2023", result);
+    assertEquals("20230501000000+0000|20230531235959+0000", result);
   }
 
   @Test

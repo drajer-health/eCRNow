@@ -177,7 +177,9 @@ public class SubscriptionUtils {
 
               if (enc.hasClass_()
                   && enc.getClass_().hasCode()
-                  && enc.getClass_().getCode().contentEquals("AMB")) {
+                  && (enc.getClass_().getCode().contentEquals("AMB")
+                      || enc.getClass_().getCode().contentEquals("VR")
+                      || enc.getClass_().getCode().contentEquals("HH"))) {
                 logger.info("Setting Encounter Class as Ambulatory ");
                 nc.setEncounterClass("AMB");
               } else {

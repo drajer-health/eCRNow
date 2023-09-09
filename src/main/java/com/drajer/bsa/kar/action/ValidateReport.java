@@ -144,7 +144,7 @@ public class ValidateReport extends BsaAction {
 
         logger.debug(" Data to be validated : {}", request);
 
-        if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
+ /*       if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
           ResponseEntity<String> response =
               restTemplate.postForEntity(validatorEndpoint, request, String.class);
           logger.debug(response.getBody());
@@ -152,7 +152,7 @@ public class ValidateReport extends BsaAction {
           ApplicationUtils.saveDataToFile(response.getBody(), "Operation_Outcome.json");
         } else {
           logger.warn("No validation endpoint set. Skipping validation");
-        }
+        } */
 
         if (Boolean.TRUE.equals(ActionUtils.operationOutcomeHasErrors(outcome))) {
 

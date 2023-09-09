@@ -12,6 +12,7 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.util.TestUtils;
@@ -52,6 +53,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class R3ToR2DataConverterUtilsTest {
@@ -98,6 +100,7 @@ public class R3ToR2DataConverterUtilsTest {
 
   @Before
   public void setUp() throws Exception {
+    ReflectionTestUtils.setField(AESEncryption.class, "secretKey", "123");
 
     FhirContext fhirContext = FhirContext.forR4();
     medication =

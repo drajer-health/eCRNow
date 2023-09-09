@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,11 +234,11 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElementWithClassCode(
             CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
 
-    if (cc.getAddress() != null) {
+    if (cc.hasAddress()) {
       s.append(CdaFhirUtilities.getAddressXml(cc.getAddress()));
     }
 
-    if (cc.getTelecom() != null) {
+    if (cc.hasTelecom()) {
       s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false));
     }
 
@@ -432,7 +433,7 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      if (org.getAddress() != null) {
+      if (org.hasAddress()) {
         List<Address> addrs = org.getAddress();
         sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
       } else {
@@ -896,9 +897,6 @@ public class CdaHeaderGenerator {
     // Add Telecom (Phone)
     patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false));
 
-    // Add Telecom (Email)
-    patientDetails.append(CdaFhirUtilities.getEmailXml(p.getTelecom()));
-
     // Add patient
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
@@ -1002,7 +1000,6 @@ public class CdaHeaderGenerator {
 
         // Add Telecom
         patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false));
-        patientDetails.append(CdaFhirUtilities.getEmailXml(guardianContact.getTelecom()));
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
@@ -1026,14 +1023,22 @@ public class CdaHeaderGenerator {
 
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LANGUAGE_COMM_EL_NAME));
-    Coding language =
+    Pair<Coding, Boolean> language =
         CdaFhirUtilities.getLanguageForCodeSystem(
             p.getCommunication(), CdaGeneratorConstants.FHIR_LANGUAGE_CODESYSTEM_URL);
 
-    if (language != null && language.getCode() != null) {
+    if (language != null
+        && language.getValue0() != null
+        && language.getValue0().getCode() != null) {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getCode()));
+              CdaGeneratorConstants.LANGUAGE_CODE_EL_NAME, language.getValue0().getCode()));
+
+      // Add preferred indicator.
+      if (language.getValue1()) {
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForValue(CdaGeneratorConstants.LANGUAGE_PREF_IND, "true"));
+      }
     } else {
       patientDetails.append(
           CdaGeneratorUtils.getXmlForNullCD(

@@ -22,6 +22,7 @@ public final class BsaTypes {
     SUSPENDED,
     COMPLETED,
     CANCELLED,
+    RELAUNCHED,
     Unknown
   }
 
@@ -74,6 +75,7 @@ public final class BsaTypes {
     else if (nst == NotificationProcessingStatusType.SUSPENDED) return "SUSPENDED";
     else if (nst == NotificationProcessingStatusType.COMPLETED) return "COMPLETED";
     else if (nst == NotificationProcessingStatusType.CANCELLED) return "CANCELLED";
+    else if (nst == NotificationProcessingStatusType.RELAUNCHED) return "RELAUNCHED";
     else return UNKNOWN;
   }
 
@@ -83,6 +85,7 @@ public final class BsaTypes {
     else if (s.contentEquals("SUSPENDED")) return NotificationProcessingStatusType.SUSPENDED;
     else if (s.contentEquals("COMPLETED")) return NotificationProcessingStatusType.COMPLETED;
     else if (s.contentEquals("CANCELLED")) return NotificationProcessingStatusType.CANCELLED;
+    else if (s.contentEquals("RELAUNCHED")) return NotificationProcessingStatusType.RELAUNCHED;
     else return NotificationProcessingStatusType.Unknown;
   }
 

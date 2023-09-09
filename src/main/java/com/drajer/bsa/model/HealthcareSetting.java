@@ -349,6 +349,10 @@ public class HealthcareSetting implements FhirServerDetails {
   @Column(name = "backend_auth_key_alias", columnDefinition = "TEXT")
   private String backendAuthKeyAlias;
 
+  @Column(name = "debug_enabled", nullable = true)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
+  private Boolean debugEnabled = true;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -359,6 +363,14 @@ public class HealthcareSetting implements FhirServerDetails {
    * itself gets stored in the karsActive attribute in the database.
    */
   @Transient private HealthcareSettingOperationalKnowledgeArtifacts kars;
+
+  public Boolean getDebugEnabled() {
+    return debugEnabled;
+  }
+
+  public void setDebugEnabled(Boolean debugEnabled) {
+    this.debugEnabled = debugEnabled;
+  }
 
   public String getKarsActive() {
     return karsActive;
