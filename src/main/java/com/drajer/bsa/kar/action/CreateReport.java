@@ -98,7 +98,6 @@ public class CreateReport extends BsaAction {
 
             logger.info("Getting Report Creator for: {}", ct);
             ReportCreator rc = ReportCreator.getReportCreator(ct.asStringValue());
-            if (data.getFhirInputDataByType() != null) {
 
               /* if(data.getFhirInputDataByType() != null) {
               logger.info(" Resources By Type {}", data.getFhirInputDataByType().size());
@@ -112,7 +111,6 @@ public class CreateReport extends BsaAction {
               	}
 
               }*/
-            }
 
             if (rc != null) {
 
