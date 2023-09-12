@@ -4,7 +4,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.EcrReportCreator.SectionTypeEnum;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes;
-import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -22,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
@@ -73,13 +73,18 @@ public class HcsReportCreator extends ReportCreator {
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-reporting-bundle";
   public static final String HCS_CONTENT_BUNDLE =
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-content-bundle";
-  
+
   private static final String HCS_REPORT_LOINC_CODE = "75619-7";
   private static final String HCS_REPORT_LOINC_CODE_SYSTEM = "http://loinc.org";
   public static final String HCS_REPORT_LOINC_CODE_DISPLAY_NAME = "Healthcare Survey Report";
   private static final String VERSION_NUM_URL =
-	      "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
+      "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
+  public static final String REPORT_INITIATION_TYPE_EXT_URL =
+      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-report-initiation-types";
+  public static final String REPORT_INITIATION_TYPE_CODE = "manually-initiated";
+  public static final String MESSAGE_SIGNIFICANCE_CATEGORY =
+      "http://hl7.org/fhir/ValueSet/message-significance-category";
 
   public enum SectionTypeEnum {
     CHIEF_COMPLAINT,
@@ -179,12 +184,21 @@ public class HcsReportCreator extends ReportCreator {
 
     // Add extensions
     Extension ext = new Extension();
-    ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
+    /* ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
     StringType st = new StringType();
-    st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
-    ext.setValue(st);
+    st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE); */
+    CodeType c1 = new CodeType();
+    c1.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
+    ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
+    ext.setValue(c1);
+    Extension ext2 = new Extension();
+    ext2.setUrl(REPORT_INITIATION_TYPE_EXT_URL);
+    StringType st2 = new StringType();
+    st2.setValue(REPORT_INITIATION_TYPE_CODE);
+    ext2.setValue(st2);
     List<Extension> exts = new ArrayList<>();
     exts.add(ext);
+    exts.add(ext2);
 
     header.setExtension(exts);
 
@@ -227,7 +241,7 @@ public class HcsReportCreator extends ReportCreator {
     Bundle returnBundle = new Bundle();
 
     returnBundle.setId(UUID.randomUUID().toString());
-    returnBundle.setType(BundleType.DOCUMENT);
+    returnBundle.setType(BundleType.COLLECTION);
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, HCS_CONTENT_BUNDLE));
 
     logger.info(" Creating Composition Resource ");
@@ -599,6 +613,7 @@ public class HcsReportCreator extends ReportCreator {
 
     Narrative val = new Narrative();
     val.setDivAsString("No Information");
+    val.setStatusAsString("generated");
     sc.setText(val);
   }
 
@@ -607,6 +622,7 @@ public class HcsReportCreator extends ReportCreator {
 
     Narrative val = new Narrative();
     val.setDivAsString("Not Generated automatically in this version");
+    val.setStatusAsString("generated");
     sc.setText(val);
   }
 
@@ -653,9 +669,7 @@ public class HcsReportCreator extends ReportCreator {
   }
 
   public void addExtensionIfAppropriate(
-      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
-
-  }
+      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {}
 
   public Pair<Boolean, ReportableMatchedTriggerCode> resourceHasMatchedCode(
       Resource res, CheckTriggerCodeStatus ctcs) {

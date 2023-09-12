@@ -5,30 +5,23 @@ import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.nio.file.*;
-import java.security.*;
+import java.io.InputStream;
+import java.security.Key;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.*;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
-import org.bouncycastle.util.io.pem.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
 import org.postgresql.util.Base64;
@@ -110,7 +103,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     map.add("client_assertion", jwt);
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
     ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
-    logger.info(" Response Body = ",response.getBody());
+    logger.info(" Response Body = ", response.getBody());
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 
@@ -168,74 +161,39 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    */
   public String generateJwt(String clientId, String aud) throws KeyStoreException {
 
-      try {
-        PrivateKey key = getPrivateKey(path);
+    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    char[] passwordChar = password.toCharArray();
+    try {
+      InputStream store = new FileInputStream(jwksLocation);
+      ks.load(store, passwordChar);
+      // store.close();
+      Key key = ks.getKey(alias, passwordChar);
 
-        Map<String, Object> map = new HashMap<>();
+      X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
+      String x5tValue = Base64.encodeBytes(DigestUtils.sha1(cert.getEncoded()));
 
-        map.put("x5t", thumbprint);
-        map.put("alg", "RSA384");
-
-        return Jwts.builder()
-            .setIssuer(clientId)
-            .setSubject(clientId)
-            .setAudience(cdcaud)
-            .setExpiration(
-                new Date(
-                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
-            .setId(UUID.randomUUID().toString())
-            .setHeaderParams(map)
-            .signWith(key)
-            .compact();
-      } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-        logger.error("Exception Occurred: ", e);
-      }
-      return null;
+      return Jwts.builder()
+          .setHeaderParam("typ", "JWT")
+          .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
+          .setHeaderParam("alg", "RS384")
+          .setHeaderParam("x5t", x5tValue)
+          .setIssuer(clientId)
+          .setSubject(clientId)
+          .setAudience(cdcaud)
+          //  .setAudience(aud)
+          .setExpiration(
+              new Date(
+                  System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
+          .setId(UUID.randomUUID().toString())
+          // .signWith(key)
+          .signWith(SignatureAlgorithm.RS384, key)
+          .compact();
+    } catch (IOException
+        | NoSuchAlgorithmException
+        | CertificateException
+        | UnrecoverableKeyException e) {
+      logger.error("Exception Occurred: ", e);
     }
-
-  /**
-   * @param path String representation of the path to the private key
-   * @return a private key file's contents
-   * @throws IOException
-   * @throws InvalidKeySpecException
-   * @throws NoSuchAlgorithmException
-   */
-  public static PrivateKey getPrivateKey(String path)
-      throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
-    String pkey = getPrivateKeyAsString(path);
-    /* String formattedPKey =
-    pkey.replace("-----BEGIN RSA PRIVATE KEY-----", "")
-        .replaceAll("\\n", "")
-        .replace("-----END RSA PRIVATE KEY-----", ""); */
-    Reader reader = new StringReader(pkey);
-    PemReader pemReader = new PemReader(reader);
-    PemObject pemObject = pemReader.readPemObject();
-    byte[] keyBytes = pemObject.getContent();
-    KeyFactory kf = KeyFactory.getInstance("RSA");
-    PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-    return kf.generatePrivate(spec);
-  }
-
-  /**
-   * @param filePath
-   * @return private key as a String
-   */
-  private static String getPrivateKeyAsString(String filePath) {
-    StringBuilder builder = new StringBuilder();
-
-    try (BufferedReader buffer = new BufferedReader(new FileReader(filePath))) {
-
-      String str;
-
-      while ((str = buffer.readLine()) != null) {
-
-        builder.append(str).append("\n");
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    // Returning a string
-    return builder.toString();
+    return null;
   }
 }
