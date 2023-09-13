@@ -47,4 +47,17 @@ public class NotificationContextServiceImpl implements NotificationContextServic
   public NotificationContext getNotificationContext(UUID id) {
     return ncDao.getNotificationContextById(id);
   }
+
+  @Override
+  public NotificationContext getNotificationContextData(
+      UUID id, String fhirServerBaseURL, String notificationResourceId, String patientId) {
+
+    return ncDao.getNotificationContextData(
+        id, fhirServerBaseURL, notificationResourceId, patientId);
+  }
+
+  @Override
+  public void delete(NotificationContext notificationContext) {
+    ncDao.delete(notificationContext);
+  }
 }

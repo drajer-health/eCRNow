@@ -31,4 +31,24 @@ public interface NotificationContextService {
    * @return
    */
   public NotificationContext getNotificationContext(UUID id);
+
+  /**
+   * Method to retrieve a NotificationContext by id, fhirServerBaseUrl, notificationResourceId and
+   * patientId from DB
+   *
+   * @param id The unique id for the NotificationContext in the DB.
+   * @param fhirServerBaseURL The fhirServerBaseURL for NotificationContext in the DB.
+   * @param notificationResourceId The notificationResourceId for NotificationContext in the DB.
+   * @param patientId The patientId for NotificationContext in the DB.
+   * @return {@link NotificationContext}
+   */
+  public NotificationContext getNotificationContextData(
+      UUID id, String fhirServerBaseURL, String notificationResourceId, String patientId);
+
+  /**
+   * Method to delete NotificationContext by NotificationContext
+   *
+   * @param notificationContext The NotificationContext data from DB
+   */
+  public void delete(NotificationContext notificationContext);
 }

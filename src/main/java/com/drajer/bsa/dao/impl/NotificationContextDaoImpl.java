@@ -86,4 +86,23 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     criteria.add(Restrictions.eq("notificationResourceType", notificationResourceType));
     return (NotificationContext) criteria.uniqueResult();
   }
+
+  @Override
+  public NotificationContext getNotificationContextData(
+      UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
+    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+
+    if (id != null) criteria.add(Restrictions.eq("id", id));
+    if (fhirServerBaseUrl != null)
+      criteria.add(Restrictions.eq("fhirServerBaseUrl", fhirServerBaseUrl));
+    if (notificationResourceId != null)
+      criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
+    if (patientId != null) criteria.add(Restrictions.eq("patientId", patientId));
+    return (NotificationContext) criteria.uniqueResult();
+  }
+
+  @Override
+  public void delete(NotificationContext notificationContext) {
+    getSession().delete(notificationContext);
+  }
 }

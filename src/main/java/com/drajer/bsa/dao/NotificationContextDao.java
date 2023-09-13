@@ -54,4 +54,25 @@ public interface NotificationContextDao {
    */
   public NotificationContext getNotificationContextByUniqueConstraints(
       String url, String patientId, String notificationResourceId, String notificationResourceType);
+
+  /**
+   * Method to retrieve a NotificationContext by id, fhir_server_base_url, patient_id,
+   * notification_resource_id,
+   *
+   * @param id The id to retrieve the notification context.
+   * @param fhirServerBaseUrl The fhirServerBaseUrl to retieve the notification context.
+   * @param patientId The patient Id to retrieve the notification context.
+   * @param notificationResourceId The Notification Resource Id to retrieve the notification
+   *     context.
+   * @return Returns the NotificationContext for the provided unique constraints.
+   */
+  public NotificationContext getNotificationContextData(
+      UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId);
+
+  /**
+   * Method to delete the NotificationContext
+   *
+   * @param notificationContext The NotificationContext data from DB
+   */
+  public void delete(NotificationContext notificationContext);
 }
