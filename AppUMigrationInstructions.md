@@ -49,4 +49,18 @@ The callback function registered with the timers during creation will route the 
 6. The existing timers will fire and eventually bleed out of the table. This may take many days or weeks depending on the type of encounters.
 7. Once the existing timers bleed out, all transactions going forward will be on 3.X.X of the app.
 
+**Migrating from existing infrastructure to a new infrastructure** 
+
+Sometimes vendors would like to migrate from existing infrastructure (say from on-prem) to a new infrastructure (say cloud), then there is a series 
+of steps that need to be followed to ensure smooth transition of the ecrNow App data. 
+These steps apply when migrating from one cloud provider (say AWS or Azure) to another cloud provider( say Azure or AWS) or when migrating to new 
+instances within the same cloud provider. 
+
+1. Plan the migration such that there is minimal downtime. 
+2. For the duration of the migration, stop invoking /api/systemLaunch or /api/launchPatient or /api/relaunchPatient APIs.
+3. 
+
+
+
+
 
