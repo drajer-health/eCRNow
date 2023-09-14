@@ -18,7 +18,6 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -142,7 +141,7 @@ public class ValidateReport extends BsaAction {
 
         logger.debug(" Data to be validated : {}", request);
 
- /*       if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
+        /*       if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
           ResponseEntity<String> response =
               restTemplate.postForEntity(validatorEndpoint, request, String.class);
           logger.debug(response.getBody());

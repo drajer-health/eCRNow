@@ -4,7 +4,6 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.action.EcrReportCreator.SectionTypeEnum;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes;
-import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
@@ -73,12 +72,12 @@ public class HcsReportCreator extends ReportCreator {
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-reporting-bundle";
   public static final String HCS_CONTENT_BUNDLE =
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-content-bundle";
-  
+
   private static final String HCS_REPORT_LOINC_CODE = "75619-7";
   private static final String HCS_REPORT_LOINC_CODE_SYSTEM = "http://loinc.org";
   public static final String HCS_REPORT_LOINC_CODE_DISPLAY_NAME = "Healthcare Survey Report";
   private static final String VERSION_NUM_URL =
-	      "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
+      "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
 
   public enum SectionTypeEnum {
@@ -653,9 +652,7 @@ public class HcsReportCreator extends ReportCreator {
   }
 
   public void addExtensionIfAppropriate(
-      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {
-
-  }
+      Reference ref, Resource res, KarProcessingData kd, ResourceType rt) {}
 
   public Pair<Boolean, ReportableMatchedTriggerCode> resourceHasMatchedCode(
       Resource res, CheckTriggerCodeStatus ctcs) {

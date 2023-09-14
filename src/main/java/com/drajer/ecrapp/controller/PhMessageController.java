@@ -195,7 +195,7 @@ public class PhMessageController {
           publicHealthMessageData.getSubmittedVersionNumber());
 
       List<PublicHealthMessage> publicHealthMessages =
-          phMessageService.getPhMessageByparameters(publicHealthMessageData);
+          phMessageService.getPhMessageByParameters(publicHealthMessageData);
 
       if (publicHealthMessages.isEmpty()) {
 

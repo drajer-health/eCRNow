@@ -35,7 +35,7 @@ public interface PhMessageService {
    * @param publicHealthMessageData object
    * @return A list of PublicHealthMessage objects corresponding to the provided Parameters
    */
-  List<PublicHealthMessage> getPhMessageByparameters(
+  List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData);
 
   /**
