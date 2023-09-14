@@ -1,6 +1,7 @@
 package com.drajer.bsa.dao;
 
 import com.drajer.bsa.model.NotificationContext;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -66,7 +67,7 @@ public interface NotificationContextDao {
    *     context.
    * @return Returns the NotificationContext for the provided unique constraints.
    */
-  public NotificationContext getNotificationContextData(
+  public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId);
 
   /**

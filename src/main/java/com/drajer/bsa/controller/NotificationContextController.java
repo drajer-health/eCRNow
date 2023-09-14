@@ -4,6 +4,7 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.service.NotificationContextService;
 import com.drajer.sof.model.NotificationContextData;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -36,15 +37,16 @@ public class NotificationContextController {
       HttpServletRequest request,
       HttpServletResponse response)
       throws IOException {
-    NotificationContext notificationContextDetails =
+    List<NotificationContext> notificationContextDetails =
         notificationContextService.getNotificationContextData(
-            notificationContextData.getId(),
-            notificationContextData.getFhirServerBaseUrl(),
+            notificationContextData.getId(), notificationContextData.getFhirServerBaseUrl(),
             notificationContextData.getNotificationResourceId(),
-            notificationContextData.getPatientId());
+                notificationContextData.getPatientId());
     if (notificationContextDetails != null) {
-      notificationContextService.delete(notificationContextDetails);
-      return "NotificationContext deleted successfully.";
+      for (NotificationContext notificationContext : notificationContextDetails) {
+        notificationContextService.delete(notificationContext);
+        return "NotificationContext deleted successfully.";
+      }
     }
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "NotificationContext Not found");
     return "NotificationContext Not found";

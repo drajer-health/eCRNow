@@ -1,6 +1,7 @@
 package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.NotificationContext;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -42,7 +43,7 @@ public interface NotificationContextService {
    * @param patientId The patientId for NotificationContext in the DB.
    * @return {@link NotificationContext}
    */
-  public NotificationContext getNotificationContextData(
+  public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseURL, String notificationResourceId, String patientId);
 
   /**

@@ -3,6 +3,7 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
+import java.util.List;
 import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
@@ -88,7 +89,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
   }
 
   @Override
-  public NotificationContext getNotificationContextData(
+  public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
     Criteria criteria = getSession().createCriteria(NotificationContext.class);
 
@@ -98,7 +99,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     if (notificationResourceId != null)
       criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
     if (patientId != null) criteria.add(Restrictions.eq("patientId", patientId));
-    return (NotificationContext) criteria.uniqueResult();
+    return criteria.list();
   }
 
   @Override
