@@ -3,6 +3,7 @@ package com.drajer.ecrapp.service.impl;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.PhMessageDao;
 import com.drajer.ecrapp.service.PhMessageService;
+import com.drajer.sof.model.PublicHealthMessageData;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
@@ -21,5 +22,14 @@ public class PhMessageServiceImpl implements PhMessageService {
 
   public List<PublicHealthMessage> getPhMessageDataByXRequestIds(List<String> xRequestIds) {
     return phMessageDao.getPhMessageByXRequestIds(xRequestIds);
+  }
+
+  public List<PublicHealthMessage> getPhMessageByparameters(
+      PublicHealthMessageData publicHealthMessageData) {
+    return phMessageDao.getPhMessageByParameters(publicHealthMessageData);
+  }
+
+  public void deletePhMessage(PublicHealthMessage publicHealthMessage) {
+    phMessageDao.delete(publicHealthMessage);
   }
 }

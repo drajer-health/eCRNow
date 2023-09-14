@@ -2,6 +2,7 @@ package com.drajer.ecrapp.controller;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.service.PhMessageService;
+import com.drajer.sof.model.PublicHealthMessageData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -171,6 +173,44 @@ public class PhMessageController {
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+  }
+
+  @CrossOrigin
+  @DeleteMapping("/api/phMessage")
+  public ResponseEntity<String> deletePhMessages(
+      @RequestBody PublicHealthMessageData publicHealthMessageData) {
+    if (publicHealthMessageData == null) {
+      return ResponseEntity.badRequest()
+          .body("Invalid input. Provide either 'id' or a combination of parameters.");
+    }
+
+    try {
+      logger.info(
+          "Parameters received for deleting phMessages: id={}, fhirServerBaseUrl={}, notifiedResourceId={}, patientId={}, versionId={}",
+          publicHealthMessageData.getId(),
+          publicHealthMessageData.getFhirServerBaseUrl(),
+          publicHealthMessageData.getNotifiedResourceId(),
+          publicHealthMessageData.getPatientId(),
+          publicHealthMessageData.getSubmittedVersionNumber());
+
+      List<PublicHealthMessage> publicHealthMessages =
+          phMessageService.getPhMessageByparameters(publicHealthMessageData);
+
+      if (publicHealthMessages.isEmpty()) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No phMessage records found.");
+      }
+      publicHealthMessages.forEach(
+          publicHealthMessage -> {
+            phMessageService.deletePhMessage(publicHealthMessage);
+          });
+
+      return ResponseEntity.ok("phMessages deleted successfully");
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Error in processing the request");
     }
   }
 

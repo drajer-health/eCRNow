@@ -3,12 +3,14 @@ package com.drajer.ecrapp.dao.impl;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.PhMessageDao;
+import com.drajer.sof.model.PublicHealthMessageData;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
@@ -28,6 +30,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   private static final Logger logger = LoggerFactory.getLogger(PhMessageDaoImpl.class);
 
+  public static final String ID = "id";
   public static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";
   public static final String PATIENT_ID = "patientId";
   public static final String ENCOUNTER_ID = "encounterId";
@@ -43,6 +46,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   public static final String CORRELATION_ID = "correlationId";
   public static final String SUBMISSION_TIME = "submissionTime";
   public static final String RESPONSE_RECEIVED_TIME = "responseReceivedTime";
+  public static final String SUBMITTED_VERSION_NUMBER = "submittedVersionNumber";
 
   public List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
@@ -156,6 +160,46 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
       projectionList.add(Projections.property(propertyName), propertyName);
     }
     return projectionList;
+  }
+
+  @Override
+  public List<PublicHealthMessage> getPhMessageByParameters(
+      PublicHealthMessageData publicHealthMessageData) {
+
+    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+
+    UUID id = publicHealthMessageData.getId();
+    if (id != null) {
+      criteria.add(Restrictions.eq(ID, id));
+    } else {
+
+      String fhirServerBaseUrl = publicHealthMessageData.getFhirServerBaseUrl();
+      if (fhirServerBaseUrl != null) {
+        criteria.add(Restrictions.eq(FHIR_SERVER_BASE_URL, fhirServerBaseUrl));
+      }
+
+      String notifiedResourceId = publicHealthMessageData.getNotifiedResourceId();
+      if (notifiedResourceId != null) {
+        criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, notifiedResourceId));
+      }
+
+      String patientId = publicHealthMessageData.getPatientId();
+      if (patientId != null) {
+        criteria.add(Restrictions.eq(PATIENT_ID, patientId));
+      }
+
+      Integer submittedVersionNumber = publicHealthMessageData.getSubmittedVersionNumber();
+      if (submittedVersionNumber != null) {
+        criteria.add(Restrictions.eq(SUBMITTED_VERSION_NUMBER, submittedVersionNumber));
+      }
+    }
+
+    return criteria.list();
+  }
+
+  @Override
+  public void delete(PublicHealthMessage message) {
+    getSession().delete(message);
   }
 
   private List<String> getSelectedProperties() {

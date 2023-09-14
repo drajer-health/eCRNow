@@ -1,6 +1,7 @@
 package com.drajer.ecrapp.service;
 
 import com.drajer.bsa.model.PublicHealthMessage;
+import com.drajer.sof.model.PublicHealthMessageData;
 import java.util.List;
 import java.util.Map;
 
@@ -27,4 +28,20 @@ public interface PhMessageService {
    * @return A list of PublicHealthMessage objects corresponding to the provided XRequest IDs.
    */
   List<PublicHealthMessage> getPhMessageDataByXRequestIds(List<String> xRequestIds);
+
+  /**
+   * Retrieves A list of PublicHealthMessage based on specified parameters.
+   *
+   * @param publicHealthMessageData object
+   * @return A list of PublicHealthMessage objects corresponding to the provided Parameters
+   */
+  List<PublicHealthMessage> getPhMessageByparameters(
+      PublicHealthMessageData publicHealthMessageData);
+
+  /**
+   * Deletes a PublicHealthMessage data object.
+   *
+   * @param publicHealthMessage The PublicHealthMessage object to be deleted.
+   */
+  void deletePhMessage(PublicHealthMessage publicHealthMessage);
 }
