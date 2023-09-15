@@ -1328,7 +1328,8 @@ public class R4ResourcesData {
               BundleEntryComponent locationEntry =
                   new BundleEntryComponent().setResource(locationResource);
               bundle.addEntry(locationEntry);
-              if (locationResource.getAddress() != null && !locationResource.getAddress().isEmpty()) {
+              if (locationResource.getAddress() != null
+                  && !locationResource.getAddress().isEmpty()) {
                 r4FhirData.setLocation(locationResource);
               }
             }
