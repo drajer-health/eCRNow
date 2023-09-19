@@ -6,6 +6,7 @@ import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   @Override
   public KnowledgeArtifactRepository getKARByUrl(String url) {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactRepository.class);
-    criteria.add(Restrictions.eq("fhirServerURL", url));
+    criteria.add(Restrictions.like("fhirServerURL", url, MatchMode.EXACT));
     return (KnowledgeArtifactRepository) criteria.uniqueResult();
   }
 
@@ -62,8 +63,8 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
       String karId, String karVersion, Integer hsId) {
     Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
-    criteria.add(Restrictions.eq("versionUniqueKarId", karId + "|" + karVersion));
-    criteria.add(Restrictions.eq("hsId", hsId));
+    criteria.add(Restrictions.like("versionUniqueKarId", karId + "|" + karVersion,MatchMode.EXACT));
+    criteria.add(Restrictions.like("hsId", hsId));
     KnowledgeArtifactStatus kars = (KnowledgeArtifactStatus) criteria.uniqueResult();
     logger.info("Getting KAR Status by using karId and karVersion. ");
 
