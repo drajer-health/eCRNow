@@ -102,11 +102,11 @@ public class SetOfStringsUserType implements UserType {
       PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
       throws SQLException {
     if (!(value instanceof Set)) {
-      st.setNull(index, Types.OTHER);
+      st.setNull(index, Types.CHAR);
       return;
     }
     String store = String.join("||", ((Set<String>) value));
-    st.setObject(index, store, Types.OTHER);
+    st.setObject(index, store, Types.CHAR);
   }
 
   /**

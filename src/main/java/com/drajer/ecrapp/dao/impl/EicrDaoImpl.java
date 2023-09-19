@@ -7,6 +7,7 @@ import com.drajer.ecrapp.model.ReportabilityResponse;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -43,9 +44,9 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
   public Integer getMaxVersionId(Eicr eicr) {
     Criteria criteria = getSession().createCriteria(Eicr.class);
-    criteria.add(Restrictions.eq(FHIR_SERVER_URL, eicr.getFhirServerUrl()));
-    criteria.add(Restrictions.eq("launchPatientId", eicr.getLaunchPatientId()));
-    criteria.add(Restrictions.eq(ENCOUNTER_ID, eicr.getEncounterId()));
+    criteria.add(Restrictions.like(FHIR_SERVER_URL, eicr.getFhirServerUrl(),MatchMode.EXACT));
+    criteria.add(Restrictions.like("launchPatientId", eicr.getLaunchPatientId(),MatchMode.EXACT));
+    criteria.add(Restrictions.like(ENCOUNTER_ID, eicr.getEncounterId(),MatchMode.EXACT));
     criteria.addOrder(Order.desc("docVersion"));
     criteria.setMaxResults(1);
 

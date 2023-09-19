@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -46,11 +47,11 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
   @Override
   public Integer getMaxVersionId(PublicHealthMessage message) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
-    criteria.add(Restrictions.eq(FHIR_SERVER_URL, message.getFhirServerBaseUrl()));
-    criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, message.getNotifiedResourceId()));
-    criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_TYPE, message.getNotifiedResourceType()));
-    criteria.add(Restrictions.eq(PATIENT_ID, message.getPatientId()));
-    criteria.add(Restrictions.eq(KAR_UNIQUE_ID, message.getKarUniqueId()));
+    criteria.add(Restrictions.like(FHIR_SERVER_URL, message.getFhirServerBaseUrl(),MatchMode.EXACT));
+    criteria.add(Restrictions.like(NOTIFIED_RESOURCE_ID, message.getNotifiedResourceId(),MatchMode.EXACT));
+    criteria.add(Restrictions.like(NOTIFIED_RESOURCE_TYPE, message.getNotifiedResourceType(),MatchMode.EXACT));
+    criteria.add(Restrictions.like(PATIENT_ID, message.getPatientId(),MatchMode.EXACT));
+    criteria.add(Restrictions.like(KAR_UNIQUE_ID, message.getKarUniqueId(),MatchMode.EXACT));
 
     criteria.addOrder(Order.desc(SUBMITTED_VERSION_NUMBER));
     criteria.setMaxResults(1);
@@ -115,54 +116,54 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
   public static void prepareCriteria(Criteria criteria, Map<String, String> searchParams) {
 
     if (searchParams.get(SUBMITTED_DATA_ID) != null) {
-      criteria.add(Restrictions.eq(SUBMITTED_DATA_ID, searchParams.get(SUBMITTED_DATA_ID)));
+      criteria.add(Restrictions.like(SUBMITTED_DATA_ID, searchParams.get(SUBMITTED_DATA_ID),MatchMode.EXACT));
     }
     if (searchParams.get(SUBMITTED_VERSION_NUMBER) != null) {
       criteria.add(
-          Restrictions.eq(SUBMITTED_VERSION_NUMBER, searchParams.get(SUBMITTED_VERSION_NUMBER)));
+          Restrictions.like(SUBMITTED_VERSION_NUMBER, searchParams.get(SUBMITTED_VERSION_NUMBER),MatchMode.EXACT));
     }
     if (searchParams.get(RESPONSE_DATA_ID) != null) {
-      criteria.add(Restrictions.eq(RESPONSE_DATA_ID, searchParams.get(RESPONSE_DATA_ID)));
+      criteria.add(Restrictions.like(RESPONSE_DATA_ID, searchParams.get(RESPONSE_DATA_ID),MatchMode.EXACT));
     }
     if (searchParams.get(FHIR_SERVER_URL) != null) {
-      criteria.add(Restrictions.eq(FHIR_SERVER_URL, searchParams.get(FHIR_SERVER_URL)));
+      criteria.add(Restrictions.like(FHIR_SERVER_URL, searchParams.get(FHIR_SERVER_URL),MatchMode.EXACT));
     }
     if (searchParams.get(PATIENT_ID) != null) {
-      criteria.add(Restrictions.eq(PATIENT_ID, searchParams.get(PATIENT_ID)));
+      criteria.add(Restrictions.like(PATIENT_ID, searchParams.get(PATIENT_ID),MatchMode.EXACT));
     }
     if (searchParams.get(ENCOUNTER_ID) != null) {
-      criteria.add(Restrictions.eq(ENCOUNTER_ID, searchParams.get(ENCOUNTER_ID)));
+      criteria.add(Restrictions.like(ENCOUNTER_ID, searchParams.get(ENCOUNTER_ID),MatchMode.EXACT));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_ID) != null) {
-      criteria.add(Restrictions.eq(NOTIFIED_RESOURCE_ID, searchParams.get(NOTIFIED_RESOURCE_ID)));
+      criteria.add(Restrictions.like(NOTIFIED_RESOURCE_ID, searchParams.get(NOTIFIED_RESOURCE_ID),MatchMode.EXACT));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_TYPE) != null) {
       criteria.add(
-          Restrictions.eq(NOTIFIED_RESOURCE_TYPE, searchParams.get(NOTIFIED_RESOURCE_TYPE)));
+          Restrictions.like(NOTIFIED_RESOURCE_TYPE, searchParams.get(NOTIFIED_RESOURCE_TYPE),MatchMode.EXACT));
     }
     if (searchParams.get(KAR_UNIQUE_ID) != null) {
-      criteria.add(Restrictions.eq(KAR_UNIQUE_ID, searchParams.get(KAR_UNIQUE_ID)));
+      criteria.add(Restrictions.like(KAR_UNIQUE_ID, searchParams.get(KAR_UNIQUE_ID),MatchMode.EXACT));
     }
     if (searchParams.get(SUBMITTED_MESSAGE_ID) != null) {
-      criteria.add(Restrictions.eq(SUBMITTED_MESSAGE_ID, searchParams.get(SUBMITTED_MESSAGE_ID)));
+      criteria.add(Restrictions.like(SUBMITTED_MESSAGE_ID, searchParams.get(SUBMITTED_MESSAGE_ID),MatchMode.EXACT));
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
-      criteria.add(Restrictions.eq(X_REQUEST_ID, searchParams.get(X_REQUEST_ID)));
+      criteria.add(Restrictions.like(X_REQUEST_ID, searchParams.get(X_REQUEST_ID),MatchMode.EXACT));
     }
     if (searchParams.get(X_CORRELATION_ID) != null) {
-      criteria.add(Restrictions.eq(X_CORRELATION_ID, searchParams.get(X_CORRELATION_ID)));
+      criteria.add(Restrictions.like(X_CORRELATION_ID, searchParams.get(X_CORRELATION_ID),MatchMode.EXACT));
     }
     if (searchParams.get(RESPONSE_MESSAGE_ID) != null) {
-      criteria.add(Restrictions.eq(RESPONSE_MESSAGE_ID, searchParams.get(RESPONSE_MESSAGE_ID)));
+      criteria.add(Restrictions.like(RESPONSE_MESSAGE_ID, searchParams.get(RESPONSE_MESSAGE_ID),MatchMode.EXACT));
     }
     if (searchParams.get(RESPONSE_PROCESSING_INS) != null) {
       criteria.add(
-          Restrictions.eq(RESPONSE_PROCESSING_INS, searchParams.get(RESPONSE_PROCESSING_INS)));
+          Restrictions.like(RESPONSE_PROCESSING_INS, searchParams.get(RESPONSE_PROCESSING_INS),MatchMode.EXACT));
     }
     if (searchParams.get(RESPONSE_PROCESSING_STATUS) != null) {
       criteria.add(
-          Restrictions.eq(
-              RESPONSE_PROCESSING_STATUS, searchParams.get(RESPONSE_PROCESSING_STATUS)));
+          Restrictions.like(
+              RESPONSE_PROCESSING_STATUS, searchParams.get(RESPONSE_PROCESSING_STATUS),MatchMode.EXACT));
     }
   }
 }

@@ -49,7 +49,7 @@ public class KarExecutionState {
   @Id @GeneratedValue private UUID id;
 
   /** The attribute represents the key to retrieve the notification context for executing the Kar */
-  @Column(name = "nc_id", nullable = false, columnDefinition = "uuid")
+  @Column(name = "nc_id", nullable = false)
   private UUID ncId;
 
   /** The attribute links back to the Notification Context */
