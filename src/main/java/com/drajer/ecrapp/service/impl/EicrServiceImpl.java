@@ -169,14 +169,15 @@ public class EicrServiceImpl implements EicrRRService {
         ecr.setResponseXRequestId(xRequestId);
         ecr.setResponseData(data.getRrXml());
 
-        if (rrModel.getReportableType() != null) ecr.setResponseType(rrModel.getReportableType());
+        if (rrModel.getReportableType() != null)
+          ecr.setResponseType(rrModel.getReportableType().toString());
         else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
         if (rrModel.getReportableType() != null && rrModel.getReportableStatus() != null)
           ecr.setResponseTypeDisplay(
               rrModel.getReportableType() + "-" + rrModel.getReportableStatus().getDisplayName());
         else if (rrModel.getReportableType() != null)
-          ecr.setResponseTypeDisplay(rrModel.getReportableType());
+          ecr.setResponseTypeDisplay(rrModel.getReportableType().toString());
         else if (rrModel.getReportableStatus() != null)
           ecr.setResponseTypeDisplay(rrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
@@ -289,8 +290,8 @@ public class EicrServiceImpl implements EicrRRService {
   public DocumentReference constructDocumentReference(ReportabilityResponse data, Eicr ecr) {
 
     if (ecr.getResponseType() != null
-        && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
-            || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
+        && (ecr.getResponseType().contains(EicrTypes.ReportabilityType.RRVS1.toString())
+            || ecr.getResponseType().contains(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
           data.getRrXml(), ecr.getLaunchPatientId(), ecr.getEncounterId());
     } else {

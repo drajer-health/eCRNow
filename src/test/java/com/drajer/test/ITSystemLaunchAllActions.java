@@ -216,7 +216,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       }
 
       eicr = getEICRDocument(eicr != null ? eicr.getId().toString() : null);
-      assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
+      assertTrue(eicr.getResponseType().contains("RRVS1"));
       assertEquals(rr.getRrXml(), eicr != null ? eicr.getResponseData() : null);
       assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : "");
       /* Count should be 2 since 2 metadata call explicitly 1:SystemLaunch 2:SubmitEicr(handleReportablityResponse) */
