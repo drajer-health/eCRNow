@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ServiceRequest;
-import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,10 +240,9 @@ public class CdaPlanOfTreatmentGenerator {
         if (s.getCode() != null
             && s.getCode().getCoding() != null
             && !s.getCode().getCoding().isEmpty()
-            && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)
-            && s.getStatus() != null
-            && s.getStatus() == ServiceRequestStatus.ACTIVE) {
+            && Boolean.TRUE.equals(
+                CdaFhirUtilities.isCodingPresentForCodeSystem(
+                    s.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
           logger.debug("Found a Service Request with a LOINC code");
           sr.add(s);

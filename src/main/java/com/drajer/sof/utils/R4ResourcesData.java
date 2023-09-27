@@ -887,6 +887,13 @@ public class R4ResourcesData {
     return serviceRequestCodes;
   }
 
+  private boolean isServiceRequestValid(ServiceRequest s) {
+    return (s.hasStatus()
+        && (s.getStatus() != ServiceRequest.ServiceRequestStatus.REVOKED
+            || s.getStatus() != ServiceRequest.ServiceRequestStatus.ENTEREDINERROR
+            || s.getStatus() != ServiceRequest.ServiceRequestStatus.UNKNOWN));
+  }
+
   public List<ServiceRequest> getServiceRequestData(
       FhirContext context,
       IGenericClient client,
@@ -908,11 +915,8 @@ public class R4ResourcesData {
           ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
           if (!serviceRequest.getEncounter().isEmpty()
-              && serviceRequest
-                  .getEncounter()
-                  .getReferenceElement()
-                  .getIdPart()
-                  .equals(encounterId)) {
+              && serviceRequest.getEncounter().getReferenceElement().getIdPart().equals(encounterId)
+              && isServiceRequestValid(serviceRequest)) {
             serviceRequests.add(serviceRequest);
             serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
           }
@@ -930,7 +934,8 @@ public class R4ResourcesData {
                 && isResourceWithinDateTime(
                     start,
                     end,
-                    serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
+                    serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue())
+                && isServiceRequestValid(serviceRequest)) {
               serviceRequests.add(serviceRequest);
               serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
             }
@@ -938,7 +943,8 @@ public class R4ResourcesData {
           // If ServiceRequest Date is not present looking for LastUpdatedDate
           else {
             Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
-            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)
+                && isServiceRequestValid(serviceRequest)) {
               serviceRequests.add(serviceRequest);
               serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
             }

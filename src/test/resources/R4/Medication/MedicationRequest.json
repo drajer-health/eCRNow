@@ -80,7 +80,10 @@
               "repeat": {
                 "boundsPeriod": {
                   "start": "2020-04-29T08:34:00.000-05:00"
-                }
+                },
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
               },
               "code": {
                 "coding": [
@@ -231,7 +234,10 @@
               "repeat": {
                 "boundsPeriod": {
                   "start": "2020-04-29T08:32:00.000-05:00"
-                }
+                },
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
               },
               "code": {
                 "coding": [
@@ -463,7 +469,10 @@
               "repeat": {
                 "boundsPeriod": {
                   "start": "2020-04-29T09:00:00.000-05:00"
-                }
+                },
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
               },
               "code": {
                 "coding": [
@@ -609,7 +618,10 @@
               "repeat": {
                 "boundsPeriod": {
                   "start": "2020-04-28T13:27:00.000-05:00"
-                }
+                },
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
               },
               "code": {
                 "coding": [
@@ -771,7 +783,10 @@
               "repeat": {
                 "boundsPeriod": {
                   "start": "2020-04-28T13:27:00.000-05:00"
-                }
+                },
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
               },
               "code": {
                 "coding": [
@@ -933,7 +948,10 @@
               "repeat": {
                 "boundsPeriod": {
                   "start": "2020-04-28T13:28:00.000-05:00"
-                }
+                },
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
               },
               "code": {
                 "coding": [

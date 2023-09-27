@@ -116,6 +116,8 @@ public class CdaGeneratorConstants {
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
   public static final String FHIR_USCORE_BIRTHSEX_EXT_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex";
+  public static final String FHIR_DATA_ABSENT_REASON_EXT_URL =
+      "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
 
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
@@ -892,6 +894,7 @@ public class CdaGeneratorConstants {
   public static final String DEVICE_TABLE_COL_2_TITLE = "Device Date";
   public static final String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
   public static final String UNKNOWN_VALUE = "Unknown";
+  public static final String NO_VALUE = "No Value";
   public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS =
       "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";
@@ -1030,6 +1033,24 @@ public class CdaGeneratorConstants {
       if (oidNameMap.containsKey(retVal.getValue0())) {
         return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
       } else return retVal;
+    } else if (url.startsWith("urn:oid:")) {
+
+      String oid = url.replace("urn:oid:", "");
+      if (oidMap.containsKey(oid)) {
+
+        Pair<String, String> oidUrlName = oidMap.get(oid);
+
+        if (oidNameMap.containsKey(oid)) {
+
+          return new Pair<>(oid, oidNameMap.get(oid));
+        } else {
+
+          return new Pair<>(oid, oidUrlName.getValue1());
+        }
+      }
+
+      return new Pair<>("", "");
+
     } else {
       return new Pair<>("", "");
     }

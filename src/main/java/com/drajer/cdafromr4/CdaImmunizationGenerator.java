@@ -81,8 +81,8 @@ public class CdaImmunizationGenerator {
           medDisplayName = imm.getVaccineCode().getCodingFirstRep().getDisplay();
         }
 
-        String dt = null;
-        if (imm.getOccurrenceDateTimeType() != null) {
+        String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
+        if (imm.hasOccurrenceDateTimeType() && imm.getOccurrenceDateTimeType() != null) {
           dt = imm.getOccurrenceDateTimeType().getValue().toString();
         }
 
@@ -92,7 +92,7 @@ public class CdaImmunizationGenerator {
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 
-        ++rowNum; // TODO: ++rowNum or rowNum++
+        ++rowNum;
       }
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
@@ -150,6 +150,12 @@ public class CdaImmunizationGenerator {
           sb.append(
               CdaGeneratorUtils.getXmlForNullEffectiveTime(
                   CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        if (imm.hasDoseQuantity()) {
+          sb.append(
+              CdaFhirUtilities.getQuantityXml(
+                  imm.getDoseQuantity(), CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false));
         }
 
         // add the consumable presentation.

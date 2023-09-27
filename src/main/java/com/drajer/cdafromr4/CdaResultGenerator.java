@@ -85,13 +85,26 @@ public class CdaResultGenerator {
 
         String obsDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
         List<Coding> cds = null;
-        if (obs.getCode() != null && obs.getCode().getCodingFirstRep() != null) {
+        if (obs.hasCode()
+            && obs.getCode() != null
+            && obs.getCode().hasCoding()
+            && obs.getCode().getCodingFirstRep() != null) {
 
           cds = obs.getCode().getCoding();
 
           if (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getDisplay())) {
             obsDisplayName = obs.getCode().getCodingFirstRep().getDisplay();
           } else if (!StringUtils.isEmpty(obs.getCode().getText())) {
+            obsDisplayName = obs.getCode().getText();
+          } else if (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getCode())
+              && (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getSystem()))) {
+            obsDisplayName =
+                obs.getCode().getCodingFirstRep().getSystem()
+                    + "|"
+                    + obs.getCode().getCodingFirstRep().getCode();
+          } else if (obs.hasCode()
+              && obs.getCode() != null
+              && !StringUtils.isEmpty(obs.getCode().getText())) {
             obsDisplayName = obs.getCode().getText();
           }
         }
@@ -217,7 +230,10 @@ public class CdaResultGenerator {
       for (ObservationComponentComponent oc : obs.getComponent()) {
 
         logger.debug("Found Observation Components ");
-        if (oc.getCode() != null) {
+        if (oc.hasCode()
+            && oc.getCode().hasCoding()
+            && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                oc.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
           cc = oc.getCode();
         }
 
@@ -244,13 +260,21 @@ public class CdaResultGenerator {
       }
     }
 
-    if (!foundComponent) {
+    if (obs != null && Boolean.FALSE.equals(foundComponent)) {
 
+      CodeableConcept cc = null;
       logger.debug("No component found , so directly adding the observation code ");
+      if (obs.hasCode()
+          && obs.getCode().hasCoding()
+          && CdaFhirUtilities.isCodingPresentForCodeSystem(
+              obs.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+        cc = obs.getCode();
+      }
+
       lrEntry.append(
           getXmlForObservationComponent(
               details,
-              obs.getCode(),
+              cc,
               obs.getValue(),
               obs.getId(),
               obs.getEffective(),
@@ -686,7 +710,9 @@ public class CdaResultGenerator {
 
       for (Observation s : data.getLabResults()) {
 
-        if (s.getCode() != null
+        if (s.hasCode()
+            && s.getCode() != null
+            && s.getCode().hasCoding()
             && s.getCode().getCoding() != null
             && !s.getCode().getCoding().isEmpty()
             && CdaFhirUtilities.isCodingPresentForCodeSystem(

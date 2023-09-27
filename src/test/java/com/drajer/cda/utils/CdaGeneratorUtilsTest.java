@@ -558,8 +558,12 @@ public class CdaGeneratorUtilsTest {
   @Test
   public void getXmlForNfQuantityTest() {
     String expectedResult = "<elName nullFlavor=\"NF\"/>\n";
-    String result = CdaGeneratorUtils.getXmlForNfQuantity("elName", "NF");
+    String result = CdaGeneratorUtils.getXmlForNfQuantity("elName", "NF", false);
     assertEquals(expectedResult, result);
+
+    String expectedResult2 = "<elName xsi:type=\"PQ\" nullFlavor=\"NF\"/>\n";
+    String result2 = CdaGeneratorUtils.getXmlForNfQuantity("elName", "NF", true);
+    assertEquals(expectedResult2, result2);
   }
 
   @Test

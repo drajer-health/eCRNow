@@ -864,8 +864,9 @@ public class CdaFhirUtilities {
         Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
         if (!csd.getValue0().isEmpty()
-            && c.getSystem().contentEquals(codeSystemUrl)
-            && !foundCodeForCodeSystem) {
+            && (c.getSystem().contentEquals(codeSystemUrl)
+                || c.getSystem().contains(csd.getValue0()))
+            && Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
           logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
@@ -1244,14 +1245,15 @@ public class CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (dt != null && dt.getValue() != null) {
+    if (dt != null && dt.hasValue() && dt.getValue() != null) {
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
               elName, dt.getValue().toString(), dt.getCode(), valFlag));
 
     } else {
-      sb.append(CdaGeneratorUtils.getXmlForNfQuantity(elName, CdaGeneratorConstants.NF_NI));
+      sb.append(
+          CdaGeneratorUtils.getXmlForNfQuantity(elName, CdaGeneratorConstants.NF_NI, valFlag));
     }
 
     return sb.toString();
@@ -1310,6 +1312,12 @@ public class CdaFhirUtilities {
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_FEMALE_CODE,
               CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+    } else if (gender == AdministrativeGender.UNKNOWN) {
+
+      s +=
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME, CdaGeneratorConstants.NF_UNK);
+
     } else if (gender != null) {
 
       s +=
@@ -1698,7 +1706,7 @@ public class CdaFhirUtilities {
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
 
     String val = "";
-    if (dt != null) {
+    if (dt != null && !dt.hasExtension(CdaGeneratorConstants.FHIR_DATA_ABSENT_REASON_EXT_URL)) {
 
       if (dt instanceof Coding) {
         Coding cd = (Coding) dt;
@@ -1760,7 +1768,7 @@ public class CdaFhirUtilities {
     }
 
     if (!valFlag) val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
-    else val += CdaGeneratorUtils.getNFXmlForValueString(CdaGeneratorConstants.NF_NI);
+    else val += CdaGeneratorUtils.getXmlForValueString(CdaGeneratorConstants.NO_VALUE);
 
     return val;
   }
@@ -1802,75 +1810,35 @@ public class CdaFhirUtilities {
       Boolean valFlag,
       String codeSystemUrl,
       Boolean csOptional,
-      DomainResource res) {
+      DomainResource res,
+      List<Medication> medList) {
 
     if (dt instanceof Reference) {
 
-      logger.debug("Found Medication of Type Reference within Domain Resource");
+      logger.info("Found Medication of Type Reference within Domain Resource");
       Reference med = (Reference) dt;
       String codeXml = "";
       if (med.getReference().startsWith(CdaGeneratorConstants.FHIR_CONTAINED_REFERENCE)) {
         // Check contained.
         String refId = med.getReference().substring(1);
 
-        logger.debug("Found Medication of Type Reference with Id {}", refId);
+        logger.info("Found Medication of Type Reference with Id {}", refId);
 
         if (res.getContained() != null) {
 
-          logger.debug("Contained Elements Not null");
+          logger.info("Contained Elements Not null");
           List<Resource> meds = res.getContained();
 
           for (Resource r : meds) {
 
             if (r.getId().contains(refId) && r instanceof Medication) {
 
-              logger.debug("Found Medication in contained resource");
+              logger.info("Found Medication in contained resource");
 
               Medication cmed = (Medication) r;
 
               // Found the reference, check the code and ingredients.
-
-              if (cmed.getCode() != null
-                  && cmed.getCode().getCoding() != null
-                  && !cmed.getCode().getCoding().isEmpty()
-                  && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                      cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
-
-                logger.debug("Found Medication for code system in code element");
-                // Found the Medication that matters.
-                codeXml =
-                    getXmlForTypeForCodeSystem(
-                        cmed.getCode(), elName, valFlag, codeSystemUrl, csOptional);
-
-              } // if code present
-              else {
-                // Check the ingredients
-
-                if (cmed.getIngredient() != null) {
-
-                  logger.debug("Found Ingredients");
-                  List<MedicationIngredientComponent> ings = cmed.getIngredient();
-
-                  for (MedicationIngredientComponent ing : ings) {
-
-                    if (ing.getItem() instanceof CodeableConcept) {
-
-                      logger.debug("Found Ingredient which is coded");
-                      CodeableConcept cc = (CodeableConcept) ing.getItem();
-
-                      if (cc.getCoding() != null
-                          && !cc.getCoding().isEmpty()
-                          && CdaFhirUtilities.isCodingPresentForCodeSystem(
-                              cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL)) {
-                        codeXml =
-                            getXmlForTypeForCodeSystem(
-                                cc, elName, valFlag, codeSystemUrl, csOptional);
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
+              codeXml = getXmlForMedication(cmed, elName, valFlag, codeSystemUrl, csOptional);
             } // contained med
           } // for all contained resources
         } // contained present
@@ -1878,13 +1846,80 @@ public class CdaFhirUtilities {
       } // Contained reference
       else {
 
-        // Check the actual medication
+        logger.info(" Checking medication references ");
+        // check if the medications have been extracted for non contained references.
+        if (medList != null && !medList.isEmpty()) {
 
+          String id = med.getReferenceElement().getIdPart();
+          Medication medRes = null;
+          for (Medication m : medList) {
+            if (m.getIdElement().getIdPart().contentEquals(id)) {
+
+              logger.info(" Found the non-contained medication reference resource {}", id);
+              medRes = m;
+              break;
+            }
+          }
+
+          // Found the reference, check the code and ingredients.
+          if (medRes != null) {
+            codeXml = getXmlForMedication(medRes, elName, valFlag, codeSystemUrl, csOptional);
+          }
+        }
       }
 
       return codeXml;
 
     } else return getXmlForTypeForCodeSystem(dt, elName, valFlag, codeSystemUrl, csOptional);
+  }
+
+  public static String getXmlForMedication(
+      Medication cmed, String elName, Boolean valFlag, String codeSystemUrl, Boolean csOptional) {
+
+    String codeXml = "";
+
+    if (cmed.getCode() != null
+        && cmed.getCode().getCoding() != null
+        && !cmed.getCode().getCoding().isEmpty()
+        && Boolean.TRUE.equals(
+            CdaFhirUtilities.isCodingPresentForCodeSystem(
+                cmed.getCode().getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
+
+      logger.debug("Found Medication for code system in code element");
+      // Found the Medication that matters.
+      codeXml =
+          getXmlForTypeForCodeSystem(cmed.getCode(), elName, valFlag, codeSystemUrl, csOptional);
+
+    } // if code present
+    else {
+      // Check the ingredients
+
+      if (cmed.getIngredient() != null) {
+
+        logger.debug("Found Ingredients");
+        List<MedicationIngredientComponent> ings = cmed.getIngredient();
+
+        for (MedicationIngredientComponent ing : ings) {
+
+          if (ing.getItem() instanceof CodeableConcept) {
+
+            logger.debug("Found Ingredient which is coded");
+            CodeableConcept cc = (CodeableConcept) ing.getItem();
+
+            if (cc.getCoding() != null
+                && !cc.getCoding().isEmpty()
+                && Boolean.TRUE.equals(
+                    CdaFhirUtilities.isCodingPresentForCodeSystem(
+                        cc.getCoding(), CdaGeneratorConstants.FHIR_RXNORM_URL))) {
+              codeXml = getXmlForTypeForCodeSystem(cc, elName, valFlag, codeSystemUrl, csOptional);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return codeXml;
   }
 
   public static String getXmlForTypeForCodeSystem(

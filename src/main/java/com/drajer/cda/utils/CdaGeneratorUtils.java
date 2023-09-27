@@ -590,15 +590,31 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForNfQuantity(String elName, String nf) {
-    return CdaGeneratorConstants.START_XMLTAG
-        + elName
-        + CdaGeneratorConstants.SPACE
-        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + nf
-        + CdaGeneratorConstants.DOUBLE_QUOTE
-        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  public static String getXmlForNfQuantity(String elName, String nf, Boolean valFlag) {
+    if (Boolean.FALSE.equals(valFlag)) {
+      return CdaGeneratorConstants.START_XMLTAG
+          + elName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + nf
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    } else {
+      return CdaGeneratorConstants.START_XMLTAG
+          + elName
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.XSI_TYPE
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.PQ_TYPE
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.SPACE
+          + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + nf
+          + CdaGeneratorConstants.DOUBLE_QUOTE
+          + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
   }
 
   public static String getXmlForNullEffectiveTime(String elName, String value) {
