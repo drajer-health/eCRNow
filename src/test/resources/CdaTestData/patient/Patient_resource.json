@@ -1,0 +1,326 @@
+{
+  "resourceType": "Bundle",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "a-11287.E-4237",
+        "extension": [
+          {
+            "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+            "valueReference": {
+              "reference": "Organization/a-11287.CSG-1"
+            }
+          },
+          {
+            "url": "https://fhir.athena.io/StructureDefinition/ah-provider-group",
+            "valueReference": {
+              "reference": "Organization/a-11287.PG-1"
+            }
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "UNK"
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Not Hispanic or Latino"
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2028-9",
+                  "display": "Asian"
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Asian"
+              }
+            ]
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://fhir.athena.io/sid/ah-patient",
+            "value": "a-11287.E-4237"
+          },
+          {
+            "system": "http://hl7.org/fhir/sid/us-ssn",
+            "value": "025123334"
+          },
+          {
+            "system": "http://example.com/patient-ids",
+            "value": "123456",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/identifier-type",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            }
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Test",
+            "given": [
+              "Jill"
+            ],
+            "period": {
+              "start": "2022-09-19"
+            }
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-555-5006",
+            "use": "home"
+          },
+          {
+            "system": "phone",
+            "value": "555-555-5006",
+            "use": "mobile"
+          },
+          {
+            "system": "email",
+            "value": "jill@email.com"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "2020-10-27",
+        "address": [
+          {
+            "use": "home",
+            "line": [
+              "2221 HOME STREET"
+            ],
+            "city": "SALT LAKE CITY",
+            "state": "UT",
+            "postalCode": "84101",
+            "country": "USA",
+            "period": {
+              "start": "2022-09-19"
+            }
+          },
+          {
+            "use": "billing",
+            "type": "postal",
+            "line": [
+              "2221 HOME STREET"
+            ],
+            "city": "SALT LAKE CITY",
+            "state": "UT",
+            "postalCode": "84101",
+            "country": "USA",
+            "period": {
+              "start": "2022-09-19"
+            }
+          }
+        ],
+        "contact": [
+          {
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                    "code": "N"
+                  }
+                ]
+              }
+            ],
+            "name": {
+              "family": "du March�",
+              "_family": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix",
+                    "valueString": "VV"
+                  }
+                ]
+              },
+              "given": [
+                "B�n�dicte"
+              ]
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "+33 (237) 998327"
+              }
+            ],
+            "address": {
+              "use": "home",
+              "type": "both",
+              "line": [
+                "534 Erewhon St"
+              ],
+              "city": "PleasantVille",
+              "district": "Rainbow",
+              "state": "Vic",
+              "postalCode": "3999",
+              "period": {
+                "start": "1974-12-25"
+              }
+            },
+            "gender": "female",
+            "period": {
+              "start": "2012"
+            }
+          }
+        ],
+        "maritalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+              "code": "S",
+              "display": "Never Married"
+            }
+          ]
+        },
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "en",
+                  "display": "English"
+                }
+              ],
+              "text": "English"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "a-11287.stay-9787",
+        "extension": [
+          {
+            "url": "https://fhir.athena.io/StructureDefinition/ah-practice",
+            "valueReference": {
+              "reference": "Organization/a-1.Practice-11287"
+            }
+          },
+          {
+            "url": "https://fhir.athena.io/StructureDefinition/ah-chart-sharing-group",
+            "valueReference": {
+              "reference": "Organization/a-11287.CSG-1"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://fhir.athena.io/sid/ah-stay",
+            "value": "a-11287.stay-9787"
+          }
+        ],
+        "status": "in-progress",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "inpatient encounter"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://www.ama-assn.org/go/cpt",
+                "code": "99236",
+                "display": "HOSPITALIST ADMISSION/DISCHARGE SAME DAY"
+              }
+            ],
+            "text": "HOSPITALIST ADMISSION/DISCHARGE SAME DAY"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/a-11287.E-4237"
+        },
+        "participant": [
+          {
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                    "code": "ATND",
+                    "display": "attender"
+                  }
+                ],
+                "text": "The practitioner that has responsibility for overseeing a patient's care during a patient encounter."
+              }
+            ],
+            "period": {
+              "start": "2022-09-20T10:12:27Z"
+            },
+            "individual": {
+              "reference": "Practitioner/a-11287.Provider-84"
+            }
+          }
+        ],
+        "period": {
+          "start": "2022-09-20T10:12:00Z"
+        },
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "186747009",
+                "display": "coronavirus infection"
+              }
+            ],
+            "text": "coronavirus infection"
+          }
+        ],
+        "hospitalization": {
+          "dischargeDisposition": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+                "code": "home",
+                "display": "Home"
+              }
+            ],
+            "text": "The patient was dicharged and has indicated that they are going to return home afterwards."
+          }
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/a-11287.Department-1"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/a-11287.Department-1"
+        }
+      }
+    }
+  ]
+}

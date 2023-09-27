@@ -129,6 +129,8 @@ public class CdaHeaderGenerator {
 
         eICRHeader.append(getCustodianXml(details, data));
 
+        eICRHeader.append(getParticipantXml(details, data, data.getPatient()));
+
         eICRHeader.append(getEncompassingEncounter(data.getEncounter(), prs, details, data));
       } else {
         String msg = "No Fhir Data Bundle retrieved to CREATE EICR.";
@@ -144,6 +146,113 @@ public class CdaHeaderGenerator {
     }
 
     return eICRHeader.toString();
+  }
+
+  private static String getParticipantXml(LaunchDetails details, R4FhirData data, Patient patient) {
+
+    StringBuilder s = new StringBuilder("");
+    if (patient != null && patient.getContact() != null) {
+
+      List<ContactComponent> ccs = patient.getContact();
+
+      for (ContactComponent cc : ccs) {
+
+        if (cc.getRelationship() != null) {
+
+          Coding c = getTranslatableCodeableConceptCoding(cc.getRelationship());
+
+          if (c != null) {
+            s.append(getParticipantXml(cc, c));
+          }
+        }
+      }
+    }
+
+    return s.toString();
+  }
+
+  public static String getParticipantXml(ContactComponent cc, Coding c) {
+
+    StringBuilder s = new StringBuilder(200);
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+            CdaGeneratorConstants.PARTICIPANT_EL_NAME, CdaGeneratorConstants.TYPE_CODE_IND));
+
+    String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElementWithClassCode(
+            CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME, relationship));
+
+    if (cc.getAddress() != null) {
+      s.append(CdaFhirUtilities.getAddressXml(cc.getAddress()));
+    }
+
+    if (cc.getTelecom() != null) {
+      s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false));
+    }
+
+    s.append(
+        CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    List<HumanName> names = new ArrayList<>();
+    if (cc.getName() != null) {
+      names.add(cc.getName());
+    }
+    s.append(CdaFhirUtilities.getNameXml(names));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_PERSON_EL_NAME));
+
+    s.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSOCIATED_ENTITY_EL_NAME));
+    s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+
+    return s.toString();
+  }
+
+  public static Coding getTranslatableCodeableConceptCoding(List<CodeableConcept> cds) {
+
+    if (cds != null) {
+
+      for (CodeableConcept cd : cds) {
+
+        List<Coding> codes = cd.getCoding();
+
+        Coding c = getTranslatableCoding(codes);
+
+        if (c != null) {
+
+          return c;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  public static Coding getTranslatableCoding(List<Coding> codes) {
+
+    if (codes != null) {
+
+      for (Coding c : codes) {
+
+        if (c.getCode() != null) {
+
+          String relationship = CdaGeneratorConstants.getCodeForContactRelationship(c.getCode());
+
+          if (relationship != null && !relationship.isEmpty()) {
+
+            return c;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   public static String getPractitionerXml(Practitioner pr) {
