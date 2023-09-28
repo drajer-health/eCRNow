@@ -132,7 +132,7 @@ public class EcrReportCreator extends ReportCreator {
 
     Bundle reportingBundle = null;
 
-    if (kd.getKarStatus().getOutputFormat() == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION) {
+    if (kd.getKarStatus().getOutputFormat() == OutputContentType.FHIR) {
 
       logger.info(" Creating a FHIR Eicr Report ");
       reportingBundle = createReportingBundle(profile);
@@ -175,8 +175,7 @@ public class EcrReportCreator extends ReportCreator {
 
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
-    } else if (kd.getKarStatus().getOutputFormat()
-        == OutputContentType.TEST_CDAR30_NOT_FOR_PRODUCTION) {
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30) {
 
       logger.info(" Creating a Test CDA R30 Not For Production Eicr Report ");
       reportingBundle = createReportingBundle(profile);
@@ -198,8 +197,7 @@ public class EcrReportCreator extends ReportCreator {
       // Add the Content Bundle.
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
 
-    } else if (kd.getKarStatus().getOutputFormat()
-        == OutputContentType.TEST_BOTH_NOT_FOR_PRODUCTION) {
+    } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.BOTH) {
 
       logger.info(" Creating an Eicr for each of the above formats ");
 

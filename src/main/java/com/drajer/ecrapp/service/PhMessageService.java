@@ -27,6 +27,14 @@ public interface PhMessageService {
    * @param xRequestIds A list of XRequest IDs to filter the PublicHealthMessage data.
    * @return A list of PublicHealthMessage objects corresponding to the provided XRequest IDs.
    */
+  List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds);
+
+  /**
+   * Retrieves a list of PublicHealthMessage objects based on the provided XRequest IDs.
+   *
+   * @param xRequestIds A list of XRequest IDs to filter the PublicHealthMessage data.
+   * @return A list of PublicHealthMessage objects corresponding to the provided XRequest IDs.
+   */
   List<PublicHealthMessage> getPhMessageDataByXRequestIds(List<String> xRequestIds);
 
   /**

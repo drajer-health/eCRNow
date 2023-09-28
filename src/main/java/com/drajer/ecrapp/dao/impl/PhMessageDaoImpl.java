@@ -154,6 +154,24 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
     return criteria.addOrder(Order.desc("id")).list();
   }
 
+  @Override
+  public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds) {
+    Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+
+    List<String> selectedProperties = getSelectedProperties();
+    ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
+
+    criteria.setProjection(projectionList);
+    criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
+
+    Disjunction disjunction = Restrictions.disjunction();
+    for (String xRequestId : xRequestIds) {
+      disjunction.add(Restrictions.like(X_REQUEST_ID, "%" + xRequestId + "%"));
+    }
+    criteria.add(disjunction);
+    return criteria.addOrder(Order.desc("id")).list();
+  }
+
   private ProjectionList buildProjectionList(List<String> selectedProperties, Criteria criteria) {
     ProjectionList projectionList = Projections.projectionList();
     for (String propertyName : selectedProperties) {
@@ -214,15 +232,12 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
         "notificationId",
         "xCorrelationId",
         "xRequestId",
-        "submittedFhirData",
         "submittedMessageType",
         "submittedDataId",
         "submittedVersionNumber",
         "submittedMessageId",
         "submissionMessageStatus",
         "submissionTime",
-        "fhirResponseData",
-        "failureResponseData",
         "responseMessageType",
         "responseDataId",
         "responseMessageId",
@@ -231,7 +246,6 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
         "responseReceivedTime",
         "responseEhrDocRefId",
         "initiatingAction",
-        "triggerMatchStatus",
         "patientLinkerId",
         "lastUpdated");
   }

@@ -24,6 +24,10 @@ public class PhMessageServiceImpl implements PhMessageService {
     return phMessageDao.getPhMessageByXRequestIds(xRequestIds);
   }
 
+  public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds) {
+    return phMessageDao.getPhMessagesContainingXRequestIds(xRequestIds);
+  }
+
   public List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData) {
     return phMessageDao.getPhMessageByParameters(publicHealthMessageData);

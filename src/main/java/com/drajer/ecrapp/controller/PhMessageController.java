@@ -176,6 +176,28 @@ public class PhMessageController {
     }
   }
 
+  @PostMapping("/api/getPhMessagesContainingXRequestIds")
+  public ResponseEntity<Object> getPhMessagesContainingXRequestIds(
+      @RequestBody Map<String, Object> requestBody) {
+    try {
+      List<String> xRequestIds = extractXRequestIds(requestBody);
+
+      List<PublicHealthMessage> phMessage =
+          phMessageService.getPhMessagesContainingXRequestIds(xRequestIds);
+
+      if (phMessage != null && !phMessage.isEmpty()) {
+        return ResponseEntity.ok(phMessage);
+      } else {
+        return ResponseEntity.notFound().build();
+      }
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+  }
+
   @CrossOrigin
   @DeleteMapping("/api/phMessage")
   public ResponseEntity<String> deletePhMessages(
@@ -217,10 +239,10 @@ public class PhMessageController {
   private List<String> extractXRequestIds(Map<String, Object> requestBody) {
     List<String> xRequestIds = (List<String>) requestBody.get("xRequestIds");
 
-    if (xRequestIds == null || xRequestIds.isEmpty() || xRequestIds.size() > 20) {
+    if (xRequestIds == null || xRequestIds.isEmpty()) {
       throw new IllegalArgumentException(
           "The provided Xrequest IDs are out of range. "
-              + "Please ensure that the number of Xrequest IDs is greater than 0 and does not exceed 20.");
+              + "Please ensure that the number of Xrequest IDs is greater than 0 ");
     }
 
     return xRequestIds;

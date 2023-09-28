@@ -11,6 +11,8 @@ public interface PhMessageDao {
 
   List<PublicHealthMessage> getPhMessageByXRequestIds(List<String> xRequestId);
 
+  List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds);
+
   List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData);
 

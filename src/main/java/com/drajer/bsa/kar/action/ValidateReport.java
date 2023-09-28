@@ -62,18 +62,16 @@ public class ValidateReport extends BsaAction {
 
       if (artStatus != null
           && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-              || artStatus.getOutputFormat() == OutputContentType.TEST_CDAR30_NOT_FOR_PRODUCTION)) {
+              || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
 
         logger.info(" Validating CDA Output ");
         validateCdaOutput(data, actStatus);
-      } else if (artStatus != null
-          && artStatus.getOutputFormat() == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION) {
+      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.FHIR) {
 
         logger.info(" Validating FHIR Output ");
         // by default it is FHIR Payload and validate accordingly.
         validateFhirOutput(data, actStatus);
-      } else if (artStatus != null
-          && artStatus.getOutputFormat() == OutputContentType.TEST_BOTH_NOT_FOR_PRODUCTION) {
+      } else if (artStatus != null && artStatus.getOutputFormat() == OutputContentType.BOTH) {
 
         logger.info(" Validating Both CDA and FHIR Output ");
         validateCdaOutput(data, actStatus);
