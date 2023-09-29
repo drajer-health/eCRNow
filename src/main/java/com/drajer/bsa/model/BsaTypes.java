@@ -166,7 +166,8 @@ public final class BsaTypes {
     UNKNOWN,
     TEST_FHIR_NOT_FOR_PRODUCTION,
     TEST_CDAR30_NOT_FOR_PRODUCTION,
-    TEST_BOTH_NOT_FOR_PRODUCTION
+    TEST_BOTH_NOT_FOR_PRODUCTION,
+    CDAR31_FOR_TRIAL_IMPLEMENTATION
   }
 
   public static String getOutputContentType(OutputContentType t) {
@@ -175,6 +176,7 @@ public final class BsaTypes {
       return "FHIR";
     else if (t == OutputContentType.CDA_R11) return "CDA_R11";
     else if (t == OutputContentType.CDA_R30
+        || t == OutputContentType.CDAR31_FOR_TRIAL_IMPLEMENTATION
         || t == OutputContentType.TEST_CDAR30_NOT_FOR_PRODUCTION) return "CDA_R30";
     else if (t == OutputContentType.BOTH || t == OutputContentType.TEST_BOTH_NOT_FOR_PRODUCTION)
       return "Both";
@@ -186,7 +188,9 @@ public final class BsaTypes {
     if (code.equalsIgnoreCase("FHIR") || code.equalsIgnoreCase("TEST_FHIR_NOT_FOR_PRODUCTION"))
       return OutputContentType.FHIR;
     else if (code.equalsIgnoreCase("CDA_R11")) return OutputContentType.CDA_R11;
-    else if (code.equalsIgnoreCase("CDA_R30")||code.equalsIgnoreCase("CDAR31_FOR_TRIAL_IMPLEMENTATION")|| code.equalsIgnoreCase("TEST_CDAR30_NOT_FOR_PRODUCTION"))
+    else if (code.equalsIgnoreCase("CDA_R30")
+        || code.equalsIgnoreCase("CDAR31_FOR_TRIAL_IMPLEMENTATION")
+        || code.equalsIgnoreCase("TEST_CDAR30_NOT_FOR_PRODUCTION"))
       return OutputContentType.CDA_R30;
     else if (code.equalsIgnoreCase("Both") || code.equalsIgnoreCase("TEST_BOTH_NOT_FOR_PRODUCTION"))
       return OutputContentType.BOTH;
