@@ -186,8 +186,7 @@ public final class BsaTypes {
     if (code.equalsIgnoreCase("FHIR") || code.equalsIgnoreCase("TEST_FHIR_NOT_FOR_PRODUCTION"))
       return OutputContentType.FHIR;
     else if (code.equalsIgnoreCase("CDA_R11")) return OutputContentType.CDA_R11;
-    else if (code.equalsIgnoreCase("CDA_R30")
-        || code.equalsIgnoreCase("TEST_CDAR30_NOT_FOR_PRODUCTION"))
+    else if (code.equalsIgnoreCase("CDA_R30")||code.equalsIgnoreCase("CDAR31_FOR_TRIAL_IMPLEMENTATION")|| code.equalsIgnoreCase("TEST_CDAR30_NOT_FOR_PRODUCTION"))
       return OutputContentType.CDA_R30;
     else if (code.equalsIgnoreCase("Both") || code.equalsIgnoreCase("TEST_BOTH_NOT_FOR_PRODUCTION"))
       return OutputContentType.BOTH;
