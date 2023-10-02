@@ -177,7 +177,7 @@ public class EcrReportCreator extends ReportCreator {
       reportingBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
     } else if (kd.getKarStatus().getOutputFormat() == OutputContentType.CDA_R30) {
 
-      logger.info(" Creating a CDA R30 Eicr Report ");
+      logger.info(" Creating a Test CDA R30 Not For Production Eicr Report ");
       reportingBundle = createReportingBundle(profile);
       Bundle contentBundle = getCdaR11Report(kd, ehrService, dataRequirementId, profile, act);
       MessageHeader mh = createMessageHeader(kd, true, contentBundle);

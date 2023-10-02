@@ -2,6 +2,7 @@ package com.drajer.ecrapp.controller;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.service.PhMessageService;
+import com.drajer.sof.model.PublicHealthMessageData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,7 +46,10 @@ public class PhMessageController {
       @RequestParam(name = "notifiedResourceId", required = false) String notifiedResourceId,
       @RequestParam(name = "notifiedResourceType", required = false) String notifiedResourceType,
       @RequestParam(name = "karUniqueId", required = false) String karUniqueId,
-      @RequestParam(name = "notificationId", required = false) String notificationId) {
+      @RequestParam(name = "notificationId", required = false) String notificationId,
+      @RequestParam(name = "correlationId", required = false) String correlationId,
+      @RequestParam(name = "startTime", required = false) String startTime,
+      @RequestParam(name = "endTime", required = false) String endTime) {
     List<JSONObject> phMessageData = new ArrayList<>();
     try {
       logger.info(
@@ -120,6 +127,18 @@ public class PhMessageController {
         searchParams.put("notificationId", notificationId);
       }
 
+      if (correlationId != null && !correlationId.isEmpty()) {
+        searchParams.put("correlationId", correlationId);
+      }
+
+      if (startTime != null) {
+        searchParams.put("submissionTime", startTime);
+      }
+
+      if (endTime != null) {
+        searchParams.put("responseReceivedTime", endTime);
+      }
+
       List<PublicHealthMessage> phMessage = phMessageService.getPhMessageData(searchParams);
 
       if (phMessage != null) {
@@ -133,5 +152,99 @@ public class PhMessageController {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
     }
+  }
+
+  @PostMapping("/api/phMessage/batch")
+  public ResponseEntity<Object> getByBatchXRequestIds(
+      @RequestBody Map<String, Object> requestBody) {
+    try {
+      List<String> xRequestIds = extractXRequestIds(requestBody);
+
+      List<PublicHealthMessage> phMessage =
+          phMessageService.getPhMessageDataByXRequestIds(xRequestIds);
+
+      if (phMessage != null && !phMessage.isEmpty()) {
+        return ResponseEntity.ok(phMessage);
+      } else {
+        return ResponseEntity.notFound().build();
+      }
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+  }
+
+  @PostMapping("/api/getPhMessagesContainingXRequestIds")
+  public ResponseEntity<Object> getPhMessagesContainingXRequestIds(
+      @RequestBody Map<String, Object> requestBody) {
+    try {
+      List<String> xRequestIds = extractXRequestIds(requestBody);
+
+      List<PublicHealthMessage> phMessage =
+          phMessageService.getPhMessagesContainingXRequestIds(xRequestIds);
+
+      if (phMessage != null && !phMessage.isEmpty()) {
+        return ResponseEntity.ok(phMessage);
+      } else {
+        return ResponseEntity.notFound().build();
+      }
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+      logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_IN_PROCESSING_THE_REQUEST);
+    }
+  }
+
+  @CrossOrigin
+  @DeleteMapping("/api/phMessage")
+  public ResponseEntity<String> deletePhMessages(
+      @RequestBody PublicHealthMessageData publicHealthMessageData) {
+    if (publicHealthMessageData == null) {
+      return ResponseEntity.badRequest()
+          .body("Invalid input. Provide either 'id' or a combination of parameters.");
+    }
+
+    try {
+      logger.info(
+          "Parameters received for deleting phMessages: id={}, fhirServerBaseUrl={}, notifiedResourceId={}, patientId={}, versionId={}",
+          publicHealthMessageData.getId(),
+          publicHealthMessageData.getFhirServerBaseUrl(),
+          publicHealthMessageData.getNotifiedResourceId(),
+          publicHealthMessageData.getPatientId(),
+          publicHealthMessageData.getSubmittedVersionNumber());
+
+      List<PublicHealthMessage> publicHealthMessages =
+          phMessageService.getPhMessageByParameters(publicHealthMessageData);
+
+      if (publicHealthMessages.isEmpty()) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No phMessage records found.");
+      }
+      publicHealthMessages.forEach(
+          publicHealthMessage -> {
+            phMessageService.deletePhMessage(publicHealthMessage);
+          });
+
+      return ResponseEntity.ok("phMessages deleted successfully");
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Error in processing the request");
+    }
+  }
+
+  private List<String> extractXRequestIds(Map<String, Object> requestBody) {
+    List<String> xRequestIds = (List<String>) requestBody.get("xRequestIds");
+
+    if (xRequestIds == null || xRequestIds.isEmpty()) {
+      throw new IllegalArgumentException(
+          "The provided Xrequest IDs are out of range. "
+              + "Please ensure that the number of Xrequest IDs is greater than 0 ");
+    }
+
+    return xRequestIds;
   }
 }

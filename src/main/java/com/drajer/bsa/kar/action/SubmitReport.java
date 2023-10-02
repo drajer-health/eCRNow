@@ -122,9 +122,8 @@ public class SubmitReport extends BsaAction {
       KnowledgeArtifactStatus artStatus =
           data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
 
-      if (artStatus != null
-          && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
-              || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
+      if (artStatus != null && (artStatus.getOutputFormat() == OutputContentType.CDA_R11)
+          || artStatus.getOutputFormat() == OutputContentType.CDA_R30) {
 
         logger.info(" Submitting CDA Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
