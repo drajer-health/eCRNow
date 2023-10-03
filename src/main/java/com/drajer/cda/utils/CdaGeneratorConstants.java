@@ -1033,24 +1033,6 @@ public class CdaGeneratorConstants {
       if (oidNameMap.containsKey(retVal.getValue0())) {
         return new Pair<>(retVal.getValue0(), oidNameMap.get(retVal.getValue0()));
       } else return retVal;
-    } else if (url.startsWith("urn:oid:")) {
-
-      String oid = url.replace("urn:oid:", "");
-      if (oidMap.containsKey(oid)) {
-
-        Pair<String, String> oidUrlName = oidMap.get(oid);
-
-        if (oidNameMap.containsKey(oid)) {
-
-          return new Pair<>(oid, oidNameMap.get(oid));
-        } else {
-
-          return new Pair<>(oid, oidUrlName.getValue1());
-        }
-      }
-
-      return new Pair<>("", "");
-
     } else {
       return new Pair<>("", "");
     }

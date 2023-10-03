@@ -864,9 +864,8 @@ public class CdaFhirUtilities {
         Pair<String, String> csd = CdaGeneratorConstants.getCodeSystemFromUrl(c.getSystem());
 
         if (!csd.getValue0().isEmpty()
-            && (c.getSystem().contentEquals(codeSystemUrl)
-                || c.getSystem().contains(csd.getValue0()))
-            && Boolean.FALSE.equals(foundCodeForCodeSystem)) {
+            && c.getSystem().contentEquals(codeSystemUrl)
+            && !foundCodeForCodeSystem) {
 
           logger.debug("Found the Coding for Codesystem {}", codeSystemUrl);
           sb.append(
