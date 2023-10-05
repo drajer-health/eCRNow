@@ -93,7 +93,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     map.add("client_assertion", jwt);
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
     ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
-    logger.info(" Response Body = ",response.getBody());
+    logger.info(" Response Body = ", response.getBody());
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 

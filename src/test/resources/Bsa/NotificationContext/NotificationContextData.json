@@ -1,0 +1,6 @@
+{
+  "id": "24d0c3ff-1802-439b-bfe9-74766f56451b",
+  "fhirServerBaseUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/",
+  "notificationResourceId": "892f5b3a-a325-44a7-9ab0-1838aa9c28ea",
+  "patientId": "e060bd84-b88a-452a-8711-df5c036d6dd1"
+}

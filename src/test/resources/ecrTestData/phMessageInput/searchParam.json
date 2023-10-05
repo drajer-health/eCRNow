@@ -9,5 +9,8 @@
   "notifiedResourceId": "11",
   "notifiedResourceType": "12",
   "karUniqueId": "8",
-  "notificationId": "10"
+  "notificationId": "10",
+  "correlationId" :"56",
+  "startTime":"2023-07-04",
+  "endTime":"2023-08-05"
 }
