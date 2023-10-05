@@ -2,8 +2,9 @@ package com.drajer.ecrapp.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.drajer.bsa.dao.PhMessageDao;
 import com.drajer.bsa.model.PublicHealthMessage;
-import com.drajer.ecrapp.dao.PhMessageDao;
+import com.drajer.bsa.service.impl.PhMessageServiceImpl;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;

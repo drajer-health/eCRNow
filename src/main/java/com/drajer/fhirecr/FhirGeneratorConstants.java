@@ -18,8 +18,10 @@ public class FhirGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/observation-category";
 
   // Composition Codes
-  public static final String COMP_TYPE_CODE = "55751-2";
-  public static final String COMP_TYPE_CODE_DISPLAY = "Public Health Case Report";
+  public static final String ECR_COMP_TYPE_CODE = "55751-2";
+  public static final String ECR_COMP_TYPE_CODE_DISPLAY = "Public Health Case Report";
+  public static final String HCS_COMP_TYPE_CODE = "75619-7";
+  public static final String HCS_COMP_TYPE_CODE_DISPLAY = "National Health Care Surveys report";
 
   // Composition section codes commonly used.
   public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE = "46239-0";
@@ -32,24 +34,45 @@ public class FhirGeneratorConstants {
   public static final String REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE_DISPLAY =
       "Review of Systems narrative";
   public static final String PROBLEM_SECTION_LOINC_CODE = "11450-4";
-  public static final String PROBLEM_SECTION_LOINC_CODE_DISPLAY = "Problem Section Narrative";
+  public static final String PROBLEM_SECTION_LOINC_CODE_DISPLAY = "Problem list - Reported";
+  public static final String ALLERGIES_SECTION_LOINC_CODE = "48765-2";
+  public static final String ALLERGIES_SECTION_LOINC_CODE_DISPLAY =
+      "Allergies and adverse reactions Document";
+  public static final String ADMISSION_MEDICATIONS_SECTION_LOINC_CODE = "42346-7";
+  public static final String ADMISSION_MEDICATIONS_SECTION_LOINC_CODE_DISPLAY =
+      "Medications on admission (narrative)";
+  public static final String MEDICATIONS_SECTION_LOINC_CODE = "10160-0";
+  public static final String MEDICATIONS_SECTION_LOINC_CODE_DISPLAY =
+      "History of Medication use Narrative";
+  public static final String NOTES_SECTION_LOINC_CODE = "28650-0";
+  public static final String NOTES_SECTION_LOINC_CODE_DISPLAY =
+      "Clinical notes and chart sections Set";
+  public static final String MEDICAL_EQUIPMENT_SECTION_LOINC_CODE = "46264-8";
+  public static final String MEDICAL_EQUIPMENT_SECTION_LOINC_CODE_DISPLAY =
+      "History of medical device use";
+  public static final String CARE_TEAM_SECTION_LOINC_CODE = "85847-2";
+  public static final String CARE_TEAM_SECTION_LOINC_CODE_DISPLAY = "Patient Care team information";
+  public static final String GOALS_SECTION_LOINC_CODE = "61146-7";
+  public static final String GOALS_SECTION_LOINC_CODE_DISPLAY = "Goals Narrative";
   public static final String PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE = "11348-0";
   public static final String PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE_DISPLAY =
       "Past Medical History Narrative";
   public static final String MEDICATION_ADMINISTERED_SECTION_LOINC_CODE = "29549-3";
   public static final String MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY =
-      "Medications Administered Narrative";
+      "Medication administered Narrative";
   public static final String RESULTS_SECTION_LOINC_CODE = "30954-2";
-  public static final String RESULTS_SECTION_LOINC_CODE_DISPLAY = "Results Section Narrative";
+  public static final String RESULTS_SECTION_LOINC_CODE_DISPLAY =
+      "Relevant diagnostic tests/laboratory data Narrative";
   public static final String PLAN_OF_TREATMENT_SECTION_LOINC_CODE = "18776-5";
-  public static final String PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY =
-      "Plan of Treatment Narrative";
+  public static final String PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY = "Plan of care note";
   public static final String IMMUNIZATION_SECTION_LOINC_CODE = "11369-6";
-  public static final String IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY = "Immunizations Narrative";
+  public static final String IMMUNIZATION_SECTION_LOINC_CODE_DISPLAY =
+      "History of Immunization Narrative";
   public static final String PROCEDURE_SECTION_LOINC_CODE = "47519-4";
-  public static final String PROCEDURE_SECTION_LOINC_CODE_DISPLAY = "Procedure Section Narrative";
+  public static final String PROCEDURE_SECTION_LOINC_CODE_DISPLAY =
+      "History of Procedures Document";
   public static final String VITAL_SIGNS_SECTION_LOINC_CODE = "8716-3";
-  public static final String VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY = "Vital Signs Narrative";
+  public static final String VITAL_SIGNS_SECTION_LOINC_CODE_DISPLAY = "Vital signs";
   public static final String SOCIAL_HISTORY_SECTION_LOINC_CODE = "29762-2";
   public static final String SOCIAL_HISTORY_SECTION_LOINC_CODE_DISPLAY = "Social History Narrative";
   public static final String PREGNANCY_SECTION_LOINC_CODE = "90767-5";

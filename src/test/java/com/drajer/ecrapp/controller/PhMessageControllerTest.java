@@ -3,8 +3,9 @@ package com.drajer.ecrapp.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.drajer.bsa.controller.PhMessageController;
 import com.drajer.bsa.model.PublicHealthMessage;
-import com.drajer.ecrapp.service.PhMessageService;
+import com.drajer.bsa.service.PhMessageService;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;

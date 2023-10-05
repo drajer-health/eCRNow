@@ -3,6 +3,7 @@ package com.drajer.ecrapp.dao.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
+import com.drajer.bsa.dao.impl.PhMessageDaoImpl;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
