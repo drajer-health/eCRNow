@@ -147,7 +147,7 @@
 </code>
 <statusCode code="completed"/>
 <effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST" nullFlavor="NI"/>
+<value xsi:type="ST">No Value</value>
 </observation>
 </component>
 </organizer>
@@ -258,13 +258,13 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="Observation/a-11287.inptlabobservation-601/_history/73079797"/>
-<code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
+<code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
 <reference value="#labTestName7"/>
 </originalText>
 </code>
 <statusCode code="completed"/>
 <effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST" nullFlavor="NI"/>
+<value xsi:type="ST">No Value</value>
 </observation>
 </component>
 </organizer>
@@ -280,13 +280,13 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.2"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="Observation/a-11287.inptlabobservation-601/_history/73079797"/>
-<code code="363905002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Details of alcohol drinking behavior (observable entity)"><originalText>
+<code code="94308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"><originalText>
 <reference value="#labTestName8"/>
 </originalText>
 </code>
 <statusCode code="completed"/>
 <effectiveTime nullFlavor="NI"/>
-<value xsi:type="ST" nullFlavor="NI"/>
+<value xsi:type="ST">No Value</value>
 </observation>
 </component>
 </organizer>
