@@ -1,8 +1,8 @@
-package com.drajer.ecrapp.service.impl;
+package com.drajer.bsa.service.impl;
 
+import com.drajer.bsa.dao.PhMessageDao;
 import com.drajer.bsa.model.PublicHealthMessage;
-import com.drajer.ecrapp.dao.PhMessageDao;
-import com.drajer.ecrapp.service.PhMessageService;
+import com.drajer.bsa.service.PhMessageService;
 import com.drajer.sof.model.PublicHealthMessageData;
 import java.util.List;
 import java.util.Map;

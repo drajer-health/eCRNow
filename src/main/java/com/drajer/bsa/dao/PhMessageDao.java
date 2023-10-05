@@ -1,4 +1,4 @@
-package com.drajer.ecrapp.dao;
+package com.drajer.bsa.dao;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.sof.model.PublicHealthMessageData;

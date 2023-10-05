@@ -99,20 +99,6 @@ public class CreateReport extends BsaAction {
             logger.info("Getting Report Creator for: {}", ct);
             ReportCreator rc = ReportCreator.getReportCreator(ct.asStringValue());
 
-            /* if(data.getFhirInputDataByType() != null) {
-            	logger.info(" Resources By Type {}", data.getFhirInputDataByType().size());
-
-            	for(Map.Entry<ResourceType, Set<Resource>> ent: data.getFhirInputDataByType().entrySet()) {
-
-            		Set<Resource> inputResources = ent.getValue();
-
-            		if(inputResources != null) {
-            			resources.addAll(inputResources);
-            		}
-
-            	}
-            }*/
-
             if (rc != null) {
 
               logger.info("Start creating report");
@@ -240,7 +226,11 @@ public class CreateReport extends BsaAction {
           msg.setKarUniqueId(kd.getKar().getVersionUniqueId());
 
           // Update Version and Matched Trigger Status
-          msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
+          if (kd.getPhm() != null) {
+            msg.setSubmittedVersionNumber(kd.getPhm().getSubmittedVersionNumber() + 1);
+          } else {
+            msg.setSubmittedVersionNumber(phDao.getMaxVersionId(msg) + 1);
+          }
           msg.setTriggerMatchStatus(
               BsaServiceUtils.getEncodedTriggerMatchStatus(
                   kd.getCurrentTriggerMatchStatus(), kd, docRef.getId()));

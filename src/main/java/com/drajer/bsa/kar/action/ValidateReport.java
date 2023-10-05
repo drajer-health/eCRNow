@@ -173,7 +173,7 @@ public class ValidateReport extends BsaAction {
 
       outcome
           .addIssue()
-          .setSeverity(OperationOutcome.IssueSeverity.ERROR)
+          .setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR)
           .setDiagnostics(
               "Failed to parse request body as JSON resource. Error was: {}" + e.getMessage());
     }

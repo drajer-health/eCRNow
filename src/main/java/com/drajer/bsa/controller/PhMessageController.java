@@ -1,7 +1,7 @@
-package com.drajer.ecrapp.controller;
+package com.drajer.bsa.controller;
 
 import com.drajer.bsa.model.PublicHealthMessage;
-import com.drajer.ecrapp.service.PhMessageService;
+import com.drajer.bsa.service.PhMessageService;
 import com.drajer.sof.model.PublicHealthMessageData;
 import java.util.ArrayList;
 import java.util.HashMap;

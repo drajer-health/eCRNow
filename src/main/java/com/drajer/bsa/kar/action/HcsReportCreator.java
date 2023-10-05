@@ -1,7 +1,6 @@
 package com.drajer.bsa.kar.action;
 
 import com.drajer.bsa.ehr.service.EhrQueryService;
-import com.drajer.bsa.kar.action.EcrReportCreator.SectionTypeEnum;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
@@ -27,8 +27,12 @@ import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.CompositionStatus;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
+import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Immunization;
@@ -37,6 +41,7 @@ import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.MessageHeader.MessageDestinationComponent;
 import org.hl7.fhir.r4.model.MessageHeader.MessageSourceComponent;
 import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -61,42 +66,49 @@ public class HcsReportCreator extends ReportCreator {
   public static final String BUNDLE_REL_URL = "Bundle/";
   public static final String MESSAGE_HEADER_PROFILE =
       "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-messageheader";
+  public static final String SENDER_ORG_PROFILE =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-organization";
   public static final String MESSAGE_TYPE =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-messageheader-message-types";
   public static final String NAMED_EVENT_URL =
       "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-triggerdefinition-namedevents";
-  public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
-      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
-  public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
   public static final String HCS_REPORTING_BUNDLE =
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-reporting-bundle";
   public static final String HCS_CONTENT_BUNDLE =
       "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-content-bundle";
+  public static final String HCS_COMPOSITION =
+      "http://hl7.org/fhir/us/health-care-surveys-reporting/StructureDefinition/hcs-composition";
 
   private static final String HCS_REPORT_LOINC_CODE = "75619-7";
-  private static final String HCS_REPORT_LOINC_CODE_SYSTEM = "http://loinc.org";
-  public static final String HCS_REPORT_LOINC_CODE_DISPLAY_NAME = "Healthcare Survey Report";
+  public static final String HCS_REPORT_TITLE = "Health Care Survey Report";
   private static final String VERSION_NUM_URL =
       "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber";
   private static final String DEVICE_NAME = "eCRNow/Backend Service App";
+  public static final String REPORT_INITIATION_TYPE_EXT_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-report-initiation-type";
+  public static final String REPORT_INITIATION_TYPE_CODE_SYSTEM_URL =
+      "http://hl7.org/fhir/us/medmorph/CodeSystem/us-ph-report-initiation-types";
+  public static final String REPORT_INITIATION_TYPE_CODE = "subscription-notification";
+  public static final String MESSAGE_SIGNIFICANCE_CATEGORY =
+      "http://hl7.org/fhir/ValueSet/message-significance-category";
 
   public enum SectionTypeEnum {
-    CHIEF_COMPLAINT,
-    HISTORY_OF_PRESENT_ILLNESS,
-    REVIEW_OF_SYSTEMS,
+    REASON_FOR_VISIT,
+    ALLERGIES,
     PROBLEM,
-    MEDICAL_HISTORY,
     MEDICATION_ADMINISTERED,
+    ADMISSION_MEDICATIONS,
+    MEDICATIONS,
     RESULTS,
+    NOTES,
     PLAN_OF_TREATMENT,
-    SERVICE_REQUEST,
     IMMUNIZATIONS,
     PROCEDURES,
     VITAL_SIGNS,
     SOCIAL_HISTORY,
-    PREGNANCY,
-    REPORTABILITY_RESPONSE,
-    EMERGENCY_OUTBREAK_SECTION
+    MEDICAL_EQUIPMENT,
+    CARE_TEAM,
+    GOAL
   }
 
   @Override
@@ -115,7 +127,7 @@ public class HcsReportCreator extends ReportCreator {
       String id,
       String profile,
       BsaAction act) {
-    // Create the report as needed by the Ecr FHIR IG
+    // Create the report as needed by the HCS FHIR IG
     Bundle returnBundle = new Bundle();
 
     logger.info("Creating report for {}", kd.getKar().getKarId());
@@ -128,9 +140,23 @@ public class HcsReportCreator extends ReportCreator {
 
     // Create the Content Bundle.
     Bundle contentBundle = createContentBundle(kd, ehrService, id, profile);
+    BundleEntryComponent contentBundlebec = new BundleEntryComponent().setResource(contentBundle);
+    contentBundlebec.setFullUrl(
+        StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
+            + "/"
+            + contentBundle.getResourceType().toString()
+            + "/"
+            + contentBundle.getIdElement().getIdPart());
 
     // Create the Message Header resource.
     MessageHeader header = createMessageHeader(kd);
+    BundleEntryComponent headerbec = new BundleEntryComponent().setResource(header);
+    headerbec.setFullUrl(
+        StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
+            + "/"
+            + header.getResourceType().toString()
+            + "/"
+            + header.getIdElement().getIdPart());
 
     Organization sender = createSender(kd);
 
@@ -142,13 +168,23 @@ public class HcsReportCreator extends ReportCreator {
     header.setFocus(refs);
 
     // Reference the sender.
-    header.setSender(referenceTo(sender));
+    header.setSender(getFullReference(sender, kd.getHealthcareSetting().getFhirServerBaseURL()));
 
     // Add the Message Header Resource
-    returnBundle.addEntry(new BundleEntryComponent().setResource(header));
+    returnBundle.addEntry(headerbec);
 
     // Add the Content Bundle.
-    returnBundle.addEntry(new BundleEntryComponent().setResource(contentBundle));
+    returnBundle.addEntry(contentBundlebec);
+
+    // Add additional resources to the content bundle
+    Set<Resource> resourcesTobeAdded = new HashSet<>();
+    resourcesTobeAdded.add(sender);
+    addResourcesToBundle(kd, contentBundle, resourcesTobeAdded);
+
+    // Add sender to the outer bundle also to resolve the reference issue
+    resourcesTobeAdded.clear();
+    resourcesTobeAdded.add(sender);
+    addResourcesToBundle(kd, returnBundle, resourcesTobeAdded);
 
     return returnBundle;
   }
@@ -159,12 +195,61 @@ public class HcsReportCreator extends ReportCreator {
     return ref;
   }
 
+  public Reference getFullReference(Resource res, String baseUrl) {
+
+    Reference ref = new Reference();
+    ref.setReference(baseUrl + "/" + res.fhirType() + "/" + res.getIdElement().getIdPart());
+
+    return ref;
+  }
+
   public Organization createSender(KarProcessingData kd) {
+
     HealthcareSetting hs = kd.getHealthcareSetting();
-    Organization org = new Organization();
-    org.setId(UUID.randomUUID().toString());
-    org.setName(hs.getOrgName());
-    org.addIdentifier().setSystem(hs.getOrgIdSystem()).setValue(hs.getOrgId());
+    Organization org = null;
+
+    if (kd.getNotificationContext().getNotificationResourceType()
+        == ResourceType.Encounter.toString()) {
+
+      org = new Organization();
+      org.setId(UUID.randomUUID().toString());
+      // org.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, SENDER_ORG_PROFILE));
+      org.setName(hs.getOrgName());
+      org.setActive(true);
+
+      List<ContactPoint> cts = new ArrayList<>();
+      ContactPoint ct = new ContactPoint();
+      ct.setUse(ContactPointUse.WORK);
+      ct.setSystem(ContactPointSystem.EMAIL);
+      ct.setValue("+1-777-555-1111");
+      cts.add(ct);
+      org.setTelecom(cts);
+
+      Address addr = new Address();
+      addr.setCountry("US");
+      org.addAddress();
+      org.addIdentifier().setSystem(hs.getOrgIdSystem()).setValue(hs.getOrgId());
+    } else {
+
+      org = new Organization();
+      org.setId(UUID.randomUUID().toString());
+      org.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, SENDER_ORG_PROFILE));
+      org.setName(hs.getOrgName());
+      org.setActive(true);
+
+      List<ContactPoint> cts = new ArrayList<>();
+      ContactPoint ct = new ContactPoint();
+      ct.setUse(ContactPointUse.WORK);
+      ct.setSystem(ContactPointSystem.EMAIL);
+      ct.setValue("+1-777-555-1111");
+      cts.add(ct);
+      org.setTelecom(cts);
+
+      Address addr = new Address();
+      addr.setCountry("US");
+      org.addAddress(addr);
+      org.addIdentifier().setSystem(hs.getOrgIdSystem()).setValue(hs.getOrgId());
+    }
 
     return org;
   }
@@ -177,13 +262,17 @@ public class HcsReportCreator extends ReportCreator {
     header.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, MESSAGE_HEADER_PROFILE));
 
     // Add extensions
-    Extension ext = new Extension();
-    ext.setUrl(MESSAGE_PROCESSING_CATEGORY_EXT_URL);
-    StringType st = new StringType();
-    st.setValue(MESSAGE_PROCESSING_CATEGORY_CODE);
-    ext.setValue(st);
+    Extension ext2 = new Extension();
+    ext2.setUrl(REPORT_INITIATION_TYPE_EXT_URL);
+    CodeableConcept rptCd = new CodeableConcept();
+    Coding rptCoding = new Coding();
+    rptCoding.setCode(REPORT_INITIATION_TYPE_CODE);
+    rptCoding.setSystem(REPORT_INITIATION_TYPE_CODE_SYSTEM_URL);
+    rptCd.addCoding(rptCoding);
+    ext2.setValue(rptCd);
+
     List<Extension> exts = new ArrayList<>();
-    exts.add(ext);
+    exts.add(ext2);
 
     header.setExtension(exts);
 
@@ -201,7 +290,6 @@ public class HcsReportCreator extends ReportCreator {
       mdc.setEndpoint(i.asStringValue());
       mdcs.add(mdc);
     }
-
     header.setDestination(mdcs);
 
     // Set source.
@@ -226,17 +314,34 @@ public class HcsReportCreator extends ReportCreator {
     Bundle returnBundle = new Bundle();
 
     returnBundle.setId(UUID.randomUUID().toString());
-    returnBundle.setType(BundleType.DOCUMENT);
+    returnBundle.setType(BundleType.COLLECTION);
+    returnBundle.setTimestamp(Date.from(Instant.now()));
     returnBundle.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, HCS_CONTENT_BUNDLE));
 
     logger.info(" Creating Composition Resource ");
     Set<Resource> resourcesTobeAdded = new HashSet<>();
     Composition comp = createComposition(kd, resourcesTobeAdded);
 
-    returnBundle.addEntry(new BundleEntryComponent().setResource(comp));
+    BundleEntryComponent bec = new BundleEntryComponent().setResource(comp);
+    bec.setFullUrl(
+        StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
+            + "/"
+            + comp.getResourceType().toString()
+            + "/"
+            + comp.getIdElement().getIdPart());
+    returnBundle.addEntry(bec);
+
+    addResourcesToBundle(kd, returnBundle, resourcesTobeAdded);
+
+    return returnBundle;
+  }
+
+  public void addResourcesToBundle(
+      KarProcessingData kd, Bundle b, Set<Resource> resourcesTobeAdded) {
 
     for (Resource res : resourcesTobeAdded) {
 
+      removeExtensions(res);
       BundleEntryComponent bec = new BundleEntryComponent();
       bec.setResource(res);
       bec.setFullUrl(
@@ -246,16 +351,15 @@ public class HcsReportCreator extends ReportCreator {
               + "/"
               + res.getIdElement().getIdPart());
 
-      returnBundle.addEntry(bec);
+      b.addEntry(bec);
     }
-
-    return returnBundle;
   }
 
   public Composition createComposition(KarProcessingData kd, Set<Resource> resTobeAdded) {
 
     Composition comp = new Composition();
     comp.setId(UUID.randomUUID().toString());
+    comp.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, HCS_COMPOSITION));
 
     // Add clinical document version number extension.
     comp.setExtension(getExtensions());
@@ -272,8 +376,8 @@ public class HcsReportCreator extends ReportCreator {
     comp.setType(
         FhirGeneratorUtils.getCodeableConcept(
             FhirGeneratorConstants.LOINC_CS_URL,
-            FhirGeneratorConstants.COMP_TYPE_CODE,
-            FhirGeneratorConstants.COMP_TYPE_CODE_DISPLAY));
+            FhirGeneratorConstants.HCS_COMP_TYPE_CODE,
+            FhirGeneratorConstants.HCS_COMP_TYPE_CODE_DISPLAY));
 
     // Set Patient
     Set<Resource> patients = kd.getResourcesByType(ResourceType.Patient.toString());
@@ -281,6 +385,8 @@ public class HcsReportCreator extends ReportCreator {
 
       logger.info(" Setting up the patient for the composition ");
       Resource patient = patients.iterator().next();
+
+      removeExtensions(patient);
 
       comp.getSubject().setResource(patient);
       resTobeAdded.add(patient);
@@ -296,7 +402,8 @@ public class HcsReportCreator extends ReportCreator {
 
       logger.info(" Setting up the patient for the composition ");
       Resource encounter = encounters.iterator().next();
-      comp.getEncounter().setResource(encounters.iterator().next());
+      removeExtensions(encounter);
+      comp.getEncounter().setResource(encounter);
       resTobeAdded.add(encounter);
 
     } else {
@@ -314,7 +421,7 @@ public class HcsReportCreator extends ReportCreator {
     if (practs != null && !practs.isEmpty()) resTobeAdded.addAll(practs);
 
     // Add title
-    comp.setTitle(HCS_REPORT_LOINC_CODE);
+    comp.setTitle(HCS_REPORT_TITLE);
 
     // Add Organization
     Organization org = ReportCreationUtilities.getOrganization(kd);
@@ -329,36 +436,49 @@ public class HcsReportCreator extends ReportCreator {
     // Add sections
     List<SectionComponent> scs = new ArrayList<>();
 
-    // Add chief complaint section.
-    SectionComponent sc = getSection(SectionTypeEnum.CHIEF_COMPLAINT, kd);
-    if (sc != null) scs.add(sc);
+    SectionComponent sc = null;
 
-    // Add History of Present Illness section.
-    sc = getSection(SectionTypeEnum.HISTORY_OF_PRESENT_ILLNESS, kd);
+    // Add reason for visit section
+    sc = getSection(SectionTypeEnum.REASON_FOR_VISIT, kd);
     if (sc != null) scs.add(sc);
-
-    // Add Review of Systems Section
-    sc = getSection(SectionTypeEnum.REVIEW_OF_SYSTEMS, kd);
-    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Encounter, kd, sc, resTobeAdded);
 
     // Add Problem section.
     sc = getSection(SectionTypeEnum.PROBLEM, kd);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Condition, kd, sc, resTobeAdded);
 
-    // Add Past Medical History section.
-    sc = getSection(SectionTypeEnum.MEDICAL_HISTORY, kd);
+    // Add Allergies section.
+    sc = getSection(SectionTypeEnum.ALLERGIES, kd);
     if (sc != null) scs.add(sc);
+    addEntries(ResourceType.AllergyIntolerance, kd, sc, resTobeAdded);
 
     // Add Medications Administered section.
     sc = getSection(SectionTypeEnum.MEDICATION_ADMINISTERED, kd);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.MedicationAdministration, kd, sc, resTobeAdded);
 
+    // Add Medications Section
+    sc = getSection(SectionTypeEnum.MEDICATIONS, kd);
+    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
+
+    // Add Admission Medications Section
+    /*    sc = getSection(SectionTypeEnum.ADMISSION_MEDICATIONS, kd);
+        if (sc != null) scs.add(sc);
+        // No way to figure out admission medications currently
+        // addEntries(ResourceType.MedicationStatement, kd, sc, resTobeAdded);
+    */
     // Add Results section.
     sc = getSection(SectionTypeEnum.RESULTS, kd);
     if (sc != null) scs.add(sc);
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+
+    // Add Notes section.
+    sc = getSection(SectionTypeEnum.NOTES, kd);
+    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.DocumentReference, kd, sc, resTobeAdded);
+    addEntries(ResourceType.DiagnosticReport, kd, sc, resTobeAdded);
 
     // Add Plan Of Treatment section.
     sc = getSection(SectionTypeEnum.PLAN_OF_TREATMENT, kd);
@@ -382,17 +502,24 @@ public class HcsReportCreator extends ReportCreator {
     addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
 
     // Add Social History section.
-    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
+    /*    sc = getSection(SectionTypeEnum.SOCIAL_HISTORY, kd);
     if (sc != null) scs.add(sc);
-    addEntries(ResourceType.Observation, kd, sc, resTobeAdded);
+    addEntries(ResourceType.Observation, kd, sc, resTobeAdded); */
 
-    // Add Pregnancy section.
-    sc = getSection(SectionTypeEnum.PREGNANCY, kd);
+    // Add Medical Equipment section.
+    sc = getSection(SectionTypeEnum.MEDICAL_EQUIPMENT, kd);
     if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Device, kd, sc, resTobeAdded);
 
-    // Add Emergency Outbreak section.
-    sc = getSection(SectionTypeEnum.EMERGENCY_OUTBREAK_SECTION, kd);
+    // Add Care Team section.
+    sc = getSection(SectionTypeEnum.CARE_TEAM, kd);
     if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Device, kd, sc, resTobeAdded);
+
+    // Add Goals section.
+    sc = getSection(SectionTypeEnum.GOAL, kd);
+    if (sc != null) scs.add(sc);
+    addEntries(ResourceType.Device, kd, sc, resTobeAdded);
 
     // Finalize the sections.
     comp.setSection(scs);
@@ -401,6 +528,18 @@ public class HcsReportCreator extends ReportCreator {
     Set<Resource> locs = kd.getResourcesByType(ResourceType.Location);
     if (locs != null && !locs.isEmpty()) {
       resTobeAdded.addAll(locs);
+    }
+
+    // Add Organizations
+    Set<Resource> orgs = kd.getResourcesByType(ResourceType.Organization);
+    if (orgs != null && !orgs.isEmpty()) {
+      resTobeAdded.addAll(orgs);
+    }
+
+    // Add Practitioners
+    Set<Resource> practitioners = kd.getResourcesByType(ResourceType.Practitioner);
+    if (practitioners != null && !practitioners.isEmpty()) {
+      resTobeAdded.addAll(practitioners);
     }
 
     return comp;
@@ -434,31 +573,13 @@ public class HcsReportCreator extends ReportCreator {
     SectionComponent sc = null;
 
     switch (st) {
-      case CHIEF_COMPLAINT:
+      case REASON_FOR_VISIT:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.CHIEF_COMPLAINT_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.CHIEF_COMPLAINT_SECTION_LOINC_CODE_DISPLAY);
-        populateChiefComplaintNarrative(sc, kd);
-        break;
-
-      case HISTORY_OF_PRESENT_ILLNESS:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
-        break;
-
-      case REVIEW_OF_SYSTEMS:
-        sc =
-            FhirGeneratorUtils.getSectionComponent(
-                FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.REVIEW_OF_SYSTEMS_SECTION_LOINC_CODE_DISPLAY);
-        populateDefaultNarrative(sc, kd);
+                FhirGeneratorConstants.REASON_FOR_VISIT_CODE,
+                FhirGeneratorConstants.REASON_FOR_VISIT_CODE_DISPLAY);
+        populateReasonForVisitNarrative(sc, kd);
         break;
 
       case PROBLEM:
@@ -470,12 +591,12 @@ public class HcsReportCreator extends ReportCreator {
         populateDefaultNarrative(sc, kd);
         break;
 
-      case MEDICAL_HISTORY:
+      case ALLERGIES:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.PAST_MEDICAL_HISTORY_SECTION_LOINC_CODE_DISPLAY);
+                FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.ALLERGIES_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
@@ -485,6 +606,24 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.MEDICATION_ADMINISTERED_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case ADMISSION_MEDICATIONS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.ADMISSION_MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case MEDICATIONS:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.MEDICATIONS_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
@@ -503,6 +642,15 @@ public class HcsReportCreator extends ReportCreator {
                 FhirGeneratorConstants.LOINC_CS_URL,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE,
                 FhirGeneratorConstants.PLAN_OF_TREATMENT_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case NOTES:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.NOTES_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
@@ -542,21 +690,30 @@ public class HcsReportCreator extends ReportCreator {
         populateDefaultNarrative(sc, kd);
         break;
 
-      case PREGNANCY:
+      case MEDICAL_EQUIPMENT:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.PREGNANCY_SECTION_LOINC_CODE_DISPLAY);
+                FhirGeneratorConstants.MEDICAL_EQUIPMENT_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.MEDICAL_EQUIPMENT_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
-      case EMERGENCY_OUTBREAK_SECTION:
+      case CARE_TEAM:
         sc =
             FhirGeneratorUtils.getSectionComponent(
                 FhirGeneratorConstants.LOINC_CS_URL,
-                FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE,
-                FhirGeneratorConstants.EMERGENCY_OUTBREAK_SECTION_LOINC_CODE_DISPLAY);
+                FhirGeneratorConstants.CARE_TEAM_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.CARE_TEAM_SECTION_LOINC_CODE_DISPLAY);
+        populateDefaultNarrative(sc, kd);
+        break;
+
+      case GOAL:
+        sc =
+            FhirGeneratorUtils.getSectionComponent(
+                FhirGeneratorConstants.LOINC_CS_URL,
+                FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE,
+                FhirGeneratorConstants.GOALS_SECTION_LOINC_CODE_DISPLAY);
         populateDefaultNarrative(sc, kd);
         break;
 
@@ -593,10 +750,10 @@ public class HcsReportCreator extends ReportCreator {
     return dev;
   }
 
-  public void populateChiefComplaintNarrative(SectionComponent sc, KarProcessingData kd) {
-    logger.info("KarProcessingData:{}", kd);
-
+  public void populateReasonForVisitNarrative(SectionComponent sc, KarProcessingData kd) {
+    logger.info(" Generating Reason For Visit Narrative");
     Narrative val = new Narrative();
+    val.setStatus(NarrativeStatus.ADDITIONAL);
     val.setDivAsString("No Information");
     sc.setText(val);
   }
@@ -605,6 +762,7 @@ public class HcsReportCreator extends ReportCreator {
     logger.info("KarProcessingData:{}", kd);
 
     Narrative val = new Narrative();
+    val.setStatus(NarrativeStatus.ADDITIONAL);
     val.setDivAsString("Not Generated automatically in this version");
     sc.setText(val);
   }
@@ -750,8 +908,36 @@ public class HcsReportCreator extends ReportCreator {
     return false;
   }
 
+  public void removeExtensions(Resource res) {
+
+    if (res instanceof DomainResource) {
+
+      DomainResource r = (DomainResource) res;
+
+      List<Extension> exts = r.getExtension();
+      List<Extension> newExts = new ArrayList<>();
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl().contains("us/core")
+            || ext.getUrl().contains("us/medmorph")
+            || ext.getUrl().contains("us/healthcare-survey")
+            || ext.getUrl().contains("us/ecr")
+            || ext.getUrl().contains("us/ph")) {
+          newExts.add(ext);
+        }
+      }
+
+      r.setExtension(newExts);
+    }
+  }
+
   public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
 
-    return ReportGenerationUtils.filterObservationsByCategory(res, category);
+    if (ObservationCategory.SOCIALHISTORY.toCode().contentEquals(category)) {
+      return ReportGenerationUtils.getSmokingStatusObservation(res);
+    } else {
+      return ReportGenerationUtils.filterObservationsByCategory(res, category);
+    }
   }
 }

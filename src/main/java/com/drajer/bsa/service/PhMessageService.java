@@ -1,4 +1,4 @@
-package com.drajer.ecrapp.service;
+package com.drajer.bsa.service;
 
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.sof.model.PublicHealthMessageData;

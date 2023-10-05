@@ -9,12 +9,8 @@ import static org.mockito.Mockito.verify;
 
 import com.drajer.bsa.controller.PhMessageController;
 import com.drajer.bsa.model.PublicHealthMessage;
-<<<<<<< HEAD
 import com.drajer.bsa.service.PhMessageService;
-=======
-import com.drajer.ecrapp.service.PhMessageService;
 import com.drajer.sof.model.PublicHealthMessageData;
->>>>>>> branch '3.1.2' of https://github.com/drajer-health/eCRNow
 import com.drajer.test.util.TestUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;

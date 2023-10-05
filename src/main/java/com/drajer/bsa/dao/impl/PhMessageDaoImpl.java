@@ -1,8 +1,8 @@
-package com.drajer.ecrapp.dao.impl;
+package com.drajer.bsa.dao.impl;
 
+import com.drajer.bsa.dao.PhMessageDao;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.ecrapp.dao.AbstractDao;
-import com.drajer.ecrapp.dao.PhMessageDao;
 import com.drajer.sof.model.PublicHealthMessageData;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

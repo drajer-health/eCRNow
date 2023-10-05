@@ -699,7 +699,7 @@ public class CdaFhirUtilities {
 
     for (Coding c : codings) {
 
-      if (c.getSystem().contentEquals(codeSystemUrl)) {
+      if (c.hasSystem() && c.getSystem().contentEquals(codeSystemUrl)) {
 
         foundCodeSystem = true;
         break;

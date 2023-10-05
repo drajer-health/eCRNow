@@ -191,7 +191,7 @@ public class KarParserImpl implements KarParser {
 
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-receiver-endpoint";
 
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";

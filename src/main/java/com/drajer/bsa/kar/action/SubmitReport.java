@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.gclient.IOperationProcessMsgMode;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
@@ -122,8 +123,9 @@ public class SubmitReport extends BsaAction {
       KnowledgeArtifactStatus artStatus =
           data.getHealthcareSetting().getArtifactStatus(art.getVersionUniqueId());
 
-      if (artStatus != null && (artStatus.getOutputFormat() == OutputContentType.CDA_R11)
-          || artStatus.getOutputFormat() == OutputContentType.CDA_R30) {
+      if (artStatus != null
+          && (artStatus.getOutputFormat() == OutputContentType.CDA_R11
+              || artStatus.getOutputFormat() == OutputContentType.CDA_R30)) {
 
         logger.info(" Submitting CDA Output ");
         submitCdaOutput(data, actStatus, data.getHealthcareSetting());
@@ -357,10 +359,15 @@ public class SubmitReport extends BsaAction {
       Object response = null;
       try {
 
-        logger.info(" Trying to invoke $process-message");
+        logger.info(" Trying to invoke $process-message to: {}", submissionEndpoint);
         response = operation.encodedJson().execute();
-        logger.info(" Response Received = ", response);
+        logger.info(" Response Received from process message ");
         responseBundle = (Bundle) response;
+      } catch (InvalidRequestException ex) {
+
+        String myResp = ex.getResponseBody();
+        logger.error(" ResponseBody : ", myResp);
+        return;
       } catch (RuntimeException re) {
 
         logger.error("Error calling $process-message endpoint", re);
