@@ -761,8 +761,8 @@ public class Dstu2CdaFhirUtilities {
 
     } else {
 
-      String start = CdaGeneratorConstants.NF_NI;
-      String end = CdaGeneratorConstants.NF_NI;
+      String start = "";
+      String end = "";
       return CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, start, end);
     }
   }
