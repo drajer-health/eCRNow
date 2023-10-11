@@ -2149,14 +2149,16 @@ public class CdaFhirUtilities {
       return "completed";
     } else if (val.equalsIgnoreCase("entered-in-error")) {
       return "nullified";
-    } else if (val.equalsIgnoreCase("stopped")) {
+    } else if (val.equalsIgnoreCase("stopped")
+        || val.equalsIgnoreCase("not-done")
+        || val.equalsIgnoreCase("ended")) {
       return "aborted";
     } else if (val.equalsIgnoreCase("on-hold")) {
       return "suspended";
     } else if (val.equalsIgnoreCase("unknown") || val.equalsIgnoreCase("draft")) {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
-      return "held";
+      return "cancelled";
     } else return "completed";
   }
 

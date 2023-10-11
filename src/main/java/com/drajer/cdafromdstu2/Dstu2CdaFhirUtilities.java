@@ -35,6 +35,7 @@ import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -894,7 +895,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (dt != null && dt.getValue() != null ) {
+    if (dt != null && dt.getValue() != null) {
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantity(
@@ -1121,7 +1122,7 @@ public class Dstu2CdaFhirUtilities {
       } else if (dt instanceof BaseQuantityDt) {
 
         QuantityDt qt = (QuantityDt) dt;
-        
+
         val += getStringForQuantity(qt);
 
         if (qt.getValueElement() != null && qt.getSystemElement() != null && qt.getUnit() != null) {
@@ -1137,26 +1138,40 @@ public class Dstu2CdaFhirUtilities {
       } else if (dt instanceof DateDt) {
 
         DateDt d = (DateDt) dt;
-        val += d.getValueAsString();
+        val +=
+            Integer.toString(d.getMonth() + 1)
+                + "-"
+                + d.getDay().toString()
+                + "-"
+                + d.getYear().toString();
 
       } else if (dt instanceof DateTimeDt) {
 
         DateTimeDt d = (DateTimeDt) dt;
-
-        val += d.getValueAsString();
+        val +=
+            Integer.toString(d.getMonth() + 1)
+                + "-"
+                + d.getDay().toString()
+                + "-"
+                + d.getYear().toString();
 
       } else if (dt instanceof PeriodDt) {
         PeriodDt pt = (PeriodDt) dt;
 
+        SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
         if (pt.getStart() != null && pt.getEnd() != null) {
-          val += pt.getStart().toString() + CdaGeneratorConstants.PIPE + pt.getEnd().toString();
+
+          val += formatter.format(pt.getStart());
+          val += "|";
+          val += formatter.format(pt.getEnd());
+
         } else if (pt.getStart() != null) {
-          val += pt.getStart().toString();
+          val += formatter.format(pt.getStart());
         }
+
       } else if (dt instanceof CodeDt) {
 
         CodeDt cd = (CodeDt) dt;
-
         val += cd.getValue();
       }
 
@@ -1538,11 +1553,26 @@ public class Dstu2CdaFhirUtilities {
 
         val.append(getStringForQuantity(qt));
 
+      } else if (dt instanceof DateDt) {
+
+        DateDt d = (DateDt) dt;
+        val.append(
+            Integer.toString(d.getMonth() + 1)
+                + "-"
+                + d.getDay().toString()
+                + "-"
+                + d.getYear().toString());
+
       } else if (dt instanceof DateTimeDt) {
 
         DateTimeDt d = (DateTimeDt) dt;
 
-        val.append(d.getValueAsString());
+        val.append(
+            Integer.toString(d.getMonth() + 1)
+                + "-"
+                + d.getDay().toString()
+                + "-"
+                + d.getYear().toString());
 
       } else if (dt instanceof TimingDt) {
 
@@ -1558,16 +1588,15 @@ public class Dstu2CdaFhirUtilities {
 
       } else if (dt instanceof PeriodDt) {
         PeriodDt pt = (PeriodDt) dt;
-
-        logger.debug("Found the Period element for creating string");
+        SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
         if (pt.getStart() != null && pt.getEnd() != null) {
-          val.append(pt.getStart().toString())
-              .append(CdaGeneratorConstants.PIPE)
-              .append(pt.getEnd().toString());
+
+          val.append(formatter.format(pt.getStart()));
+          val.append("|");
+          val.append(formatter.format(pt.getEnd()));
+
         } else if (pt.getStart() != null) {
-          val.append(pt.getStart().toString());
-        } else {
-          val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
+          val.append(formatter.format(pt.getStart()));
         }
       } else if (dt instanceof CodeDt) {
 
@@ -1609,38 +1638,35 @@ public class Dstu2CdaFhirUtilities {
   public static String getStringForQuantity(QuantityDt qt) {
 
     String val = "";
-    
+
     if (qt != null
-            && qt.getValueElement() != null
-            && (qt.getUnit() != null || 
-                qt.getCode() != null)) {
+        && qt.getValueElement() != null
+        && (qt.getUnit() != null || qt.getCode() != null)) {
 
-          String units = ((qt.getCode() != null) ? qt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
+      String units = ((qt.getCode() != null) ? qt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
 
-          if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && (qt.getUnit() != null)) {
-            units = qt.getUnit();
-          }
-          
-          String system = ((qt.getSystem() != null) ? qt.getSystemElement().getValueAsString() : "");
+      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && (qt.getUnit() != null)) {
+        units = qt.getUnit();
+      }
 
-          val +=
-              qt.getValueElement().getValueAsString()
-                  + CdaGeneratorConstants.PIPE
-                  + system
-                  + CdaGeneratorConstants.PIPE
-                  + units;
-                    
-        } else if (qt != null && (qt.getValueElement() != null)) {
-          String retVal = qt.getValueElement().getValueAsString();
-          
-          if(retVal == null)
-        	  val += CdaGeneratorConstants.UNKNOWN_VALUE;
-          else 
-        	  val += retVal;
-          
-        } else {
-          val += CdaGeneratorConstants.UNKNOWN_VALUE;
-        }
+      String system = ((qt.getSystem() != null) ? qt.getSystemElement().getValueAsString() : "");
+
+      val +=
+          qt.getValueElement().getValueAsString()
+              + CdaGeneratorConstants.PIPE
+              + system
+              + CdaGeneratorConstants.PIPE
+              + units;
+
+    } else if (qt != null && (qt.getValueElement() != null)) {
+      String retVal = qt.getValueElement().getValueAsString();
+
+      if (retVal == null) val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      else val += retVal;
+
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
 
     return val;
   }
