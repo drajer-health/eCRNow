@@ -894,7 +894,7 @@ public class Dstu2CdaFhirUtilities {
 
     StringBuilder sb = new StringBuilder(200);
 
-    if (dt != null) {
+    if (dt != null && dt.getValue() != null ) {
 
       sb.append(
           CdaGeneratorUtils.getXmlForQuantity(
@@ -1121,6 +1121,8 @@ public class Dstu2CdaFhirUtilities {
       } else if (dt instanceof BaseQuantityDt) {
 
         QuantityDt qt = (QuantityDt) dt;
+        
+        val += getStringForQuantity(qt);
 
         if (qt.getValueElement() != null && qt.getSystemElement() != null && qt.getUnit() != null) {
 
@@ -1607,21 +1609,38 @@ public class Dstu2CdaFhirUtilities {
   public static String getStringForQuantity(QuantityDt qt) {
 
     String val = "";
-
+    
     if (qt != null
-        && qt.getValueElement() != null
-        && qt.getSystemElement() != null
-        && qt.getUnit() != null) {
+            && qt.getValueElement() != null
+            && (qt.getUnit() != null || 
+                qt.getCode() != null)) {
 
-      val +=
-          qt.getValueElement().getValueAsString()
-              + CdaGeneratorConstants.PIPE
-              + qt.getSystemElement().getValueAsString()
-              + CdaGeneratorConstants.PIPE
-              + qt.getUnit();
-    } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
-    }
+          String units = ((qt.getCode() != null) ? qt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
+
+          if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && (qt.getUnit() != null)) {
+            units = qt.getUnit();
+          }
+          
+          String system = ((qt.getSystem() != null) ? qt.getSystemElement().getValueAsString() : "");
+
+          val +=
+              qt.getValueElement().getValueAsString()
+                  + CdaGeneratorConstants.PIPE
+                  + system
+                  + CdaGeneratorConstants.PIPE
+                  + units;
+                    
+        } else if (qt != null && (qt.getValueElement() != null)) {
+          String retVal = qt.getValueElement().getValueAsString();
+          
+          if(retVal == null)
+        	  val += CdaGeneratorConstants.UNKNOWN_VALUE;
+          else 
+        	  val += retVal;
+          
+        } else {
+          val += CdaGeneratorConstants.UNKNOWN_VALUE;
+        }
 
     return val;
   }
