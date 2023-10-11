@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -1855,6 +1856,17 @@ public class CdaFhirUtilities {
         StringType st = (StringType) dt;
 
         val.append(st.getValue());
+      } else if (dt instanceof BooleanType) {
+
+        BooleanType b = (BooleanType) dt;
+
+        String ret = "false";
+        if (b.getValueAsString().equalsIgnoreCase("true")) {
+
+          ret = "true";
+        }
+
+        val.append(ret);
       }
 
       logger.debug("Printing the class name {} and value {}", dt.getClass(), val);
