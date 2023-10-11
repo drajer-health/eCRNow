@@ -833,6 +833,8 @@ public class CdaGeneratorConstants {
   public static final String PROB_TABLE_COL_1_BODY_CONTENT = "problem";
   public static final String PROB_TABLE_COL_2_TITLE = "Problem Status";
   public static final String PROB_TABLE_COL_2_BODY_CONTENT = "problemStatus";
+  public static final String PROB_TABLE_COL_3_TITLE = "Problem Onset Date";
+  public static final String PROB_TABLE_COL_3_BODY_CONTENT = "problemOnsetDate";
   public static final String HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT = "historyOfPresentIllness";
   public static final String REASON_FOR_VISIT_BODY_CONTENT = "reasonForVisit";
   public static final String ALLERGY_TABLE_COL_1_TITLE = "Allergy Substance";
@@ -865,6 +867,8 @@ public class CdaGeneratorConstants {
   public static final String LABTEST_TABLE_COL_2_BODY_CONTENT = "labTestResultValue";
   public static final String LABTEST_TABLE_COL_3_TITLE = "Lab Test Result Date";
   public static final String LABTEST_TABLE_COL_3_BODY_CONTENT = "labTestResultValueDate";
+  public static final String LABTEST_TABLE_COL_4_TITLE = "Lab Test Result Interpretation";
+  public static final String LABTEST_TABLE_COL_4_BODY_CONTENT = "labTestResultValueInterpretation";
   public static final String MED_TABLE_COL_1_TITLE = "Medication Name";
   public static final String MED_TABLE_COL_1_BODY_CONTENT = "medication";
   public static final String MED_TABLE_COL_2_TITLE = "Medication Start Date";
@@ -892,6 +896,7 @@ public class CdaGeneratorConstants {
   public static final String DEVICE_TABLE_COL_2_TITLE = "Device Date";
   public static final String DEVICE_TABLE_COL_2_BODY_CONTENT = "deviceDate";
   public static final String UNKNOWN_VALUE = "Unknown";
+  public static final String NO_INTERPRETATION = "No Interpretation data";
   public static final String UNKNOWN_HISTORY_OF_PRESENT_ILLNESS =
       "Unknown History of Present Illness";
   public static final String UNKNOWN_REASON_FOR_VISIT = "Unknown Reason For Visit";

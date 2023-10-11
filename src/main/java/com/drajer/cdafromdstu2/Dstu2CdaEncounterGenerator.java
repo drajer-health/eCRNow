@@ -7,6 +7,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,12 +81,11 @@ public class Dstu2CdaEncounterGenerator {
           && encounter.getPeriod().getStartElement() != null
           && encounter.getPeriod().getStartElement().getTimeZone() != null) {
 
-        dt =
-            CdaGeneratorUtils.getStringForDateTime(
-                encounter.getPeriod().getStart(),
-                encounter.getPeriod().getStartElement().getTimeZone());
+        dt = Dstu2CdaFhirUtilities.getStringForIDataType(encounter.getPeriod());
+
       } else if (encounter.getPeriod() != null && encounter.getPeriod().getStart() != null) {
-        dt = CdaGeneratorUtils.getStringForDateTime(encounter.getPeriod().getStart(), null);
+        SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+        dt = formatter.format(encounter.getPeriod().getStart());
       } else {
         logger.error(
             " Period is either null or the Period.DateTime has a null value or null timezone value ");

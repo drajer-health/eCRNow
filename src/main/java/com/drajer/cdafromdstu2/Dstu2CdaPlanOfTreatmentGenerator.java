@@ -11,6 +11,7 @@ import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.eca.model.ActionRepo;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -91,7 +92,9 @@ public class Dstu2CdaPlanOfTreatmentGenerator {
         logger.debug("Service Date for display {} ", serviceDate);
 
         if (serviceDate.isEmpty() && dr.getIssued() != null) {
-          serviceDate = CdaGeneratorUtils.getStringForDateTime(dr.getIssued(), null);
+
+          SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+          serviceDate = formatter.format(dr.getIssued());
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<>();

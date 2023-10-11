@@ -6,6 +6,7 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.LaunchDetails;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,7 +81,8 @@ public class Dstu2CdaImmunizationGenerator {
 
         String dt = null;
         if (imm.getDate() != null) {
-          dt = imm.getDate().toString();
+          SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+          dt = formatter.format(imm.getDate());
         }
 
         Map<String, String> bodyvals = new LinkedHashMap<String, String>();

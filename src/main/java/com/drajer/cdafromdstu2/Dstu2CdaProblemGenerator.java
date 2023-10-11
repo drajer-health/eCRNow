@@ -69,6 +69,7 @@ public class Dstu2CdaProblemGenerator {
       List<String> list = new ArrayList<String>();
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.PROB_TABLE_COL_3_TITLE);
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
               list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
@@ -104,6 +105,12 @@ public class Dstu2CdaProblemGenerator {
               CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
               CdaGeneratorConstants.TABLE_RESOLVED_STATUS);
         }
+
+        String probDate = CdaGeneratorConstants.UNKNOWN_VALUE;
+        if (prob.getOnset() != null) {
+          probDate = Dstu2CdaFhirUtilities.getStringForIDataType(prob.getOnset());
+        }
+        bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_3_BODY_CONTENT, probDate);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum; // TODO: ++rowNum or rowNum++

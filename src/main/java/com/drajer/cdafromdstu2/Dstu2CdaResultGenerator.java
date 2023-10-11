@@ -70,6 +70,7 @@ public class Dstu2CdaResultGenerator {
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
       list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
+      list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_4_TITLE);
       hsb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
               list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
@@ -113,6 +114,21 @@ public class Dstu2CdaResultGenerator {
           dt = Dstu2CdaFhirUtilities.getStringForIDataType(obs.getEffective());
         }
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
+
+        String interpret = CdaGeneratorConstants.NO_INTERPRETATION;
+        if (obs.getInterpretation() != null) {
+
+          if (!StringUtils.isEmpty(obs.getInterpretation().getText())) {
+            interpret = obs.getInterpretation().getText();
+          } else if (obs.getInterpretation().getCoding() != null
+              && (obs.getInterpretation().getCoding().size() > 0)) {
+
+            CodingDt cd = obs.getInterpretation().getCodingFirstRep();
+
+            interpret = Dstu2CdaFhirUtilities.getStringForCoding(cd);
+          }
+        }
+        bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_4_BODY_CONTENT, interpret);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
 

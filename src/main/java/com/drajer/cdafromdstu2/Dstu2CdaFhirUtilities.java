@@ -1125,16 +1125,6 @@ public class Dstu2CdaFhirUtilities {
 
         val += getStringForQuantity(qt);
 
-        if (qt.getValueElement() != null && qt.getSystemElement() != null && qt.getUnit() != null) {
-
-          val +=
-              qt.getValueElement().getValueAsString()
-                  + CdaGeneratorConstants.PIPE
-                  + qt.getSystemElement().getValueAsString()
-                  + CdaGeneratorConstants.PIPE
-                  + qt.getUnit();
-        }
-
       } else if (dt instanceof DateDt) {
 
         DateDt d = (DateDt) dt;
@@ -1649,14 +1639,7 @@ public class Dstu2CdaFhirUtilities {
         units = qt.getUnit();
       }
 
-      String system = ((qt.getSystem() != null) ? qt.getSystemElement().getValueAsString() : "");
-
-      val +=
-          qt.getValueElement().getValueAsString()
-              + CdaGeneratorConstants.PIPE
-              + system
-              + CdaGeneratorConstants.PIPE
-              + units;
+      val += qt.getValueElement().getValueAsString() + CdaGeneratorConstants.PIPE + units;
 
     } else if (qt != null && (qt.getValueElement() != null)) {
       String retVal = qt.getValueElement().getValueAsString();
