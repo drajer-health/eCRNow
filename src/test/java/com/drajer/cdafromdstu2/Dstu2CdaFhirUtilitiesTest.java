@@ -117,6 +117,6 @@ public class Dstu2CdaFhirUtilitiesTest {
 
     String result3 = Dstu2CdaFhirUtilities.getStringForIDataType(p);
 
-    assertTrue(result.equalsIgnoreCase(exResult2));
+    assertTrue(result3.equalsIgnoreCase(exResult2));
   }
 }
