@@ -22,6 +22,16 @@ public interface PhMessageService {
   List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams);
 
   /**
+   * The method is used to retrieve phmessage data Summary by search parameters.
+   *
+   * @param searchParams - The supported parameters currently are
+   *     fhirServerBaseUrl,patientId,encounterId,xRequestId,submittedDataId,version,
+   *     responsDataId,responseProcessingInstruction,notifiedResourceId,notifiedResourceType,karUniqueId,responsDataId.
+   * @return
+   */
+  List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams);
+
+  /**
    * Retrieves a list of PublicHealthMessage objects based on the provided XRequest IDs.
    *
    * @param xRequestIds A list of XRequest IDs to filter the PublicHealthMessage data.

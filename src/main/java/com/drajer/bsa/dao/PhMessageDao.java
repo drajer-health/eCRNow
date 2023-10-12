@@ -9,6 +9,8 @@ public interface PhMessageDao {
 
   List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams);
 
+  List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams);
+
   List<PublicHealthMessage> getPhMessageByXRequestIds(List<String> xRequestId);
 
   List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds);
