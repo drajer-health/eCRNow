@@ -26,6 +26,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/create_hibernate_sequence.sql
   - include:
+      file: db/changelog/changes/alter_kar_info.sql
+  - include:
       file: db/changelog/changes/alter_healthcare_setting.sql
   - include:
       file: db/changelog/changes/alter_notification_context.sql

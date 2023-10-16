@@ -28,6 +28,7 @@ public class HibernateConfiguration {
 	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setDataSource(dataSource());
+		liquibase();
 		sessionFactory.setPackagesToScan("com.drajer.ersd.model", "com.drajer.sof.model", "com.drajer.eca.model",
 				"com.drajer.ecrapp.model", "com.drajer.bsa.model", "com.drajer.bsa.kar.model");
 		sessionFactory.setHibernateProperties(hibernateProperties());

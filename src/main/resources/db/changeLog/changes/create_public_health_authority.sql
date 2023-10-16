@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS public_health_authority
 (
     id INT PRIMARY KEY,
     auth_type varchar(255) NOT NULL,
-    clientid varchar(255) NOT NULL,
-    clientsecret varchar(255),
+    clientId varchar(255) NOT NULL,
+    clientSecret varchar(255),
     fhir_server_base_url varchar(255) NOT NULL,
     fhir_version varchar(255),
     last_updated_ts timestamp NOT NULL,
