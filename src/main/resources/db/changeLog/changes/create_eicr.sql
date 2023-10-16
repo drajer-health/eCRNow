@@ -1,0 +1,25 @@
+CREATE TABLE IF NOT EXISTS eicr
+(
+    id  INT PRIMARY KEY,
+    doc_version integer,
+    ehr_doc_ref_id varchar(255),
+    eicr_data varchar(255),
+    eicr_doc_id varchar(255),
+    eicr_proc_status varchar(255),
+    encounter_id varchar(255),
+    fhir_server_url varchar(255),
+    initiating_action varchar(255),
+    last_updated_ts timestamp NOT NULL,
+    launch_details_id integer,
+    launch_patient_id varchar(255),
+    provider_uuid varchar(255),
+    rr_data varchar(255),
+    response_doc_id varchar(255),
+    response_type varchar(255),
+    response_type_display varchar(255),
+    response_x_request_id varchar(255),
+    rr_proc_status varchar(255),
+    set_id varchar(255),
+    x_correlation_id varchar(255),
+    x_req_id varchar(255)
+);

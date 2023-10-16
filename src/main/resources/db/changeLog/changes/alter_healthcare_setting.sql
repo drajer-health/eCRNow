@@ -1,0 +1,1 @@
+ALTER TABLE healthcare_setting ADD COLUMN debug_enabled BOOLEAN;
