@@ -856,10 +856,15 @@ public class KarProcessingData {
     }
   }
 
-  public boolean containsResourceWithId(String resourceId) {
+  public boolean containsResourceWithId(String resourceId, ResourceType type) {
 
-    if (resourcesById.containsKey(resourceId)) {
-      return true;
-    } else return false;
+    if (resourcesById.containsKey(type)) {
+      if (resourcesById.get(type).containsKey(resourceId)) {
+        logger.debug(" Found resource Id for type {} and id {}", type, resourceId);
+        return true;
+      }
+    }
+
+    return false;
   }
 }

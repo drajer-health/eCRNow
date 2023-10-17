@@ -805,7 +805,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<given qualifier=\"PR\">Jill</given>\r\n"
             + "<family>Test</family>\r\n"
             + "</name>\r\n"
-            + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\"/>\r\n"
+            + "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>\r\n"
             + "<birthTime value=\"20201027\"/>\r\n"
             + "<sdtc:deceasedInd value=\"false\"/>\r\n"
             + "<maritalStatusCode code=\"S\" codeSystem=\"2.16.840.1.113883.5.2\" codeSystemName=\"v3-MaritalStatus\" displayName=\"Never Married\"/>\r\n"

@@ -1687,11 +1687,14 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     Map<String, String> testData = new HashMap<>();
     testData.put(
-        "male", "<administrativeGenderCode code=\"M\" codeSystem=\"2.16.840.1.113883.5.1\"/>");
+        "male",
+        "<administrativeGenderCode code=\"M\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"male\"/>");
     testData.put(
-        "female", "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\"/>");
+        "female",
+        "<administrativeGenderCode code=\"F\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"female\"/>");
     testData.put(
-        "other", "<administrativeGenderCode code=\"UN\" codeSystem=\"2.16.840.1.113883.5.1\"/>");
+        "other",
+        "<administrativeGenderCode code=\"UN\" codeSystem=\"2.16.840.1.113883.5.1\" codeSystemName=\"HL7AdministrativeGenderCode\" displayName=\"unknown\"/>");
 
     for (Map.Entry<String, String> entry : testData.entrySet()) {
       String actualXml =

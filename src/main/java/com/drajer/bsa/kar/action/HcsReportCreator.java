@@ -930,6 +930,45 @@ public class HcsReportCreator extends ReportCreator {
 
       r.setExtension(newExts);
     }
+
+    // remove observation extensions
+    if (res instanceof Observation) {
+
+      Observation obs = (Observation) res;
+
+      if (obs.hasPerformer()) {
+
+        List<Reference> perfs = obs.getPerformer();
+
+        List<Extension> newExts = new ArrayList<>();
+        for (Reference perfRef : perfs) {
+          newExts.clear();
+          if (perfRef.hasExtension()) {
+
+            List<Extension> existingExts = perfRef.getExtension();
+            logger.info(" Existing Exts {} ", existingExts.size());
+            Boolean found = false;
+
+            for (Extension e : existingExts) {
+
+              if (!found
+                  && e.getUrl()
+                      .contentEquals(
+                          "http://hl7.org/fhir/StructureDefinition/event-performerFunction")) {
+                newExts.add(e);
+                found = true;
+              } else if (!e.getUrl()
+                  .contentEquals(
+                      "http://hl7.org/fhir/StructureDefinition/event-performerFunction")) {
+                newExts.add(e);
+              }
+            }
+            logger.info(" New Exts {} ", newExts.size());
+            perfRef.setExtension(newExts);
+          }
+        }
+      }
+    }
   }
 
   public Set<Resource> filterObservationsByCategory(Set<Resource> res, String category) {
