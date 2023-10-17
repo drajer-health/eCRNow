@@ -21,9 +21,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Value("${token.validator.class}")
   private String tokenFilterClassName;
-  
-  @Autowired
-  ApplicationContext applicationContext;
+
+  @Autowired ApplicationContext applicationContext;
 
   @Override
   public void configure(WebSecurity web) throws Exception {
@@ -39,11 +38,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       logger.info("Token Filter class Name is not empty");
       Class<?> classInstance = Class.forName(tokenFilterClassName);
       logger.info(classInstance.getDeclaredMethods()[0].getName());
-      Filter customFilter = (Filter) applicationContext.getAutowireCapableBeanFactory().autowire(classInstance,1,true);
+      Filter customFilter =
+          (Filter)
+              applicationContext.getAutowireCapableBeanFactory().autowire(classInstance, 1, true);
       http.csrf()
           .disable()
-          .addFilterAfter(
-              customFilter, UsernamePasswordAuthenticationFilter.class)
+          .addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
           .authorizeRequests()
           .antMatchers("/api/**")
           .permitAll()
@@ -54,5 +54,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       http.csrf().disable().authorizeRequests().anyRequest().permitAll();
     }
   }
-
 }
