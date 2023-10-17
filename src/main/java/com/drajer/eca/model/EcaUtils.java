@@ -15,6 +15,7 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.ecrapp.util.MDCUtils;
+import com.drajer.ersd.temp.ValueSetSingletonTemp;
 import com.drajer.sof.model.Dstu2FhirData;
 import com.drajer.sof.model.FhirData;
 import com.drajer.sof.model.LaunchDetails;
@@ -113,6 +114,7 @@ public class EcaUtils {
       logger.debug(
           "Total # of {} Codes in Trigger Code Value Set for matching for Emergent Reporting",
           codesToMatchAgainst.size());
+
     } else {
 
       codesToMatchAgainst =
@@ -128,6 +130,10 @@ public class EcaUtils {
 
       logger.info("Number of Matched Codes = {}", intersection.size());
 
+      for (String matchCode : intersection) {
+        logger.info("Matched Code = {}", matchCode);
+      }
+
       state.getMatchTriggerStatus().setTriggerMatchStatus(true);
       matchfound = true;
 
@@ -142,7 +148,45 @@ public class EcaUtils {
 
       logger.info("No Matched codes found for : {}", ad.getPath());
     }
+
+    logMatchCodesForTempERSD(ad, codesToMatch);
+
     return matchfound;
+  }
+
+  private static void logMatchCodesForTempERSD(ActionData ad, Set<String> codesToMatch) {
+    Set<String> codesToMatchAgainstEmergent =
+        ValueSetSingletonTemp.getInstance().getEmergentValueSetsAsStringForGrouper(ad.getPath());
+    Set<String> codesToMatchAgainstFullEicr =
+        ValueSetSingletonTemp.getInstance().getValueSetsAsStringForGrouper(ad.getPath());
+
+    if (codesToMatchAgainstEmergent != null) {
+      Set<String> intersectionTemp =
+          SetUtils.intersection(codesToMatch, codesToMatchAgainstEmergent);
+
+      if (intersectionTemp != null && !intersectionTemp.isEmpty()) {
+
+        logger.info("Total Emergent codes matched from temp eRSD = {}", intersectionTemp.size());
+
+        for (String matchCode : intersectionTemp) {
+          logger.info("The Emergent Code that matched from temp eRSD = {}", matchCode);
+        }
+      }
+    }
+
+    if (codesToMatchAgainstFullEicr != null) {
+      Set<String> intersectionTemp =
+          SetUtils.intersection(codesToMatch, codesToMatchAgainstFullEicr);
+
+      if (intersectionTemp != null && !intersectionTemp.isEmpty()) {
+
+        logger.info("Total Full Eicr codes matched from temp eRSD = {}", intersectionTemp.size());
+
+        for (String matchCode : intersectionTemp) {
+          logger.info("The Full Eicr Code that matched from temp eRSD = {}", matchCode);
+        }
+      }
+    }
   }
 
   public static Eicr createEicr(LaunchDetails details) {
