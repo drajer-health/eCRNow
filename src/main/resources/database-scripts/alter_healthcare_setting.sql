@@ -1,0 +1,1 @@
+ALTER TABLE healthcare_setting ADD debug_enabled bit not null;
