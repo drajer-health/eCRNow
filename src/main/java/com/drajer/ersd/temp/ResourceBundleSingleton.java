@@ -1,6 +1,8 @@
 package com.drajer.ersd.temp;
 
 import ca.uhn.fhir.parser.IParser;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +62,7 @@ public class ResourceBundleSingleton {
     LOGGER.info("About to read ERSD File {}", ersdTempFileLocation);
     Bundle bundle = null;
 
-    try (InputStream in = this.getClass().getResourceAsStream(ersdTempFileLocation)) {
+    try (InputStream in = new FileInputStream(new File(ersdTempFileLocation))) {
       bundle = jsonParser.parseResource(Bundle.class, in);
     } catch (Exception e) {
       LOGGER.error("Exception Reading ERSD File", e);
