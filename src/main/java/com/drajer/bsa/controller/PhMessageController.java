@@ -49,7 +49,9 @@ public class PhMessageController {
       @RequestParam(name = "notificationId", required = false) String notificationId,
       @RequestParam(name = "xCorrelationId", required = false) String xCorrelationId,
       @RequestParam(name = "startTime", required = false) String startTime,
-      @RequestParam(name = "endTime", required = false) String endTime) {
+      @RequestParam(name = "endTime", required = false) String endTime,
+      @RequestParam(name = "summaryFlag", required = false, defaultValue = "false")
+          boolean summaryFlag) {
     List<JSONObject> phMessageData = new ArrayList<>();
     try {
       logger.info(
@@ -139,7 +141,8 @@ public class PhMessageController {
         searchParams.put("responseReceivedTime", endTime);
       }
 
-      List<PublicHealthMessage> phMessage = phMessageService.getPhMessageData(searchParams);
+      List<PublicHealthMessage> phMessage =
+          phMessageService.getPhMessageData(searchParams, summaryFlag);
 
       if (phMessage != null) {
         return new ResponseEntity<>(phMessage, HttpStatus.OK);
@@ -282,9 +285,10 @@ public class PhMessageController {
       @RequestBody Map<String, Object> requestBody) {
     try {
       List<String> xRequestIds = extractXRequestIds(requestBody);
+      boolean summaryFlag = (boolean) requestBody.getOrDefault("summaryFlag", false);
 
       List<PublicHealthMessage> phMessage =
-          phMessageService.getPhMessageDataByXRequestIds(xRequestIds);
+          phMessageService.getPhMessageDataByXRequestIds(xRequestIds, summaryFlag);
 
       if (phMessage != null && !phMessage.isEmpty()) {
         return ResponseEntity.ok(phMessage);
@@ -304,9 +308,10 @@ public class PhMessageController {
       @RequestBody Map<String, Object> requestBody) {
     try {
       List<String> xRequestIds = extractXRequestIds(requestBody);
+      boolean summaryFlag = (boolean) requestBody.getOrDefault("summaryFlag", false);
 
       List<PublicHealthMessage> phMessage =
-          phMessageService.getPhMessagesContainingXRequestIds(xRequestIds);
+          phMessageService.getPhMessagesContainingXRequestIds(xRequestIds, summaryFlag);
 
       if (phMessage != null && !phMessage.isEmpty()) {
         return ResponseEntity.ok(phMessage);

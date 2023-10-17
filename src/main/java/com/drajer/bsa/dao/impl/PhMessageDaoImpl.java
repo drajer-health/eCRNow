@@ -48,11 +48,14 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   public static final String SUBMISSION_TIME = "submissionTime";
   public static final String RESPONSE_RECEIVED_TIME = "responseReceivedTime";
   public static final String SUBMITTED_VERSION_NUMBER = "submittedVersionNumber";
+  public static final String SUMMARY_FLAG = "summaryFlag";
 
-  public List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams) {
+  public List<PublicHealthMessage> getPhMessageData(
+      Map<String, String> searchParams, boolean summaryFlag) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
 
     prepareCriteria(criteria, searchParams);
+    applySummaryFlagProjection(criteria, summaryFlag);
 
     List<PublicHealthMessage> phMessage = criteria.list();
 
@@ -64,14 +67,15 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   public List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+
     List<String> selectedProperties = getSelectedProperties();
     ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
 
     criteria.setProjection(projectionList);
-
     prepareCriteria(criteria, searchParams);
 
     criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
+
     List<PublicHealthMessage> phMessage = criteria.list();
 
     if (phMessage != null) {
@@ -156,15 +160,19 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   }
 
   @Override
-  public List<PublicHealthMessage> getPhMessageByXRequestIds(List<String> xRequestIds) {
+  public List<PublicHealthMessage> getPhMessageByXRequestIds(
+      List<String> xRequestIds, boolean summaryFlag) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+    applySummaryFlagProjection(criteria, summaryFlag);
     criteria.add(Restrictions.in(X_REQUEST_ID, xRequestIds));
     return criteria.addOrder(Order.desc("id")).list();
   }
 
   // @Override
-  public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds) {
+  public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(
+      List<String> xRequestIds, boolean summaryFlag) {
     Criteria criteria = getSession().createCriteria(PublicHealthMessage.class);
+    applySummaryFlagProjection(criteria, summaryFlag);
 
     Disjunction disjunction = Restrictions.disjunction();
     for (String xRequestId : xRequestIds) {
@@ -250,5 +258,16 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
         "initiatingAction",
         "patientLinkerId",
         "lastUpdated");
+  }
+
+  private void applySummaryFlagProjection(Criteria criteria, boolean summaryFlag) {
+    if (summaryFlag) {
+      List<String> selectedProperties = getSelectedProperties();
+      ProjectionList projectionList = buildProjectionList(selectedProperties, criteria);
+
+      criteria.setProjection(projectionList);
+
+      criteria.setResultTransformer(Transformers.aliasToBean(PublicHealthMessage.class));
+    }
   }
 }
