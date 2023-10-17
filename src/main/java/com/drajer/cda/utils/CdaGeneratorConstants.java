@@ -162,8 +162,11 @@ public class CdaGeneratorConstants {
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
+  public static final String CDA_MALE_CODE_DISPLAY = "male";
   public static final String CDA_FEMALE_CODE = "F";
+  public static final String CDA_FEMALE_CODE_DISPLAY = "female";
   public static final String CDA_UNK_GENDER = "UN";
+  public static final String CDA_UNK_GENDER_DISPLAY = "unknown";
   public static final String CDA_INPATIENT_ENCOUNTER_CLASS = "IMP";
   public static final String CDA_AMBULATORY_ENCOUNTER_CLASS = "AMB";
   public static final String CDA_EMERGENCY_ENCOUNTER_CLASS = "EMER";

@@ -553,7 +553,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             Reference practitionerReference = participant.getIndividual();
             String practitionerID = practitionerReference.getReferenceElement().getIdPart();
             if (!practitionerMap.containsKey(practitionerID)
-                && !kd.containsResourceWithId(practitionerID)) {
+                && !kd.containsResourceWithId(practitionerID, ResourceType.Practitioner)) {
               Practitioner practitioner =
                   (Practitioner)
                       getResourceById(
@@ -573,7 +573,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()
             && !kd.containsResourceWithId(
-                organizationReference.getReferenceElement().getIdPart())) {
+                organizationReference.getReferenceElement().getIdPart(),
+                ResourceType.Organization)) {
           Organization organization =
               (Organization)
                   getResourceById(
@@ -595,7 +596,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.hasLocation()
               && !kd.containsResourceWithId(
-                  location.getLocation().getReferenceElement().getIdPart())) {
+                  location.getLocation().getReferenceElement().getIdPart(),
+                  ResourceType.Location)) {
             Reference locationReference = location.getLocation();
             Location locationResource =
                 (Location)
@@ -1075,7 +1077,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       if (obs.getStatus() != null
           && (obs.getStatus() == ObservationStatus.CANCELLED
               || obs.getStatus() == ObservationStatus.ENTEREDINERROR
-              || obs.getStatus() == ObservationStatus.ENTEREDINERROR)) {
+              || obs.getStatus() == ObservationStatus.UNKNOWN)) {
 
         logger.info(
             " Ignoring {} resource with id {}",

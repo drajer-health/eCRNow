@@ -1446,14 +1446,18 @@ public class CdaFhirUtilities {
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_MALE_CODE,
-              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM,
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM_NAME,
+              CdaGeneratorConstants.CDA_MALE_CODE_DISPLAY);
     } else if (gender == AdministrativeGender.FEMALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_FEMALE_CODE,
-              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM,
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM_NAME,
+              CdaGeneratorConstants.CDA_FEMALE_CODE_DISPLAY);
     } else if (gender == AdministrativeGender.UNKNOWN) {
 
       s +=
@@ -1466,7 +1470,9 @@ public class CdaFhirUtilities {
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_UNK_GENDER,
-              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM,
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM_NAME,
+              CdaGeneratorConstants.CDA_UNK_GENDER_DISPLAY);
     } else {
 
       logger.debug("Did not find the gender for the patient ");
