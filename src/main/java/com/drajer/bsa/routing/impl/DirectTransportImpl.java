@@ -166,6 +166,9 @@ public class DirectTransportImpl implements DataTransportInterface {
     //  Enable SSL Connections from the client.
     props.setProperty("mail.smtp.ssl.enable", "true");
 
+    // Enable SSL TLSv1.2 Protocol
+    props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+  
     Session session = Session.getInstance(props, null);
 
     logger.info(" Retrieve Session instance for sending Direct mail ");
@@ -279,7 +282,9 @@ public class DirectTransportImpl implements DataTransportInterface {
       props.put("mail.imap.auth", "true");
       props.put("mail.imap.ssl.enable", "true");
       props.put("mail.imap.ssl.trust", "*");
-
+      // Add TLSv1.2 protocol
+      props.setProperty("mail.imap.ssl.protocols", "TLSv1.2");
+      
       Session session = Session.getInstance(props, null);
 
       Store store = session.getStore(IMAP);
