@@ -7,6 +7,7 @@ import com.drajer.eca.model.MatchTriggerStatus;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import com.drajer.test.simulator.ContentDataSimulator;
@@ -37,10 +38,13 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.junit.Before;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.util.ReflectionTestUtils;
 
+@PowerMockIgnore({"javax.crypto.*"})
 public class BaseGeneratorTest {
 
   public static final Logger logger = LoggerFactory.getLogger(BaseGeneratorTest.class);
@@ -64,6 +68,7 @@ public class BaseGeneratorTest {
   }
 
   public LaunchDetails loadLaunchDetailsFromFile() {
+    ReflectionTestUtils.setField(AESEncryption.class, "secretKey", "123");
     return TestUtils.readFileContents(
         LAUNCH_DETAILS_FILENAME, new TypeReference<LaunchDetails>() {});
   }
