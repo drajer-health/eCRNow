@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.13</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<version>2.7.12</version>
+		<relativePath />
+		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.drajer.ecrnow</groupId>
 	<artifactId>ecr-now</artifactId>
@@ -17,10 +18,15 @@
 	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
-		<java.version>1.8</java.version>
-		<fhir.version>6.6.1</fhir.version>
+		<java.version>17</java.version>
+		<fhir.version>5.4.0</fhir.version>
+		<fhirpath.version>5.4.0</fhirpath.version>
+		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
+		<skip.integration.tests>false</skip.integration.tests>
 	</properties>
+
+
 
 	<distributionManagement>
 		<site>
@@ -28,6 +34,20 @@
 			<url>${project.build.directory}/staging</url>
 		</site>
 	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>oss-sonatype</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>oss-sonatype-public</id>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</repository>
+	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
@@ -71,7 +91,7 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-		<!--mssql-->
+		<!--mssql -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
@@ -84,24 +104,10 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-<!--		<dependency>
+		<dependency>
 			<groupId>com.github.kagkarlsson</groupId>
 			<artifactId>db-scheduler-spring-boot-starter</artifactId>
-			<version>11.5</version>
-		</dependency>-->
-
-		<dependency>
-			<groupId>com.cerner.ipaas</groupId>
-			<artifactId>ipaas-db-scheduler</artifactId>
-			<version>0.0.2</version>
-			<classifier>cerner</classifier>
-		</dependency>
-
-		<dependency>
-			<groupId>com.cerner.ipaas</groupId>
-			<artifactId>ipaas-db-scheduler</artifactId>
-			<version>0.0.2</version>
-			<classifier>spring-boot-starter</classifier>
+			<version>11.6</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
@@ -115,15 +121,39 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
 			<optional>true</optional>
 		</dependency>
-
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+			<version>0.11.2</version>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- FHIR Dependencies -->
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
+
+
 
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -150,27 +180,82 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.spring</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.expression</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.measure-hapi</artifactId>
+			<version>${cql-evaluator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax</groupId>
+					<artifactId>javaee-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20230227</version>
+			<version>20190722</version>
 		</dependency>
 
 		<!-- Java stuff -->
 		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-core</artifactId>
-		    <version>2.15.0</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.13.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-annotations</artifactId>
-		    <version>2.15.0</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.13.3</version>
 		</dependency>
 
 		<dependency>
-   			<groupId>com.fasterxml.jackson.core</groupId>
-   			<artifactId>jackson-databind</artifactId>
-   			<version>2.15.0</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.12.6.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.5</version>
 		</dependency>
 
 		<dependency>
@@ -185,14 +270,14 @@
 			<version>4.4</version>
 		</dependency>
 
-		<!--  Schematron Validator -->
+		<!-- Schematron Validator -->
 		<dependency>
 			<groupId>com.helger</groupId>
 			<artifactId>ph-schematron-validator</artifactId>
 			<version>5.6.0</version>
 		</dependency>
 
-		<!--  Direct Dependencies -->
+		<!-- Direct Dependencies -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
@@ -238,13 +323,7 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.9</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
-			<version>1.3.2</version>
+			<version>1.13</version>
 		</dependency>
 
 		<dependency>
@@ -261,15 +340,13 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!--Added this explicitly because version 4.0.0 pulled from spring-boot-starter-test causes test failure
-		  due to static method mocking-->
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>3.12.4</version>
+			<version>3.3.3</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Spring Boot Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -292,7 +369,7 @@
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock-jre8</artifactId>
-			<version>2.35.0</version>
+			<version>2.31.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -318,19 +395,6 @@
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<version>5.9.3</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hamcrest</groupId>
-					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -352,31 +416,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>1.18.22</version>
-						</path>
-					</annotationProcessorPaths>
-					<compilerArguments>
-						<verbose />
-						<Xlint />
-					</compilerArguments>
-					<fork>true</fork>
-					<verbose>true</verbose>
-<!--					<source>1.17</source>-->
-<!--					<target>1.17</target>-->
-					<showWarnings>true</showWarnings>
-					<compilerVersion>17</compilerVersion>
-					<debug>true</debug>
-				</configuration>
 			</plugin>
 
 			<plugin>
@@ -429,7 +468,7 @@
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
 						</configuration>
 					</execution>
-					<!--  Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
+					<!-- Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
 					<execution>
 						<id>jacoco-merge-report-verify</id>
 						<phase>verify</phase>
@@ -458,7 +497,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>2.21.0</version>
 				<executions>
 					<execution>
 						<id>default-test</id>
@@ -466,10 +505,7 @@
 							<goal>test</goal>
 						</goals>
 						<configuration>
-							<argLine>
-								--add-opens java.base/java.lang=ALL-UNNAMED
-								--add-opens java.base/java.util=ALL-UNNAMED
-							</argLine>
+
 							<skipTests>${skip.unit.tests}</skipTests>
 							<excludes>
 								<exclude>**/IT*.java</exclude>
@@ -482,7 +518,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>2.21.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -493,7 +529,7 @@
 							<includes>
 								<include>**/IT*.java</include>
 							</includes>
-							<argLine>${failsafeArgLine}</argLine>
+
 							<skipTests>${skip.integration.tests}</skipTests>
 						</configuration>
 					</execution>
@@ -565,6 +601,28 @@
 	</reporting>
 
 	<profiles>
+
+		<!-- Profile for Java 17 -->
+		<profile>
+			<id>java17-profile</id>
+			<activation>
+				<jdk>[17,)</jdk>
+			</activation>
+			<properties>
+				<argLine>
+					--add-opens=java.base/java.util=ALL-UNNAMED
+					--add-opens=java.base/java.util.regex=ALL-UNNAMED
+					--add-opens=java.base/java.io=ALL-UNNAMED
+					--add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+					--add-opens=java.base/java.lang=ALL-UNNAMED
+					--add-opens=java.base/java.time=ALL-UNNAMED
+					--add-opens=java.base/java.time.format=ALL-UNNAMED
+					--add-opens java.base/java.text=ALL-UNNAMED
+				</argLine>
+
+
+			</properties>
+		</profile>
 		<profile>
 			<id>eCRNow</id>
 			<activation>
@@ -614,48 +672,8 @@
 					<version>4.0.4</version>
 					<scope>runtime</scope>
 				</dependency>
-				<dependency>
-					<groupId>org.springframework.cloud</groupId>
-					<artifactId>spring-cloud-starter-kubernetes-client-config</artifactId>
-					<version>2.1.3</version>
-				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>
-
-	<repositories>
-		<repository>
-			<id>artifactory-maven-central-main</id>
-			<name>maven</name>
-			<url>https://cernerrepos.net/maven</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>artifactory-ais-release-local</id>
-			<name>AIS Release Artifact Repository</name>
-			<url>https://artifactory-corp.cerner.com/artifactory/ais-libs-release-local/</url>
-			<releases>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>artifactory-ais-snapshot-local</id>
-			<name>AIS Snapshot Artifact Repository</name>
-			<url>https://artifactory-corp.cerner.com/artifactory/ais-libs-snapshot-local/</url>
-			<releases>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 </project>
