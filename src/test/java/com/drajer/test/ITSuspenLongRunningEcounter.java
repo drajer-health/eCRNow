@@ -4,22 +4,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
 
+import com.drajer.eca.model.*;
 import com.drajer.eca.model.EventTypes.JobStatus;
-import com.drajer.eca.model.PatientExecutionState;
-import com.drajer.eca.model.PeriodicUpdateEicrStatus;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,8 +23,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -148,6 +142,7 @@ public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
 
     wireMockServer.stubFor(
         post(urlPathEqualTo(getURLPath(clientDetails.getRestAPIURL())))
+            // .withRequestBody(equalToJson(sb1.toString()))
             .atPriority(10)
             .willReturn(
                 aResponse()
@@ -209,12 +204,9 @@ public class ITSuspenLongRunningEcounter extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-      CriteriaQuery<LaunchDetails> query = criteriaBuilder.createQuery(LaunchDetails.class);
-      Root<LaunchDetails> phMessageEntity = query.from(LaunchDetails.class);
-      query.where(criteriaBuilder.equal(phMessageEntity.get("xRequestId"), "testCaseId"));
-      launchDetails = session.createQuery(query).getSingleResult();
+      Criteria criteria = session.createCriteria(LaunchDetails.class);
+      criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);

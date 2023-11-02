@@ -1,9 +1,14 @@
 package com.drajer.bsa.service.impl;
 
 import ca.uhn.fhir.parser.IParser;
+import com.drajer.bsa.dao.impl.PublicHealthMessagesDaoImpl;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.interfaces.InfrastructureLoadManagerInterface;
-import com.drajer.bsa.kar.model.*;
+import com.drajer.bsa.kar.model.BsaAction;
+import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
+import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
+import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.model.KarExecutionState;
 import com.drajer.bsa.model.KarProcessingData;
@@ -18,6 +23,7 @@ import com.drajer.bsa.utils.BsaServiceUtils;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
@@ -59,7 +65,7 @@ public class KarProcessorImpl implements KarProcessor {
 
   @Autowired HealthcareSettingsService hsService;
 
-  // @Autowired PublicHealthMessagesDaoImpl phDao;
+  @Autowired PublicHealthMessagesDaoImpl phDao;
 
   @Autowired InfrastructureLoadManagerInterface loadManager;
 
@@ -300,16 +306,16 @@ public class KarProcessorImpl implements KarProcessor {
       NotificationContext nc, KarProcessingData data) {
 
     Map<String, String> searchParams = new HashMap<>();
-    /* searchParams.put(PublicHealthMessagesDaoImpl.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
+    searchParams.put(PublicHealthMessagesDaoImpl.FHIR_SERVER_URL, nc.getFhirServerBaseUrl());
     searchParams.put(PublicHealthMessagesDaoImpl.PATIENT_ID, nc.getPatientId());
     searchParams.put(
         PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_ID, nc.getNotificationResourceId());
     searchParams.put(
         PublicHealthMessagesDaoImpl.NOTIFIED_RESOURCE_TYPE, nc.getNotificationResourceType());
     searchParams.put(PublicHealthMessagesDaoImpl.KAR_UNIQUE_ID, data.getKar().getVersionUniqueId());
-    List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);*/
+    List<PublicHealthMessage> messages = phDao.getPublicHealthMessage(searchParams);
 
-    /*if (messages != null && !messages.isEmpty()) return messages.get(0);
-    else*/ return null;
+    if (messages != null && !messages.isEmpty()) return messages.get(0);
+    else return null;
   }
 }

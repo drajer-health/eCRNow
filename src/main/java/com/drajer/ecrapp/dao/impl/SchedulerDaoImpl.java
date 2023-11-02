@@ -3,10 +3,10 @@ package com.drajer.ecrapp.dao.impl;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.SchedulerDao;
 import com.drajer.ecrapp.model.ScheduledTasks;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +19,13 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
+    Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
 
-    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
-    CriteriaQuery<ScheduledTasks> query = criteriaBuilder.createQuery(ScheduledTasks.class);
-    Root<ScheduledTasks> scheduledTasks = query.from(ScheduledTasks.class);
+    String queryString = actionType + "_" + launchId + "_";
 
-    String queryString = actionType + "_" + launchId + "_" + "_%";
-    query.where(criteriaBuilder.equal(scheduledTasks.get(TASK_NAME), "EICRTask"));
-    query.where(criteriaBuilder.like(scheduledTasks.get(TASK_INSTANCE), queryString));
+    criteria.add(Restrictions.eq(TASK_NAME, "EICRTask"));
+    criteria.add(Restrictions.like(TASK_INSTANCE, queryString, MatchMode.START));
 
-    return getSession().createQuery(query).getResultList();
+    return criteria.list();
   }
 }

@@ -2,7 +2,7 @@ package com.drajer.bsa.interfaces.impl;
 
 import com.drajer.bsa.interfaces.InfrastructureLoadManagerInterface;
 import com.drajer.bsa.model.BsaTypes.BsaJobType;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

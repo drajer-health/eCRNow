@@ -1,8 +1,8 @@
 package com.drajer.ersd.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 // @Entity - No need to persist.
 @Table(name = "valuesetgrouper")

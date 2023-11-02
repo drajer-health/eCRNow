@@ -8,14 +8,13 @@ import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,12 +106,9 @@ public class ITSystemLaunch extends BaseIntegrationTest {
   private void getLaunchDetailAndStatus() {
 
     try {
-
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-      CriteriaQuery<LaunchDetails> query = criteriaBuilder.createQuery(LaunchDetails.class);
-      Root<LaunchDetails> phMessageEntity = query.from(LaunchDetails.class);
-      query.where(criteriaBuilder.equal(phMessageEntity.get("xRequestId"), "testCaseId"));
-      launchDetails = session.createQuery(query).getSingleResult();
+      Criteria criteria = session.createCriteria(LaunchDetails.class);
+      criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);

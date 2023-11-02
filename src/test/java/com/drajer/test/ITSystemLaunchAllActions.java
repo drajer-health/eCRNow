@@ -14,15 +14,14 @@ import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.TestUtils;
 import com.drajer.test.util.WireMockHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import org.apache.http.client.utils.URIBuilder;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -220,25 +219,16 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
       assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
       assertEquals(rr.getRrXml(), eicr != null ? eicr.getResponseData() : null);
       assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : "");
-      /*
-       * Count should be 2 since 2 metadata call explicitly 1:SystemLaunch
-       * 2:SubmitEicr(handleReportablityResponse)
-       */
+      /* Count should be 2 since 2 metadata call explicitly 1:SystemLaunch 2:SubmitEicr(handleReportablityResponse) */
       wireMockServer.verify(exactly(2), getRequestedFor(urlEqualTo("/FHIR/metadata")));
     }
   }
 
   private void getLaunchDetailAndStatus() {
     try {
-      //      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      //      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      //      launchDetails = (LaunchDetails) criteria.uniqueResult();
-
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-      CriteriaQuery<LaunchDetails> query = criteriaBuilder.createQuery(LaunchDetails.class);
-      Root<LaunchDetails> phMessageEntity = query.from(LaunchDetails.class);
-      query.where(criteriaBuilder.equal(phMessageEntity.get("xRequestId"), "testCaseId"));
-      launchDetails = session.createQuery(query).getSingleResult();
+      Criteria criteria = session.createCriteria(LaunchDetails.class);
+      criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);
@@ -365,12 +355,9 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   private List<Eicr> getAllEICRDocuments() {
     try {
 
-      //			Criteria criteria = session.createCriteria(Eicr.class);
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-      CriteriaQuery<Eicr> query = criteriaBuilder.createQuery(Eicr.class);
-
-      if (query != null) {
-        return session.createQuery(query).getResultList();
+      Criteria criteria = session.createCriteria(Eicr.class);
+      if (criteria != null) {
+        return criteria.list();
       }
     } catch (Exception e) {
       logger.error("Exception retrieving EICR ", e);

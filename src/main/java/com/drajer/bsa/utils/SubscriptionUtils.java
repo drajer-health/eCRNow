@@ -2,14 +2,14 @@ package com.drajer.bsa.utils;
 
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;

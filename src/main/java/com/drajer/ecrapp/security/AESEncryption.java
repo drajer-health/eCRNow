@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -95,7 +96,7 @@ public class AESEncryption {
     return null;
   }
 
-  // @PostConstruct
+  @PostConstruct
   public void getSecretKey() {
     secretKey = environment.getRequiredProperty("security.key");
   }

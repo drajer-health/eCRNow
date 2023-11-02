@@ -10,10 +10,7 @@ import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CdaResultGeneratorTest {
 
   @Test

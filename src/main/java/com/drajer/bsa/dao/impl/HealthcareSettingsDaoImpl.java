@@ -8,10 +8,10 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.util.List;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,6 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
-
   /**
    * Method to create or update a HealthcareSetting.
    *
@@ -85,13 +84,10 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public HealthcareSetting getHealthcareSettingByUrl(String url) {
+    Criteria criteria = getSession().createCriteria(HealthcareSetting.class);
+    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
+    HealthcareSetting hs = (HealthcareSetting) criteria.uniqueResult();
 
-    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
-    CriteriaQuery<HealthcareSetting> query = criteriaBuilder.createQuery(HealthcareSetting.class);
-    Root<HealthcareSetting> healthcareSetting = query.from(HealthcareSetting.class);
-
-    query.where(criteriaBuilder.equal(healthcareSetting.get("fhirServerBaseURL"), url));
-    HealthcareSetting hs = (HealthcareSetting) getSession().createQuery(query).getSingleResult();
     if (hs != null) setKars(hs);
 
     return hs;
@@ -105,13 +101,8 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public List<HealthcareSetting> getAllHealthcareSettings() {
-
-    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
-    CriteriaQuery<HealthcareSetting> query = criteriaBuilder.createQuery(HealthcareSetting.class);
-    Root<HealthcareSetting> healthcareSetting = query.from(HealthcareSetting.class);
-
-    query.orderBy(criteriaBuilder.desc(healthcareSetting.get("id")));
-    return getSession().createQuery(query).getResultList();
+    Criteria criteria = getSession().createCriteria(HealthcareSetting.class);
+    return criteria.addOrder(Order.desc("id")).list();
   }
 
   private void setKars(HealthcareSetting hs) {
@@ -136,13 +127,9 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
   @Override
   public List<KnowledgeArtifactStatus> getKarsActiveByHsId(Integer id) {
 
-    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
-    CriteriaQuery<KnowledgeArtifactStatus> query =
-        criteriaBuilder.createQuery(KnowledgeArtifactStatus.class);
-    Root<KnowledgeArtifactStatus> knowledgeArtifactStatus =
-        query.from(KnowledgeArtifactStatus.class);
+    Criteria criteria = getSession().createCriteria(KnowledgeArtifactStatus.class);
+    criteria.add(Restrictions.eq("hsId", id));
 
-    query.where(criteriaBuilder.equal(knowledgeArtifactStatus.get("hsId"), "id"));
-    return getSession().createQuery(query).getResultList();
+    return criteria.list();
   }
 }

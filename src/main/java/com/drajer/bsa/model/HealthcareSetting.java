@@ -3,12 +3,20 @@ package com.drajer.bsa.model;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.ecrapp.security.AESEncryption;
-import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.type.NumericBooleanConverter;
+import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,28 +93,28 @@ public class HealthcareSetting implements FhirServerDetails {
    * The flag that indicates that Direct Transport has to be used.
    */
   @Column(name = "is_direct", nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isDirect;
 
   /*
    * The flag that indicates that XDR Transport has to be used.
    */
   @Column(name = "is_xdr", nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isXdr;
 
   /*
    * The flag that indicates that RESTful API has to be used.
    */
   @Column(name = "is_restapi", nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean isRestAPI;
 
   /*
    * The flag that indicates that FHIR API has to be used.
    */
   @Column(name = "is_fhir", nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean fhirAPI;
 
   /*
@@ -190,7 +198,7 @@ public class HealthcareSetting implements FhirServerDetails {
    * response is received.
    */
   @Column(name = "create_doc_ref_response", nullable = true)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean createDocRefForResponse;
 
   /**
@@ -263,11 +271,11 @@ public class HealthcareSetting implements FhirServerDetails {
   private Date ehrAccessTokenExpirationTime;
 
   @Column(name = "require_aud", nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean requireAud = false;
 
   @Column(name = "ehr_supports_subscriptions", nullable = true)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean ehrSupportsSubscriptions = false;
 
   /**
@@ -323,7 +331,7 @@ public class HealthcareSetting implements FhirServerDetails {
   private String offHoursTimezone;
 
   @Column(name = "off_hours_enabled", nullable = true)
-  @Convert(converter = NumericBooleanConverter.class)
+  @Type(type = "org.hibernate.type.NumericBooleanType")
   private Boolean offhoursEnabled = true;
 
   /** The attribute represents a username that may be used with password-based Authorization. */

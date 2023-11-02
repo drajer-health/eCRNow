@@ -3,9 +3,8 @@ package com.drajer.sof.dao.impl;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -29,22 +28,18 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
   public LaunchDetails getLaunchDetailsByPatientAndEncounter(
       String patient, String encounter, String fhirServerUrl) {
+    Criteria criteria = getSession().createCriteria(LaunchDetails.class);
+    criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
+    criteria.add(Restrictions.eq("launchPatientId", patient));
+    criteria.add(Restrictions.eq("encounterId", encounter));
 
-    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
-    CriteriaQuery<LaunchDetails> query = criteriaBuilder.createQuery(LaunchDetails.class);
-    Root<LaunchDetails> launchDetailsEntity = query.from(LaunchDetails.class);
-    query.where(criteriaBuilder.equal(launchDetailsEntity.get("ehrServerURL"), fhirServerUrl));
-    query.where(criteriaBuilder.equal(launchDetailsEntity.get("launchPatientId"), patient));
-    query.where(criteriaBuilder.equal(launchDetailsEntity.get("encounterId"), encounter));
-    return getSession().createQuery(query).getSingleResult();
+    return (LaunchDetails) criteria.uniqueResult();
   }
 
   public LaunchDetails getLaunchDetailsByState(int state) {
-    CriteriaBuilder criteriaBuilder = getSession().getCriteriaBuilder();
-    CriteriaQuery<LaunchDetails> query = criteriaBuilder.createQuery(LaunchDetails.class);
-    Root<LaunchDetails> launchDetailsEntity = query.from(LaunchDetails.class);
-    query.where(criteriaBuilder.equal(launchDetailsEntity.get("launchState"), state));
-    return getSession().createQuery(query).getSingleResult();
+    Criteria criteria = getSession().createCriteria(LaunchDetails.class);
+    criteria.add(Restrictions.eq("launchState", state));
+    return (LaunchDetails) criteria.uniqueResult();
   }
 
   public void delete(LaunchDetails launchDetails) {
