@@ -1532,16 +1532,14 @@ public class CdaFhirUtilities {
     String val = "";
 
     if (qt != null
-        && qt.getValueElement() != null
-        && qt.getSystemElement() != null
-        && (qt.getUnit() != null || qt.getCode() != null)) {
+        && qt.hasValueElement()
+        && qt.hasSystemElement()
+        && (qt.hasUnit() || qt.hasCode())) {
 
-      String units = (qt.getUnit() != null ? qt.getUnit() : CdaGeneratorConstants.UNKNOWN_VALUE);
+      String units = (qt.hasCode() ? qt.getCode() : CdaGeneratorConstants.UNKNOWN_VALUE);
 
-      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE)
-          && qt.getCode() != null
-          && !qt.getCode().isEmpty()) {
-        units = qt.getCode();
+      if (units.contentEquals(CdaGeneratorConstants.UNKNOWN_VALUE) && qt.hasUnit()) {
+        units = qt.getUnit();
       }
 
       val +=
@@ -1550,6 +1548,8 @@ public class CdaFhirUtilities {
               + qt.getSystemElement().getValueAsString()
               + CdaGeneratorConstants.PIPE
               + units;
+    } else if (qt != null && qt.hasValueElement()) {
+      val += qt.getValueElement().getValueAsString();
     } else {
       val += CdaGeneratorConstants.UNKNOWN_VALUE;
     }
