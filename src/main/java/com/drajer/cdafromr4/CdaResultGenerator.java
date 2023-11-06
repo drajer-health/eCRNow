@@ -103,14 +103,13 @@ public class CdaResultGenerator {
           } else if (!StringUtils.isEmpty(obs.getCode().getText())) {
             obsDisplayName = obs.getCode().getText();
           } else if (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getCode())
-                  && (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getSystem()))) {
+              && (!StringUtils.isEmpty(obs.getCode().getCodingFirstRep().getSystem()))) {
             obsDisplayName =
-                    obs.getCode().getCodingFirstRep().getSystem()
-                            + "|"
-                            + obs.getCode().getCodingFirstRep().getCode();
+                obs.getCode().getCodingFirstRep().getSystem()
+                    + "|"
+                    + obs.getCode().getCodingFirstRep().getCode();
           }
-        }  else if (obs.hasCode()
-
+        } else if (obs.hasCode()
             && obs.getCode() != null
             && !StringUtils.isEmpty(obs.getCode().getText())) {
           obsDisplayName = obs.getCode().getText();

@@ -407,6 +407,5 @@ public class R4FhirData extends FhirData {
         + ", jurisdictions="
         + jurisdictions
         + "]";
-
   }
 }

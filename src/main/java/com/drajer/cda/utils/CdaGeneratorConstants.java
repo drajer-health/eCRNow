@@ -96,8 +96,6 @@ public class CdaGeneratorConstants {
 
   // public static final String PH_REPORT_TITLE = "Initial Public Health Case Report";
 
-
-
   // FHIR Types
 
   // FHIR Value Set URLS and values
@@ -1170,7 +1168,7 @@ public class CdaGeneratorConstants {
 
     if (!StringUtils.isEmpty(val)) {
 
-      if (val.contentEquals("C") || val.contentEquals(EMERGENCY_VALUE)){
+      if (val.contentEquals("C") || val.contentEquals(EMERGENCY_VALUE)) {
         return "ECON";
       } else if (val.contentEquals("N")
           || val.contentEquals(LAST_NAME_EL_NAME)
@@ -1189,7 +1187,6 @@ public class CdaGeneratorConstants {
     // Unable to translate other codes
 
   }
-
 
   public static String getSplitValueURL(Object theValue) {
     String name = "";

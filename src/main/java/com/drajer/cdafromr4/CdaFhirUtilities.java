@@ -1876,7 +1876,6 @@ public class CdaFhirUtilities {
 
     if (Boolean.FALSE.equals(valFlag))
       val += CdaGeneratorUtils.getNFXMLForElement(elName, CdaGeneratorConstants.NF_NI);
-
     else val += CdaGeneratorUtils.getXmlForValueString(CdaGeneratorConstants.NO_VALUE);
 
     return val;

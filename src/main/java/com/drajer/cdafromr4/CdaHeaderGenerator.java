@@ -14,21 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1109,52 +1098,7 @@ public class CdaHeaderGenerator {
     addr.setPostalCode("84101");
     addr.setUse(AddressUse.WORK);
     addrs.add(addr);
-=======
->>>>>>> 15492bceddf87a346635da2b03d00a558256df04
 
-    StringBuilder patientDetails = new StringBuilder(200);
-
-    if (p.getDeceased() != null) {
-
-      if (p.hasDeceasedBooleanType()
-          && Boolean.TRUE.equals(p.getDeceasedBooleanType().getValue())) {
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForNullEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
-      } else if (p.hasDeceasedDateTimeType() && p.getDeceased() instanceof DateTimeType) {
-
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
-
-        DateTimeType d = (DateTimeType) p.getDeceased();
-        patientDetails.append(
-            CdaFhirUtilities.getDateTimeTypeXml(d, CdaGeneratorConstants.SDTC_DECEASED_TIME));
-      } else {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForValue(
-                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
-      }
-    } else if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
-    }
-
-    return patientDetails.toString();
-  }
-
-  private static boolean isCodingNullFlavor(Coding coding) {
-
-    if (coding != null
-        && coding.getCode() != null
-        && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
-      return true;
-    } else return false;
+    return addrs;
   }
 }

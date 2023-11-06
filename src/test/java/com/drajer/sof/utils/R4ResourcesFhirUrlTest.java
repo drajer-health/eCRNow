@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.drajer.sof.model.LaunchDetails;
+import com.drajer.sof.model.R4FhirData;
 import java.util.Date;
 import org.hl7.fhir.r4.model.Encounter;
 import org.junit.Before;
@@ -34,6 +35,8 @@ public class R4ResourcesFhirUrlTest {
 
   @Mock LaunchDetails launchDetails;
 
+  @Mock R4FhirData r4FhirData;
+
   @Mock Encounter encounter;
 
   @Captor ArgumentCaptor<String> urlCaptor;
@@ -52,7 +55,7 @@ public class R4ResourcesFhirUrlTest {
 
     initializeMocks();
     r4ResourcesData.getTravelObservationData(
-        context, client, launchDetails, encounter, new Date(), new Date());
+        context, client, launchDetails, r4FhirData, encounter, new Date(), new Date());
     PowerMockito.verifyStatic(FhirContextInitializer.class);
     // capturing url
     FhirContextInitializer.getResourceBundleByUrl(

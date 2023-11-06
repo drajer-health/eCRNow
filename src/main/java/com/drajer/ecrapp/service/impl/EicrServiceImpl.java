@@ -185,12 +185,11 @@ public class EicrServiceImpl implements EicrRRService {
 
         if (cdaRrModel.getReportableType() != null)
           ecr.setResponseType(cdaRrModel.getReportableType().toString());
-
         else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
         if (cdaRrModel.getReportableType() != null && cdaRrModel.getReportableStatus() != null)
           ecr.setResponseTypeDisplay(
-                  cdaRrModel.getReportableType()
+              cdaRrModel.getReportableType()
                   + "-"
                   + cdaRrModel.getReportableStatus().getDisplayName());
         else if (cdaRrModel.getReportableType() != null)

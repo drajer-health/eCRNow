@@ -37,11 +37,10 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.junit.Before;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @PowerMockIgnore({"javax.crypto.*"})
 public class BaseGeneratorTest {
@@ -51,11 +50,11 @@ public class BaseGeneratorTest {
   public static final String EXCEPTION_READING_FILE = "Exception Reading File";
 
   public static final String LAUNCH_DETAILS_FILENAME =
-          "CdaTestData/LaunchDetails/LaunchDetails.json";
+      "CdaTestData/LaunchDetails/LaunchDetails.json";
   public static final String PATIENT_RES_FILENAME = "CdaTestData/patient/Patient_resource.json";
   static final String ECIR_DETAILS_FILENAME = "R4/Misc/eicr.json";
   public static final String XML_FOR_II_USING_GUID =
-          "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>";
+      "<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>";
   R4FhirData r4FhirData;
   LaunchDetails launchDetails = loadLaunchDetailsFromFile();
   Eicr eicr = loadEicrDetailsFromFile();
@@ -65,9 +64,10 @@ public class BaseGeneratorTest {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     r4FhirData = new R4FhirData();
   }
+
   public LaunchDetails loadLaunchDetailsFromFile() {
     return TestUtils.readFileContents(
-            LAUNCH_DETAILS_FILENAME, new TypeReference<LaunchDetails>() {});
+        LAUNCH_DETAILS_FILENAME, new TypeReference<LaunchDetails>() {});
   }
 
   public Eicr loadEicrDetailsFromFile() {
@@ -163,7 +163,6 @@ public class BaseGeneratorTest {
 
     return r4FhirData;
   }
-
 
   public List<DiagnosticReport> getDiagnosticReport(String filename) {
     Bundle b = loadBundleFromFile(filename);
