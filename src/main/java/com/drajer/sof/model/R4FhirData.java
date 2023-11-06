@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ public class R4FhirData extends FhirData {
   private List<Condition> encounterDiagnosisConditions;
   private List<Condition> pregnancyConditions;
   private List<DiagnosticReport> diagReports;
+  private List<Observation> diagReportObservations;
   private List<Observation> labResults;
   private List<Observation> labResultValueObservations;
   private List<Observation> travelObs;
@@ -49,8 +51,10 @@ public class R4FhirData extends FhirData {
   private List<MedicationAdministration> medicationAdministrations;
   private List<Medication> medicationList;
   private List<ServiceRequest> serviceRequests;
+  private List<Procedure> procedureList;
 
   private Address jurisdiction;
+  private List<Address> jurisdictions;
 
   private boolean triggerQueryFailed = false;
 
@@ -63,6 +67,12 @@ public class R4FhirData extends FhirData {
       logger.info(
           " Using Organization information from Encounter.serviceProvider as Jurisdiction ");
       jurisdiction = organization.getAddressFirstRep();
+    } else if (patient != null && patient.getAddress() != null) {
+      logger.info(
+          " Using Patient address information for Jurisdiction assuming first entry of list.");
+      jurisdictions = patient.getAddress();
+
+      jurisdiction = patient.getAddressFirstRep();
     }
   }
 
@@ -108,6 +118,7 @@ public class R4FhirData extends FhirData {
     encounterDiagnosisConditions = new ArrayList<>();
     pregnancyConditions = new ArrayList<>();
     diagReports = new ArrayList<>();
+    diagReportObservations = new ArrayList<>();
     labResults = new ArrayList<>();
     labResultValueObservations = new ArrayList<>();
     travelObs = new ArrayList<>();
@@ -119,6 +130,7 @@ public class R4FhirData extends FhirData {
     medicationAdministrations = new ArrayList<>();
     serviceRequests = new ArrayList<>();
     medicationList = new ArrayList<>();
+    procedureList = new ArrayList<>();
   }
 
   public Bundle getData() {
@@ -201,6 +213,10 @@ public class R4FhirData extends FhirData {
     this.encounterDiagnosisConditions = encounterDiagnosisConditions;
   }
 
+  public void addEncounterDiagnosisConditions(List<Condition> encounterDiagnosisConditions) {
+    this.encounterDiagnosisConditions.addAll(encounterDiagnosisConditions);
+  }
+
   public List<Condition> getPregnancyConditions() {
     return pregnancyConditions;
   }
@@ -223,6 +239,10 @@ public class R4FhirData extends FhirData {
 
   public void setLabResults(List<Observation> labResults) {
     this.labResults = labResults;
+  }
+
+  public void addLabResults(List<Observation> labRes) {
+    this.labResults.addAll(labRes);
   }
 
   public List<Observation> getTravelObs() {
@@ -312,5 +332,81 @@ public class R4FhirData extends FhirData {
 
   public void setTriggerQueryFailed(final boolean triggerQueryFailed) {
     this.triggerQueryFailed = triggerQueryFailed;
+  }
+
+  public List<Procedure> getProcedureList() {
+    return procedureList;
+  }
+
+  public void setProcedureList(List<Procedure> procedureList) {
+    this.procedureList = procedureList;
+  }
+
+  public List<Observation> getDiagReportObservations() {
+    return diagReportObservations;
+  }
+
+  public void setDiagReportObservations(List<Observation> diagReportObservations) {
+    this.diagReportObservations = diagReportObservations;
+  }
+
+  @Override
+  public String toString() {
+    return "R4FhirData [data="
+        + data
+        + ", patient="
+        + patient
+        + ", practitioner="
+        + practitioner
+        + ", practitionersList="
+        + practitionersList
+        + ", encounter="
+        + encounter
+        + ", location="
+        + location
+        + ", locationList="
+        + locationList
+        + ", organization="
+        + organization
+        + ", conditions="
+        + conditions
+        + ", encounterDiagnosisConditions="
+        + encounterDiagnosisConditions
+        + ", pregnancyConditions="
+        + pregnancyConditions
+        + ", diagReports="
+        + diagReports
+        + ", diagReportObservations="
+        + diagReportObservations
+        + ", labResults="
+        + labResults
+        + ", labResultValueObservations="
+        + labResultValueObservations
+        + ", travelObs="
+        + travelObs
+        + ", pregnancyObs="
+        + pregnancyObs
+        + ", occupationObs="
+        + occupationObs
+        + ", immunizations="
+        + immunizations
+        + ", medications="
+        + medications
+        + ", medicationRequests="
+        + medicationRequests
+        + ", medicationAdministrations="
+        + medicationAdministrations
+        + ", medicationList="
+        + medicationList
+        + ", serviceRequests="
+        + serviceRequests
+        + ", procedureList="
+        + procedureList
+        + ", jurisdiction="
+        + jurisdiction
+        + ", jurisdictions="
+        + jurisdictions
+        + "]";
+
   }
 }

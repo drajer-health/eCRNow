@@ -49,7 +49,7 @@ public class CreateEicrAction extends AbstractAction {
         // PreConditions Met, then process related actions.
         Boolean relatedActsDone = true;
         Boolean validationMode = details.getValidationMode();
-        if (conditionsMet || validationMode) {
+        if (Boolean.TRUE.equals(conditionsMet) || Boolean.TRUE.equals(validationMode)) {
 
           logger.info(" PreConditions have been Met, evaluating Related Actions. ");
 
@@ -65,7 +65,8 @@ public class CreateEicrAction extends AbstractAction {
                 // check if the action is completed.
                 String actionId = act.getRelatedAction().getActionId();
 
-                if (!state.hasActionCompleted(actionId) && !validationMode) {
+                if (Boolean.FALSE.equals(state.hasActionCompleted(actionId))
+                    && Boolean.FALSE.equals(validationMode)) {
 
                   logger.info(
                       " Action {} is not completed , hence this action has to wait ", actionId);
@@ -77,7 +78,7 @@ public class CreateEicrAction extends AbstractAction {
                   // Check if there is any timing constraint that needs to be handled.
                   if (act.getDuration() != null
                       && state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
-                      && !validationMode) {
+                      && Boolean.FALSE.equals(validationMode)) {
 
                     // Duration is not null, meaning that the create action has to be delayed by the
                     // duration.
@@ -119,7 +120,7 @@ public class CreateEicrAction extends AbstractAction {
             // Timing constraints are applicable if this job has not started, once it is started
             // the State Machine has to manage the execution.
             if (state.getCreateEicrStatus().getJobStatus() == JobStatus.NOT_STARTED
-                && !validationMode) {
+                && Boolean.FALSE.equals(validationMode)) {
 
               logger.info(" Related Actions Done and this action has not started ");
 
@@ -149,7 +150,7 @@ public class CreateEicrAction extends AbstractAction {
 
             } else if ((state.getCreateEicrStatus().getJobStatus() == JobStatus.SCHEDULED
                     && launchType == WorkflowEvent.SCHEDULED_JOB)
-                || validationMode) {
+                || Boolean.TRUE.equals(validationMode)) {
 
               // Do this only if the job is scheduled.
               logger.info(" Creating the EICR since the job has been scheduled ");
@@ -157,11 +158,10 @@ public class CreateEicrAction extends AbstractAction {
               // Check Trigger Codes again in case the data has changed.
               PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 
-              if ((state.getMatchTriggerStatus().getTriggerMatchStatus()
-                      && !CollectionUtils.isEmpty(state.getMatchTriggerStatus().getMatchedCodes()))
-                  || (newState.getMatchTriggerStatus().getTriggerMatchStatus()
-                      && !CollectionUtils.isEmpty(
-                          newState.getMatchTriggerStatus().getMatchedCodes()))) {
+
+              if (Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())
+                  && newState.getMatchTriggerStatus().getMatchedCodes() != null
+                  && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
 
                 logger.info(
                     "Creating the EICR for {} action as new trigger code is matched",

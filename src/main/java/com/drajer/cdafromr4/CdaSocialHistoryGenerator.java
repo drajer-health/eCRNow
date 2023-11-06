@@ -27,6 +27,7 @@ public class CdaSocialHistoryGenerator {
   private static final Logger logger = LoggerFactory.getLogger(CdaSocialHistoryGenerator.class);
 
   public static String generateSocialHistorySection(R4FhirData data, LaunchDetails details) {
+    logger.info("LaunchDetails in generateSocialHistorySection:{}", details);
 
     StringBuilder sb = new StringBuilder(2000);
 

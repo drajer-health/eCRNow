@@ -54,7 +54,7 @@ public class EcrFhirRetryableSearchTest {
     EcrFhirRetryClient retryClient = mock(EcrFhirRetryClient.class);
     IQuery iQuery = mock(EcrFhirRetryableSearch.class);
     IUntypedQuery iUntypedQuery = mock(EcrFhirRetryableSearch.class);
-    String url = "http://localhost:9010/FHIR/Condition?patient=12742571";
+    String url = "http://localhost:9011/FHIR/Condition?patient=12742571";
     Map<String, FHIRRetryTemplateConfig.HttpMethodType> map = new HashMap<>();
     currentStateDetails.setFhirVersion("R4");
 

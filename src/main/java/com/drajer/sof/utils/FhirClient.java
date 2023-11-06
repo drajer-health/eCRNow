@@ -10,7 +10,6 @@ import ca.uhn.fhir.rest.api.RequestFormatParamStyleEnum;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.IHttpClient;
-import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import ca.uhn.fhir.rest.gclient.ICreate;
 import ca.uhn.fhir.rest.gclient.IDelete;
 import ca.uhn.fhir.rest.gclient.IFetchConformanceUntyped;
@@ -70,7 +69,7 @@ public class FhirClient implements IGenericClient {
   }
 
   @Override
-  public void forceConformanceCheck() throws FhirClientConnectionException {
+  public void forceConformanceCheck() {
     this.interceptor.reset();
     this.client.forceConformanceCheck();
   }

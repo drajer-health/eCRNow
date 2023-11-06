@@ -3,9 +3,12 @@ package com.drajer.cda.parser;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 public class CdaRrModel {
+  private final Logger logger = LoggerFactory.getLogger(CdaRrModel.class);
 
   public static final String UNKONWN_RESPONSE_TYPE = "Unknown";
 
@@ -22,7 +25,9 @@ public class CdaRrModel {
   private CdaIi patientId;
   private CdaIi encounterId;
 
-  public CdaRrModel() {}
+  public CdaRrModel() {
+    logger.info("CdaRrModel initiated");
+  }
 
   public CdaIi getEicrDocId() {
     return eicrDocId;

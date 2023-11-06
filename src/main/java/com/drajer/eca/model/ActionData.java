@@ -66,9 +66,9 @@ public class ActionData {
     if (logger.isInfoEnabled()) {
       logger.info(" *** Printing Action Data *** ");
 
-      if (fhirDataType != null) logger.info(" Fhir Data Type = {}", fhirDataType.toString());
+      if (fhirDataType != null) logger.info(" Fhir Data Type = {}", fhirDataType);
 
-      if (triggerType != null) logger.info(" Trigger Type = {}", triggerType.toString());
+      if (triggerType != null) logger.info(" Trigger Type = {}", triggerType);
 
       logger.info(" Path  = {}", path);
 

@@ -1,0 +1,29 @@
+{
+  "eicrDocId": [
+    {
+      "rootValue": "12345",
+      "extValue": "67890"
+    }
+  ],
+  "rrDocId": {
+    "rootValue": "67890",
+    "extValue": "12345"
+  },
+  "reportableStatus": {
+    "code": "439401001",
+    "displayName": "Diagnosis"
+  },
+  "reportableType": "RRVS1",
+  "patientId": [
+    {
+      "rootValue": "54321",
+      "extValue": "98765"
+    }
+  ],
+  "encounterId": [
+    {
+      "rootValue": "12345",
+      "extValue": "67890"
+    }
+  ]
+}

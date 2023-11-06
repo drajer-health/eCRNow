@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = SpringConfiguration.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
@@ -67,7 +67,7 @@ public abstract class BaseIntegrationTest {
   protected static final String URL = "http://localhost:";
   protected static final String fhirBaseUrl = "/FHIR";
 
-  protected static final int wireMockHttpPort = 9010;
+  protected static final int wireMockHttpPort = 9011;
   protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
 
@@ -100,6 +100,11 @@ public abstract class BaseIntegrationTest {
     systemLaunchPayload = jsonObject.toString();
 
     return systemLaunchPayload;
+  }
+
+  protected String getSystemLaunch3Payload(String systemLaunchFile) {
+
+    return TestUtils.getFileContentAsString(systemLaunchFile);
   }
 
   protected void createClientDetails(String clientDetailsFile) throws IOException {

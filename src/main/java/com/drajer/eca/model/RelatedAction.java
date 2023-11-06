@@ -44,7 +44,7 @@ public class RelatedAction {
     if (logger.isInfoEnabled()) {
       logger.info(" *** Printing Related Actions *** ");
 
-      if (relationship != null) logger.info(" Relationship = {}", relationship.toString());
+      if (relationship != null) logger.info(" Relationship = {}", relationship);
 
       if (abstractAction != null) abstractAction.print();
 

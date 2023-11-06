@@ -1,0 +1,55 @@
+{
+  "resourceType": "MedicationRequest",
+  "id": "medrx002",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: MedicationRequest</b><a name=\"medrx002\"> </a></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource MedicationRequest &quot;medrx002&quot; </p></div><p><b>identifier</b>: id: 12345 (use: OFFICIAL)</p><p><b>status</b>: active</p><p><b>intent</b>: order</p><h3>Medications</h3><table class=\"grid\"><tr><td>-</td><td><b>Reference</b></td></tr><tr><td>*</td><td><span title=\"  Linked to a RESOURCE Medication  \"><a href=\"medicationexample0316.html\">Medication/med0316: prescribed medication</a></span></td></tr></table><p><b>subject</b>: <a href=\"patient-example-a.html\">Patient/pat1: Donald Duck</a> &quot;Donald DUCK&quot;</p><p><b>encounter</b>: <a href=\"encounter-example-f001-heart.html\">Encounter/f001: encounter that leads to this prescription</a></p><p><b>authoredOn</b>: 2015-03-01</p><p><b>requester</b>: <a href=\"practitioner-example-f007-sh.html\">Practitioner/f007: Patrick Pump</a> &quot;Simone HEPS&quot;</p><h3>Reasons</h3><table class=\"grid\"><tr><td>-</td><td><b>Concept</b></td></tr><tr><td>*</td><td>Essential hypertension (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#59621000)</span></td></tr></table><h3>DosageInstructions</h3><table class=\"grid\"><tr><td>-</td><td><b>Sequence</b></td><td><b>Text</b></td></tr><tr><td>*</td><td>1</td><td>Take one tablet daily as directed</td></tr></table></div>"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "http://www.bmc.nl/portal/prescriptions",
+      "value": "12345"
+    }
+  ],
+  "status": "active",
+  "intent": "order",
+  "medication": {
+    "reference": {
+      "reference": "Medication/med0316",
+      "display": "prescribed medication"
+    }
+  },
+  "subject": {
+    "reference": "Patient/pat1",
+    "display": "Donald Duck"
+  },
+  "encounter": {
+    "reference": "Encounter/f001",
+    "display": "encounter that leads to this prescription"
+  },
+  "authoredOn": "2015-03-01",
+  "requester": {
+    "reference": "Practitioner/f007",
+    "display": "Patrick Pump"
+  },
+  "reason": [
+    {
+      "concept": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "59621000",
+            "display": "Essential hypertension (disorder)"
+          }
+        ]
+      }
+    }
+  ],
+  "dosageInstruction": [
+    {
+      "sequence": 1,
+      "text": "Take one tablet daily as directed"
+    }
+  ]
+}
