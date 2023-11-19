@@ -4,12 +4,16 @@ import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 
 import com.drajer.bsa.auth.RestApiAuthorizationHeaderIf;
 import com.drajer.bsa.model.KarProcessingData;
+import com.drajer.bsa.model.TriggerMatchExecution;
 import com.drajer.bsa.routing.DataTransportInterface;
+import com.drajer.bsa.utils.BsaServiceUtils;
+import java.util.stream.Collectors;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+// here
 @Service
 public class RestfulTransportImpl implements DataTransportInterface {
 
@@ -26,6 +31,12 @@ public class RestfulTransportImpl implements DataTransportInterface {
   @Autowired RestApiAuthorizationHeaderIf authorizationService;
 
   @Autowired private RestTemplate restTemplate;
+
+  @Value("${isMatchedPathsAndEicrDocIdRequired:false}")
+  private boolean isMatchedPathsAndEicrDocIdRequired;
+
+  private static final String MATCHED_PATHS_HEADER = "matchedPaths";
+  private static final String EICR_DOC_ID_HEADER = "eicrDocId";
 
   @Override
   public void sendEicrDataUsingDirect(KarProcessingData data) {
@@ -81,6 +92,12 @@ public class RestfulTransportImpl implements DataTransportInterface {
         logger.debug("Eicr Trigger request: {}", json);
       }
 
+      if (isMatchedPathsAndEicrDocIdRequired) {
+        String matchedPaths = getTriggerMatchedCodes(data);
+        headers.add(MATCHED_PATHS_HEADER, matchedPaths);
+        headers.add(EICR_DOC_ID_HEADER, data.getPhm().getSubmittedDataId());
+      }
+
       final HttpEntity<String> request = new HttpEntity<>(json, headers);
 
       logger.info(data.getHealthcareSetting().getRestApiUrl());
@@ -114,6 +131,22 @@ public class RestfulTransportImpl implements DataTransportInterface {
     }
 
     return bundleResponse;
+  }
+
+  private String getTriggerMatchedCodes(KarProcessingData data) {
+
+    String matchedPaths = "";
+    TriggerMatchExecution state = BsaServiceUtils.getDetailStatus(data);
+    if (state != null && state.getStatuses() != null) {
+      matchedPaths =
+          state
+              .getStatuses()
+              .stream()
+              .flatMap(ctcs -> ctcs.getMatchedCodes().stream())
+              .map(mtc -> mtc.getMatchedPath())
+              .collect(Collectors.joining(","));
+    }
+    return matchedPaths;
   }
 
   /**
