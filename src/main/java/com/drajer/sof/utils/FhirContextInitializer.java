@@ -138,7 +138,7 @@ public class FhirContextInitializer {
 
     FhirClient client =
         new FhirClient(context.newRestfulGenericClient(url), requestId, EventTypes.QueryType.NONE);
-    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+    context.getRestfulClientFactory().setSocketTimeout(socketTimeoutInSec * 1000);
     context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
     context.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
 
