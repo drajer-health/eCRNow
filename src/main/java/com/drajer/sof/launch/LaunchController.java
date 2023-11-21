@@ -97,14 +97,6 @@ public class LaunchController {
   @PostMapping(value = "/api/launchDetails")
   public LaunchDetails saveLaunchDetails(@RequestBody LaunchDetails launchDetails) {
 
-    logger.info(" Saving Launch Context: {}", launchDetails);
-    authDetailsService.saveOrUpdate(launchDetails);
-
-    if (Boolean.FALSE.equals(launchDetails.getIsMultiTenantSystemLaunch())) {
-      logger.info("Scheduling refresh token job ");
-      tokenScheduler.scheduleJob(launchDetails);
-    }
-
     String taskInstanceId = "";
     // Kick off the Launch Event Processing
     scheduleJob(launchDetails, taskInstanceId);
