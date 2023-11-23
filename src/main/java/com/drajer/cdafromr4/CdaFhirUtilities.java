@@ -339,7 +339,7 @@ public class CdaFhirUtilities {
 
     StringBuilder addrString = new StringBuilder(200);
 
-    if (addr != null) {
+    if (addr != null&& !addr.isEmpty()) {
 
       logger.debug(" Found a valid address. ");
       String addrUse = null;

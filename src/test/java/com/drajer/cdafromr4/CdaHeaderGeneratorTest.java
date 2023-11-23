@@ -55,6 +55,21 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   static final String ORGANIZATION_FILENAME = "CdaTestData/patient/Organization.json";
   static final String PRACTITIONER_FILENAME = "CdaTestData/Practitioner/Practitioner.json";
 
+  public static List<Address> getAddressDetails() {
+    List<Address> addrs = new ArrayList<>();
+    Address addr = new Address();
+    List<StringType> addrLine = new ArrayList<>();
+    addrLine.add(new StringType("0987 Facility Drive"));
+    addr.setLine(addrLine);
+    addr.setCity("alt Lake City");
+    addr.setState("UT");
+    addr.setCountry("US");
+    addr.setPostalCode("84101");
+    addr.setUse(Address.AddressUse.WORK);
+    addrs.add(addr);
+
+    return addrs;
+  }
   @Test
   public void testCreateCdaHeader() {
     // Set up test data

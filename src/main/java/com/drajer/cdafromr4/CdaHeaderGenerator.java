@@ -1086,19 +1086,4 @@ public class CdaHeaderGenerator {
     } else return false;
   }
 
-  public static List<Address> getAddressDetails() {
-    List<Address> addrs = new ArrayList<>();
-    Address addr = new Address();
-    List<StringType> addrLine = new ArrayList<>();
-    addrLine.add(new StringType("0987 Facility Drive"));
-    addr.setLine(addrLine);
-    addr.setCity("alt Lake City");
-    addr.setState("UT");
-    addr.setCountry("US");
-    addr.setPostalCode("84101");
-    addr.setUse(AddressUse.WORK);
-    addrs.add(addr);
-
-    return addrs;
-  }
 }
