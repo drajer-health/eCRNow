@@ -9,6 +9,8 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;
@@ -157,9 +159,11 @@ public class CreateEicrAction extends AbstractAction {
               // Check Trigger Codes again in case the data has changed.
               PatientExecutionState newState = EcaUtils.recheckTriggerCodes(details, launchType);
 
-              if (Boolean.TRUE.equals(newState.getMatchTriggerStatus().getTriggerMatchStatus())
-                  && newState.getMatchTriggerStatus().getMatchedCodes() != null
-                  && !newState.getMatchTriggerStatus().getMatchedCodes().isEmpty()) {
+              if ((state.getMatchTriggerStatus().getTriggerMatchStatus()
+                      && !CollectionUtils.isEmpty(state.getMatchTriggerStatus().getMatchedCodes()))
+                      || (newState.getMatchTriggerStatus().getTriggerMatchStatus()
+                      && !CollectionUtils.isEmpty(
+                      newState.getMatchTriggerStatus().getMatchedCodes()))) {
 
                 logger.info(
                     "Creating the EICR for {} action as new trigger code is matched",
