@@ -92,7 +92,7 @@ public class CheckTriggerCodeStatusList {
 
     return false;
   }
-
+// Method to extract matched paths from trigger_match_status column of ph_message.
   public String getTriggerMatchedPaths() {
     String matchedPath =
         statuses
