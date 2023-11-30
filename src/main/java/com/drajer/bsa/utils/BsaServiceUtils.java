@@ -11,7 +11,6 @@ import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
-import com.drajer.bsa.model.TriggerMatchExecution;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -702,22 +701,6 @@ public class BsaServiceUtils {
       throw new RuntimeException(msg, e);
     }
 
-    return state;
-  }
-
-  public static TriggerMatchExecution getDetailStatus(KarProcessingData data) {
-    ObjectMapper mapper = new ObjectMapper();
-    TriggerMatchExecution state = null;
-
-    try {
-
-      state = mapper.readValue(data.getPhm().getTriggerMatchStatus(), TriggerMatchExecution.class);
-
-    } catch (JsonProcessingException e1) {
-      String msg = "Unable to read/write execution state";
-      logger.error(msg, e1);
-      throw new RuntimeException(msg, e1);
-    }
     return state;
   }
 }

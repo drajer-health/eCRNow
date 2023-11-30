@@ -3,7 +3,9 @@ package com.drajer.bsa.kar.action;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,5 +91,17 @@ public class CheckTriggerCodeStatusList {
     }
 
     return false;
+  }
+
+  public String getTriggerMatchedPaths() {
+    String matchedPath =
+        statuses
+            .stream()
+            .filter(Objects::nonNull)
+            .flatMap(status -> status.getMatchedCodes().stream())
+            .filter(Objects::nonNull)
+            .map(MatchedTriggerCodes::getMatchedPath)
+            .collect(Collectors.joining(","));
+    return matchedPath;
   }
 }

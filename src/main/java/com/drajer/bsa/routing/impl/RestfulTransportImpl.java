@@ -3,11 +3,10 @@ package com.drajer.bsa.routing.impl;
 import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 
 import com.drajer.bsa.auth.RestApiAuthorizationHeaderIf;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.model.KarProcessingData;
-import com.drajer.bsa.model.TriggerMatchExecution;
 import com.drajer.bsa.routing.DataTransportInterface;
 import com.drajer.bsa.utils.BsaServiceUtils;
-import java.util.stream.Collectors;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -92,7 +91,7 @@ public class RestfulTransportImpl implements DataTransportInterface {
       }
 
       if (isMatchedPathsAndEicrDocIdRequired) {
-        String matchedPaths = getTriggerMatchedCodes(data);
+        String matchedPaths = getTriggerMatchedPaths(data);
         headers.add(MATCHED_PATHS_HEADER, matchedPaths);
         headers.add(EICR_DOC_ID_HEADER, data.getPhm().getSubmittedDataId());
       }
@@ -132,18 +131,12 @@ public class RestfulTransportImpl implements DataTransportInterface {
     return bundleResponse;
   }
 
-  private String getTriggerMatchedCodes(KarProcessingData data) {
-    String matchedPaths = "";
-    TriggerMatchExecution state = BsaServiceUtils.getDetailStatus(data);
-    if (state != null && state.getStatuses() != null) {
-      matchedPaths =
-          state
-              .getStatuses()
-              .stream()
-              .flatMap(ctcs -> ctcs.getMatchedCodes().stream())
-              .map(mtc -> mtc.getMatchedPath())
-              .collect(Collectors.joining(","));
-    }
+  private String getTriggerMatchedPaths(KarProcessingData data) {
+
+    CheckTriggerCodeStatusList status =
+        BsaServiceUtils.getTriggerMatchStatus(data.getPhm().getTriggerMatchStatus());
+    String matchedPaths = status.getTriggerMatchedPaths();
+
     return matchedPaths;
   }
 
