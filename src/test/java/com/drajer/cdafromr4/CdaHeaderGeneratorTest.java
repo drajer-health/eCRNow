@@ -70,6 +70,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     return addrs;
   }
+
   @Test
   public void testCreateCdaHeader() {
     // Set up test data

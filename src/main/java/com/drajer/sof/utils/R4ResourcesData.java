@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
@@ -79,12 +80,13 @@ public class R4ResourcesData {
       try {
         logger.info("Getting Encounter data by ID {}", encounterID);
         encounter = (Encounter) client.read().resource(ENCOUNTER).withId(encounterID).execute();
-      } catch (ResourceNotFoundException resourceNotFoundException) {
-        logger.error(
-            "Error in getting Encounter resource by Id: {}",
-            encounterID,
-            resourceNotFoundException);
-        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+      } catch (ResourceNotFoundException | RetryableException exception) {
+        if (exception instanceof ResourceNotFoundException
+            || (exception instanceof RetryableException
+                && exception.getCause() instanceof ResourceNotFoundException)) {
+          logger.error("Error in getting Encounter resource by Id: {}", encounterID, exception);
+          WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+        }
       } catch (Exception e) {
         logger.error("Error in getting Encounter resource by Id: {}", encounterID, e);
       }

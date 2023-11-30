@@ -9,7 +9,6 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
@@ -161,9 +160,9 @@ public class CreateEicrAction extends AbstractAction {
 
               if ((state.getMatchTriggerStatus().getTriggerMatchStatus()
                       && !CollectionUtils.isEmpty(state.getMatchTriggerStatus().getMatchedCodes()))
-                      || (newState.getMatchTriggerStatus().getTriggerMatchStatus()
+                  || (newState.getMatchTriggerStatus().getTriggerMatchStatus()
                       && !CollectionUtils.isEmpty(
-                      newState.getMatchTriggerStatus().getMatchedCodes()))) {
+                          newState.getMatchTriggerStatus().getMatchedCodes()))) {
 
                 logger.info(
                     "Creating the EICR for {} action as new trigger code is matched",

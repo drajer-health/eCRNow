@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
@@ -1085,5 +1084,4 @@ public class CdaHeaderGenerator {
       return true;
     } else return false;
   }
-
 }

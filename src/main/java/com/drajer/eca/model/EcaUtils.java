@@ -148,7 +148,6 @@ public class EcaUtils {
       logger.info("No Matched codes found for : {}", ad.getPath());
     }
 
-
     return matchfound;
   }
 
