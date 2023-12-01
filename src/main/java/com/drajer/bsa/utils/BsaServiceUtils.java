@@ -13,6 +13,7 @@ import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -671,6 +672,7 @@ public class BsaServiceUtils {
   public static CheckTriggerCodeStatusList getTriggerMatchStatus(String data) {
 
     ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     CheckTriggerCodeStatusList state = null;
 
     try {
