@@ -498,7 +498,10 @@ public class CdaResultGenerator {
       for (ObservationComponentComponent oc : obs.getComponent()) {
 
         logger.debug("Found Observation Components ");
-        if (oc.getCode() != null) {
+        if (oc.hasCode()
+            && oc.getCode().hasCoding()
+            && CdaFhirUtilities.isCodingPresentForCodeSystem(
+                oc.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
           cc = oc.getCode();
         }
 
@@ -533,13 +536,20 @@ public class CdaResultGenerator {
       }
     }
 
-    if (Boolean.FALSE.equals(foundComponent)) {
-
+    if (obs != null && Boolean.FALSE.equals(foundComponent)) {
+      CodeableConcept cc = null;
       logger.debug("No component found , so directly adding the observation code ");
+      if (obs.hasCode()
+          && obs.getCode().hasCoding()
+          && CdaFhirUtilities.isCodingPresentForCodeSystem(
+              obs.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL)) {
+        cc = obs.getCode();
+      }
+
       lrEntry.append(
           getXmlForObservationComponent(
               details,
-              obs.getCode(),
+              cc,
               obs.getValue(),
               obs.getId(),
               obs.getEffective(),

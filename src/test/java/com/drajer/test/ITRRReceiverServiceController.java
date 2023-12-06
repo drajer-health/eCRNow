@@ -2,9 +2,7 @@ package com.drajer.test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.model.ReportabilityResponse;
@@ -102,7 +100,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
-    assertEquals("RRVS1", eicr != null ? eicr.getResponseType() : null);
+    assertTrue(eicr.getResponseType().contains("RRVS1"));
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertEquals("197477086", eicr.getEhrDocRefId());
@@ -124,7 +122,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(moreThanOrExactly(1), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
-    assertEquals("RRVS2", eicr != null ? eicr.getResponseType() : null);
+    assertTrue(eicr.getResponseType().contains("RRVS2"));
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertEquals("197477086", eicr.getEhrDocRefId());
@@ -143,7 +141,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     wireMockServer.verify(moreThanOrExactly(0), postRequestedFor(urlEqualTo(FHIR_DOCREF_URL)));
 
     eicr = getEICRDocument(eicr.getId().toString());
-    assertEquals("RRVS3", eicr != null ? eicr.getResponseType() : null);
+    assertTrue(eicr.getResponseType().contains("RRVS3"));
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertNull(eicr.getEhrDocRefId());
@@ -162,7 +160,7 @@ public class ITRRReceiverServiceController extends BaseIntegrationTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
     eicr = getEICRDocument(eicr.getId().toString());
-    assertEquals("RRVS4", eicr != null ? eicr.getResponseType() : null);
+    assertTrue(eicr.getResponseType().contains("RRVS4"));
     assertEquals(rr != null ? rr.getRrXml() : "", eicr != null ? eicr.getResponseData() : null);
     assertEquals("123456", eicr != null ? eicr.getResponseXRequestId() : null);
     assertNull(eicr.getEhrDocRefId());

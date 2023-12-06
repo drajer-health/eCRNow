@@ -1,6 +1,8 @@
 package com.drajer.cda.parser;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -16,7 +18,7 @@ public class CdaRrModel {
 
   private CdaCode reportableStatus;
 
-  private String reportableType;
+  private Set<String> reportableType;
 
   private String errors;
   private CdaIi setId;
@@ -35,12 +37,19 @@ public class CdaRrModel {
     this.eicrDocId = eicrDocId;
   }
 
-  public String getReportableType() {
+  public Set<String> getReportableType() {
     return reportableType;
   }
 
-  public void setReportableType(String reportableType) {
+  public void setReportableType(Set<String> reportableType) {
     this.reportableType = reportableType;
+  }
+
+  public void addReportableType(String reportableType) {
+    if (this.reportableType == null) {
+      this.reportableType = new HashSet<>();
+    }
+    this.reportableType.add(reportableType);
   }
 
   public String getErrors() {

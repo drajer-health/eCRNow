@@ -113,6 +113,7 @@ public class EcaUtils {
       logger.debug(
           "Total # of {} Codes in Trigger Code Value Set for matching for Emergent Reporting",
           codesToMatchAgainst.size());
+
     } else {
 
       codesToMatchAgainst =
@@ -128,6 +129,10 @@ public class EcaUtils {
 
       logger.info("Number of Matched Codes = {}", intersection.size());
 
+      for (String matchCode : intersection) {
+        logger.info("Matched Code = {}", matchCode);
+      }
+
       state.getMatchTriggerStatus().setTriggerMatchStatus(true);
       matchfound = true;
 
@@ -142,6 +147,7 @@ public class EcaUtils {
 
       logger.info("No Matched codes found for : {}", ad.getPath());
     }
+
     return matchfound;
   }
 

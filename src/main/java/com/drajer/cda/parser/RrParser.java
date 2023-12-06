@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -76,26 +77,31 @@ public class RrParser {
               "SetID = {}", ((model.getSetId() != null) ? model.getSetId().getExtValue() : null));
 
           // Determine status
-          Element rrstatusElem =
-              (Element) CdaParserConstants.RR_STATUS_OBS_EXP.evaluate(doc, XPathConstants.NODE);
+          NodeList rrstatusNodes =
+              (NodeList) CdaParserConstants.RR_STATUS_OBS_EXP.evaluate(doc, XPathConstants.NODESET);
 
-          if (rrstatusElem != null) {
+          if (rrstatusNodes != null && rrstatusNodes.getLength() > 0) {
 
             logger.debug(" Found the Reportability Status Node ");
-            Element resultValue =
-                (Element)
-                    CdaParserConstants.REL_VAL_EXP.evaluate(rrstatusElem, XPathConstants.NODE);
 
-            if (resultValue != null) {
+            for (int i = 0; i < rrstatusNodes.getLength(); i++) {
 
-              logger.debug(" Found the Reportability Status Value Node ");
-              CdaCode val = CdaParserUtilities.readCode(resultValue);
+              Node rrstatusElem = rrstatusNodes.item(i);
+              Element resultValue =
+                  (Element)
+                      CdaParserConstants.REL_VAL_EXP.evaluate(rrstatusElem, XPathConstants.NODE);
 
-              if (val != null) {
+              if (resultValue != null) {
 
-                logger.debug(" Setting the Reportability Status ");
-                model.setReportableType(val.getCode());
-                model.setReportableStatus(val);
+                logger.debug(" Found the Reportability Status Value Node ");
+                CdaCode val = CdaParserUtilities.readCode(resultValue);
+
+                if (val != null) {
+
+                  logger.debug(" Setting the Reportability Status ");
+                  model.addReportableType(val.getCode());
+                  model.setReportableStatus(val);
+                }
               }
             }
           }
@@ -114,9 +120,10 @@ public class RrParser {
                       CdaParserConstants.ENCOUNTER_ID_EXP.evaluate(doc, XPathConstants.NODESET)));
 
           logger.info(
-              "Patient Id = {}, Encounter Id = {}",
+              "Patient Id = {}, Encounter Id = {}, RR Statuses: {}",
               ((model.getPatientId() != null) ? model.getPatientId().getExtValue() : null),
-              ((model.getEncounterId() != null) ? model.getEncounterId().getExtValue() : null));
+              ((model.getEncounterId() != null) ? model.getEncounterId().getExtValue() : null),
+              ((model.getReportableType() != null) ? model.getReportableType() : null));
         }
 
       } catch (XPathExpressionException e) {

@@ -14,21 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,9 +183,7 @@ public class CdaHeaderGenerator {
   }
 
   private static String getParticipantXml(LaunchDetails details, R4FhirData data, Patient patient) {
-
     logger.info("LaunchDetails :{} R4FhirData:{}", details, data);
-
     StringBuilder s = new StringBuilder("");
     if (patient != null && patient.getContact() != null) {
 
@@ -930,7 +916,6 @@ public class CdaHeaderGenerator {
     if (religion != null) {
       patientDetails.append(CdaFhirUtilities.getReligiousAffiliationXml(religion));
     }
-
     Coding race =
         CdaFhirUtilities.getCodingExtension(
             p.getExtension(),

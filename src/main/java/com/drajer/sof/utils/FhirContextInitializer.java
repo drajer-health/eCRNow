@@ -75,6 +75,9 @@ public class FhirContextInitializer {
   @Value("${ecr.fhir.skip.triggerquery.resources:}")
   private String skipTriggerResource;
 
+  @Value("${ecr.fhir.connection.socket.timeout:90}")
+  private int socketTimeoutInSec;
+
   @Value("${socket.timeout:3}")
   private Integer socketTimeout;
 
@@ -135,8 +138,7 @@ public class FhirContextInitializer {
 
     FhirClient client =
         new FhirClient(context.newRestfulGenericClient(url), requestId, EventTypes.QueryType.NONE);
-
-    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+    context.getRestfulClientFactory().setSocketTimeout(socketTimeoutInSec * 1000);
     context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
     context.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
 
@@ -178,7 +180,7 @@ public class FhirContextInitializer {
             context.newRestfulGenericClient(launchDetails.getEhrServerURL()),
             launchDetails.getxRequestId(),
             type);
-    context.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+    context.getRestfulClientFactory().setSocketTimeout(socketTimeoutInSec * 1000);
 
     BearerTokenAuthInterceptor bearerTokenAuthInterceptor =
         new EcrOAuthBearerTokenInterceptor(launchDetails);

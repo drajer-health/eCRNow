@@ -604,7 +604,6 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForNfQuantity(String elName, String nf, Boolean valFlag) {
-
     if (Boolean.FALSE.equals(valFlag)) {
       return CdaGeneratorConstants.START_XMLTAG
           + elName

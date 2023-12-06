@@ -2,14 +2,21 @@ package com.drajer.routing;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 
+import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.security.AuthorizationService;
+import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,6 +33,12 @@ public class RestApiSender {
   @Autowired private AuthorizationService authorizationService;
 
   @Autowired private RestTemplate restTemplate;
+
+  @Value("${isMatchedPathsAndEicrDocIdRequired:false}")
+  private boolean isMatchedPathsAndEicrDocIdRequired;
+
+  private static final String MATCHED_PATHS_HEADER = "matchedPaths";
+  private static final String EICR_DOC_ID_HEADER = "eicrDocId";
 
   public JSONObject sendEicrXmlDocument(
       final LaunchDetails launchDetails, final String eicrXml, Eicr ecr) {
@@ -58,8 +71,16 @@ public class RestApiSender {
       if (logger.isDebugEnabled()) {
         logger.debug("Eicr Trigger request: {}", json);
       }
+      if (isMatchedPathsAndEicrDocIdRequired) {
+        String matchedPaths = "";
+        matchedPaths = getTriggerMatchedCodes(launchDetails);
+        headers.add(MATCHED_PATHS_HEADER, matchedPaths);
+        headers.add(EICR_DOC_ID_HEADER, ecr.getEicrDocId());
+      }
 
       final HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+      logger.info("Request Header : {}", headers);
 
       logger.info(launchDetails.getRestAPIURL());
 
@@ -91,6 +112,27 @@ public class RestApiSender {
       throw new RuntimeException(e.getMessage());
     }
     return bundleResponse;
+  }
+
+  public String getTriggerMatchedCodes(final LaunchDetails launchDetails) {
+    String matchedPaths = "";
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(launchDetails);
+    if (state != null) {
+      if (state.getMatchTriggerStatus() != null
+          && state.getMatchTriggerStatus().getMatchedCodes() != null) {
+        List<MatchedTriggerCodes> codes = state.getMatchTriggerStatus().getMatchedCodes();
+        matchedPaths =
+            codes
+                .stream()
+                .filter(Objects::nonNull)
+                .map(code -> code.getMatchedPath())
+                .collect(Collectors.joining(","));
+        logger.info("Matched Paths {}", matchedPaths);
+      }
+    } else {
+      logger.info("No Matched Codes present");
+    }
+    return matchedPaths;
   }
 
   /**

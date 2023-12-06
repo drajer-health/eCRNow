@@ -56,6 +56,8 @@ public class R4FhirData extends FhirData {
   private Address jurisdiction;
   private List<Address> jurisdictions;
 
+  private boolean triggerQueryFailed = false;
+
   public void prepareJurisdicationData() {
 
     if (location != null && location.getAddress() != null) {
@@ -322,6 +324,14 @@ public class R4FhirData extends FhirData {
 
   public void setLabResultValueObservations(List<Observation> labResultValueObservations) {
     this.labResultValueObservations = labResultValueObservations;
+  }
+
+  public boolean hasTriggerQueryFailed() {
+    return triggerQueryFailed;
+  }
+
+  public void setTriggerQueryFailed(final boolean triggerQueryFailed) {
+    this.triggerQueryFailed = triggerQueryFailed;
   }
 
   public List<Procedure> getProcedureList() {

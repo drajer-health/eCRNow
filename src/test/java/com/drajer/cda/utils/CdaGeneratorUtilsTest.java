@@ -753,6 +753,20 @@ public class CdaGeneratorUtilsTest {
     String expectedResult = "<MOBILE value=\"tel:(202)102-1012\" use=\"WORK\"/>\n";
     String actualResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "2021021012", "WORK");
     assertEquals(expectedResult, actualResult);
+
+    String trimmedResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "+1(202)1021012", "WORK");
+    assertEquals(expectedResult, trimmedResult);
+
+    String noUseAttrResult = "<MOBILE value=\"tel:(202)102-1012\"/>\n";
+    String noAttrResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "2021021012", "");
+    assertEquals(noUseAttrResult, noAttrResult);
+
+    String nullExpectedResult = "<MOBILE nullFlavor=\"NI\"/>\n";
+    String nullResult = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "1021012", "WORK");
+    assertEquals(nullExpectedResult, nullResult);
+
+    String nullResult2 = CdaGeneratorUtils.getXmlForTelecom("MOBILE", "", "WORK");
+    assertEquals(nullExpectedResult, nullResult2);
   }
 
   @Test

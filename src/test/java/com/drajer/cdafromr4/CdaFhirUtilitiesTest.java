@@ -98,6 +98,141 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGetTelecomXml() {
+
+    List<ContactPoint> cps = new ArrayList<ContactPoint>();
+    ContactPoint cp1 = new ContactPoint();
+    cp1.setUse(ContactPointUse.HOME);
+    cp1.setSystem(ContactPointSystem.PHONE);
+    cp1.setValue("1234567890");
+    cps.add(cp1);
+    ContactPoint cp2 = new ContactPoint();
+    cp2.setUse(ContactPointUse.MOBILE);
+    cp2.setSystem(ContactPointSystem.PHONE);
+    cp2.setValue("0987654321");
+    cps.add(cp2);
+    ContactPoint cp3 = new ContactPoint();
+    cp3.setUse(ContactPointUse.WORK);
+    cp3.setSystem(ContactPointSystem.EMAIL);
+    cp3.setValue("a@b.com");
+    cps.add(cp3);
+
+    String result = CdaFhirUtilities.getTelecomXml(cps, false);
+
+    assertTrue(result.contains("(123)456-7890"));
+    assertTrue(result.contains("(098)765-4321"));
+    assertFalse(result.contains("a@b.com"));
+
+    String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
+    assertTrue(result2.contains("(123)456-7890"));
+    assertFalse(result2.contains("(098)765-4321"));
+    assertFalse(result2.contains("a@b.com"));
+
+    String result3 = CdaFhirUtilities.getTelecomXml(null, true);
+    String expected = "<telecom nullFlavor=\"NI\"/>";
+    assertEquals(expected, result3.trim());
+  }
+  // When we have only work address
+  @Test
+  public void testGetAddressWorkXml() {
+
+    List<Address> addrs = new ArrayList<Address>();
+    Address addressWork = getAddressWork();
+    addrs.add(addressWork);
+
+    String result = CdaFhirUtilities.getAddressXml(addrs, false);
+
+    assertTrue(result.contains("2800 Rockcreek Parkway"));
+    assertTrue(result.contains("2800"));
+    assertTrue(result.contains("Kansas"));
+    assertTrue(result.contains("US"));
+  }
+
+  // when we don't have work address
+  @Test
+  public void testGetAddressWithoutWork() {
+
+    List<Address> addrs = new ArrayList<Address>();
+    Address addressBilling = getAddressBilling();
+
+    addrs.add(addressBilling);
+
+    Address addressHome = getAddressHome();
+
+    addrs.add(addressHome);
+    String result = CdaFhirUtilities.getAddressXml(addrs, false);
+
+    assertTrue(result.contains("2300 Cloud Way"));
+    assertTrue(result.contains("20765"));
+    assertTrue(result.contains("Cloud Way"));
+    assertTrue(result.contains("Austin"));
+  }
+
+  // when we have work address along with other addresses
+  @Test
+  public void testGetAddressWithMultipleAddress() {
+
+    List<Address> addrs = new ArrayList<Address>();
+    Address addressBilling = getAddressBilling();
+    addrs.add(addressBilling);
+    Address addressWork = getAddressWork();
+    addrs.add(addressWork);
+    Address addressHome = getAddressHome();
+    addrs.add(addressHome);
+    String result = CdaFhirUtilities.getAddressXml(addrs, false);
+
+    assertTrue(result.contains("2800 Rockcreek Parkway"));
+    assertTrue(result.contains("2800"));
+    assertTrue(result.contains("North Kansas City"));
+    assertTrue(result.contains("US"));
+  }
+
+  private Address getAddressWork() {
+    Address addressWork = new Address();
+    addressWork.setUse(AddressUse.WORK);
+    StringType line = new StringType();
+    line.setValue("2800 Rockcreek Parkway");
+    List<StringType> lines = new ArrayList<StringType>();
+    lines.add(line);
+    addressWork.setLine(lines);
+    addressWork.setCity("North Kansas City,");
+    addressWork.setState("Kansas");
+    addressWork.setPostalCode("2800");
+    addressWork.setCountry("US");
+    return addressWork;
+  }
+
+  private Address getAddressHome() {
+    Address addressHome = new Address();
+    addressHome.setUse(AddressUse.HOME);
+    StringType line3 = new StringType();
+    line3.setValue("Outer Ring road");
+    List<StringType> lines3 = new ArrayList<StringType>();
+    lines3.add(line3);
+    addressHome.setLine(lines3);
+    addressHome.setCity("Bangalore");
+    addressHome.setState("Karnataka");
+    addressHome.setPostalCode("560045");
+    addressHome.setCountry("India");
+    return addressHome;
+  }
+
+  private Address getAddressBilling() {
+    Address addressBilling = new Address();
+    addressBilling.setUse(AddressUse.BILLING);
+    StringType line2 = new StringType();
+    line2.setValue("2300 Cloud Way");
+    List<StringType> lines2 = new ArrayList<StringType>();
+    lines2.add(line2);
+    addressBilling.setLine(lines2);
+    addressBilling.setCity("Austin");
+    addressBilling.setState("Cloud Way");
+    addressBilling.setPostalCode("20765");
+    addressBilling.setCountry("US");
+    return addressBilling;
+  }
+
+  @Test
   public void testGetAddressXml() {
 
     List<Address> addrs = new ArrayList<Address>();
@@ -616,42 +751,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getLanguageForCodeSystem(comms, "http://hl7.org/fhir/ValueSet/languages");
     assertNotNull(result);
     assertEquals(language, result);
-  }
-
-  @Test
-  public void testGetTelecomXml() {
-
-    List<ContactPoint> cps = new ArrayList<ContactPoint>();
-    ContactPoint cp1 = new ContactPoint();
-    cp1.setUse(ContactPointUse.HOME);
-    cp1.setSystem(ContactPointSystem.PHONE);
-    cp1.setValue("1234567890");
-    cps.add(cp1);
-    ContactPoint cp2 = new ContactPoint();
-    cp2.setUse(ContactPointUse.MOBILE);
-    cp2.setSystem(ContactPointSystem.PHONE);
-    cp2.setValue("0987654321");
-    cps.add(cp2);
-    ContactPoint cp3 = new ContactPoint();
-    cp3.setUse(ContactPointUse.WORK);
-    cp3.setSystem(ContactPointSystem.EMAIL);
-    cp3.setValue("a@b.com");
-    cps.add(cp3);
-
-    String result = CdaFhirUtilities.getTelecomXml(cps, false);
-
-    assertTrue(result.contains("(123)456-7890"));
-    assertTrue(result.contains("(098)765-4321"));
-    assertFalse(result.contains("a@b.com"));
-
-    String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
-    assertTrue(result2.contains("(123)456-7890"));
-    assertFalse(result2.contains("(098)765-4321"));
-    assertFalse(result2.contains("a@b.com"));
-
-    String result3 = CdaFhirUtilities.getTelecomXml(null, true);
-    String expected = "<telecom nullFlavor=\"NI\"/>";
-    assertEquals(expected, result3.trim());
   }
 
   @Test

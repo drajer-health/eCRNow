@@ -137,7 +137,7 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (data.getRrXml() != null && !data.getRrXml().isEmpty()) {
 
-      logger.debug("Reportability Response: {}", data.getRrXml());
+      logger.debug("Reportability Response: {}, saveToEhr: {}", data.getRrXml(), saveToEhr);
 
       final CdaRrModel cdaRrModel = rrParser.parse(data.getRrXml());
       final CdaIi rrDocId = cdaRrModel.getRrDocId();
@@ -184,7 +184,7 @@ public class EicrServiceImpl implements EicrRRService {
         ecr.setResponseData(data.getRrXml());
 
         if (cdaRrModel.getReportableType() != null)
-          ecr.setResponseType(cdaRrModel.getReportableType());
+          ecr.setResponseType(cdaRrModel.getReportableType().toString());
         else ecr.setResponseType(CdaRrModel.UNKONWN_RESPONSE_TYPE);
 
         if (cdaRrModel.getReportableType() != null && cdaRrModel.getReportableStatus() != null)
@@ -193,7 +193,7 @@ public class EicrServiceImpl implements EicrRRService {
                   + "-"
                   + cdaRrModel.getReportableStatus().getDisplayName());
         else if (cdaRrModel.getReportableType() != null)
-          ecr.setResponseTypeDisplay(cdaRrModel.getReportableType());
+          ecr.setResponseTypeDisplay(cdaRrModel.getReportableType().toString());
         else if (cdaRrModel.getReportableStatus() != null)
           ecr.setResponseTypeDisplay(cdaRrModel.getReportableStatus().getDisplayName());
         else ecr.setResponseTypeDisplay(CdaRrModel.UNKONWN_RESPONSE_TYPE);
@@ -349,8 +349,8 @@ public class EicrServiceImpl implements EicrRRService {
       ReportabilityResponse data, Eicr ecr, String rrDocRefMimeType) {
 
     if (ecr.getResponseType() != null
-        && (ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS1.toString())
-            || ecr.getResponseType().equals(EicrTypes.ReportabilityType.RRVS2.toString()))) {
+        && (ecr.getResponseType().contains(EicrTypes.ReportabilityType.RRVS1.toString())
+            || ecr.getResponseType().contains(EicrTypes.ReportabilityType.RRVS2.toString()))) {
       return r4ResourcesData.constructR4DocumentReference(
           data.getRrXml(),
           ecr.getLaunchPatientId(),

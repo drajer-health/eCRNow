@@ -20,11 +20,7 @@ import com.drajer.eca.model.MatchedTriggerCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Resource;
@@ -42,7 +38,7 @@ public interface Utility {
     cdaIi.setRootValue("root");
     cdaRrModel.setErrors("error");
     cdaIi.setExtValue("59662");
-    cdaRrModel.setReportableType("RRVS1");
+    cdaRrModel.setReportableType(Collections.singleton("RRVS1"));
     cdaRrModel.setEicrDocId(cdaIi);
     cdaRrModel.setRrDocId(cdaIi);
 

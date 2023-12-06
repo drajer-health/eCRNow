@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
@@ -26,6 +27,7 @@ import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,9 @@ public class R4ResourcesData {
   @Autowired FhirContextInitializer resourceData;
 
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Value("${ecr.fhir.exclude.loinctravelcode:false}")
+  private Boolean excludeLoincTravelCode;
 
   private final Logger logger = LoggerFactory.getLogger(R4ResourcesData.class);
 
@@ -75,12 +80,13 @@ public class R4ResourcesData {
       try {
         logger.info("Getting Encounter data by ID {}", encounterID);
         encounter = (Encounter) client.read().resource(ENCOUNTER).withId(encounterID).execute();
-      } catch (ResourceNotFoundException resourceNotFoundException) {
-        logger.error(
-            "Error in getting Encounter resource by Id: {}",
-            encounterID,
-            resourceNotFoundException);
-        WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+      } catch (ResourceNotFoundException | RetryableException exception) {
+        if (exception instanceof ResourceNotFoundException
+            || (exception instanceof RetryableException
+                && exception.getCause() instanceof ResourceNotFoundException)) {
+          logger.error("Error in getting Encounter resource by Id: {}", encounterID, exception);
+          WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+        }
       } catch (Exception e) {
         logger.error("Error in getting Encounter resource by Id: {}", encounterID, e);
       }
@@ -431,7 +437,12 @@ public class R4ResourcesData {
     for (String travelSnomedCode : QueryConstants.getTravelHistorySmtCodes()) {
       codeBuilder.append(QueryConstants.SNOMED_CODE_SYSTEM + "|" + travelSnomedCode + ",");
     }
-    codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + QueryConstants.TRAVEL_CODE);
+    if (excludeLoincTravelCode) {
+      // removing comma from last character from codebuilder
+      codeBuilder.deleteCharAt(codeBuilder.length() - 1);
+    } else {
+      codeBuilder.append(QueryConstants.LOINC_CODE_SYSTEM + "|" + QueryConstants.TRAVEL_CODE);
+    }
     codeBuilder.trimToSize();
     String codes = codeBuilder.toString();
 
@@ -443,7 +454,6 @@ public class R4ResourcesData {
             + launchDetails.getLaunchPatientId()
             + "&code="
             + codes;
-
     Bundle travelCodeBundle =
         (Bundle)
             FhirContextInitializer.getResourceBundleByUrl(
@@ -1004,6 +1014,13 @@ public class R4ResourcesData {
     return serviceRequestCodes;
   }
 
+  private boolean isServiceRequestValid(ServiceRequest s) {
+    return (s.hasStatus()
+        && (s.getStatus() != ServiceRequest.ServiceRequestStatus.REVOKED
+            || s.getStatus() != ServiceRequest.ServiceRequestStatus.ENTEREDINERROR
+            || s.getStatus() != ServiceRequest.ServiceRequestStatus.UNKNOWN));
+  }
+
   public List<ServiceRequest> getServiceRequestData(
       FhirContext context,
       IGenericClient client,
@@ -1025,11 +1042,8 @@ public class R4ResourcesData {
           ServiceRequest serviceRequest = (ServiceRequest) entry.getResource();
 
           if (!serviceRequest.getEncounter().isEmpty()
-              && serviceRequest
-                  .getEncounter()
-                  .getReferenceElement()
-                  .getIdPart()
-                  .equals(encounterId)) {
+              && serviceRequest.getEncounter().getReferenceElement().getIdPart().equals(encounterId)
+              && isServiceRequestValid(serviceRequest)) {
             serviceRequests.add(serviceRequest);
             serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
           }
@@ -1047,7 +1061,8 @@ public class R4ResourcesData {
                 && isResourceWithinDateTime(
                     start,
                     end,
-                    serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue())) {
+                    serviceRequest.getOccurrenceDateTimeType().dateTimeValue().getValue())
+                && isServiceRequestValid(serviceRequest)) {
               serviceRequests.add(serviceRequest);
               serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
             }
@@ -1055,7 +1070,8 @@ public class R4ResourcesData {
           // If ServiceRequest Date is not present looking for LastUpdatedDate
           else {
             Date lastUpdatedDateTime = serviceRequest.getMeta().getLastUpdated();
-            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)) {
+            if (isResourceWithinDateTime(start, end, lastUpdatedDateTime)
+                && isServiceRequestValid(serviceRequest)) {
               serviceRequests.add(serviceRequest);
               serviceRequestCodes.addAll(findServiceRequestCodes(serviceRequest));
             }
@@ -1177,6 +1193,7 @@ public class R4ResourcesData {
         }
       }
     } catch (Exception e) {
+      r4FhirData.setTriggerQueryFailed(true);
       logger.error("Error in getting Condition Data", e);
     }
 
@@ -1210,6 +1227,7 @@ public class R4ResourcesData {
       }
 
     } catch (Exception e) {
+      r4FhirData.setTriggerQueryFailed(true);
       logger.error("Error in getting Observation Data", e);
     }
 
@@ -1234,6 +1252,7 @@ public class R4ResourcesData {
         }
       }
     } catch (Exception e) {
+      r4FhirData.setTriggerQueryFailed(true);
       logger.error("Error in getting the ServiceRequest Data", e);
     }
     return bundle;
@@ -1447,7 +1466,10 @@ public class R4ResourcesData {
               BundleEntryComponent locationEntry =
                   new BundleEntryComponent().setResource(locationResource);
               bundle.addEntry(locationEntry);
-              r4FhirData.setLocation(locationResource);
+              if (locationResource.getAddress() != null
+                  && !locationResource.getAddress().isEmpty()) {
+                r4FhirData.setLocation(locationResource);
+              }
             }
           }
         }

@@ -31,10 +31,7 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -100,14 +97,6 @@ public class LaunchController {
   @PostMapping(value = "/api/launchDetails")
   public LaunchDetails saveLaunchDetails(@RequestBody LaunchDetails launchDetails) {
 
-    logger.info(" Saving Launch Context: {}", launchDetails);
-    authDetailsService.saveOrUpdate(launchDetails);
-
-    if (Boolean.FALSE.equals(launchDetails.getIsMultiTenantSystemLaunch())) {
-      logger.info("Scheduling refresh token job ");
-      tokenScheduler.scheduleJob(launchDetails);
-    }
-
     String taskInstanceId = "";
     // Kick off the Launch Event Processing
     scheduleJob(launchDetails, taskInstanceId);
@@ -119,7 +108,9 @@ public class LaunchController {
 
     try {
       if (launchDetails.getEncounterId() != null && launchDetails.getStartDate() != null) {
+
         logger.info("Scheduling the job based on Encounter period.start time:::::");
+
         // Setup Execution State.
         PatientExecutionState state =
             new PatientExecutionState(
@@ -127,14 +118,21 @@ public class LaunchController {
 
         launchDetails.setStatus(mapper.writeValueAsString(state));
         authDetailsService.saveOrUpdate(launchDetails);
+
+        logger.info("Scheduling refresh token job ");
+        tokenScheduler.scheduleJob(launchDetails);
+
         Instant t = launchDetails.getStartDate().toInstant();
         workflowService.invokeScheduler(
             launchDetails.getId(), EcrActionTypes.MATCH_TRIGGER, t, taskInstanceId);
       } else {
         logger.info("Invoking SOF Launch workflow event handler ");
+        authDetailsService.saveOrUpdate(launchDetails);
+        tokenScheduler.scheduleJob(launchDetails);
         workflowService.handleWorkflowEvent(WorkflowEvent.SOF_LAUNCH, launchDetails);
       }
     } catch (JsonProcessingException e) {
+      authDetailsService.saveOrUpdate(launchDetails);
       logger.error("Error in Scheduling the Job", e);
     }
   }
@@ -175,13 +173,21 @@ public class LaunchController {
       @RequestBody SystemLaunch systemLaunch,
       HttpServletRequest request,
       HttpServletResponse response)
-      throws IOException {
+      throws IOException, ParseException {
 
     logger.info(
         "System launch request received for patientId: {} and encounterId: {}",
         systemLaunch.getPatientId(),
         systemLaunch.getEncounterId());
-
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    Date startDate =
+        StringUtils.isNotBlank(systemLaunch.getEncounterStartDateTime())
+            ? formatter.parse(systemLaunch.getEncounterStartDateTime())
+            : null;
+    Date endDate =
+        StringUtils.isNotBlank(systemLaunch.getEncounterEndDateTime())
+            ? formatter.parse(systemLaunch.getEncounterEndDateTime())
+            : null;
     ClientDetails clientDetails =
         clientDetailsService.getClientDetailsByUrl(systemLaunch.getFhirServerURL());
     String requestIdHeadervalue = request.getHeader("X-Request-ID");
@@ -317,9 +323,21 @@ public class LaunchController {
             }
             launchDetails.setLaunchType("SystemLaunch");
 
-            IBaseResource encounter = getEncounterById(launchDetails);
-            setStartAndEndDates(clientDetails, launchDetails, encounter);
-
+            if (Objects.nonNull(startDate)) {
+              launchDetails.setStartDate(startDate);
+              if (Objects.nonNull(endDate)) {
+                launchDetails.setEndDate(endDate);
+              } else {
+                launchDetails.setEndDate(getDate(clientDetails.getEncounterEndThreshold()));
+              }
+              logger.debug(
+                  "Found start Date {} and end date {} in System Launch Request",
+                  startDate,
+                  endDate);
+            } else {
+              IBaseResource encounter = getEncounterById(launchDetails);
+              setStartAndEndDates(clientDetails, launchDetails, encounter);
+            }
             clientDetailsService.saveOrUpdate(clientDetails);
 
             saveLaunchDetails(launchDetails);
