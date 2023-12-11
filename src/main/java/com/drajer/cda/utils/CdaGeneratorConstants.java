@@ -835,6 +835,7 @@ public class CdaGeneratorConstants {
   public static final String INT_TYPE = "INT";
   public static final String ED_TYPE = "ED";
   public static final String ST_TYPE = "ST";
+  public static final String BL_TYPE = "BL";
 
   // Table Values
   public static final int TABLE_BORDER = 1;
@@ -916,7 +917,7 @@ public class CdaGeneratorConstants {
 
   // Valueset Values
   public static final String FHIR_GUARDIAN_VALUE = "N";
-  public static final String FHIR_EMERGENCY_CONTACT_VALUE = "E";
+  public static final String FHIR_EMERGENCY_CONTACT_VALUE = "C";
   public static final String EMERGENCY_VALUE = "emergency";
   public static final String GUARDIAN_VALUE = "GUARD";
   public static final String FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =

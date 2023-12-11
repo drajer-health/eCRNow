@@ -219,7 +219,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), pr.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -267,7 +269,9 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
-        logger.debug("Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
+        logger.debug(
+            "Add Trigger Codes to Problem Observation if applicable {}",
+            pr.getIdElement().getIdPart());
         sb.append(addTriggerCodes(details, pr, onset, abatement));
 
         logger.debug("Completed adding Trigger Codes ");
@@ -344,7 +348,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(

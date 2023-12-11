@@ -18,7 +18,7 @@
 <versionNumber value="43"/>
 <recordTarget>
 <patientRole>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Patient/a-11287.E-4237"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.E-4237"/>
 <addr use="HP">
 <streetAddressLine>2221 HOME STREET</streetAddressLine>
 <city>SALT LAKE CITY</city>
@@ -142,7 +142,7 @@
 </custodian>
 <componentOf>
 <encompassingEncounter>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Encounter/a-11287.stay-9787"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.stay-9787"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.stay-9787"/>
 <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"></code>
 <effectiveTime>
@@ -182,7 +182,7 @@
 </responsibleParty>
 <location>
 <healthCareFacility>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Location/a-11287.Department-1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.Department-1"/>
 <code code="CHR" codeSystem="2.16.840.1.113883.5.111" codeSystemName="v3-RoleCode" displayName="Chronic Care Facility"></code>
 <location>
 <addr>
@@ -270,7 +270,7 @@
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.4"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Condition/a-11287.StayDx-4277"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.StayDx-4277"/>
 <code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
 </code>
 <statusCode code="completed"/>
@@ -297,7 +297,7 @@
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.4"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Condition/a-11287.Problem-8623"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.Problem-8623"/>
 <code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
 </code>
 <statusCode code="completed"/>
@@ -324,7 +324,7 @@
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.4"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Condition/a-11287.Problem-8624"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.Problem-8624"/>
 <code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
 </code>
 <statusCode code="completed"/>
@@ -369,7 +369,7 @@
 <encounter classCode="ENC" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.49"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.49" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Encounter/a-11287.stay-9787"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.stay-9787"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.stay-9787"/>
 <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"><originalText>
 <reference value="#encounter1"/>
@@ -435,7 +435,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="MedicationRequest/a-11287.hospmedicationrequest-26903"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.hospmedicationrequest-26903"/>
 <statusCode code="active"/>
 <effectiveTime value="20220920061723-0400"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -485,7 +485,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
 <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="Immunization/a-11287.historical-3158"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.historical-3158"/>
 <statusCode code="completed"/>
 <effectiveTime value="20220920"/>
 <consumable>

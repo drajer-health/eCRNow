@@ -1725,7 +1725,7 @@ public class CdaFhirUtilities {
     Pair<String, Boolean> retVal = null;
     for (Resource res : resources) {
 
-      logger.debug("res.getId {}", res.getId());
+      logger.debug("res.getId {}", res.getIdElement().getIdPart());
 
       if (res.getId().contains(refId) && res instanceof Medication) {
 
@@ -1971,6 +1971,17 @@ public class CdaFhirUtilities {
         if (Boolean.FALSE.equals(valFlag))
           val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
+      } else if (dt instanceof BooleanType) {
+
+        BooleanType b = (BooleanType) dt;
+
+        String ret = "false";
+        if (b.getValueAsString().equalsIgnoreCase("true")) {
+
+          val += CdaGeneratorUtils.getXmlForValueString("true");
+        } else {
+          val += CdaGeneratorUtils.getXmlForValueString("false");
+        }
       }
 
       logger.debug(PRINTING_THE_CLASS_NAME, dt.getClass());

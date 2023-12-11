@@ -35,6 +35,15 @@ public class CdaGeneratorUtilsTest {
   }
 
   @Test
+  public void testGetXmlForValueBoolean() {
+    String expectedXml = "<value xsi:type=\"BL\" value=\"true\"/>\n";
+    String actualXml = CdaGeneratorUtils.getXmlForValueBoolean("true");
+
+    assertNotNull(actualXml);
+    assertEquals(expectedXml, actualXml);
+  }
+
+  @Test
   public void testGetCurrentDateTime() {
 
     String formattedTime = CdaGeneratorUtils.getCurrentDateTime();

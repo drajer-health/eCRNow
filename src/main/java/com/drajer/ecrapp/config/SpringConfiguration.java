@@ -29,6 +29,7 @@ import org.springframework.retry.support.RetryTemplate;
       "com.drajer.bsa.kar.model",
       "com.drajer.bsa.service",
       "com.drajer.bsa.ehr.service",
+      "com.drajer.bsa.ehr.customizations",
       "com.drajer.bsa.routing",
       "com.drajer.bsa.interfaces",
       "com.drajer.bsa"

@@ -40,7 +40,7 @@
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.4"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Condition/d2572364249/_history/2572364249"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="d2572364249"/>
 <code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
 </code>
 <statusCode code="completed"/>

@@ -124,7 +124,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                med.getId(),
+                med.getIdElement().getIdPart(),
                 med.getMedication(),
                 med.getEffective(),
                 medstatus,
@@ -176,7 +176,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                medAdm.getId(),
+                medAdm.getIdElement().getIdPart(),
                 medAdm.getMedication(),
                 medAdm.getEffective(),
                 medstatus,
@@ -260,7 +260,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                medReq.getId(),
+                medReq.getIdElement().getIdPart(),
                 medReq.getMedication(),
                 null,
                 medstatus,
