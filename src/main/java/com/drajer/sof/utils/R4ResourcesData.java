@@ -6,7 +6,6 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.cda.parser.CdaParserConstants;
 import com.drajer.cdafromr4.CdaFhirUtilities;
 import com.drajer.ecrapp.fhir.utils.RetryableException;
-import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
@@ -85,7 +84,7 @@ public class R4ResourcesData {
             || (exception instanceof RetryableException
                 && exception.getCause() instanceof ResourceNotFoundException)) {
           logger.error("Error in getting Encounter resource by Id: {}", encounterID, exception);
-          WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
+          throw exception;
         }
       } catch (Exception e) {
         logger.error("Error in getting Encounter resource by Id: {}", encounterID, e);

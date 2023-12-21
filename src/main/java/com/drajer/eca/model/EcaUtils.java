@@ -11,8 +11,8 @@ import com.drajer.eca.model.EventTypes.EcrActionTypes;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.ecrapp.config.AppConfig;
 import com.drajer.ecrapp.config.ValueSetSingleton;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.ecrapp.model.Eicr;
-import com.drajer.ecrapp.service.WorkflowService;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.ecrapp.util.MDCUtils;
 import com.drajer.sof.model.Dstu2FhirData;
@@ -347,12 +347,16 @@ public class EcaUtils {
                   client.read().resource("Encounter").withId(details.getEncounterId()).execute();
         }
 
-      } catch (ResourceNotFoundException resourceNotFoundException) {
-        logger.error(
-            "Error in getting Encounter resource by Id: {}",
-            details.getEncounterId(),
-            resourceNotFoundException);
-        WorkflowService.cancelAllScheduledTasksForLaunch(details, true);
+      } catch (ResourceNotFoundException | RetryableException exception) {
+        if (exception instanceof ResourceNotFoundException
+            || (exception instanceof RetryableException
+                && exception.getCause() instanceof ResourceNotFoundException)) {
+          logger.error(
+              "Error in getting Encounter resource by Id: {}", details.getEncounterId(), exception);
+          throw exception;
+        }
+      } catch (Exception e) {
+        logger.error("Error in getting Encounter resource by Id: {}", details.getEncounterId(), e);
       }
 
       if (r4Encounter != null) {

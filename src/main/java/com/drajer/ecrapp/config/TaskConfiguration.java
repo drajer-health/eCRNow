@@ -1,8 +1,10 @@
 package com.drajer.ecrapp.config;
 
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.drajer.eca.model.ActionRepo;
 import com.drajer.eca.model.EventTypes.WorkflowEvent;
 import com.drajer.eca.model.TaskTimer;
+import com.drajer.ecrapp.fhir.utils.RetryableException;
 import com.drajer.ecrapp.model.WorkflowTask;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.ecrapp.util.MDCUtils;
@@ -86,7 +88,23 @@ public class TaskConfiguration {
                         inst.getTaskAndInstance(),
                         inst.getData().getLaunchDetailsId(),
                         deletedException);
-
+                  } catch (RetryableException | ResourceNotFoundException exception) {
+                    if ((exception instanceof RetryableException
+                            && exception.getCause() instanceof ResourceNotFoundException)
+                        || exception instanceof ResourceNotFoundException) {
+                      log.info(
+                          "Error in completing the Execution of Task for {}, Launch Id::: {}, finishing task",
+                          inst.getTaskAndInstance(),
+                          inst.getData().getLaunchDetailsId(),
+                          exception);
+                      LaunchDetails details =
+                          launchDetailsDao.getAuthDetailsById(inst.getData().getLaunchDetailsId());
+                      if (details != null) {
+                        details.setProcessingState(
+                            LaunchDetails.getString(LaunchDetails.ProcessingStatus.Errors));
+                        launchDetailsDao.saveOrUpdate(details);
+                      }
+                    }
                   } catch (Exception e) {
 
                     if (ctx.getExecution().consecutiveFailures >= timerRetries) {
