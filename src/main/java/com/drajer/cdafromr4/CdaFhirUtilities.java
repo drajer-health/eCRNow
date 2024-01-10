@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -286,16 +287,33 @@ public class CdaFhirUtilities {
     return null;
   }
 
-  public static Coding getLanguageForCodeSystem(
+  public static Pair<Coding, Boolean> getLanguageForCodeSystem(
       List<PatientCommunicationComponent> comms, String codeSystemUrl) {
 
+    Coding prefCoding = null;
+    Coding altCoding = null;
     if (comms != null && !comms.isEmpty()) {
 
       for (PatientCommunicationComponent comm : comms) {
 
-        Coding c = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+        if (comm.hasPreferred() && comm.getPreferred()) {
 
-        if (c != null) return c;
+          prefCoding = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+          break;
+        } else if (comm.hasLanguage()
+            && comm.getLanguage().hasCoding()
+            && comm.getLanguage().getCodingFirstRep().hasCode()) {
+
+          // Assign the alternate coding.
+          altCoding = getCodingForCodeSystem(comm.getLanguage(), codeSystemUrl);
+        }
+      }
+
+      // Found preferred language.
+      if (prefCoding != null) {
+        return new Pair<>(prefCoding, true);
+      } else if (altCoding != null) {
+        return new Pair<>(altCoding, false);
       }
     }
 
@@ -314,8 +332,17 @@ public class CdaFhirUtilities {
           addrString.append(getAddressXml(addr));
         }
       } else {
-        Address addr = addrs.get(0);
-        addrString.append(getAddressXml(addr));
+
+        Address addres = null;
+        for (Address addr : addrs) {
+          if (addr.hasUse() && addr.getUseElement().getValue() == Address.AddressUse.WORK) {
+            addres = addr;
+            break;
+          }
+        }
+
+        if (addres == null) addres = addrs.get(0);
+        addrString.append(getAddressXml(addres));
       }
     } else {
       Address addr = null;
@@ -451,7 +478,31 @@ public class CdaFhirUtilities {
 
           telString.append(
               CdaGeneratorUtils.getXmlForTelecom(
+                  CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, false));
+
+          if (onlyOne) break;
+        } else if (tel.getSystem() != null
+            && tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL
+            && !StringUtils.isEmpty(tel.getValue())) {
+
+          logger.debug("Found Email address ");
+          String use = "";
+
+          telString.append(
+              CdaGeneratorUtils.getXmlForEmail(
                   CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use));
+
+          if (onlyOne) break;
+        } else if (tel.getSystem() != null
+            && tel.getSystem() == ContactPoint.ContactPointSystem.FAX
+            && !StringUtils.isEmpty(tel.getValue())) {
+
+          logger.debug("Found Fax address ");
+          String use = "";
+
+          telString.append(
+              CdaGeneratorUtils.getXmlForTelecom(
+                  CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, true));
 
           if (onlyOne) break;
         }
@@ -649,7 +700,7 @@ public class CdaFhirUtilities {
 
     for (Coding c : codings) {
 
-      if (c.getSystem().contentEquals(codeSystemUrl)) {
+      if (c.hasSystem() && c.getSystem().contentEquals(codeSystemUrl)) {
 
         foundCodeSystem = true;
         break;
@@ -1269,9 +1320,17 @@ public class CdaFhirUtilities {
 
     if (dt != null && dt.hasValue() && dt.getValue() != null) {
 
+      String units = "";
+
+      if (dt.hasCode()) {
+        units = dt.getCode();
+      } else if (units.isEmpty() && dt.hasUnit()) {
+        units = dt.getUnit();
+      }
+
       sb.append(
           CdaGeneratorUtils.getXmlForQuantityWithUnits(
-              elName, dt.getValue().toString(), dt.getCode(), valFlag));
+              elName, dt.getValue().toString(), units, valFlag));
 
     } else {
       sb.append(
@@ -1387,14 +1446,18 @@ public class CdaFhirUtilities {
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_MALE_CODE,
-              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM,
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM_NAME,
+              CdaGeneratorConstants.CDA_MALE_CODE_DISPLAY);
     } else if (gender == AdministrativeGender.FEMALE) {
 
       s +=
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_FEMALE_CODE,
-              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM,
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM_NAME,
+              CdaGeneratorConstants.CDA_FEMALE_CODE_DISPLAY);
     } else if (gender == AdministrativeGender.UNKNOWN) {
 
       s +=
@@ -1407,7 +1470,9 @@ public class CdaFhirUtilities {
           CdaGeneratorUtils.getXmlForCD(
               CdaGeneratorConstants.ADMIN_GENDER_CODE_EL_NAME,
               CdaGeneratorConstants.CDA_UNK_GENDER,
-              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM);
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM,
+              CdaGeneratorConstants.ADMIN_GEN_CODE_SYSTEM_NAME,
+              CdaGeneratorConstants.CDA_UNK_GENDER_DISPLAY);
     } else {
 
       logger.debug("Did not find the gender for the patient ");
@@ -1660,7 +1725,7 @@ public class CdaFhirUtilities {
     Pair<String, Boolean> retVal = null;
     for (Resource res : resources) {
 
-      logger.debug("res.getId {}", res.getId());
+      logger.debug("res.getId {}", res.getIdElement().getIdPart());
 
       if (res.getId().contains(refId) && res instanceof Medication) {
 
@@ -1749,7 +1814,7 @@ public class CdaFhirUtilities {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val.append(d.getValueAsString());
+        val.append(CdaGeneratorUtils.getStringForDateTime(d.getValue(), d.getTimeZone()));
 
       } else if (dt instanceof Timing) {
 
@@ -1767,12 +1832,23 @@ public class CdaFhirUtilities {
         Period pt = (Period) dt;
 
         logger.debug("Found the Period element for creating string");
-        if (pt.getStart() != null && pt.getEnd() != null) {
-          val.append(pt.getStart().toString())
+        if (pt.hasStart() && pt.hasEnd()) {
+
+          val.append(
+                  CdaGeneratorUtils.getStringForDateTime(
+                      pt.getStart(), pt.getStartElement().getTimeZone()))
               .append(CdaGeneratorConstants.PIPE)
-              .append(pt.getEnd().toString());
-        } else if (pt.getStart() != null) {
-          val.append(pt.getStart().toString());
+              .append(
+                  CdaGeneratorUtils.getStringForDateTime(
+                      pt.getEnd(), pt.getEndElement().getTimeZone()));
+        } else if (pt.hasStart()) {
+          val.append(
+              CdaGeneratorUtils.getStringForDateTime(
+                  pt.getStart(), pt.getStartElement().getTimeZone()));
+        } else if (pt.hasEnd()) {
+          val.append(
+              CdaGeneratorUtils.getStringForDateTime(
+                  pt.getEnd(), pt.getEndElement().getTimeZone()));
         } else {
           val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
         }
@@ -1786,12 +1862,49 @@ public class CdaFhirUtilities {
         StringType st = (StringType) dt;
 
         val.append(st.getValue());
+      } else if (dt instanceof BooleanType) {
+
+        BooleanType b = (BooleanType) dt;
+
+        String ret = "false";
+        if (b.getValueAsString().equalsIgnoreCase("true")) {
+
+          ret = "true";
+        }
+
+        val.append(ret);
       }
 
       logger.debug("Printing the class name {} and value {}", dt.getClass(), val);
       return val.toString();
     }
     return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
+  public static String getStringForDates(
+      Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
+
+    String val = "";
+
+    if (recorded != null && recorded.getValue0() != null) {
+      val += recorded.getValue0().toString();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    if (onset != null && onset.getValue0() != null) {
+      val += onset.getValue0().toString();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    if (abatement != null && abatement.getValue0() != null) {
+      val += abatement.getValue0().toString();
+    } else {
+      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+    }
+
+    return val;
   }
 
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
@@ -1858,6 +1971,17 @@ public class CdaFhirUtilities {
         if (Boolean.FALSE.equals(valFlag))
           val += CdaGeneratorUtils.getXmlForText(elName, st.getValue());
         else val += CdaGeneratorUtils.getXmlForValueString(st.getValue());
+      } else if (dt instanceof BooleanType) {
+
+        BooleanType b = (BooleanType) dt;
+
+        String ret = "false";
+        if (b.getValueAsString().equalsIgnoreCase("true")) {
+
+          val += CdaGeneratorUtils.getXmlForValueString("true");
+        } else {
+          val += CdaGeneratorUtils.getXmlForValueString("false");
+        }
       }
 
       logger.debug(PRINTING_THE_CLASS_NAME, dt.getClass());

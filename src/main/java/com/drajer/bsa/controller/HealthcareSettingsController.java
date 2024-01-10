@@ -33,6 +33,7 @@ public class HealthcareSettingsController {
   private static final String FHIR_VERSION = "fhirVersion";
   private static final String VALUE_URI = "valueUri";
   private static final String EXTENSION = "extension";
+  public static final String ERROR_IN_PROCESSING_THE_REQUEST = "Error in Processing the Request";
 
   @Autowired Authorization authorization;
 
@@ -172,5 +173,38 @@ public class HealthcareSettingsController {
   @GetMapping("/api/healthcareSettings/")
   public List<HealthcareSetting> getAllHealthcareSettings() {
     return healthcareSettingsService.getAllHealthcareSettings();
+  }
+
+  /**
+   * Deletes a HealthcareSetting based on the provided FHIR Server URL.
+   *
+   * @param url The URL used to retrieve the HealthcareSetting.
+   * @return A ResponseEntity with a status message indicating the result of the delete operation.
+   */
+  @CrossOrigin
+  @DeleteMapping("/api/healthcareSettings")
+  public ResponseEntity<String> deleteHealthcareSettingsByUrl(@RequestParam("url") String url) {
+    try {
+      logger.info("Received URL: {} for deleting healthcareSettings", url);
+
+      if (url == null || url.isEmpty()) {
+        return ResponseEntity.badRequest().body("Requested FHIR URL is missing or empty");
+      }
+
+      HealthcareSetting healthcareSetting =
+          healthcareSettingsService.getHealthcareSettingByUrl(url);
+
+      if (healthcareSetting != null) {
+        healthcareSettingsService.delete(healthcareSetting);
+        return ResponseEntity.ok("HealthcareSetting deleted successfully");
+      }
+
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("HealthcareSetting not found");
+
+    } catch (Exception e) {
+      logger.error("Error in processing the request", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Error in processing the request");
+    }
   }
 }

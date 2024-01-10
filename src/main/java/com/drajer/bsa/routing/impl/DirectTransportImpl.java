@@ -4,9 +4,9 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.routing.DataTransportInterface;
 import com.drajer.bsa.service.RrReceiver;
+import com.drajer.bsa.utils.BsaServiceUtils;
 import com.drajer.ecrapp.model.EicrTypes;
 import com.drajer.ecrapp.model.ReportabilityResponse;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -31,13 +31,13 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.search.FlagTerm;
 import javax.mail.util.ByteArrayDataSource;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /*
@@ -55,6 +55,9 @@ public class DirectTransportImpl implements DataTransportInterface {
   private static final String INBOX = "Inbox";
 
   @Autowired RrReceiver rrReceiver;
+
+  @Value("${bsa.output.directory:bsa-output}")
+  String logDirectory;
 
   public class DirectMimeMessage extends MimeMessage {
 
@@ -322,9 +325,8 @@ public class DirectTransportImpl implements DataTransportInterface {
                 rrXml += IOUtils.toString(stream, StandardCharsets.UTF_8);
                 data.setRrXml(rrXml);
 
-                String filename = UUID.randomUUID() + ".xml";
-                FileUtils.writeStringToFile(
-                    new File(filename), data.getRrXml(), StandardCharsets.UTF_8);
+                String filename = logDirectory + "_" + UUID.randomUUID() + ".xml";
+                BsaServiceUtils.saveDataToFile(data.getRrXml(), filename);
 
                 // Invoke the rrReceiver Handler for handling Reportability Response.
                 logger.debug(" RrXML : {}", data.getRrXml());

@@ -22,6 +22,7 @@ public final class BsaTypes {
     SUSPENDED,
     COMPLETED,
     CANCELLED,
+    RELAUNCHED,
     Unknown
   }
 
@@ -74,6 +75,7 @@ public final class BsaTypes {
     else if (nst == NotificationProcessingStatusType.SUSPENDED) return "SUSPENDED";
     else if (nst == NotificationProcessingStatusType.COMPLETED) return "COMPLETED";
     else if (nst == NotificationProcessingStatusType.CANCELLED) return "CANCELLED";
+    else if (nst == NotificationProcessingStatusType.RELAUNCHED) return "RELAUNCHED";
     else return UNKNOWN;
   }
 
@@ -83,6 +85,7 @@ public final class BsaTypes {
     else if (s.contentEquals("SUSPENDED")) return NotificationProcessingStatusType.SUSPENDED;
     else if (s.contentEquals("COMPLETED")) return NotificationProcessingStatusType.COMPLETED;
     else if (s.contentEquals("CANCELLED")) return NotificationProcessingStatusType.CANCELLED;
+    else if (s.contentEquals("RELAUNCHED")) return NotificationProcessingStatusType.RELAUNCHED;
     else return NotificationProcessingStatusType.Unknown;
   }
 
@@ -160,24 +163,37 @@ public final class BsaTypes {
     CDA_R11,
     CDA_R30,
     BOTH,
-    UNKNOWN
+    UNKNOWN,
+    TEST_FHIR_NOT_FOR_PRODUCTION,
+    TEST_CDAR30_NOT_FOR_PRODUCTION,
+    TEST_BOTH_NOT_FOR_PRODUCTION,
+    CDAR31_FOR_TRIAL_IMPLEMENTATION
   }
 
   public static String getOutputContentType(OutputContentType t) {
 
-    if (t == OutputContentType.FHIR) return "FHIR";
+    if (t == OutputContentType.FHIR || t == OutputContentType.TEST_FHIR_NOT_FOR_PRODUCTION)
+      return "FHIR";
     else if (t == OutputContentType.CDA_R11) return "CDA_R11";
-    else if (t == OutputContentType.CDA_R30) return "CDA_R30";
-    else if (t == OutputContentType.BOTH) return "Both";
+    else if (t == OutputContentType.CDA_R30
+        || t == OutputContentType.CDAR31_FOR_TRIAL_IMPLEMENTATION
+        || t == OutputContentType.TEST_CDAR30_NOT_FOR_PRODUCTION) return "CDA_R30";
+    else if (t == OutputContentType.BOTH || t == OutputContentType.TEST_BOTH_NOT_FOR_PRODUCTION)
+      return "Both";
     else return UNKNOWN;
   }
 
   public static OutputContentType getOutputContentType(String code) {
 
-    if (code.equalsIgnoreCase("FHIR")) return OutputContentType.FHIR;
+    if (code.equalsIgnoreCase("FHIR") || code.equalsIgnoreCase("TEST_FHIR_NOT_FOR_PRODUCTION"))
+      return OutputContentType.FHIR;
     else if (code.equalsIgnoreCase("CDA_R11")) return OutputContentType.CDA_R11;
-    else if (code.equalsIgnoreCase("CDA_R30")) return OutputContentType.CDA_R30;
-    else if (code.equalsIgnoreCase("Both")) return OutputContentType.BOTH;
+    else if (code.equalsIgnoreCase("CDA_R30")
+        || code.equalsIgnoreCase("CDAR31_FOR_TRIAL_IMPLEMENTATION")
+        || code.equalsIgnoreCase("TEST_CDAR30_NOT_FOR_PRODUCTION"))
+      return OutputContentType.CDA_R30;
+    else if (code.equalsIgnoreCase("Both") || code.equalsIgnoreCase("TEST_BOTH_NOT_FOR_PRODUCTION"))
+      return OutputContentType.BOTH;
     else return OutputContentType.UNKNOWN;
   }
 

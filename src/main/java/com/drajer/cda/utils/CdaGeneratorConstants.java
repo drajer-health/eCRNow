@@ -162,8 +162,11 @@ public class CdaGeneratorConstants {
 
   public static final String FHIR_MR_IDTYPE_CODE = "MR";
   public static final String CDA_MALE_CODE = "M";
+  public static final String CDA_MALE_CODE_DISPLAY = "male";
   public static final String CDA_FEMALE_CODE = "F";
+  public static final String CDA_FEMALE_CODE_DISPLAY = "female";
   public static final String CDA_UNK_GENDER = "UN";
+  public static final String CDA_UNK_GENDER_DISPLAY = "unknown";
   public static final String CDA_INPATIENT_ENCOUNTER_CLASS = "IMP";
   public static final String CDA_AMBULATORY_ENCOUNTER_CLASS = "AMB";
   public static final String CDA_EMERGENCY_ENCOUNTER_CLASS = "EMER";
@@ -697,6 +700,7 @@ public class CdaGeneratorConstants {
   public static final String VERSION_EL_NAME = "versionNumber";
   public static final String CONFIDENTIALITY_EL_NAME = "confidentialityCode";
   public static final String LANGUAGE_CODE_EL_NAME = "languageCode";
+  public static final String LANGUAGE_PREF_IND = "preferenceInd";
   public static final String RECORD_TARGET_EL_NAME = "recordTarget";
   public static final String GUARDIAN_EL_NAME = "guardian";
   public static final String GUARDIAN_PERSON_EL_NAME = "guardianPerson";
@@ -831,6 +835,7 @@ public class CdaGeneratorConstants {
   public static final String INT_TYPE = "INT";
   public static final String ED_TYPE = "ED";
   public static final String ST_TYPE = "ST";
+  public static final String BL_TYPE = "BL";
 
   // Table Values
   public static final int TABLE_BORDER = 1;
@@ -843,6 +848,9 @@ public class CdaGeneratorConstants {
   public static final String PROB_TABLE_COL_1_BODY_CONTENT = "problem";
   public static final String PROB_TABLE_COL_2_TITLE = "Problem Status";
   public static final String PROB_TABLE_COL_2_BODY_CONTENT = "problemStatus";
+  public static final String PROB_TABLE_COL_3_TITLE =
+      "Problem Recorded Date|Onset Date|Resolved Date";
+  public static final String PROB_TABLE_COL_3_BODY_CONTENT = "problemDate";
   public static final String HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT = "historyOfPresentIllness";
   public static final String REASON_FOR_VISIT_BODY_CONTENT = "reasonForVisit";
   public static final String ALLERGY_TABLE_COL_1_TITLE = "Allergy Substance";
@@ -909,7 +917,7 @@ public class CdaGeneratorConstants {
 
   // Valueset Values
   public static final String FHIR_GUARDIAN_VALUE = "N";
-  public static final String FHIR_EMERGENCY_CONTACT_VALUE = "E";
+  public static final String FHIR_EMERGENCY_CONTACT_VALUE = "C";
   public static final String EMERGENCY_VALUE = "emergency";
   public static final String GUARDIAN_VALUE = "GUARD";
   public static final String FHIR_CONTACT_RELATIONSHIP_CODESYSTEM =

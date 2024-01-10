@@ -327,7 +327,8 @@ public class Dstu2CdaFhirUtilities {
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME,
                   tel.getValue(),
-                  CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse())));
+                  CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse()),
+                  false));
 
           break;
         }
@@ -357,7 +358,7 @@ public class Dstu2CdaFhirUtilities {
 
           logger.info(" Found Email  ");
           telString.append(
-              CdaGeneratorUtils.getXmlForTelecom(
+              CdaGeneratorUtils.getXmlForEmail(
                   CdaGeneratorConstants.TEL_EL_NAME,
                   tel.getValue(),
                   CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse())));
@@ -749,8 +750,8 @@ public class Dstu2CdaFhirUtilities {
 
     } else {
 
-      String start = CdaGeneratorConstants.NF_NI;
-      String end = CdaGeneratorConstants.NF_NI;
+      String start = "";
+      String end = "";
       return CdaGeneratorUtils.getXmlForValueIVLWithTS(elName, start, end);
     }
   }

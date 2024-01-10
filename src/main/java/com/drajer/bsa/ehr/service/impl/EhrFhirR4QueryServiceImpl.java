@@ -254,7 +254,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         getResourceById(
             client, context, PATIENT_RESOURCE, kd.getNotificationContext().getPatientId());
 
-    if (res != null) {
+    if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
 
       logger.info(
           " Found Patient resource for Id : {}", kd.getNotificationContext().getPatientId());
@@ -264,6 +264,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       Map<ResourceType, Set<Resource>> resMap = new EnumMap<>(ResourceType.class);
       resMap.put(res.getResourceType(), resources);
       kd.addResourcesByType(resMap);
+    } else {
+      logger.error(
+          " Did not find the patient resource for id {} as expected ",
+          kd.getNotificationContext().getPatientId());
     }
 
     if (kd.getNotificationContext()
@@ -281,7 +285,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
               ResourceType.Encounter.toString(),
               kd.getNotificationContext().getNotificationResourceId());
 
-      if (enc != null) {
+      if (enc != null && enc.getResourceType() != ResourceType.OperationOutcome) {
 
         logger.info(
             " Found Encounter resource for Id : {}",
@@ -549,7 +553,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             Reference practitionerReference = participant.getIndividual();
             String practitionerID = practitionerReference.getReferenceElement().getIdPart();
             if (!practitionerMap.containsKey(practitionerID)
-                && !kd.containsResourceWithId(practitionerID)) {
+                && !kd.containsResourceWithId(practitionerID, ResourceType.Practitioner)) {
               Practitioner practitioner =
                   (Practitioner)
                       getResourceById(
@@ -569,7 +573,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         Reference organizationReference = encounter.getServiceProvider();
         if (organizationReference.hasReferenceElement()
             && !kd.containsResourceWithId(
-                organizationReference.getReferenceElement().getIdPart())) {
+                organizationReference.getReferenceElement().getIdPart(),
+                ResourceType.Organization)) {
           Organization organization =
               (Organization)
                   getResourceById(
@@ -591,7 +596,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         for (EncounterLocationComponent location : enocunterLocations) {
           if (location.hasLocation()
               && !kd.containsResourceWithId(
-                  location.getLocation().getReferenceElement().getIdPart())) {
+                  location.getLocation().getReferenceElement().getIdPart(),
+                  ResourceType.Location)) {
             Reference locationReference = location.getLocation();
             Location locationResource =
                 (Location)
@@ -634,22 +640,6 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return kd.getFhirInputDataByType();
   }
 
-  public HashMap<ResourceType, Set<Resource>> loadSecondaryResources(KarProcessingData kd) {
-
-    logger.info(LOG_FHIR_CTX_GET);
-    FhirContext context = fhirContextInitializer.getFhirContext(R4);
-
-    logger.info(LOG_INIT_FHIR_CLIENT);
-    IGenericClient client = getClient(kd, context);
-    logger.info("Client: {}", client);
-
-    // Retrieve the DiagnosticReports and get their components
-
-    // Retrieve Medication References
-
-    return kd.getFhirInputDataByType();
-  }
-
   @Override
   public Resource getResourceByUrl(KarProcessingData kd, String resourceName, String url) {
 
@@ -677,7 +667,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       resource = (Resource) (genericClient.read().resource(resourceName).withUrl(url).execute());
 
-      if (resource != null) {
+      if (resource != null && resource.getResourceType() != ResourceType.OperationOutcome) {
         populateSecondaryResources(
             genericClient, context, resource, data, resource.getResourceType());
       }
@@ -776,7 +766,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
 
-      if (bundle.getEntry() != null) {
+      if (bundle != null && bundle.hasEntry()) {
         logger.info(
             "Total No of Entries {} retrieved : {}", resourceName, bundle.getEntry().size());
 
@@ -789,9 +779,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           resMapById = new HashMap<>();
           for (BundleEntryComponent comp : bc) {
 
-            logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
-            resources.add(comp.getResource());
+            if (comp.getResource().getResourceType() != ResourceType.OperationOutcome) {
+              logger.debug(" Adding Resource Id : {}", comp.getResource().getId());
+              resources.add(comp.getResource());
+            } else {
+              logger.error("Found Operation Outcomes which are not expected ");
+            }
           }
+
           Set<Resource> uniqueResources =
               ResourceUtils.deduplicate(resources).stream().collect(Collectors.toSet());
           resMap.put(resType, uniqueResources);
@@ -945,7 +940,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(" Query to be executed before parameter substitution {}", queryToExecute);
 
-        queryToExecute = substituteContextParams(data, queryToExecute);
+        queryToExecute = substituteContextParams(data, queryToExecute, false);
 
         logger.info(" Substituted Query to be executed {}", queryToExecute);
 
@@ -1018,7 +1013,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       Bundle bundle = genericClient.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
 
       getAllR4RecordsUsingPagination(genericClient, bundle);
-      if (bundle.hasEntry() && bundle.getEntry().size() > 0) {
+      if (bundle != null && bundle.hasEntry() && bundle.getEntry().size() > 0) {
 
         logger.info(
             "Total No of Entries when searching for ResourceType: {} retrieved was: {}",
@@ -1036,6 +1031,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
           if (isValidResource(comp)) {
             resources.add(comp.getResource());
+            kd.storeResourceById(comp.getResource().getIdElement().getIdPart(), comp.getResource());
 
             sortResourcesByType(comp, resMapType);
             populateSecondaryResources(
@@ -1081,7 +1077,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       if (obs.getStatus() != null
           && (obs.getStatus() == ObservationStatus.CANCELLED
               || obs.getStatus() == ObservationStatus.ENTEREDINERROR
-              || obs.getStatus() == ObservationStatus.ENTEREDINERROR)) {
+              || obs.getStatus() == ObservationStatus.UNKNOWN)) {
 
         logger.info(
             " Ignoring {} resource with id {}",
@@ -1240,17 +1236,11 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     } else if (comp.getResource().getResourceType() == ResourceType.Medication) {
 
+      // Include hte resource for now.
       Medication m = (Medication) comp.getResource();
 
-      // Ignore observations that should not be included.
-      /*  if(m.getStatus() != null &&
-        (m.getStatus() == MedicationStatus.ENTEREDINERROR ||
-         m.getStatus() == MedicationStatus.INACTIVE) ) {
-
-       logger.info(" Ignoring {} resource with id {}", comp.getResource().getResourceType().toString(), comp.getResource().getIdElement().getIdPart());
-       retVal = false;
-      } */
-
+    } else if (comp.getResource().getResourceType() == ResourceType.OperationOutcome) {
+      retVal = false;
     } else retVal = true;
 
     return retVal;
@@ -1303,7 +1293,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mreq.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mreq.getMedication();
-        Resource secRes = kd.getResourceById(medRef.getReferenceElement().getIdPart());
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
         if (secRes == null) {
           secRes =
@@ -1314,7 +1305,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                   medRef.getReferenceElement().getIdPart());
         }
 
-        if (secRes != null) {
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
 
           logger.info(
               " Adding secondary Medication resource for MedicationRequest with id {}",
@@ -1330,7 +1321,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mAdm.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mAdm.getMedication();
-        Resource secRes = kd.getResourceById(medRef.getReferenceElement().getIdPart());
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
         if (secRes == null) {
           secRes =
@@ -1341,7 +1333,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                   medRef.getReferenceElement().getIdPart());
         }
 
-        if (secRes != null) {
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
 
           logger.info(
               " Adding secondary Medication resource for MedicationAdministration with id {}",
@@ -1357,17 +1349,19 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Retrieve any medications
       if (mDisp.getMedication() instanceof Reference) {
         Reference medRef = (Reference) mDisp.getMedication();
-        Resource secRes = kd.getResourceById(medRef.getReferenceElement().getIdPart());
+        Resource secRes =
+            kd.getResourceById(medRef.getReferenceElement().getIdPart(), ResourceType.Medication);
 
         if (secRes == null) {
-          getResourceById(
-              genericClient,
-              context,
-              ResourceType.Medication.toString(),
-              medRef.getReferenceElement().getIdPart());
+          secRes =
+              getResourceById(
+                  genericClient,
+                  context,
+                  ResourceType.Medication.toString(),
+                  medRef.getReferenceElement().getIdPart());
         }
 
-        if (secRes != null) {
+        if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
 
           logger.info(
               " Adding secondary Medidcation resource for MedicationDispense with id {}",
@@ -1386,17 +1380,19 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         for (Reference r : components) {
 
-          Resource secRes = kd.getResourceById(r.getReferenceElement().getIdPart());
+          Resource secRes =
+              kd.getResourceById(r.getReferenceElement().getIdPart(), ResourceType.Observation);
 
           if (secRes == null) {
-            getResourceById(
-                genericClient,
-                context,
-                ResourceType.Observation.toString(),
-                r.getReferenceElement().getIdPart());
+            secRes =
+                getResourceById(
+                    genericClient,
+                    context,
+                    ResourceType.Observation.toString(),
+                    r.getReferenceElement().getIdPart());
           }
 
-          if (secRes != null) {
+          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
 
             logger.info(
                 " Adding secondary Observation resource for Diagnostic Report with id {}",
@@ -1411,13 +1407,15 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   private void addResourceToContext(KarProcessingData data, Resource res, String dataReqId) {
 
-    if (res != null) {
+    if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
       data.addResourceById(dataReqId, res);
       Set<Resource> resources = new HashSet<>();
       resources.add(res);
       data.addResourcesByType(res.getResourceType(), resources);
     } else {
-      logger.info(" Resource for dataReqId {} is null, hence not added ", dataReqId);
+      logger.info(
+          " Resource for dataReqId {} is null or is an OperationOutcome, hence not added ",
+          dataReqId);
     }
   }
 
@@ -1426,7 +1424,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     return queryToExecute.contains(SEARCH_QUERY_CHARACTERS);
   }
 
-  public String substituteContextParams(KarProcessingData data, String queryToExecute) {
+  public String substituteContextParams(
+      KarProcessingData data, String queryToExecute, Boolean substitutionForConditionEvaluation) {
 
     // Substitute any context parameters.
     String substitutedQuery =
@@ -1442,22 +1441,27 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           -1 * Integer.valueOf(data.getHealthcareSetting().getEncounterStartThreshold());
       int endThreshold = Integer.parseInt(data.getHealthcareSetting().getEncounterEndThreshold());
 
-      Encounter enc = null;
+      if (substitutionForConditionEvaluation) {
 
-      if (substitutedQuery.contains(ENCOUNTER_END_DATE_PARAM)) enc = retrieveContextEncounter(data);
+        // Reset thresholds as they should be added for condition evaluation.
+        startThreshold = 0;
+        endThreshold = 0;
+      }
+
+      Encounter enc = retrieveContextEncounter(data);
 
       String startDate = null;
       String endDate = null;
 
       if (enc != null) {
 
-        if (enc.getPeriod() != null && enc.getPeriod().getStart() != null) {
+        if (enc.hasPeriod() && enc.getPeriod().hasStart()) {
           startDate =
               DateFormatUtils.format(
                   DateUtils.addHours(enc.getPeriod().getStart(), startThreshold), DATE_FORMAT);
         }
 
-        if (enc.getPeriod() != null && enc.getPeriod().getEnd() != null) {
+        if (enc.hasPeriod() && enc.getPeriod().hasEnd()) {
           endDate =
               DateFormatUtils.format(
                   DateUtils.addHours(enc.getPeriod().getEnd(), endThreshold), DATE_FORMAT);
@@ -1478,7 +1482,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           endDate =
               DateFormatUtils.format(
                   DateUtils.addHours(
-                      data.getNotificationContext().getEncounterStartTime(), endThreshold),
+                      data.getNotificationContext().getEncounterEndTime(), endThreshold),
                   DATE_FORMAT);
         } else {
           endDate = DateFormatUtils.format(new Date(), DATE_FORMAT);

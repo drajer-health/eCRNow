@@ -191,14 +191,18 @@ public class KarParserImpl implements KarParser {
 
   private static final String JSON_KAR_EXT = "json";
   private static final String RECEIVER_ADDRESS_URL =
-      "http://hl7.org/fhir/us/medmorph/StructureDefinition/ext-receiverAddress";
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-receiver-endpoint";
 
   private static final String LOCAL_HOST_REPO_BASE_URL = "http://localhost";
   private static final String LOCAL_HOST_REPO_NAME = "local-repo";
   private static final String PH_QUERY_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-fhirquerypattern-extension";
+  private static final String MEDMORPH_QUERY_EXTENSION_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-fhirquerypattern-extension";
   private static final String PH_RELATED_DATA_EXTENSION_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-relateddata-extension";
+  private static final String MEDMORPH_RELATED_DATA_EXTENSION_URL =
+      "http://hl7.org/fhir/us/medmorph/StructureDefinition/us-ph-relateddata-extension";
 
   private static HashMap<String, String> actionClasses = new HashMap<>();
 
@@ -612,6 +616,10 @@ public class KarParserImpl implements KarParser {
         // Get Query Extensions to identify default queries.
         Extension queryExt = dr.getExtensionByUrl(PH_QUERY_EXTENSION_URL);
 
+        if (queryExt == null) {
+          queryExt = dr.getExtensionByUrl(MEDMORPH_QUERY_EXTENSION_URL);
+        }
+
         FhirQueryFilter query = new FhirQueryFilter();
         query.setResourceType(rt);
         query.setDataReqId(dr.getId());
@@ -627,6 +635,10 @@ public class KarParserImpl implements KarParser {
 
         // Get Related Data Ids to reuse data already accessed.
         Extension relatedDataExt = dr.getExtensionByUrl(PH_RELATED_DATA_EXTENSION_URL);
+
+        if (relatedDataExt == null) {
+          relatedDataExt = dr.getExtensionByUrl(MEDMORPH_RELATED_DATA_EXTENSION_URL);
+        }
 
         if (relatedDataExt != null && relatedDataExt.getValue() != null) {
 

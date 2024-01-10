@@ -4,11 +4,13 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.kar.action.BsaActionStatus;
+import com.drajer.bsa.kar.action.CheckTriggerCodeStatus;
 import com.drajer.bsa.kar.action.CheckTriggerCodeStatusList;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.FhirQueryFilter;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes;
+import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
@@ -686,14 +688,25 @@ public class BsaServiceUtils {
     return state;
   }
 
-  public static String getEncodedTriggerMatchStatus(CheckTriggerCodeStatusList ctc) {
+  public static String getEncodedTriggerMatchStatus(
+      CheckTriggerCodeStatusList ctc, KarProcessingData kd, String eicrId) {
     ObjectMapper mapper = new ObjectMapper();
 
     String state = null;
     try {
 
-      state = mapper.writeValueAsString(ctc);
+      for (CheckTriggerCodeStatus ctcs : ctc.getStatuses()) {
 
+        ctcs.setActionId(
+            kd.getScheduledJobData().getActionId() + kd.getScheduledJobData().getJobId());
+        ctcs.setActionType(kd.getScheduledJobData().getActionType());
+        ctcs.setActionStatus(BsaActionStatusType.COMPLETED);
+        Set<String> eicrIds = new HashSet<String>();
+        eicrIds.add(eicrId);
+        ctcs.setOutputProduced(eicrIds);
+      }
+
+      state = mapper.writeValueAsString(ctc);
     } catch (JsonProcessingException e) {
 
       String msg = "Unable to update execution state";

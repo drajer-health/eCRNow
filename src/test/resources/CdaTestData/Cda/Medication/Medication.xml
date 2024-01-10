@@ -15,74 +15,74 @@
 <tbody>
 <tr>
 <td>
-<content ID="medication1">Amoxicillin (product)</content>
+    <content ID="medication1">Amoxicillin (product)</content>
 </td>
 <td>
-<content ID="medicationDate1">2020-10-23</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="medication2">Amoxicillin (product)</content>
-</td>
-<td>
-<content ID="medicationDate2">null</content>
+    <content ID="medicationDate1">20201023</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="medication3">Unknown</content>
+    <content ID="medication2">Amoxicillin (product)</content>
 </td>
 <td>
-<content ID="medicationDate3">Thu Oct 15 13:30:00 UTC 2020</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="medication4">LORazepam</content>
-</td>
-<td>
-<content ID="medicationDate4">20200429083400-0500</content>
+    <content ID="medicationDate2">null</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="medication5">albuterol</content>
+    <content ID="medication3">Unknown</content>
 </td>
 <td>
-<content ID="medicationDate5">20200429083200-0500</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="medication6">cefepime 1000 MG Injection</content>
-</td>
-<td>
-<content ID="medicationDate6">20200429090000-0500</content>
+    <content ID="medicationDate3">20201015143000+0100</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="medication7">cetirizine-pseudoephedrine (ZyrTEC-D 5 mg-120 mg oral tablet, extended release)</content>
+    <content ID="medication4">LORazepam</content>
 </td>
 <td>
-<content ID="medicationDate7">20200428132700-0500</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="medication8">citalopram (citalopram 20 mg oral tablet)</content>
-</td>
-<td>
-<content ID="medicationDate8">20200428132700-0500</content>
+    <content ID="medicationDate4">20200429083400-0500</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="medication9">norgestimate-ethinyl estradiol (Ortho Tri-Cyclen oral tablet)</content>
+    <content ID="medication5">albuterol</content>
 </td>
 <td>
-<content ID="medicationDate9">20200428132800-0500</content>
+    <content ID="medicationDate5">20200429083200-0500</content>
+</td>
+</tr>
+<tr>
+<td>
+    <content ID="medication6">cefepime 1000 MG Injection</content>
+</td>
+<td>
+    <content ID="medicationDate6">20200429090000-0500</content>
+</td>
+</tr>
+<tr>
+<td>
+    <content ID="medication7">cetirizine-pseudoephedrine (ZyrTEC-D 5 mg-120 mg oral tablet, extended release)</content>
+</td>
+<td>
+    <content ID="medicationDate7">20200428132700-0500</content>
+</td>
+</tr>
+<tr>
+<td>
+    <content ID="medication8">citalopram (citalopram 20 mg oral tablet)</content>
+</td>
+<td>
+    <content ID="medicationDate8">20200428132700-0500</content>
+</td>
+</tr>
+<tr>
+<td>
+    <content ID="medication9">norgestimate-ethinyl estradiol (Ortho Tri-Cyclen oral tablet)</content>
+</td>
+<td>
+    <content ID="medicationDate9">20200428132800-0500</content>
 </td>
 </tr>
 </tbody>
@@ -92,7 +92,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="MedicationStatement/example005"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="example005"/>
 <statusCode code="completed"/>
 <effectiveTime value="20201023"/>
 <doseQuantity nullFlavor="NI"/>
@@ -112,7 +112,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="MedicationStatement/example005/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="example005"/>
 <statusCode code="completed"/>
 <effectiveTime nullFlavor="NI"/>
 <doseQuantity nullFlavor="NI"/>
@@ -132,7 +132,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="MedicationAdministration/medadmin0301/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="medadmin0301"/>
 <statusCode code="active"/>
 <effectiveTime>
 <low value="20201015143000+0100"/>
@@ -154,7 +154,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311503471/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311503471"/>
 <statusCode code="active"/>
 <effectiveTime value="20200429083400-0500"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -176,7 +176,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311503467/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311503467"/>
 <statusCode code="active"/>
 <effectiveTime value="20200429083200-0500"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -198,7 +198,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311503469/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311503469"/>
 <statusCode code="active"/>
 <effectiveTime value="20200429090000-0500"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -220,7 +220,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311477549/_history/0"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311477549"/>
 <statusCode code="active"/>
 <effectiveTime value="20200428132700-0500"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -242,7 +242,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311477547/_history/0"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311477547"/>
 <statusCode code="active"/>
 <effectiveTime value="20200428132700-0500"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -264,7 +264,7 @@
 <substanceAdministration classCode="SBADM" moodCode="INT">
 <templateId root="2.16.840.1.113883.10.20.22.4.16"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/MedicationRequest/311477551/_history/0"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="311477551"/>
 <statusCode code="active"/>
 <effectiveTime value="20200428132800-0500"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
@@ -284,3 +284,4 @@
 </entry>
 </section>
 </component>
+

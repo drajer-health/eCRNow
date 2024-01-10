@@ -124,7 +124,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                med.getId(),
+                med.getIdElement().getIdPart(),
                 med.getMedication(),
                 med.getEffective(),
                 medstatus,
@@ -176,7 +176,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                medAdm.getId(),
+                medAdm.getIdElement().getIdPart(),
                 medAdm.getMedication(),
                 medAdm.getEffective(),
                 medstatus,
@@ -260,7 +260,7 @@ public class CdaMedicationGenerator {
 
         medEntries.append(
             getEntryForMedication(
-                medReq.getId(),
+                medReq.getIdElement().getIdPart(),
                 medReq.getMedication(),
                 null,
                 medstatus,
@@ -351,12 +351,17 @@ public class CdaMedicationGenerator {
       if (dosage.hasDoseAndRate()
           && dosage.getDoseAndRateFirstRep() != null
           && dosage.getDoseAndRateFirstRep().hasDose()
-          && dosage.getDoseAndRateFirstRep().getDose() != null)
+          && dosage.getDoseAndRateFirstRep().getDose() != null) {
         ds =
             CdaFhirUtilities.getXmlForType(
                 dosage.getDoseAndRateFirstRep().getDose(),
                 CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME,
                 false);
+      } else {
+        ds =
+            CdaFhirUtilities.getQuantityXml(
+                dose, CdaGeneratorConstants.DOSE_QUANTITY_EL_NAME, false);
+      }
 
       if (dosage.hasTiming()
           && dosage.getTiming() != null

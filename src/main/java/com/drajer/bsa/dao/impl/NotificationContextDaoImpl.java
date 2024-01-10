@@ -3,6 +3,7 @@ package com.drajer.bsa.dao.impl;
 import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.ecrapp.dao.AbstractDao;
+import java.util.List;
 import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
@@ -58,5 +59,54 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     Criteria criteria = getSession().createCriteria(NotificationContext.class);
     criteria.add(Restrictions.eq("fhirServerBaseURL", url));
     return (NotificationContext) criteria.uniqueResult();
+  }
+
+  /**
+   * Method to retrieve a NotificationContext by Url, patient_id, notification_resource_id,
+   * notification_resource_type
+   *
+   * @param url The url to retrieve the notification context.
+   * @param patientId The patient Id to retrieve the notification context.
+   * @param notificationResourceId The Notification Resource Id to retrieve the notification
+   *     context.
+   * @param notificationResourceType The Notification Resource Type to retieve the notification
+   *     context.
+   * @return Returns the NotificationContext for the provided unique constraints.
+   */
+  @Override
+  public NotificationContext getNotificationContextByUniqueConstraints(
+      String url,
+      String patientId,
+      String notificationResourceId,
+      String notificationResourceType) {
+    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+
+    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
+    criteria.add(Restrictions.eq("patientId", patientId));
+    criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
+    criteria.add(Restrictions.eq("notificationResourceType", notificationResourceType));
+    return (NotificationContext) criteria.uniqueResult();
+  }
+
+  @Override
+  public List<NotificationContext> getNotificationContextData(
+      UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
+    Criteria criteria = getSession().createCriteria(NotificationContext.class);
+
+    if (id != null) {
+      criteria.add(Restrictions.eq("id", id));
+    } else {
+      if (fhirServerBaseUrl != null)
+        criteria.add(Restrictions.eq("fhirServerBaseUrl", fhirServerBaseUrl));
+      if (notificationResourceId != null)
+        criteria.add(Restrictions.eq("notificationResourceId", notificationResourceId));
+      if (patientId != null) criteria.add(Restrictions.eq("patientId", patientId));
+    }
+    return criteria.list();
+  }
+
+  @Override
+  public void delete(NotificationContext notificationContext) {
+    getSession().delete(notificationContext);
   }
 }

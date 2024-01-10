@@ -400,7 +400,7 @@ public class CdaResultGenerator {
         Type val = obs.getValue();
         List<CodeableConcept> interpretation = obs.getInterpretation();
         StringBuilder id = new StringBuilder(200);
-        id.append(obs.getId());
+        id.append(obs.getIdElement().getIdPart());
         int rowNum = 1;
 
         for (ObservationComponentComponent oc : obs.getComponent()) {
@@ -465,7 +465,7 @@ public class CdaResultGenerator {
                 details,
                 cc,
                 obs.getValue(),
-                obs.getId(),
+                obs.getIdElement().getIdPart(),
                 obs.getEffective(),
                 obs.getInterpretation(),
                 contentRef,
@@ -492,7 +492,7 @@ public class CdaResultGenerator {
       Type val = obs.getValue();
       List<CodeableConcept> interpretation = obs.getInterpretation();
       StringBuilder id = new StringBuilder(200);
-      id.append(obs.getId());
+      id.append(obs.getIdElement().getIdPart());
       int rowNum = 1;
 
       for (ObservationComponentComponent oc : obs.getComponent()) {
@@ -541,7 +541,7 @@ public class CdaResultGenerator {
               details,
               obs.getCode(),
               obs.getValue(),
-              obs.getId(),
+              obs.getIdElement().getIdPart(),
               obs.getEffective(),
               obs.getInterpretation(),
               contentRef,
@@ -795,7 +795,8 @@ public class CdaResultGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_LAB_RESULT_TEMPLATE_ID_EXT));
 
         lrEntry.append(
-            CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), obs.getId()));
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), obs.getIdElement().getIdPart()));
 
         String codeXml =
             CdaFhirUtilities.getCodingXmlForCodeSystem(
@@ -928,7 +929,7 @@ public class CdaResultGenerator {
         } else {
           logger.info(
               " Ignoring observation with id {} because it is not coded with LOINC code",
-              s.getId());
+              s.getIdElement().getIdPart());
         }
       }
     } else {
@@ -963,7 +964,7 @@ public class CdaResultGenerator {
         } else {
           logger.info(
               " Ignoring Diagnostic Report with id {} since the data cannot be used to create an Organizer or POT Observation ",
-              dr.getId());
+              dr.getIdElement().getIdPart());
         }
       }
     } else {

@@ -5,6 +5,7 @@ import com.drajer.bsa.model.FhirServerDetails;
 import com.drajer.sof.model.Response;
 import com.jayway.jsonpath.JsonPath;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +15,16 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
+import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,13 +86,23 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    // map.add("scope", scopes);
+    map.add("scope", scopes);
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
     map.add("client_assertion", jwt);
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+    HttpHeaders hdrs = request.getHeaders();
+
+    logger.debug(" Header Content Type {} ", hdrs.getContentType());
+    logger.debug(" Other Headers {}", hdrs);
+    logger.debug(" JWT {}", map.get("client_assertion"));
+
+    logger.info(" Request {}", request);
+
     ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
+    logger.info(" Response Body = ", response.getBody());
     return new JSONObject(Objects.requireNonNull(response.getBody()));
   }
 
@@ -99,6 +113,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     try {
       return connectToServer(baseUrl, fsd);
     } catch (Exception e) {
+      logger.error(" Message {}", e.getMessage());
       logger.error(
           "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
       return null;
@@ -154,15 +169,26 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       // store.close();
       Key key = ks.getKey(alias, passwordChar);
 
+      X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
+      String x5tValue = Base64.encodeBytes(DigestUtils.sha1(cert.getEncoded()));
+
       return Jwts.builder()
+          .setHeaderParam("typ", "JWT")
+          .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
+          .setHeaderParam("alg", "RS384")
+          .setHeaderParam("x5t", x5tValue)
           .setIssuer(clientId)
           .setSubject(clientId)
+          // .setAudience(
+          //
+          // "https://login.microsoftonline.com/9ce70869-60db-44fd-abe8-d2767077fc8f/oauth2/token")
           .setAudience(aud)
           .setExpiration(
               new Date(
                   System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date
           .setId(UUID.randomUUID().toString())
-          .signWith(key)
+          // .signWith(key)
+          .signWith(SignatureAlgorithm.RS384, key)
           .compact();
     } catch (IOException
         | NoSuchAlgorithmException

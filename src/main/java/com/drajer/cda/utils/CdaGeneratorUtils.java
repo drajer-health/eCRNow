@@ -642,7 +642,7 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
-  public static String getXmlForTelecom(String telName, String telNo, String use) {
+  public static String getXmlForTelecom(String telName, String telNo, String use, Boolean fax) {
 
     String s = "";
 
@@ -653,6 +653,12 @@ public class CdaGeneratorUtils {
       finalTel = tel.substring(tel.length() - 10);
     }
 
+    String telprefix = "tel:(";
+
+    if (fax) {
+      telprefix = "fax:(";
+    }
+
     if (!StringUtils.isEmpty(use) && finalTel.length() == 10) {
 
       s +=
@@ -661,7 +667,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
+              + telprefix
               + finalTel.substring(0, 3)
               + ")"
               + finalTel.substring(3, 6)
@@ -682,7 +688,7 @@ public class CdaGeneratorUtils {
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.VALUE_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
-              + "tel:("
+              + telprefix
               + finalTel.substring(0, 3)
               + ")"
               + finalTel.substring(3, 6)
@@ -2078,6 +2084,9 @@ public class CdaGeneratorUtils {
   }
 
   public static String getXmlForValuePQ(String value, String units) {
+    String defaultUnits = StringUtils.isNotBlank(units) ? units : "1";
+    String escapedUnits = StringEscapeUtils.escapeXml10(defaultUnits);
+
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.VAL_EL_NAME
         + CdaGeneratorConstants.SPACE
@@ -2093,7 +2102,23 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.SPACE
         + CdaGeneratorConstants.UNIT_WITH_EQUAL
         + CdaGeneratorConstants.DOUBLE_QUOTE
-        + StringEscapeUtils.escapeXml10(units)
+        + escapedUnits
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
+  public static String getXmlForValueBoolean(String val) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + CdaGeneratorConstants.VAL_EL_NAME
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.BL_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + val
         + CdaGeneratorConstants.DOUBLE_QUOTE
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }

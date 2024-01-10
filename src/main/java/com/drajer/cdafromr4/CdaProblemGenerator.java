@@ -67,6 +67,7 @@ public class CdaProblemGenerator {
       List<String> list = new ArrayList<>();
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_1_TITLE);
       list.add(CdaGeneratorConstants.PROB_TABLE_COL_2_TITLE);
+      list.add(CdaGeneratorConstants.PROB_TABLE_COL_3_TITLE);
       sb.append(
           CdaGeneratorUtils.getXmlForTableHeader(
               list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
@@ -113,6 +114,18 @@ public class CdaProblemGenerator {
               CdaGeneratorConstants.PROB_TABLE_COL_2_BODY_CONTENT,
               CdaGeneratorConstants.TABLE_ACTIVE_STATUS);
         }
+
+        // Add dates
+        Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(prob.getOnset());
+        Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(prob.getAbatement());
+        Pair<Date, TimeZone> recordedDate = null;
+        if (prob.hasRecordedDateElement()) {
+          recordedDate =
+              new Pair<>(prob.getRecordedDate(), prob.getRecordedDateElement().getTimeZone());
+        }
+
+        String probDates = CdaFhirUtilities.getStringForDates(onset, abatement, recordedDate);
+        bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_3_BODY_CONTENT, probDates);
 
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum;
@@ -180,7 +193,7 @@ public class CdaProblemGenerator {
         Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(pr.getOnset());
         Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(pr.getAbatement());
         Pair<Date, TimeZone> recordedDate = null;
-        if (pr.getRecordedDateElement() != null) {
+        if (pr.hasRecordedDateElement()) {
           recordedDate =
               new Pair<>(pr.getRecordedDate(), pr.getRecordedDateElement().getTimeZone());
         }
@@ -206,7 +219,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), pr.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -254,7 +269,9 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
-        logger.debug("Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
+        logger.debug(
+            "Add Trigger Codes to Problem Observation if applicable {}",
+            pr.getIdElement().getIdPart());
         sb.append(addTriggerCodes(details, pr, onset, abatement));
 
         logger.debug("Completed adding Trigger Codes ");
@@ -331,7 +348,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(

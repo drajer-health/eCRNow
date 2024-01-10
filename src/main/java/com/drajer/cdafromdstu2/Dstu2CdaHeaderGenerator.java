@@ -14,10 +14,8 @@ import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.resource.Patient.Contact;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IdentifierTypeCodesEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
-import ca.uhn.fhir.model.primitive.StringDt;
 import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
 import com.drajer.ecrapp.model.Eicr;
@@ -26,6 +24,7 @@ import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu2.model.BooleanType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -294,7 +293,7 @@ public class Dstu2CdaHeaderGenerator {
     return sb.toString();
   }
 
-  public static String getLocationXml(Location loc) {
+  public static String getLocationXml(Location loc, Organization org, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(500);
 
@@ -310,14 +309,21 @@ public class Dstu2CdaHeaderGenerator {
       } else {
         sb.append(
             CdaGeneratorUtils.getXmlForII(
-                CdaGeneratorConstants.AUTHOR_NPI_AA, loc.getId().getValue()));
+                details.getAssigningAuthorityId(), loc.getId().getValue()));
       }
 
       if (loc.getType() != null && loc.getType().getCoding() != null) {
 
-        sb.append(
-            Dstu2CdaFhirUtilities.getCodingXml(
-                loc.getType().getCoding(), CdaGeneratorConstants.CODE_EL_NAME));
+        List<CodingDt> types = loc.getType().getCoding();
+
+        String typeXml =
+            Dstu2CdaFhirUtilities.getCodingXmlForCodeSystem(
+                types,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                false,
+                "");
+        sb.append(typeXml);
       } else {
         List<CodingDt> codes = null;
         sb.append(Dstu2CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME));
@@ -330,38 +336,56 @@ public class Dstu2CdaHeaderGenerator {
       sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-    } else {
+    } else if (org != null) {
 
-      // ***************
-      // NOTE : THIS IS TEMPORARY --------
-      // For Connectathon testing add defaults, this needs to be removed after connectathon and
-      // replaced with the commented out code.
-      // ***************
-      sb.append(
-          CdaGeneratorUtils.getXmlForII(
-              CdaGeneratorConstants.AUTHOR_NPI_AA, CdaGeneratorConstants.UNKNOWN_VALUE));
-      sb.append(
-          CdaGeneratorUtils.getXmlForCD(
-              CdaGeneratorConstants.CODE_EL_NAME,
-              "OF",
-              "2.16.840.1.113883.5.111",
-              "HL7RoleCode",
-              "Outpatient Facility"));
+      IdentifierDt npi =
+          Dstu2CdaFhirUtilities.getIdentifierForSystem(
+              org.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+
+      if (npi != null) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+      } else {
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), org.getId().getValue()));
+      }
+
+      if (org.getType() != null && org.getType().getCoding() != null) {
+
+        List<CodingDt> types = org.getType().getCoding();
+
+        String typeXml =
+            Dstu2CdaFhirUtilities.getCodingXmlForCodeSystem(
+                types,
+                CdaGeneratorConstants.CODE_EL_NAME,
+                CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                false,
+                "");
+        sb.append(typeXml);
+      } else {
+        List<CodingDt> codes = null;
+        sb.append(Dstu2CdaFhirUtilities.getCodingXml(codes, CdaGeneratorConstants.CODE_EL_NAME));
+      }
+
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
-      List<AddressDt> addrs = new ArrayList<>();
-      AddressDt addr = new AddressDt();
-      List<StringDt> addrLine = new ArrayList<>();
-      addrLine.add(new StringDt("0987 Facility Drive"));
-      addr.setLine(addrLine);
-      addr.setCity("alt Lake City");
-      addr.setState("UT");
-      addr.setCountry("US");
-      addr.setPostalCode("84101");
-      addr.setUse(AddressUseEnum.WORK);
-      addrs.add(addr);
+      List<AddressDt> addrs = org.getAddress();
       sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
 
+    } else {
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForII(
+              details.getAssigningAuthorityId(), CdaGeneratorConstants.UNKNOWN_VALUE));
+      sb.append(
+          CdaGeneratorUtils.getXmlForNullCD(
+              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_NI));
+
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.LOCATION_EL_NAME));
+      List<AddressDt> addrs = null;
+      sb.append(Dstu2CdaFhirUtilities.getAddressXml(addrs));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.LOCATION_EL_NAME));
     }
 
@@ -538,7 +562,7 @@ public class Dstu2CdaHeaderGenerator {
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.HEALTHCARE_FACILITY_EL_NAME));
 
-    sb.append(getLocationXml(loc));
+    sb.append(getLocationXml(loc, org, details));
 
     sb.append(
         CdaGeneratorUtils.getXmlForStartElement(
@@ -617,26 +641,7 @@ public class Dstu2CdaHeaderGenerator {
         Dstu2CdaFhirUtilities.getDateTypeXml(
             p.getBirthDateElement(), CdaGeneratorConstants.BIRTH_TIME_EL_NAME));
 
-    if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
-    } else {
-      patientDetails.append(
-          CdaGeneratorUtils.getXmlForValue(
-              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
-
-      if (p.getDeceased() instanceof DateTimeDt) {
-        DateTimeDt d = (DateTimeDt) p.getDeceased();
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, d.getValue().toString()));
-      } else {
-        patientDetails.append(
-            CdaGeneratorUtils.getXmlForNullEffectiveTime(
-                CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
-      }
-    }
+    patientDetails.append(getDeceasedXml(p));
 
     CodingDt race =
         Dstu2CdaFhirUtilities.getCodingExtension(
@@ -767,6 +772,45 @@ public class Dstu2CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PATIENT_ROLE_EL_NAME));
     patientDetails.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.RECORD_TARGET_EL_NAME));
+
+    return patientDetails.toString();
+  }
+
+  public static String getDeceasedXml(Patient p) {
+
+    StringBuilder patientDetails = new StringBuilder(200);
+
+    if (p.getDeceased() != null) {
+
+      if (p.getDeceased() instanceof BooleanType
+          && Boolean.TRUE.equals(((BooleanType) p.getDeceased()).getValue())) {
+
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForValue(
+                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForNullEffectiveTime(
+                CdaGeneratorConstants.SDTC_DECEASED_TIME, CdaGeneratorConstants.NF_NI));
+      } else if (p.getDeceased() instanceof DateTimeDt) {
+
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForValue(
+                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_TRUE));
+
+        DateTimeDt d = (DateTimeDt) p.getDeceased();
+        patientDetails.append(
+            Dstu2CdaFhirUtilities.getDateTimeTypeXml(d, CdaGeneratorConstants.SDTC_DECEASED_TIME));
+      } else {
+        patientDetails.append(
+            CdaGeneratorUtils.getXmlForValue(
+                CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
+      }
+    } else if (p.getDeceased() == null || (p.getDeceased() != null && p.getDeceased().isEmpty())) {
+      patientDetails.append(
+          CdaGeneratorUtils.getXmlForValue(
+              CdaGeneratorConstants.SDTC_DECEASED_IND, CdaGeneratorConstants.CCDA_FALSE));
+    }
 
     return patientDetails.toString();
   }

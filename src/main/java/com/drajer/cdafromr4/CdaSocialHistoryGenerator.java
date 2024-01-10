@@ -134,6 +134,13 @@ public class CdaSocialHistoryGenerator {
 
             String display = CdaFhirUtilities.getStringForType(obs.getValue());
 
+            // Handle boolean type
+            if (display.contentEquals("true")) {
+              display = "Employed";
+            } else if (display.contentEquals("false")) {
+              display = "Unemployed";
+            }
+
             bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
 
             sb.append(CdaGeneratorUtils.addTableRow(bodyvals, index));

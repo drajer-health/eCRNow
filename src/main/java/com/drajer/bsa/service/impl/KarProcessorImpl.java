@@ -99,6 +99,7 @@ public class KarProcessorImpl implements KarProcessor {
     // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
     PublicHealthMessage phm = getPublicHealthMessage(nc, data);
     if (phm != null && phm.getTriggerMatchStatus() != null) {
+      data.setPhm(phm);
       data.setPreviousTriggerMatchStatus(
           BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
     }
@@ -182,6 +183,7 @@ public class KarProcessorImpl implements KarProcessor {
         // Get existing ph message for the same patient/encounter/kar/fhirserver combination.
         PublicHealthMessage phm = getPublicHealthMessage(nc, kd);
         if (phm != null && phm.getTriggerMatchStatus() != null) {
+          kd.setPhm(phm);
           kd.setPreviousTriggerMatchStatus(
               BsaServiceUtils.getTriggerMatchStatus(phm.getTriggerMatchStatus()));
         }

@@ -1,0 +1,16 @@
+{
+  "triggerEvent": "triggerEvent",
+  "fhirServerBaseUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/",
+  "patientId": "92023793-1d04-453e-af78-bab72199ef9a",
+  "notificationResourceId": "1b374f22-0cd9-4959-88c2-b77f1ba768fe",
+  "notificationResourceType": "Encounter",
+  "relaunchNotificationData": "notification data",
+  "notificationProcessingStatus": "COMPLETED",
+  "notificationData": "notification data",
+  "xCorrelationId": "32",
+  "xRequestId": "32",
+  "throttleContext": "1",
+  "ehrAccessToken": "170de15ad4eaf8eabb3f163d2c83dbfd",
+  "ehrAccessTokenExpiryDuration": 3000,
+  "encounterClass": "IMP"
+}
