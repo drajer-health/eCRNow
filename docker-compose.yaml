@@ -1,0 +1,32 @@
+services:
+  ecrnow-api:
+    container_name: ecrnow-api
+    image: ecrnow:latest
+    build:
+      context: ./
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST:     medmorph-new.cluster-cd3zxm507t8p.us-west-2.rds.amazonaws.com
+      FHIR_URL: https://dummyserver.org/fhir/
+      JDBC_PASSWORD: ${MEDMORPHDB_PASSWORD}
+      JDBC_USERNAME: medmorphadmin
+      logging.level.org.hibernate.SQL: WARN
+      logging.level.org.hibernate.: WARN
+      logging.level.org.springframework.: INFO
+      logging.level.ca.uhn.fhir.: INFO
+      SECURITY_KEY: asdfqwer1234
+
+    volumes:
+#      - ~/Projects/eCRNow/kars:/usr/ecrnow/kars
+      - ~/Projects/eCRNow/logs:/usr/ecrnow/logs
+  ecrnowui:
+    container_name: ecrnowui
+    image: ecrnow-ui:latest
+    ports:
+      - "80:80"
+    environment:
+      AUTH_BASIC: asdfasdf
+      AUTH_BASIC_USERNAME: medmorph
+      REACT_APP_ECR_BASE_URL: http://ecrnow-api:8080
+      AUTH_BASIC_PASSWORD: ${MEDMORPH_PASSWORD}
