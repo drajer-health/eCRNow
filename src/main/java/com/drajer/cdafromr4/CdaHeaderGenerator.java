@@ -6,33 +6,18 @@ import com.drajer.eca.model.ActionRepo;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Location;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 public class CdaHeaderGenerator {
 
@@ -151,7 +136,6 @@ public class CdaHeaderGenerator {
         HashMap<V3ParticipationType, List<Practitioner>> prs = getSortedPractitionerList(data);
 
         eICRHeader.append(getAuthorXml(data, data.getEncounter(), prs));
-
         // Add software version always
         eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
 
@@ -191,13 +175,12 @@ public class CdaHeaderGenerator {
 
       throw new RuntimeException(msg);
     }
-
     return eICRHeader.toString();
   }
 
   private static String getParticipantXml(LaunchDetails details, R4FhirData data, Patient patient) {
 
-    logger.info("LaunchDetails :{} R4FhirData:{}", details, data);
+    logger.debug("LaunchDetails :{} R4FhirData:{}", details, data);
 
     StringBuilder s = new StringBuilder("");
     if (patient != null && patient.getContact() != null) {
@@ -366,7 +349,7 @@ public class CdaHeaderGenerator {
 
     if (loc != null) {
 
-      logger.info("Location data is present, using it to populate LOCATION detail in XML");
+      logger.debug("Location data is present, using it to populate LOCATION detail in XML");
       Identifier npi =
           CdaFhirUtilities.getIdentifierForSystem(
               loc.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
@@ -375,9 +358,7 @@ public class CdaHeaderGenerator {
         sb.append(
             CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), loc.getIdElement().getIdPart()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), loc.getId()));
       }
 
       if (loc.getType() != null) {
@@ -407,7 +388,7 @@ public class CdaHeaderGenerator {
 
     } else if (org != null) {
 
-      logger.info(
+      logger.debug(
           "Location data is not present, using Organization data to populate LOCATION detail in XML");
       Identifier npi =
           CdaFhirUtilities.getIdentifierForSystem(
@@ -417,9 +398,7 @@ public class CdaHeaderGenerator {
         sb.append(
             CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), org.getIdElement().getIdPart()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), org.getId()));
       }
 
       if (org.getType() != null) {
@@ -448,7 +427,7 @@ public class CdaHeaderGenerator {
 
     } else {
 
-      logger.info("Location and Organization data not present, so populate using null flavors");
+      logger.debug("Location and Organization data not present, so populate using null flavors");
 
       sb.append(
           CdaGeneratorUtils.getXmlForII(
@@ -504,7 +483,6 @@ public class CdaHeaderGenerator {
 
   public static String getAuthorXml(
       R4FhirData data, Encounter en, HashMap<V3ParticipationType, List<Practitioner>> practMap) {
-
     logger.debug("R4FhirData in getAuthorXml :{}", data);
 
     StringBuilder sb = new StringBuilder(500);
@@ -553,15 +531,15 @@ public class CdaHeaderGenerator {
       }
 
       if (!practs.isEmpty()) {
-        logger.info(
+        logger.debug(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
         sb.append(getPractitionerXml(pr));
       } else {
-        logger.info("Didn't find a Practitioner with valid type");
+        logger.debug("Didn't find a Practitioner with valid type");
       }
     } else {
-      logger.info("No Practitioner found");
+      logger.debug("No Practitioner found");
     }
 
     if (Boolean.FALSE.equals(foundAuthor)) {
@@ -589,9 +567,7 @@ public class CdaHeaderGenerator {
                 CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()),
                 id.getValue()));
       } else {
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), org.getIdElement().getIdPart()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), org.getId()));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
@@ -646,9 +622,7 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
 
     if (en != null) {
-      sb.append(
-          CdaGeneratorUtils.getXmlForII(
-              details.getAssigningAuthorityId(), en.getIdElement().getIdPart()));
+      sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId()));
 
       // Add Identifiers
       List<Identifier> ids = en.getIdentifier();
@@ -793,15 +767,15 @@ public class CdaHeaderGenerator {
       }
 
       if (!practs.isEmpty()) {
-        logger.info(
+        logger.debug(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
         practXml.append(getPractitionerXml(pr));
       } else {
-        logger.info("Didn't find a Practitioner with valid type");
+        logger.debug("Didn't find a Practitioner with valid type");
       }
     } else {
-      logger.info("No Practitioner found");
+      logger.debug("No Practitioner found");
     }
 
     if (Boolean.FALSE.equals(foundPrimaryPerformer)) {
@@ -866,6 +840,7 @@ public class CdaHeaderGenerator {
         CdaFhirUtilities.getIdentifierForType(
             p.getIdentifier(), CdaFhirEnumConstants.FHIR_ID_TYPE_MR);
 
+
     Boolean addOnce = true;
 
     if (ids != null && !ids.isEmpty()) {
@@ -887,8 +862,7 @@ public class CdaHeaderGenerator {
 
           if (Boolean.TRUE.equals(addOnce)) {
             patientDetails.append(
-                CdaGeneratorUtils.getXmlForII(
-                    details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
+                CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
             addOnce = false;
           }
         }
@@ -897,8 +871,7 @@ public class CdaHeaderGenerator {
     } else {
       logger.debug("Using Resource Identifier as id");
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForII(
-              details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
+          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
     }
 
     // Add Address.
@@ -915,10 +888,22 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElementWithAttribute(
             CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
-    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName()));
+    List<HumanName> nameList = p.getName();
+    String primaryName = CdaFhirUtilities.getNameXml(nameList);
+    patientDetails.append(primaryName);
     patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+    nameList.remove(CdaFhirUtilities.hNameFinder(nameList));
+    if(nameList != null) {
+      for (HumanName listName : nameList) {
+        patientDetails.append(
+                CdaGeneratorUtils.getXmlForStartElementWithAttribute(
+                        CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
+        patientDetails.append(CdaFhirUtilities.getNamesXml(listName));
+        patientDetails.append(
+                CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      }
+    }
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
 
     patientDetails.append(
