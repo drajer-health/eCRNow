@@ -970,7 +970,7 @@ public class CdaGeneratorUtils {
     else
       retVal +=
           CdaGeneratorUtils.getXmlForNullEffectiveTime(
-              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NF_NI);
+              CdaGeneratorConstants.TIME_LOW_EL_NAME, CdaGeneratorConstants.NI_NF);
 
     if (!StringUtils.isEmpty(high) && (!CdaGeneratorConstants.UNKNOWN_VALUE.contentEquals(high)))
       retVal +=
@@ -978,7 +978,7 @@ public class CdaGeneratorUtils {
     else
       retVal +=
           CdaGeneratorUtils.getXmlForNullEffectiveTime(
-              CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NF_NI);
+              CdaGeneratorConstants.TIME_HIGH_EL_NAME, CdaGeneratorConstants.NI_NF);
 
     retVal += CdaGeneratorUtils.getXmlForEndElement(elName);
 

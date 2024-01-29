@@ -822,6 +822,8 @@ public class CdaGeneratorConstants {
 
   // Null Flavors
   public static final String NF_NI = "NI";
+
+  public static final String NI_NF = "NF";
   public static final String NF_NA = "NA";
   public static final String NF_UNK = "UNK";
   public static final String NF_OTH = "OTH";
