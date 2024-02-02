@@ -4,6 +4,7 @@ COPY pom.xml .
 RUN mvn -U dependency:resolve dependency:resolve-plugins
 
 COPY src src
+RUN mvn fmt:format
 RUN mvn -U package -Dskip.unit.tests=true -Dskip.integration.tests=true
 
 ARG JDBC_USERNAME
