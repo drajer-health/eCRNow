@@ -1,23 +1,30 @@
-FROM maven:3.8.1-adoptopenjdk-11 AS builder
+FROM maven:3.9.3-amazoncorretto-11 AS builder
 WORKDIR /build
 COPY pom.xml .
 RUN mvn -U dependency:resolve dependency:resolve-plugins
 
 COPY src src
+RUN mvn fmt:format
 RUN mvn -U package -Dskip.unit.tests=true -Dskip.integration.tests=true
 
-FROM tomcat as appserver
-RUN sed -i 's/port="8080"/port="8081"/' ${CATALINA_HOME}/conf/server.xml
-EXPOSE 8081
-RUN mkdir /app-artifacts
-COPY documents/app-artifacts /app-artifacts
+ARG JDBC_USERNAME
+ARG JDBC_PASSWORD
+ARG SECURITY_KEY
+ARG FHIR_URL
+# ENV JDBC_USERNAME=JDBC_USERNAME
 
-RUN mkdir /schema
-COPY src/test/resources/AppData/Schema /schema
+FROM amazoncorretto:17
 
 VOLUME /config
 VOLUME /output
 VOLUME /logs
+RUN mkdir -p /usr/ecrnow/lib
+WORKDIR /usr/ecrnow
 
-RUN rm -fr /usr/local/tomcat/webapps/ROOT.war
-COPY --from=builder /build/target/ecr-now.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=builder /build/target/ecr-now.war lib
+COPY kars kars
+COPY eRSDv2.json .
+
+EXPOSE 8080
+
+ENTRYPOINT java -Dsecurity.key=$SECURITY_KEY -jar lib/ecr-now.war
