@@ -64,7 +64,8 @@ The eCRNow-UI project and application is used to configure the eCRNow App. Altho
 ## 4.1 Pre-Requisites: ##
 The following technologies should have been installed on your machine where you will build, test and deploy your applications.
 
-* Java 8 or higher.
+* Java 8 for main / master branch.
+* Java 17 or higher should use the "java-17-master" branch.
 * PostgresSQL Database 10.x or higher.
 * NodeJS 12.4.1 or above
 * Maven 3.3.x or higher.
@@ -86,8 +87,7 @@ The following technologies should have been installed on your machine where you 
 **Backend:**
 
 File: src/main/resources/application.properties
-
-Change the database user name, password to reflect the database that was created in step 2 above.
+The database name and password along with an encryption key are passed as command line arguments or environment variables as detailed in Step 5 below. 
 
 *ERSD FILE LOCATION*
 
