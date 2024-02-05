@@ -103,7 +103,8 @@ Currently this link only works state-side and if you are out of country, please 
 *SCHEMATRON FILE LOCATION*
 
 Change the Schematron File location to reflect where to find the actual eICR Schematron.
-The schematron file can be downloaded from https://gforge.hl7.org/gf/project/pher/scmsvn/?action=browse&path=%2Ftrunk%2FPHCASERPT_eICR%2Fschematron%2F with the appropriate HL7 authorization.
+CDA eICR R1.1 : The schematron file can be downloaded from https://github.com/HL7/CDA-phcaserpt-1.1.1/tree/main/validation .
+CDA eICR R3.1 : The schematron file can be downloaded from https://github.com/HL7/CDA-phcaserpt-1.1.1/tree/main/validation](https://github.com/HL7/CDA-phcaserpt-1.3.0/tree/CDA-phcaserpt-1.3.1/validation .
 
 *SCHEMA FILE LOCATION*
 
