@@ -1565,6 +1565,43 @@ public class CdaFhirUtilities {
     return val;
   }
 
+  public static String getStringForCodings(List<Coding> cds) {
+
+    String val = "";
+    if (cds != null) {
+      Boolean first = true;
+      for (Coding c : cds) {
+
+        if (c.hasDisplay()) {
+          if (first) {
+            val += c.getDisplay();
+          } else {
+            val += " | " + c.getDisplay();
+          }
+
+          first = false;
+        }
+      }
+    }
+
+    return val;
+  }
+
+  public static String getStringForCodeableConcept(CodeableConcept cd) {
+
+    String val = "";
+    if (cd != null) {
+
+      if (!StringUtils.isEmpty(cd.getText())) {
+        val += cd.getText();
+      } else if (cd.hasCoding()) {
+        val += getStringForCodings(cd.getCoding());
+      }
+    }
+
+    return val;
+  }
+
   public static String getCombinationStringForCodeSystem(
       CodeableConcept code, Type value, String codeSystemUrl, Boolean csOptional) {
 

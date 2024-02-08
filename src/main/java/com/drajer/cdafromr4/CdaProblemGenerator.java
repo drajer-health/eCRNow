@@ -78,14 +78,10 @@ public class CdaProblemGenerator {
       // Add Body Rows
       int rowNum = 1;
       for (Condition prob : conds) {
-        String probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (prob.getCode() != null
-            && prob.getCode().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
-
-          probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
-        }
+        String probDisplayName = CdaFhirUtilities.getStringForCodeableConcept(prob.getCode());
+        if (StringUtils.isEmpty(probDisplayName))
+          probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
