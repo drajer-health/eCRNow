@@ -8,6 +8,8 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.sqlserver.jdbc.StringUtils;
+
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
