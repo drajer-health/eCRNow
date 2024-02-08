@@ -97,7 +97,7 @@ public class PatientLaunchController {
 
       if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs, false);
+        Bundle nb = getNotificationBundle(launchContext, hs, requestId, false);
 
         notificationReceiver.processNotification(nb, request, response, launchContext);
 
@@ -172,7 +172,7 @@ public class PatientLaunchController {
 
       if (!StringUtils.isEmpty(requestId)) {
 
-        Bundle nb = getNotificationBundle(launchContext, hs, true);
+        Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
 
         notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
 
@@ -201,7 +201,7 @@ public class PatientLaunchController {
    * @return
    */
   public Bundle getNotificationBundle(
-      PatientLaunchContext context, HealthcareSetting hs, Boolean relaunch) {
+      PatientLaunchContext context, HealthcareSetting hs, String requestId, Boolean relaunch) {
 
     Bundle nb = new Bundle();
 
@@ -282,6 +282,7 @@ public class PatientLaunchController {
     KarProcessingData kd = new KarProcessingData();
     kd.setHealthcareSetting(hs);
     kd.setNotificationContext(new NotificationContext());
+    kd.getNotificationContext().setxRequestId(requestId);
     Resource res =
         ehrService.getResourceById(kd, ResourceType.Encounter.toString(), context.getEncounterId());
     nb.addEntry(new BundleEntryComponent().setResource(res));
