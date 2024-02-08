@@ -19,6 +19,7 @@ public class MatchedTriggerCodes {
   private Set<String> matchedCodes;
   private Set<String> matchedValues;
   private String valueSet;
+  private String valueSetOid;
   private String valueSetVersion;
   private String matchedPath;
 
@@ -65,6 +66,14 @@ public class MatchedTriggerCodes {
 
   public void setMatchedValues(Set<String> matchedValues) {
     this.matchedValues = matchedValues;
+  }
+
+  public String getValueSetOid() {
+    return valueSetOid;
+  }
+
+  public void setValueSetOid(String valueSetOid) {
+    this.valueSetOid = valueSetOid;
   }
 
   public Pair<String, String> getMatchingCode(CodeableConcept cd, String path) {

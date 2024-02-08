@@ -14,6 +14,7 @@ import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
 import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.fhirecr.FhirGeneratorConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
@@ -324,6 +325,7 @@ public class BsaServiceUtils {
           if (mtc == null) {
             mtc = new MatchedTriggerCodes();
             mtc.setValueSet(vs.getUrl());
+            mtc.setValueSetOid(getValueSetOid(vs));
             mtc.setValueSetVersion(vs.getVersion());
             mtc.setMatchedPath(path);
             matchFound = true;
@@ -345,6 +347,24 @@ public class BsaServiceUtils {
     }
 
     return retVal;
+  }
+
+  private static String getValueSetOid(ValueSet vs) {
+
+    String vsOid = FhirGeneratorConstants.RCTC_OID;
+
+    if (vs.hasIdentifier()) {
+
+      List<Identifier> ids = vs.getIdentifier();
+
+      for (Identifier id : ids) {
+        if (id.hasSystem()
+            && id.getSystem().contentEquals(FhirGeneratorConstants.DOC_ID_SYSTEM)
+            && id.hasValue()) vsOid = id.getValue();
+      }
+    }
+
+    return vsOid;
   }
 
   public static Set<String> getMatchableCodes(CodeableConcept cc) {

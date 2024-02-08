@@ -1113,7 +1113,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           && (doesCodeableConceptContain(
                   CONDITION_VERIFICATION_STATUS_SYSTEM_URL, "refuted", cond.getVerificationStatus())
               || doesCodeableConceptContain(
-                  CONDITION_CLINICAL_STATUS_SYSTEM_URL,
+                  CONDITION_VERIFICATION_STATUS_SYSTEM_URL,
                   "entered-in-error",
                   cond.getVerificationStatus()))) {
         logger.info(

@@ -152,9 +152,6 @@ public class CdaHeaderGenerator {
 
         eICRHeader.append(getAuthorXml(data, data.getEncounter(), prs));
 
-        // Add software version always
-        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
-
         // Add EHR information if available
         if (appProps != null
             && appProps.containsKey("ehr.product.name")
@@ -163,6 +160,9 @@ public class CdaHeaderGenerator {
               getAdditionalAuthorXml(
                   appProps.get("ehr.product.name"), appProps.get("ehr.product.version")));
         }
+
+        // Add software version always
+        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
 
         // Add System Integrator / Implementer information if available
         if (appProps != null
