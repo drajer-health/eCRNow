@@ -178,7 +178,7 @@ public class HealthcareSetting implements FhirServerDetails {
    */
   @Column(name = "direct_recipient_address", nullable = true)
   private String directRecipientAddress;
-  
+
   /*
    * The TLS version to be used for Direct SMTP related protocols
    */
@@ -811,14 +811,14 @@ public class HealthcareSetting implements FhirServerDetails {
   }
 
   public String getDirectTlsVersion() {
-	return directTlsVersion;
-}
+    return directTlsVersion;
+  }
 
-public void setDirectTlsVersion(String directTlsVersion) {
-	this.directTlsVersion = directTlsVersion;
-}
+  public void setDirectTlsVersion(String directTlsVersion) {
+    this.directTlsVersion = directTlsVersion;
+  }
 
-public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {
+  public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {
 
     HealthcareSettingOperationalKnowledgeArtifacts arts = getKars();
 

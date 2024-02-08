@@ -5,7 +5,6 @@ import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.sof.utils.Authorization;
 import com.microsoft.sqlserver.jdbc.StringUtils;
-
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,7 +40,7 @@ public class HealthcareSettingsController {
   @Autowired Authorization authorization;
 
   @Autowired HealthcareSettingsService healthcareSettingsService;
-  
+
   @Value("${direct.tls.version}")
   String directSmtpTlsVersion;
 
@@ -95,9 +94,9 @@ public class HealthcareSettingsController {
           if (object.getString(FHIR_VERSION).startsWith("4.")) {
             hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
           }
-          
-          if(StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
-        	  hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+
+          if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+            hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
           }
 
           for (int i = 0; i < innerExtension.length(); i++) {
@@ -143,11 +142,11 @@ public class HealthcareSettingsController {
 
     if (existingHsd == null || (existingHsd.getId().equals(hsDetails.getId()))) {
       logger.info("Saving the Client Details");
-      
-      if(StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
-    	  hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+
+      if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+        hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
       }
-      
+
       healthcareSettingsService.saveOrUpdate(hsDetails);
       return new ResponseEntity<>(hsDetails, HttpStatus.OK);
     } else {

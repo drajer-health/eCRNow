@@ -168,10 +168,10 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     //  Enable SSL Connections from the client.
     props.setProperty("mail.smtp.ssl.enable", "true");
-    
+
     // Set TLS protocols
-    if(!StringUtils.isEmpty(directTlsVersion)) {
-    props.setProperty("smtp.ssl.protocols", directTlsVersion);
+    if (!StringUtils.isEmpty(directTlsVersion)) {
+      props.setProperty("smtp.ssl.protocols", directTlsVersion);
     }
 
     Session session = Session.getInstance(props, null);
@@ -276,7 +276,12 @@ public class DirectTransportImpl implements DataTransportInterface {
    * @param coorleationId
    */
   public void readMailUsingImap(
-      String host, String username, String password, String port, String coorleationId, String directTlsVersion) {
+      String host,
+      String username,
+      String password,
+      String port,
+      String coorleationId,
+      String directTlsVersion) {
 
     try {
 
@@ -289,8 +294,8 @@ public class DirectTransportImpl implements DataTransportInterface {
       props.put("mail.imap.auth", "true");
       props.put("mail.imap.ssl.enable", "true");
       props.put("mail.imap.ssl.trust", "*");
-      if(!StringUtils.isEmpty(directTlsVersion)) {
-      props.put("mail.imap.ssl.protocols", directTlsVersion);
+      if (!StringUtils.isEmpty(directTlsVersion)) {
+        props.put("mail.imap.ssl.protocols", directTlsVersion);
       }
 
       Session session = Session.getInstance(props, null);
