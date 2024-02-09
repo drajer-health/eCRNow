@@ -1,1 +1,0 @@
-ALTER TABLE notification_context ADD relaunch_notification_data varchar(255);
