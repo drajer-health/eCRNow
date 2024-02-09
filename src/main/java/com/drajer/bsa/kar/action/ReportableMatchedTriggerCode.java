@@ -7,6 +7,7 @@ public class ReportableMatchedTriggerCode {
 
   private String valueSetVersion;
   private String valueSet;
+  private String valueSetOid;
   private String codeSystem;
   private String code;
   private Set<String> allMatches;
@@ -53,5 +54,13 @@ public class ReportableMatchedTriggerCode {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public String getValueSetOid() {
+    return valueSetOid;
+  }
+
+  public void setValueSetOid(String valueSetOid) {
+    this.valueSetOid = valueSetOid;
   }
 }

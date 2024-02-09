@@ -364,12 +364,10 @@ public class SubmitReport extends BsaAction {
         logger.info(" Response Received from process message ");
         responseBundle = (Bundle) response;
       } catch (InvalidRequestException ex) {
-
         String myResp = ex.getResponseBody();
         logger.error(" ResponseBody : ", myResp);
         return;
       } catch (RuntimeException re) {
-
         logger.error("Error calling $process-message endpoint", re);
         logger.info("Response Object was {}", re);
         return;

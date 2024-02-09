@@ -1067,11 +1067,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
   public Boolean isValidResource(BundleEntryComponent comp) {
 
+    if (comp != null) {
+      return isValidResource(comp.getResource());
+    } else return false;
+  }
+
+  public Boolean isValidResource(Resource res) {
+
     Boolean retVal = true;
 
-    if (comp.getResource().getResourceType() == ResourceType.Observation) {
+    if (res.getResourceType() == ResourceType.Observation) {
 
-      Observation obs = (Observation) comp.getResource();
+      Observation obs = (Observation) res;
 
       // Ignore observations that should not be included.
       if (obs.getStatus() != null
@@ -1081,13 +1088,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
-    } else if (comp.getResource().getResourceType() == ResourceType.Condition) {
+    } else if (res.getResourceType() == ResourceType.Condition) {
 
-      Condition cond = (Condition) comp.getResource();
+      Condition cond = (Condition) res;
 
       // Ignore conditions based on clinical status that should not be included.
       if (cond.hasClinicalStatus()
@@ -1102,8 +1109,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                   CONDITION_CLINICAL_STATUS_SYSTEM_URL, "unknown", cond.getClinicalStatus()))) {
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
 
@@ -1113,18 +1120,18 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           && (doesCodeableConceptContain(
                   CONDITION_VERIFICATION_STATUS_SYSTEM_URL, "refuted", cond.getVerificationStatus())
               || doesCodeableConceptContain(
-                  CONDITION_CLINICAL_STATUS_SYSTEM_URL,
+                  CONDITION_VERIFICATION_STATUS_SYSTEM_URL,
                   "entered-in-error",
                   cond.getVerificationStatus()))) {
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
-    } else if (comp.getResource().getResourceType() == ResourceType.ServiceRequest) {
+    } else if (res.getResourceType() == ResourceType.ServiceRequest) {
 
-      ServiceRequest sr = (ServiceRequest) comp.getResource();
+      ServiceRequest sr = (ServiceRequest) res;
 
       // Ignore observations that should not be included.
       if (sr.getStatus() != null
@@ -1134,14 +1141,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
 
-    } else if (comp.getResource().getResourceType() == ResourceType.MedicationRequest) {
+    } else if (res.getResourceType() == ResourceType.MedicationRequest) {
 
-      MedicationRequest mr = (MedicationRequest) comp.getResource();
+      MedicationRequest mr = (MedicationRequest) res;
 
       // Ignore observations that should not be included.
       if (mr.getStatus() != null
@@ -1151,14 +1158,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
 
-    } else if (comp.getResource().getResourceType() == ResourceType.MedicationAdministration) {
+    } else if (res.getResourceType() == ResourceType.MedicationAdministration) {
 
-      MedicationAdministration ma = (MedicationAdministration) comp.getResource();
+      MedicationAdministration ma = (MedicationAdministration) res;
 
       // Ignore observations that should not be included.
       if (ma.getStatus() != null
@@ -1167,27 +1174,27 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
 
-    } else if (comp.getResource().getResourceType() == ResourceType.MedicationStatement) {
+    } else if (res.getResourceType() == ResourceType.MedicationStatement) {
 
-      MedicationStatement ms = (MedicationStatement) comp.getResource();
+      MedicationStatement ms = (MedicationStatement) res;
 
       // Ignore observations that should not be included.
       if (ms.getStatus() != null && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR)) {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
-    } else if (comp.getResource().getResourceType() == ResourceType.DiagnosticReport) {
+    } else if (res.getResourceType() == ResourceType.DiagnosticReport) {
 
-      DiagnosticReport dr = (DiagnosticReport) comp.getResource();
+      DiagnosticReport dr = (DiagnosticReport) res;
 
       // Ignore observations that should not be included.
       if (dr.getStatus() != null
@@ -1197,14 +1204,14 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
 
-    } else if (comp.getResource().getResourceType() == ResourceType.Immunization) {
+    } else if (res.getResourceType() == ResourceType.Immunization) {
 
-      Immunization imm = (Immunization) comp.getResource();
+      Immunization imm = (Immunization) res;
 
       // Ignore observations that should not be included.
       if (imm.getStatus() != null
@@ -1213,13 +1220,13 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
-    } else if (comp.getResource().getResourceType() == ResourceType.Procedure) {
+    } else if (res.getResourceType() == ResourceType.Procedure) {
 
-      Procedure pr = (Procedure) comp.getResource();
+      Procedure pr = (Procedure) res;
 
       // Ignore observations that should not be included.
       if (pr.getStatus() != null
@@ -1229,17 +1236,17 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         logger.info(
             " Ignoring {} resource with id {}",
-            comp.getResource().getResourceType().toString(),
-            comp.getResource().getIdElement().getIdPart());
+            res.getResourceType().toString(),
+            res.getIdElement().getIdPart());
         retVal = false;
       }
 
-    } else if (comp.getResource().getResourceType() == ResourceType.Medication) {
+    } else if (res.getResourceType() == ResourceType.Medication) {
 
       // Include hte resource for now.
-      Medication m = (Medication) comp.getResource();
+      Medication m = (Medication) res;
 
-    } else if (comp.getResource().getResourceType() == ResourceType.OperationOutcome) {
+    } else if (res.getResourceType() == ResourceType.OperationOutcome) {
       retVal = false;
     } else retVal = true;
 
@@ -1392,7 +1399,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                     r.getReferenceElement().getIdPart());
           }
 
-          if (secRes != null && secRes.getResourceType() != ResourceType.OperationOutcome) {
+          if (secRes != null
+              && secRes.getResourceType() != ResourceType.OperationOutcome
+              && isValidResource(secRes)) {
 
             logger.info(
                 " Adding secondary Observation resource for Diagnostic Report with id {}",

@@ -4,12 +4,14 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.sof.utils.Authorization;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,9 @@ public class HealthcareSettingsController {
   @Autowired Authorization authorization;
 
   @Autowired HealthcareSettingsService healthcareSettingsService;
+
+  @Value("${direct.tls.version}")
+  String directSmtpTlsVersion;
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsController.class);
 
@@ -90,6 +95,10 @@ public class HealthcareSettingsController {
             hsDetails.setFhirVersion(FhirVersionEnum.R4.toString());
           }
 
+          if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+            hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+          }
+
           for (int i = 0; i < innerExtension.length(); i++) {
             JSONObject urlExtension = innerExtension.getJSONObject(i);
             if (urlExtension.getString("url").equals("token")) {
@@ -133,6 +142,11 @@ public class HealthcareSettingsController {
 
     if (existingHsd == null || (existingHsd.getId().equals(hsDetails.getId()))) {
       logger.info("Saving the Client Details");
+
+      if (StringUtils.isEmpty(hsDetails.getDirectTlsVersion())) {
+        hsDetails.setDirectTlsVersion(directSmtpTlsVersion);
+      }
+
       healthcareSettingsService.saveOrUpdate(hsDetails);
       return new ResponseEntity<>(hsDetails, HttpStatus.OK);
     } else {

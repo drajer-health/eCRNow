@@ -86,12 +86,21 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    // map.add("scope", scopes);
+    map.add("scope", scopes);
     map.add("grant_type", "client_credentials");
 
     map.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
     map.add("client_assertion", jwt);
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+    HttpHeaders hdrs = request.getHeaders();
+
+    logger.debug(" Header Content Type {} ", hdrs.getContentType());
+    logger.debug(" Other Headers {}", hdrs);
+    logger.debug(" JWT {}", map.get("client_assertion"));
+
+    logger.info(" Request {}", request);
+
     ResponseEntity<?> response = resTemplate.postForEntity(tokenEndpoint, request, Response.class);
     logger.info(" Response Body = ", response.getBody());
     return new JSONObject(Objects.requireNonNull(response.getBody()));
@@ -104,6 +113,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     try {
       return connectToServer(baseUrl, fsd);
     } catch (Exception e) {
+      logger.error(" Message {}", e.getMessage());
       logger.error(
           "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
       return null;
@@ -169,9 +179,10 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
           .setHeaderParam("x5t", x5tValue)
           .setIssuer(clientId)
           .setSubject(clientId)
-          .setAudience(
-              "https://login.microsoftonline.com/9ce70869-60db-44fd-abe8-d2767077fc8f/oauth2/token")
-          //  .setAudience(aud)
+          // .setAudience(
+          //
+          // "https://login.microsoftonline.com/9ce70869-60db-44fd-abe8-d2767077fc8f/oauth2/token")
+          .setAudience(aud)
           .setExpiration(
               new Date(
                   System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))) // a java.util.Date

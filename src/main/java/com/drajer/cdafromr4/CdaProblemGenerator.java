@@ -78,14 +78,10 @@ public class CdaProblemGenerator {
       // Add Body Rows
       int rowNum = 1;
       for (Condition prob : conds) {
-        String probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (prob.getCode() != null
-            && prob.getCode().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(prob.getCode().getCodingFirstRep().getDisplay())) {
-
-          probDisplayName = prob.getCode().getCodingFirstRep().getDisplay();
-        }
+        String probDisplayName = CdaFhirUtilities.getStringForCodeableConcept(prob.getCode());
+        if (StringUtils.isEmpty(probDisplayName))
+          probDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(CdaGeneratorConstants.PROB_TABLE_COL_1_BODY_CONTENT, probDisplayName);
@@ -219,7 +215,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), pr.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), pr.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(
@@ -267,7 +265,9 @@ public class CdaProblemGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
-        logger.debug("Add Trigger Codes to Problem Observation if applicable {}", pr.getId());
+        logger.debug(
+            "Add Trigger Codes to Problem Observation if applicable {}",
+            pr.getIdElement().getIdPart());
         sb.append(addTriggerCodes(details, pr, onset, abatement));
 
         logger.debug("Completed adding Trigger Codes ");
@@ -344,7 +344,9 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
 
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), cond.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(

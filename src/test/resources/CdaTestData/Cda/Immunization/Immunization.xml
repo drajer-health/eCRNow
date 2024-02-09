@@ -44,7 +44,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
 <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization/M197287364/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="M197287364"/>
 <statusCode code="completed"/>
 <effectiveTime value="20140101"/>
 <doseQuantity value="1.25" unit="mg"/>
@@ -63,7 +63,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
 <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization/M197287360/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="M197287360"/>
 <statusCode code="completed"/>
 <effectiveTime value="20000101"/>
 <doseQuantity value="1.25" unit="mg"/>
@@ -82,7 +82,7 @@
 <substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
 <templateId root="2.16.840.1.113883.10.20.22.4.52"/>
 <templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
-<id root="2.16.840.1.113883.1.1.1.1" extension="https://fhir-open.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Immunization/M197287356/_history/1"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="M197287356"/>
 <statusCode code="completed"/>
 <effectiveTime value="20190101"/>
 <doseQuantity value="1.25" unit="mg"/>

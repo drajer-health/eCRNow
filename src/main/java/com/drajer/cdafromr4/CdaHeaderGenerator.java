@@ -152,9 +152,6 @@ public class CdaHeaderGenerator {
 
         eICRHeader.append(getAuthorXml(data, data.getEncounter(), prs));
 
-        // Add software version always
-        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
-
         // Add EHR information if available
         if (appProps != null
             && appProps.containsKey("ehr.product.name")
@@ -163,6 +160,9 @@ public class CdaHeaderGenerator {
               getAdditionalAuthorXml(
                   appProps.get("ehr.product.name"), appProps.get("ehr.product.version")));
         }
+
+        // Add software version always
+        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
 
         // Add System Integrator / Implementer information if available
         if (appProps != null
@@ -375,7 +375,9 @@ public class CdaHeaderGenerator {
         sb.append(
             CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), loc.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), loc.getIdElement().getIdPart()));
       }
 
       if (loc.getType() != null) {
@@ -415,7 +417,9 @@ public class CdaHeaderGenerator {
         sb.append(
             CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
       } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), org.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), org.getIdElement().getIdPart()));
       }
 
       if (org.getType() != null) {
@@ -585,7 +589,9 @@ public class CdaHeaderGenerator {
                 CdaGeneratorUtils.getRootOid(id.getSystem(), details.getAssigningAuthorityId()),
                 id.getValue()));
       } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), org.getId()));
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(
+                details.getAssigningAuthorityId(), org.getIdElement().getIdPart()));
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
@@ -640,7 +646,9 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENCOMPASSING_ENC_EL_NAME));
 
     if (en != null) {
-      sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), en.getId()));
+      sb.append(
+          CdaGeneratorUtils.getXmlForII(
+              details.getAssigningAuthorityId(), en.getIdElement().getIdPart()));
 
       // Add Identifiers
       List<Identifier> ids = en.getIdentifier();
@@ -879,7 +887,8 @@ public class CdaHeaderGenerator {
 
           if (Boolean.TRUE.equals(addOnce)) {
             patientDetails.append(
-                CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
+                CdaGeneratorUtils.getXmlForII(
+                    details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
             addOnce = false;
           }
         }
@@ -888,7 +897,8 @@ public class CdaHeaderGenerator {
     } else {
       logger.debug("Using Resource Identifier as id");
       patientDetails.append(
-          CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), p.getId()));
+          CdaGeneratorUtils.getXmlForII(
+              details.getAssigningAuthorityId(), p.getIdElement().getIdPart()));
     }
 
     // Add Address.

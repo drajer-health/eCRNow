@@ -113,7 +113,8 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectRecipientAddress(),
             is,
             CDA_FILE_NAME,
-            data.getxCorrelationId());
+            data.getxCorrelationId(),
+            hs.getDirectTlsVersion());
 
         logger.info(" Finished sending the message using Direct ");
 
@@ -129,7 +130,8 @@ public class DirectTransportImpl implements DataTransportInterface {
             hs.getDirectRecipientAddress(),
             is,
             CDA_FILE_NAME,
-            data.getxCorrelationId());
+            data.getxCorrelationId(),
+            hs.getDirectTlsVersion());
       } else {
 
         logger.error(" Cannot send Direct message since both Direct Host and SMTP Urls are empty ");
@@ -152,7 +154,8 @@ public class DirectTransportImpl implements DataTransportInterface {
       String recipientAddr,
       InputStream is,
       String filename,
-      String correlationId)
+      String correlationId,
+      String directTlsVersion)
       throws Exception {
 
     Properties props = new Properties();
@@ -165,6 +168,11 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     //  Enable SSL Connections from the client.
     props.setProperty("mail.smtp.ssl.enable", "true");
+
+    // Set TLS protocols
+    if (!StringUtils.isEmpty(directTlsVersion)) {
+      props.setProperty("smtp.ssl.protocols", directTlsVersion);
+    }
 
     Session session = Session.getInstance(props, null);
 
@@ -234,7 +242,8 @@ public class DirectTransportImpl implements DataTransportInterface {
           hs.getDirectUser(),
           hs.getDirectPwd(),
           hs.getImapPort(),
-          data.getxCorrelationId());
+          data.getxCorrelationId(),
+          hs.getDirectTlsVersion());
 
       logger.info(" Finished sending the message using Direct ");
 
@@ -245,7 +254,8 @@ public class DirectTransportImpl implements DataTransportInterface {
           hs.getDirectUser(),
           hs.getDirectPwd(),
           hs.getImapPort(),
-          data.getxCorrelationId());
+          data.getxCorrelationId(),
+          hs.getDirectTlsVersion());
 
     } else {
 
@@ -266,7 +276,12 @@ public class DirectTransportImpl implements DataTransportInterface {
    * @param coorleationId
    */
   public void readMailUsingImap(
-      String host, String username, String password, String port, String coorleationId) {
+      String host,
+      String username,
+      String password,
+      String port,
+      String coorleationId,
+      String directTlsVersion) {
 
     try {
 
@@ -279,6 +294,9 @@ public class DirectTransportImpl implements DataTransportInterface {
       props.put("mail.imap.auth", "true");
       props.put("mail.imap.ssl.enable", "true");
       props.put("mail.imap.ssl.trust", "*");
+      if (!StringUtils.isEmpty(directTlsVersion)) {
+        props.put("mail.imap.ssl.protocols", directTlsVersion);
+      }
 
       Session session = Session.getInstance(props, null);
 
