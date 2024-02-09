@@ -31,6 +31,7 @@ public class PhMessageServiceTest {
 
   private Map<String, String> searchParam;
 
+  private boolean summaryFlag = false;
   private List<PublicHealthMessage> expectedPublicHealthMessageDetails;
 
   @BeforeEach
@@ -53,10 +54,11 @@ public class PhMessageServiceTest {
   public void testGetPhMessageData() throws IOException {
 
     Mockito.lenient()
-        .when(phMessageDao.getPhMessageData(searchParam))
+        .when(phMessageDao.getPhMessageData(searchParam, summaryFlag))
         .thenReturn(expectedPublicHealthMessageDetails);
 
-    List<PublicHealthMessage> result = phMessageServiceImpl.getPhMessageData(searchParam);
+    List<PublicHealthMessage> result =
+        phMessageServiceImpl.getPhMessageData(searchParam, summaryFlag);
 
     assertEquals(expectedPublicHealthMessageDetails, result);
   }
@@ -66,11 +68,11 @@ public class PhMessageServiceTest {
     List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
 
     Mockito.lenient()
-        .when(phMessageDao.getPhMessageByXRequestIds(xRequestIds))
+        .when(phMessageDao.getPhMessageByXRequestIds(xRequestIds, summaryFlag))
         .thenReturn(expectedPublicHealthMessageDetails);
 
     List<PublicHealthMessage> result =
-        phMessageServiceImpl.getPhMessageDataByXRequestIds(xRequestIds);
+        phMessageServiceImpl.getPhMessageDataByXRequestIds(xRequestIds, summaryFlag);
 
     assertEquals(expectedPublicHealthMessageDetails, result);
   }
