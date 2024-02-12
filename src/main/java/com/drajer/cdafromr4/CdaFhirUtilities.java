@@ -7,12 +7,10 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TimeZone;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -1484,66 +1482,91 @@ public class CdaFhirUtilities {
     return s;
   }
 
+  public static HumanName hNameFinder(List<HumanName> names){
+    HumanName hName = null;
+    if (!names.isEmpty()) {
+
+      List<HumanName> hNameList = names.stream().filter(humanName -> humanName.hasPeriod()).filter(humanName -> !humanName.getPeriod().getStart().equals(null)).collect(Collectors.toList());
+      if (hNameList.size() == 0){
+        hName = names.stream().findFirst().get();
+      }
+      else {
+
+        hName = hNameList.stream()
+                .sorted(Comparator.comparing(humanName -> humanName.getPeriod().getStart(), Comparator.reverseOrder()))
+                .findFirst().get();
+      }
+    }
+    return hName;
+  }
+
   public static String getNameXml(List<HumanName> names) {
 
     StringBuilder nameString = new StringBuilder(200);
 
-    if (names != null && !names.isEmpty()) {
+    stringHelper(hNameFinder(names), nameString);
+    return nameString.toString();
+  }
 
-      Optional<HumanName> hName = names.stream().findFirst();
-      if (hName.isPresent()) {
+  public static String getNamesXml(HumanName hName){
+    StringBuilder sb = new StringBuilder();
+    stringHelper(hName, sb);
+    return sb.toString();
+  }
 
-        HumanName name = hName.get();
-        List<StringType> ns = name.getGiven();
 
-        for (StringType n : ns) {
+  private static void stringHelper(HumanName hName, StringBuilder nameString){
+    if (!hName.isEmpty()) {
 
-          if (!StringUtils.isEmpty(n.getValue())) {
+      HumanName name = hName;
+      List<StringType> ns = name.getGiven();
 
-            String nameQualifier = null;
-            if (name.getUse() != null) {
-              nameQualifier = CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toCode());
-            }
+      for (StringType n : ns) {
 
-            nameString.append(
-                CdaGeneratorUtils.getXmlForTextWithAttribute(
-                    CdaGeneratorConstants.FIRST_NAME_EL_NAME,
-                    CdaGeneratorConstants.QUALIFIER_ATTR_NAME,
-                    nameQualifier,
-                    n.getValue()));
+        if (!StringUtils.isEmpty(n.getValue())) {
+
+          String nameQualifier = null;
+          if (name.getUse() != null) {
+            nameQualifier = CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toCode());
           }
-        }
 
-        // If Empty create NF
-        if (StringUtils.isEmpty(nameString)) {
           nameString.append(
-              CdaGeneratorUtils.getXmlForNFText(
-                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
-        }
-
-        if (name.getFamily() != null && !StringUtils.isEmpty(name.getFamily())) {
-          nameString.append(
-              CdaGeneratorUtils.getXmlForText(
-                  CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
-        } else {
-          nameString.append(
-              CdaGeneratorUtils.getXmlForNFText(
-                  CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+                  CdaGeneratorUtils.getXmlForTextWithAttribute(
+                          CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+                          CdaGeneratorConstants.QUALIFIER_ATTR_NAME,
+                          nameQualifier,
+                          n.getValue()));
         }
       }
-      // Enough names for now.
-    } else {
+
+      // If Empty create NF
+      if (StringUtils.isEmpty(nameString)) {
+        nameString.append(
+                CdaGeneratorUtils.getXmlForNFText(
+                        CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+      }
+
+      if (name.getFamily() != null && !StringUtils.isEmpty(name.getFamily())) {
+        nameString.append(
+                CdaGeneratorUtils.getXmlForText(
+                        CdaGeneratorConstants.LAST_NAME_EL_NAME, name.getFamily()));
+      } else {
+        nameString.append(
+                CdaGeneratorUtils.getXmlForNFText(
+                        CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+      }
+    }
+    // Enough names for now.
+    else {
 
       logger.debug("Did not find the Name for the patient ");
       nameString.append(
-          CdaGeneratorUtils.getXmlForNFText(
-              CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNFText(
+                      CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
       nameString.append(
-          CdaGeneratorUtils.getXmlForNFText(
-              CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+              CdaGeneratorUtils.getXmlForNFText(
+                      CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
-
-    return nameString.toString();
   }
 
   public static String getStringForCoding(Coding cd) {
