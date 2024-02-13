@@ -318,7 +318,7 @@ public class SubmitReport extends BsaAction {
 
       if (obj != null) {
         token = obj.getString("access_token");
-        logger.info(" Successfully retrieve token {}", token);
+        logger.debug(" Successfully retrieve token {}", token);
       } else {
         logger.error(" Unable to retrieve access token for PHA: {}", pha.getFhirServerBaseURL());
       }

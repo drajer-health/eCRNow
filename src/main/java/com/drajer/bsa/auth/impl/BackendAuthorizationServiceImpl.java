@@ -80,7 +80,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     }
     String clientId = fsd.getClientId();
     String scopes = fsd.getScopes();
-    String jwt = generateJwt(clientId, tokenEndpoint);
+    String jwt = generateJwt(clientId, tokenEndpoint, fsd);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -159,7 +159,8 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
    * @return a signed JWT
    * @throws KeyStoreException for problems with public/private keys
    */
-  public String generateJwt(String clientId, String aud) throws KeyStoreException {
+  public String generateJwt(String clientId, String aud, FhirServerDetails fsd)
+      throws KeyStoreException {
 
     KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
     char[] passwordChar = password.toCharArray();
@@ -167,9 +168,9 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       InputStream store = new FileInputStream(jwksLocation);
       ks.load(store, passwordChar);
       // store.close();
-      Key key = ks.getKey(alias, passwordChar);
+      Key key = ks.getKey(fsd.getBackendAuthKeyAlias(), passwordChar);
 
-      X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
+      X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());
       String x5tValue = Base64.encodeBytes(DigestUtils.sha1(cert.getEncoded()));
 
       return Jwts.builder()
