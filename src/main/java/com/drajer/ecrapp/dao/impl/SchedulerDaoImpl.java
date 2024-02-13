@@ -28,4 +28,22 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
     return criteria.list();
   }
+
+  @Override
+  public List<ScheduledTasks> getScheduledTasks() {
+    Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
+
+    List<ScheduledTasks> scheduledTasks = criteria.list();
+
+    if (scheduledTasks != null) {
+      return scheduledTasks;
+    }
+    return null;
+  }
+
+  @Override
+  public ScheduledTasks saveOrUpdate(ScheduledTasks scheduledTasks) {
+    getSession().saveOrUpdate(scheduledTasks);
+    return scheduledTasks;
+  }
 }
