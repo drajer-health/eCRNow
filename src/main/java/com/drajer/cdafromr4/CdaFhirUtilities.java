@@ -1289,7 +1289,7 @@ public class CdaFhirUtilities {
     }
   }
 
-  public static String getPeriodXml(Period period, String elName) {
+  public static String getPeriodXml(Period period, String elName, Boolean valFlag) {
 
     StringBuilder sb = new StringBuilder(200);
 
@@ -2076,12 +2076,16 @@ public class CdaFhirUtilities {
 
         DateTimeType d = (DateTimeType) dt;
 
-        val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
+        if (Boolean.FALSE.equals(valFlag))
+          val += CdaGeneratorUtils.getXmlForEffectiveTime(elName, d.getValue(), d.getTimeZone());
+        else
+          val +=
+              CdaGeneratorUtils.getXmlForValueEffectiveTime(elName, d.getValue(), d.getTimeZone());
 
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;
 
-        val += getPeriodXml(pt, elName);
+        val += getPeriodXml(pt, elName, valFlag);
       } else if (dt instanceof Timing) {
 
         Timing t = (Timing) (dt);
@@ -2142,7 +2146,7 @@ public class CdaFhirUtilities {
       } else if (dt instanceof Period) {
         Period pt = (Period) dt;
 
-        val += getPeriodXml(pt, elName);
+        val += getPeriodXml(pt, elName, false);
       } else if (dt instanceof Timing) {
 
         Timing t = (Timing) (dt);
@@ -2575,7 +2579,7 @@ public class CdaFhirUtilities {
     } else if (val.equalsIgnoreCase("unknown") || val.equalsIgnoreCase("draft")) {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
-      return "held";
+      return "cancelled";
     } else return COMPLETED;
   }
 

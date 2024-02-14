@@ -678,7 +678,8 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaEncounterGenerator.getEncounterCodeXml(en, ""));
       sb.append(
-          CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
+          CdaFhirUtilities.getPeriodXml(
+              en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
     } else {
       sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
       sb.append(

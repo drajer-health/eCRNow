@@ -1093,13 +1093,13 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     String expectedXml =
         "<effectiveTime><low value=\"20220403153000-0400\"/><high value=\"20230403153000-0400\"/></effectiveTime>";
 
-    String actualXml = CdaFhirUtilities.getPeriodXml(period, "effectiveTime");
+    String actualXml = CdaFhirUtilities.getPeriodXml(period, "effectiveTime", false);
     actualXml = actualXml.replaceAll("\n", "");
     assertEquals(expectedXml.trim(), actualXml.trim());
 
     // Test with a null Period object
     expectedXml = "<effectiveTime nullFlavor=\"NI\"/>";
-    actualXml = CdaFhirUtilities.getPeriodXml(null, "effectiveTime");
+    actualXml = CdaFhirUtilities.getPeriodXml(null, "effectiveTime", false);
     assertEquals(expectedXml.trim(), actualXml.trim());
   }
 
@@ -1556,7 +1556,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     "on-hold, suspended",
     "unknown, held",
     "draft, held",
-    "cancelled, held"
+    "cancelled, cancelled"
   })
   public void testGetStatusCodeForFhirMedStatusCodes(String input, String expectedOutput) {
 

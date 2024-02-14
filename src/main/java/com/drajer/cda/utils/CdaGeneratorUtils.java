@@ -531,6 +531,22 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getXmlForValueEffectiveTime(String elName, String value) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + elName
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.XSI_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.TS_TYPE
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.VALUE_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + value
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+  }
+
   public static String getHl7StringForDate(Date value) {
 
     String s = "";
@@ -562,6 +578,47 @@ public class CdaGeneratorUtils {
       s +=
           CdaGeneratorConstants.START_XMLTAG
               + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.NF_NI
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
+
+    return s;
+  }
+
+  public static String getXmlForValueEffectiveTime(String elName, Date value, TimeZone t) {
+    String s = "";
+    if (value != null) {
+
+      String val = CdaGeneratorUtils.getStringForDateTime(value, t);
+
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.XSI_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.TS_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.VALUE_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + val
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+
+    } else {
+      s +=
+          CdaGeneratorConstants.START_XMLTAG
+              + elName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.XSI_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.TS_TYPE
+              + CdaGeneratorConstants.DOUBLE_QUOTE
               + CdaGeneratorConstants.SPACE
               + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
               + CdaGeneratorConstants.DOUBLE_QUOTE
