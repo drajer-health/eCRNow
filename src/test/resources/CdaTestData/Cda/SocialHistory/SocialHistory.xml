@@ -224,6 +224,16 @@
 <text>Recent countries visited (observable entity)-</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121500+0000"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="223600005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="India (geographic location)"></code>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"></code>
+</participantRole>
+</participant>
 </act>
 </entry>
 <entry>
@@ -242,6 +252,16 @@
 <text>Recent countries visited (observable entity)-</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121000+0000"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="223600005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="India (geographic location)"></code>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"></code>
+</participantRole>
+</participant>
 </act>
 </entry>
 <entry>

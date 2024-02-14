@@ -680,8 +680,8 @@ public class CdaFhirUtilities {
 
       if (ent.getResource() != null
           &&
-          //  ent.getResource() != null &&
-          //   ent.getResource().fhirType().contentEquals(type) &&
+          // ent.getResource() != null &&
+          // ent.getResource().fhirType().contentEquals(type) &&
           ent.getResource().getId() != null
           && ent.getResource().getId().contentEquals(id)) {
 
@@ -818,7 +818,8 @@ public class CdaFhirUtilities {
           break;
         }
 
-        // If display is at the Codeable Concept level, use it in case we don't find anything else
+        // If display is at the Codeable Concept level, use it in case we don't find
+        // anything else
         if (cd != null && !StringUtils.isEmpty(cd.getText())) {
           anyCdDisplay = cd.getText();
         }
@@ -961,7 +962,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
@@ -1029,6 +1031,23 @@ public class CdaFhirUtilities {
     }
 
     return sb.toString();
+  }
+
+  public static Address getAddressExtensionValue(List<Extension> extensions, String extensionUrl) {
+    if (extensions == null || extensions.isEmpty()) {
+      return null;
+    }
+
+    for (Extension extension : extensions) {
+      if (extension.getUrl() != null
+          && extension.getUrl().equals(extensionUrl)
+          && extension.getValue() instanceof Address) {
+        logger.debug("Found Address Extension at top level.");
+        return (Address) extension.getValue();
+      }
+    }
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
+    return null;
   }
 
   public static String getCodingXmlForMappedConceptDomain(
@@ -1131,7 +1150,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag(
                 cdName, CdaGeneratorConstants.NF_OTH));

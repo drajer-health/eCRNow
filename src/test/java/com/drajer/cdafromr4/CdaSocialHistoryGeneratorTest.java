@@ -21,6 +21,8 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
 
   private static final String SOCIAL_HISTORY_CDA_FILE =
       "CdaTestData/Cda/SocialHistory/SocialHistory.xml";
+
+  private static final String TREAVEL_OBS_FILE1 = "CdaTestData/Observation/travelHistory.json";
   private static final String PREGNANCY_CONDITION_FILE =
       "CdaTestData/Condition/CondPregnancy_SCT_77386006.json";
   private static final String TRAVEL_OBS_FILE = "R4/Observation/ObsTravel_SCT.json";
@@ -86,5 +88,17 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     assertNotNull(actualXml);
 
     assertXmlEquals(expectedXml.toString(), actualXml);
+  }
+
+  @Test
+  public void testGenerateParticipantWithAddressExtension() {
+
+    R4FhirData r4FhirData = new R4FhirData();
+
+    r4FhirData.setTravelObs(getObs(TREAVEL_OBS_FILE1));
+
+    String participantXml =
+        CdaSocialHistoryGenerator.generateParticipant(r4FhirData.getTravelObs().get(0));
+    assertNotNull(participantXml);
   }
 }

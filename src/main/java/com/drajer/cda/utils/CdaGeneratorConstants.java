@@ -139,6 +139,7 @@ public class CdaGeneratorConstants {
   public static final String FHIR_LAB_RESULT_CATEGORY = "laboratory";
   public static final String FHIR_OBSERVATION_CATEGORY_URL =
       "http://hl7.org/fhir/observation-category";
+
   public static final String FHIR_DIAG_REPORT_CATEGORY = "LAB";
   public static final String FHIR_DIAG_REPORT_CATEGORY_URL =
       "http://hl7.org/fhir/ValueSet/diagnostic-service-sections";
@@ -147,6 +148,8 @@ public class CdaGeneratorConstants {
   public static final String FHIR_LANGUAGE_CODESYSTEM_URL = "urn:ietf:bcp:47";
   public static final String FHIR_MARITAL_STATUS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus";
+  public static final String FHIR_OBSERVATION_ADDRESS_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension";
   public static final String FHIR_RELIGIOUS_AFFILIATION_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation";
   public static final String FHIR_NF_URL = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
@@ -687,6 +690,7 @@ public class CdaGeneratorConstants {
   public static final String TYPE_CODE_LOC = "LOC";
   public static final String TYPE_CODE_PRD = "PRD";
   public static final String US_REALM_CODE_VAL = "US";
+  public static final String TERR = "TERR";
 
   // Element Names
   public static final String REALM_CODE_EL_NAME = "realmCode";
