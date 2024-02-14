@@ -61,9 +61,6 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   @Value("${jwks.keystore.password}")
   String password;
 
-  @Value("${jwks.keystore.alias}")
-  String alias;
-
   /**
    * @param url base url of ehr
    * @param fsd knowledge artifact data

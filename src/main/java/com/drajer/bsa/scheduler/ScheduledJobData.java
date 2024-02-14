@@ -18,7 +18,7 @@ public class ScheduledJobData implements Serializable {
   String xRequestId;
   BsaJobType jobType;
 
-  public ScheduledJobData(
+  ScheduledJobData(
       UUID id,
       String action,
       BsaTypes.ActionType type,

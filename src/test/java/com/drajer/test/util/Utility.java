@@ -9,12 +9,10 @@ import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.model.BsaTypes.ActionType;
 import com.drajer.bsa.model.BsaTypes.BsaActionStatusType;
-import com.drajer.bsa.model.BsaTypes.BsaJobType;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthMessage;
-import com.drajer.bsa.scheduler.ScheduledJobData;
 import com.drajer.cda.parser.CdaCode;
 import com.drajer.cda.parser.CdaIi;
 import com.drajer.cda.parser.CdaRrModel;
@@ -22,14 +20,12 @@ import com.drajer.eca.model.MatchedTriggerCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Resource;
@@ -201,7 +197,7 @@ public interface Utility {
     mdcContext.put("key1", "value1");
     mdcContext.put("key2", "value2");
 
-    ScheduledJobData jobData =
+    /*   ScheduledJobData jobData =
         new ScheduledJobData(
             UUID.randomUUID(),
             "action123",
@@ -212,7 +208,7 @@ public interface Utility {
             BsaJobType.IMMEDIATE_REPORTING,
             mdcContext);
 
-    karProcessingData.setScheduledJobData(jobData);
+    karProcessingData.setScheduledJobData(jobData); */
     return karProcessingData;
   }
 }
