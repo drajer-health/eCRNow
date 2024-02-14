@@ -568,6 +568,16 @@ public class CdaHeaderGenerator {
       sb.append(getPractitionerXml(null));
     }
 
+    //  add reprsented organization if it exists
+    if (data.getOrganization() != null && data.getOrganization().hasName()) {
+
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForText(
+              CdaGeneratorConstants.NAME_EL_NAME, data.getOrganization().getName()));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
+    }
+
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
