@@ -1588,7 +1588,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertEquals("held", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("draft"));
 
-    assertEquals("held", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("cancelled"));
+    assertEquals("cancelled", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("cancelled"));
   }
 
   @Test
