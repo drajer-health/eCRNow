@@ -1484,9 +1484,28 @@ public class CdaFhirUtilities {
     return s;
   }
 
-  public static String getNameXml(List<HumanName> names) {
+  public static String getNameXml(List<HumanName> allNames) {
 
     StringBuilder nameString = new StringBuilder(200);
+
+    List<HumanName> names = new ArrayList<>();
+    if (allNames != null && !allNames.isEmpty()) {
+
+      for (HumanName n : allNames) {
+
+        // Add name which is not expired
+        if (!n.hasPeriod()) {
+          names.add(n); // No period = active
+        } else if (n.hasPeriod() && !n.getPeriod().hasEnd()) {
+          names.add(n); // No end = active
+        }
+      }
+
+      if (names == null || names.isEmpty()) {
+        // All are expired so use whatever names were passed in
+        names = allNames;
+      }
+    }
 
     if (names != null && !names.isEmpty()) {
 
@@ -2030,14 +2049,22 @@ public class CdaFhirUtilities {
       } else if (dt instanceof CodeableConcept) {
 
         CodeableConcept cd = (CodeableConcept) dt;
-
+        Boolean textFound = false;
         List<Coding> cds = new ArrayList<>();
+
         if (cd.hasCoding()) {
           cds.addAll(cd.getCoding());
+        } else if (cd.hasText() && valFlag) {
+          // Add Value Result as String if there is soemthing in the CodeableConcept
+          val += CdaGeneratorUtils.getXmlForValueString(cd.getText());
+          textFound = true;
         }
 
-        if (Boolean.FALSE.equals(valFlag)) val += getCodingXml(cds, elName, "");
-        else val += getCodingXmlForValue(cds, elName, null);
+        if (!textFound) {
+          if (Boolean.FALSE.equals(valFlag)) {
+            val += getCodingXml(cds, elName, "");
+          } else val += getCodingXmlForValue(cds, elName, null);
+        }
 
       } else if (dt instanceof Quantity) {
 

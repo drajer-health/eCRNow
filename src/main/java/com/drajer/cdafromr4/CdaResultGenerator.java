@@ -662,6 +662,8 @@ public class CdaResultGenerator {
       if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
     }
 
+    // Add performer
+
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
