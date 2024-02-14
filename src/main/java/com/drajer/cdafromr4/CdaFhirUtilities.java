@@ -1659,6 +1659,58 @@ public class CdaFhirUtilities {
     return val;
   }
 
+  public static String getStringForMedicationFromContainedResources(
+      List<Resource> resources, String refId) {
+
+    Pair<String, Boolean> retVal = null;
+    for (Resource res : resources) {
+
+      logger.debug("res.getId {}", res.getIdElement().getIdPart());
+
+      if (res.getId().contains(refId) && res instanceof Medication) {
+
+        logger.debug("Found a Contained Resource with Id {}", refId);
+        Medication cmed = (Medication) res;
+        // Found the reference, check the code and ingredients.
+
+        if (cmed.getCode() != null) {
+          logger.debug("Found Contained Med  Code");
+          retVal =
+              getCodeableConceptDisplayForCodeSystem(
+                  cmed.getCode(), CdaGeneratorConstants.FHIR_RXNORM_URL, false);
+        } // if code present
+
+        if (retVal.getValue0().isEmpty()) {
+
+          logger.debug("Return Val is empty");
+
+          if (cmed.getIngredient() != null) {
+
+            logger.debug("Found ingredient");
+            List<MedicationIngredientComponent> ings = cmed.getIngredient();
+
+            for (MedicationIngredientComponent ing : ings) {
+
+              if (ing.getItem() instanceof CodeableConcept) {
+
+                logger.debug("Found a CC for Ingredient");
+                CodeableConcept cc = (CodeableConcept) ing.getItem();
+                retVal =
+                    getCodeableConceptDisplayForCodeSystem(
+                        cc, CdaGeneratorConstants.FHIR_RXNORM_URL, false);
+                break;
+              }
+            }
+          }
+        }
+
+        if (!retVal.getValue0().isEmpty()) return retVal.getValue0();
+      } // Found id
+    } // For all resources
+
+    return CdaGeneratorConstants.UNKNOWN_VALUE;
+  }
+
   public static String getStringForMedicationType(Resource r, List<Medication> medList) {
 
     String retVal = CdaGeneratorConstants.UNKNOWN_VALUE;
@@ -1823,58 +1875,6 @@ public class CdaFhirUtilities {
     }
 
     return retVal;
-  }
-
-  public static String getStringForMedicationFromContainedResources(
-      List<Resource> resources, String refId) {
-
-    Pair<String, Boolean> retVal = null;
-    for (Resource res : resources) {
-
-      logger.debug("res.getId {}", res.getIdElement().getIdPart());
-
-      if (res.getId().contains(refId) && res instanceof Medication) {
-
-        logger.debug("Found a Contained Resource with Id {}", refId);
-        Medication cmed = (Medication) res;
-        // Found the reference, check the code and ingredients.
-
-        if (cmed.getCode() != null) {
-          logger.debug("Found Contained Med  Code");
-          retVal =
-              getCodeableConceptDisplayForCodeSystem(
-                  cmed.getCode(), CdaGeneratorConstants.FHIR_RXNORM_URL, false);
-        } // if code present
-
-        if (retVal.getValue0().isEmpty()) {
-
-          logger.debug("Return Val is empty");
-
-          if (cmed.getIngredient() != null) {
-
-            logger.debug("Found ingredient");
-            List<MedicationIngredientComponent> ings = cmed.getIngredient();
-
-            for (MedicationIngredientComponent ing : ings) {
-
-              if (ing.getItem() instanceof CodeableConcept) {
-
-                logger.debug("Found a CC for Ingredient");
-                CodeableConcept cc = (CodeableConcept) ing.getItem();
-                retVal =
-                    getCodeableConceptDisplayForCodeSystem(
-                        cc, CdaGeneratorConstants.FHIR_RXNORM_URL, false);
-                break;
-              }
-            }
-          }
-        }
-
-        if (!retVal.getValue0().isEmpty()) return retVal.getValue0();
-      } // Found id
-    } // For all resources
-
-    return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
 
   public static String getStringForType(Type dt) {
