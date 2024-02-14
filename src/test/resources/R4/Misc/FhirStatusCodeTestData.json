@@ -4,5 +4,5 @@
   "nullified": "entered-in-error",
   "aborted": "stopped",
   "suspended": "on-hold",
-  "held": "unknown|draft|cancelled"
+  "held": "unknown|draft"
 }

@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public class ScheduledJobData implements Serializable {
 
+  static final long serialVersionUID = 1403267933737660088L;
+
   UUID karExecutionStateId;
   String actionId;
   BsaTypes.ActionType actionType;

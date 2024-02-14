@@ -49,7 +49,7 @@ testCase:
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
         "thead/tr/th[3]": "Problem Recorded Date|Onset Date|Resolved Date"
-        "tbody/tr[1]/td[1]/content": "Disease caused by 2019-nCoV"
+        "tbody/tr[1]/td[1]/content": "Disease caused by 2019 novel coronavirus"
         "tbody/tr[1]/td[2]/content": "Active"
         "tbody/tr[1]/td[3]/content": "Wed May 13 19:04:28 UTC 2020Wed May 13 19:04:00 UTC 2020Unknown"
       - xPath: "entry"
@@ -353,7 +353,7 @@ testCase:
       - xPath: "text/table/"
         #    'tbody/tr[6]/td[1]/content': "Hyperlipidemia (disorder)"
         #    'tbody/tr[6]/td[2]/content': "Active"
-        "tbody/tr[8]/td[1]/content": "Suspected coronavirus infection (situation)"
+        "tbody/tr[8]/td[1]/content": "Suspected coronavirus infection"
         "tbody/tr[8]/td[2]/content": "Active"
       - xPath: "entry"
         count: 8
@@ -502,7 +502,7 @@ testCase:
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
-        "tbody/tr[1]/td[1]/content": "Disease caused by 2019-nCoV"
+        "tbody/tr[1]/td[1]/content": "COVID-19 virus infection"
         "tbody/tr[1]/td[2]/content": "Active"
       - xPath: "entry"
         count: 1
@@ -632,7 +632,7 @@ testCase:
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
-        "tbody/tr[1]/td[1]/content": "Accidental poisoning by heroin (disorder)"
+        "tbody/tr[1]/td[1]/content": "Accidental poisoning caused by heroin"
         "tbody/tr[1]/td[2]/content": "Active"
       - xPath: "entry"
         count: 1
@@ -771,7 +771,7 @@ testCase:
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
-        "tbody/tr[1]/td[1]/content": "Disease caused by 2019-nCoV"
+        "tbody/tr[1]/td[1]/content": "Disease caused by 2019 novel coronavirus"
         "tbody/tr[1]/td[2]/content": "Active"
       - xPath: "entry"
         count: 1
@@ -915,9 +915,9 @@ testCase:
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
-        "tbody/tr[1]/td[1]/content": "Disease caused by 2019-nCoV"
+        "tbody/tr[1]/td[1]/content": "Disease caused by 2019 novel coronavirus"
         "tbody/tr[1]/td[2]/content": "Active"
-        "tbody/tr[2]/td[1]/content": "Accidental poisoning by heroin (disorder)"
+        "tbody/tr[2]/td[1]/content": "Accidental poisoning caused by heroin"
         "tbody/tr[2]/td[2]/content": "Active"
       - xPath: "entry"
         count: 2
@@ -1150,9 +1150,9 @@ testCase:
       - xPath: "text/table/"
         "thead/tr/th[1]": "Problem or Diagnosis"
         "thead/tr/th[2]": "Problem Status"
-        "tbody/tr[1]/td[1]/content": "Disease caused by 2019-nCoV"
+        "tbody/tr[1]/td[1]/content": "Disease caused by 2019 novel coronavirus"
         "tbody/tr[1]/td[2]/content": "Active"
-        "tbody/tr[2]/td[1]/content": "Accidental poisoning by heroin (disorder)"
+        "tbody/tr[2]/td[1]/content": "Accidental poisoning caused by heroin"
         "tbody/tr[2]/td[2]/content": "Active"
       - xPath: "entry"
         count: 2

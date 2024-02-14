@@ -269,7 +269,7 @@ public class CdaResultGenerator {
 
       if (rep.getResult() != null && rep.getResultFirstRep() != null) {
 
-        val = CdaFhirUtilities.getStringForType(rep.getResultFirstRep());
+        val = getResultValueForDiagnosticReport(rep, allResults);
       }
 
       bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
@@ -662,6 +662,8 @@ public class CdaResultGenerator {
       if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
     }
 
+    // Add performer
+
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
@@ -972,5 +974,77 @@ public class CdaResultGenerator {
     }
 
     return drs;
+  }
+
+  public static String getResultValueForDiagnosticReport(
+      DiagnosticReport dr, List<Observation> obsList) {
+
+    String retVal = "";
+
+    if (dr.hasResult()) {
+
+      Boolean first = true;
+      String res = "Result#";
+      int counter = 1;
+      String delim = ":";
+      for (Reference r : dr.getResult()) {
+        Observation obs = findObservation(r, obsList);
+
+        if (obs != null) {
+          if (first) {
+            retVal += res + Integer.toString(counter) + delim + getResultValueForObservation(obs);
+            counter++;
+          } else {
+            retVal +=
+                " | " + res + Integer.toString(counter) + delim + getResultValueForObservation(obs);
+            counter++;
+          }
+
+          first = false;
+        }
+      }
+    }
+
+    return retVal;
+  }
+
+  public static String getResultValueForObservation(Observation obs) {
+
+    String retVal = "";
+
+    if (obs.hasValue()) {
+      retVal = CdaFhirUtilities.getStringForType(obs.getValue());
+    } else if (obs.hasComponent()) {
+
+      for (ObservationComponentComponent c : obs.getComponent()) {
+
+        Boolean first = true;
+        String comp = "Component#";
+        int counter = 1;
+        String delim = ":";
+
+        if (first && obs.hasValue()) {
+          retVal +=
+              comp
+                  + Integer.toString(counter)
+                  + delim
+                  + CdaFhirUtilities.getStringForType(obs.getValue());
+          counter++;
+        } else if (obs.hasValue()) {
+          retVal +=
+              " | "
+                  + comp
+                  + Integer.toString(counter)
+                  + delim
+                  + CdaFhirUtilities.getStringForType(obs.getValue());
+          counter++;
+        }
+
+        first = false;
+      }
+    }
+
+    if (StringUtils.isEmpty(retVal)) return CdaGeneratorConstants.UNKNOWN_VALUE;
+    else return retVal;
   }
 }

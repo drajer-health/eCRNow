@@ -180,6 +180,12 @@ public class HealthcareSetting implements FhirServerDetails {
   private String directRecipientAddress;
 
   /*
+   * The TLS version to be used for Direct SMTP related protocols
+   */
+  @Column(name = "smtp_tls_version", nullable = true)
+  private String directTlsVersion;
+
+  /*
    * The address to which the XDR payload has to be sent.
    */
   @Column(name = "xdr_recipient_address", nullable = true)
@@ -804,6 +810,14 @@ public class HealthcareSetting implements FhirServerDetails {
     this.offHoursStart = offHoursStart;
   }
 
+  public String getDirectTlsVersion() {
+    return directTlsVersion;
+  }
+
+  public void setDirectTlsVersion(String directTlsVersion) {
+    this.directTlsVersion = directTlsVersion;
+  }
+
   public KnowledgeArtifactStatus getArtifactStatus(String uniqueUrl) {
 
     HealthcareSettingOperationalKnowledgeArtifacts arts = getKars();
@@ -843,6 +857,7 @@ public class HealthcareSetting implements FhirServerDetails {
     logger.info(" Encounter Start Threshold : {}", encounterStartThreshold);
     logger.info(" Encounter End Threshold : {}", encounterEndThreshold);
     logger.info(" KnowledgArtifacts Active : {}", karsActive);
+    logger.info(" Healthcare Setting Direct Protocol : {}", directTlsVersion);
 
     if (kars != null) kars.log();
 

@@ -16,16 +16,23 @@ public class PhMessageServiceImpl implements PhMessageService {
 
   @Autowired PhMessageDao phMessageDao;
 
-  public List<PublicHealthMessage> getPhMessageData(Map<String, String> searchParams) {
-    return phMessageDao.getPhMessageData(searchParams);
+  public List<PublicHealthMessage> getPhMessageData(
+      Map<String, String> searchParams, boolean summaryFlag) {
+    return phMessageDao.getPhMessageData(searchParams, summaryFlag);
   }
 
-  public List<PublicHealthMessage> getPhMessageDataByXRequestIds(List<String> xRequestIds) {
-    return phMessageDao.getPhMessageByXRequestIds(xRequestIds);
+  public List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams) {
+    return phMessageDao.getPhMessageDataSummary(searchParams);
   }
 
-  public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(List<String> xRequestIds) {
-    return phMessageDao.getPhMessagesContainingXRequestIds(xRequestIds);
+  public List<PublicHealthMessage> getPhMessageDataByXRequestIds(
+      List<String> xRequestIds, boolean summaryFlag) {
+    return phMessageDao.getPhMessageByXRequestIds(xRequestIds, summaryFlag);
+  }
+
+  public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(
+      List<String> xRequestIds, boolean summaryFlag) {
+    return phMessageDao.getPhMessagesContainingXRequestIds(xRequestIds, summaryFlag);
   }
 
   public List<PublicHealthMessage> getPhMessageByParameters(

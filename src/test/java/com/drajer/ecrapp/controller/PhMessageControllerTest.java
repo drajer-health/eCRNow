@@ -3,6 +3,7 @@ package com.drajer.ecrapp.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,8 +49,8 @@ public class PhMessageControllerTest {
 
   @ParameterizedTest
   @CsvSource({
-    "fhirServerBaseUrl1, 13, 3, 32, 25, null, 15, 19, 11, '', 12, 8, 6534236, 2023-07-04, 2023-08-04",
-    "null, '', 3, 32, 25, '', 15, 19, 11, null, 12, 8, 6534236, 2023-07-04, 2023-08-04"
+    "fhirServerBaseUrl1, 13, 3, 32, 25, null, 15, 19, 11, '', 12, 8, 6534236, 2023-07-04, 2023-08-04,true",
+    "null, '', 3, 32, 25, '', 15, 19, 11, null, 12, 8, 6534236, 2023-07-04, 2023-08-04,false"
   })
   public void testGetPhMessageDetails(
       String fhirServerBaseUrl,
@@ -66,9 +67,11 @@ public class PhMessageControllerTest {
       String karUniqueId,
       String correlationId,
       String startTime,
-      String endTime) {
+      String endTime,
+      String summaryFlagString) {
 
-    Mockito.when(phMessageService.getPhMessageData(any()))
+    boolean summaryFlag = Boolean.parseBoolean(summaryFlagString);
+    Mockito.when(phMessageService.getPhMessageData(any(), anyBoolean()))
         .thenReturn(expectedPublicHealthMessageDetails);
 
     ResponseEntity<Object> actualResponse =
@@ -87,7 +90,8 @@ public class PhMessageControllerTest {
             karUniqueId,
             correlationId,
             startTime,
-            endTime);
+            endTime,
+            summaryFlag);
 
     // Assert
     assertEquals(

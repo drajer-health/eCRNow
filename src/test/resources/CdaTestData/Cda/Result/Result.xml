@@ -85,7 +85,7 @@
 <content ID="labTestName7">http://loinc.org|94308-4</content>
 </td>
 <td>
-<content ID="labTestResultValue7"></content>
+<content ID="labTestResultValue7">Result#1:Unknown</content>
 </td>
 <td>
 <content ID="labTestResultValueDate7">20220920084400-0400</content>
@@ -96,7 +96,7 @@
 <content ID="labTestName8">http://loinc.org|94308-4</content>
 </td>
 <td>
-<content ID="labTestResultValue8"></content>
+<content ID="labTestResultValue8">Result#1:Unknown</content>
 </td>
 <td>
 <content ID="labTestResultValueDate8">20220920084400-0400</content>
