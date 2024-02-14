@@ -53,7 +53,7 @@ public class AuthorizationUtils {
         break;
     }
 
-    logger.info("Returning token {}", token);
+    logger.debug("Returning token {}", token);
     return token;
   }
 }

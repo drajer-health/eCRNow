@@ -51,4 +51,8 @@ public interface FhirServerDetails {
   String getAuthType();
 
   void setAuthType(String authType);
+
+  String getBackendAuthKeyAlias();
+
+  void setBackendAuthKeyAlias(String alias);
 }

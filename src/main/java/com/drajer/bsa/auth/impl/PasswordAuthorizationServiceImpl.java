@@ -45,9 +45,6 @@ public class PasswordAuthorizationServiceImpl implements AuthorizationService {
   @Value("${jwks.keystore.password}")
   String password;
 
-  @Value("${jwks.keystore.alias}")
-  String alias;
-
   /** @param fsd The processing context which contains information such as patient, encounter */
   @Override
   public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
