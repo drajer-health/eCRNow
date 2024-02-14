@@ -94,7 +94,7 @@ public class CdaMedicationGenerator {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (med.hasMedication() && med.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(med);
+          medDisplayName = CdaFhirUtilities.getStringForMedicationType(med, medList);
         }
 
         String dt = null;
@@ -142,7 +142,7 @@ public class CdaMedicationGenerator {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (medAdm.hasMedication() && medAdm.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medAdm);
+          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medAdm, medList);
         }
 
         String dt = null;
@@ -196,7 +196,7 @@ public class CdaMedicationGenerator {
         String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         if (medReq.hasMedication() && medReq.getMedication() != null) {
-          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medReq);
+          medDisplayName = CdaFhirUtilities.getStringForMedicationType(medReq, medList);
         }
 
         DateTimeType startDate = null;

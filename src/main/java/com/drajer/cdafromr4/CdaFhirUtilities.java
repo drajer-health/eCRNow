@@ -1659,7 +1659,7 @@ public class CdaFhirUtilities {
     return val;
   }
 
-  public static String getStringForMedicationType(Resource r) {
+  public static String getStringForMedicationType(Resource r, List<Medication> medList) {
 
     String retVal = CdaGeneratorConstants.UNKNOWN_VALUE;
 
@@ -1688,6 +1688,29 @@ public class CdaFhirUtilities {
             logger.debug("Return Val = {}", retVal);
           } // contained present
         } // Contained reference
+        else {
+          // Handle actual reference
+          logger.debug(" Checking medication references ");
+          // check if the medications have been extracted for non contained references.
+          if (medList != null && !medList.isEmpty()) {
+
+            String id = med.getReferenceElement().getIdPart();
+            Medication medRes = null;
+            for (Medication m : medList) {
+              if (m.getIdElement().getIdPart().contentEquals(id)) {
+
+                logger.info(" Found the non-contained medication reference resource {}", id);
+                medRes = m;
+                break;
+              }
+            }
+
+            // Found the reference, check the code and ingredients.
+            if (medRes != null && medRes.hasCode()) {
+              retVal = getStringForType(medRes.getCode());
+            }
+          }
+        }
 
         return retVal;
 
@@ -1715,6 +1738,29 @@ public class CdaFhirUtilities {
                 getStringForMedicationFromContainedResources(medAdminRef.getContained(), refId);
           } // contained present
         } // Contained reference
+        else {
+          // Handle actual reference
+          logger.debug(" Checking medication references ");
+          // check if the medications have been extracted for non contained references.
+          if (medList != null && !medList.isEmpty()) {
+
+            String id = med.getReferenceElement().getIdPart();
+            Medication medRes = null;
+            for (Medication m : medList) {
+              if (m.getIdElement().getIdPart().contentEquals(id)) {
+
+                logger.info(" Found the non-contained medication reference resource {}", id);
+                medRes = m;
+                break;
+              }
+            }
+
+            // Found the reference, check the code and ingredients.
+            if (medRes != null && medRes.hasCode()) {
+              retVal = getStringForType(medRes.getCode());
+            }
+          }
+        }
 
         return retVal;
 
@@ -1742,6 +1788,29 @@ public class CdaFhirUtilities {
             retVal = getStringForMedicationFromContainedResources(medStmtRef.getContained(), refId);
           } // contained present
         } // Contained reference
+        else {
+          // Handle actual reference
+          logger.debug(" Checking medication references ");
+          // check if the medications have been extracted for non contained references.
+          if (medList != null && !medList.isEmpty()) {
+
+            String id = med.getReferenceElement().getIdPart();
+            Medication medRes = null;
+            for (Medication m : medList) {
+              if (m.getIdElement().getIdPart().contentEquals(id)) {
+
+                logger.info(" Found the non-contained medication reference resource {}", id);
+                medRes = m;
+                break;
+              }
+            }
+
+            // Found the reference, check the code and ingredients.
+            if (medRes != null && medRes.hasCode()) {
+              retVal = getStringForType(medRes.getCode());
+            }
+          }
+        }
 
         return retVal;
 

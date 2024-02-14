@@ -1346,82 +1346,89 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testGetStringForMedicationType() {
 
+    List<Medication> medList = null;
     Resource resource =
         (Resource)
             loadResourceDataFromFile(
                 MedicationRequest.class, "CdaTestData/Medication/medicationRequest.json");
 
-    String actual = CdaFhirUtilities.getStringForMedicationType(resource);
+    String actual = CdaFhirUtilities.getStringForMedicationType(resource, null);
     assertNotNull(actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationRequestAndReference() {
+    List<Medication> medList = null;
     MedicationRequest mr = new MedicationRequest();
     Reference med = new Reference("#med123");
     mr.setMedication(med);
     mr.setContained(getContained());
     String expected = "Unknown";
-    String actual = CdaFhirUtilities.getStringForMedicationType(mr);
+    String actual = CdaFhirUtilities.getStringForMedicationType(mr, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationRequestAndCodeableConcept() {
+    List<Medication> medList = null;
     MedicationRequest mr = new MedicationRequest();
     CodeableConcept cc = new CodeableConcept();
     Coding coding = new Coding().setCode("1234").setDisplay("Simvastatin");
     cc.addCoding(coding);
     mr.setMedication(cc);
     String expected = "Simvastatin";
-    String actual = CdaFhirUtilities.getStringForMedicationType(mr);
+    String actual = CdaFhirUtilities.getStringForMedicationType(mr, null);
     assertEquals(expected, actual);
   }
 
   @Test
   @Ignore
   public void testGetStringForMedicationTypeWithMedicationAdministrationAndReference() {
+    List<Medication> medList = null;
     MedicationAdministration ma = new MedicationAdministration();
     Reference med = new Reference("#medication");
     ma.setMedication(med);
     ma.setContained(getContained());
     String expected = "Metformin";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ma);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ma, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationAdministrationAndCodeableConcept() {
+    List<Medication> medList = null;
     MedicationAdministration ma = new MedicationAdministration();
     CodeableConcept cc = new CodeableConcept();
     Coding coding = new Coding().setCode("5678").setDisplay("Atorvastatin");
     cc.addCoding(coding);
     ma.setMedication(cc);
     String expected = "Atorvastatin";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ma);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ma, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationStatementAndReference() {
+    List<Medication> medList = null;
     MedicationStatement ms = new MedicationStatement();
     Reference med = new Reference("#med789");
     ms.setMedication(med);
     ms.setContained(getContained());
     String expected = "Unknown";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ms);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ms, null);
     assertEquals(expected, actual);
   }
 
   @Test
   public void testGetStringForMedicationTypeWithMedicationStatementAndCodeableConcept() {
+    List<Medication> medList = null;
     MedicationStatement ms = new MedicationStatement();
     CodeableConcept cc = new CodeableConcept();
     Coding coding = new Coding().setCode("9012").setDisplay("Ibuprofen");
     cc.addCoding(coding);
     ms.setMedication(cc);
     String expected = "Ibuprofen";
-    String actual = CdaFhirUtilities.getStringForMedicationType(ms);
+    String actual = CdaFhirUtilities.getStringForMedicationType(ms, null);
     assertEquals(expected, actual);
   }
 
