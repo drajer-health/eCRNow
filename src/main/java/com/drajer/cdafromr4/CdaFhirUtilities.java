@@ -2006,21 +2006,21 @@ public class CdaFhirUtilities {
     return CdaGeneratorConstants.UNKNOWN_VALUE;
   }
 
-  public static String getStringForDates(
-      Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
+  public  static String getStringForDates(
+          Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
 
     String val = "";
 
     if (recorded != null && recorded.getValue0() != null) {
-      val += recorded.getValue0().toString();
+      val += recorded.getValue0().toString() + '|';
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val += CdaGeneratorConstants.UNKNOWN_VALUE + '|';
     }
 
     if (onset != null && onset.getValue0() != null) {
-      val += onset.getValue0().toString();
+      val += onset.getValue0().toString() + '|';
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val += CdaGeneratorConstants.UNKNOWN_VALUE + '|';
     }
 
     if (abatement != null && abatement.getValue0() != null) {
