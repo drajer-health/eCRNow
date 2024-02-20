@@ -61,6 +61,15 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
   @Value("${jwks.keystore.password}")
   String password;
 
+  @Value("${jwt.kid}")
+  String kid;
+
+  @Value("${jwt.type}")
+  String type;
+
+  @Value("${jwt.alg}")
+  String alg;
+
   /**
    * @param url base url of ehr
    * @param fsd knowledge artifact data
@@ -171,9 +180,9 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       String x5tValue = Base64.encodeBytes(DigestUtils.sha1(cert.getEncoded()));
 
       return Jwts.builder()
-          .setHeaderParam("typ", "JWT")
-          .setHeaderParam("kid", "178DCA01A4118728949830333DE0DF58C1CA7BBF")
-          .setHeaderParam("alg", "RS384")
+          .setHeaderParam("typ", type)
+          .setHeaderParam("kid", kid)
+          .setHeaderParam("alg", alg)
           .setHeaderParam("x5t", x5tValue)
           .setIssuer(clientId)
           .setSubject(clientId)
