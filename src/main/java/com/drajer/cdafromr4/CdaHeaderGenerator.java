@@ -152,9 +152,6 @@ public class CdaHeaderGenerator {
 
         eICRHeader.append(getAuthorXml(data, data.getEncounter(), prs));
 
-        // Add software version always
-        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
-
         // Add EHR information if available
         if (appProps != null
             && appProps.containsKey("ehr.product.name")
@@ -163,6 +160,9 @@ public class CdaHeaderGenerator {
               getAdditionalAuthorXml(
                   appProps.get("ehr.product.name"), appProps.get("ehr.product.version")));
         }
+
+        // Add software version always
+        eICRHeader.append(getAdditionalAuthorXml(SW_APP_NAME, SW_APP_VERSION));
 
         // Add System Integrator / Implementer information if available
         if (appProps != null
@@ -568,6 +568,16 @@ public class CdaHeaderGenerator {
       sb.append(getPractitionerXml(null));
     }
 
+    //  add reprsented organization if it exists
+    if (data.getOrganization() != null && data.getOrganization().hasName()) {
+
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForText(
+              CdaGeneratorConstants.NAME_EL_NAME, data.getOrganization().getName()));
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
+    }
+
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_AUTHOR_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.AUTHOR_EL_NAME));
 
@@ -668,7 +678,8 @@ public class CdaHeaderGenerator {
 
       sb.append(CdaEncounterGenerator.getEncounterCodeXml(en, ""));
       sb.append(
-          CdaFhirUtilities.getPeriodXml(en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
+          CdaFhirUtilities.getPeriodXml(
+              en.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
     } else {
       sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
       sb.append(

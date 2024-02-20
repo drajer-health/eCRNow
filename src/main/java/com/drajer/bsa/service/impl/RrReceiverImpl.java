@@ -80,7 +80,7 @@ public class RrReceiverImpl implements RrReceiver {
 
       logger.info(" Found the Eicr for correlation Id: {}", xCorrelationId);
       phm.setResponseMessageType(EicrTypes.RrType.FAILURE_MDN.toString());
-      phm.setxRequestId(xRequestId);
+      // phm.setxRequestId(xRequestId);
       phm.setFailureResponseData(data.getRrXml());
 
       phDao.saveOrUpdate(phm);
@@ -128,7 +128,7 @@ public class RrReceiverImpl implements RrReceiver {
         logger.info(" Found the ecr for doc Id = {}", eicrDocId.getRootValue());
 
         phm.setCdaResponseData(data.getRrXml());
-        phm.setxRequestId(xRequestId);
+        // phm.setxRequestId(xRequestId);
         phm.setResponseDataId(rrDocId.getRootValue());
         phm.setResponseMessageType(EicrTypes.RrType.REPORTABILITY_RESPONSE.toString());
         phm.setResponseReceivedTime(Date.from(Instant.now()));

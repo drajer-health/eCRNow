@@ -609,6 +609,7 @@ public class KarParserImpl implements KarParser {
 
   private void populateInputDataReq(PlanDefinitionActionComponent ac, BsaAction action) {
 
+    logger.info(" Action Id {}", action.getActionId());
     List<DataRequirement> drs = ac.getInput();
     action.setInputData(drs);
 

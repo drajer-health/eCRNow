@@ -58,6 +58,7 @@ public class CheckTriggerCodeStatus extends BsaActionStatus {
       if (matches != null && !matches.isEmpty()) {
         ReportableMatchedTriggerCode rc = new ReportableMatchedTriggerCode();
         rc.setValueSet(mtc.getValueSet());
+        rc.setValueSetOid(mtc.getValueSetOid());
         rc.setValueSetVersion(mtc.getValueSetVersion());
 
         Optional<String> value = matches.stream().findFirst();

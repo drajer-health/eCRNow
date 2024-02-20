@@ -1,9 +1,0 @@
-cp documents/app-artifacts/kars/ersd_app_release2.json ~/ecrnow
-cp documents/eCR Now App Configuration Guide_v2.docx ~/ecrnow
-cp documents/eCR_R1.1_FHIR_Mapping_R4_v3.xlsx ~/ecrnow
-cp documents/~$R Now App Configuration Guide.docx ~/ecrnow
-cp documents/~$eCR_R1.1_FHIR_Mapping_R4.xlsx ~/ecrnow
-cp documents/~$eCR_R1.1_FHIR_Mapping_R4_v3.xlsx ~/ecrnow
-cp documents/~$eCR_R1.1_FHIR_Mapping_dstu2.xlsx ~/ecrnow
-cp src/main/resources/customized-queries-plandefinition-ersd-instance.properties ~/ecrnow
-cp src/main/resources/subscription-topic-named-event2.properties ~/ecrnow

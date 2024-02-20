@@ -62,7 +62,7 @@ public class PhMessageDaoTest {
   public void testGetPhMessageData() {
 
     List<PublicHealthMessage> actualPublicHealthMessages =
-        phMessageDaoImpl.getPhMessageData(searchParams);
+        phMessageDaoImpl.getPhMessageData(searchParams, false);
 
     assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
     assertEquals(
@@ -75,7 +75,7 @@ public class PhMessageDaoTest {
     List<String> xRequestIds = Arrays.asList("xRequestId1", "xRequestId2");
 
     List<PublicHealthMessage> actualPublicHealthMessages =
-        phMessageDaoImpl.getPhMessageByXRequestIds(xRequestIds);
+        phMessageDaoImpl.getPhMessageByXRequestIds(xRequestIds, false);
 
     assertThat(actualPublicHealthMessages).hasSize(expectedPublicHealthMessages.size());
     assertEquals(

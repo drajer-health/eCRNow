@@ -4,8 +4,10 @@ import com.drajer.fhirecr.FhirGeneratorConstants;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
@@ -41,6 +43,30 @@ public class ReportGenerationUtils {
           returnVal.add(r);
         }
       }
+    }
+
+    return returnVal;
+  }
+
+  public static Set<Resource> filterDiagnosticReports(Set<Resource> res, Boolean resultFlag) {
+
+    logger.info(" Filtering Diagnostic Reports with {}", (resultFlag ? "results" : "no results"));
+    Set<Resource> returnVal = new HashSet<>();
+
+    if (res != null && resultFlag) {
+
+      returnVal =
+          res.stream()
+              .map(dr -> (DiagnosticReport) (dr))
+              .filter(r -> r.hasResult())
+              .collect(Collectors.toSet());
+    } else if (res != null) {
+
+      returnVal =
+          res.stream()
+              .map(dr -> (DiagnosticReport) (dr))
+              .filter(r -> !(r.hasResult()))
+              .collect(Collectors.toSet());
     }
 
     return returnVal;
@@ -95,5 +121,52 @@ public class ReportGenerationUtils {
       }
     }
     return false;
+  }
+
+  public static String getTextForCodeableConcepts(List<CodeableConcept> ccs) {
+
+    String text = "No Information";
+    Boolean found = false;
+    String codingText = "Information: ";
+
+    if (ccs != null && !ccs.isEmpty()) {
+
+      for (CodeableConcept cc : ccs) {
+
+        if (cc.hasText() && !found) {
+          text = cc.getText();
+          found = true;
+        } else if (cc.hasText() && found) {
+          text += ", " + cc.getText();
+        } else if (!cc.hasText() && cc.hasCoding()) {
+          codingText += getTextForCodings(cc.getCoding());
+        }
+      }
+
+      // If no text was present, using Coding text.
+      if (!found) {
+        text = codingText;
+      }
+    }
+    return text;
+  }
+
+  public static String getTextForCodings(List<Coding> ccs) {
+
+    String text = "No Information";
+    Boolean found = false;
+
+    if (ccs != null && !ccs.isEmpty()) {
+      for (Coding cc : ccs) {
+
+        if (cc.hasDisplay() && !found) {
+          text = cc.getDisplay();
+          found = true;
+        } else if (cc.hasDisplay() && found) {
+          text += ", " + cc.getDisplay();
+        }
+      }
+    }
+    return text;
   }
 }

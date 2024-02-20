@@ -6,6 +6,12 @@ public class FhirGeneratorConstants {
 
   // FHIR Resource Type Constants.
 
+  // ECR RCTC OID
+  public static final String RCTC_OID = "2.16.840.1.114222.4.11.7508";
+
+  // Document Bundle constants
+  public static final String DOC_ID_SYSTEM = "urn:ietf:rfc:3986";
+
   // Extension urls
   public static final String COMP_CLIN_DOC_VERSION_NUM_URL =
       "http://hl7.org/fhir/R4/extension-composition-clinicaldocument-versionnumber";
@@ -24,9 +30,9 @@ public class FhirGeneratorConstants {
   public static final String HCS_COMP_TYPE_CODE_DISPLAY = "National Health Care Surveys report";
 
   // Composition section codes commonly used.
-  public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE = "46239-0";
+  public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE = "10154-3";
   public static final String CHIEF_COMPLAINT_SECTION_LOINC_CODE_DISPLAY =
-      "Chief complaint+Reason for visit Narrative";
+      "Chief complaint Narrative";
   public static final String HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE = "10164-2";
   public static final String HISTORY_OF_PRESENT_ILLNESS_SECTION_LOINC_CODE_DISPLAY =
       "History of Present illness Narrative";

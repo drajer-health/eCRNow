@@ -832,6 +832,7 @@ public class CdaGeneratorConstants {
   public static final String CO_TYPE = "CO";
   public static final String PIVL_TS_TYPE = "PIVL_TS";
   public static final String IVL_TS_TYPE = "IVL_TS";
+  public static final String TS_TYPE = "TS";
   public static final String INT_TYPE = "INT";
   public static final String ED_TYPE = "ED";
   public static final String ST_TYPE = "ST";

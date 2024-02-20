@@ -37,6 +37,7 @@ public class AuthorizationUtils {
         token = passwordAuthorizationService.getAuthorizationToken(fsd);
         break;
       case SOF_BACKEND:
+      case SOF_PROVIDER:
         token = backendAuthorizationService.getAuthorizationToken(fsd);
         break;
       case SYSTEM:
@@ -44,7 +45,6 @@ public class AuthorizationUtils {
         token = ehrAuthorizationService.getAuthorizationToken(fsd);
         break;
       case UNKNOWN:
-      case SOF_PROVIDER:
       default:
         Map<String, Object> tokenParams = new HashMap<>();
         tokenParams.put("expires_in", 60 * 60 * 24);
@@ -53,7 +53,7 @@ public class AuthorizationUtils {
         break;
     }
 
-    logger.info("Returning token {}", token);
+    logger.debug("Returning token {}", token);
     return token;
   }
 }

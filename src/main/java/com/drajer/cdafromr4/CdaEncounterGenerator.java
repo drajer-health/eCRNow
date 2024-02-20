@@ -151,7 +151,7 @@ public class CdaEncounterGenerator {
 
       sb.append(
           CdaFhirUtilities.getPeriodXml(
-              encounter.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME));
+              encounter.getPeriod(), CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
 
       if (encounter.getHospitalization() != null
           && encounter.getHospitalization().getDischargeDisposition() != null) {
