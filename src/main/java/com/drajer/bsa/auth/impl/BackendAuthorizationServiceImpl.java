@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -24,7 +25,6 @@ import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
-import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -168,7 +168,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       Key key = ks.getKey(fsd.getBackendAuthKeyAlias(), passwordChar);
 
       X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());
-      String x5tValue = Base64.encodeBytes(DigestUtils.sha1(cert.getEncoded()));
+      String x5tValue = Base64.getEncoder().encodeToString(DigestUtils.sha1(cert.getEncoded()));
 
       return Jwts.builder()
           .setHeaderParam("typ", "JWT")
