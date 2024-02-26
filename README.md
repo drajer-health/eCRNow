@@ -4,7 +4,7 @@ For more information on electronic case reporting please refer to the following 
 
 * [More information on electronic case reporting (eCR)](https://ecr.aimsplatform.org)
 
-* [More background information on ecrNow FHIR App](https://ecr.aimsplatform.org/ecr-now-fhir-app)
+* [More background information on ecrNow FHIR App](https://ecr.aimsplatform.org/general/ecr-now-fhir-app)
 
 # 2. App Architecture #
 The app is architected as a Java Spring Boot app using Java Spring framework for the application layer, Hibernate and PostgreSQL for the backend technologies and ReactJS for the front end. The app can be instantiated as a micro service and containerized using Docker or other technologies for deployments.
