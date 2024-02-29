@@ -1224,6 +1224,98 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGetXmlForNamesWithValues() {
+
+    ArrayList<HumanName> humanNames = new ArrayList<>();
+
+    List<StringType> givenNames1 = new ArrayList<>();
+    givenNames1.add(new StringType("John"));
+    givenNames1.add(new StringType("Mark"));
+
+    List<StringType> givenNames2 = new ArrayList<>();
+    givenNames2.add(new StringType("Alice"));
+    givenNames2.add(new StringType("Bob"));
+
+    List<StringType> givenNames3 = new ArrayList<>();
+    givenNames3.add(new StringType("Emma"));
+    givenNames3.add(new StringType("David"));
+
+    List<StringType> givenNames4 = new ArrayList<>();
+    givenNames4.add(new StringType("Olivia"));
+    givenNames4.add(new StringType("James"));
+
+    // 1. Human without a period:
+    HumanName humanWithoutPeriod = new HumanName();
+    humanWithoutPeriod.setFamily("Smith");
+    humanWithoutPeriod.setGiven(givenNames1);
+
+    // 2. Human with period containing both start and end dates:
+    HumanName humanWithPeriodStartEnd = new HumanName();
+    humanWithPeriodStartEnd.setFamily("Doe");
+    humanWithPeriodStartEnd.setGiven(givenNames2);
+    humanWithPeriodStartEnd.setPeriod(
+        new Period()
+            .setStartElement(new DateTimeType("2023-05-01T00:00:00Z"))
+            .setEndElement(new DateTimeType("2023-05-31T23:59:59Z")));
+
+    // 3. Human with period containing only a start date:
+    HumanName humanWithPeriodStartOnly = new HumanName();
+    humanWithPeriodStartOnly.setFamily("Johnson");
+    humanWithPeriodStartOnly.setGiven(givenNames3);
+    humanWithPeriodStartOnly.setPeriod(
+        new Period().setStartElement(new DateTimeType("2023-05-01T00:00:00Z")));
+
+    // 4. Human with period containing only an end date:
+    HumanName humanWithPeriodEndOnly = new HumanName();
+    humanWithPeriodEndOnly.setUse(NameUse.fromCode("usual"));
+    humanWithPeriodEndOnly.setFamily("Brown");
+    humanWithPeriodEndOnly.setGiven(givenNames4);
+    humanWithPeriodEndOnly.setPeriod(
+        new Period().setEndElement(new DateTimeType("2023-05-31T23:59:59Z")));
+
+    humanNames.add(humanWithPeriodStartEnd);
+    humanNames.add(humanWithPeriodEndOnly);
+    humanNames.add(humanWithoutPeriod);
+    humanNames.add(humanWithPeriodStartOnly);
+
+    String expectedXml =
+        "<name>\r\n"
+            + "<given>John</given>\r\n"
+            + "<given>Mark</given>\r\n"
+            + "<family>Smith</family>\r\n"
+            + "</name>\r\n"
+            + "<name>\r\n"
+            + "<given>Alice</given>\r\n"
+            + "<given>Bob</given>\r\n"
+            + "<family>Doe</family>\r\n"
+            + "</name>\r\n"
+            + "<name>\r\n"
+            + "<given>Emma</given>\r\n"
+            + "<given>David</given>\r\n"
+            + "<family>Johnson</family>\r\n"
+            + "</name>\r\n"
+            + "<name use=\"L\">\r\n"
+            + "<given>Olivia</given>\r\n"
+            + "<given>James</given>\r\n"
+            + "<family>Brown</family>\r\n"
+            + "</name>";
+
+    String actualXml = CdaFhirUtilities.getXmlForNames(humanNames);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGetXmlforNamesWithEmptyValue() {
+
+    String expectedXml = "<name> <given nullFlavor=\"NI\"/> <family nullFlavor=\"NI\"/> </name>";
+
+    String nameXml = CdaFhirUtilities.getXmlForNames(null);
+
+    assertXmlEquals(expectedXml.trim(), nameXml.trim());
+  }
+
+  @Test
   public void testGetStringForCoding() {
     Coding coding = new Coding();
     coding.setSystem("http://loinc.org");

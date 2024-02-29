@@ -8,6 +8,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -680,8 +681,8 @@ public class CdaFhirUtilities {
 
       if (ent.getResource() != null
           &&
-          //  ent.getResource() != null &&
-          //   ent.getResource().fhirType().contentEquals(type) &&
+          // ent.getResource() != null &&
+          // ent.getResource().fhirType().contentEquals(type) &&
           ent.getResource().getId() != null
           && ent.getResource().getId().contentEquals(id)) {
 
@@ -818,7 +819,8 @@ public class CdaFhirUtilities {
           break;
         }
 
-        // If display is at the Codeable Concept level, use it in case we don't find anything else
+        // If display is at the Codeable Concept level, use it in case we don't find
+        // anything else
         if (cd != null && !StringUtils.isEmpty(cd.getText())) {
           anyCdDisplay = cd.getText();
         }
@@ -961,7 +963,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
@@ -1131,7 +1134,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag(
                 cdName, CdaGeneratorConstants.NF_OTH));
@@ -2583,6 +2587,36 @@ public class CdaFhirUtilities {
     } else return COMPLETED;
   }
 
+  /**
+   * Finds human names based on different criteria.
+   *
+   * @param names A list of HumanName objects to be filtered.
+   * @return A list of HumanName objects that meet the specified criteria.
+   */
+  public static List<HumanName> hNameFinder(List<HumanName> names) {
+    List<HumanName> result = new ArrayList<>();
+
+    if (names == null || names.isEmpty()) {
+      return result;
+    } else {
+
+      Comparator<HumanName> comparator =
+          Comparator.comparingInt(
+              (HumanName name) -> {
+                if (!name.hasPeriod()) return 0;
+                if (name.getPeriod().hasStart() && name.getPeriod().hasEnd()) return 1;
+                if (name.getPeriod().hasStart()) return 2;
+                if (name.getPeriod().hasEnd()) return 3;
+                return 4;
+              });
+      names.sort(comparator);
+
+      result.addAll(names);
+
+      return result;
+    }
+  }
+
   public static String getCodeForNameUse(List<HumanName> names) {
 
     String nameUse = null;
@@ -2601,5 +2635,74 @@ public class CdaFhirUtilities {
     }
 
     return nameUse;
+  }
+
+  public static String getXmlForNames(List<HumanName> names) {
+    List<HumanName> humanNames = CdaFhirUtilities.hNameFinder(names);
+    StringBuilder nameString = new StringBuilder();
+
+    if (humanNames != null && !humanNames.isEmpty()) {
+      for (HumanName name : humanNames) {
+        String nameUse =
+            name.getUse() != null
+                ? CdaGeneratorConstants.getCodeForNameUse(name.getUse().toCode())
+                : null;
+        nameString.append(
+            CdaGeneratorUtils.getXmlForStartElementWithAttribute(
+                CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
+
+        List<StringType> givenNames = name.getGiven();
+        boolean hasGivenName = false;
+
+        for (StringType givenName : givenNames) {
+          String value = givenName.getValue();
+          if (!StringUtils.isEmpty(value)) {
+            String nameQualifier =
+                name.getUse() != null
+                    ? CdaGeneratorConstants.getCodeForNameQualifier(name.getUse().toCode())
+                    : null;
+            nameString.append(
+                CdaGeneratorUtils.getXmlForTextWithAttribute(
+                    CdaGeneratorConstants.FIRST_NAME_EL_NAME,
+                    CdaGeneratorConstants.QUALIFIER_ATTR_NAME,
+                    nameQualifier,
+                    value));
+            hasGivenName = true;
+          }
+        }
+
+        if (!hasGivenName) {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+
+        String familyName = name.getFamily();
+        if (!StringUtils.isEmpty(familyName)) {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.LAST_NAME_EL_NAME, familyName));
+        } else {
+          nameString.append(
+              CdaGeneratorUtils.getXmlForNFText(
+                  CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+        }
+        nameString.append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      }
+    } else {
+      logger.debug("Did not find the Name for the patient");
+      nameString.append(
+          CdaGeneratorUtils.getXmlForStartElementWithAttribute(
+              CdaGeneratorConstants.NAME_EL_NAME, "", ""));
+      nameString.append(
+          CdaGeneratorUtils.getXmlForNFText(
+              CdaGeneratorConstants.FIRST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+      nameString.append(
+          CdaGeneratorUtils.getXmlForNFText(
+              CdaGeneratorConstants.LAST_NAME_EL_NAME, CdaGeneratorConstants.NF_NI));
+      nameString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+    }
+
+    return nameString.toString();
   }
 }

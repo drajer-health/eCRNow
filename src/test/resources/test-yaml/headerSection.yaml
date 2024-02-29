@@ -54,7 +54,7 @@ testCase:
         "telecom[1]/@use": "MC"
         "telecom[2]/@value": "mailto:coviddonefhir@gmail.com"
       - xPath: "patient/name"
-        count: 1
+        count: 2
       - xPath: "patient/languageCommunication"
         count: 1
       - xPath: "patient/"

@@ -568,7 +568,7 @@ public class CdaHeaderGenerator {
       sb.append(getPractitionerXml(null));
     }
 
-    //  add reprsented organization if it exists
+    // add reprsented organization if it exists
     if (data.getOrganization() != null && data.getOrganization().hasName()) {
 
       sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
@@ -922,13 +922,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.PATIENT_EL_NAME));
 
-    String nameUse = CdaFhirUtilities.getCodeForNameUse(p.getName());
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForStartElementWithAttribute(
-            CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.USE_ATTR_NAME, nameUse));
-    patientDetails.append(CdaFhirUtilities.getNameXml(p.getName()));
-    patientDetails.append(
-        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+    patientDetails.append(CdaFhirUtilities.getXmlForNames(p.getName()));
 
     patientDetails.append(CdaFhirUtilities.getGenderXml(p.getGenderElement().getValue()));
 
