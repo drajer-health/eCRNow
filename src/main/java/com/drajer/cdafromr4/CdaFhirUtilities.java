@@ -2602,4 +2602,71 @@ public class CdaFhirUtilities {
 
     return nameUse;
   }
+
+  public static Address getAddressExtensionValue(List<Extension> extensions, String extensionUrl) {
+    if (extensions == null || extensions.isEmpty()) {
+      return null;
+    }
+
+    for (Extension extension : extensions) {
+      if (extension.hasUrl()
+          && extension.getUrl().equals(extensionUrl)
+          && extension.hasValue()
+          && extension.getValue() instanceof Address) {
+        logger.debug("Found Address Extension at top level.");
+        return (Address) extension.getValue();
+      }
+    }
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
+    return null;
+  }
+
+  public static String getTravelHistoryAddressXml(Address addr) {
+    StringBuilder addrString = new StringBuilder(200);
+
+    if (addr != null) {
+
+      addrString.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
+
+      if (addr.hasCountry()) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(
+                CdaGeneratorConstants.COUNTRY_EL_NAME, addr.getCountry()));
+      } else {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForNFText(
+                CdaGeneratorConstants.COUNTRY_EL_NAME, CdaGeneratorConstants.NF_NI));
+      }
+
+      if (addr.hasCity()) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.CITY_EL_NAME, addr.getCity()));
+      }
+
+      if (addr.hasState()) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.STATE_EL_NAME, addr.getState()));
+      }
+
+      addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
+    }
+    return addrString.toString();
+  }
+
+  public static String getSingleCodingXmlForCodings(List<Coding> coding, String elName) {
+    StringBuilder addrString = new StringBuilder(200);
+
+    if (coding != null && !coding.isEmpty()) {
+      for (Coding c : coding) {
+        String xml = getSingleCodingXml(c, elName, "");
+        if (!xml.isEmpty()) {
+          addrString.append(xml);
+          return addrString.toString();
+        }
+      }
+    }
+
+    return addrString.toString();
+  }
 }
