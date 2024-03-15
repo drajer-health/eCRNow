@@ -203,6 +203,55 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static List<Coding> getAllCodingsFromExtension(
+      List<Extension> exts, String extUrl, String subextUrl) {
+    List<Coding> codings = new ArrayList<>();
+
+    if (exts == null || exts.isEmpty()) {
+      logger.debug("No extensions provided");
+      return codings;
+    }
+
+    for (Extension ext : exts) {
+      if (ext.hasUrl() && ext.getUrl().contentEquals(extUrl)) {
+
+        if (ext.hasValue() && ext.getValue() instanceof Coding) {
+          logger.debug("Found Extension at top level ");
+          codings.add((Coding) ext.getValue());
+
+        } else if (!ext.hasValue()) {
+
+          List<Extension> subExts = ext.getExtensionsByUrl(subextUrl);
+
+          for (Extension subext : subExts) {
+            if (subext.hasValue()) {
+
+              if (subext.getValue() instanceof Coding) {
+                logger.debug("Found Extension nested as children ");
+                codings.add((Coding) subext.getValue());
+
+              } else if (subext.getValue() instanceof CodeableConcept) {
+
+                CodeableConcept cd = (CodeableConcept) subext.getValue();
+
+                if (cd.hasCoding()) {
+                  logger.debug("Found Extension nested as childrens ");
+                  codings.addAll(cd.getCoding());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (codings.isEmpty()) {
+      logger.debug("Did not find the Extension or sub extensions for the Url {}", extUrl);
+    }
+
+    return codings;
+  }
+
   public static Coding getCodingExtension(List<Extension> exts, String extUrl) {
 
     if (exts != null && !exts.isEmpty()) {
@@ -680,8 +729,8 @@ public class CdaFhirUtilities {
 
       if (ent.getResource() != null
           &&
-          //  ent.getResource() != null &&
-          //   ent.getResource().fhirType().contentEquals(type) &&
+          // ent.getResource() != null &&
+          // ent.getResource().fhirType().contentEquals(type) &&
           ent.getResource().getId() != null
           && ent.getResource().getId().contentEquals(id)) {
 
@@ -818,7 +867,8 @@ public class CdaFhirUtilities {
           break;
         }
 
-        // If display is at the Codeable Concept level, use it in case we don't find anything else
+        // If display is at the Codeable Concept level, use it in case we don't find
+        // anything else
         if (cd != null && !StringUtils.isEmpty(cd.getText())) {
           anyCdDisplay = cd.getText();
         }
@@ -961,7 +1011,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
@@ -1131,7 +1182,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag(
                 cdName, CdaGeneratorConstants.NF_OTH));
