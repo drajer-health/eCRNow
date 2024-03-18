@@ -66,11 +66,10 @@ public class CdaHeaderGenerator {
         appProps.putAll((Map) properties);
 
       } else {
-        throw new IllegalArgumentException(
-            "Properties file '" + propertiesFileName + "' not found in classpath!");
+        logger.error("Properties file {} not found in classpath!", propertiesFileName);
       }
     } catch (IOException e) {
-      throw new RuntimeException("Error loading properties file: " + propertiesFileName, e);
+      logger.error("Error loading properties file :{} ", e);
     }
   }
 
