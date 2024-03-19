@@ -2564,10 +2564,12 @@ public class CdaFhirUtilities {
   public static String getStatusCodeForFhirMedStatusCodes(String val) {
 
     if (val.equalsIgnoreCase("active")
-        || val.equalsIgnoreCase("in-progress")
-        || val.equalsIgnoreCase("intended")
-        || val.equalsIgnoreCase("not-taken")) {
+            || val.equalsIgnoreCase("in-progress")
+            || val.equalsIgnoreCase("intended")
+            || val.equalsIgnoreCase("not-taken")) {
       return "active";
+    } else if (val.equalsIgnoreCase("not-done") || val.equalsIgnoreCase("Not-done")) {
+      return "not-done";
     } else if (val.equalsIgnoreCase(COMPLETED)) {
       return COMPLETED;
     } else if (val.equalsIgnoreCase("entered-in-error")) {
@@ -2579,7 +2581,7 @@ public class CdaFhirUtilities {
     } else if (val.equalsIgnoreCase("unknown") || val.equalsIgnoreCase("draft")) {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
-      return "cancelled";
+      return "held";
     } else return COMPLETED;
   }
 

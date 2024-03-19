@@ -1579,7 +1579,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals("active", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("in-progress"));
 
     assertEquals(
-        "nullified", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("entered-in-error"));
+            "nullified", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("entered-in-error"));
 
     assertEquals("aborted", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("stopped"));
     assertEquals("suspended", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("on-hold"));
@@ -1588,7 +1588,9 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertEquals("held", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("draft"));
 
-    assertEquals("cancelled", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("cancelled"));
+    assertEquals("held", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("cancelled"));
+
+    assertEquals("not-done", CdaFhirUtilities.getStatusCodeForFhirMedStatusCodes("not-done"));
   }
 
   @Test
