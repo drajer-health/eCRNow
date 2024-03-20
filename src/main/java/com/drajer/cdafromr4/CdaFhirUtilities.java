@@ -2581,7 +2581,7 @@ public class CdaFhirUtilities {
     } else if (val.equalsIgnoreCase("unknown") || val.equalsIgnoreCase("draft")) {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
-      return "held";
+      return "cancelled";
     } else return COMPLETED;
   }
 
