@@ -108,6 +108,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     lines.add(line);
     ad1.setLine(lines);
     ad1.setCity("Rockville");
+    ad1.setDistrict("Baltimore");
     ad1.setState("MD");
     ad1.setPostalCode("20874");
     ad1.setCountry("US");
@@ -117,6 +118,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertTrue(result.contains("142 Example Drive"));
     assertTrue(result.contains("20874"));
+    assertTrue(result.contains("Baltimore"));
     assertTrue(result.contains("MD"));
     assertTrue(result.contains("Rockville"));
 

@@ -395,6 +395,15 @@ public class CdaFhirUtilities {
                 CdaGeneratorConstants.CITY_EL_NAME, CdaGeneratorConstants.NF_NI));
       }
 
+      // District
+      if (!StringUtils.isEmpty(addr.getDistrict())) {
+        addrString.append(
+                CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.DISTRICT_EL_NAME, addr.getDistrict()));
+      } else {
+        addrString.append(
+                CdaGeneratorUtils.getXmlForNFText(
+                        CdaGeneratorConstants.DISTRICT_EL_NAME, CdaGeneratorConstants.NF_NI));
+      }
       // State
       if (!StringUtils.isEmpty(addr.getState())) {
         addrString.append(
