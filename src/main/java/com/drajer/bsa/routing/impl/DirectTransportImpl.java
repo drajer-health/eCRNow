@@ -171,7 +171,7 @@ public class DirectTransportImpl implements DataTransportInterface {
 
     // Set TLS protocols
     if (!StringUtils.isEmpty(directTlsVersion)) {
-      props.setProperty("smtp.ssl.protocols", directTlsVersion);
+      props.setProperty("mail.smtp.ssl.protocols", directTlsVersion);
     }
 
     Session session = Session.getInstance(props, null);
