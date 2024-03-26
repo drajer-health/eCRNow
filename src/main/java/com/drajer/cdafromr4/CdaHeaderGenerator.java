@@ -38,29 +38,46 @@ public class CdaHeaderGenerator {
 
   private CdaHeaderGenerator() {}
 
+  private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
   private static String SW_APP_VERSION = "Version 3.1.X";
   private static String SW_APP_NAME = "ecrNowApp";
+  private static final String SPRING_ACTIVE_PROFILE = "spring.active.profile";
+  private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
+
+  private static String activeProfile;
 
   // Map to hold Application Properties
   private static HashMap<String, String> appProps = new HashMap<>();
 
-  // Static block to load App properties file
   static {
+    loadProperties();
+  }
+
+  public static void loadProperties() {
+    String propertiesFileName = getPropertiesFileName();
+
     try (InputStream input =
-        CdaHeaderGenerator.class.getClassLoader().getResourceAsStream("application.properties")) {
+        CdaHeaderGenerator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
+      if (input != null) {
+        Properties properties = new Properties();
+        properties.load(input);
+        appProps.putAll((Map) properties);
 
-      Properties prop = new Properties();
-      prop.load(input);
-      prop.forEach(
-          (key, value) -> {
-            appProps.put((String) key, (String) value);
-          });
-
-    } catch (IOException ex) {
-      logger.error("Error while loading App properties files", ex);
+      } else {
+        logger.error("Properties file {} not found in classpath!", propertiesFileName);
+      }
+    } catch (IOException e) {
+      logger.error("Error loading properties file :{} ", e);
     }
+  }
+
+  private static String getPropertiesFileName() {
+    String activeProfile = System.getProperty(SPRING_ACTIVE_PROFILE);
+    return (activeProfile != null && !activeProfile.isEmpty())
+        ? "application-" + activeProfile + ".properties"
+        : DEFAULT_PROPERTIES_FILE;
   }
 
   public static String createCdaHeader(R4FhirData data, LaunchDetails details, Eicr ecr) {
