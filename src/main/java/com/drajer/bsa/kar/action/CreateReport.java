@@ -119,7 +119,8 @@ public class CreateReport extends BsaAction {
                 if (Boolean.TRUE.equals(BsaServiceUtils.hasCdaData(output))) {
 
                   logger.info("Creating PH message for CDA Data ");
-                  createPublicHealthMessageForCda(data, BsaTypes.getActionString(type), output);
+                  createPublicHealthMessageForCda(
+                      data, BsaTypes.getActionString(type), output, actionId);
 
                 } else {
 
@@ -132,7 +133,18 @@ public class CreateReport extends BsaAction {
                           + "_"
                           + data.getNotificationContext().getNotificationResourceId()
                           + ".json";
+
                   saveReportToFile(jsonParser.encodeResourceToString(output), fileName);
+
+                  String xmlFileName =
+                      logDirectory
+                          + BsaTypes.getActionString(type)
+                          + "_"
+                          + data.getNotificationContext().getPatientId()
+                          + "_"
+                          + data.getNotificationContext().getNotificationResourceId()
+                          + ".xml";
+                  saveReportToFile(xmlParser.encodeResourceToString(output), xmlFileName);
                 }
               } else {
                 logger.error(" No report created, hence nothing do ");
@@ -169,7 +181,7 @@ public class CreateReport extends BsaAction {
   }
 
   public void createPublicHealthMessageForCda(
-      KarProcessingData kd, String actionType, Resource output) {
+      KarProcessingData kd, String actionType, Resource output, String actionId) {
 
     List<DocumentReference> docrefs = new ArrayList<>();
     MessageHeader header = BsaServiceUtils.findMessageHeaderAndDocumentReferences(output, docrefs);
@@ -222,7 +234,12 @@ public class CreateReport extends BsaAction {
           msg.setSubmittedDataId(docRef.getId());
           msg.setSubmittedMessageId(header.getId());
           msg.setSubmissionTime(Date.from(Instant.now()));
-          msg.setInitiatingAction(actionType + kd.getScheduledJobData().getJobId());
+
+          if (kd.getScheduledJobData() != null) {
+            msg.setInitiatingAction(actionType + kd.getScheduledJobData().getJobId());
+          } else {
+            msg.setInitiatingAction(actionId + kd.getContextPatientId() + kd.getxRequestId());
+          }
           msg.setKarUniqueId(kd.getKar().getVersionUniqueId());
 
           // Update Version and Matched Trigger Status
@@ -233,7 +250,7 @@ public class CreateReport extends BsaAction {
           }
           msg.setTriggerMatchStatus(
               BsaServiceUtils.getEncodedTriggerMatchStatus(
-                  kd.getCurrentTriggerMatchStatus(), kd, docRef.getId()));
+                  kd.getCurrentTriggerMatchStatus(), kd, docRef.getId(), actionType, actionId));
 
           // Create BitSet for MessageStatus and add attribute.
           logger.debug("Saving data to file {}", fileName);

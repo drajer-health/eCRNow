@@ -121,6 +121,9 @@ public abstract class BsaAction {
   /** JSON Parser to deal with FHIR Encode and Decode */
   protected IParser jsonParser;
 
+  /** XML Parser to deal with FHIR Encode and Decode */
+  protected IParser xmlParser;
+
   /** The scheduler that is required to be used to schedule jobs. */
   protected BsaScheduler scheduler;
 
@@ -479,6 +482,14 @@ public abstract class BsaAction {
 
   public void setJsonParser(IParser jsonParser) {
     this.jsonParser = jsonParser;
+  }
+
+  public IParser getXmlParser() {
+    return xmlParser;
+  }
+
+  public void setXmlParser(IParser xmlParser) {
+    this.xmlParser = xmlParser;
   }
 
   public String getLogDirectory() {

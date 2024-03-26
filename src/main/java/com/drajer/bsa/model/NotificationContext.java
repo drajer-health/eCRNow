@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
               "fhir_server_base_url",
               "patient_id",
               "notification_resource_id",
-              "notification_resource_type"
+              "notification_resource_type",
+              "trigger_event"
             }))
 @DynamicUpdate
 public class NotificationContext {
@@ -176,6 +177,13 @@ public class NotificationContext {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public String getActualTriggerEvent() {
+    if (triggerEvent != null && triggerEvent.contains("|")) {
+      String[] s = triggerEvent.split("\\|");
+      return s[0];
+    } else return triggerEvent;
   }
 
   public String getTriggerEvent() {

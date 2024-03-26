@@ -55,6 +55,7 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
+import org.hl7.fhir.r4.model.OidType;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -90,6 +91,8 @@ public class EcrReportCreator extends ReportCreator {
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-document-bundle";
   public static final String EICR_DOC_CONTENT_TYPE = "application/xml;charset=utf-8";
   public static final String BUNDLE_REL_URL = "Bundle/";
+  public static final String EICR_COMPOSITION_PROFILE_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-composition";
   public static final String MESSAGE_PROCESSING_CATEGORY_EXT_URL =
       "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-message-processing-category-extension";
   public static final String MESSAGE_PROCESSING_CATEGORY_CODE = "notification";
@@ -151,7 +154,7 @@ public class EcrReportCreator extends ReportCreator {
       reportingBundle = createReportingBundle(profile);
       Bundle contentBundle =
           getFhirReport(kd, ehrService, dataRequirementId, EICR_DOCUMENT_BUNDLE, act);
-      MessageHeader mh = createMessageHeader(kd, true, contentBundle);
+      MessageHeader mh = createMessageHeader(kd, false, contentBundle);
 
       // Add the Message Header Resource
       BundleEntryComponent bec = new BundleEntryComponent();
@@ -508,7 +511,16 @@ public class EcrReportCreator extends ReportCreator {
     Set<Resource> resourcesTobeAdded = new HashSet<>();
     Composition comp = createComposition(kd, resourcesTobeAdded, data);
 
-    returnBundle.addEntry(new BundleEntryComponent().setResource(comp));
+    BundleEntryComponent becComp = new BundleEntryComponent();
+    becComp.setResource(comp);
+    String fullUrlComp =
+        StringUtils.stripEnd(kd.getNotificationContext().getFhirServerBaseUrl(), "/")
+            + "/"
+            + comp.getResourceType().toString()
+            + "/"
+            + comp.getIdElement().getIdPart();
+    becComp.setFullUrl(fullUrlComp);
+    returnBundle.addEntry(becComp);
 
     for (Resource res : resourcesTobeAdded) {
 
@@ -532,6 +544,9 @@ public class EcrReportCreator extends ReportCreator {
 
     Composition comp = new Composition();
     comp.setId(UUID.randomUUID().toString());
+
+    // Add Meta
+    comp.setMeta(ActionUtils.getMeta(DEFAULT_VERSION, EICR_COMPOSITION_PROFILE_URL));
 
     // Add clinical document version number extension.
     comp.setExtension(getExtensions());
@@ -1059,7 +1074,9 @@ public class EcrReportCreator extends ReportCreator {
           Extension vsExt = new Extension();
           vsExt.setUrl(TRIGGER_CODE_VALUESET_EXT_URL);
           StringType url = new StringType(matchCode.getValue1().getValueSetOid());
-          vsExt.setValue(url);
+          OidType oid = new OidType();
+          oid.setValue(url.asStringValue());
+          vsExt.setValue(oid);
           ext.addExtension(vsExt);
 
           // Add Value Set Version Extension.

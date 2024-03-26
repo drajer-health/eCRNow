@@ -2568,11 +2568,12 @@ public class CdaFhirUtilities {
         || val.equalsIgnoreCase("intended")
         || val.equalsIgnoreCase("not-taken")) {
       return "active";
-    } else if (val.equalsIgnoreCase(COMPLETED)) {
-      return COMPLETED;
+    } else if (val.equalsIgnoreCase("completed")) {
+      return "completed";
     } else if (val.equalsIgnoreCase("entered-in-error")) {
       return "nullified";
-    } else if (val.equalsIgnoreCase("stopped")) {
+    } else if (val.equalsIgnoreCase("stopped")
+    		   || val.equalsIgnoreCase("not-done") ) {
       return "aborted";
     } else if (val.equalsIgnoreCase("on-hold")) {
       return "suspended";
@@ -2580,7 +2581,7 @@ public class CdaFhirUtilities {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
       return "cancelled";
-    } else return COMPLETED;
+    } else return "completed";
   }
 
   public static String getCodeForNameUse(List<HumanName> names) {

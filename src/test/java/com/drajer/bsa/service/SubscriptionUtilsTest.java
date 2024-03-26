@@ -28,6 +28,6 @@ class SubscriptionUtilsTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpServletResponse response = mock(HttpServletResponse.class);
 
-    SubscriptionUtils.getNotificationContext(bund, request, response);
+    SubscriptionUtils.getNotificationContext(bund, request, response, false);
   }
 }

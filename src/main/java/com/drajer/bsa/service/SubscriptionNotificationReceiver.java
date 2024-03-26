@@ -37,5 +37,6 @@ public interface SubscriptionNotificationReceiver {
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext);
+      PatientLaunchContext launchContext,
+      Boolean relaunch);
 }

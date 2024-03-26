@@ -174,7 +174,8 @@ public class PatientLaunchController {
 
         Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
 
-        notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
+        notificationReceiver.processRelaunchNotification(
+            nb, request, response, launchContext, true);
 
       } else {
         throw new ResponseStatusException(

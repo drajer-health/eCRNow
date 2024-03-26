@@ -1154,6 +1154,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       if (mr.getStatus() != null
           && (mr.getStatus() == MedicationRequestStatus.ENTEREDINERROR
               || mr.getStatus() == MedicationRequestStatus.CANCELLED
+              || mr.getStatus() == MedicationRequestStatus.DRAFT
               || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
 
         logger.info(
@@ -1170,6 +1171,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Ignore observations that should not be included.
       if (ma.getStatus() != null
           && (ma.getStatus() == MedicationAdministrationStatus.ENTEREDINERROR
+              || ma.getStatus() == MedicationAdministrationStatus.NOTDONE
               || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
 
         logger.info(
@@ -1184,7 +1186,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationStatement ms = (MedicationStatement) res;
 
       // Ignore observations that should not be included.
-      if (ms.getStatus() != null && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR)) {
+      if (ms.getStatus() != null && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR
+    		  || ms.getStatus() == MedicationStatementStatus.NOTTAKEN
+    		  || ms.getStatus() == MedicationStatementStatus.UNKNOWN)) {
 
         logger.info(
             " Ignoring {} resource with id {}",
