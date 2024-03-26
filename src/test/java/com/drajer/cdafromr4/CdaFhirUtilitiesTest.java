@@ -2044,4 +2044,59 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
       }
     }
   }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setText("Display-Text");
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Display-Text", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNull() {
+    CodeableConcept cd = new CodeableConcept();
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertThat(result).isBlank();
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNullAndCodingNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem("http://loinc.org");
+    coding.setCode("15074-8");
+    coding.setDisplay("Glucose [Moles/volume] in Blood");
+
+    cd.addCoding(coding);
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_WithEmptyValue() {
+
+    assertThat(CdaFhirUtilities.getStringForCodeableConcept(null)).isBlank();
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_CodingListWithMultipleCodings() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding1 = new Coding();
+    coding1.setSystem("http://loinc.org");
+    coding1.setCode("15074-8");
+    coding1.setDisplay("Glucose [Moles/volume] in Blood-1");
+
+    Coding coding2 = new Coding();
+    coding2.setSystem("http://loinc.org");
+    coding2.setCode("15074-8");
+    coding2.setDisplay("Glucose [Moles/volume] in Blood-2");
+
+    cd.addCoding(coding1);
+    cd.addCoding(coding2);
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood-1 | Glucose [Moles/volume] in Blood-2", result);
+  }
 }

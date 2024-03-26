@@ -72,14 +72,10 @@ public class CdaImmunizationGenerator {
       // add Body Rows
       int rowNum = 1;
       for (Immunization imm : imms) {
-        String medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
-        if (imm.getVaccineCode() != null
-            && imm.getVaccineCode().getCodingFirstRep() != null
-            && !StringUtils.isEmpty(imm.getVaccineCode().getCodingFirstRep().getDisplay())) {
-
-          medDisplayName = imm.getVaccineCode().getCodingFirstRep().getDisplay();
-        }
+        String medDisplayName = CdaFhirUtilities.getStringForCodeableConcept(imm.getVaccineCode());
+        if (StringUtils.isEmpty(medDisplayName))
+          medDisplayName = CdaGeneratorConstants.UNKNOWN_VALUE;
 
         String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
         if (imm.hasOccurrenceDateTimeType() && imm.getOccurrenceDateTimeType() != null) {

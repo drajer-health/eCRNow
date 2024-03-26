@@ -14,7 +14,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({CdaGeneratorUtils.class})
 public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
 
-  private static final String IMMUNIZATION_FILE = "R4/Immunization/Immunization.json";
+  private static final String IMMUNIZATION_FILE = "CdaTestData/Immunization/Immunization.json";
   private static final String IMMUNIZATION_CDA_FILE =
       "CdaTestData/Cda/Immunization/Immunization.xml";
 
