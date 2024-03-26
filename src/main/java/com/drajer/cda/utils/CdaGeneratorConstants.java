@@ -149,6 +149,9 @@ public class CdaGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus";
   public static final String FHIR_RELIGIOUS_AFFILIATION_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation";
+  public static final String FHIR_OBSERVATION_ADDRESS_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension";
+
   public static final String FHIR_NF_URL = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String FHIR_ENCOUNTER_CLASS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ActCode";
@@ -687,7 +690,7 @@ public class CdaGeneratorConstants {
   public static final String TYPE_CODE_LOC = "LOC";
   public static final String TYPE_CODE_PRD = "PRD";
   public static final String US_REALM_CODE_VAL = "US";
-
+  public static final String TERR = "TERR";
   // Element Names
   public static final String REALM_CODE_EL_NAME = "realmCode";
   public static final String ENTRY_REL_NAME = "entryRelationship";

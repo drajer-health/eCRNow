@@ -1,0 +1,100 @@
+{
+	"resourceType": "Bundle",
+	"id": "6024c15a-a2ab-4628-9d5b-5699393bf417",
+	"meta": {
+		"lastUpdated": "2024-02-09T11:54:59.041+00:00"
+	},
+	"type": "searchset",
+	"total": 3,
+	"link": [
+		{
+			"relation": "self",
+			"url": "http://ecr.drajer.com/open/fhir-r4/fhir/MedicationRequest?patient=Patient%2Fe9bd7100-48af-4c69-a557-c13235f72f74"
+		}
+	],
+	"entry": [
+		{
+			"fullUrl": "http://ecr.drajer.com/open/fhir-r4/fhir/Observation/f1da4975-a496-467f-b57f-2cd8458d0838",
+			"resource": {
+				"resourceType": "Observation",
+				"id": "f1da4975-a496-467f-b57f-2cd8458d0838",
+				"meta": {
+					"versionId": "1"
+				},
+				"status": "final",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/observation-category",
+								"code": "social-history",
+								"display": "Social History"
+							}
+						],
+						"text": "Social History"
+					}
+				],
+				"code": {
+					"coding": [
+						{
+							"system": "http://snomed.info/sct",
+							"code": "420008001",
+							"display": "Travel"
+						}
+					],
+					"text": "Travel History"
+				},
+				"subject": {
+					"reference": "Patient/e9bd7100-48af-4c69-a557-c13235f72f74",
+					"display": "Alice C Newman"
+				},
+				"component": [
+					{
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension",
+								"valueAddress": {
+									"line": [
+										"[\"1170 N Rancho Robles Rd\"]"
+									],
+									"city": "Oracle",
+									"state": "AZ",
+									"postalCode": "8562",
+									"country": "US"
+								}
+							}
+						],
+						"code": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72",
+									"code": "4154424",
+									"display": "Recent Travel Location",
+									"userSelected": true
+								},
+								{
+									"system": "http://snomed.info/sct",
+									"code": "161086008",
+									"display": "Recent countries visited (observable entity)",
+									"userSelected": false
+								}
+							],
+							"text": "Recent Travel Location"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "http://snomed.info/sct",
+									"code": "223668000",
+									"display": "Italy (geographic location)",
+									"userSelected": false
+								}
+							],
+							"text": "Italy"
+						}
+					}
+				]
+			}
+		}
+	]
+}
