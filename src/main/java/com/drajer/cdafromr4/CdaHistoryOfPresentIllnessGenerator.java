@@ -80,7 +80,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
         Map<String, String> bodyvals = new LinkedHashMap<>();
         bodyvals.put(
             CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, probDisplayName);
-
+        bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_DATE, CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL + CdaGeneratorConstants.NF_NI);
         sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
         ++rowNum;
       }
@@ -88,7 +88,7 @@ public class CdaHistoryOfPresentIllnessGenerator {
 
       Map<String, String> bodyvals = new HashMap<>();
       bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_CONTENT, text);
-
+      bodyvals.put(CdaGeneratorConstants.HISTORY_OF_PRESENT_ILLNESS_BODY_DATE, CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL + CdaGeneratorConstants.NF_NI);
       sb.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
     }
 
