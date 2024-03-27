@@ -2009,27 +2009,27 @@ public class CdaFhirUtilities {
   public static String getStringForDates(
       Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
 
-    StringBuilder valBuilder = new StringBuilder();
+    StringBuilder val = new StringBuilder();
 
     if (recorded != null && recorded.getValue0() != null) {
-      valBuilder.append(recorded.getValue0().toString());
+      val.append(recorded.getValue0().toString());
     } else {
-      valBuilder.append(CdaGeneratorConstants.UNKNOWN_VALUE);
+      val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
     if (onset != null && onset.getValue0() != null) {
-      valBuilder.append('|').append(onset.getValue0().toString());
+      val.append('|').append(onset.getValue0().toString());
     } else {
-      valBuilder.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
+      val.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
     if (abatement != null && abatement.getValue0() != null) {
-      valBuilder.append('|').append(abatement.getValue0().toString());
+      val.append('|').append(abatement.getValue0().toString());
     } else {
-      valBuilder.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
+      val.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
-    return valBuilder.toString();
+    return val.toString();
   }
 
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
