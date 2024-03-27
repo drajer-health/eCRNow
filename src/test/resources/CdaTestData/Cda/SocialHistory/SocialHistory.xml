@@ -74,7 +74,7 @@
 <content ID="socContent7">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult7">Recent countries visited (observable entity)-</content>
+<content ID="socObservationResult7">Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</content>
 </td>
 </tr>
 <tr>
@@ -82,7 +82,7 @@
 <content ID="socContent8">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult8">Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</content>
+<content ID="socObservationResult8">Recent Travel History |  Value : Last travel within 21 days</content>
 </td>
 </tr>
 <tr>
@@ -90,7 +90,7 @@
 <content ID="socContent9">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult9">Recent countries visited (observable entity)-</content>
+<content ID="socObservationResult9">Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</content>
 </td>
 </tr>
 <tr>
@@ -98,7 +98,7 @@
 <content ID="socContent10">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult10">Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</content>
+<content ID="socObservationResult10">Recent Travel History |  Value : Last travel within 21 days</content>
 </td>
 </tr>
 <tr>
@@ -106,7 +106,7 @@
 <content ID="socContent11">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult11">Recent countries visited (observable entity)-Italy (geographic location)</content>
+<content ID="socObservationResult11">Recent Travel Location |  Value : Italy</content>
 </td>
 </tr>
 <tr>
@@ -114,7 +114,7 @@
 <content ID="socContent12">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult12">Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</content>
+<content ID="socObservationResult12">Recent Travel History |  Value : Last travel within 7 days</content>
 </td>
 </tr>
 <tr>
@@ -122,7 +122,7 @@
 <content ID="socContent13">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult13">Recent countries visited (observable entity)-China (geographic location)</content>
+<content ID="socObservationResult13">Recent Travel Location |  Value : China</content>
 </td>
 </tr>
 <tr>
@@ -130,7 +130,7 @@
 <content ID="socContent14">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult14">Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</content>
+<content ID="socObservationResult14">Recent Travel History |  Value : Last travel within 7 days</content>
 </td>
 </tr>
 </tbody>
@@ -221,7 +221,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Recent countries visited (observable entity)-</text>
+<text>Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121500+0000"/>
 <participant typeCode="LOC">
@@ -240,7 +240,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</text>
+<text>Recent Travel History |  Value : Last travel within 21 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121500+0000"/>
 </act>
@@ -249,7 +249,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Recent countries visited (observable entity)-</text>
+<text>Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121000+0000"/>
 <participant typeCode="LOC">
@@ -268,7 +268,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Detail of recent history of travel (observable entity)-History of travel within past twenty-one days (situation)</text>
+<text>Recent Travel History |  Value : Last travel within 21 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20230209121000+0000"/>
 </act>
@@ -277,7 +277,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Recent countries visited (observable entity)-Italy (geographic location)</text>
+<text>Recent Travel Location |  Value : Italy</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112164000+0000"/>
 </act>
@@ -286,7 +286,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</text>
+<text>Recent Travel History |  Value : Last travel within 7 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112164000+0000"/>
 </act>
@@ -295,7 +295,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Recent countries visited (observable entity)-China (geographic location)</text>
+<text>Recent Travel Location |  Value : China</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112163300+0000"/>
 </act>
@@ -304,7 +304,7 @@
 <act classCode="ACT" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
-<text>Detail of recent history of travel (observable entity)-History of travel within past seven days (situation)</text>
+<text>Recent Travel History |  Value : Last travel within 7 days</text>
 <statusCode code="completed"/>
 <effectiveTime value="20210112163300+0000"/>
 </act>
