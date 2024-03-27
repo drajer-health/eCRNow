@@ -1247,14 +1247,14 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   @Test
   public void testGetStringForDates() {
     Pair<Date, TimeZone> onset =
-        new Pair<>(
-            new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-25T00:00:00Z
+        new Pair<>(new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T00:00:00Z
     Pair<Date, TimeZone> abatement =
-        new Pair<>(
-            new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-26T00:00:00Z
+        new Pair<>(new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-26T00:00:00Z
     Pair<Date, TimeZone> recorded =
-        new Pair<>(
-            new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-25T18:00:00Z
+        new Pair<>(new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T18:00:00Z
 
     String expected =
         "Sat Feb 26 08:40:00 UTC 2022|Sat Feb 26 00:00:00 UTC 2022|Fri Feb 25 08:40:00 UTC 2022";
@@ -2065,6 +2065,106 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGetAllCodingsFromExtension() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
+    String subExtUrl = "detailed";
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionListWithSubExtension1() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
+    String subExtUrl = "detailed";
+
+    extension.setUrl(extUrl);
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+    subExtension.setUrl(subExtUrl);
+    subExtension.setValue(codingValue);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionListWithSubExtension2() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+    CodeableConcept valueCodeableConcept = new CodeableConcept();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+    String subExtUrl = "detailed";
+    extension.setUrl(extUrl);
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    valueCodeableConcept.addCoding(codingValue);
+
+    subExtension.setUrl(subExtUrl);
+    subExtension.setValue(valueCodeableConcept);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionWithOnlyExtUrl() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    String extUrl = "http://example.com/ext";
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem(CdaGeneratorConstants.FHIR_IDENTIFIER_TYPE_SYSTEM);
+    codingValue.setCode("MR");
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, "");
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue, result.get(0));
+  }
+
   public void testGetStringForCodeableConcept_TextNotNull() {
     CodeableConcept cd = new CodeableConcept();
     cd.setText("Display-Text");
