@@ -122,16 +122,12 @@ public class CdaGeneratorConstants {
   public static final String FHIR_DATA_ABSENT_REASON_EXT_URL =
       "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
 
-  public static final String FHIR_USCORE_DETAILED_RACE_EXT_URL =
-      "http://hl7.org/fhir/us/core/ValueSet/detailed-race";
-  public static final String FHIR_USCORE_DETAILED_ETHNICITY_EXT_URL =
-      "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity";
-
   public static final String SDTC_DETAILED_RACE_CODE = "sdtc:raceCode";
   public static final String SDTC_DETAILED_ETHNIC_GROUP_CODE = "sdtc:ethnicGroupCode";
 
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
+  public static final String OMB_ETHNICITY_DETAILED_URL = "detailed";
   public static final String FHIR_NPI_URL = "http://hl7.org/fhir/sid/us-npi";
   public static final String FHIR_CPT_URL = "http://www.ama-assn.org/go/cpt";
   public static final String FHIR_SNOMED_URL = "http://snomed.info/sct";

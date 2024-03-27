@@ -2049,7 +2049,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   public void testGetAllCodingsFromExtension() {
     List<Extension> exts = new ArrayList<>();
     Extension extension = new Extension();
-    String extUrl = "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity";
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
 
     String subExtUrl = "detailed";
 
@@ -2066,6 +2066,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
 
     assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
   }
 
   @Test
@@ -2074,7 +2075,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     Extension extension = new Extension();
     Extension subExtension = new Extension();
 
-    String extUrl = "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity";
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
 
     String subExtUrl = "detailed";
 
@@ -2093,6 +2094,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
 
     assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
   }
 
   @Test
@@ -2101,7 +2103,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     Extension extension = new Extension();
     Extension subExtension = new Extension();
     CodeableConcept valueCodeableConcept = new CodeableConcept();
-    String extUrl = "http://hl7.org/fhir/us/core/ValueSet/detailed-ethnicity";
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
     String subExtUrl = "detailed";
     extension.setUrl(extUrl);
 
@@ -2121,6 +2123,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
 
     assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
   }
 
   @Test

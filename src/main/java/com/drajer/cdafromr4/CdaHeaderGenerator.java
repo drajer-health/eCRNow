@@ -980,7 +980,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         generateXmlForDetailedRaceAndEthnicityCodes(
             p.getExtension(),
-            CdaGeneratorConstants.FHIR_USCORE_DETAILED_RACE_EXT_URL,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
             CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE));
 
@@ -1014,8 +1014,8 @@ public class CdaHeaderGenerator {
     patientDetails.append(
         generateXmlForDetailedRaceAndEthnicityCodes(
             p.getExtension(),
-            CdaGeneratorConstants.FHIR_USCORE_DETAILED_ETHNICITY_EXT_URL,
-            CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
+            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
+            CdaGeneratorConstants.OMB_ETHNICITY_DETAILED_URL,
             CdaGeneratorConstants.SDTC_DETAILED_ETHNIC_GROUP_CODE));
 
     // Adding Guardian
@@ -1146,7 +1146,7 @@ public class CdaHeaderGenerator {
     } else return false;
   }
 
-  private static String generateXmlForDetailedRaceAndEthnicityCodes(
+  public static String generateXmlForDetailedRaceAndEthnicityCodes(
       List<Extension> extensions, String extensionUrl, String categoryUrl, String xmlElementName) {
     StringBuilder sb = new StringBuilder();
 
