@@ -93,7 +93,7 @@ testCase:
     validate:
       - Observation: 26
         TravelObservation: 6
-        OccupationObservation: 3
+        OccupationObservation: 0
         Organization: 1
         Condition: 2
         PregnancyCondition: 1
