@@ -1246,15 +1246,23 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
   @Test
   public void testGetStringForDates() {
-    Pair<Date, TimeZone> onset = new Pair<>(new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-25T00:00:00Z
-    Pair<Date, TimeZone> abatement = new Pair<>(new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-26T00:00:00Z
-    Pair<Date, TimeZone> recorded = new Pair<>(new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-25T18:00:00Z
+    Pair<Date, TimeZone> onset =
+        new Pair<>(
+            new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-25T00:00:00Z
+    Pair<Date, TimeZone> abatement =
+        new Pair<>(
+            new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-26T00:00:00Z
+    Pair<Date, TimeZone> recorded =
+        new Pair<>(
+            new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date: 2022-02-25T18:00:00Z
 
-    String expected = "Sat Feb 26 08:40:00 UTC 2022|Sat Feb 26 00:00:00 UTC 2022|Fri Feb 25 08:40:00 UTC 2022";
+    String expected =
+        "Sat Feb 26 08:40:00 UTC 2022|Sat Feb 26 00:00:00 UTC 2022|Fri Feb 25 08:40:00 UTC 2022";
     String result = CdaFhirUtilities.getStringForDates(recorded, onset, abatement);
 
     assertEquals(expected, result);
   }
+
   @Test
   public void testGetCombinationStringForCodeSystem_WithValue() {
     CodeableConcept codeableConcept = new CodeableConcept();
