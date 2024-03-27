@@ -363,6 +363,15 @@ public class R3ToR2DataConverterUtils {
           List<Observation> occObs = new ArrayList<>();
           List<Observation> travelObs = new ArrayList<>();
           List<Observation> pregnancyObs = new ArrayList<>();
+          List<Observation> pregnancyStatusObs = new ArrayList<>();
+          List<Observation> lmpObs = new ArrayList<>();
+          List<Observation> postPartumObs = new ArrayList<>();
+          List<Observation> pregnancyOutcomeObs = new ArrayList<>();
+          List<Observation> homelessObs = new ArrayList<>();
+          List<Observation> disabilityObs = new ArrayList<>();
+          List<Observation> vaccineCredObs = new ArrayList<>();
+          List<Observation> residencyObs = new ArrayList<>();
+          List<Observation> nationalityObs = new ArrayList<>();
 
           for (Resource r : socObs) {
             Observation sochisObs = (Observation) r;
@@ -386,11 +395,74 @@ public class R3ToR2DataConverterUtils {
               logger.info(" Found Occupation History Observation ");
               pregnancyObs.add(sochisObs);
             }
+
+            if (sochisObs.hasCode() && isPregnancyStatusObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Pregnancy Status Observation ");
+              pregnancyStatusObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isLastMenstrualPeriodObservation(sochisObs.getCode())) {
+
+              logger.info(" Found LMP Observation ");
+              lmpObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isPostPartumStatusObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Post Partum Status Observation ");
+              postPartumObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isPregnancyOutcomeObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Pregnancy Outcome Observation ");
+              pregnancyOutcomeObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isHomelessObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Homeless Observation ");
+              homelessObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isDisabilityObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Disability Observation ");
+              disabilityObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isVaccineCredObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Vaccine Credential Observation ");
+              vaccineCredObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isResidencyObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Residency Info Observation ");
+              residencyObs.add(sochisObs);
+            }
+
+            if (sochisObs.hasCode() && isNationalityObservation(sochisObs.getCode())) {
+
+              logger.info(" Found Nationality Observation ");
+              nationalityObs.add(sochisObs);
+            }
           }
 
           r4FhirData.setOccupationObs(occObs);
           r4FhirData.setTravelObs(travelObs);
           r4FhirData.setPregnancyObs(pregnancyObs);
+          r4FhirData.setPregnancyStatusObs(pregnancyStatusObs);
+          r4FhirData.setLmpObs(lmpObs);
+          r4FhirData.setPostPartumObs(postPartumObs);
+          r4FhirData.setPregnancyOutcomeObs(pregnancyOutcomeObs);
+          r4FhirData.setHomelessObs(homelessObs);
+          r4FhirData.setDisabilityObs(disabilityObs);
+          r4FhirData.setVaccineCredObs(vaccineCredObs);
+          r4FhirData.setResidencyObs(residencyObs);
+          r4FhirData.setNationalityObs(nationalityObs);
         }
 
       } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
@@ -426,12 +498,17 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("11295-3")
-                    && c.getSystem().contentEquals("http://loinc.org"))
+            && ((c.getCode().contentEquals("11295-3") && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("11341-5")
+                    && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("21843-8")
+                    && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("74165-2")
+                    && c.getSystem().contains("http://loinc.org"))
                 || (c.getCode().contentEquals("224362002")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("364703007")
-                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+                    && c.getSystem().contains("http://snomed.info/sct")))) {
           return true;
         }
       }
@@ -450,20 +527,19 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("29762-2")
-                    && c.getSystem().contentEquals("http://loinc.org"))
+            && ((c.getCode().contentEquals("29762-2") && c.getSystem().contains("http://loinc.org"))
                 || (c.getCode().contentEquals("161085007")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("161086008")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("420008001")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("46521000175102")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("34831000175105")
-                    && c.getSystem().contentEquals("http://snomed.info/sct"))
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("443846001")
-                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+                    && c.getSystem().contains("http://snomed.info/sct")))) {
           return true;
         }
       }
@@ -482,10 +558,13 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && ((c.getCode().contentEquals("90767-5")
-                    && c.getSystem().contentEquals("http://loinc.org"))
+            && ((c.getCode().contentEquals("90767-5") && c.getSystem().contains("http://loinc.org"))
+                || (c.getCode().contentEquals("146799005")
+                    && c.getSystem().contains("http://snomed.info/sct"))
+                || (c.getCode().contentEquals("60001007")
+                    && c.getSystem().contains("http://snomed.info/sct"))
                 || (c.getCode().contentEquals("77386006")
-                    && c.getSystem().contentEquals("http://snomed.info/sct")))) {
+                    && c.getSystem().contains("http://snomed.info/sct")))) {
           return true;
         }
       }
@@ -504,8 +583,199 @@ public class R3ToR2DataConverterUtils {
 
         if (c.hasCode()
             && c.hasSystem()
-            && c.getCode().contentEquals("77386006")
-            && c.getSystem().contentEquals("http://snomed.info/sct")) {
+            && c.getSystem().contains("http://snomed.info/sct")
+            && (c.getCode().contentEquals("77386006")
+                || c.getCode().contentEquals("146799005")
+                || c.getCode().contentEquals("60001007"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPregnancyStatusObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("82810-3")
+                && c.getSystem().contains("http://loinc.org")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isLastMenstrualPeriodObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("8665-2")
+                && c.getSystem().contains("http://loinc.org")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPostPartumStatusObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && ((c.getCode().contentEquals("249197004")
+                && c.getSystem().contains("http://snomed.info/sct")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isPregnancyOutcomeObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://snomed.info/sct")
+            && ((c.getCode().contentEquals("17369002")
+                || c.getCode().contentEquals("21243004")
+                || c.getCode().contentEquals("237364002")
+                || c.getCode().contentEquals("237364002")
+                || c.getCode().contentEquals("237364002")))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isHomelessObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://snomed.info/sct")
+            && (c.getCode().contentEquals("32911000") || c.getCode().contentEquals("105526001"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isDisabilityObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://loinc.org")
+            && (c.getCode().contentEquals("69856-3")
+                || c.getCode().contentEquals("69857-1")
+                || c.getCode().contentEquals("69858-9")
+                || c.getCode().contentEquals("69859-7")
+                || c.getCode().contentEquals("69860-5")
+                || c.getCode().contentEquals("69861-3"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isVaccineCredObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://loinc.org")
+            && (c.getCode().contentEquals("11370-4"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isResidencyObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://loinc.org")
+            && (c.getCode().contentEquals("77983-5"))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public static Boolean isNationalityObservation(CodeableConcept cd) {
+
+    if (cd != null && cd.hasCoding()) {
+
+      List<Coding> cds = cd.getCoding();
+
+      for (Coding c : cds) {
+
+        if (c.hasCode()
+            && c.hasSystem()
+            && c.getSystem().contains("http://snomed.info/sct")
+            && (c.getCode().contentEquals("186034007"))) {
           return true;
         }
       }

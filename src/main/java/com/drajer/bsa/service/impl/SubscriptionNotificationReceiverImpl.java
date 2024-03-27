@@ -69,7 +69,7 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
     logger.info(" Stating to process re-launch notification ");
 
     NotificationContext nc =
-        SubscriptionUtils.getNotificationContext(notificationBundle, request, response);
+        SubscriptionUtils.getNotificationContext(notificationBundle, request, response, false);
 
     if (nc != null) {
 
@@ -191,13 +191,14 @@ public class SubscriptionNotificationReceiverImpl implements SubscriptionNotific
       Bundle notificationBundle,
       HttpServletRequest request,
       HttpServletResponse response,
-      PatientLaunchContext launchContext) {
+      PatientLaunchContext launchContext,
+      Boolean relaunch) {
 
     List<KarProcessingData> dataList = new ArrayList<>();
     logger.info(" Stating to process notification ");
 
     NotificationContext nc =
-        SubscriptionUtils.getNotificationContext(notificationBundle, request, response);
+        SubscriptionUtils.getNotificationContext(notificationBundle, request, response, true);
 
     if (nc != null) {
 

@@ -55,7 +55,7 @@ public class SubscriptionUtilsTest {
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false);
     assertNotNull(notificationContext);
   }
 
@@ -80,7 +80,7 @@ public class SubscriptionUtilsTest {
     bundle.setType(BundleType.HISTORY);
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false);
     assertNotNull(notificationContext);
   }
 
@@ -89,7 +89,7 @@ public class SubscriptionUtilsTest {
     Bundle bundle = new Bundle();
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false);
     assertNull(notificationContext);
   }
 
@@ -107,7 +107,7 @@ public class SubscriptionUtilsTest {
       }
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse);
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false);
       mockHttpServletRequest.removeHeader("X-Correlation-ID");
       mockHttpServletRequest.removeHeader("X-Request-ID");
 
@@ -141,7 +141,7 @@ public class SubscriptionUtilsTest {
     bundle.setType(BundleType.HISTORY);
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false);
     assertNull(notificationContext);
   }
 }

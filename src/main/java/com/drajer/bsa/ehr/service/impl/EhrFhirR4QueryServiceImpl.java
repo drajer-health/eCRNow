@@ -49,6 +49,7 @@ import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Immunization.ImmunizationPerformerComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.hl7.fhir.r4.model.Location;
 import org.hl7.fhir.r4.model.Medication;
@@ -960,7 +961,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
           Resource res = getResourceByUrl(data, query.getResourceType().toString(), queryToExecute);
 
-          addResourceToContext(data, res, dataReqId);
+          addResourceToContext(data, res, dataReqId, true);
         }
       } else {
         logger.info(
@@ -1154,6 +1155,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       if (mr.getStatus() != null
           && (mr.getStatus() == MedicationRequestStatus.ENTEREDINERROR
               || mr.getStatus() == MedicationRequestStatus.CANCELLED
+              || mr.getStatus() == MedicationRequestStatus.DRAFT
               || mr.getStatus() == MedicationRequestStatus.UNKNOWN)) {
 
         logger.info(
@@ -1170,6 +1172,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       // Ignore observations that should not be included.
       if (ma.getStatus() != null
           && (ma.getStatus() == MedicationAdministrationStatus.ENTEREDINERROR
+              || ma.getStatus() == MedicationAdministrationStatus.NOTDONE
               || ma.getStatus() == MedicationAdministrationStatus.UNKNOWN)) {
 
         logger.info(
@@ -1184,7 +1187,10 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       MedicationStatement ms = (MedicationStatement) res;
 
       // Ignore observations that should not be included.
-      if (ms.getStatus() != null && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR)) {
+      if (ms.getStatus() != null
+          && (ms.getStatus() == MedicationStatementStatus.ENTEREDINERROR
+              || ms.getStatus() == MedicationStatementStatus.NOTTAKEN
+              || ms.getStatus() == MedicationStatementStatus.UNKNOWN)) {
 
         logger.info(
             " Ignoring {} resource with id {}",
@@ -1377,6 +1383,23 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           kd.storeResourceById(medRef.getReferenceElement().getIdPart(), secRes);
         }
       }
+    } else if (res != null && rType == ResourceType.Immunization) {
+
+      Immunization immz = (Immunization) res;
+
+      // Retrieve any medications
+      if (immz.hasPerformer()) {
+
+        List<ImmunizationPerformerComponent> perfs = immz.getPerformer();
+
+        for (ImmunizationPerformerComponent perf : perfs) {
+
+          if (ResourceType.fromCode(perf.getActor().getType()) == ResourceType.Practitioner) {
+            getAndAddSecondaryResource(
+                kd, perf.getActor(), ResourceType.Practitioner, genericClient, context);
+          }
+        }
+      }
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
 
       DiagnosticReport report = (DiagnosticReport) res;
@@ -1414,16 +1437,47 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
   }
 
-  private void addResourceToContext(KarProcessingData data, Resource res, String dataReqId) {
+  private void getAndAddSecondaryResource(
+      KarProcessingData kd,
+      Reference ref,
+      ResourceType type,
+      IGenericClient genericClient,
+      FhirContext context) {
 
-    if (res != null && res.getResourceType() != ResourceType.OperationOutcome) {
-      data.addResourceById(dataReqId, res);
-      Set<Resource> resources = new HashSet<>();
-      resources.add(res);
-      data.addResourcesByType(res.getResourceType(), resources);
+    // check if it already exists in the Resource Id Map
+    Resource secRes = kd.getResourceById(ref.getReferenceElement().getIdPart(), type);
+
+    // If the resource is not found, then retrieve from the FHIR server
+    if (secRes == null) {
+      secRes =
+          getResourceById(
+              genericClient, context, type.toString(), ref.getReferenceElement().getIdPart());
+    }
+
+    addResourceToContext(kd, secRes, ref.getReferenceElement().getIdPart(), false);
+  }
+
+  private void addResourceToContext(
+      KarProcessingData data, Resource res, String dataReqId, Boolean isDataReq) {
+
+    if (res != null
+        && res.getResourceType() != ResourceType.OperationOutcome
+        && isValidResource(res)) {
+
+      if (isDataReq) {
+        // Add to FHIR Input Data by Query Based Data Requirement Id
+        logger.info(" Adding Resources for DataReqId {}", dataReqId);
+        data.addResourceById(dataReqId, res);
+      } else {
+        // Add to Resource Id Map using the Id element
+        logger.info(" Adding Resource for Id {}", dataReqId);
+        data.storeResourceById(dataReqId, res);
+      }
+
+      data.addResourceByType(res.getResourceType(), res);
     } else {
       logger.info(
-          " Resource for dataReqId {} is null or is an OperationOutcome, hence not added ",
+          " Resource for dataReqId {} is null, invalid resource or is an OperationOutcome, hence not added ",
           dataReqId);
     }
   }

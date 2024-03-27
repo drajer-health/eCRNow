@@ -39,29 +39,46 @@ public class CdaHeaderGenerator {
 
   private CdaHeaderGenerator() {}
 
+  private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
   private static String SW_APP_VERSION = "Version 3.1.X";
   private static String SW_APP_NAME = "ecrNowApp";
+  private static final String SPRING_ACTIVE_PROFILE = "spring.active.profile";
+  private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
+
+  private static String activeProfile;
 
   // Map to hold Application Properties
   private static HashMap<String, String> appProps = new HashMap<>();
 
-  // Static block to load App properties file
   static {
+    loadProperties();
+  }
+
+  public static void loadProperties() {
+    String propertiesFileName = getPropertiesFileName();
+
     try (InputStream input =
-        CdaHeaderGenerator.class.getClassLoader().getResourceAsStream("application.properties")) {
+        CdaHeaderGenerator.class.getClassLoader().getResourceAsStream(propertiesFileName)) {
+      if (input != null) {
+        Properties properties = new Properties();
+        properties.load(input);
+        appProps.putAll((Map) properties);
 
-      Properties prop = new Properties();
-      prop.load(input);
-      prop.forEach(
-          (key, value) -> {
-            appProps.put((String) key, (String) value);
-          });
-
-    } catch (IOException ex) {
-      logger.error("Error while loading App properties files", ex);
+      } else {
+        logger.error("Properties file {} not found in classpath!", propertiesFileName);
+      }
+    } catch (IOException e) {
+      logger.error("Error loading properties file :{} ", e);
     }
+  }
+
+  private static String getPropertiesFileName() {
+    String activeProfile = System.getProperty(SPRING_ACTIVE_PROFILE);
+    return (activeProfile != null && !activeProfile.isEmpty())
+        ? "application-" + activeProfile + ".properties"
+        : DEFAULT_PROPERTIES_FILE;
   }
 
   public static String createCdaHeader(R4FhirData data, LaunchDetails details, Eicr ecr) {
@@ -305,62 +322,6 @@ public class CdaHeaderGenerator {
     return null;
   }
 
-  public static String getPractitionerXml(Practitioner pr) {
-
-    StringBuilder sb = new StringBuilder(500);
-
-    if (pr != null) {
-
-      Identifier npi =
-          CdaFhirUtilities.getIdentifierForSystem(
-              pr.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
-
-      if (npi != null) {
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
-      } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
-      }
-
-      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
-      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
-
-      sb.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-
-      List<HumanName> hns = pr.getName();
-      sb.append(CdaFhirUtilities.getNameXml(hns));
-
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-      sb.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-
-    } else {
-
-      sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
-
-      List<Address> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
-
-      List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
-
-      sb.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-
-      List<HumanName> hns = null;
-      sb.append(CdaFhirUtilities.getNameXml(hns));
-
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-      sb.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-    }
-
-    return sb.toString();
-  }
-
   public static String getLocationXml(Location loc, Organization org, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(500);
@@ -557,7 +518,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        sb.append(getPractitionerXml(pr));
+        sb.append(CdaFhirUtilities.getPractitionerXml(pr));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -566,7 +527,7 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundAuthor)) {
-      sb.append(getPractitionerXml(null));
+      sb.append(CdaFhirUtilities.getPractitionerXml(null));
     }
 
     // add reprsented organization if it exists
@@ -808,7 +769,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        practXml.append(getPractitionerXml(pr));
+        practXml.append(CdaFhirUtilities.getPractitionerXml(pr));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -817,7 +778,7 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundPrimaryPerformer)) {
-      practXml.append(getPractitionerXml(null));
+      practXml.append(CdaFhirUtilities.getPractitionerXml(null));
     }
 
     return practXml.toString();
@@ -849,7 +810,7 @@ public class CdaHeaderGenerator {
                 CdaGeneratorUtils.getXmlForStartElement(
                     CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-            sb.append(getPractitionerXml(p));
+            sb.append(CdaFhirUtilities.getPractitionerXml(p));
 
             sb.append(
                 CdaGeneratorUtils.getXmlForEndElement(

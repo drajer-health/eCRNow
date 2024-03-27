@@ -1245,6 +1245,25 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGetStringForDates() {
+    Pair<Date, TimeZone> onset =
+        new Pair<>(new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T00:00:00Z
+    Pair<Date, TimeZone> abatement =
+        new Pair<>(new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-26T00:00:00Z
+    Pair<Date, TimeZone> recorded =
+        new Pair<>(new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T18:00:00Z
+
+    String expected =
+        "Sat Feb 26 08:40:00 UTC 2022|Sat Feb 26 00:00:00 UTC 2022|Fri Feb 25 08:40:00 UTC 2022";
+    String result = CdaFhirUtilities.getStringForDates(recorded, onset, abatement);
+
+    assertEquals(expected, result);
+  }
+
+  @Test
   public void testGetCombinationStringForCodeSystem_WithValue() {
     CodeableConcept codeableConcept = new CodeableConcept();
     Coding coding = new Coding();
@@ -2144,5 +2163,59 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     assertThat(result).isNotEmpty();
     assertEquals(codingValue, result.get(0));
+  }
+
+  public void testGetStringForCodeableConcept_TextNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setText("Display-Text");
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Display-Text", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNull() {
+    CodeableConcept cd = new CodeableConcept();
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertThat(result).isBlank();
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNullAndCodingNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem("http://loinc.org");
+    coding.setCode("15074-8");
+    coding.setDisplay("Glucose [Moles/volume] in Blood");
+
+    cd.addCoding(coding);
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_WithEmptyValue() {
+
+    assertThat(CdaFhirUtilities.getStringForCodeableConcept(null)).isBlank();
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_CodingListWithMultipleCodings() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding1 = new Coding();
+    coding1.setSystem("http://loinc.org");
+    coding1.setCode("15074-8");
+    coding1.setDisplay("Glucose [Moles/volume] in Blood-1");
+
+    Coding coding2 = new Coding();
+    coding2.setSystem("http://loinc.org");
+    coding2.setCode("15074-8");
+    coding2.setDisplay("Glucose [Moles/volume] in Blood-2");
+
+    cd.addCoding(coding1);
+    cd.addCoding(coding2);
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood-1 | Glucose [Moles/volume] in Blood-2", result);
   }
 }

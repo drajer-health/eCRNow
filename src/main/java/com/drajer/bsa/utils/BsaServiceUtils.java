@@ -709,7 +709,11 @@ public class BsaServiceUtils {
   }
 
   public static String getEncodedTriggerMatchStatus(
-      CheckTriggerCodeStatusList ctc, KarProcessingData kd, String eicrId) {
+      CheckTriggerCodeStatusList ctc,
+      KarProcessingData kd,
+      String eicrId,
+      String actionId,
+      String actionType) {
     ObjectMapper mapper = new ObjectMapper();
 
     String state = null;
@@ -717,9 +721,8 @@ public class BsaServiceUtils {
 
       for (CheckTriggerCodeStatus ctcs : ctc.getStatuses()) {
 
-        ctcs.setActionId(
-            kd.getScheduledJobData().getActionId() + kd.getScheduledJobData().getJobId());
-        ctcs.setActionType(kd.getScheduledJobData().getActionType());
+        ctcs.setActionId(actionId);
+        ctcs.setActionType(BsaTypes.getActionType(actionType));
         ctcs.setActionStatus(BsaActionStatusType.COMPLETED);
         Set<String> eicrIds = new HashSet<String>();
         eicrIds.add(eicrId);

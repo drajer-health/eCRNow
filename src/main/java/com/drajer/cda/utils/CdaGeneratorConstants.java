@@ -22,6 +22,7 @@ public class CdaGeneratorConstants {
   public static final String START_XMLTAG = "<";
   public static final String END_XMLTAG = "/>";
   public static final String END_XMLTAG_NEWLN = "/>" + "\n";
+  public static final String NEW_LINE = "\n";
   public static final String FORWARD_SLASH = "/";
   public static final String BACKWARD_SLASH = "\\";
   public static final String DOUBLE_QUOTE = "\"";
@@ -153,6 +154,9 @@ public class CdaGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus";
   public static final String FHIR_RELIGIOUS_AFFILIATION_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation";
+  public static final String FHIR_OBSERVATION_ADDRESS_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension";
+
   public static final String FHIR_NF_URL = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String FHIR_ENCOUNTER_CLASS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ActCode";
@@ -691,7 +695,7 @@ public class CdaGeneratorConstants {
   public static final String TYPE_CODE_LOC = "LOC";
   public static final String TYPE_CODE_PRD = "PRD";
   public static final String US_REALM_CODE_VAL = "US";
-
+  public static final String TERR = "TERR";
   // Element Names
   public static final String REALM_CODE_EL_NAME = "realmCode";
   public static final String ENTRY_REL_NAME = "entryRelationship";
@@ -755,6 +759,7 @@ public class CdaGeneratorConstants {
   public static final String MANU_MAT_EL_NAME = "manufacturedMaterial";
   public static final String LOT_NUM_TEXT = "lotNumberText";
   public static final String PERF_EL_NAME = "performer";
+  public static final String DEFAULT_PERF_EL_TYPE_CODE = "PRF";
   public static final String ASSIGNED_ENTITY_EL_NAME = "assignedEntity";
   public static final String ASSOCIATED_ENTITY_EL_NAME = "associatedEntity";
   public static final String PARTICIPANT_EL_NAME = "participant";

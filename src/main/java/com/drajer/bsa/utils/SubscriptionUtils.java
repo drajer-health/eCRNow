@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
@@ -85,7 +86,7 @@ public class SubscriptionUtils {
   }
 
   public static NotificationContext getNotificationContext(
-      Bundle bundle, HttpServletRequest request, HttpServletResponse response) {
+      Bundle bundle, HttpServletRequest request, HttpServletResponse response, Boolean relaunch) {
 
     NotificationContext nc = null;
 
@@ -147,7 +148,12 @@ public class SubscriptionUtils {
           if (fhirServerUrl != null && (fhirServerUrl.length() > FHIR_SERVER_URL_MIN_LENGTH)) {
 
             nc = new NotificationContext();
-            nc.setTriggerEvent(namedEvent);
+
+            if (!relaunch) {
+              nc.setTriggerEvent(namedEvent);
+            } else {
+              nc.setTriggerEvent(namedEvent + "|" + UUID.randomUUID().toString());
+            }
             nc.setFhirServerBaseUrl(fhirServerUrl);
             nc.setPatientId(getPatientId(res));
             nc.setNotificationResourceId(res.getIdElement().getIdPart());

@@ -1,5 +1,6 @@
 package com.drajer.bsa.service.impl;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
@@ -507,6 +508,7 @@ public class KarParserImpl implements KarParser {
         action.setActionId(act.getId(), plan.getUrl());
         action.setScheduler(scheduler);
         action.setJsonParser(jsonParser);
+        action.setXmlParser(FhirContext.forR4().newXmlParser());
         action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
@@ -536,6 +538,7 @@ public class KarParserImpl implements KarParser {
     action.setActionId("check-response", plan.getUrl());
     action.setScheduler(scheduler);
     action.setJsonParser(jsonParser);
+    action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setRestTemplate(restTemplate);
     action.setIgnoreTimers(ignoreTimers);
     action.setType(ActionType.CHECK_RESPONSE);
@@ -698,6 +701,7 @@ public class KarParserImpl implements KarParser {
     }
 
     action.setJsonParser(this.jsonParser);
+    action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setIgnoreTimers(this.ignoreTimers);
 
     if (action.getType() == ActionType.EVALUATE_MEASURE) {
@@ -771,6 +775,7 @@ public class KarParserImpl implements KarParser {
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
           subAction.setJsonParser(jsonParser);
+          subAction.setXmlParser(FhirContext.forR4().newXmlParser());
           subAction.setRestTemplate(restTemplate);
           subAction.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));
