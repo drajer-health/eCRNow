@@ -2008,27 +2008,27 @@ public class CdaFhirUtilities {
   public static String getStringForDates(
       Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
 
-    String val = "";
+    StringBuilder val = new StringBuilder();
 
     if (recorded != null && recorded.getValue0() != null) {
-      val += recorded.getValue0().toString();
+      val.append(recorded.getValue0().toString());
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
     if (onset != null && onset.getValue0() != null) {
-      val += onset.getValue0().toString();
+      val.append('|').append(onset.getValue0().toString());
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
     if (abatement != null && abatement.getValue0() != null) {
-      val += abatement.getValue0().toString();
+      val.append('|').append(abatement.getValue0().toString());
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
-    return val;
+    return val.toString();
   }
 
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
