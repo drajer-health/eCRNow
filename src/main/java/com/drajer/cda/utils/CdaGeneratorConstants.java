@@ -22,6 +22,7 @@ public class CdaGeneratorConstants {
   public static final String START_XMLTAG = "<";
   public static final String END_XMLTAG = "/>";
   public static final String END_XMLTAG_NEWLN = "/>" + "\n";
+  public static final String NEW_LINE = "\n";
   public static final String FORWARD_SLASH = "/";
   public static final String BACKWARD_SLASH = "\\";
   public static final String DOUBLE_QUOTE = "\"";
@@ -754,6 +755,7 @@ public class CdaGeneratorConstants {
   public static final String MANU_MAT_EL_NAME = "manufacturedMaterial";
   public static final String LOT_NUM_TEXT = "lotNumberText";
   public static final String PERF_EL_NAME = "performer";
+  public static final String DEFAULT_PERF_EL_TYPE_CODE = "PRF";
   public static final String ASSIGNED_ENTITY_EL_NAME = "assignedEntity";
   public static final String ASSOCIATED_ENTITY_EL_NAME = "associatedEntity";
   public static final String PARTICIPANT_EL_NAME = "participant";

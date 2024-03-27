@@ -165,7 +165,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</assignedPerson>\r\n"
             + "";
-    String actualXml = CdaHeaderGenerator.getPractitionerXml(practitioner);
+    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner);
 
     assertThat(actualXml).isNotNull();
 

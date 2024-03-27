@@ -11,7 +11,10 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Immunization.ImmunizationPerformerComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,6 +200,10 @@ public class CdaImmunizationGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MAN_PROD_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CONSUMABLE_EL_NAME));
 
+        if (imm.hasPerformer()) {
+          sb.append(getXmlForPerformer(imm.getPerformer(), data));
+        }
+
         // End Tags for Entries
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.MED_ACT_EL_NAME));
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -208,6 +215,28 @@ public class CdaImmunizationGenerator {
 
     } else {
       sb.append(generateEmptyImmunizations());
+    }
+
+    return sb.toString();
+  }
+
+  public static String getXmlForPerformer(
+      List<ImmunizationPerformerComponent> izcs, R4FhirData data) {
+
+    StringBuilder sb = new StringBuilder(400);
+    String functionCode = "";
+
+    if (izcs != null) {
+
+      for (ImmunizationPerformerComponent perf : izcs) {
+
+        Practitioner pract = data.getPractitionerById(perf.getActor().getId());
+        if (ResourceType.fromCode(perf.getActor().getType()) == ResourceType.Practitioner
+            && pract != null) {
+
+          sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode));
+        }
+      }
     }
 
     return sb.toString();

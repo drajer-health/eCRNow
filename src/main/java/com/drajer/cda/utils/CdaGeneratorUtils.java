@@ -408,6 +408,23 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET;
   }
 
+  public static String getXmlForNullCDWithText(String cdName, String code, String text) {
+    return CdaGeneratorConstants.START_XMLTAG
+        + cdName
+        + CdaGeneratorConstants.SPACE
+        + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + code
+        + CdaGeneratorConstants.DOUBLE_QUOTE
+        + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+        + CdaGeneratorConstants.NEW_LINE
+        + getXmlForStartElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + text
+        + getXmlForEndElement(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME)
+        + CdaGeneratorConstants.NEW_LINE
+        + getXmlForEndElement(cdName);
+  }
+
   public static String getXmlForII(String root, String ext) {
     return CdaGeneratorConstants.START_XMLTAG
         + CdaGeneratorConstants.ID_ROOT

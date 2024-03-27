@@ -321,62 +321,6 @@ public class CdaHeaderGenerator {
     return null;
   }
 
-  public static String getPractitionerXml(Practitioner pr) {
-
-    StringBuilder sb = new StringBuilder(500);
-
-    if (pr != null) {
-
-      Identifier npi =
-          CdaFhirUtilities.getIdentifierForSystem(
-              pr.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
-
-      if (npi != null) {
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
-      } else {
-        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
-      }
-
-      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
-      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
-
-      sb.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-
-      List<HumanName> hns = pr.getName();
-      sb.append(CdaFhirUtilities.getNameXml(hns));
-
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-      sb.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-
-    } else {
-
-      sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
-
-      List<Address> addrs = null;
-      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
-
-      List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
-
-      sb.append(
-          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
-
-      List<HumanName> hns = null;
-      sb.append(CdaFhirUtilities.getNameXml(hns));
-
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
-      sb.append(
-          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
-    }
-
-    return sb.toString();
-  }
-
   public static String getLocationXml(Location loc, Organization org, LaunchDetails details) {
 
     StringBuilder sb = new StringBuilder(500);
@@ -573,7 +517,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        sb.append(getPractitionerXml(pr));
+        sb.append(CdaFhirUtilities.getPractitionerXml(pr));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -582,7 +526,7 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundAuthor)) {
-      sb.append(getPractitionerXml(null));
+      sb.append(CdaFhirUtilities.getPractitionerXml(null));
     }
 
     //  add reprsented organization if it exists
@@ -824,7 +768,7 @@ public class CdaHeaderGenerator {
         logger.info(
             "Found {} Practitioner with valid type, adding XML for Practitioner", practs.size());
         Practitioner pr = practs.get(0);
-        practXml.append(getPractitionerXml(pr));
+        practXml.append(CdaFhirUtilities.getPractitionerXml(pr));
       } else {
         logger.info("Didn't find a Practitioner with valid type");
       }
@@ -833,7 +777,7 @@ public class CdaHeaderGenerator {
     }
 
     if (Boolean.FALSE.equals(foundPrimaryPerformer)) {
-      practXml.append(getPractitionerXml(null));
+      practXml.append(CdaFhirUtilities.getPractitionerXml(null));
     }
 
     return practXml.toString();
@@ -865,7 +809,7 @@ public class CdaHeaderGenerator {
                 CdaGeneratorUtils.getXmlForStartElement(
                     CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
 
-            sb.append(getPractitionerXml(p));
+            sb.append(CdaFhirUtilities.getPractitionerXml(p));
 
             sb.append(
                 CdaGeneratorUtils.getXmlForEndElement(

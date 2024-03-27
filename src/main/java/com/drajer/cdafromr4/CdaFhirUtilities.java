@@ -38,6 +38,8 @@ import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
@@ -1591,15 +1593,12 @@ public class CdaFhirUtilities {
       Boolean first = true;
       for (Coding c : cds) {
 
-        if (c.hasDisplay()) {
-          if (first) {
-            val += c.getDisplay();
-          } else {
-            val += " | " + c.getDisplay();
-          }
-
-          first = false;
+        if (first) {
+          val += getStringForCoding(c);
+        } else {
+          val += " | " + getStringForCoding(c);
         }
+        first = false;
       }
     }
 
@@ -2572,8 +2571,7 @@ public class CdaFhirUtilities {
       return "completed";
     } else if (val.equalsIgnoreCase("entered-in-error")) {
       return "nullified";
-    } else if (val.equalsIgnoreCase("stopped")
-    		   || val.equalsIgnoreCase("not-done") ) {
+    } else if (val.equalsIgnoreCase("stopped") || val.equalsIgnoreCase("not-done")) {
       return "aborted";
     } else if (val.equalsIgnoreCase("on-hold")) {
       return "suspended";
@@ -2655,19 +2653,141 @@ public class CdaFhirUtilities {
     return addrString.toString();
   }
 
-  public static String getSingleCodingXmlForCodings(List<Coding> coding, String elName) {
+  public static String getSingleCodingXmlFromCodings(List<Coding> coding, String elName) {
+
     StringBuilder addrString = new StringBuilder(200);
 
+    StringBuilder altXml = new StringBuilder(200);
+
     if (coding != null && !coding.isEmpty()) {
+
       for (Coding c : coding) {
+
         String xml = getSingleCodingXml(c, elName, "");
+
         if (!xml.isEmpty()) {
           addrString.append(xml);
-          return addrString.toString();
+          break;
         }
       }
     }
 
     return addrString.toString();
+  }
+
+  public static Object getPerformerXml(Practitioner pract, String functionCode) {
+
+    StringBuilder s = new StringBuilder(200);
+
+    if (pract != null) {
+
+      s.append(
+          CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+              CdaGeneratorConstants.PERF_EL_NAME, CdaGeneratorConstants.DEFAULT_PERF_EL_TYPE_CODE));
+
+      s.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+
+      s.append(getPractitionerXml(pract));
+      s.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+      s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PERF_EL_NAME));
+    }
+
+    return s;
+  }
+
+  public static String getPractitionerXml(Practitioner pr) {
+
+    StringBuilder sb = new StringBuilder(500);
+
+    if (pr != null) {
+
+      Identifier npi =
+          CdaFhirUtilities.getIdentifierForSystem(
+              pr.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+
+      if (npi != null) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+      } else {
+        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
+      }
+
+      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
+      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+      List<HumanName> hns = pr.getName();
+      sb.append(CdaFhirUtilities.getNameXml(hns));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+
+    } else {
+
+      sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
+
+      List<Address> addrs = null;
+      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
+
+      List<ContactPoint> cps = null;
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+      List<HumanName> hns = null;
+      sb.append(CdaFhirUtilities.getNameXml(hns));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+    }
+
+    return sb.toString();
+  }
+
+  public static String getStringForObservationsWithComponents(Observation obs) {
+
+    String result = "";
+
+    if (obs != null) {
+      // Get the text from the code
+      result += getStringForCodeableConcept(obs.getCode());
+
+      if (obs.hasValue()) {
+        result += " | " + " Value : " + getStringForType(obs.getValue());
+      }
+
+      if (obs.hasComponent()) {
+
+        List<ObservationComponentComponent> comps = obs.getComponent();
+
+        int i = 1;
+        for (ObservationComponentComponent comp : comps) {
+
+          result +=
+              " Component "
+                  + Integer.toString(i)
+                  + " : "
+                  + getStringForCodeableConcept(comp.getCode());
+
+          if (comp.hasValue()) {
+
+            result += " | " + " Value : " + getStringForType(comp.getValue());
+          }
+
+          i++;
+        }
+      }
+    }
+
+    return result;
   }
 }

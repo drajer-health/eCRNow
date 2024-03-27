@@ -165,9 +165,7 @@ public class CdaSocialHistoryGenerator {
               CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
               CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
 
-          String display =
-              CdaFhirUtilities.getCombinationStringForCodeSystem(
-                  obs.getCode(), obs.getValue(), CdaGeneratorConstants.FHIR_SNOMED_URL, true);
+          String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
 
           bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
 
@@ -252,7 +250,9 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
+    // Add components
     sb.append(generateParticipant(obs));
+
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -275,7 +275,7 @@ public class CdaSocialHistoryGenerator {
   }
 
   private static boolean isValidObservationComponent(ObservationComponentComponent oc) {
-    return (oc.hasCode() && oc.getCode().hasCoding());
+    return (oc.hasCode() && oc.hasValue());
   }
 
   private static String buildParticipantXml(ObservationComponentComponent oc) {
@@ -286,11 +286,17 @@ public class CdaSocialHistoryGenerator {
         .append(CdaGeneratorUtils.getXmlForParticipantRole(CdaGeneratorConstants.TERR));
 
     if (oc.hasValue() && oc.getValue() instanceof CodeableConcept) {
+
       CodeableConcept cc = (CodeableConcept) oc.getValue();
+
       if (cc.hasCoding()) {
         participantXml.append(
-            CdaFhirUtilities.getSingleCodingXmlForCodings(
+            CdaFhirUtilities.getSingleCodingXmlFromCodings(
                 cc.getCoding(), CdaGeneratorConstants.CODE_EL_NAME));
+      } else if (cc.hasText()) {
+        participantXml.append(
+            CdaGeneratorUtils.getXmlForNullCDWithText(
+                CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cc.getText()));
       }
     }
 
