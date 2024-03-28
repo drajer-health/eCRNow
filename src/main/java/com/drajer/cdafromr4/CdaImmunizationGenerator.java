@@ -14,6 +14,7 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationPerformerComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,19 +227,25 @@ public class CdaImmunizationGenerator {
     StringBuilder sb = new StringBuilder(400);
     String functionCode = "";
 
-    if (izcs != null) {
-
+    if (izcs != null & data != null) {
       for (ImmunizationPerformerComponent perf : izcs) {
+        Reference actor = perf.getActor();
 
-        Practitioner pract = data.getPractitionerById(perf.getActor().getId());
-        if (ResourceType.fromCode(perf.getActor().getType()) == ResourceType.Practitioner
-            && pract != null) {
+        if (actor != null
+            && actor.hasReferenceElement()
+            && actor.getReferenceElement().hasResourceType()
+            && ResourceType.fromCode(actor.getReferenceElement().getResourceType())
+                == ResourceType.Practitioner) {
 
-          sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode));
+          Practitioner pract = data.getPractitionerById(actor.getReferenceElement().getIdPart());
+
+          if (pract != null) {
+            sb.append(CdaFhirUtilities.getPerformerXml(pract, functionCode));
+            return sb.toString();
+          }
         }
       }
     }
-
     return sb.toString();
   }
 
