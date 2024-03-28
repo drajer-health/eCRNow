@@ -1394,7 +1394,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
         for (ImmunizationPerformerComponent perf : perfs) {
 
-          if (ResourceType.fromCode(perf.getActor().getType()) == ResourceType.Practitioner) {
+          if (perf.hasActor() && isPractitioner(perf.getActor())) {
             getAndAddSecondaryResource(
                 kd, perf.getActor(), ResourceType.Practitioner, genericClient, context);
           }
@@ -1662,5 +1662,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
     }
 
     return queryToExecute;
+  }
+
+  private boolean isPractitioner(Reference actor) {
+    if (actor.hasReferenceElement()
+        && actor.getReferenceElement().hasResourceType()
+        && ResourceType.fromCode(actor.getReferenceElement().getResourceType())
+            == ResourceType.Practitioner) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -99,7 +99,7 @@ public class BaseGeneratorTest {
     List<Medication> medications = new ArrayList<>();
     List<MedicationAdministration> medicationAdministrations = new ArrayList<>();
     List<Immunization> immunizations = new ArrayList<>();
-
+    List<Practitioner> practitionerList = new ArrayList<>();
     List<ServiceRequest> serviceRequests = new ArrayList<>();
     List<DiagnosticReport> diagnosticReports = new ArrayList<>();
     List<BundleEntryComponent> entries = bundle.getEntry();
@@ -117,6 +117,7 @@ public class BaseGeneratorTest {
             case Practitioner:
               Practitioner practitioner = (Practitioner) ent.getResource();
               r4FhirData.setPractitioner(practitioner);
+              practitionerList.add(practitioner);
               break;
             case Location:
               Location location = (Location) ent.getResource();
@@ -163,7 +164,7 @@ public class BaseGeneratorTest {
     r4FhirData.setMedicationAdministrations(medicationAdministrations);
     r4FhirData.setDiagReports(diagnosticReports);
     r4FhirData.setServiceRequests(serviceRequests);
-
+    r4FhirData.setPractitionersList(practitionerList);
     return r4FhirData;
   }
 
