@@ -107,7 +107,12 @@ public class KarParserImpl implements KarParser {
   private static final String VARIABLE_EXTENSION_URL =
       "http://hl7.org/fhir/StructureDefinition/variable";
 
+  private static final String US_SPECIFICATION_LIBRARY_PROFILE =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library";
+
   private static final String RCTC_DEFAULT_SYSTEM = "urn:ietf:rfc:3986";
+
+  private static final String VERSION3_ERSD = "3.";
 
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
@@ -371,6 +376,23 @@ public class KarParserImpl implements KarParser {
           logger.info(" Processing Library");
 
           Library lib = (Library) comp.getResource();
+
+          // Add Version
+          if (lib.hasMeta() && lib.getMeta().hasProfile() && lib.getMeta().hasVersionId()) {
+
+            List<CanonicalType> profiles = lib.getMeta().getProfile();
+
+            for (CanonicalType prof : profiles) {
+
+              if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
+                logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
+                art.setKarVersion(lib.getMeta().getVersionId());
+                break;
+              }
+            }
+          }
+
           if (art.getKarName() == null) {
             art.setKarName(lib.getName());
           }

@@ -123,8 +123,12 @@ public class CdaGeneratorConstants {
   public static final String FHIR_DATA_ABSENT_REASON_EXT_URL =
       "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
 
+  public static final String SDTC_DETAILED_RACE_CODE = "sdtc:raceCode";
+  public static final String SDTC_DETAILED_ETHNIC_GROUP_CODE = "sdtc:ethnicGroupCode";
+
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
+  public static final String OMB_ETHNICITY_DETAILED_URL = "detailed";
   public static final String FHIR_NPI_URL = "http://hl7.org/fhir/sid/us-npi";
   public static final String FHIR_CPT_URL = "http://www.ama-assn.org/go/cpt";
   public static final String FHIR_SNOMED_URL = "http://snomed.info/sct";
@@ -712,6 +716,7 @@ public class CdaGeneratorConstants {
   public static final String ADDR_EL_NAME = "addr";
   public static final String ST_ADDR_LINE_EL_NAME = "streetAddressLine";
   public static final String CITY_EL_NAME = "city";
+  public static final String COUNTY_EL_NAME = "county";
   public static final String STATE_EL_NAME = "state";
   public static final String COUNTRY_EL_NAME = "country";
   public static final String POSTAL_CODE_EL_NAME = "postalCode";

@@ -668,7 +668,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       resource = (Resource) (genericClient.read().resource(resourceName).withUrl(url).execute());
 
-      if (resource != null && resource.getResourceType() != ResourceType.OperationOutcome) {
+      if (resource != null
+          && resource.getResourceType() != ResourceType.OperationOutcome
+          && isValidResource(resource)) {
         populateSecondaryResources(
             genericClient, context, resource, data, resource.getResourceType());
       }
@@ -727,6 +729,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       resource =
           (Resource) (genericClient.read().resource(resourceName).withId(resourceId).execute());
+
+      if (!isValidResource(resource)) resource = null;
 
     } catch (BaseServerResponseException responseException) {
       if (responseException.getOperationOutcome() != null) {
@@ -977,7 +981,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
   private String createSearchUrl(KarProcessingData data, String queryToExecute) {
 
     String finalQuery = data.getNotificationContext().getFhirServerBaseUrl() + "/" + queryToExecute;
-    logger.info("Final serach Query URL:{}", finalQuery);
+    logger.info("Final search Query URL:{}", finalQuery);
 
     return finalQuery;
   }
@@ -1249,7 +1253,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
     } else if (res.getResourceType() == ResourceType.Medication) {
 
-      // Include hte resource for now.
+      // Include the resource for now.
       Medication m = (Medication) res;
 
     } else if (res.getResourceType() == ResourceType.OperationOutcome) {
@@ -1269,9 +1273,9 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
 
       for (Coding c : cds) {
 
-        if (c.getSystem() != null
+        if (c.hasSystem()
             && c.getSystem().contentEquals(system)
-            && c.getCode() != null
+            && c.hasCode()
             && c.getCode().contentEquals(code)) {
           return true;
         }
