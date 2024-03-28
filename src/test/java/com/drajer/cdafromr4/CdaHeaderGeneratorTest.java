@@ -166,6 +166,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
             + "<state>Vic</state>\r\n"
             + "<postalCode>3999</postalCode>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
@@ -178,8 +179,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</associatedPerson>\r\n"
             + "</associatedEntity>\r\n"
-            + "</participant>\r\n"
-            + "";
+            + "</participant>";
 
     String actualXml = CdaHeaderGenerator.getParticipantXml(contactComponents.get(0), coding);
 
@@ -888,6 +888,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
             + "<state>Vic</state>\r\n"
             + "<postalCode>3999</postalCode>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
@@ -905,8 +906,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</languageCommunication>\r\n"
             + "</patient>\r\n"
             + "</patientRole>\r\n"
-            + "</recordTarget>\r\n"
-            + "";
+            + "</recordTarget>\r\n";
 
     String actualXml =
         CdaHeaderGenerator.getPatientDetails(r4FhirData1.getPatient(), launchDetails);
