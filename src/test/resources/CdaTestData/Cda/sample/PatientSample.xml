@@ -233,7 +233,7 @@
 <td>
 <content ID="problemStatus1">Active</content>
 </td>
-<td> <content ID="problemDate1">Tue Sep 20 10:15:07 UTC 2022Tue Sep 20 00:00:00 UTC 2022Unknown</content> </td>
+<td> <content ID="problemDate1">Tue Sep 20 10:15:07 UTC 2022|Tue Sep 20 00:00:00 UTC 2022|Unknown</content> </td>
 </tr>
 <tr>
 <td>
@@ -242,7 +242,7 @@
 <td>
 <content ID="problemStatus2">Active</content>
 </td>
-<td> <content ID="problemDate2">Tue Sep 20 10:16:12 UTC 2022Tue Sep 20 00:00:00 UTC 2022Unknown</content> </td>
+<td> <content ID="problemDate2">Tue Sep 20 10:16:12 UTC 2022|Tue Sep 20 00:00:00 UTC 2022|Unknown</content> </td>
 </tr>
 <tr>
 <td>
@@ -251,7 +251,7 @@
 <td>
 <content ID="problemStatus3">Active</content>
 </td>
-<td> <content ID="problemDate3">Tue Sep 20 10:16:26 UTC 2022Tue Sep 20 00:00:00 UTC 2022Unknown</content> </td>
+<td> <content ID="problemDate3">Tue Sep 20 10:16:26 UTC 2022|Tue Sep 20 00:00:00 UTC 2022|Unknown</content> </td>
 </tr>
 </tbody>
 </table>
