@@ -46,7 +46,7 @@ encounter=/Encounter/{{context.encounterId}}
 conditions=/Condition?patient=Patient/{{context.patientId}}&clinical-status=http://terminology.hl7.org/CodeSystem/condition-clinical|active
 labTests=/Observation?patient=Patient/{{context.patientId}}&category=http://terminology.hl7.org/CodeSystem/observation-category|laboratory&date=ge{{context.encounterStartDate}
 
-# 3. Configuring the custom queries # 
+# 3. Configuring the custom queries for ERSDv2 # 
 
 In order to specify the custom queries, the following variable is used
 
@@ -76,7 +76,66 @@ Sample_ERSD.json
     ...
 }
 
-# 4. Leveraging _include parameter in custom queries to improve performance
+# 4. Configuring the custom queries for ERSDv3 # 
+
+In order to specify the custom queries, the following variable is used
+
+custom-query.directory
+
+The directory is the location where custom query files can be placed.
+One custom query file can be created for each ERSD file.
+
+The file naming convention should conform to the following:
+
+[Bundle Id of the ERSD file ]-[SpecificationLibrary.meta.versionId].queries
+
+## Library.meta.versionId ##
+
+The Library resource used is the SpecificationLibrary present in the ERSD.
+The SpecificationLibrary is identified using hte Meta.profile element which should be equal to "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library"
+The Library.meta.versionId is "3.0.0" below.
+
+Sample SpecificationLibrary resource from ERSD: 
+{
+"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+            "resource": {
+                "description": "Defines the asset-collection library containing the US Public Health specification assets.",
+                "experimental": false,
+                "id": "SpecificationLibrary",
+                "meta": {
+                    "profile": [
+                        "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library"
+                    ],
+                    "versionId": "3.0.0"     ### This is the version Id
+                },
+}
+
+
+## Bundle Id ##
+
+The Bundle Id for the ERSD json below is "rctc-release-2022-07-13-Bundle-rctc"
+
+Sample_ERSD.json
+{
+    "resourceType": "Bundle",
+    "id": "rctc-release-2022-07-13-Bundle-rctc",  ### This is the Bundle Id
+    "meta":
+    {
+        "versionId": "1",                         
+        "lastUpdated": "2022-07-18T21:32:25.000+00:00",
+        "source": "#fsOSEUhB1HVhhCy9"
+    },
+    ...
+}
+
+
+For the above ERSD and Library resource found in the ERSD, the following custom query file should be created.
+
+rctc-release-2022-07-13-Bundle-rctc-3.0.0.queries
+
+
+
+# 5. Leveraging _include parameter in custom queries to improve performance
 
 In order to trigger and create an eICR, the eCRNow App makes FHIR queries to the EHR and receives data for processing.
 In doing so for certain types of Resources, related resource data has to be extracted from the EHR. These related resources are 

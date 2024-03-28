@@ -437,7 +437,7 @@ public class CdaFhirUtilities {
       }
 
       // City
-      if (!StringUtils.isEmpty(addr.getCity())) {
+      if (addr.hasCity() && !StringUtils.isEmpty(addr.getCity())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.CITY_EL_NAME, addr.getCity()));
       } else {
@@ -446,8 +446,15 @@ public class CdaFhirUtilities {
                 CdaGeneratorConstants.CITY_EL_NAME, CdaGeneratorConstants.NF_NI));
       }
 
+      // County
+      if (addr.hasDistrict() && !StringUtils.isEmpty(addr.getDistrict())) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(
+                CdaGeneratorConstants.COUNTY_EL_NAME, addr.getDistrict()));
+      }
+
       // State
-      if (!StringUtils.isEmpty(addr.getState())) {
+      if (addr.hasState() && !StringUtils.isEmpty(addr.getState())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.STATE_EL_NAME, addr.getState()));
       } else {
@@ -457,7 +464,7 @@ public class CdaFhirUtilities {
       }
 
       // Postal Code
-      if (!StringUtils.isEmpty(addr.getPostalCode())) {
+      if (addr.hasPostalCode() && !StringUtils.isEmpty(addr.getPostalCode())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(
                 CdaGeneratorConstants.POSTAL_CODE_EL_NAME, addr.getPostalCode()));
@@ -468,7 +475,7 @@ public class CdaFhirUtilities {
       }
 
       // Country
-      if (!StringUtils.isEmpty(addr.getCountry())) {
+      if (addr.hasCountry() && !StringUtils.isEmpty(addr.getCountry())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(
                 CdaGeneratorConstants.COUNTRY_EL_NAME, addr.getCountry()));

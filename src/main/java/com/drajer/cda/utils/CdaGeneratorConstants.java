@@ -716,6 +716,7 @@ public class CdaGeneratorConstants {
   public static final String ADDR_EL_NAME = "addr";
   public static final String ST_ADDR_LINE_EL_NAME = "streetAddressLine";
   public static final String CITY_EL_NAME = "city";
+  public static final String COUNTY_EL_NAME = "county";
   public static final String STATE_EL_NAME = "state";
   public static final String COUNTRY_EL_NAME = "country";
   public static final String POSTAL_CODE_EL_NAME = "postalCode";
