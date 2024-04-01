@@ -205,7 +205,7 @@ public class R3ToR2DataConverterUtils {
             practitioners.add((Practitioner) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setPractitionersList(practitioners);
+          r4FhirData.addPractitionersList(practitioners);
         }
       } else if (type.contentEquals(ResourceType.Condition.toString())) {
 
@@ -236,8 +236,8 @@ public class R3ToR2DataConverterUtils {
               pregnancyConditions.add(c);
             }
           }
-          r4FhirData.setPregnancyConditions(pregnancyConditions);
-          r4FhirData.setConditions(conditionList);
+          r4FhirData.addPregnancyConditions(pregnancyConditions);
+          r4FhirData.addConditions(conditionList);
           r4FhirData.addEncounterDiagnosisConditions(encDiagList);
         }
       } else if (type.contentEquals(ResourceType.Immunization.toString())) {
@@ -310,7 +310,7 @@ public class R3ToR2DataConverterUtils {
             medList.add((Medication) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setMedicationList(medList);
+          r4FhirData.addMedicationList(medList);
         }
       } else if (type.contentEquals(ResourceType.ServiceRequest.toString())) {
 
@@ -322,7 +322,7 @@ public class R3ToR2DataConverterUtils {
             servReqList.add((ServiceRequest) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setServiceRequests(servReqList);
+          r4FhirData.addServiceRequests(servReqList);
         }
       } else if (type.contentEquals(ResourceType.Observation.toString())) {
 
@@ -351,6 +351,7 @@ public class R3ToR2DataConverterUtils {
             vitalObsList.add((Observation) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
+          r4FhirData.setVitalObs(vitalObsList);
         }
 
         logger.info(" Setting up the SocialHistory for R4FhirData ");
@@ -451,18 +452,18 @@ public class R3ToR2DataConverterUtils {
             }
           }
 
-          r4FhirData.setOccupationObs(occObs);
-          r4FhirData.setTravelObs(travelObs);
-          r4FhirData.setPregnancyObs(pregnancyObs);
-          r4FhirData.setPregnancyStatusObs(pregnancyStatusObs);
-          r4FhirData.setLmpObs(lmpObs);
-          r4FhirData.setPostPartumObs(postPartumObs);
-          r4FhirData.setPregnancyOutcomeObs(pregnancyOutcomeObs);
-          r4FhirData.setHomelessObs(homelessObs);
-          r4FhirData.setDisabilityObs(disabilityObs);
-          r4FhirData.setVaccineCredObs(vaccineCredObs);
-          r4FhirData.setResidencyObs(residencyObs);
-          r4FhirData.setNationalityObs(nationalityObs);
+          r4FhirData.addOccupationObs(occObs);
+          r4FhirData.addTravelObs(travelObs);
+          r4FhirData.addPregnancyObs(pregnancyObs);
+          r4FhirData.addPregnancyStatusObs(pregnancyStatusObs);
+          r4FhirData.addLmpObs(lmpObs);
+          r4FhirData.addPostPartumObs(postPartumObs);
+          r4FhirData.addPregnancyOutcomeObs(pregnancyOutcomeObs);
+          r4FhirData.addHomelessObs(homelessObs);
+          r4FhirData.addDisabilityObs(disabilityObs);
+          r4FhirData.addVaccineCredObs(vaccineCredObs);
+          r4FhirData.addResidencyObs(residencyObs);
+          r4FhirData.addNationalityObs(nationalityObs);
         }
 
       } else if (type.contentEquals(ResourceType.DiagnosticReport.toString())) {
@@ -475,7 +476,7 @@ public class R3ToR2DataConverterUtils {
             diagReportList.add((DiagnosticReport) r);
             data.addEntry(new BundleEntryComponent().setResource(r));
           }
-          r4FhirData.setDiagReports(diagReportList);
+          r4FhirData.addDiagReports(diagReportList);
         }
       } else {
         logger.error(

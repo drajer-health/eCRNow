@@ -197,7 +197,7 @@ public class RrReceiverImpl implements RrReceiver {
               EicrTypes.RrProcessingStatus.HEALTHCARE_SETTING_NOT_FOUND_FOR_RR.toString());
         }
 
-        // Save the state, no matter what so that they can be reporcessed.
+        // Save the state, no matter what so that they can be reprocessed.
         phDao.saveOrUpdate(phm);
 
       } else {
