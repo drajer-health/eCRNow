@@ -434,9 +434,6 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
     }
 
-    // End Tag for Entry Relationship
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-
     DateTimeType estimatedDate = null;
 
     if (cond.getOnset() instanceof Period) {
@@ -460,6 +457,7 @@ public class CdaSocialHistoryGenerator {
 
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
     }
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
     return sb.toString();
   }

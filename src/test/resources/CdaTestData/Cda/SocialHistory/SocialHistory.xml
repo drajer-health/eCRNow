@@ -130,7 +130,6 @@
 <high nullFlavor="NI"/>
 </effectiveTime>
 <value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
-</observation>
 <entryRelationship typeCode="REFR">
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
@@ -139,6 +138,7 @@
 <value xsi:type="TS" value="20240630"/>
 </observation>
 </entryRelationship>
+</observation>
 </entry>
 <entry>
 <observation classCode="OBS" moodCode="EVN">
@@ -150,7 +150,6 @@
 <high value="20240630000000+0000"/>
 </effectiveTime>
 <value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
-</observation>
 <entryRelationship typeCode="REFR">
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
@@ -159,6 +158,7 @@
 <value xsi:type="TS" value="20240630"/>
 </observation>
 </entryRelationship>
+</observation>
 </entry>
 <entry>
 <observation classCode="OBS" moodCode="EVN">
