@@ -107,7 +107,8 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     int row = 1;
 
     String actualXml =
-        CdaResultGenerator.getXmlForComponents(report, allObs, launchDetails, contentId, row);
+        CdaResultGenerator.getXmlForComponents(
+            report, allObs, launchDetails, contentId, row, r4FhirData);
 
     assertNotNull(actualXml);
     assertFalse(actualXml.isEmpty());
