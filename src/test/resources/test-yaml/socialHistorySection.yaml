@@ -92,7 +92,7 @@ testCase:
         #'tbody/tr[6]/td[1]/content': "Travel History"
         #'tbody/tr[6]/td[2]/content': "Travel abroad within past thirty days (finding)-No recent travel"
       - xPath: "entry"
-        count: 1
+        count: 2
       - xPath: "entry[1]/observation/templateId"
         count: 1
       - xPath: "entry[1]/observation/id"
@@ -115,9 +115,9 @@ testCase:
         "value/@codeSystemName": "Administrative Gender"
         "value/@displayName": "Male"
       - xPath: "entry[2]/observation/templateId"
-        count: 0
+        count: 1
       - xPath: "entry[2]/observation/id"
-        count: 0
+        count: 1
       - xPath: "entry[2]/observation/"
 #        "@classCode": "OBS"
 #        "@moodCode": "EVN"

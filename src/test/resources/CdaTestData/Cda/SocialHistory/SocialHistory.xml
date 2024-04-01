@@ -123,18 +123,42 @@
 <entry>
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
-<code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
 <statusCode code="completed"/>
-<value xsi:type="TS" value="20240630"/>
+<effectiveTime>
+<low value="20240101"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
 </observation>
-</entry>
-<entry>
+<entryRelationship typeCode="REFR">
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
 <code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
 <statusCode code="completed"/>
 <value xsi:type="TS" value="20240630"/>
 </observation>
+</entryRelationship>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high value="20240630000000+0000"/>
+</effectiveTime>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+</observation>
+<entryRelationship typeCode="REFR">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
+<statusCode code="completed"/>
+<value xsi:type="TS" value="20240630"/>
+</observation>
+</entryRelationship>
 </entry>
 <entry>
 <observation classCode="OBS" moodCode="EVN">

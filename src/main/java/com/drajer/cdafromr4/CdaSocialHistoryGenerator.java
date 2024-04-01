@@ -385,6 +385,58 @@ public class CdaSocialHistoryGenerator {
 
     StringBuilder sb = new StringBuilder();
 
+    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PREGNANCY_OBS_TEMPLATE_ID));
+
+    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.OBS_ASSERTION,
+            CdaGeneratorConstants.OBS_ASSERTION_CODESYSTEM,
+            CdaGeneratorConstants.OBS_ASSERTION_CODESYSTEM_NAME,
+            CdaGeneratorConstants.OBS_ASSERTION_DISPLAY));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(cond.getOnset());
+    Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForIVLWithTS(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, false));
+
+    List<CodeableConcept> cds = new ArrayList<>();
+    cds.add(cond.getCode());
+
+    String codeXml =
+        CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
+            cds,
+            CdaGeneratorConstants.VAL_EL_NAME,
+            true,
+            CdaGeneratorConstants.FHIR_SNOMED_URL,
+            false);
+
+    if (!codeXml.isEmpty()) {
+      sb.append(codeXml);
+    } else {
+      sb.append(
+          CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
+    }
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+
     DateTimeType estimatedDate = null;
 
     if (cond.getOnset() instanceof Period) {
@@ -398,19 +450,18 @@ public class CdaSocialHistoryGenerator {
       }
     }
 
-    if (estimatedDate == null) {
-      return sb.toString();
+    if (estimatedDate != null) {
 
-    } else {
-      // Generate the entry
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+      // Generate the Estimate Delivery entry
+      sb.append(
+          CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_REFR_CODE));
 
       sb.append(generateXmlforEstimatedDeliveryDate(estimatedDate));
 
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-
-      return sb.toString();
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
     }
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    return sb.toString();
   }
 
   public static String generateBirthSexEntry(CodeType birthSex) {
