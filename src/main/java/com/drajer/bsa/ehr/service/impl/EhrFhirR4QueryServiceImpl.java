@@ -368,7 +368,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       ResourceType type = ResourceType.valueOf(entry.getType());
       logger.info(" Fetching Resource of type {}", type);
 
-      //  This is for backwards compatability with the old matching input / output ids
+      // This is for backwards compatability with the old matching input / output ids
       Set<Resource> outputResources = kd.getOutputDataById(id);
       if (outputResources != null && !outputResources.isEmpty()) {
         addFilteredResources(kd, entry, id, type, outputResources);
@@ -1404,6 +1404,21 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
           }
         }
       }
+    } else if (res != null && rType == ResourceType.Observation) {
+
+      Observation observation = (Observation) res;
+
+      if (observation.hasPerformer()) {
+
+        List<Reference> performers = observation.getPerformer();
+        for (Reference performer : performers) {
+
+          if (isPractitioner(performer)) {
+            getAndAddSecondaryResource(
+                kd, performer, ResourceType.Practitioner, genericClient, context);
+          }
+        }
+      }
     } else if (res != null && rType == ResourceType.DiagnosticReport) {
 
       DiagnosticReport report = (DiagnosticReport) res;
@@ -1433,8 +1448,24 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
             logger.info(
                 " Adding secondary Observation resource for Diagnostic Report with id {}",
                 secRes.getId());
+
             kd.addResourceByType(secRes.getResourceType(), secRes);
             kd.storeResourceById(r.getReferenceElement().getIdPart(), secRes);
+            //
+
+            Observation observation = (Observation) secRes;
+
+            if (observation.hasPerformer()) {
+
+              List<Reference> performers = observation.getPerformer();
+              for (Reference performer : performers) {
+
+                if (isPractitioner(performer)) {
+                  getAndAddSecondaryResource(
+                      kd, performer, ResourceType.Practitioner, genericClient, context);
+                }
+              }
+            }
           }
         }
       }
