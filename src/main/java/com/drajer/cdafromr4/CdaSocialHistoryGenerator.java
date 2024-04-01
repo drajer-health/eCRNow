@@ -15,8 +15,10 @@ import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.StringType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -383,61 +385,32 @@ public class CdaSocialHistoryGenerator {
 
     StringBuilder sb = new StringBuilder();
 
-    // Generate the entry
-    sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-    sb.append(
-        CdaGeneratorUtils.getXmlForAct(
-            CdaGeneratorConstants.OBS_ACT_EL_NAME,
-            CdaGeneratorConstants.OBS_CLASS_CODE,
-            CdaGeneratorConstants.MOOD_CODE_DEF));
+    DateTimeType estimatedDate = null;
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PREGNANCY_OBS_TEMPLATE_ID));
-
-    sb.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
-
-    sb.append(
-        CdaGeneratorUtils.getXmlForCD(
-            CdaGeneratorConstants.CODE_EL_NAME,
-            CdaGeneratorConstants.OBS_ASSERTION,
-            CdaGeneratorConstants.OBS_ASSERTION_CODESYSTEM,
-            CdaGeneratorConstants.OBS_ASSERTION_CODESYSTEM_NAME,
-            CdaGeneratorConstants.OBS_ASSERTION_DISPLAY));
-
-    sb.append(
-        CdaGeneratorUtils.getXmlForCD(
-            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
-
-    Pair<Date, TimeZone> onset = CdaFhirUtilities.getActualDate(cond.getOnset());
-    Pair<Date, TimeZone> abatement = CdaFhirUtilities.getActualDate(cond.getAbatement());
-
-    sb.append(
-        CdaGeneratorUtils.getXmlForIVLWithTS(
-            CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, false));
-
-    List<CodeableConcept> cds = new ArrayList<>();
-    cds.add(cond.getCode());
-
-    String codeXml =
-        CdaFhirUtilities.getCodeableConceptXmlForCodeSystem(
-            cds,
-            CdaGeneratorConstants.VAL_EL_NAME,
-            true,
-            CdaGeneratorConstants.FHIR_SNOMED_URL,
-            false);
-
-    if (!codeXml.isEmpty()) {
-      sb.append(codeXml);
-    } else {
-      sb.append(
-          CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
+    if (cond.getOnset() instanceof Period) {
+      Period onsetPeriod = (Period) cond.getOnset();
+      if (onsetPeriod.hasEnd()) {
+        estimatedDate = onsetPeriod.getEndElement();
+      }
+    } else if (cond.hasAbatement()) {
+      if (cond.getAbatement() instanceof DateTimeType) {
+        estimatedDate = (DateTimeType) cond.getAbatement();
+      }
     }
 
-    // End Tag for Entry Relationship
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
-    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+    if (estimatedDate == null) {
+      return sb.toString();
 
-    return sb.toString();
+    } else {
+      // Generate the entry
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+      sb.append(generateXmlforEstimatedDeliveryDate(estimatedDate));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+      return sb.toString();
+    }
   }
 
   public static String generateBirthSexEntry(CodeType birthSex) {
@@ -517,6 +490,36 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.SOC_HISTORY_SEC_TITLE));
 
+    return sb.toString();
+  }
+
+  private static String generateXmlforEstimatedDeliveryDate(DateTimeType estimatedDate) {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.PREGNANCY_EDOD_OBS_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_CODE,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_DISPLAY_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForValueEffectiveTime(
+            CdaGeneratorConstants.VAL_EL_NAME, estimatedDate.getValue(), null));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     return sb.toString();
   }
 
