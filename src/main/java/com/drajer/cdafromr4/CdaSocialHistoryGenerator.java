@@ -15,8 +15,10 @@ import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.StringType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -383,7 +385,6 @@ public class CdaSocialHistoryGenerator {
 
     StringBuilder sb = new StringBuilder();
 
-    // Generate the entry
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
     sb.append(
         CdaGeneratorUtils.getXmlForAct(
@@ -433,10 +434,31 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
     }
 
-    // End Tag for Entry Relationship
+    DateTimeType estimatedDate = null;
+
+    if (cond.getOnset() instanceof Period) {
+      Period onsetPeriod = (Period) cond.getOnset();
+      if (onsetPeriod.hasEnd()) {
+        estimatedDate = onsetPeriod.getEndElement();
+      }
+    } else if (cond.hasAbatement()) {
+      if (cond.getAbatement() instanceof DateTimeType) {
+        estimatedDate = (DateTimeType) cond.getAbatement();
+      }
+    }
+
+    if (estimatedDate != null) {
+
+      // Generate the Estimate Delivery entry
+      sb.append(
+          CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_REFR_CODE));
+
+      sb.append(generateXmlforEstimatedDeliveryDate(estimatedDate));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+    }
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-
     return sb.toString();
   }
 
@@ -517,6 +539,36 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.SOC_HISTORY_SEC_TITLE));
 
+    return sb.toString();
+  }
+
+  private static String generateXmlforEstimatedDeliveryDate(DateTimeType estimatedDate) {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.PREGNANCY_EDOD_OBS_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_CODE,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_DISPLAY_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForValueEffectiveTime(
+            CdaGeneratorConstants.VAL_EL_NAME, estimatedDate.getValue(), null));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     return sb.toString();
   }
 

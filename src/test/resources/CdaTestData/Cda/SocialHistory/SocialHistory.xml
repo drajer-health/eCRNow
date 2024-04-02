@@ -26,7 +26,7 @@
 <content ID="socContent1">Pregnancy Condition</content>
 </td>
 <td>
-<content ID="socObservationResult1">Suspected disease caused by 2019-nCoV</content>
+<content ID="socObservationResult1">Patient currently pregnant (finding)</content>
 </td>
 </tr>
 <tr>
@@ -39,34 +39,34 @@
 </tr>
 <tr>
 <td>
-<content ID="socContent3">Pregnancy Condition</content>
+<content ID="socContent3">Occupation History</content>
 </td>
 <td>
-<content ID="socObservationResult3">Mixed anxiety and depressive disorder (disorder)</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="socContent4">Pregnancy Condition</content>
-</td>
-<td>
-<content ID="socObservationResult4">Seasonal allergy (disorder)</content>
+<content ID="socObservationResult3">Software Engineer</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="socContent5">Pregnancy Condition</content>
+<content ID="socContent4">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult5">Disease caused by 2019-nCoV</content>
+<content ID="socObservationResult4">Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</content>
 </td>
 </tr>
 <tr>
 <td>
-<content ID="socContent6">Occupation History</content>
+<content ID="socContent5">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult6">Software Engineer</content>
+<content ID="socObservationResult5">Recent Travel History |  Value : Last travel within 21 days</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent6">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult6">Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</content>
 </td>
 </tr>
 <tr>
@@ -74,7 +74,7 @@
 <content ID="socContent7">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult7">Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</content>
+<content ID="socObservationResult7">Recent Travel History |  Value : Last travel within 21 days</content>
 </td>
 </tr>
 <tr>
@@ -82,7 +82,7 @@
 <content ID="socContent8">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult8">Recent Travel History |  Value : Last travel within 21 days</content>
+<content ID="socObservationResult8">Recent Travel Location |  Value : Italy</content>
 </td>
 </tr>
 <tr>
@@ -90,7 +90,7 @@
 <content ID="socContent9">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult9">Recent Travel Location Component 1 : Recent Travel Location |  Value : India Component 2 : Recent Travel Location |  Value : Italy</content>
+<content ID="socObservationResult9">Recent Travel History |  Value : Last travel within 7 days</content>
 </td>
 </tr>
 <tr>
@@ -98,7 +98,7 @@
 <content ID="socContent10">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult10">Recent Travel History |  Value : Last travel within 21 days</content>
+<content ID="socObservationResult10">Recent Travel Location |  Value : China</content>
 </td>
 </tr>
 <tr>
@@ -106,31 +106,7 @@
 <content ID="socContent11">Travel History</content>
 </td>
 <td>
-<content ID="socObservationResult11">Recent Travel Location |  Value : Italy</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="socContent12">Travel History</content>
-</td>
-<td>
-<content ID="socObservationResult12">Recent Travel History |  Value : Last travel within 7 days</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="socContent13">Travel History</content>
-</td>
-<td>
-<content ID="socObservationResult13">Recent Travel Location |  Value : China</content>
-</td>
-</tr>
-<tr>
-<td>
-<content ID="socContent14">Travel History</content>
-</td>
-<td>
-<content ID="socObservationResult14">Recent Travel History |  Value : Last travel within 7 days</content>
+<content ID="socObservationResult11">Recent Travel History |  Value : Last travel within 7 days</content>
 </td>
 </tr>
 </tbody>
@@ -150,23 +126,18 @@
 <id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
 <statusCode code="completed"/>
 <effectiveTime>
-<low value="20200428201200+0000"/>
-<high nullFlavor="NI"/>
-</effectiveTime>
-<value xsi:type="CD" code="840544004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Suspected disease caused by 2019-nCoV"><translation code="Z20.828" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="Contact with and (suspected) exposure to other viral communicable diseases"/>
-</value>
-</observation>
-</entry>
-<entry>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
-<statusCode code="completed"/>
-<effectiveTime>
-<low value="20200101"/>
+<low value="20240101"/>
 <high nullFlavor="NI"/>
 </effectiveTime>
 <value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+<entryRelationship typeCode="REFR">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
+<statusCode code="completed"/>
+<value xsi:type="TS" value="20240630"/>
+</observation>
+</entryRelationship>
 </observation>
 </entry>
 <entry>
@@ -176,34 +147,17 @@
 <statusCode code="completed"/>
 <effectiveTime>
 <low nullFlavor="NI"/>
-<high nullFlavor="NI"/>
+<high value="20240630000000+0000"/>
 </effectiveTime>
-<value xsi:type="CD" code="231504006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Mixed anxiety and depressive disorder (disorder)"></value>
-</observation>
-</entry>
-<entry>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+<entryRelationship typeCode="REFR">
 <observation classCode="OBS" moodCode="EVN">
 <templateId root="2.16.840.1.113883.10.20.15.3.8"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
 <statusCode code="completed"/>
-<effectiveTime>
-<low nullFlavor="NI"/>
-<high nullFlavor="NI"/>
-</effectiveTime>
-<value xsi:type="CD" code="444316004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Seasonal allergy (disorder)"></value>
+<value xsi:type="TS" value="20240630"/>
 </observation>
-</entry>
-<entry>
-<observation classCode="OBS" moodCode="EVN">
-<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
-<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
-<statusCode code="completed"/>
-<effectiveTime>
-<low value="20200428201200+0000"/>
-<high nullFlavor="NI"/>
-</effectiveTime>
-<value xsi:type="CD" code="840539006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Disease caused by 2019-nCoV"><translation code="U07.1" codeSystem="2.16.840.1.113883.6.90" codeSystemName="ICD-10-CM" displayName="2019-nCoV acute respiratory disease"/>
-</value>
+</entryRelationship>
 </observation>
 </entry>
 <entry>
