@@ -885,6 +885,8 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<raceCode code=\"2028-9\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Asian\"/>\r\n"
             + "<ethnicGroupCode code=\"2186-5\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Not Hispanic or Latino\"/>\r\n"
             + "<guardian>\r\n"
+            + "<code nullFlavor=\"OTH\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.18.58\" codeSystemName=\"v2-0131\"/>\r\n"
+            + "</code>\r\n"
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
@@ -906,7 +908,8 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</languageCommunication>\r\n"
             + "</patient>\r\n"
             + "</patientRole>\r\n"
-            + "</recordTarget>\r\n";
+            + "</recordTarget>\r\n"
+            + "";
 
     String actualXml =
         CdaHeaderGenerator.getPatientDetails(r4FhirData1.getPatient(), launchDetails);
@@ -980,7 +983,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     st1.setSystem("http://hl7.org/fhir/v3/NullFlavor");
     st1.setCode("UNK");
     st1.setDisplay("Unknown");
-
     Type tp1 = (Type) st1;
     subext1.setValue(tp1);
     ext1.addExtension(subext1);

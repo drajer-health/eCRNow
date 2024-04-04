@@ -954,16 +954,32 @@ public class CdaFhirUtilities {
       Boolean valueTrue,
       Boolean includeNullFlavor) {
 
-    StringBuilder sb = new StringBuilder(500);
+    if (cds == null) {
+      return "";
+    }
+
+    StringBuilder sb = new StringBuilder();
+
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (Boolean.FALSE.equals(valueTrue))
-      sb.append(
-          getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));
-    else
-      sb.append(
-          getCodingXmlForValueForMappedConceptDomain(
-              conceptDomain, codes, cdName, includeNullFlavor));
+    if (codes == null || !codes.isEmpty()) {
+      if (Boolean.FALSE.equals(valueTrue)) {
+        sb.append(
+            getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));
+      } else {
+        sb.append(
+            getCodingXmlForValueForMappedConceptDomain(
+                conceptDomain, codes, cdName, includeNullFlavor));
+      }
+    } else {
+      for (CodeableConcept cc : cds) {
+        if (cc.hasText()) {
+          sb.append(
+              CdaGeneratorUtils.getXmlForNullCDWithText(
+                  cdName, CdaGeneratorConstants.NF_OTH, cc.getText()));
+        }
+      }
+    }
 
     return sb.toString();
   }
@@ -1477,6 +1493,21 @@ public class CdaFhirUtilities {
       }
     }
     return s;
+  }
+
+  public static Coding getSingleCodingForCodeSystems(List<CodeableConcept> cds, String csUrl) {
+    if (cds == null || cds.isEmpty()) {
+      return null;
+    }
+
+    for (CodeableConcept cd : cds) {
+      Coding c = getCodingForCodeSystem(cd, csUrl);
+      if (c != null && c.hasSystem()) {
+        return c;
+      }
+    }
+
+    return null;
   }
 
   public static String getSingleCodingXml(Coding c, String elName, String csUrl) {

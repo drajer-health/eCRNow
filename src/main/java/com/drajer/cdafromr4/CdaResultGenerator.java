@@ -8,12 +8,14 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -182,6 +184,16 @@ public class CdaResultGenerator {
         lrEntry.append(
             CdaGeneratorUtils.getXmlForCD(
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+        if (obs.hasIssued()) {
+          Pair<Date, TimeZone> issuedDate = CdaFhirUtilities.getActualDate(obs.getIssuedElement());
+
+          lrEntry.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.EFF_TIME_EL_NAME,
+                  issuedDate.getValue0(),
+                  issuedDate.getValue1()));
+        }
 
         lrEntry.append(
             getXmlForObservation(
