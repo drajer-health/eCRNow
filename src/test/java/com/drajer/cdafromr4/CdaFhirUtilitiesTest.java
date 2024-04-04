@@ -953,7 +953,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     cds.add(new CodeableConcept().addCoding(coding).setText("High Observation"));
 
-    String cdName = "code";
     Boolean valueTrue = false;
 
     Boolean includeNullFlavor = true;
@@ -961,16 +960,50 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
             CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             cds,
-            cdName,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             valueTrue,
             includeNullFlavor);
 
     String expectedXml =
-        "<code code=\"HH\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"HH\"></code>\r\n"
+        "<interpretationCode code=\"HH\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"HH\"></interpretationCode>\r\n"
             + "";
 
     assertThat(actualXml).isNotNull().isNotEmpty();
     assertEquals(expectedXml.trim(), actualXml.trim());
+  }
+
+  @Test
+  public void testGetCodeableConceptXmlForMappedConceptDomain_WithOnlyText() {
+
+    List<CodeableConcept> cds = new ArrayList<>();
+    Coding coding = new Coding();
+    cds.add(new CodeableConcept().addCoding(coding).setText("interpretationCode text 1"));
+    cds.add(new CodeableConcept().addCoding(coding).setText("interpretationCode text 2"));
+
+    Boolean valueTrue = false;
+
+    Boolean includeNullFlavor = true;
+    String actualXml =
+        CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+            cds,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+            valueTrue,
+            includeNullFlavor);
+
+    String expectedXml =
+        "<interpretationCode nullFlavor=\"OTH\">\r\n"
+            + "<originalText>\r\n"
+            + "interpretationCode text 1</originalText>\r\n"
+            + "\r\n"
+            + "</interpretationCode>\r\n"
+            + "<interpretationCode nullFlavor=\"OTH\">\r\n"
+            + "<originalText>\r\n"
+            + "interpretationCode text 2</originalText>\r\n"
+            + "\r\n"
+            + "</interpretationCode>";
+    assertThat(actualXml).isNotNull().isNotEmpty();
+    assertXmlEquals(expectedXml, actualXml);
   }
 
   @Test
@@ -985,7 +1018,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     cds.add(new CodeableConcept().addCoding(coding).setText("High Observation"));
 
-    String cdName = "code";
     Boolean valueTrue = true;
 
     Boolean includeNullFlavor = true;
@@ -993,7 +1025,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
             CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             cds,
-            cdName,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             valueTrue,
             includeNullFlavor);
 

@@ -9,6 +9,7 @@ import com.drajer.sof.model.R4FhirData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -989,6 +990,23 @@ public class CdaHeaderGenerator {
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_EL_NAME));
 
+        if (guardianContact.hasRelationship()) {
+          Coding coding =
+              CdaFhirUtilities.getSingleCodingForCodeSystems(
+                  guardianContact.getRelationship(),
+                  CdaGeneratorConstants.FHIR_CONTACT_RELATIONSHIP_CODESYSTEM);
+
+          if (coding != null) {
+            patientDetails.append(
+                CdaFhirUtilities.getCodingXmlForCodeSystem(
+                    Collections.singletonList(coding),
+                    CdaGeneratorConstants.CODE_EL_NAME,
+                    CdaGeneratorConstants.FHIR_LOC_ROLE_CODE_TYPE_V3,
+                    false,
+                    ""));
+          }
+        }
+
         // Add address if found
         List<Address> addrs = new ArrayList<>();
         if (guardianContact.getAddress() != null) {
@@ -1005,6 +1023,7 @@ public class CdaHeaderGenerator {
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));
+
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
 
