@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
-import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,7 +113,9 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     } catch (Exception e) {
       logger.error(" Message {}", e.getMessage());
       logger.error(
-          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
+          "Error in Getting the AccessToken for the client: {}",
+          StringEscapeUtils.escapeJava(fsd.getFhirServerBaseURL()),
+          e);
       return null;
     }
   }
@@ -144,7 +147,10 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
                     + ".extension[?(@.url == 'token')].valueUri");
         return result.get(0).toString();
       } catch (Exception e2) {
-        logger.error("Error in Getting the TokenEndpoint for the client: {}", url, e2);
+        logger.error(
+            "Error in Getting the TokenEndpoint for the client: {}",
+            StringEscapeUtils.escapeJava(url),
+            e2);
         throw e1;
       }
     }
@@ -168,7 +174,7 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
       Key key = ks.getKey(fsd.getBackendAuthKeyAlias(), passwordChar);
 
       X509Certificate cert = (X509Certificate) ks.getCertificate(fsd.getBackendAuthKeyAlias());
-      String x5tValue = Base64.encodeBytes(DigestUtils.sha1(cert.getEncoded()));
+      String x5tValue = Base64.getEncoder().encodeToString(DigestUtils.sha1(cert.getEncoded()));
 
       return Jwts.builder()
           .setHeaderParam("typ", "JWT")

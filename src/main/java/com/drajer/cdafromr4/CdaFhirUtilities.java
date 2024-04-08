@@ -38,6 +38,8 @@ import org.hl7.fhir.r4.model.Medication.MedicationIngredientComponent;
 import org.hl7.fhir.r4.model.MedicationAdministration;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationStatement;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Patient.ContactComponent;
@@ -201,6 +203,55 @@ public class CdaFhirUtilities {
 
     logger.debug("Did not find the Extension or sub extensions for the Url {}", extUrl);
     return null;
+  }
+
+  public static List<Coding> getAllCodingsFromExtension(
+      List<Extension> exts, String extUrl, String subextUrl) {
+    List<Coding> codings = new ArrayList<>();
+
+    if (exts == null || exts.isEmpty()) {
+      logger.debug("No extensions provided");
+      return codings;
+    }
+
+    for (Extension ext : exts) {
+      if (ext.hasUrl() && ext.getUrl().contentEquals(extUrl)) {
+
+        if (ext.hasValue() && ext.getValue() instanceof Coding) {
+          logger.debug("Found Extension at top level ");
+          codings.add((Coding) ext.getValue());
+
+        } else if (!ext.hasValue()) {
+
+          List<Extension> subExts = ext.getExtensionsByUrl(subextUrl);
+
+          for (Extension subext : subExts) {
+            if (subext.hasValue()) {
+
+              if (subext.getValue() instanceof Coding) {
+                logger.debug("Found Extension nested as children ");
+                codings.add((Coding) subext.getValue());
+
+              } else if (subext.getValue() instanceof CodeableConcept) {
+
+                CodeableConcept cd = (CodeableConcept) subext.getValue();
+
+                if (cd.hasCoding()) {
+                  logger.debug("Found Extension nested as childrens ");
+                  codings.addAll(cd.getCoding());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (codings.isEmpty()) {
+      logger.debug("Did not find the Extension or sub extensions for the Url {}", extUrl);
+    }
+
+    return codings;
   }
 
   public static Coding getCodingExtension(List<Extension> exts, String extUrl) {
@@ -386,7 +437,7 @@ public class CdaFhirUtilities {
       }
 
       // City
-      if (!StringUtils.isEmpty(addr.getCity())) {
+      if (addr.hasCity() && !StringUtils.isEmpty(addr.getCity())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.CITY_EL_NAME, addr.getCity()));
       } else {
@@ -395,8 +446,15 @@ public class CdaFhirUtilities {
                 CdaGeneratorConstants.CITY_EL_NAME, CdaGeneratorConstants.NF_NI));
       }
 
+      // County
+      if (addr.hasDistrict() && !StringUtils.isEmpty(addr.getDistrict())) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(
+                CdaGeneratorConstants.COUNTY_EL_NAME, addr.getDistrict()));
+      }
+
       // State
-      if (!StringUtils.isEmpty(addr.getState())) {
+      if (addr.hasState() && !StringUtils.isEmpty(addr.getState())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.STATE_EL_NAME, addr.getState()));
       } else {
@@ -406,7 +464,7 @@ public class CdaFhirUtilities {
       }
 
       // Postal Code
-      if (!StringUtils.isEmpty(addr.getPostalCode())) {
+      if (addr.hasPostalCode() && !StringUtils.isEmpty(addr.getPostalCode())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(
                 CdaGeneratorConstants.POSTAL_CODE_EL_NAME, addr.getPostalCode()));
@@ -417,7 +475,7 @@ public class CdaFhirUtilities {
       }
 
       // Country
-      if (!StringUtils.isEmpty(addr.getCountry())) {
+      if (addr.hasCountry() && !StringUtils.isEmpty(addr.getCountry())) {
         addrString.append(
             CdaGeneratorUtils.getXmlForText(
                 CdaGeneratorConstants.COUNTRY_EL_NAME, addr.getCountry()));
@@ -680,8 +738,8 @@ public class CdaFhirUtilities {
 
       if (ent.getResource() != null
           &&
-          //  ent.getResource() != null &&
-          //   ent.getResource().fhirType().contentEquals(type) &&
+          // ent.getResource() != null &&
+          // ent.getResource().fhirType().contentEquals(type) &&
           ent.getResource().getId() != null
           && ent.getResource().getId().contentEquals(id)) {
 
@@ -818,7 +876,8 @@ public class CdaFhirUtilities {
           break;
         }
 
-        // If display is at the Codeable Concept level, use it in case we don't find anything else
+        // If display is at the Codeable Concept level, use it in case we don't find
+        // anything else
         if (cd != null && !StringUtils.isEmpty(cd.getText())) {
           anyCdDisplay = cd.getText();
         }
@@ -895,16 +954,32 @@ public class CdaFhirUtilities {
       Boolean valueTrue,
       Boolean includeNullFlavor) {
 
-    StringBuilder sb = new StringBuilder(500);
+    if (cds == null) {
+      return "";
+    }
+
+    StringBuilder sb = new StringBuilder();
+
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (Boolean.FALSE.equals(valueTrue))
-      sb.append(
-          getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));
-    else
-      sb.append(
-          getCodingXmlForValueForMappedConceptDomain(
-              conceptDomain, codes, cdName, includeNullFlavor));
+    if (!codes.isEmpty()) {
+      if (Boolean.FALSE.equals(valueTrue)) {
+        sb.append(
+            getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));
+      } else {
+        sb.append(
+            getCodingXmlForValueForMappedConceptDomain(
+                conceptDomain, codes, cdName, includeNullFlavor));
+      }
+    } else {
+      for (CodeableConcept cc : cds) {
+        if (cc.hasText()) {
+          sb.append(
+              CdaGeneratorUtils.getXmlForNullCDWithText(
+                  cdName, CdaGeneratorConstants.NF_OTH, cc.getText()));
+        }
+      }
+    }
 
     return sb.toString();
   }
@@ -961,7 +1036,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullCDWithoutEndTag(cdName, CdaGeneratorConstants.NF_OTH));
       }
@@ -1131,7 +1207,8 @@ public class CdaFhirUtilities {
       // At least one code is there so...close the tag
       if (Boolean.FALSE.equals(foundCodeForCodeSystem)) {
 
-        // If we dont find the preferred code system, then add NF of OTH along with translations.
+        // If we dont find the preferred code system, then add NF of OTH along with
+        // translations.
         sb.append(
             CdaGeneratorUtils.getXmlForNullValueCDWithoutEndTag(
                 cdName, CdaGeneratorConstants.NF_OTH));
@@ -1295,20 +1372,62 @@ public class CdaFhirUtilities {
 
     if (period != null) {
 
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(elName));
+      if (valFlag) {
 
-      sb.append(
-          CdaFhirUtilities.getDateTimeTypeXml(
-              period.getStartElement(), CdaGeneratorConstants.TIME_LOW_EL_NAME));
+        sb.append(
+            CdaGeneratorConstants.START_XMLTAG
+                + elName
+                + CdaGeneratorConstants.SPACE
+                + CdaGeneratorConstants.XSI_TYPE
+                + CdaGeneratorConstants.DOUBLE_QUOTE
+                + CdaGeneratorConstants.IVL_TS_TYPE
+                + CdaGeneratorConstants.DOUBLE_QUOTE
+                + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET);
 
-      sb.append(
-          CdaFhirUtilities.getDateTimeTypeXml(
-              period.getEndElement(), CdaGeneratorConstants.TIME_HIGH_EL_NAME));
+        if (period.hasStart())
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_LOW_EL_NAME,
+                  period.getStart(),
+                  period.getStartElement().getTimeZone()));
+        else
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_LOW_EL_NAME, null, null));
 
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
+        if (period.hasEnd())
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_HIGH_EL_NAME,
+                  period.getEnd(),
+                  period.getEndElement().getTimeZone()));
+        else
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_HIGH_EL_NAME, null, null));
 
-    } else {
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
+
+      } else {
+        sb.append(CdaGeneratorUtils.getXmlForStartElement(elName));
+
+        sb.append(
+            CdaFhirUtilities.getDateTimeTypeXml(
+                period.getStartElement(), CdaGeneratorConstants.TIME_LOW_EL_NAME));
+
+        sb.append(
+            CdaFhirUtilities.getDateTimeTypeXml(
+                period.getEndElement(), CdaGeneratorConstants.TIME_HIGH_EL_NAME));
+
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
+      }
+
+    } else if (!valFlag) {
       sb.append(CdaGeneratorUtils.getXmlForNullEffectiveTime(elName, CdaGeneratorConstants.NF_NI));
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForValueIVLWithTS(
+              elName, CdaGeneratorConstants.UNKNOWN_VALUE, CdaGeneratorConstants.UNKNOWN_VALUE));
     }
 
     return sb.toString();
@@ -1416,6 +1535,21 @@ public class CdaFhirUtilities {
       }
     }
     return s;
+  }
+
+  public static Coding getSingleCodingForCodeSystems(List<CodeableConcept> cds, String csUrl) {
+    if (cds == null || cds.isEmpty()) {
+      return null;
+    }
+
+    for (CodeableConcept cd : cds) {
+      Coding c = getCodingForCodeSystem(cd, csUrl);
+      if (c != null && c.hasSystem()) {
+        return c;
+      }
+    }
+
+    return null;
   }
 
   public static String getSingleCodingXml(Coding c, String elName, String csUrl) {
@@ -1591,15 +1725,12 @@ public class CdaFhirUtilities {
       Boolean first = true;
       for (Coding c : cds) {
 
-        if (c.hasDisplay()) {
-          if (first) {
-            val += c.getDisplay();
-          } else {
-            val += " | " + c.getDisplay();
-          }
-
-          first = false;
+        if (first) {
+          val += getStringForCoding(c);
+        } else {
+          val += " | " + getStringForCoding(c);
         }
+        first = false;
       }
     }
 
@@ -2009,27 +2140,27 @@ public class CdaFhirUtilities {
   public static String getStringForDates(
       Pair<Date, TimeZone> onset, Pair<Date, TimeZone> abatement, Pair<Date, TimeZone> recorded) {
 
-    String val = "";
+    StringBuilder val = new StringBuilder();
 
     if (recorded != null && recorded.getValue0() != null) {
-      val += recorded.getValue0().toString();
+      val.append(recorded.getValue0().toString());
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val.append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
     if (onset != null && onset.getValue0() != null) {
-      val += onset.getValue0().toString();
+      val.append('|').append(onset.getValue0().toString());
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
     if (abatement != null && abatement.getValue0() != null) {
-      val += abatement.getValue0().toString();
+      val.append('|').append(abatement.getValue0().toString());
     } else {
-      val += CdaGeneratorConstants.UNKNOWN_VALUE;
+      val.append('|').append(CdaGeneratorConstants.UNKNOWN_VALUE);
     }
 
-    return val;
+    return val.toString();
   }
 
   public static String getXmlForType(Type dt, String elName, Boolean valFlag) {
@@ -2568,11 +2699,11 @@ public class CdaFhirUtilities {
         || val.equalsIgnoreCase("intended")
         || val.equalsIgnoreCase("not-taken")) {
       return "active";
-    } else if (val.equalsIgnoreCase(COMPLETED)) {
-      return COMPLETED;
+    } else if (val.equalsIgnoreCase("completed")) {
+      return "completed";
     } else if (val.equalsIgnoreCase("entered-in-error")) {
       return "nullified";
-    } else if (val.equalsIgnoreCase("stopped")) {
+    } else if (val.equalsIgnoreCase("stopped") || val.equalsIgnoreCase("not-done")) {
       return "aborted";
     } else if (val.equalsIgnoreCase("on-hold")) {
       return "suspended";
@@ -2580,7 +2711,7 @@ public class CdaFhirUtilities {
       return "held";
     } else if (val.equalsIgnoreCase("cancelled")) {
       return "cancelled";
-    } else return COMPLETED;
+    } else return "completed";
   }
 
   public static String getCodeForNameUse(List<HumanName> names) {
@@ -2601,5 +2732,194 @@ public class CdaFhirUtilities {
     }
 
     return nameUse;
+  }
+
+  public static Address getAddressExtensionValue(List<Extension> extensions, String extensionUrl) {
+    if (extensions == null || extensions.isEmpty()) {
+      return null;
+    }
+
+    for (Extension extension : extensions) {
+      if (extension.hasUrl()
+          && extension.getUrl().equals(extensionUrl)
+          && extension.hasValue()
+          && extension.getValue() instanceof Address) {
+        logger.debug("Found Address Extension at top level.");
+        return (Address) extension.getValue();
+      }
+    }
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extensionUrl);
+    return null;
+  }
+
+  public static String getTravelHistoryAddressXml(Address addr) {
+    StringBuilder addrString = new StringBuilder(200);
+
+    if (addr != null) {
+
+      addrString.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ADDR_EL_NAME));
+
+      if (addr.hasCountry()) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(
+                CdaGeneratorConstants.COUNTRY_EL_NAME, addr.getCountry()));
+      } else {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForNFText(
+                CdaGeneratorConstants.COUNTRY_EL_NAME, CdaGeneratorConstants.NF_NI));
+      }
+
+      if (addr.hasCity()) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.CITY_EL_NAME, addr.getCity()));
+      }
+
+      if (addr.hasState()) {
+        addrString.append(
+            CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.STATE_EL_NAME, addr.getState()));
+      }
+
+      addrString.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ADDR_EL_NAME));
+    }
+    return addrString.toString();
+  }
+
+  public static String getSingleCodingXmlFromCodings(List<Coding> coding, String elName) {
+
+    StringBuilder addrString = new StringBuilder(200);
+
+    StringBuilder altXml = new StringBuilder(200);
+
+    if (coding != null && !coding.isEmpty()) {
+
+      for (Coding c : coding) {
+
+        String xml = getSingleCodingXml(c, elName, "");
+
+        if (!xml.isEmpty()) {
+          addrString.append(xml);
+          break;
+        }
+      }
+    }
+
+    return addrString.toString();
+  }
+
+  public static Object getPerformerXml(Practitioner pract, String functionCode) {
+
+    StringBuilder s = new StringBuilder(200);
+
+    if (pract != null) {
+
+      s.append(
+          CdaGeneratorUtils.getXmlForStartElementWithTypeCode(
+              CdaGeneratorConstants.PERF_EL_NAME, CdaGeneratorConstants.DEFAULT_PERF_EL_TYPE_CODE));
+
+      s.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+
+      s.append(getPractitionerXml(pract));
+      s.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_ENTITY_EL_NAME));
+      s.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PERF_EL_NAME));
+    }
+
+    return s;
+  }
+
+  public static String getPractitionerXml(Practitioner pr) {
+
+    StringBuilder sb = new StringBuilder(500);
+
+    if (pr != null) {
+
+      Identifier npi =
+          CdaFhirUtilities.getIdentifierForSystem(
+              pr.getIdentifier(), CdaGeneratorConstants.FHIR_NPI_URL);
+
+      if (npi != null) {
+        sb.append(
+            CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA, npi.getValue()));
+      } else {
+        sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
+      }
+
+      sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
+      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+      List<HumanName> hns = pr.getName();
+      sb.append(CdaFhirUtilities.getNameXml(hns));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+
+    } else {
+
+      sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorConstants.AUTHOR_NPI_AA));
+
+      List<Address> addrs = null;
+      sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
+
+      List<ContactPoint> cps = null;
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
+
+      sb.append(
+          CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+      sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.NAME_EL_NAME));
+
+      List<HumanName> hns = null;
+      sb.append(CdaFhirUtilities.getNameXml(hns));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.NAME_EL_NAME));
+      sb.append(
+          CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
+    }
+
+    return sb.toString();
+  }
+
+  public static String getStringForObservationsWithComponents(Observation obs) {
+
+    String result = "";
+
+    if (obs != null) {
+      // Get the text from the code
+      result += getStringForCodeableConcept(obs.getCode());
+
+      if (obs.hasValue()) {
+        result += " | " + " Value : " + getStringForType(obs.getValue());
+      }
+
+      if (obs.hasComponent()) {
+
+        List<ObservationComponentComponent> comps = obs.getComponent();
+
+        int i = 1;
+        for (ObservationComponentComponent comp : comps) {
+
+          result +=
+              " Component "
+                  + Integer.toString(i)
+                  + " : "
+                  + getStringForCodeableConcept(comp.getCode());
+
+          if (comp.hasValue()) {
+
+            result += " | " + " Value : " + getStringForType(comp.getValue());
+          }
+
+          i++;
+        }
+      }
+    }
+
+    return result;
   }
 }

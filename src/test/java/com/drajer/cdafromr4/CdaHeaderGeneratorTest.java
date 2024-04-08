@@ -76,6 +76,79 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
   }
 
   @Test
+  public void testGenerateXmlForDetailedEthnicityCode() {
+    List<Extension> extensions = new ArrayList<>();
+    extensions.add(
+        createExtension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "2178-2",
+            "Latin American"));
+
+    String expectedXml =
+        "<sdtc:ethnicGroupCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>\r\n";
+    String actualXml =
+        CdaHeaderGenerator.generateXmlForDetailedRaceAndEthnicityCodes(
+            extensions,
+            CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
+            CdaGeneratorConstants.OMB_ETHNICITY_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_ETHNIC_GROUP_CODE);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateXmlForDetailedRaceCode() {
+    List<Extension> extensions = new ArrayList<>();
+    extensions.add(
+        createExtension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "1072-8",
+            "Mexican American Indian"));
+
+    String expectedXml =
+        "<sdtc:raceCode code=\"1072-8\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Mexican American Indian\"/>\r\n";
+    String actualXml =
+        CdaHeaderGenerator.generateXmlForDetailedRaceAndEthnicityCodes(
+            extensions,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testGenerateXmlForDetailedUnknownRaceCode() {
+    List<Extension> extensions = new ArrayList<>();
+    extensions.add(
+        createExtension(
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "ASKU",
+            "asked but unknown"));
+
+    String expectedXml = "<sdtc:raceCode nullFlavor=\"ASKU\"/>";
+    String actualXml =
+        CdaHeaderGenerator.generateXmlForDetailedRaceAndEthnicityCodes(
+            extensions,
+            CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
+            CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
+            CdaGeneratorConstants.SDTC_DETAILED_RACE_CODE);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  private Extension createExtension(String extUrl, String code, String display) {
+    Extension extension = new Extension();
+    Coding codingValue = new Coding();
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode(code);
+    codingValue.setDisplay(display);
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+    return extension;
+  }
+
+  @Test
   public void testGetParticipantXml() {
     R4FhirData r4FhirData1 = new R4FhirData();
     Bundle bundle = loadBundleFromFile(PATIENT_RES_FILENAME);
@@ -93,6 +166,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
             + "<state>Vic</state>\r\n"
             + "<postalCode>3999</postalCode>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
@@ -105,8 +179,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</associatedPerson>\r\n"
             + "</associatedEntity>\r\n"
-            + "</participant>\r\n"
-            + "";
+            + "</participant>";
 
     String actualXml = CdaHeaderGenerator.getParticipantXml(contactComponents.get(0), coding);
 
@@ -165,7 +238,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "</name>\r\n"
             + "</assignedPerson>\r\n"
             + "";
-    String actualXml = CdaHeaderGenerator.getPractitionerXml(practitioner);
+    String actualXml = CdaFhirUtilities.getPractitionerXml(practitioner);
 
     assertThat(actualXml).isNotNull();
 
@@ -812,9 +885,12 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<raceCode code=\"2028-9\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Asian\"/>\r\n"
             + "<ethnicGroupCode code=\"2186-5\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Not Hispanic or Latino\"/>\r\n"
             + "<guardian>\r\n"
+            + "<code nullFlavor=\"OTH\"><translation code=\"N\" codeSystem=\"2.16.840.1.113883.18.58\" codeSystemName=\"v2-0131\"/>\r\n"
+            + "</code>\r\n"
             + "<addr use=\"HP\">\r\n"
             + "<streetAddressLine>534 Erewhon St</streetAddressLine>\r\n"
             + "<city>PleasantVille</city>\r\n"
+            + "<county>Rainbow</county>\r\n"
             + "<state>Vic</state>\r\n"
             + "<postalCode>3999</postalCode>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
@@ -907,7 +983,6 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     st1.setSystem("http://hl7.org/fhir/v3/NullFlavor");
     st1.setCode("UNK");
     st1.setDisplay("Unknown");
-
     Type tp1 = (Type) st1;
     subext1.setValue(tp1);
     ext1.addExtension(subext1);

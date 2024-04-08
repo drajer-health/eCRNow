@@ -2,12 +2,16 @@ package com.drajer.bsa.utils;
 
 import com.drajer.bsa.model.BsaTypes.NotificationProcessingStatusType;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.model.PatientLaunchContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
@@ -85,7 +89,11 @@ public class SubscriptionUtils {
   }
 
   public static NotificationContext getNotificationContext(
-      Bundle bundle, HttpServletRequest request, HttpServletResponse response) {
+      Bundle bundle,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Boolean relaunch,
+      PatientLaunchContext launchContext) {
 
     NotificationContext nc = null;
 
@@ -147,7 +155,12 @@ public class SubscriptionUtils {
           if (fhirServerUrl != null && (fhirServerUrl.length() > FHIR_SERVER_URL_MIN_LENGTH)) {
 
             nc = new NotificationContext();
-            nc.setTriggerEvent(namedEvent);
+
+            if (!relaunch) {
+              nc.setTriggerEvent(namedEvent);
+            } else {
+              nc.setTriggerEvent(namedEvent + "|" + UUID.randomUUID().toString());
+            }
             nc.setFhirServerBaseUrl(fhirServerUrl);
             nc.setPatientId(getPatientId(res));
             nc.setNotificationResourceId(res.getIdElement().getIdPart());
@@ -212,6 +225,17 @@ public class SubscriptionUtils {
               String guid = java.util.UUID.randomUUID().toString();
               nc.setxRequestId(guid);
               nc.setxCorrelationId(guid);
+            }
+
+            if (launchContext.getEhrLaunchContext() != null
+                && !launchContext.getEhrLaunchContext().isEmpty()) {
+              ObjectMapper objectMapper = new ObjectMapper();
+              try {
+                nc.setEhrLaunchContext(
+                    objectMapper.writeValueAsString(launchContext.getEhrLaunchContext()));
+              } catch (JsonProcessingException e) {
+                logger.error("Unable to set the Launch Context in the Notification Context ");
+              }
             }
 
           } else {

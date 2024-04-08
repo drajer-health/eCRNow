@@ -340,6 +340,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
       for (DataRequirementCodeFilterComponent drcf : drcfs) {
 
         if ((drcf.getPath().toLowerCase().contains("code")
+                || drcf.getPath().contains("reasonCode")
                 || drcf.getPath().contains("value")
                 || drcf.getPath().equals("medication"))
             && drcf.getValueSet() != null) {

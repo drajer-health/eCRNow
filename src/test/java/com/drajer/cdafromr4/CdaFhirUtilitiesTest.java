@@ -953,7 +953,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     cds.add(new CodeableConcept().addCoding(coding).setText("High Observation"));
 
-    String cdName = "code";
     Boolean valueTrue = false;
 
     Boolean includeNullFlavor = true;
@@ -961,16 +960,50 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
             CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             cds,
-            cdName,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             valueTrue,
             includeNullFlavor);
 
     String expectedXml =
-        "<code code=\"HH\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"HH\"></code>\r\n"
+        "<interpretationCode code=\"HH\" codeSystem=\"2.16.840.1.113883.5.83\" codeSystemName=\"v3-ObservationInterpretation\" displayName=\"HH\"></interpretationCode>\r\n"
             + "";
 
     assertThat(actualXml).isNotNull().isNotEmpty();
     assertEquals(expectedXml.trim(), actualXml.trim());
+  }
+
+  @Test
+  public void testGetCodeableConceptXmlForMappedConceptDomain_WithOnlyText() {
+
+    List<CodeableConcept> cds = new ArrayList<>();
+    Coding coding = new Coding();
+    cds.add(new CodeableConcept().addCoding(coding).setText("interpretationCode text 1"));
+    cds.add(new CodeableConcept().addCoding(coding).setText("interpretationCode text 2"));
+
+    Boolean valueTrue = false;
+
+    Boolean includeNullFlavor = true;
+    String actualXml =
+        CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+            cds,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+            valueTrue,
+            includeNullFlavor);
+
+    String expectedXml =
+        "<interpretationCode nullFlavor=\"OTH\">\r\n"
+            + "<originalText>\r\n"
+            + "interpretationCode text 1</originalText>\r\n"
+            + "\r\n"
+            + "</interpretationCode>\r\n"
+            + "<interpretationCode nullFlavor=\"OTH\">\r\n"
+            + "<originalText>\r\n"
+            + "interpretationCode text 2</originalText>\r\n"
+            + "\r\n"
+            + "</interpretationCode>";
+    assertThat(actualXml).isNotNull().isNotEmpty();
+    assertXmlEquals(expectedXml, actualXml);
   }
 
   @Test
@@ -985,7 +1018,6 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
 
     cds.add(new CodeableConcept().addCoding(coding).setText("High Observation"));
 
-    String cdName = "code";
     Boolean valueTrue = true;
 
     Boolean includeNullFlavor = true;
@@ -993,7 +1025,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
             CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             cds,
-            cdName,
+            CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
             valueTrue,
             includeNullFlavor);
 
@@ -1242,6 +1274,25 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     actual = CdaFhirUtilities.getStringForCoding(coding1);
 
     assertEquals("http://loinc.org|15074-8", actual);
+  }
+
+  @Test
+  public void testGetStringForDates() {
+    Pair<Date, TimeZone> onset =
+        new Pair<>(new Date(1645778400000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T00:00:00Z
+    Pair<Date, TimeZone> abatement =
+        new Pair<>(new Date(1645864800000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-26T00:00:00Z
+    Pair<Date, TimeZone> recorded =
+        new Pair<>(new Date(1645833600000L), TimeZone.getTimeZone("UTC")); // Date:
+    // 2022-02-25T18:00:00Z
+
+    String expected =
+        "Sat Feb 26 08:40:00 UTC 2022|Sat Feb 26 00:00:00 UTC 2022|Fri Feb 25 08:40:00 UTC 2022";
+    String result = CdaFhirUtilities.getStringForDates(recorded, onset, abatement);
+
+    assertEquals(expected, result);
   }
 
   @Test
@@ -2043,5 +2094,160 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
         assertEquals(dataKey, output);
       }
     }
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtension() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
+    String subExtUrl = "detailed";
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionListWithSubExtension1() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
+    String subExtUrl = "detailed";
+
+    extension.setUrl(extUrl);
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+    subExtension.setUrl(subExtUrl);
+    subExtension.setValue(codingValue);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionListWithSubExtension2() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    Extension subExtension = new Extension();
+    CodeableConcept valueCodeableConcept = new CodeableConcept();
+    String extUrl = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+    String subExtUrl = "detailed";
+    extension.setUrl(extUrl);
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem("urn:oid:2.16.840.1.113883.6.238");
+    codingValue.setCode("2178-2");
+    codingValue.setDisplay("Latin American");
+
+    valueCodeableConcept.addCoding(codingValue);
+
+    subExtension.setUrl(subExtUrl);
+    subExtension.setValue(valueCodeableConcept);
+
+    extension.addExtension(subExtension);
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, subExtUrl);
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue.getCode(), result.get(0).getCode());
+  }
+
+  @Test
+  public void testGetAllCodingsFromExtensionWithOnlyExtUrl() {
+    List<Extension> exts = new ArrayList<>();
+    Extension extension = new Extension();
+    String extUrl = "http://example.com/ext";
+
+    Coding codingValue = new Coding();
+
+    codingValue.setSystem(CdaGeneratorConstants.FHIR_IDENTIFIER_TYPE_SYSTEM);
+    codingValue.setCode("MR");
+    extension.setUrl(extUrl);
+    extension.setValue(codingValue);
+
+    exts.add(extension);
+    List<Coding> result = CdaFhirUtilities.getAllCodingsFromExtension(exts, extUrl, "");
+
+    assertThat(result).isNotEmpty();
+    assertEquals(codingValue, result.get(0));
+  }
+
+  public void testGetStringForCodeableConcept_TextNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    cd.setText("Display-Text");
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Display-Text", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNull() {
+    CodeableConcept cd = new CodeableConcept();
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertThat(result).isBlank();
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_TextNullAndCodingNotNull() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setSystem("http://loinc.org");
+    coding.setCode("15074-8");
+    coding.setDisplay("Glucose [Moles/volume] in Blood");
+
+    cd.addCoding(coding);
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood", result);
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_WithEmptyValue() {
+
+    assertThat(CdaFhirUtilities.getStringForCodeableConcept(null)).isBlank();
+  }
+
+  @Test
+  public void testGetStringForCodeableConcept_CodingListWithMultipleCodings() {
+    CodeableConcept cd = new CodeableConcept();
+    Coding coding1 = new Coding();
+    coding1.setSystem("http://loinc.org");
+    coding1.setCode("15074-8");
+    coding1.setDisplay("Glucose [Moles/volume] in Blood-1");
+
+    Coding coding2 = new Coding();
+    coding2.setSystem("http://loinc.org");
+    coding2.setCode("15074-8");
+    coding2.setDisplay("Glucose [Moles/volume] in Blood-2");
+
+    cd.addCoding(coding1);
+    cd.addCoding(coding2);
+
+    String result = CdaFhirUtilities.getStringForCodeableConcept(cd);
+    assertEquals("Glucose [Moles/volume] in Blood-1 | Glucose [Moles/volume] in Blood-2", result);
   }
 }

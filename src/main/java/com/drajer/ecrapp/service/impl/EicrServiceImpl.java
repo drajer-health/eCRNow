@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -115,7 +116,8 @@ public class EicrServiceImpl implements EicrRRService {
 
     if (ecr != null) {
 
-      logger.info(" Found the Eicr for correlation Id: {}", xCorrelationId);
+      logger.info(
+          " Found the Eicr for correlation Id: {}", StringEscapeUtils.escapeJava(xCorrelationId));
       ecr.setResponseType(EicrTypes.RrType.FAILURE_MDN.toString());
       ecr.setResponseXRequestId(xRequestId);
       ecr.setResponseData(data.getRrXml());
@@ -123,7 +125,8 @@ public class EicrServiceImpl implements EicrRRService {
       saveOrUpdate(ecr);
 
     } else {
-      String errorMsg = "Unable to find Eicr for Correlation Id: " + xCorrelationId;
+      String errorMsg =
+          "Unable to find Eicr for Correlation Id: " + StringEscapeUtils.escapeJava(xCorrelationId);
       logger.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
       // Create an Error Table and add it to error table for future administration.
@@ -248,12 +251,14 @@ public class EicrServiceImpl implements EicrRRService {
         saveOrUpdate(ecr);
 
       } else {
-        String errorMsg = "Unable to find Eicr for EICR_DOC_ID: " + eicrDocId.getRootValue();
+        String errorMsg =
+            "Unable to find Eicr for EICR_DOC_ID: "
+                + StringEscapeUtils.escapeJava(eicrDocId.getRootValue());
         logger.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     } else {
-      String errorMsg = "Received empty RR in request: " + xRequestId;
+      String errorMsg = "Received empty RR in request: " + StringEscapeUtils.escapeJava(xRequestId);
       logger.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
@@ -316,7 +321,7 @@ public class EicrServiceImpl implements EicrRRService {
       // Initialize the Client
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, fhirServerURL, accessToken, ecr.getResponseXRequestId());
+              context, fhirServerURL, accessToken, ecr.getResponseXRequestId(), null);
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 

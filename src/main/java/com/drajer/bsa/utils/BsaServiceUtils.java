@@ -320,7 +320,11 @@ public class BsaServiceUtils {
 
         if (retInfo != null) {
 
-          logger.info(" Match Found for code {} | {}", retInfo.getValue0(), retInfo.getValue1());
+          logger.info(
+              " Match Found for Path {} and code {} | {}",
+              path,
+              retInfo.getValue0(),
+              retInfo.getValue1());
 
           if (mtc == null) {
             mtc = new MatchedTriggerCodes();
@@ -709,7 +713,11 @@ public class BsaServiceUtils {
   }
 
   public static String getEncodedTriggerMatchStatus(
-      CheckTriggerCodeStatusList ctc, KarProcessingData kd, String eicrId) {
+      CheckTriggerCodeStatusList ctc,
+      KarProcessingData kd,
+      String eicrId,
+      String actionId,
+      String actionType) {
     ObjectMapper mapper = new ObjectMapper();
 
     String state = null;
@@ -717,9 +725,8 @@ public class BsaServiceUtils {
 
       for (CheckTriggerCodeStatus ctcs : ctc.getStatuses()) {
 
-        ctcs.setActionId(
-            kd.getScheduledJobData().getActionId() + kd.getScheduledJobData().getJobId());
-        ctcs.setActionType(kd.getScheduledJobData().getActionType());
+        ctcs.setActionId(actionId);
+        ctcs.setActionType(BsaTypes.getActionType(actionType));
         ctcs.setActionStatus(BsaActionStatusType.COMPLETED);
         Set<String> eicrIds = new HashSet<String>();
         eicrIds.add(eicrId);

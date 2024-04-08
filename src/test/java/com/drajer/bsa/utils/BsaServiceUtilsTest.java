@@ -200,7 +200,12 @@ public class BsaServiceUtilsTest {
     KarProcessingData kd = Utility.karProcessingData();
     CheckTriggerCodeStatusList expectedcheckTriggerList = Utility.getCheckTriggerCodeStatusList();
     String actualcheckTriggerList =
-        bsaServiceUtils.getEncodedTriggerMatchStatus(expectedcheckTriggerList, kd, "763845684756");
+        bsaServiceUtils.getEncodedTriggerMatchStatus(
+            expectedcheckTriggerList,
+            kd,
+            "763845684756",
+            "create-report-actionId",
+            "create-report-actionType");
     assertNotNull(actualcheckTriggerList);
   }
 

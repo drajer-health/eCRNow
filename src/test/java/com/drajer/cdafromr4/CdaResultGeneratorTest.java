@@ -50,6 +50,10 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
+    PowerMockito.when(
+            CdaGeneratorUtils.getXmlForEffectiveTime(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn("<effectiveTime value=\"20200428194229+0000\"/>");
+
     String actualXml = CdaResultGenerator.generateResultsSection(fhirData, launchDetails);
 
     logger.info(" Actual XML ", actualXml);
@@ -107,7 +111,8 @@ public class CdaResultGeneratorTest extends BaseGeneratorTest {
     int row = 1;
 
     String actualXml =
-        CdaResultGenerator.getXmlForComponents(report, allObs, launchDetails, contentId, row);
+        CdaResultGenerator.getXmlForComponents(
+            report, allObs, launchDetails, contentId, row, r4FhirData);
 
     assertNotNull(actualXml);
     assertFalse(actualXml.isEmpty());

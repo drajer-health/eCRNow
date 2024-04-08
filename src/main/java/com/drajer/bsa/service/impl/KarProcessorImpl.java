@@ -90,7 +90,7 @@ public class KarProcessorImpl implements KarProcessor {
     // Get Kar for processing.
     KnowledgeArtifact kar = data.getKar();
     NotificationContext nc = data.getNotificationContext();
-    String namedEvent = nc.getTriggerEvent();
+    String namedEvent = nc.getActualTriggerEvent();
     data.setExecutionSequenceId(nc.getId().toString());
     data.setEhrQueryService(ehrInterface);
     data.setKarExecutionStateService(karExecutionStateService);

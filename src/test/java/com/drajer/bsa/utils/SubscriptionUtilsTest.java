@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.drajer.bsa.model.NotificationContext;
+import com.drajer.bsa.model.PatientLaunchContext;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -52,10 +53,11 @@ public class SubscriptionUtilsTest {
 
     mockHttpServletRequest.addHeader("X-Request-ID", "ecrunittest_id");
     mockHttpServletRequest.addHeader("X-Correlation-ID", "ecrUnitTestCorrelationID");
+    PatientLaunchContext launchContext = new PatientLaunchContext();
 
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     assertNotNull(notificationContext);
   }
 
@@ -78,18 +80,21 @@ public class SubscriptionUtilsTest {
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
     bundle.setType(BundleType.HISTORY);
+    PatientLaunchContext launchContext = new PatientLaunchContext();
+
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     assertNotNull(notificationContext);
   }
 
   @Test
   public void getNotificationContextWithEmptyBundle() {
     Bundle bundle = new Bundle();
+    PatientLaunchContext launchContext = new PatientLaunchContext();
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     assertNull(notificationContext);
   }
 
@@ -105,9 +110,10 @@ public class SubscriptionUtilsTest {
       for (Map.Entry<String, String> entry : headers.entrySet()) {
         mockHttpServletRequest.addHeader(entry.getKey(), entry.getValue());
       }
+      PatientLaunchContext launchContext = new PatientLaunchContext();
       NotificationContext notificationContext =
           SubscriptionUtils.getNotificationContext(
-              bundle, mockHttpServletRequest, mockHttpServletResponse);
+              bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
       mockHttpServletRequest.removeHeader("X-Correlation-ID");
       mockHttpServletRequest.removeHeader("X-Request-ID");
 
@@ -139,9 +145,10 @@ public class SubscriptionUtilsTest {
     encounterEntry.setResource(bundle);
     bundle.addEntry(encounterEntry);
     bundle.setType(BundleType.HISTORY);
+    PatientLaunchContext launchContext = new PatientLaunchContext();
     NotificationContext notificationContext =
         SubscriptionUtils.getNotificationContext(
-            bundle, mockHttpServletRequest, mockHttpServletResponse);
+            bundle, mockHttpServletRequest, mockHttpServletResponse, false, launchContext);
     assertNull(notificationContext);
   }
 }

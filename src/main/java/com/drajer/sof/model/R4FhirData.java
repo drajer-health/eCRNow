@@ -42,9 +42,19 @@ public class R4FhirData extends FhirData {
   private List<Observation> diagReportObservations;
   private List<Observation> labResults;
   private List<Observation> labResultValueObservations;
+  private List<Observation> vitalObs;
   private List<Observation> travelObs;
   private List<Observation> pregnancyObs;
   private List<Observation> occupationObs;
+  private List<Observation> pregnancyStatusObs;
+  private List<Observation> lmpObs;
+  private List<Observation> postPartumObs;
+  private List<Observation> pregnancyOutcomeObs;
+  private List<Observation> homelessObs;
+  private List<Observation> disabilityObs;
+  private List<Observation> vaccineCredObs;
+  private List<Observation> residencyObs;
+  private List<Observation> nationalityObs;
   private List<Immunization> immunizations;
   private List<MedicationStatement> medications;
   private List<MedicationRequest> medicationRequests;
@@ -119,6 +129,7 @@ public class R4FhirData extends FhirData {
     diagReportObservations = new ArrayList<>();
     labResults = new ArrayList<>();
     labResultValueObservations = new ArrayList<>();
+    vitalObs = new ArrayList<>();
     travelObs = new ArrayList<>();
     pregnancyObs = new ArrayList<>();
     occupationObs = new ArrayList<>();
@@ -129,6 +140,17 @@ public class R4FhirData extends FhirData {
     serviceRequests = new ArrayList<>();
     medicationList = new ArrayList<>();
     procedureList = new ArrayList<>();
+
+    // 3.1 and FHIR Related data.
+    pregnancyStatusObs = new ArrayList<>();
+    lmpObs = new ArrayList<>();
+    postPartumObs = new ArrayList<>();
+    pregnancyOutcomeObs = new ArrayList<>();
+    homelessObs = new ArrayList<>();
+    disabilityObs = new ArrayList<>();
+    vaccineCredObs = new ArrayList<>();
+    residencyObs = new ArrayList<>();
+    nationalityObs = new ArrayList<>();
   }
 
   public Bundle getData() {
@@ -161,6 +183,10 @@ public class R4FhirData extends FhirData {
 
   public void setPractitionersList(List<Practitioner> practitionersList) {
     this.practitionersList = practitionersList;
+  }
+
+  public void addPractitionersList(List<Practitioner> practitionersList) {
+    this.practitionersList.addAll(practitionersList);
   }
 
   public Encounter getEncounter() {
@@ -203,6 +229,10 @@ public class R4FhirData extends FhirData {
     this.conditions = conditions;
   }
 
+  public void addConditions(List<Condition> conditions) {
+    this.conditions.addAll(conditions);
+  }
+
   public List<Condition> getEncounterDiagnosisConditions() {
     return encounterDiagnosisConditions;
   }
@@ -223,12 +253,20 @@ public class R4FhirData extends FhirData {
     this.pregnancyConditions = pregnancyConditions;
   }
 
+  public void addPregnancyConditions(List<Condition> pregnancyConditions) {
+    this.pregnancyConditions.addAll(pregnancyConditions);
+  }
+
   public List<DiagnosticReport> getDiagReports() {
     return diagReports;
   }
 
   public void setDiagReports(List<DiagnosticReport> diagReports) {
     this.diagReports = diagReports;
+  }
+
+  public void addDiagReports(List<DiagnosticReport> diagReports) {
+    this.diagReports.addAll(diagReports);
   }
 
   public List<Observation> getLabResults() {
@@ -251,6 +289,10 @@ public class R4FhirData extends FhirData {
     this.travelObs = travelObs;
   }
 
+  public void addTravelObs(List<Observation> travelObs) {
+    this.travelObs.addAll(travelObs);
+  }
+
   public List<Observation> getPregnancyObs() {
     return pregnancyObs;
   }
@@ -259,12 +301,20 @@ public class R4FhirData extends FhirData {
     this.pregnancyObs = pregnancyObs;
   }
 
+  public void addPregnancyObs(List<Observation> pregnancyObs) {
+    this.pregnancyObs.addAll(pregnancyObs);
+  }
+
   public List<Observation> getOccupationObs() {
     return occupationObs;
   }
 
   public void setOccupationObs(List<Observation> occupationObs) {
     this.occupationObs = occupationObs;
+  }
+
+  public void addOccupationObs(List<Observation> occupationObs) {
+    this.occupationObs.addAll(occupationObs);
   }
 
   public List<Immunization> getImmunizations() {
@@ -308,12 +358,20 @@ public class R4FhirData extends FhirData {
     this.medicationList = medicationList;
   }
 
+  public void addMedicationList(List<Medication> medicationList) {
+    this.medicationList.addAll(medicationList);
+  }
+
   public List<ServiceRequest> getServiceRequests() {
     return serviceRequests;
   }
 
   public void setServiceRequests(List<ServiceRequest> serviceRequests) {
     this.serviceRequests = serviceRequests;
+  }
+
+  public void addServiceRequests(List<ServiceRequest> serviceRequests) {
+    this.serviceRequests.addAll(serviceRequests);
   }
 
   public List<Observation> getLabResultValueObservations() {
@@ -338,6 +396,138 @@ public class R4FhirData extends FhirData {
 
   public void setDiagReportObservations(List<Observation> diagReportObservations) {
     this.diagReportObservations = diagReportObservations;
+  }
+
+  public List<Observation> getPregnancyStatusObs() {
+    return pregnancyStatusObs;
+  }
+
+  public void setPregnancyStatusObs(List<Observation> pregnancyStatusObs) {
+    this.pregnancyStatusObs = pregnancyStatusObs;
+  }
+
+  public void addPregnancyStatusObs(List<Observation> pregnancyStatusObs) {
+    this.pregnancyStatusObs.addAll(pregnancyStatusObs);
+  }
+
+  public List<Observation> getLmpObs() {
+    return lmpObs;
+  }
+
+  public void setLmpObs(List<Observation> lmpObs) {
+    this.lmpObs = lmpObs;
+  }
+
+  public void addLmpObs(List<Observation> lmpObs) {
+    this.lmpObs.addAll(lmpObs);
+  }
+
+  public List<Observation> getPostPartumObs() {
+    return postPartumObs;
+  }
+
+  public void setPostPartumObs(List<Observation> postPartumObs) {
+    this.postPartumObs = postPartumObs;
+  }
+
+  public void addPostPartumObs(List<Observation> postPartumObs) {
+    this.postPartumObs.addAll(postPartumObs);
+  }
+
+  public List<Observation> getPregnancyOutcomeObs() {
+    return pregnancyOutcomeObs;
+  }
+
+  public void setPregnancyOutcomeObs(List<Observation> pregnancyOutcomeObs) {
+    this.pregnancyOutcomeObs = pregnancyOutcomeObs;
+  }
+
+  public void addPregnancyOutcomeObs(List<Observation> pregnancyOutcomeObs) {
+    this.pregnancyOutcomeObs.addAll(pregnancyOutcomeObs);
+  }
+
+  public List<Observation> getHomelessObs() {
+    return homelessObs;
+  }
+
+  public void setHomelessObs(List<Observation> homelessObs) {
+    this.homelessObs = homelessObs;
+  }
+
+  public void addHomelessObs(List<Observation> homelessObs) {
+    this.homelessObs.addAll(homelessObs);
+  }
+
+  public List<Observation> getDisabilityObs() {
+    return disabilityObs;
+  }
+
+  public void setDisabilityObs(List<Observation> disabilityObs) {
+    this.disabilityObs = disabilityObs;
+  }
+
+  public void addDisabilityObs(List<Observation> disabilityObs) {
+    this.disabilityObs.addAll(disabilityObs);
+  }
+
+  public List<Observation> getVaccineCredObs() {
+    return vaccineCredObs;
+  }
+
+  public void setVaccineCredObs(List<Observation> vaccineCredObs) {
+    this.vaccineCredObs = vaccineCredObs;
+  }
+
+  public void addVaccineCredObs(List<Observation> vaccineCredObs) {
+    this.vaccineCredObs.addAll(vaccineCredObs);
+  }
+
+  public List<Observation> getResidencyObs() {
+    return residencyObs;
+  }
+
+  public void setResidencyObs(List<Observation> residencyObs) {
+    this.residencyObs = residencyObs;
+  }
+
+  public void addResidencyObs(List<Observation> residencyObs) {
+    this.residencyObs.addAll(residencyObs);
+  }
+
+  public List<Observation> getNationalityObs() {
+    return nationalityObs;
+  }
+
+  public void setNationalityObs(List<Observation> nationalityObs) {
+    this.nationalityObs = nationalityObs;
+  }
+
+  public void addNationalityObs(List<Observation> nationalityObs) {
+    this.nationalityObs.addAll(nationalityObs);
+  }
+
+  public Address getJurisdiction() {
+    return jurisdiction;
+  }
+
+  public void setJurisdiction(Address jurisdiction) {
+    this.jurisdiction = jurisdiction;
+  }
+
+  public List<Address> getJurisdictions() {
+    return jurisdictions;
+  }
+
+  public void setJurisdictions(List<Address> jurisdictions) {
+    this.jurisdictions = jurisdictions;
+  }
+
+  public List<Observation> getVitalObs() {
+    return vitalObs;
+  }
+
+  public void setVitalObs(List<Observation> vitalObs) {
+    this.vitalObs = vitalObs;
   }
 
   @Override

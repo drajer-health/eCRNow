@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.9.RELEASE</version>
+		<version>2.7.12</version>
 		<relativePath />
 		<!-- lookup parent from repository -->
 	</parent>
@@ -25,6 +25,8 @@
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
 	</properties>
+
+
 
 	<distributionManagement>
 		<site>
@@ -243,7 +245,6 @@
 			<version>2.13.3</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -339,8 +340,13 @@
 			<scope>test</scope>
 		</dependency>
 
-	
-
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>3.3.3</version>
+			<scope>test</scope>
+		</dependency>
 		<!-- Spring Boot Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -394,10 +400,21 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -415,7 +432,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<version>0.8.8</version>
 				<executions>
 					<!-- For Unit Test Coverage - jacoco-ut.exec -->
 					<execution>
@@ -491,7 +508,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.21.0</version>
+				<version>3.2.5</version>
+				<configuration>
+					<!-- Activate the use of TCP to transmit events to the plugin -->
+					<forkNode
+						implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+				</configuration>
 				<executions>
 					<execution>
 						<id>default-test</id>
@@ -499,11 +521,13 @@
 							<goal>test</goal>
 						</goals>
 						<configuration>
-							<argLine>${surefireArgLine}</argLine>
+
 							<skipTests>${skip.unit.tests}</skipTests>
 							<excludes>
 								<exclude>**/IT*.java</exclude>
 							</excludes>
+							<forkNode
+								implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
 						</configuration>
 					</execution>
 				</executions>
@@ -523,7 +547,7 @@
 							<includes>
 								<include>**/IT*.java</include>
 							</includes>
-							<argLine>${failsafeArgLine}</argLine>
+
 							<skipTests>${skip.integration.tests}</skipTests>
 						</configuration>
 					</execution>
@@ -595,6 +619,29 @@
 	</reporting>
 
 	<profiles>
+
+		<!-- Profile for Java 17 -->
+		<profile>
+			<id>java17-profile</id>
+			<activation>
+				<jdk>[17,)</jdk>
+			</activation>
+			<properties>
+				<argLine>
+					--add-opens=java.base/java.util=ALL-UNNAMED
+					--add-opens=java.base/java.util.regex=ALL-UNNAMED
+					--add-opens=java.base/java.io=ALL-UNNAMED
+					--add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+					--add-opens=java.base/java.lang=ALL-UNNAMED
+					--add-opens=java.base/java.time=ALL-UNNAMED
+					--add-opens=java.base/java.time.format=ALL-UNNAMED
+					--add-opens
+					java.base/java.text=ALL-UNNAMED
+				</argLine>
+
+
+			</properties>
+		</profile>
 		<profile>
 			<id>eCRNow</id>
 			<activation>

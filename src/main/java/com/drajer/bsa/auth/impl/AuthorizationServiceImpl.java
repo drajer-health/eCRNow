@@ -7,6 +7,7 @@ import com.drajer.sof.model.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +43,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
   public JSONObject getAuthorizationToken(FhirServerDetails fsd) {
 
     JSONObject tokenResponse;
-    logger.info("Getting AccessToken for EHR FHIR URL : {}", fsd.getFhirServerBaseURL());
-    logger.info("Getting AccessToken for Client Id : {}", fsd.getClientId());
+    logger.info(
+        "Getting AccessToken for EHR FHIR URL : {}",
+        StringEscapeUtils.escapeJava(fsd.getFhirServerBaseURL()));
+    logger.info(
+        "Getting AccessToken for Client Id : {}", StringEscapeUtils.escapeJava(fsd.getClientId()));
 
     try {
 
@@ -53,7 +57,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         logger.info(
             " System Launch/Multi-tenant System Launch authorization is configured for EHR {}",
-            fsd.getAuthType());
+            StringEscapeUtils.escapeJava(fsd.getAuthType()));
 
         RestTemplate resTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -81,17 +85,22 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             resTemplate.exchange(fsd.getTokenUrl(), HttpMethod.POST, entity, Response.class);
         tokenResponse = new JSONObject(Objects.requireNonNull(response.getBody()));
 
-        logger.debug("Received AccessToken: {}", tokenResponse);
+        logger.debug(
+            "Received AccessToken: {}", StringEscapeUtils.escapeJson(tokenResponse.toString()));
 
         return tokenResponse;
       } else {
 
-        logger.error(" Wrong Auth Type provided for Authorization {}", fsd.getAuthType());
+        logger.error(
+            " Wrong Auth Type provided for Authorization {}",
+            StringEscapeUtils.escapeJava(fsd.getAuthType()));
       }
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
+          "Error in Getting the AccessToken for the client: {}",
+          StringEscapeUtils.escapeJava(fsd.getFhirServerBaseURL()),
+          e);
     }
     return null;
   }

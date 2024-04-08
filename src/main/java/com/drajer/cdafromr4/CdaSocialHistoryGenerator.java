@@ -11,10 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.StringType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -31,7 +35,8 @@ public class CdaSocialHistoryGenerator {
 
     StringBuilder sb = new StringBuilder(2000);
 
-    // Will have to wait to discuss with vendors on Travel History, Pregnancy, and Birth Sex
+    // Will have to wait to discuss with vendors on Travel History, Pregnancy, and
+    // Birth Sex
     // Observations.
     // Then we can generte the entries. Till then it will be empty section.
     CodeType birthSex =
@@ -112,7 +117,8 @@ public class CdaSocialHistoryGenerator {
       if (pregObs != null && !pregObs.isEmpty()) {
 
         logger.info("Pregnancy Status Observation Found - Will be added as needed.");
-        // These are not available in FHIR right now reliably, so nothing to process until further
+        // These are not available in FHIR right now reliably, so nothing to process
+        // until further
         // discussion with vendors.
 
         // Setup Table Text Entries
@@ -161,9 +167,7 @@ public class CdaSocialHistoryGenerator {
               CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_1_BODY_CONTENT,
               CdaGeneratorConstants.TRAVEL_HISTORY_DISPLAY);
 
-          String display =
-              CdaFhirUtilities.getCombinationStringForCodeSystem(
-                  obs.getCode(), obs.getValue(), CdaGeneratorConstants.FHIR_SNOMED_URL, true);
+          String display = CdaFhirUtilities.getStringForObservationsWithComponents(obs);
 
           bodyvals.put(CdaGeneratorConstants.SOC_HISTORY_TABLE_COL_2_BODY_CONTENT, display);
 
@@ -248,11 +252,71 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForEffectiveTime(
             CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
 
+    // Add components
+    sb.append(generateParticipant(obs));
+
     // End Tag for Entry
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
 
     return sb.toString();
+  }
+
+  public static String generateParticipant(Observation obs) {
+    StringBuilder sb = new StringBuilder();
+
+    if (obs != null && obs.hasComponent()) {
+      for (ObservationComponentComponent oc : obs.getComponent()) {
+        if (isValidObservationComponent(oc)) {
+          sb.append(buildParticipantXml(oc));
+        }
+      }
+    }
+
+    return sb.toString();
+  }
+
+  private static boolean isValidObservationComponent(ObservationComponentComponent oc) {
+    return (oc.hasCode() && oc.hasValue());
+  }
+
+  private static String buildParticipantXml(ObservationComponentComponent oc) {
+    StringBuilder participantXml = new StringBuilder();
+
+    participantXml
+        .append(CdaGeneratorUtils.getXmlForParticipant(CdaGeneratorConstants.TYPE_CODE_LOC))
+        .append(CdaGeneratorUtils.getXmlForParticipantRole(CdaGeneratorConstants.TERR));
+
+    if (oc.hasValue() && oc.getValue() instanceof CodeableConcept) {
+
+      CodeableConcept cc = (CodeableConcept) oc.getValue();
+
+      if (cc.hasCoding()) {
+        participantXml.append(
+            CdaFhirUtilities.getSingleCodingXmlFromCodings(
+                cc.getCoding(), CdaGeneratorConstants.CODE_EL_NAME));
+      } else if (cc.hasText()) {
+        participantXml.append(
+            CdaGeneratorUtils.getXmlForNullCDWithText(
+                CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cc.getText()));
+      }
+    }
+
+    if (oc.hasExtension()) {
+      Address address =
+          CdaFhirUtilities.getAddressExtensionValue(
+              oc.getExtension(), CdaGeneratorConstants.FHIR_OBSERVATION_ADDRESS_EXTENSION_URL);
+      if (address != null) {
+        participantXml.append(CdaFhirUtilities.getTravelHistoryAddressXml(address));
+      }
+    }
+
+    participantXml
+        .append(
+            CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_ROLE_EL_NAME))
+        .append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.PARTICIPANT_EL_NAME));
+
+    return participantXml.toString();
   }
 
   public static String generateOccHistoryEntry(Observation obs) {
@@ -321,7 +385,6 @@ public class CdaSocialHistoryGenerator {
 
     StringBuilder sb = new StringBuilder();
 
-    // Generate the entry
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ENTRY_EL_NAME));
     sb.append(
         CdaGeneratorUtils.getXmlForAct(
@@ -371,10 +434,31 @@ public class CdaSocialHistoryGenerator {
           CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
     }
 
-    // End Tag for Entry Relationship
+    DateTimeType estimatedDate = null;
+
+    if (cond.getOnset() instanceof Period) {
+      Period onsetPeriod = (Period) cond.getOnset();
+      if (onsetPeriod.hasEnd()) {
+        estimatedDate = onsetPeriod.getEndElement();
+      }
+    } else if (cond.hasAbatement()) {
+      if (cond.getAbatement() instanceof DateTimeType) {
+        estimatedDate = (DateTimeType) cond.getAbatement();
+      }
+    }
+
+    if (estimatedDate != null) {
+
+      // Generate the Estimate Delivery entry
+      sb.append(
+          CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_REFR_CODE));
+
+      sb.append(generateXmlforEstimatedDeliveryDate(estimatedDate));
+
+      sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+    }
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
-
     return sb.toString();
   }
 
@@ -455,6 +539,36 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForText(
             CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.SOC_HISTORY_SEC_TITLE));
 
+    return sb.toString();
+  }
+
+  private static String generateXmlforEstimatedDeliveryDate(DateTimeType estimatedDate) {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.PREGNANCY_EDOD_OBS_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_CODE,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.PREGNANCY_ESTIMATED_DELIVERY_DATE_DISPLAY_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForValueEffectiveTime(
+            CdaGeneratorConstants.VAL_EL_NAME, estimatedDate.getValue(), null));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
     return sb.toString();
   }
 

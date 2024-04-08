@@ -1,5 +1,6 @@
 package com.drajer.bsa.service.impl;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.auth.AuthorizationUtils;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
@@ -106,7 +107,12 @@ public class KarParserImpl implements KarParser {
   private static final String VARIABLE_EXTENSION_URL =
       "http://hl7.org/fhir/StructureDefinition/variable";
 
+  private static final String US_SPECIFICATION_LIBRARY_PROFILE =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library";
+
   private static final String RCTC_DEFAULT_SYSTEM = "urn:ietf:rfc:3986";
+
+  private static final String VERSION3_ERSD = "3.";
 
   private final Logger logger = LoggerFactory.getLogger(KarParserImpl.class);
   private static final Logger logger2 = LoggerFactory.getLogger(KarParserImpl.class);
@@ -370,6 +376,23 @@ public class KarParserImpl implements KarParser {
           logger.info(" Processing Library");
 
           Library lib = (Library) comp.getResource();
+
+          // Add Version
+          if (lib.hasMeta() && lib.getMeta().hasProfile() && lib.getMeta().hasVersionId()) {
+
+            List<CanonicalType> profiles = lib.getMeta().getProfile();
+
+            for (CanonicalType prof : profiles) {
+
+              if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
+                logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
+                art.setKarVersion(lib.getMeta().getVersionId());
+                break;
+              }
+            }
+          }
+
           if (art.getKarName() == null) {
             art.setKarName(lib.getName());
           }
@@ -507,6 +530,7 @@ public class KarParserImpl implements KarParser {
         action.setActionId(act.getId(), plan.getUrl());
         action.setScheduler(scheduler);
         action.setJsonParser(jsonParser);
+        action.setXmlParser(FhirContext.forR4().newXmlParser());
         action.setRestTemplate(restTemplate);
         action.setIgnoreTimers(ignoreTimers);
         action.setType(BsaTypes.getActionType(cd.getCode()));
@@ -536,6 +560,7 @@ public class KarParserImpl implements KarParser {
     action.setActionId("check-response", plan.getUrl());
     action.setScheduler(scheduler);
     action.setJsonParser(jsonParser);
+    action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setRestTemplate(restTemplate);
     action.setIgnoreTimers(ignoreTimers);
     action.setType(ActionType.CHECK_RESPONSE);
@@ -698,6 +723,7 @@ public class KarParserImpl implements KarParser {
     }
 
     action.setJsonParser(this.jsonParser);
+    action.setXmlParser(FhirContext.forR4().newXmlParser());
     action.setIgnoreTimers(this.ignoreTimers);
 
     if (action.getType() == ActionType.EVALUATE_MEASURE) {
@@ -771,6 +797,7 @@ public class KarParserImpl implements KarParser {
           subAction.setActionId(act.getId(), plan.getUrl());
           subAction.setScheduler(scheduler);
           subAction.setJsonParser(jsonParser);
+          subAction.setXmlParser(FhirContext.forR4().newXmlParser());
           subAction.setRestTemplate(restTemplate);
           subAction.setIgnoreTimers(ignoreTimers);
           subAction.setType(BsaTypes.getActionType(cd.getCode()));

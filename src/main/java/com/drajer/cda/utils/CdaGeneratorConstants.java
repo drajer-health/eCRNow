@@ -22,6 +22,7 @@ public class CdaGeneratorConstants {
   public static final String START_XMLTAG = "<";
   public static final String END_XMLTAG = "/>";
   public static final String END_XMLTAG_NEWLN = "/>" + "\n";
+  public static final String NEW_LINE = "\n";
   public static final String FORWARD_SLASH = "/";
   public static final String BACKWARD_SLASH = "\\";
   public static final String DOUBLE_QUOTE = "\"";
@@ -122,8 +123,12 @@ public class CdaGeneratorConstants {
   public static final String FHIR_DATA_ABSENT_REASON_EXT_URL =
       "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
 
+  public static final String SDTC_DETAILED_RACE_CODE = "sdtc:raceCode";
+  public static final String SDTC_DETAILED_ETHNIC_GROUP_CODE = "sdtc:ethnicGroupCode";
+
   public static final String OMB_RACE_CATEGORY_URL = "ombCategory";
   public static final String OMB_RACE_DETAILED_URL = "detailed";
+  public static final String OMB_ETHNICITY_DETAILED_URL = "detailed";
   public static final String FHIR_NPI_URL = "http://hl7.org/fhir/sid/us-npi";
   public static final String FHIR_CPT_URL = "http://www.ama-assn.org/go/cpt";
   public static final String FHIR_SNOMED_URL = "http://snomed.info/sct";
@@ -149,6 +154,9 @@ public class CdaGeneratorConstants {
       "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus";
   public static final String FHIR_RELIGIOUS_AFFILIATION_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation";
+  public static final String FHIR_OBSERVATION_ADDRESS_EXTENSION_URL =
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-address-extension";
+
   public static final String FHIR_NF_URL = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String FHIR_ENCOUNTER_CLASS_URL =
       "http://terminology.hl7.org/CodeSystem/v3-ActCode";
@@ -534,6 +542,8 @@ public class CdaGeneratorConstants {
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.200";
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
   public static final String PREGNANCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
+
+  public static final String PREGNANCY_EDOD_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.1";
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.1";
   public static final String PLANNED_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.44";
   public static final String PLANNED_OBS_TEMPLATE_ID_EXT = "2014-06-09";
@@ -555,6 +565,11 @@ public class CdaGeneratorConstants {
   public static final String BIRTH_SEX_CODESYSTEM_OID = "2.16.840.1.113883.5.1";
   public static final String BIRTH_SEX_CODESYSTEM_NAME = "Administrative Gender";
 
+  public static final String PREGNANCY_ESTIMATED_DELIVERY_DATE_CODE = "11778-8";
+  public static final String PREGNANCY_ESTIMATED_DELIVERY_DATE_CODESYSTEM_OID =
+      "2.16.840.1.113883.6.1";
+  public static final String PREGNANCY_ESTIMATED_DELIVERY_DATE_DISPLAY_NAME =
+      "Estimated date of delivery";
   // Payer Related Information.
   public static final String PAYERS_SEC_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.2.18";
   public static final String PAYERS_SEC_TEMPLATE_ID_EXT = "2015-08-01";
@@ -687,7 +702,7 @@ public class CdaGeneratorConstants {
   public static final String TYPE_CODE_LOC = "LOC";
   public static final String TYPE_CODE_PRD = "PRD";
   public static final String US_REALM_CODE_VAL = "US";
-
+  public static final String TERR = "TERR";
   // Element Names
   public static final String REALM_CODE_EL_NAME = "realmCode";
   public static final String ENTRY_REL_NAME = "entryRelationship";
@@ -708,6 +723,7 @@ public class CdaGeneratorConstants {
   public static final String ADDR_EL_NAME = "addr";
   public static final String ST_ADDR_LINE_EL_NAME = "streetAddressLine";
   public static final String CITY_EL_NAME = "city";
+  public static final String COUNTY_EL_NAME = "county";
   public static final String STATE_EL_NAME = "state";
   public static final String COUNTRY_EL_NAME = "country";
   public static final String POSTAL_CODE_EL_NAME = "postalCode";
@@ -751,6 +767,7 @@ public class CdaGeneratorConstants {
   public static final String MANU_MAT_EL_NAME = "manufacturedMaterial";
   public static final String LOT_NUM_TEXT = "lotNumberText";
   public static final String PERF_EL_NAME = "performer";
+  public static final String DEFAULT_PERF_EL_TYPE_CODE = "PRF";
   public static final String ASSIGNED_ENTITY_EL_NAME = "assignedEntity";
   public static final String ASSOCIATED_ENTITY_EL_NAME = "associatedEntity";
   public static final String PARTICIPANT_EL_NAME = "participant";

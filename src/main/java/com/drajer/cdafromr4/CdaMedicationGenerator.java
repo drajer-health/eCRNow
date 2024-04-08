@@ -333,14 +333,17 @@ public class CdaMedicationGenerator {
     if (effectiveTime != null) {
       sb.append(
           CdaFhirUtilities.getXmlForType(
-              effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+              effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
     } else if (startDate != null) {
       sb.append(
-          CdaFhirUtilities.getDateTimeTypeXml(startDate, CdaGeneratorConstants.EFF_TIME_EL_NAME));
+          CdaGeneratorUtils.getXmlForValueEffectiveTime(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME,
+              startDate.getValue(),
+              startDate.getTimeZone()));
     } else {
       sb.append(
-          CdaGeneratorUtils.getXmlForNullEffectiveTime(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
+          CdaGeneratorUtils.getXmlForValueEffectiveTime(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, null, null));
     }
 
     // Set up Effective Time for Frequency.

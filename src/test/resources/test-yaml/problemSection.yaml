@@ -51,7 +51,7 @@ testCase:
         "thead/tr/th[3]": "Problem Recorded Date|Onset Date|Resolved Date"
         "tbody/tr[1]/td[1]/content": "Disease caused by 2019 novel coronavirus"
         "tbody/tr[1]/td[2]/content": "Active"
-        "tbody/tr[1]/td[3]/content": "Wed May 13 19:04:28 UTC 2020Wed May 13 19:04:00 UTC 2020Unknown"
+        "tbody/tr[1]/td[3]/content": "Wed May 13 19:04:28 UTC 2020|Wed May 13 19:04:00 UTC 2020|Unknown"
       - xPath: "entry"
         count: 1
       - xPath: "entry[1]/"

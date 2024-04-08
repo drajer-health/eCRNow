@@ -8,20 +8,26 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.codesystems.V3ParticipationType;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,9 +186,21 @@ public class CdaResultGenerator {
             CdaGeneratorUtils.getXmlForCD(
                 CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
+        if (obs.hasIssued()) {
+          Pair<Date, TimeZone> issuedDate = CdaFhirUtilities.getActualDate(obs.getIssuedElement());
+
+          lrEntry.append(
+              CdaGeneratorUtils.getXmlForIVLWithTS(
+                  CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
+        }
+
         lrEntry.append(
             getXmlForObservation(
-                details, obs, CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, rowNum));
+                details,
+                obs,
+                CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
+                rowNum,
+                data));
 
         // End Tags for Entries
         lrEntry.append(
@@ -194,7 +212,7 @@ public class CdaResultGenerator {
       }
 
       if (reports != null && !reports.isEmpty()) {
-        processDiagnosticResults(reports, allResults, details, rowNum, sb, resultEntries);
+        processDiagnosticResults(reports, allResults, details, rowNum, sb, resultEntries, data);
       }
 
       // End the Sb string.
@@ -226,7 +244,8 @@ public class CdaResultGenerator {
       LaunchDetails details,
       int rowNum,
       StringBuilder sb,
-      StringBuilder resultEntries) {
+      StringBuilder resultEntries,
+      R4FhirData data) {
 
     // Create a map of all Observations to ids for faster lookup
     HashMap<String, Observation> observations = new HashMap<>();
@@ -332,7 +351,8 @@ public class CdaResultGenerator {
               observations,
               details,
               CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT,
-              rowNum);
+              rowNum,
+              data);
 
       boolean compFound = false;
       if (compXml != null && !compXml.isEmpty()) {
@@ -375,7 +395,8 @@ public class CdaResultGenerator {
       HashMap<String, Observation> allObs,
       LaunchDetails details,
       String contentId,
-      int row) {
+      int row,
+      R4FhirData data) {
 
     logger.info(" Adding References to observations ");
     StringBuilder lrEntry = new StringBuilder(2000);
@@ -436,7 +457,9 @@ public class CdaResultGenerator {
                   obs.getEffective(),
                   interpretation,
                   contentRef,
-                  null);
+                  null,
+                  obs.getPerformer(),
+                  data);
 
           if (!compString.isEmpty() && Boolean.FALSE.equals(foundComponent)) foundComponent = true;
 
@@ -469,17 +492,19 @@ public class CdaResultGenerator {
                 obs.getEffective(),
                 obs.getInterpretation(),
                 contentRef,
-                rep.getCode()));
+                rep.getCode(),
+                obs.getPerformer(),
+                data));
       }
     }
 
-    logger.debug("Lr Entry = {}", lrEntry);
+    logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
 
     return lrEntry.toString();
   }
 
   public static String getXmlForObservation(
-      LaunchDetails details, Observation obs, String contentId, int row) {
+      LaunchDetails details, Observation obs, String contentId, int row, R4FhirData data) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
     String contentRef = contentId + Integer.toString(row);
@@ -522,7 +547,9 @@ public class CdaResultGenerator {
                 obs.getEffective(),
                 interpretation,
                 contentRef,
-                null);
+                null,
+                obs.getPerformer(),
+                data);
 
         if (!compString.isEmpty()) {
           foundComponent = true;
@@ -545,10 +572,12 @@ public class CdaResultGenerator {
               obs.getEffective(),
               obs.getInterpretation(),
               contentRef,
-              null));
+              null,
+              obs.getPerformer(),
+              data));
     }
 
-    logger.debug("Lr Entry = {}", lrEntry);
+    logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
 
     return lrEntry.toString();
   }
@@ -561,7 +590,9 @@ public class CdaResultGenerator {
       Type effective,
       List<CodeableConcept> interpretation,
       String contentRef,
-      CodeableConcept altCode) {
+      CodeableConcept altCode,
+      List<Reference> performerRefs,
+      R4FhirData data) {
 
     StringBuilder lrEntry = new StringBuilder(2000);
 
@@ -612,7 +643,8 @@ public class CdaResultGenerator {
 
     } else if (altObsCodeXml != null && altObsCodeXml.getValue0()) {
 
-      // this will catch the case the DiagnosticReport.code is matched and the Observation.code does
+      // this will catch the case the DiagnosticReport.code is matched and the
+      // Observation.code does
       // not exist
       // or is not the same.
       lrEntry.append(
@@ -663,6 +695,8 @@ public class CdaResultGenerator {
     }
 
     // Add performer
+
+    lrEntry.append(getXmlForAuthor(performerRefs, data));
 
     // End Tag for Entry Relationship
     lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -939,6 +973,36 @@ public class CdaResultGenerator {
     }
 
     return sr;
+  }
+
+  public static String getXmlForAuthor(List<Reference> performerRefs, R4FhirData data) {
+    StringBuilder sb = new StringBuilder();
+    List<Practitioner> practList = new ArrayList<>();
+
+    if (data == null || performerRefs == null || performerRefs.isEmpty()) {
+      return sb.toString();
+    }
+
+    for (Reference reference : performerRefs) {
+      if (reference.hasReferenceElement()
+          && reference.getReferenceElement().hasResourceType()
+          && ResourceType.fromCode(reference.getReferenceElement().getResourceType())
+              == ResourceType.Practitioner) {
+
+        Practitioner pract = data.getPractitionerById(reference.getReferenceElement().getIdPart());
+        if (pract != null) {
+          practList.add(pract);
+        }
+      }
+    }
+
+    if (!practList.isEmpty()) {
+      HashMap<V3ParticipationType, List<Practitioner>> practMap = new HashMap<>();
+      practMap.put(V3ParticipationType.AUT, practList);
+      sb.append(CdaHeaderGenerator.getAuthorXml(data, data.getEncounter(), practMap));
+    }
+
+    return sb.toString();
   }
 
   public static List<DiagnosticReport> getValidDiagnosticReports(R4FhirData data) {

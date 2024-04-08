@@ -3,6 +3,7 @@ package com.drajer.bsa.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.utils.SubscriptionUtils;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import java.io.File;
@@ -27,7 +28,8 @@ class SubscriptionUtilsTest {
 
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpServletResponse response = mock(HttpServletResponse.class);
+    PatientLaunchContext launchContext = new PatientLaunchContext();
 
-    SubscriptionUtils.getNotificationContext(bund, request, response);
+    SubscriptionUtils.getNotificationContext(bund, request, response, false, launchContext);
   }
 }

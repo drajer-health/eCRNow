@@ -303,7 +303,8 @@ public class EcaUtilsTest {
             mockContext,
             mockDetails.getEhrServerURL(),
             mockDetails.getAccessToken(),
-            mockDetails.getxRequestId()))
+            mockDetails.getxRequestId(),
+            null))
         .thenReturn(mockClient);
     Period period = new Period();
     period.setStart(null);

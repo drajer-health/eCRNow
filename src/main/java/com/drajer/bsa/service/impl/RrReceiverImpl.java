@@ -6,9 +6,11 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.service.RrReceiver;
 import com.drajer.cda.parser.CdaIi;
@@ -20,8 +22,10 @@ import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.sof.utils.FhirContextInitializer;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -60,6 +64,8 @@ public class RrReceiverImpl implements RrReceiver {
 
   @Autowired FhirContextInitializer fhirContextInitializer;
 
+  @Autowired NotificationContextDao ncDao;
+
   /**
    * The method is used to handle a failure MDN that is received from the Direct channel.
    *
@@ -78,7 +84,8 @@ public class RrReceiverImpl implements RrReceiver {
 
     if (phm != null) {
 
-      logger.info(" Found the Eicr for correlation Id: {}", xCorrelationId);
+      logger.info(
+          " Found the Eicr for correlation Id: {}", StringEscapeUtils.escapeJava(xCorrelationId));
       phm.setResponseMessageType(EicrTypes.RrType.FAILURE_MDN.toString());
       // phm.setxRequestId(xRequestId);
       phm.setFailureResponseData(data.getRrXml());
@@ -87,7 +94,8 @@ public class RrReceiverImpl implements RrReceiver {
 
     } else {
       String errorMsg =
-          "Unable to find Public Health Message for Correlation Id: " + xCorrelationId;
+          "Unable to find Public Health Message for Correlation Id: "
+              + StringEscapeUtils.escapeJava(xCorrelationId);
       logger.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
 
@@ -197,7 +205,7 @@ public class RrReceiverImpl implements RrReceiver {
               EicrTypes.RrProcessingStatus.HEALTHCARE_SETTING_NOT_FOUND_FOR_RR.toString());
         }
 
-        // Save the state, no matter what so that they can be reporcessed.
+        // Save the state, no matter what so that they can be reprocessed.
         phDao.saveOrUpdate(phm);
 
       } else {
@@ -261,6 +269,12 @@ public class RrReceiverImpl implements RrReceiver {
 
     // Get the AccessToken using the HealthcareSetting
     JSONObject tokenResponse = ehrService.getAuthorizationToken(hs);
+    String ehrContext = null;
+    if (phm != null) {
+      NotificationContext nc =
+          ncDao.getNotificationContextById(UUID.fromString(phm.getNotificationId()));
+      if (nc != null) ehrContext = nc.getEhrLaunchContext();
+    }
 
     if (tokenResponse != null) {
 
@@ -274,7 +288,7 @@ public class RrReceiverImpl implements RrReceiver {
       // Initialize the Client
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId());
+              context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId(), ehrContext);
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
       if (outcome != null && outcome.getCreated()) {
@@ -289,7 +303,9 @@ public class RrReceiverImpl implements RrReceiver {
         phm.setResponseEhrDocRefId(outcome.getId().getIdPart());
 
       } else {
-        String errorMsg = "Unable to post RR response to FHIR server: " + hs.getFhirServerBaseURL();
+        String errorMsg =
+            "Unable to post RR response to FHIR server: "
+                + StringEscapeUtils.escapeJava(hs.getFhirServerBaseURL());
         logger.error(errorMsg);
         throw new UnclassifiedServerFailureException(500, errorMsg);
       }

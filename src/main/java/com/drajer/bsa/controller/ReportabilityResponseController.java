@@ -7,6 +7,7 @@ import com.drajer.ecrapp.model.ReportabilityResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,8 @@ public class ReportabilityResponseController {
 
       logger.info(
           " Reportability Response received for X-Correlation-ID: {} with X-Request-ID: {}",
-          xCorrelationIdHttpHeaderValue,
-          xRequestIdHttpHeaderValue);
+          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue),
+          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue));
 
       if (data.getResponseType().contentEquals(ReportabilityResponse.MDN_RESPONSE_TYPE)) {
 
@@ -83,7 +84,10 @@ public class ReportabilityResponseController {
       @RequestParam(name = "eicrId", required = false) String eicrId,
       @RequestParam(name = "eicrDocId", required = false) String eicrDocId) {
     try {
-      logger.info("Received EicrId:: {}, EicrDocId:: {} in the request", eicrId, eicrDocId);
+      logger.info(
+          "Received EicrId:: {}, EicrDocId:: {} in the request",
+          StringEscapeUtils.escapeJava(eicrId),
+          StringEscapeUtils.escapeJava(eicrDocId));
       PublicHealthMessage phm = null;
       if (eicrId != null) {
         phm = phDao.getBySubmittedMessageId(eicrId);

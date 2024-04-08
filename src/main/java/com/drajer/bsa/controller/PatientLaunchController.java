@@ -14,6 +14,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
@@ -79,11 +80,12 @@ public class PatientLaunchController {
       HttpServletResponse response) {
 
     logger.info(
-        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
-        launchContext.getFhirServerURL(),
-        launchContext.getPatientId(),
-        launchContext.getEncounterId(),
-        request.getHeader(X_REQUEST_ID),
+        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, ehrLaunchContext: {}, requestId: {},  throttleContext: {}",
+        StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
+        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+        launchContext.getEhrLaunchContext().size(),
+        StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
         launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
@@ -113,9 +115,9 @@ public class PatientLaunchController {
     }
     logger.info(
         " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-        launchContext.getPatientId(),
-        launchContext.getEncounterId(),
-        request.getHeader("X-Request-ID"));
+        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+        StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
     return "Patient Instance launched for processing successfully";
   }
@@ -155,10 +157,10 @@ public class PatientLaunchController {
 
     logger.info(
         "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
-        launchContext.getFhirServerURL(),
-        launchContext.getPatientId(),
-        launchContext.getEncounterId(),
-        request.getHeader(X_REQUEST_ID),
+        StringEscapeUtils.escapeJava(launchContext.getFhirServerURL()),
+        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+        StringEscapeUtils.escapeJava(request.getHeader(X_REQUEST_ID)),
         launchContext.getThrottleContext());
 
     logger.info(FHIR_VERSION);
@@ -174,7 +176,8 @@ public class PatientLaunchController {
 
         Bundle nb = getNotificationBundle(launchContext, hs, requestId, true);
 
-        notificationReceiver.processRelaunchNotification(nb, request, response, launchContext);
+        notificationReceiver.processRelaunchNotification(
+            nb, request, response, launchContext, true);
 
       } else {
         throw new ResponseStatusException(
@@ -188,9 +191,9 @@ public class PatientLaunchController {
     }
     logger.info(
         " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-        launchContext.getPatientId(),
-        launchContext.getEncounterId(),
-        request.getHeader("X-Request-ID"));
+        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+        StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
     return "Patient Instance launched for processing successfully";
   }
