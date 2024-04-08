@@ -114,17 +114,30 @@ The attribute ```xsd.schemas.location``` has to be set to the CDA XSD with SDTC 
 Change the logfile location to reflect where you want to log the data.
 
 4. Build the App by running the following maven command.
+```
+mvn clean install -DJAVA.VERSION=<java_version>
+```
 
-```mvn clean install```
+For Java 8
+
+```
+mvn clean install -DJAVA.VERSION=1.8
+```
+
+For Java 17
+
+```
+mvn clean install -DJAVA.VERSION=17
+```
 
 5. Run the App using the following command from the eCRNow project root directory.
 
-```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -jar ./target/ecr-now.war```
+```java -Djdbc.username=postgres -Djdbc.password=postgres -Dsecurity.key=test123 -DJAVA.VERSION=<JAVA VERSION> -jar ./target/ecr-now.war```
 
 The security.key is something that you can configure in the environment or your container approach and is used for encrypting sensitive information such as clientids, client secrets and direct transport account information in the database.
 
 NOTE: If you are using Windows system to run the application, then use the command formatted like below.
-```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" -jar .\target\ecr-now.war```
+```java "-Djdbc.username=postgres" "-Djdbc.password=postgres" "-Dsecurity.key=test123" "-DJAVA.VERSION=<JAVA VERSION>" -jar .\target\ecr-now.war```
 
 6. **App configuration for EHR server:** 
 
