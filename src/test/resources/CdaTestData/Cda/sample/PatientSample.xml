@@ -386,6 +386,29 @@
 <high nullFlavor="NI"/>
 </effectiveTime>
 <sdtc:dischargeDispositionCode code="home" codeSystem="2.16.840.1.113883.4.642.4.1093" codeSystemName="discharge-disposition" displayName="Home"></sdtc:dischargeDispositionCode>
+<entryRelationship typeCode="RSON">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.80"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.80" extension="2015-08-01"/>
+<code code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="DIAGNOSIS"/>
+<statusCode code="active"/>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="186747009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="coronavirus infection"></value>
+</observation>
+</entryRelationship>
+</act>
+</entryRelationship>
 </encounter>
 </entry>
 </section>
@@ -443,7 +466,7 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.hospmedicationrequest-26903"/>
 <statusCode code="active"/>
-<effectiveTime value="20220920061723-0400"/>
+<effectiveTime xsi:type="TS" value="20220920061723-0400"/>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>
