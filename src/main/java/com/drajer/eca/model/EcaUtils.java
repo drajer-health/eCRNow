@@ -325,7 +325,11 @@ public class EcaUtils {
 
       IGenericClient client =
           ci.createClient(
-              ctx, details.getEhrServerURL(), details.getAccessToken(), details.getxRequestId());
+              ctx,
+              details.getEhrServerURL(),
+              details.getAccessToken(),
+              details.getxRequestId(),
+              null);
 
       Encounter r4Encounter = null;
       ca.uhn.fhir.model.dstu2.resource.Encounter dstu2Encounter = null;

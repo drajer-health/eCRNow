@@ -508,6 +508,7 @@
 							<excludes>
 								<exclude>**/IT*.java</exclude>
 							</excludes>
+							<forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
 						</configuration>
 					</execution>
 				</executions>

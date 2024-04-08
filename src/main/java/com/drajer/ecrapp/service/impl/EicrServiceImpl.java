@@ -316,7 +316,7 @@ public class EicrServiceImpl implements EicrRRService {
       // Initialize the Client
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, fhirServerURL, accessToken, ecr.getResponseXRequestId());
+              context, fhirServerURL, accessToken, ecr.getResponseXRequestId(), null);
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
 

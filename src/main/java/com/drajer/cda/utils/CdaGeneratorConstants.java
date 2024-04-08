@@ -543,7 +543,7 @@ public class CdaGeneratorConstants {
   public static final String BIRTH_SEX_OBS_TEMPLATE_ID_EXT = "2016-06-01";
   public static final String PREGNANCY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
 
-  public static final String PREGNANCY_EDOD_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.8";
+  public static final String PREGNANCY_EDOD_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.3.1";
   public static final String TRAVEL_HISTORY_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.15.2.3.1";
   public static final String PLANNED_OBS_TEMPLATE_ID = "2.16.840.1.113883.10.20.22.4.44";
   public static final String PLANNED_OBS_TEMPLATE_ID_EXT = "2014-06-09";

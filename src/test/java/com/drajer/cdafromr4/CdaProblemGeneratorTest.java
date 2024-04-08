@@ -54,7 +54,9 @@ public class CdaProblemGeneratorTest extends BaseGeneratorTest {
 
     details.setStatus(TestUtils.toJsonString(state));
 
-    String result = CdaProblemGenerator.addTriggerCodes(details, cond, onset, abatement);
+    String result =
+        CdaProblemGenerator.addTriggerCodes(
+            details, cond.getCode(), onset, abatement, cond.getIdElement().getId());
     assertNotNull(result);
   }
 

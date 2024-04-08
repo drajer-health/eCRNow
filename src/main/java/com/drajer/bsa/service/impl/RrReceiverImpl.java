@@ -6,9 +6,11 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.UnclassifiedServerFailureException;
 import com.drajer.bsa.dao.HealthcareSettingsDao;
+import com.drajer.bsa.dao.NotificationContextDao;
 import com.drajer.bsa.dao.PublicHealthMessagesDao;
 import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.model.HealthcareSetting;
+import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthMessage;
 import com.drajer.bsa.service.RrReceiver;
 import com.drajer.cda.parser.CdaIi;
@@ -20,6 +22,7 @@ import com.drajer.ecrapp.model.ReportabilityResponse;
 import com.drajer.sof.utils.FhirContextInitializer;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
@@ -59,6 +62,8 @@ public class RrReceiverImpl implements RrReceiver {
   @Autowired EhrQueryService ehrService;
 
   @Autowired FhirContextInitializer fhirContextInitializer;
+
+  @Autowired NotificationContextDao ncDao;
 
   /**
    * The method is used to handle a failure MDN that is received from the Direct channel.
@@ -261,6 +266,12 @@ public class RrReceiverImpl implements RrReceiver {
 
     // Get the AccessToken using the HealthcareSetting
     JSONObject tokenResponse = ehrService.getAuthorizationToken(hs);
+    String ehrContext = null;
+    if (phm != null) {
+      NotificationContext nc =
+          ncDao.getNotificationContextById(UUID.fromString(phm.getNotificationId()));
+      if (nc != null) ehrContext = nc.getEhrLaunchContext();
+    }
 
     if (tokenResponse != null) {
 
@@ -274,7 +285,7 @@ public class RrReceiverImpl implements RrReceiver {
       // Initialize the Client
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId());
+              context, hs.getFhirServerBaseURL(), accessToken, phm.getxRequestId(), ehrContext);
 
       MethodOutcome outcome = fhirContextInitializer.submitResource(client, docRef);
       if (outcome != null && outcome.getCreated()) {

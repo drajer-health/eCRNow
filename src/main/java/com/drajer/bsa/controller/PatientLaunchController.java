@@ -79,10 +79,11 @@ public class PatientLaunchController {
       HttpServletResponse response) {
 
     logger.info(
-        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, requestId: {}, throttleContext: {}",
+        "Patient launch request received for fhirServerUrl: {}, patientId: {}, encounterId: {}, ehrLaunchContext: {}, requestId: {},  throttleContext: {}",
         launchContext.getFhirServerURL(),
         launchContext.getPatientId(),
         launchContext.getEncounterId(),
+        launchContext.getEhrLaunchContext().size(),
         request.getHeader(X_REQUEST_ID),
         launchContext.getThrottleContext());
 

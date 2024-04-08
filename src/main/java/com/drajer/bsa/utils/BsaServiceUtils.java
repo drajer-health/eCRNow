@@ -320,7 +320,11 @@ public class BsaServiceUtils {
 
         if (retInfo != null) {
 
-          logger.info(" Match Found for code {} | {}", retInfo.getValue0(), retInfo.getValue1());
+          logger.info(
+              " Match Found for Path {} and code {} | {}",
+              path,
+              retInfo.getValue0(),
+              retInfo.getValue1());
 
           if (mtc == null) {
             mtc = new MatchedTriggerCodes();

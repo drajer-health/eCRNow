@@ -174,6 +174,14 @@ public class CdaEncounterGenerator {
         sb.append(encDiagXml);
       }
 
+      String reasonDiagXml = generateEncounterReasonXml(data, details, encounter);
+
+      if (reasonDiagXml != null && !reasonDiagXml.isEmpty()) {
+
+        logger.debug("Adding Encounter Reason Code Xml to the Encounter Section");
+        sb.append(reasonDiagXml);
+      }
+
       // End Entry Tags
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENC_ACT_EL_NAME));
       sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
@@ -295,7 +303,9 @@ public class CdaEncounterGenerator {
               CdaFhirUtilities.getCodeableConceptXml(cds, CdaGeneratorConstants.VAL_EL_NAME, true));
         }
 
-        sb.append(CdaProblemGenerator.addTriggerCodes(details, c, onset, abatement));
+        sb.append(
+            CdaProblemGenerator.addTriggerCodes(
+                details, c.getCode(), onset, abatement, c.getIdElement().getIdPart()));
 
         // End Tag for Entry Relationship
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
@@ -305,6 +315,152 @@ public class CdaEncounterGenerator {
         sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
       }
     }
+
+    return sb.toString();
+  }
+
+  public static String generateEncounterReasonXml(
+      R4FhirData data, LaunchDetails details, Encounter encounter) {
+
+    StringBuilder sb = new StringBuilder();
+    CodeableConcept primaryCd = null;
+
+    if (encounter.hasReasonCode()) {
+
+      List<CodeableConcept> codes = encounter.getReasonCode();
+      List<Coding> codings = new ArrayList<>();
+
+      if (codes != null && !codes.isEmpty()) {
+
+        for (CodeableConcept cd : codes) {
+
+          Coding code =
+              CdaFhirUtilities.getCodingForCodeSystem(cd, CdaGeneratorConstants.FHIR_SNOMED_URL);
+          Coding code1 =
+              CdaFhirUtilities.getCodingForCodeSystem(cd, CdaGeneratorConstants.FHIR_ICD10_CM_URL);
+          Coding code2 =
+              CdaFhirUtilities.getCodingForCodeSystem(cd, CdaGeneratorConstants.FHIR_ICD9_CM_URL);
+
+          if (code != null) {
+            primaryCd = cd;
+            codings.add(code);
+            break;
+          }
+
+          if (code1 != null) {
+            primaryCd = cd;
+            codings.add(code1);
+            break;
+          }
+
+          if (code2 != null) {
+            primaryCd = cd;
+            codings.add(code2);
+            break;
+          }
+        } // for all codeable concepts
+      } // if codeable concept exists
+
+      if (!codings.isEmpty()) {
+        sb.append(
+            addDiagnosisActAndObsXml(
+                details, codings, primaryCd, encounter.getIdElement().getIdPart()));
+      }
+    } // if reason code is present
+
+    return sb.toString();
+  }
+
+  public static String addDiagnosisActAndObsXml(
+      LaunchDetails details, List<Coding> codes, CodeableConcept cd, String id) {
+
+    StringBuilder sb = new StringBuilder(200);
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_RSON_CODE));
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.ACT_EL_NAME,
+            CdaGeneratorConstants.ACT_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.ENC_DIAGNOSIS_ACT_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.ENC_DIAGNOSIS_ACT_TEMPLATE_ID,
+            CdaGeneratorConstants.ENC_DIAGNOSIS_ACT_TEMPLATE_ID_EXT));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.ENC_DIAGNOSIS_ACT_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.ENC_DIAGNOSIS_ACT_CODE_DISPLAY_NAME));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
+
+    // Add problem observation
+    sb.append(
+        CdaGeneratorUtils.getXmlForEntryRelationship(CdaGeneratorConstants.ENTRY_REL_SUBJ_CODE));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    sb.append(CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID));
+    sb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.PROB_OBS_TEMPLATE_ID,
+            CdaGeneratorConstants.PROB_OBS_TEMPALTE_ID_EXT));
+    sb.append(CdaGeneratorUtils.getXmlForII(CdaGeneratorUtils.getGuid()));
+
+    // Add Code.
+    sb.append(
+        CdaGeneratorUtils.getXmlForCDWithoutEndTag(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_SNOMED,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_OID,
+            CdaGeneratorConstants.SNOMED_CODESYSTEM_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.TRANSLATION_EL_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_LOINC,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.DIAGNOSIS_DISPLAY_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.CODE_EL_NAME));
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    Pair<Date, TimeZone> onset = null;
+    Pair<Date, TimeZone> abatement = null;
+
+    sb.append(
+        CdaGeneratorUtils.getXmlForIVLWithTS(
+            CdaGeneratorConstants.EFF_TIME_EL_NAME, onset, abatement, true));
+
+    String codeXml =
+        CdaFhirUtilities.getCodingXmlForValue(codes, CdaGeneratorConstants.VAL_EL_NAME, "");
+
+    if (!codeXml.isEmpty()) sb.append(codeXml);
+
+    sb.append(CdaProblemGenerator.addTriggerCodes(details, cd, onset, abatement, id));
+
+    // End Tag for Entry Relationship
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
+
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ACT_EL_NAME));
+    sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_REL_EL_NAME));
 
     return sb.toString();
   }

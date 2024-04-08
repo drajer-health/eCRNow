@@ -9,10 +9,12 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.IRestfulClientFactory;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
+import com.drajer.bsa.ehr.service.EhrHeaderInterceptorInterface;
 import com.drajer.eca.model.EventTypes;
 import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.ecrapp.fhir.utils.FHIRRetryTemplate;
@@ -92,12 +94,22 @@ public class FhirContextInitializer {
 
   @Autowired FHIRRetryTemplate retryTemplate;
 
+  @Autowired EhrHeaderInterceptorInterface headerInterceptor;
+
   public FhirContextInitializer(FHIRRetryTemplate retryTemplate) {
     this.retryTemplate = retryTemplate;
   }
 
   public void setRetryTemplate(final FHIRRetryTemplate retryTemplate) {
     this.retryTemplate = retryTemplate;
+  }
+
+  public EhrHeaderInterceptorInterface getHeaderInterceptor() {
+    return headerInterceptor;
+  }
+
+  public void setHeaderInterceptor(EhrHeaderInterceptorInterface headerInterceptor) {
+    this.headerInterceptor = headerInterceptor;
   }
 
   /**
@@ -130,7 +142,7 @@ public class FhirContextInitializer {
    * @return a Generic Client
    */
   public IGenericClient createClient(
-      FhirContext context, String url, String accessToken, String requestId) {
+      FhirContext context, String url, String accessToken, String requestId, String ehrContext) {
     logger.trace("Initializing the Client");
 
     FhirClient client =
@@ -152,6 +164,12 @@ public class FhirContextInitializer {
       // client.registerInterceptor(new LoggingInterceptor(true));
     } else {
       logger.debug("AccessToken not supplied for %{}", url);
+    }
+
+    // Add HTTP Header Interceptor
+    if (ehrContext != null && !ehrContext.isEmpty()) {
+      AdditionalRequestHeadersInterceptor hi = headerInterceptor.getHeaderInterceptor(ehrContext);
+      client.registerInterceptor(hi);
     }
 
     if (logger.isDebugEnabled()) {

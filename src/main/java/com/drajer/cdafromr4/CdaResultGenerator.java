@@ -999,7 +999,7 @@ public class CdaResultGenerator {
 
     if (!practList.isEmpty()) {
       HashMap<V3ParticipationType, List<Practitioner>> practMap = new HashMap<>();
-      practMap.put(V3ParticipationType.PPRF, practList);
+      practMap.put(V3ParticipationType.AUT, practList);
       sb.append(CdaHeaderGenerator.getAuthorXml(data, data.getEncounter(), practMap));
     }
 

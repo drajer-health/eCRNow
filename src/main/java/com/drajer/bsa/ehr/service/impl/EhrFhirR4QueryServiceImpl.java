@@ -444,7 +444,8 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
         context,
         kd.getHealthcareSetting().getFhirServerBaseURL(),
         accessToken,
-        kd.getNotificationContext().getxRequestId());
+        kd.getNotificationContext().getxRequestId(),
+        kd.getNotificationContext().getEhrLaunchContext());
   }
 
   private void retrieveAndUpdateAccessToken(KarProcessingData data) {

@@ -342,7 +342,7 @@ public class SubmitReport extends BsaAction {
 
       IGenericClient client =
           fhirContextInitializer.createClient(
-              context, submissionEndpoint, token, data.getxRequestId());
+              context, submissionEndpoint, token, data.getxRequestId(), null);
 
       context.getRestfulClientFactory().setSocketTimeout(120 * 1000);
       context.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);

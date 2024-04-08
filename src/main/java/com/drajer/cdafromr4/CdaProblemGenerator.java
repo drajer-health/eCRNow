@@ -9,6 +9,7 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -268,7 +269,9 @@ public class CdaProblemGenerator {
         logger.debug(
             "Add Trigger Codes to Problem Observation if applicable {}",
             pr.getIdElement().getIdPart());
-        sb.append(addTriggerCodes(details, pr, onset, abatement));
+        sb.append(
+            addTriggerCodes(
+                details, pr.getCode(), onset, abatement, pr.getIdElement().getIdPart()));
 
         logger.debug("Completed adding Trigger Codes ");
 
@@ -291,9 +294,10 @@ public class CdaProblemGenerator {
 
   public static String addTriggerCodes(
       LaunchDetails details,
-      Condition cond,
+      CodeableConcept cd,
       Pair<Date, TimeZone> onset,
-      Pair<Date, TimeZone> abatement) {
+      Pair<Date, TimeZone> abatement,
+      String id) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -308,12 +312,23 @@ public class CdaProblemGenerator {
     for (MatchedTriggerCodes mtc : mtcs) {
 
       // Add each code as an entry relationship observation
-      CodeableConcept cd = cond.getCode();
       List<CodeableConcept> cds = new ArrayList<>();
       if (cd != null) cds.add(cd);
 
       Set<String> matchedCodesFromCc =
           mtc.hasMatchedTriggerCodesFromCodeableConcept("Condition", cds);
+
+      Set<String> encMatchedCodes = mtc.hasMatchedTriggerCodesFromCodeableConcept("Encounter", cds);
+
+      if (encMatchedCodes != null && !encMatchedCodes.isEmpty()) {
+
+        if (matchedCodesFromCc != null) {
+          matchedCodesFromCc.addAll(encMatchedCodes);
+        } else {
+          matchedCodesFromCc = new HashSet<>();
+          matchedCodesFromCc.addAll(encMatchedCodes);
+        }
+      }
 
       if (matchedCodesFromCc != null && !matchedCodesFromCc.isEmpty()) {
 
@@ -344,9 +359,7 @@ public class CdaProblemGenerator {
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID,
                 CdaGeneratorConstants.TRIGGER_CODE_PROB_OBS_TEMPLATE_ID_EXT));
 
-        sb.append(
-            CdaGeneratorUtils.getXmlForII(
-                details.getAssigningAuthorityId(), cond.getIdElement().getIdPart()));
+        sb.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
 
         sb.append(
             CdaGeneratorUtils.getXmlForCDWithoutEndTag(

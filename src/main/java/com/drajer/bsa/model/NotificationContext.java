@@ -142,6 +142,14 @@ public class NotificationContext {
   @Column(name = "encounter_class", nullable = true)
   private String encounterClass;
 
+  /**
+   * This attribute represents the ehr_launch_context that is received as part of the Patient Launch
+   * / re-launch request. This is a Map of Key/Value pairs which is understood by the EHR's FHIR or
+   * other APIs.
+   */
+  @Column(name = "ehr_launch_context", nullable = true)
+  private String ehrLaunchContext;
+
   /** This attribute represents the last time when the object was updated. */
   @Column(name = "last_updated_ts", nullable = false)
   @CreationTimestamp
@@ -312,5 +320,13 @@ public class NotificationContext {
 
   public void setRelaunchNotificationData(String relaunchNotificationData) {
     this.relaunchNotificationData = relaunchNotificationData;
+  }
+
+  public String getEhrLaunchContext() {
+    return ehrLaunchContext;
+  }
+
+  public void setEhrLaunchContext(String ehrLaunchContext) {
+    this.ehrLaunchContext = ehrLaunchContext;
   }
 }
