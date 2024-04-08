@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.swing.*;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hibernate.ObjectDeletedException;
 import org.hl7.fhir.r4.model.Duration;
 import org.slf4j.Logger;
@@ -134,8 +135,8 @@ public class WorkflowService {
       // Identify the appropriate actions and execute it from the Action Repo.
       logger.info(
           " SOF Launch for Patient : {} and Encounter : {}",
-          details.getLaunchPatientId(),
-          details.getEncounterId());
+          StringEscapeUtils.escapeJava(details.getLaunchPatientId()),
+          StringEscapeUtils.escapeJava(details.getEncounterId()));
 
       // Setup Execution State.
       PatientExecutionState oldstate =

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +69,9 @@ public class PhMessageController {
               + "notifiedResourceType = {}\n"
               + "karUniqueId = {}\n"
               + "notificationId = {}\n",
-          fhirServerBaseUrl,
-          patientId,
-          encounterId,
+          StringEscapeUtils.escapeJava(fhirServerBaseUrl),
+          StringEscapeUtils.escapeJava(patientId),
+          StringEscapeUtils.escapeJava(encounterId),
           xRequestId,
           submittedDataId,
           version,

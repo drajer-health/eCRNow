@@ -20,6 +20,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -65,9 +66,12 @@ public class DirectEicrSender extends EicrSender {
       try {
 
         logger.info(
-            " Sending Mail from {} to {}", details.getDirectUser(), details.getDirectRecipient());
+            " Sending Mail from {} to {}",
+            StringEscapeUtils.escapeJava(details.getDirectUser()),
+            StringEscapeUtils.escapeJava(details.getDirectRecipient()));
         if (details.getSmtpUrl() != null) {
-          logger.info("Using SMTP URL to send:::::{}", details.getSmtpUrl());
+          logger.info(
+              "Using SMTP URL to send:::::{}", StringEscapeUtils.escapeJava(details.getSmtpUrl()));
           sendMail(
               details.getSmtpUrl(),
               details.getDirectUser(),
@@ -78,7 +82,9 @@ public class DirectEicrSender extends EicrSender {
               DirectEicrSender.FILE_NAME,
               correlationId);
         } else {
-          logger.info("Using Direct Host to send:::::{}", details.getDirectHost());
+          logger.info(
+              "Using Direct Host to send:::::{}",
+              StringEscapeUtils.escapeJava(details.getDirectHost()));
           sendMail(
               details.getDirectHost(),
               details.getDirectUser(),
@@ -124,7 +130,7 @@ public class DirectEicrSender extends EicrSender {
 
     DirectMimeMessage message = new DirectMimeMessage(session, correlationId, host);
 
-    logger.info("Setting From Address {}", username);
+    logger.info("Setting From Address {}", StringEscapeUtils.escapeJava(username));
     message.setFrom(new InternetAddress(username));
 
     String toAddr = StringUtils.deleteWhitespace(receipientAddr);
@@ -151,7 +157,7 @@ public class DirectEicrSender extends EicrSender {
     Transport transport = session.getTransport("smtp");
     transport.connect(host, Integer.parseInt(port), username, password);
 
-    logger.info(" Connection successful to the direct host {}", host);
+    logger.info(" Connection successful to the direct host {}", StringEscapeUtils.escapeJava(host));
     transport.sendMessage(message, message.getAllRecipients());
 
     logger.info("Finished sending Direct message successfully, closing connection ");

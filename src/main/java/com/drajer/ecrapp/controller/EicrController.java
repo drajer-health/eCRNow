@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,14 +50,14 @@ public class EicrController {
               + "version = {}\n"
               + "fhirServerUrl = {}\n"
               + "xRequestId = {}",
-          eicrId,
-          eicrDocId,
-          setId,
-          patientId,
-          encounterId,
-          version,
-          fhirServerUrl,
-          xRequestId);
+          StringEscapeUtils.escapeJava(eicrId),
+          StringEscapeUtils.escapeJava(eicrDocId),
+          StringEscapeUtils.escapeJava(setId),
+          StringEscapeUtils.escapeJava(patientId),
+          StringEscapeUtils.escapeJava(encounterId),
+          StringEscapeUtils.escapeJava(version),
+          StringEscapeUtils.escapeJava(fhirServerUrl),
+          StringEscapeUtils.escapeJava(xRequestId));
 
       Map<String, String> searchParams = new HashMap<>();
       if (eicrId != null && !eicrId.isEmpty()) {
@@ -164,8 +165,8 @@ public class EicrController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          xRequestIdHttpHeaderValue,
-          xCorrelationIdHttpHeaderValue);
+          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
       eicrList = eicrRRService.getEicrAndRRByXRequestId(xRequestId);
     } catch (Exception e) {
       logger.error(ERROR_IN_PROCESSING_THE_REQUEST, e);
@@ -185,8 +186,8 @@ public class EicrController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for retrieving ECR",
-          xRequestIdHttpHeaderValue,
-          xCorrelationIdHttpHeaderValue);
+          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         logger.error("Eicr Doc Id is null ");
@@ -219,8 +220,8 @@ public class EicrController {
     try {
       logger.info(
           "X-Request-ID: {} and X-Correlation-ID: {} received for deleting ECR",
-          xRequestIdHttpHeaderValue,
-          xCorrelationIdHttpHeaderValue);
+          StringEscapeUtils.escapeJava(xRequestIdHttpHeaderValue),
+          StringEscapeUtils.escapeJava(xCorrelationIdHttpHeaderValue));
 
       if (eicrDocId == null || eicrDocId.isEmpty()) {
         return new ResponseEntity<>(

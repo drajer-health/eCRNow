@@ -6,6 +6,7 @@ import com.drajer.sof.model.Response;
 import com.drajer.sof.service.ClientDetailsService;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +36,18 @@ public class Authorization {
     ResponseEntity<String> response = null;
     JSONObject metadata = null;
     try {
-      logger.info("Getting Metadata information from URL::::: {}", serverURL);
+      logger.info(
+          "Getting Metadata information from URL::::: {}", StringEscapeUtils.escapeJava(serverURL));
       response = restTemplate.exchange(serverURL, HttpMethod.GET, entity, String.class);
       metadata = new JSONObject(response.getBody());
-      logger.info("Received Metadata Information from URL::::: {}", serverURL);
+      logger.info(
+          "Received Metadata Information from URL::::: {}",
+          StringEscapeUtils.escapeJava(serverURL));
     } catch (Exception e) {
-      logger.error("Error in getting Metadata information for URL::::: {}", serverURL, e);
+      logger.error(
+          "Error in getting Metadata information for URL::::: {}",
+          StringEscapeUtils.escapeJava(serverURL),
+          e);
     }
     return metadata;
   }
@@ -72,7 +79,9 @@ public class Authorization {
 
   public JSONObject getAccessToken(LaunchDetails tokenDetails) {
     JSONObject tokenResponse = null;
-    logger.info("Getting AccessToken for Client: {}", tokenDetails.getClientId());
+    logger.info(
+        "Getting AccessToken for Client: {}",
+        StringEscapeUtils.escapeJava(tokenDetails.getClientId()));
     try {
       RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
@@ -88,12 +97,16 @@ public class Authorization {
           restTemplate.exchange(
               tokenDetails.getTokenUrl(), HttpMethod.POST, entity, Response.class);
       tokenResponse = new JSONObject(response.getBody());
-      logger.info("Received AccessToken for Client: {}", tokenDetails.getClientId());
+      logger.info(
+          "Received AccessToken for Client: {}",
+          StringEscapeUtils.escapeJava(tokenDetails.getClientId()));
       logger.info("Received AccessToken: {}", tokenResponse);
 
     } catch (Exception e) {
       logger.error(
-          "Error in Getting the AccessToken for the client: {}", tokenDetails.getClientId(), e);
+          "Error in Getting the AccessToken for the client: {}",
+          StringEscapeUtils.escapeJava(tokenDetails.getClientId()),
+          e);
     }
     return tokenResponse;
   }

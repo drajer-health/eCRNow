@@ -24,6 +24,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.search.FlagTerm;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +76,14 @@ public class DirectResponseReceiver extends RRReceiver {
       if (details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
         logger.info(
             "Connecting to IMAP Inbox using the imap url {} and port {}",
-            details.getDirectHost(),
+            StringEscapeUtils.escapeJava(details.getDirectHost()),
             port);
         store.connect(
             details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
       } else {
         logger.info(
             "Connecting to IMAP Inbox using imap url {} and port {}",
-            details.getDirectHost(),
+            StringEscapeUtils.escapeJava(details.getDirectHost()),
             port);
         store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
       }
@@ -167,12 +168,14 @@ public class DirectResponseReceiver extends RRReceiver {
     if (details.getImapUrl() == null || details.getImapUrl().isEmpty()) {
       logger.info(
           "Connecting to IMAP Inbox using the imap url {} and port {}",
-          details.getDirectHost(),
+          StringEscapeUtils.escapeJava(details.getDirectHost()),
           port);
       store.connect(details.getDirectHost(), port, details.getDirectUser(), details.getDirectPwd());
     } else {
       logger.info(
-          "Connecting to IMAP Inbox using imap url {} and port {}", details.getDirectHost(), port);
+          "Connecting to IMAP Inbox using imap url {} and port {}",
+          StringEscapeUtils.escapeJava(details.getDirectHost()),
+          port);
       store.connect(details.getImapUrl(), port, details.getDirectUser(), details.getDirectPwd());
     }
 

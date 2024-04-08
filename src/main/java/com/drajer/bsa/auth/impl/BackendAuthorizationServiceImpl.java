@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import net.minidev.json.JSONArray;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +113,9 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
     } catch (Exception e) {
       logger.error(" Message {}", e.getMessage());
       logger.error(
-          "Error in Getting the AccessToken for the client: {}", fsd.getFhirServerBaseURL(), e);
+          "Error in Getting the AccessToken for the client: {}",
+          StringEscapeUtils.escapeJava(fsd.getFhirServerBaseURL()),
+          e);
       return null;
     }
   }
@@ -144,7 +147,10 @@ public class BackendAuthorizationServiceImpl implements AuthorizationService {
                     + ".extension[?(@.url == 'token')].valueUri");
         return result.get(0).toString();
       } catch (Exception e2) {
-        logger.error("Error in Getting the TokenEndpoint for the client: {}", url, e2);
+        logger.error(
+            "Error in Getting the TokenEndpoint for the client: {}",
+            StringEscapeUtils.escapeJava(url),
+            e2);
         throw e1;
       }
     }
