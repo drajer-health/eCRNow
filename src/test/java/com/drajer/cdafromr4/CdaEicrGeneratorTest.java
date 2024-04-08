@@ -56,6 +56,9 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
         .thenReturn(getCdaHeaderData());
     PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
 
+    PowerMockito.when(CdaGeneratorUtils.getGuid())
+        .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
+
     String actualXml =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, launchDetails, eicr);
 

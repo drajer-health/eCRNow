@@ -1856,10 +1856,7 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     assertEquals(expectedValue, actualValue);
 
     expectedValue =
-        "<effectiveTime>\r\n"
-            + "<low value=\"19700127212023+0000\"/>\r\n"
-            + "<high value=\"19700130045343+0000\"/>\r\n"
-            + "</effectiveTime>";
+        "<effectiveTime xsi:type=\"IVL_TS\"><low value=\"19700127212023+0000\"/> <high value=\"19700130045343+0000\"/> </effectiveTime>";
     actualValue =
         CdaFhirUtilities.getXmlForType(period, CdaGeneratorConstants.EFF_TIME_EL_NAME, true);
     actualValue = StringUtils.normalizeSpace(actualValue).trim();
