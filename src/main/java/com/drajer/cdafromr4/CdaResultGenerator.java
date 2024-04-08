@@ -190,10 +190,8 @@ public class CdaResultGenerator {
           Pair<Date, TimeZone> issuedDate = CdaFhirUtilities.getActualDate(obs.getIssuedElement());
 
           lrEntry.append(
-              CdaGeneratorUtils.getXmlForEffectiveTime(
-                  CdaGeneratorConstants.EFF_TIME_EL_NAME,
-                  issuedDate.getValue0(),
-                  issuedDate.getValue1()));
+              CdaGeneratorUtils.getXmlForIVLWithTS(
+                  CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
         }
 
         lrEntry.append(

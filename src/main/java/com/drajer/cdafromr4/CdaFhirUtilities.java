@@ -1372,20 +1372,62 @@ public class CdaFhirUtilities {
 
     if (period != null) {
 
-      sb.append(CdaGeneratorUtils.getXmlForStartElement(elName));
+      if (valFlag) {
 
-      sb.append(
-          CdaFhirUtilities.getDateTimeTypeXml(
-              period.getStartElement(), CdaGeneratorConstants.TIME_LOW_EL_NAME));
+        sb.append(
+            CdaGeneratorConstants.START_XMLTAG
+                + elName
+                + CdaGeneratorConstants.SPACE
+                + CdaGeneratorConstants.XSI_TYPE
+                + CdaGeneratorConstants.DOUBLE_QUOTE
+                + CdaGeneratorConstants.IVL_TS_TYPE
+                + CdaGeneratorConstants.DOUBLE_QUOTE
+                + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET);
 
-      sb.append(
-          CdaFhirUtilities.getDateTimeTypeXml(
-              period.getEndElement(), CdaGeneratorConstants.TIME_HIGH_EL_NAME));
+        if (period.hasStart())
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_LOW_EL_NAME,
+                  period.getStart(),
+                  period.getStartElement().getTimeZone()));
+        else
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_LOW_EL_NAME, null, null));
 
-      sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
+        if (period.hasEnd())
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_HIGH_EL_NAME,
+                  period.getEnd(),
+                  period.getEndElement().getTimeZone()));
+        else
+          sb.append(
+              CdaGeneratorUtils.getXmlForEffectiveTime(
+                  CdaGeneratorConstants.TIME_HIGH_EL_NAME, null, null));
 
-    } else {
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
+
+      } else {
+        sb.append(CdaGeneratorUtils.getXmlForStartElement(elName));
+
+        sb.append(
+            CdaFhirUtilities.getDateTimeTypeXml(
+                period.getStartElement(), CdaGeneratorConstants.TIME_LOW_EL_NAME));
+
+        sb.append(
+            CdaFhirUtilities.getDateTimeTypeXml(
+                period.getEndElement(), CdaGeneratorConstants.TIME_HIGH_EL_NAME));
+
+        sb.append(CdaGeneratorUtils.getXmlForEndElement(elName));
+      }
+
+    } else if (!valFlag) {
       sb.append(CdaGeneratorUtils.getXmlForNullEffectiveTime(elName, CdaGeneratorConstants.NF_NI));
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForValueIVLWithTS(
+              elName, CdaGeneratorConstants.UNKNOWN_VALUE, CdaGeneratorConstants.UNKNOWN_VALUE));
     }
 
     return sb.toString();
