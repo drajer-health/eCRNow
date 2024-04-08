@@ -24,6 +24,7 @@ import com.drajer.sof.model.LaunchDetails;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -163,7 +164,7 @@ public class FhirContextInitializer {
       client.registerInterceptor(new BearerTokenAuthInterceptor(accessToken));
       // client.registerInterceptor(new LoggingInterceptor(true));
     } else {
-      logger.debug("AccessToken not supplied for %{}", url);
+      logger.debug("AccessToken not supplied for %{}", StringEscapeUtils.escapeJava(url));
     }
 
     // Add HTTP Header Interceptor
@@ -176,11 +177,14 @@ public class FhirContextInitializer {
       client.registerInterceptor(new LoggingInterceptor(true));
     }
     if (retryTemplate.isRetryEnabled()) {
-      logger.info("Initialized the Retryable Client with X-Request-ID: {}", requestId);
+      logger.info(
+          "Initialized the Retryable Client with X-Request-ID: {}",
+          StringEscapeUtils.escapeJava(requestId));
       return new EcrFhirRetryClient(client, retryTemplate, requestId, EventTypes.QueryType.NONE);
     }
     logger.trace(
-        "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
+        "Initialized the Client with X-Request-ID: {}",
+        StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
     return client;
   }
 
@@ -206,12 +210,13 @@ public class FhirContextInitializer {
     if (retryTemplate.isRetryEnabled()) {
       logger.info(
           "Initialized the Retryable Client with X-Request-ID: {}",
-          client.getHttpInterceptor().getXReqId());
+          StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
       return new EcrFhirRetryClient(
           client, retryTemplate, client.getHttpInterceptor().getXReqId(), type);
     }
     logger.trace(
-        "Initialized the Client with X-Request-ID: {}", client.getHttpInterceptor().getXReqId());
+        "Initialized the Client with X-Request-ID: {}",
+        StringEscapeUtils.escapeJava(client.getHttpInterceptor().getXReqId()));
 
     return client;
   }
@@ -222,7 +227,9 @@ public class FhirContextInitializer {
       outcome = genericClient.create().resource(resource).prettyPrint().encodedJson().execute();
     } catch (Exception e) {
       logger.error(
-          "Error in Submitting the resource::::: {}", resource.getResourceType().name(), e);
+          "Error in Submitting the resource::::: {}",
+          StringEscapeUtils.escapeJava(resource.getResourceType().name()),
+          e);
     }
 
     return outcome;
@@ -348,8 +355,8 @@ public class FhirContextInitializer {
       logger.info(
           "Getting {} data using Patient Id {} by URL {}",
           resourceName,
-          authDetails.getLaunchPatientId(),
-          url);
+          StringEscapeUtils.escapeJava(authDetails.getLaunchPatientId()),
+          StringEscapeUtils.escapeJava(url));
       if (authDetails.getFhirVersion().equalsIgnoreCase(DSTU2)) {
         Bundle bundle = genericClient.search().byUrl(url).returnBundle(Bundle.class).execute();
         getAllDSTU2RecordsUsingPagination(genericClient, bundle);

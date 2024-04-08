@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -83,7 +84,8 @@ public class RrReceiverImpl implements RrReceiver {
 
     if (phm != null) {
 
-      logger.info(" Found the Eicr for correlation Id: {}", xCorrelationId);
+      logger.info(
+          " Found the Eicr for correlation Id: {}", StringEscapeUtils.escapeJava(xCorrelationId));
       phm.setResponseMessageType(EicrTypes.RrType.FAILURE_MDN.toString());
       // phm.setxRequestId(xRequestId);
       phm.setFailureResponseData(data.getRrXml());
@@ -92,7 +94,8 @@ public class RrReceiverImpl implements RrReceiver {
 
     } else {
       String errorMsg =
-          "Unable to find Public Health Message for Correlation Id: " + xCorrelationId;
+          "Unable to find Public Health Message for Correlation Id: "
+              + StringEscapeUtils.escapeJava(xCorrelationId);
       logger.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
 
@@ -300,7 +303,9 @@ public class RrReceiverImpl implements RrReceiver {
         phm.setResponseEhrDocRefId(outcome.getId().getIdPart());
 
       } else {
-        String errorMsg = "Unable to post RR response to FHIR server: " + hs.getFhirServerBaseURL();
+        String errorMsg =
+            "Unable to post RR response to FHIR server: "
+                + StringEscapeUtils.escapeJava(hs.getFhirServerBaseURL());
         logger.error(errorMsg);
         throw new UnclassifiedServerFailureException(500, errorMsg);
       }

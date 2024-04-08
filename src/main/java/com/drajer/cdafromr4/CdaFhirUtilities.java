@@ -962,7 +962,7 @@ public class CdaFhirUtilities {
 
     List<Coding> codes = getCodingForValidCodeSystems(cds);
 
-    if (codes == null || !codes.isEmpty()) {
+    if (!codes.isEmpty()) {
       if (Boolean.FALSE.equals(valueTrue)) {
         sb.append(
             getCodingXmlForMappedConceptDomain(conceptDomain, codes, cdName, includeNullFlavor));

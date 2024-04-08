@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -499,7 +500,7 @@ public class CdaResultGenerator {
       }
     }
 
-    logger.debug("Lr Entry = {}", lrEntry);
+    logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
 
     return lrEntry.toString();
   }
@@ -578,7 +579,7 @@ public class CdaResultGenerator {
               data));
     }
 
-    logger.debug("Lr Entry = {}", lrEntry);
+    logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
 
     return lrEntry.toString();
   }

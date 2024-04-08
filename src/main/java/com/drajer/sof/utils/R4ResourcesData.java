@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent;
@@ -73,16 +74,19 @@ public class R4ResourcesData {
     // If Encounter Id is present in Launch Details
     if (encounterID != null) {
       try {
-        logger.info("Getting Encounter data by ID {}", encounterID);
+        logger.info("Getting Encounter data by ID {}", StringEscapeUtils.escapeJava(encounterID));
         encounter = (Encounter) client.read().resource(ENCOUNTER).withId(encounterID).execute();
       } catch (ResourceNotFoundException resourceNotFoundException) {
         logger.error(
             "Error in getting Encounter resource by Id: {}",
-            encounterID,
+            StringEscapeUtils.escapeJava(encounterID),
             resourceNotFoundException);
         WorkflowService.cancelAllScheduledTasksForLaunch(launchDetails, true);
       } catch (Exception e) {
-        logger.error("Error in getting Encounter resource by Id: {}", encounterID, e);
+        logger.error(
+            "Error in getting Encounter resource by Id: {}",
+            StringEscapeUtils.escapeJava(encounterID),
+            e);
       }
       if (encounter != null) {
         r4FhirData.setR4EncounterCodes(findEncounterCodes(encounter));

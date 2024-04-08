@@ -33,6 +33,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
@@ -427,7 +428,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       accessToken = kd.getAccessToken();
       logger.debug(
           " Reusing Valid Access Token: {}, Expiration Time: {}",
-          accessToken,
+          StringEscapeUtils.escapeJava(accessToken),
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
 
     } else {
@@ -436,7 +437,7 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
       accessToken = kd.getAccessToken();
       logger.debug(
           " Generated New Access Token: {}, Expiration Time: {}",
-          accessToken,
+          StringEscapeUtils.escapeJava(accessToken),
           kd.getHealthcareSetting().getEhrAccessTokenExpirationTime());
     }
 
@@ -741,9 +742,16 @@ public class EhrFhirR4QueryServiceImpl implements EhrQueryService {
                 .encodeResourceToString(responseException.getOperationOutcome()));
       }
       logger.error(
-          "Error in getting {} resource by Id: {}", resourceName, resourceId, responseException);
+          "Error in getting {} resource by Id: {}",
+          resourceName,
+          StringEscapeUtils.escapeJava(resourceId),
+          responseException);
     } catch (Exception e) {
-      logger.error("Error in getting {} resource by Id: {}", resourceName, resourceId, e);
+      logger.error(
+          "Error in getting {} resource by Id: {}",
+          resourceName,
+          StringEscapeUtils.escapeJava(resourceId),
+          e);
     }
     return resource;
   }
