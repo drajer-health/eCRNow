@@ -14,13 +14,13 @@ This document provides instructions for specifying the Java version during the b
 
 To specify the Java version during the build process, use the following Maven command with the `-D` flag:
 ````
-mvn clean install -DJAVA.VERSION=<java_version>
+mvn clean install -Djava.version=<java_version>
 ````
 ## Example
 
 Java 8
 ````
-mvn clean install -DJAVA.VERSION=1.8
+mvn clean install -Djava.version=1.8
 ````
 
 Java 17
@@ -43,16 +43,16 @@ This guide explains how to run a Spring Boot application and how to pass values 
 3. Run the following Maven command to start the application:
 
 ````
- mvn spring-boot:run -DJAVA.VERSION=<java_version>
+ mvn spring-boot:run -Djava.version=<java_version>
 ````
 
 ## Example
 
 Java 8
 ````
-mvn spring-boot:run -DJAVA.VERSION=1.8
+mvn spring-boot:run -Djava.version=1.8
 ````
 
 Java 17
 ````
-mvn spring-boot:run -DJAVA.VERSION=17
+mvn spring-boot:run -Djava.version=17
