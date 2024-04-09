@@ -233,7 +233,11 @@ public class EicrServiceImplTest {
         .doReturn(client)
         .when(fhirContextInitializer)
         .createClient(
-            Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), null);
+            Mockito.any(),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.isNull());
     IdType idType = new IdType("123");
 
     Mockito.lenient().doReturn(idType).when(outcome).getId();
@@ -339,7 +343,11 @@ public class EicrServiceImplTest {
         .doReturn(client)
         .when(fhirContextInitializer)
         .createClient(
-            Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), null);
+            Mockito.any(),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.isNull());
     IdType idType = new IdType("123");
     Mockito.lenient().doReturn(idType).when(outcome).getId();
     Mockito.lenient().doReturn(true).when(outcome).getCreated();
@@ -419,7 +427,11 @@ public class EicrServiceImplTest {
         .doReturn(client)
         .when(fhirContextInitializer)
         .createClient(
-            Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), null);
+            Mockito.any(),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.anyString(),
+            Mockito.isNull());
     IdType idType = new IdType("123");
     Mockito.lenient().doReturn(idType).when(outcome).getId();
     Mockito.lenient().doReturn(true).when(outcome).getCreated();
