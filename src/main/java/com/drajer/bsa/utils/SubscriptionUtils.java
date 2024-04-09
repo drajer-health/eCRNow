@@ -227,7 +227,8 @@ public class SubscriptionUtils {
               nc.setxCorrelationId(guid);
             }
 
-            if (launchContext.getEhrLaunchContext() != null
+            if (launchContext != null
+                && launchContext.getEhrLaunchContext() != null
                 && !launchContext.getEhrLaunchContext().isEmpty()) {
               ObjectMapper objectMapper = new ObjectMapper();
               try {
