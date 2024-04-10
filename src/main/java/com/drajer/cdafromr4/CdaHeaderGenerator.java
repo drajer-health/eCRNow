@@ -45,7 +45,7 @@ public class CdaHeaderGenerator {
 
   private static String SW_APP_VERSION = "Version 3.1.X";
   private static String SW_APP_NAME = "ecrNowApp";
-  private static final String SPRING_ACTIVE_PROFILE = "spring.active.profile";
+  private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
 
   private static String activeProfile;
@@ -76,7 +76,7 @@ public class CdaHeaderGenerator {
   }
 
   private static String getPropertiesFileName() {
-    String activeProfile = System.getProperty(SPRING_ACTIVE_PROFILE);
+    String activeProfile = System.getProperty(SPRING_PROFILES_ACTIVE);
     return (activeProfile != null && !activeProfile.isEmpty())
         ? "application-" + activeProfile + ".properties"
         : DEFAULT_PROPERTIES_FILE;
