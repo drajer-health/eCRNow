@@ -25,7 +25,7 @@ mvn clean install -Djava.version=1.8
 
 Java 17
 ````
-mvn clean install -Djava.version=17
+mvn clean install -DJAVA.VERSION=17
 ````
 
 
