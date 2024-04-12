@@ -8,6 +8,7 @@ import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -193,6 +194,7 @@ public class CdaResultGenerator {
               CdaGeneratorUtils.getXmlForIVLWithTS(
                   CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
         }
+        lrEntry.append(getXmlForAuthor(obs.getPerformer(), data));
 
         lrEntry.append(
             getXmlForObservation(
@@ -977,8 +979,6 @@ public class CdaResultGenerator {
 
   public static String getXmlForAuthor(List<Reference> performerRefs, R4FhirData data) {
     StringBuilder sb = new StringBuilder();
-    List<Practitioner> practList = new ArrayList<>();
-
     if (data == null || performerRefs == null || performerRefs.isEmpty()) {
       return sb.toString();
     }
@@ -991,17 +991,12 @@ public class CdaResultGenerator {
 
         Practitioner pract = data.getPractitionerById(reference.getReferenceElement().getIdPart());
         if (pract != null) {
-          practList.add(pract);
+          HashMap<V3ParticipationType, List<Practitioner>> practMap = new HashMap<>();
+          practMap.put(V3ParticipationType.AUT, Collections.singletonList(pract));
+          sb.append(CdaHeaderGenerator.getAuthorXml(data, data.getEncounter(), practMap));
         }
       }
     }
-
-    if (!practList.isEmpty()) {
-      HashMap<V3ParticipationType, List<Practitioner>> practMap = new HashMap<>();
-      practMap.put(V3ParticipationType.AUT, practList);
-      sb.append(CdaHeaderGenerator.getAuthorXml(data, data.getEncounter(), practMap));
-    }
-
     return sb.toString();
   }
 
