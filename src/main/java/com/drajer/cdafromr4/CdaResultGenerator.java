@@ -712,84 +712,50 @@ public class CdaResultGenerator {
       String contentRef,
       List<String> paths) {
 
-    Pair<Boolean, String> retVal = null;
-    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
+    if (code == null || !code.hasCoding()) {
+      return null;
+    }
 
+    String elementType =
+        valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
+    PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
     List<MatchedTriggerCodes> mtcs = state.getMatchTriggerStatus().getMatchedCodes();
 
     for (MatchedTriggerCodes mtc : mtcs) {
-
-      // if CodeableConcept present in MTC
-      Pair<String, String> matchedCode = null;
-
-      for (String s : paths) {
-        matchedCode = mtc.getMatchingCode(code, s);
-
-        if (matchedCode != null) break;
-      }
-
+      Pair<String, String> matchedCode = findMatchingCode(mtc, code, paths);
       if (matchedCode != null) {
+        String systemUrl =
+            valElement
+                ? CdaGeneratorConstants.FHIR_SNOMED_URL
+                : CdaGeneratorConstants.FHIR_LOINC_URL;
 
-        if (Boolean.FALSE.equals(valElement)) {
+        logger.info("Found a matched {} for the observation or diagnostic report", elementType);
 
-          logger.info(" Found a Matched Code for the observation or diagnostic report ");
-
-          Pair<String, String> systemName =
-              CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
-          String codeXml =
-              CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-                  CdaGeneratorConstants.CODE_EL_NAME,
-                  matchedCode.getValue0(),
-                  systemName.getValue0(),
-                  systemName.getValue1(),
-                  details.getRctcOid(),
-                  details.getRctcVersion(),
-                  code,
-                  CdaGeneratorConstants.FHIR_LOINC_URL,
-                  contentRef,
-                  valElement);
-
-          retVal = new Pair<>(true, codeXml);
-        } else {
-
-          logger.info(" Found a Matched Value for the observation or diagnostic report ");
-          Pair<String, String> systemName =
-              CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
-          String valueXml =
-              CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
-                  CdaGeneratorConstants.VAL_EL_NAME,
-                  matchedCode.getValue0(),
-                  systemName.getValue0(),
-                  systemName.getValue1(),
-                  details.getRctcOid(),
-                  details.getRctcVersion(),
-                  code,
-                  CdaGeneratorConstants.FHIR_SNOMED_URL,
-                  contentRef,
-                  valElement);
-
-          retVal = new Pair<>(true, valueXml);
-        }
-      } else if (code.getCoding() != null) {
-
-        logger.info(
-            " Did not find a Matched Code or value for the observation or diagnostic report ");
-
-        String defCodeXml = "";
-        if (Boolean.FALSE.equals(valElement)) {
-          defCodeXml =
-              CdaFhirUtilities.getCodingXml(
-                  code.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, contentRef);
-        } else {
-          defCodeXml =
-              CdaFhirUtilities.getCodingXmlForValue(
-                  code.getCoding(), CdaGeneratorConstants.VAL_EL_NAME, contentRef);
-        }
-        retVal = new Pair<>(false, defCodeXml);
+        Pair<String, String> systemName =
+            CdaGeneratorConstants.getCodeSystemFromUrl(matchedCode.getValue1());
+        String xml =
+            CdaFhirUtilities.getXmlForCodeableConceptWithCDAndValueSetAndVersion(
+                elementType,
+                matchedCode.getValue0(),
+                systemName.getValue0(),
+                systemName.getValue1(),
+                details.getRctcOid(),
+                details.getRctcVersion(),
+                code,
+                systemUrl,
+                contentRef,
+                valElement);
+        return new Pair<>(true, xml);
       }
     }
 
-    return retVal;
+    logger.info("Did not find a matched Code or value for the observation or diagnostic report");
+
+    String xml =
+        valElement
+            ? CdaFhirUtilities.getCodingXmlForValue(code.getCoding(), elementType, contentRef)
+            : CdaFhirUtilities.getCodingXml(code.getCoding(), elementType, contentRef);
+    return new Pair<>(false, xml);
   }
 
   public static String addTriggerCodes(LaunchDetails details, Observation obs, List<Coding> cds) {
@@ -1110,5 +1076,17 @@ public class CdaResultGenerator {
 
     if (StringUtils.isEmpty(retVal)) return CdaGeneratorConstants.UNKNOWN_VALUE;
     else return retVal;
+  }
+
+  private static Pair<String, String> findMatchingCode(
+      MatchedTriggerCodes mtc, CodeableConcept code, List<String> paths) {
+
+    for (String s : paths) {
+      Pair<String, String> matchedCode = mtc.getMatchingCode(code, s);
+      if (matchedCode != null) {
+        return matchedCode;
+      }
+    }
+    return null; // Indicate no matching code found
   }
 }
