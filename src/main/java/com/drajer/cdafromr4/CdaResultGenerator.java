@@ -176,9 +176,30 @@ public class CdaResultGenerator {
               CdaFhirUtilities.getCodingXml(cds, CdaGeneratorConstants.CODE_EL_NAME, ""));
         }
 
-        lrEntry.append(
-            CdaGeneratorUtils.getXmlForCD(
-                CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+        if(obs.getStatus() != null && obs.getStatus() == Observation.ObservationStatus.CORRECTED) {
+          //change the statuses accordingly
+          lrEntry.append(
+                  //change the statuses accordingly
+                  CdaGeneratorUtils.getXmlForCD(
+                          CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.CORRECTED_STATUS));
+        } else if (obs.getStatus() != null && obs.getStatus() == Observation.ObservationStatus.FINAL) {
+          lrEntry.append(
+                  //change the statuses accordingly
+                  CdaGeneratorUtils.getXmlForCD(
+                          CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.FINAL_STATUS));
+        }
+        else if (obs.getStatus() != null && obs.getStatus() == Observation.ObservationStatus.PRELIMINARY) {
+          lrEntry.append(
+                  //change the statuses accordingly
+                  CdaGeneratorUtils.getXmlForCD(
+                          CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.PRELIMINARY_STATUS));
+        }
+        else if (obs.getStatus() != null && obs.getStatus() == Observation.ObservationStatus.AMENDED) {
+          lrEntry.append(
+                  //change the statuses accordingly
+                  CdaGeneratorUtils.getXmlForCD(
+                          CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.AMENDED_STATUS));
+        }
 
         lrEntry.append(
             getXmlForObservation(

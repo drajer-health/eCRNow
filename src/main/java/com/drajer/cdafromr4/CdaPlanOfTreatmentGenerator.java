@@ -238,9 +238,17 @@ public class CdaPlanOfTreatmentGenerator {
       sb.append(codeXml);
     }
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForCD(
-            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
+    if(sr.getStatus() != null
+            && (sr.getStatus() == ServiceRequest.ServiceRequestStatus.COMPLETED)) {
+      sb.append(
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+    }
+    else{
+      sb.append(
+              CdaGeneratorUtils.getXmlForCD(
+                      CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.ACTIVE_STATUS));
+    }
 
     Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(sr.getOccurrence());
     if (effDate.getValue0() == null) {

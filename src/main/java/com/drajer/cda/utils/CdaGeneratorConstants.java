@@ -650,6 +650,14 @@ public class CdaGeneratorConstants {
   // Status Codes
   public static final String ACTIVE_STATUS = "active";
   public static final String COMPLETED_STATUS = "completed";
+
+  public static final String CORRECTED_STATUS = "corrected";
+
+  public static final String FINAL_STATUS = "final";
+
+  public static final String PRELIMINARY_STATUS = "preliminary";
+
+  public static final String AMENDED_STATUS = "amended";
   public static final String NEW_STATUS = "new";
   public static final String RESOLVED_STATUS = "resolved";
   public static final String TABLE_RESOLVED_STATUS = "Resolved";

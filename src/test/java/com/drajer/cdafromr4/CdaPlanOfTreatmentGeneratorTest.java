@@ -59,7 +59,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
     details.setStatus(TestUtils.toJsonString(state));
 
     String contentRef = "contentRef";
-
+    sr.setStatus(ServiceRequest.ServiceRequestStatus.COMPLETED);
     String actual = CdaPlanOfTreatmentGenerator.getPlannedObservationXml(sr, details, contentRef);
     assertNotNull(actual);
   }
