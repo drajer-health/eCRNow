@@ -1129,6 +1129,16 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     actualXml = actualXml.replaceAll("\n", "");
     assertEquals(expectedXml.trim(), actualXml.trim());
 
+    Period period1 = new Period();
+
+    period1.setEndElement(new DateTimeType("2023-04-03T15:30:00-04:00"));
+    expectedXml =
+        "<effectiveTime> <low nullFlavor=\"NI\"/> <high value=\"20230403153000-0400\"/> </effectiveTime>";
+
+    actualXml = CdaFhirUtilities.getPeriodXml(period1, "effectiveTime", false);
+
+    assertXmlEquals(expectedXml, actualXml);
+
     // Test with a null Period object
     expectedXml = "<effectiveTime nullFlavor=\"NI\"/>";
     actualXml = CdaFhirUtilities.getPeriodXml(null, "effectiveTime", false);

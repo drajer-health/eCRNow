@@ -8,6 +8,9 @@ import com.drajer.test.util.TestUtils;
 import java.util.List;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Period;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -61,6 +64,72 @@ public class CdaSocialHistoryGeneratorTest extends BaseGeneratorTest {
     String actual = CdaSocialHistoryGenerator.generateBirthSexEntry(birthSex);
 
     assertNotNull(actual);
+  }
+
+  @Test
+  public void testGenerateTravelHistoryEntry() {
+
+    StringBuilder expectedXml = new StringBuilder();
+
+    expectedXml.append("<entry>\r\n");
+    expectedXml.append("<act classCode=\"ACT\" moodCode=\"EVN\">\r\n");
+    expectedXml.append(
+        "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n");
+    expectedXml.append("<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>");
+    expectedXml.append(
+        "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n");
+    expectedXml.append("<text>Travel history</text>\r\n");
+    expectedXml.append("<statusCode code=\"completed\"/>\r\n");
+    expectedXml.append("<effectiveTime>\r\n");
+    expectedXml.append("<low value=\"20220403153000-0400\"/>\r\n");
+    expectedXml.append("<high value=\"20230403153000-0400\"/>\r\n");
+    expectedXml.append("</effectiveTime>\r\n");
+    expectedXml.append("</act>\r\n");
+    expectedXml.append("</entry>");
+
+    Observation observation = new Observation();
+    Period period = new Period();
+    period.setStartElement(new DateTimeType("2022-04-03T15:30:00-04:00"));
+    period.setEndElement(new DateTimeType("2023-04-03T15:30:00-04:00"));
+
+    observation.setEffective(period);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+    String actualXml =
+        CdaSocialHistoryGenerator.generateTravelHistoryEntry(observation, "Travel history");
+    assertXmlEquals(expectedXml.toString(), actualXml);
+  }
+
+  @Test
+  public void testGenerateTravelHistoryEntry1() {
+
+    StringBuilder expectedXml = new StringBuilder();
+
+    expectedXml.append("<entry>\r\n");
+    expectedXml.append("<act classCode=\"ACT\" moodCode=\"EVN\">\r\n");
+    expectedXml.append(
+        "<templateId root=\"2.16.840.1.113883.10.20.15.2.3.1\" extension=\"2016-12-01\"/>\r\n");
+    expectedXml.append("<id root=\"b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9\"/>");
+    expectedXml.append(
+        "<code code=\"420008001\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED-CT\" displayName=\"Travel\"/>\r\n");
+    expectedXml.append("<text>Travel history</text>\r\n");
+    expectedXml.append("<statusCode code=\"completed\"/>\r\n");
+    expectedXml.append("<effectiveTime value=\"20230403153000-0400\"/>\r\n");
+    expectedXml.append("</act>\r\n");
+    expectedXml.append("</entry>");
+
+    Observation observation = new Observation();
+    DateTimeType dateTimeType = new DateTimeType("2023-04-03T15:30:00-04:00");
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    observation.setEffective(dateTimeType);
+
+    String actualXml =
+        CdaSocialHistoryGenerator.generateTravelHistoryEntry(observation, "Travel history");
+    assertXmlEquals(expectedXml.toString(), actualXml);
   }
 
   @Test

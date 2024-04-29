@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,11 +247,20 @@ public class CdaSocialHistoryGenerator {
         CdaGeneratorUtils.getXmlForCD(
             CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
 
-    Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(obs.getEffective());
+    if (obs.hasEffective()) {
+      Type effective = obs.getEffective();
 
-    sb.append(
-        CdaGeneratorUtils.getXmlForEffectiveTime(
-            CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+      if (effective instanceof Period) {
+        Period period = (Period) effective;
+        sb.append(
+            CdaFhirUtilities.getPeriodXml(period, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+      } else {
+        Pair<Date, TimeZone> effDate = CdaFhirUtilities.getActualDate(effective);
+        sb.append(
+            CdaGeneratorUtils.getXmlForEffectiveTime(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
+      }
+    }
 
     // Add components
     sb.append(generateParticipant(obs));
