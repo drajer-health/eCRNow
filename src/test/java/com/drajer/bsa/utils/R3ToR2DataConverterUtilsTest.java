@@ -20,9 +20,11 @@ import com.drajer.test.util.Utility;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -274,6 +276,8 @@ public class R3ToR2DataConverterUtilsTest {
     Bundle bundle = new Bundle();
     Set<Resource> resources = new HashSet<>();
 
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+
     List<Resource> resourceList = new ArrayList<>();
     resourceList.add(patient);
     resourceList.add(condition);
@@ -290,7 +294,13 @@ public class R3ToR2DataConverterUtilsTest {
       resources.add(resource);
       String typeAsString = resource.toString().substring(22, resource.toString().indexOf('@'));
       r3ToR2DataConverterUtils.addResourcesToR4FhirData(
-          "98796", bundle, r4FhirData, launchDetails, resources, typeAsString);
+          "98796",
+          bundle,
+          r4FhirData,
+          launchDetails,
+          resources,
+          typeAsString,
+          uniqueResourceIdsByType);
       resources.remove(resource);
     }
   }
