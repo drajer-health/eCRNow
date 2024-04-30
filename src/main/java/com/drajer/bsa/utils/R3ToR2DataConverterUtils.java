@@ -14,7 +14,6 @@ import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -860,33 +859,6 @@ public class R3ToR2DataConverterUtils {
     }
 
     EcaUtils.updateDetailStatus(details, state);
-  }
-
-  private static void removeDuplicatesAndUpdateData1(
-      Set<Resource> resources, String type, Map<String, List<String>> data) {
-    if (data == null) {
-      data = new HashMap<>();
-    }
-
-    if (resources != null && !resources.isEmpty()) {
-      List<String> dataIds = data.getOrDefault(type, new ArrayList<>());
-
-      Iterator<Resource> iterator = resources.iterator();
-      while (iterator.hasNext()) {
-        Resource resource = iterator.next();
-        String resourceId = resource.getIdElement().getIdPart();
-        if (dataIds.contains(resourceId)) {
-          iterator.remove();
-          logger.debug(
-              "Removing {} resource since they are already added to the R4FhirData object", type);
-
-        } else {
-          dataIds.add(resourceId);
-        }
-      }
-
-      data.put(type, dataIds);
-    }
   }
 
   private static void removeDuplicatesAndUpdateData(
