@@ -10,17 +10,21 @@ import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -50,7 +54,7 @@ public class CdaResultGenerator {
 
     // Check if there is a LOINC code for the observation to be translated.
     List<Observation> results = getValidLabResults(data);
-    List<DiagnosticReport> reports = getValidDiagnosticReports(data);
+    List<DiagnosticReport> reports = getValidDiagnosticReports(data, results);
 
     if ((results != null && !results.isEmpty()) || (reports != null && !reports.isEmpty())) {
 
@@ -1005,10 +1009,10 @@ public class CdaResultGenerator {
     return sb.toString();
   }
 
-  public static List<DiagnosticReport> getValidDiagnosticReports(R4FhirData data) {
+  public static List<DiagnosticReport> getValidDiagnosticReports(
+      R4FhirData data, List<Observation> results) {
 
     List<DiagnosticReport> drs = new ArrayList<>();
-
     if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
 
       logger.info(
@@ -1026,6 +1030,11 @@ public class CdaResultGenerator {
                     dr.getCode().getCoding(), CdaGeneratorConstants.FHIR_LOINC_URL))) {
 
           logger.debug("Found a DiagnosticReport with a LOINC code");
+
+          if (dr.hasResult() && (results != null && !results.isEmpty())) {
+            filterLabResultsWithReferences(dr.getResult(), results);
+          }
+
           drs.add(dr);
         } else {
           logger.info(
@@ -1038,6 +1047,32 @@ public class CdaResultGenerator {
     }
 
     return drs;
+  }
+
+  public static List<Observation> filterLabResultsWithReferences(
+      List<Reference> resultRefs, List<Observation> results) {
+
+    Set<String> observationIds = new HashSet<>();
+    for (Reference reference : resultRefs) {
+      if (reference.hasReferenceElement()) {
+        IIdType referenceElement = reference.getReferenceElement();
+        if (referenceElement.hasResourceType()
+            && ResourceType.fromCode(referenceElement.getResourceType())
+                == ResourceType.Observation) {
+          observationIds.add(referenceElement.getIdPart());
+        }
+      }
+    }
+
+    if (!observationIds.isEmpty()) {
+      results.removeIf(
+          observation -> {
+            String obsId =
+                Optional.ofNullable(observation.getIdElement()).map(IdType::getIdPart).orElse(null);
+            return obsId != null && observationIds.contains(obsId);
+          });
+    }
+    return results;
   }
 
   public static String getResultValueForDiagnosticReport(

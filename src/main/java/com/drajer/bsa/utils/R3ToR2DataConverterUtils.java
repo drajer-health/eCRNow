@@ -13,7 +13,10 @@ import com.drajer.eca.model.PatientExecutionState;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -68,6 +71,7 @@ public class R3ToR2DataConverterUtils {
 
     R4FhirData r4FhirData = new R4FhirData();
     LaunchDetails details = new LaunchDetails();
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
     Bundle data = new Bundle();
 
     if (kd != null) {
@@ -102,12 +106,19 @@ public class R3ToR2DataConverterUtils {
 
         if (resources != null) {
 
-          addResourcesToR4FhirData(dr.getId(), data, r4FhirData, details, resources, dr.getType());
+          addResourcesToR4FhirData(
+              dr.getId(),
+              data,
+              r4FhirData,
+              details,
+              resources,
+              dr.getType(),
+              uniqueResourceIdsByType);
         }
       }
 
-      addAdministrativeResources(null, data, r4FhirData, details, kd, act);
-      addSecondaryResources(null, data, r4FhirData, details, kd, act);
+      addAdministrativeResources(null, data, r4FhirData, details, kd, act, uniqueResourceIdsByType);
+      addSecondaryResources(null, data, r4FhirData, details, kd, act, uniqueResourceIdsByType);
 
     } else {
 
@@ -124,16 +135,29 @@ public class R3ToR2DataConverterUtils {
       R4FhirData r4FhirData,
       LaunchDetails details,
       KarProcessingData kd,
-      BsaAction act) {
+      BsaAction act,
+      Map<String, List<String>> r4DataResourceIds) {
     logger.info("BsaAction in addSecondaryResources:{}", act);
 
     Set<Resource> medications = kd.getResourcesByType(ResourceType.Medication.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, medications, ResourceType.Medication.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        medications,
+        ResourceType.Medication.toString(),
+        r4DataResourceIds);
 
     Set<Resource> observations = kd.getResourcesByType(ResourceType.Observation.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, observations, ResourceType.Observation.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        observations,
+        ResourceType.Observation.toString(),
+        r4DataResourceIds);
   }
 
   public static void addAdministrativeResources(
@@ -142,20 +166,39 @@ public class R3ToR2DataConverterUtils {
       R4FhirData r4FhirData,
       LaunchDetails details,
       KarProcessingData kd,
-      BsaAction act) {
+      BsaAction act,
+      Map<String, List<String>> uniqueResourceIdsByType) {
     logger.info("BsaAction in addAdministrativeResources:{}", act);
 
     Set<Resource> practitioners = kd.getResourcesByType(ResourceType.Practitioner.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, practitioners, ResourceType.Practitioner.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        practitioners,
+        ResourceType.Practitioner.toString(),
+        uniqueResourceIdsByType);
 
     Set<Resource> locations = kd.getResourcesByType(ResourceType.Location.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, locations, ResourceType.Location.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        locations,
+        ResourceType.Location.toString(),
+        uniqueResourceIdsByType);
 
     Set<Resource> orgs = kd.getResourcesByType(ResourceType.Organization.toString());
     addResourcesToR4FhirData(
-        dataId, data, r4FhirData, details, orgs, ResourceType.Organization.toString());
+        dataId,
+        data,
+        r4FhirData,
+        details,
+        orgs,
+        ResourceType.Organization.toString(),
+        uniqueResourceIdsByType);
   }
 
   public static void addResourcesToR4FhirData(
@@ -164,9 +207,11 @@ public class R3ToR2DataConverterUtils {
       R4FhirData r4FhirData,
       LaunchDetails details,
       Set<Resource> resources,
-      String type) {
+      String type,
+      Map<String, List<String>> uniqueResourceIdsByType) {
     logger.info("Data id in addResourcesToR4FhirData:{}", dataId);
 
+    removeDuplicatesAndUpdateData(resources, type, uniqueResourceIdsByType);
     if (resources != null && !resources.isEmpty()) {
       if (type.contentEquals(ResourceType.Patient.toString())) {
 
@@ -815,6 +860,60 @@ public class R3ToR2DataConverterUtils {
     }
 
     EcaUtils.updateDetailStatus(details, state);
+  }
+
+  private static void removeDuplicatesAndUpdateData1(
+      Set<Resource> resources, String type, Map<String, List<String>> data) {
+    if (data == null) {
+      data = new HashMap<>();
+    }
+
+    if (resources != null && !resources.isEmpty()) {
+      List<String> dataIds = data.getOrDefault(type, new ArrayList<>());
+
+      Iterator<Resource> iterator = resources.iterator();
+      while (iterator.hasNext()) {
+        Resource resource = iterator.next();
+        String resourceId = resource.getIdElement().getIdPart();
+        if (dataIds.contains(resourceId)) {
+          iterator.remove();
+          logger.debug(
+              "Removing {} resource since they are already added to the R4FhirData object", type);
+
+        } else {
+          dataIds.add(resourceId);
+        }
+      }
+
+      data.put(type, dataIds);
+    }
+  }
+
+  private static void removeDuplicatesAndUpdateData(
+      Set<Resource> resources, String type, Map<String, List<String>> data) {
+    if (data == null) {
+      data = new HashMap<>();
+    }
+
+    if (resources != null && !resources.isEmpty()) {
+      List<String> dataIds = data.getOrDefault(type, new ArrayList<>());
+
+      resources.removeIf(
+          resource -> {
+            String resourceId = resource.getIdElement().getIdPart();
+            if (dataIds.contains(resourceId)) {
+              logger.info(
+                  "Removing {} resource since they are already added to the R4FhirData object",
+                  type);
+              return true;
+            } else {
+              dataIds.add(resourceId);
+              return false;
+            }
+          });
+
+      data.put(type, dataIds);
+    }
   }
 
   private static JobStatus getJobStatusForActionStatus(BsaActionStatusType status) {
