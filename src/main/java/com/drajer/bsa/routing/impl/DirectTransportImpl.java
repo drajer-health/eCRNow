@@ -166,7 +166,7 @@ public class DirectTransportImpl implements DataTransportInterface {
     // Trust all certificates
     props.setProperty("mail.smtp.ssl.trust", "*");
 
-    //  Enable SSL Connections from the client.
+    // Enable SSL Connections from the client.
     props.setProperty("mail.smtp.ssl.enable", "true");
 
     // Set TLS protocols
@@ -351,12 +351,13 @@ public class DirectTransportImpl implements DataTransportInterface {
 
                 rrReceiver.handleReportabilityResponse(data, mId);
               }
-
+              message.setFlag(Flags.Flag.SEEN, true);
               logger.info(
                   " Need to determine what to do with the response received from :  {}",
                   senderAddress);
             } else {
 
+              message.setFlag(Flags.Flag.SEEN, true);
               logger.info(" Not an XML attachment, so ignoring the multipart file ");
             }
           }
