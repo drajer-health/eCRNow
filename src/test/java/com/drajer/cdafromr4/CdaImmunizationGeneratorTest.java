@@ -21,7 +21,7 @@ public class CdaImmunizationGeneratorTest extends BaseGeneratorTest {
   private static final String IMMUNIZATION_CDA_FILE =
       "CdaTestData/Cda/Immunization/Immunization.xml";
   private static final String IMMUNIZATION_WITH_PERFORMER_CDA_FILE =
-      "CdaTestData/Cda/Immunization/Immunization_with_performer.xml";
+      "CdaTestData/Cda/Immunization/immunization_with_performer.xml";
 
   @Test
   public void testGenerateImmunizationSection() {
