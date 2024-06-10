@@ -26,7 +26,7 @@ public class CdaPlanOfTreatmentGeneratorTest extends BaseGeneratorTest {
   static final String PLAN_OF_TREATMENT_BUNDLE_RESOURCE_FILE =
       "CdaTestData/PlanOfTreatment/plan_of_treatment_bundle_resource.json";
   static final String PLAN_OF_TREATMENT_CDA_FILE =
-      "CdaTestData//cda//PlanOfTreatment//PlanOfTreatment.xml";
+      "CdaTestData//Cda//PlanOfTreatment//PlanOfTreatment.xml";
 
   @Test
   public void testGeneratePlanOfTreatmentSection() {
