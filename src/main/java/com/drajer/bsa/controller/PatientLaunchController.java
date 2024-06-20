@@ -110,14 +110,14 @@ public class PatientLaunchController {
         } else {
           return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
               .body(
-                  OperationOutcomeUtil.createOperationOutcome(
+                  OperationOutcomeUtil.createErrorOperationOutcome(
                       "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
         }
 
       } else {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
-                OperationOutcomeUtil.createOperationOutcome(
+                OperationOutcomeUtil.createErrorOperationOutcome(
                     "Unrecognized healthcare setting FHIR URL"));
       }
       logger.info(
@@ -126,11 +126,14 @@ public class PatientLaunchController {
           StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
           StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
-      return ResponseEntity.ok("Patient Instance launched for processing successfully");
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(
+              OperationOutcomeUtil.createSuccessOperationOutcome(
+                  "Patient Instance launched for processing successfully"));
     } catch (Exception e) {
 
       return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-          .body(OperationOutcomeUtil.createOperationOutcome(e.getMessage()));
+          .body(OperationOutcomeUtil.createErrorOperationOutcome(e.getMessage()));
     }
   }
 

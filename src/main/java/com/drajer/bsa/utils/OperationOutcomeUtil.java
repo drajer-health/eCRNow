@@ -18,28 +18,37 @@ public class OperationOutcomeUtil {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  public static Object createOperationOutcome(String message) {
+  public static Object createErrorOperationOutcome(String message) {
+    return createOperationOutcome(
+        message, OperationOutcome.IssueSeverity.ERROR, OperationOutcome.IssueType.INVALID);
+  }
+
+  public static Object createSuccessOperationOutcome(String message) {
+    return createOperationOutcome(
+        message,
+        OperationOutcome.IssueSeverity.INFORMATION,
+        OperationOutcome.IssueType.INFORMATIONAL);
+  }
+
+  private static Object createOperationOutcome(
+      String message, OperationOutcome.IssueSeverity severity, OperationOutcome.IssueType type) {
 
     IParser parser = FhirContext.forR4().newJsonParser();
     OperationOutcome operationOutcome = new OperationOutcome();
-    operationOutcome
-        .addIssue()
-        .setSeverity(OperationOutcome.IssueSeverity.ERROR)
-        .setCode(OperationOutcome.IssueType.EXCEPTION)
-        .setDiagnostics(message);
+    operationOutcome.addIssue().setSeverity(severity).setCode(type).setDiagnostics(message);
+
     Meta meta = new Meta();
     meta.setLastUpdatedElement(new InstantType());
     meta.getLastUpdatedElement().setValue(new Date()); // Set current date/time
 
     operationOutcome.setMeta(meta);
 
-    String json = null;
     try {
-      json = parser.encodeResourceToString(operationOutcome);
-      return objectMapper.readTree(json);
+      String json = parser.encodeResourceToString(operationOutcome);
+      return objectMapper.readTree(json); // Convert JSON string to JsonNode
     } catch (Exception e) {
-      logger.error("parsing error" + e.getMessage());
+      logger.error("Parsing error: " + e.getMessage());
     }
-    return json;
+    return null;
   }
 }
