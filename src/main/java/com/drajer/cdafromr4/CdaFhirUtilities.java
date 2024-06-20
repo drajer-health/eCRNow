@@ -515,7 +515,7 @@ public class CdaFhirUtilities {
     return addrString.toString();
   }
 
-  public static String getTelecomXml(List<ContactPoint> tels, boolean onlyOne) {
+  public static String getTelecomXml(List<ContactPoint> tels, boolean onlyOne, boolean isPhonePr) {
 
     StringBuilder telString = new StringBuilder(200);
 
@@ -534,11 +534,17 @@ public class CdaFhirUtilities {
                   ? ""
                   : CdaGeneratorConstants.getCodeForTelecomUse(tel.getUse().toCode());
 
-          telString.append(
+          String telecomEntry =
               CdaGeneratorUtils.getXmlForTelecom(
-                  CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, false));
+                  CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, false);
 
-          if (onlyOne) break;
+          telString.append(telecomEntry);
+          if (onlyOne) {
+            if (isPhonePr) {
+              return telecomEntry;
+            }
+            break;
+          }
         } else if (tel.getSystem() != null
             && tel.getSystem() == ContactPoint.ContactPointSystem.EMAIL
             && !StringUtils.isEmpty(tel.getValue())) {
@@ -550,7 +556,7 @@ public class CdaFhirUtilities {
               CdaGeneratorUtils.getXmlForEmail(
                   CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use));
 
-          if (onlyOne) break;
+          if (onlyOne && !isPhonePr) break;
         } else if (tel.getSystem() != null
             && tel.getSystem() == ContactPoint.ContactPointSystem.FAX
             && !StringUtils.isEmpty(tel.getValue())) {
@@ -562,7 +568,7 @@ public class CdaFhirUtilities {
               CdaGeneratorUtils.getXmlForTelecom(
                   CdaGeneratorConstants.TEL_EL_NAME, tel.getValue(), use, true));
 
-          if (onlyOne) break;
+          if (onlyOne && !isPhonePr) break;
         }
       }
     } else {
@@ -2847,7 +2853,7 @@ public class CdaFhirUtilities {
       }
 
       sb.append(CdaFhirUtilities.getAddressXml(pr.getAddress(), false));
-      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false));
+      sb.append(CdaFhirUtilities.getTelecomXml(pr.getTelecom(), false, false));
 
       sb.append(
           CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
@@ -2868,7 +2874,7 @@ public class CdaFhirUtilities {
       sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
 
       List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps, false));
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, false, false));
 
       sb.append(
           CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSIGNED_PERSON_EL_NAME));
