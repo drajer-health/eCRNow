@@ -258,7 +258,7 @@ public class CdaHeaderGenerator {
     }
 
     if (cc.hasTelecom()) {
-      s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false));
+      s.append(CdaFhirUtilities.getTelecomXml(cc.getTelecom(), false, false));
     }
 
     s.append(
@@ -548,7 +548,7 @@ public class CdaHeaderGenerator {
   }
 
   public static String getOrganizationXml(
-      Organization org, LaunchDetails details, boolean onlyOneTelecom) {
+      Organization org, LaunchDetails details, boolean onlyOneTelecom, boolean isPhonePr) {
 
     StringBuilder sb = new StringBuilder(200);
     if (org != null) {
@@ -568,7 +568,7 @@ public class CdaHeaderGenerator {
       }
 
       sb.append(CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.NAME_EL_NAME, org.getName()));
-      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), onlyOneTelecom));
+      sb.append(CdaFhirUtilities.getTelecomXml(org.getTelecom(), onlyOneTelecom, isPhonePr));
       sb.append(CdaFhirUtilities.getAddressXml(org.getAddress(), false));
 
     } else {
@@ -580,7 +580,7 @@ public class CdaHeaderGenerator {
               CdaGeneratorConstants.NAME_EL_NAME, CdaGeneratorConstants.UNKNOWN_VALUE));
 
       List<ContactPoint> cps = null;
-      sb.append(CdaFhirUtilities.getTelecomXml(cps, onlyOneTelecom));
+      sb.append(CdaFhirUtilities.getTelecomXml(cps, onlyOneTelecom, isPhonePr));
 
       List<Address> addrs = null;
       sb.append(CdaFhirUtilities.getAddressXml(addrs, false));
@@ -597,7 +597,7 @@ public class CdaHeaderGenerator {
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, true));
+    sb.append(getOrganizationXml(data.getOrganization(), details, true, true));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_CUST_ORG_EL_NAME));
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ASSGND_CUST_EL_NAME));
@@ -661,7 +661,7 @@ public class CdaHeaderGenerator {
 
     sb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, false));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false, false));
 
     sb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.REP_ORG_EL_NAME));
 
@@ -681,7 +681,7 @@ public class CdaHeaderGenerator {
         CdaGeneratorUtils.getXmlForStartElement(
             CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
 
-    sb.append(getOrganizationXml(data.getOrganization(), details, false));
+    sb.append(getOrganizationXml(data.getOrganization(), details, false, false));
 
     sb.append(
         CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SERVICE_PROVIDER_ORG_EL_NAME));
@@ -879,7 +879,7 @@ public class CdaHeaderGenerator {
     patientDetails.append(CdaFhirUtilities.getAddressXml(p.getAddress(), true));
 
     // Add Telecom (Phone)
-    patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false));
+    patientDetails.append(CdaFhirUtilities.getTelecomXml(p.getTelecom(), false, false));
 
     // Add patient
     patientDetails.append(
@@ -1019,7 +1019,8 @@ public class CdaHeaderGenerator {
         }
 
         // Add Telecom
-        patientDetails.append(CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false));
+        patientDetails.append(
+            CdaFhirUtilities.getTelecomXml(guardianContact.getTelecom(), false, false));
 
         patientDetails.append(
             CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.GUARDIAN_PERSON_EL_NAME));

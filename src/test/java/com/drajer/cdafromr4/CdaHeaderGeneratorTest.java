@@ -502,7 +502,8 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<country nullFlavor=\"NI\"/>\r\n"
             + "</addr>\r\n";
 
-    String actualXml = CdaHeaderGenerator.getOrganizationXml(organization, launchDetails, false);
+    String actualXml =
+        CdaHeaderGenerator.getOrganizationXml(organization, launchDetails, false, false);
 
     assertThat(actualXml).isNotNull();
     assertXmlEquals(expectedXml, actualXml);
@@ -521,7 +522,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
             + "<postalCode nullFlavor=\"NI\"/>\r\n"
             + "<country nullFlavor=\"NI\"/>\r\n"
             + "</addr>";
-    String actualXml = CdaHeaderGenerator.getOrganizationXml(null, launchDetails, false);
+    String actualXml = CdaHeaderGenerator.getOrganizationXml(null, launchDetails, false, false);
 
     assertThat(actualXml).isNotNull();
     assertXmlEquals(expectedXml, actualXml);

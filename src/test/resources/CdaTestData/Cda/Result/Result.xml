@@ -175,7 +175,7 @@
 </code>
 <statusCode code="completed"/>
 <effectiveTime nullFlavor="NI"/>
-<value xsi:type="CD" nullFlavor="NI"/>
+<value xsi:type="ST">Never (less than 100 in lifetime)</value>
 </observation>
 </component>
 </organizer>

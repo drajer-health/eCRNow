@@ -635,18 +635,18 @@ public class CdaFhirUtilitiesTest extends BaseGeneratorTest {
     cp3.setValue("a@b.com");
     cps.add(cp3);
 
-    String result = CdaFhirUtilities.getTelecomXml(cps, false);
+    String result = CdaFhirUtilities.getTelecomXml(cps, false, false);
 
     assertTrue(result.contains("(123)456-7890"));
     assertTrue(result.contains("(098)765-4321"));
     assertTrue(result.contains("a@b.com"));
 
-    String result2 = CdaFhirUtilities.getTelecomXml(cps, true);
+    String result2 = CdaFhirUtilities.getTelecomXml(cps, true, true);
     assertTrue(result2.contains("(123)456-7890"));
     assertFalse(result2.contains("(098)765-4321"));
     assertFalse(result2.contains("a@b.com"));
 
-    String result3 = CdaFhirUtilities.getTelecomXml(null, true);
+    String result3 = CdaFhirUtilities.getTelecomXml(null, true, true);
     String expected = "<telecom nullFlavor=\"NI\"/>";
     assertEquals(expected, result3.trim());
   }
