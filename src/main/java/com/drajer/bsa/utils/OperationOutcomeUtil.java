@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.OperationOutcome;
@@ -35,7 +36,11 @@ public class OperationOutcomeUtil {
 
     IParser parser = FhirContext.forR4().newJsonParser();
     OperationOutcome operationOutcome = new OperationOutcome();
-    operationOutcome.addIssue().setSeverity(severity).setCode(type).setDiagnostics(message);
+    operationOutcome
+        .addIssue()
+        .setSeverity(severity)
+        .setCode(type)
+        .setDetails(new CodeableConcept().setText(message));
 
     Meta meta = new Meta();
     meta.setLastUpdatedElement(new InstantType());
