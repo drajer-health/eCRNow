@@ -87,7 +87,7 @@ One custom query file can be created for each ERSD file.
 
 The file naming convention should conform to the following:
 
-[Bundle Id of the ERSD file ]-[SpecificationLibrary.meta.versionId].queries
+[Bundle Id of the ERSD file ]-[SpecificationLibrary.meta.versionId|SpecificationLibrary.version].queries
 
 ## Library.meta.versionId ##
 
@@ -110,6 +110,26 @@ Sample SpecificationLibrary resource from ERSD:
                 },
 }
 
+## Library.version ##
+
+The Library resource used is the SpecificationLibrary present in the ERSD.
+The SpecificationLibrary is identified using hte Meta.profile element which should be equal to "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library"
+The Library.version is "3.0.0" below.
+
+Sample SpecificationLibrary resource from ERSD: 
+{
+"fullUrl": "http://ersd.aimsplatform.org/fhir/Library/SpecificationLibrary",
+            "resource": {
+                "description": "Defines the asset-collection library containing the US Public Health specification assets.",
+                "experimental": false,
+                "id": "SpecificationLibrary",
+                "meta": {
+                    "profile": [
+                        "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-specification-library"
+                    ]
+                },
+		"version" : "3.0.0"
+}
 
 ## Bundle Id ##
 
