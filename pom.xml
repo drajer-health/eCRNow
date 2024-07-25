@@ -18,13 +18,12 @@
 	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
-		<java.version>1.8</java.version>
-		<fhir.version>5.4.0</fhir.version>
+		<java.version>17</java.version>
+		<fhir.version>7.2.0</fhir.version>
 		<fhirpath.version>5.4.0</fhirpath.version>
-		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
-		
+
 	</properties>
 
 
@@ -59,6 +58,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -118,6 +118,11 @@
 			<version>1.2-b06</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.opencds.cqf.fhir</groupId>
+			<artifactId>cqf-fhir-cr-spring</artifactId>
+			<version>3.8.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -181,54 +186,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.spring</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.library</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.expression</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>evaluator.measure-hapi</artifactId>
-			<version>${cql-evaluator.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax</groupId>
-					<artifactId>javaee-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20190722</version>
@@ -238,18 +195,18 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.13.2</version>
+			<version>2.17.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.13.3</version>
+			<version>2.17.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.12.6.1</version>
+			<version>2.17.2</version>
 		</dependency>
 
 
@@ -377,7 +334,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>2.11.1</version>
+			<version>2.17.2</version>
 		</dependency>
 
 		<!-- Dependency for formatting logs in json format -->

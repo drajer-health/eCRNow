@@ -37,7 +37,6 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.javatuples.Pair;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Parameters result =
         (Parameters)
             expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value = (BooleanType) result.getParameter(PARAM);
+    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
       return value.getValue();
@@ -130,7 +129,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             } else {
 
-              Type value = variableResult.getParameter(PARAM);
+              Type value = variableResult.getParameter(PARAM).getValue();
               paramComponent.setName("%" + exp.getName());
               paramComponent.setValue(value);
 
@@ -491,7 +490,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     Parameters result =
         (Parameters)
             expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
-    BooleanType value = (BooleanType) result.getParameter(PARAM);
+    BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
       return value.getValue();

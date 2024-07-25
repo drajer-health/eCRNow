@@ -11,14 +11,14 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
+import org.opencds.cqf.fhir.cql.LibraryEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CqlProcessor implements BsaConditionProcessor {
   private static final Logger logger = LoggerFactory.getLogger(CqlProcessor.class);
 
-  private LibraryProcessor libraryProcessor;
+  private LibraryEngine libraryEngine;
 
   @Override
   public Boolean evaluateExpression(
@@ -42,7 +42,7 @@ public class CqlProcessor implements BsaConditionProcessor {
     }
     Parameters result =
         (Parameters)
-            this.libraryProcessor.evaluate(
+            this.libraryEngine.evaluate(
                 cqlCondition.getUrl(),
                 cqlCondition.getPatientId(),
                 parameters,
@@ -53,17 +53,17 @@ public class CqlProcessor implements BsaConditionProcessor {
                 expressions);
 
     BooleanType value =
-        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
+        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression()).getValue();
 
     return value.getValue();
   }
 
-  public LibraryProcessor getLibraryProcessor() {
-    return libraryProcessor;
+  public LibraryEngine getLibraryEngine() {
+    return libraryEngine;
   }
 
-  public void setLibraryProcessor(LibraryProcessor libraryProcessor) {
-    this.libraryProcessor = libraryProcessor;
+  public void setLibraryEngine(LibraryEngine libraryEngine) {
+    this.libraryEngine = libraryEngine;
   }
 
   @Override

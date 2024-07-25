@@ -3,7 +3,6 @@ package com.drajer.bsa.kar.condition;
 import com.drajer.bsa.kar.model.BsaCondition;
 import java.util.List;
 import org.hl7.fhir.r4.model.Expression;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 
 /**
  * This class is used to identify Conditions of type FHIRPath.

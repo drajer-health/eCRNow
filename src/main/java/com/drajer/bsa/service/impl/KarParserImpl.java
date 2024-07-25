@@ -76,9 +76,8 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
-import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
-import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
+import org.opencds.cqf.fhir.cql.LibraryEngine;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -154,7 +153,7 @@ public class KarParserImpl implements KarParser {
   @Autowired ExpressionEvaluator expressionEvaluator;
 
   // Autowired to pass to FhirPathProcessors.
-  @Autowired LibraryProcessor libraryProcessor;
+  @Autowired LibraryEngine libraryEngine;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
@@ -846,7 +845,7 @@ public class KarParserImpl implements KarParser {
         // Necessary for Cql Evaluation because of CodeSystem Retrieve
         bc.setDataEndpoint(karEndpoint);
         bc.setLogicExpression(con.getExpression());
-        bc.setLibraryProcessor(libraryProcessor);
+        bc.setLibraryProcessor(libraryEngine);
         bc.setNormalReportingDuration(null);
         action.addCondition(bc);
       } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
@@ -885,7 +884,7 @@ public class KarParserImpl implements KarParser {
           // Necessary for Cql Evaluation because of CodeSystem Retrieve
           bc.setDataEndpoint(karEndpoint);
           bc.setLogicExpression(exp);
-          bc.setLibraryProcessor(libraryProcessor);
+          bc.setLibraryProcessor(libraryEngine);
           action.addCondition(bc);
         } else if (exp != null
             && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))

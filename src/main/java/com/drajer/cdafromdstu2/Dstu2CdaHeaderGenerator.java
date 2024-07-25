@@ -24,7 +24,7 @@ import com.drajer.sof.model.LaunchDetails;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu2.model.BooleanType;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
