@@ -37,6 +37,7 @@ import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.javatuples.Pair;
+import org.opencds.cqf.fhir.cr.common.ExpressionProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
   public static final String CPG_PARAM_DEFINITION =
       "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition";
 
-  ExpressionEvaluator expressionEvaluator;
+  ExpressionProcessor expressionProcessor;
 
   @Override
   public Boolean evaluateExpression(
@@ -67,7 +68,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+            expressionProcessor.evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {
@@ -108,7 +109,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
             logger.info(" Expression after resolution {}", expr);
 
-            Parameters variableResult = (Parameters) expressionEvaluator.evaluate(expr, null);
+            Parameters variableResult = (Parameters) expressionProcessor.evaluate(expr, null);
 
             if (exp.getName().contentEquals("encounterStartDate")
                 || exp.getName().contentEquals("encounterEndDate")
@@ -459,12 +460,12 @@ public class FhirPathProcessor implements BsaConditionProcessor {
     return params;
   }
 
-  public ExpressionEvaluator getExpressionEvaluator() {
-    return expressionEvaluator;
+  public ExpressionProcessor getExpressionProcessor() {
+    return expressionProcessor;
   }
 
-  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
-    this.expressionEvaluator = expressionEvaluator;
+  public void setExpressionProcessor(ExpressionProcessor expressionProcessor) {
+    this.expressionProcessor = expressionProcessor;
   }
 
   public Pair<CheckTriggerCodeStatus, Map<String, Set<Resource>>> applyCodeFilter(
@@ -489,7 +490,7 @@ public class FhirPathProcessor implements BsaConditionProcessor {
 
     Parameters result =
         (Parameters)
-            expressionEvaluator.evaluate(cond.getLogicExpression().getExpression(), params);
+            expressionProcessor.evaluate(cond.getLogicExpression().getExpression(), params);
     BooleanType value = (BooleanType) result.getParameter(PARAM).getValue();
 
     if (value != null) {

@@ -3,6 +3,7 @@ package com.drajer.bsa.kar.condition;
 import com.drajer.bsa.kar.model.BsaCondition;
 import java.util.List;
 import org.hl7.fhir.r4.model.Expression;
+import org.opencds.cqf.fhir.cr.common.ExpressionProcessor;
 
 /**
  * This class is used to identify Conditions of type FHIRPath.
@@ -36,11 +37,11 @@ public class BsaFhirPathCondition extends BsaCondition {
     this.variableExpression = variableExpression;
   }
 
-  public ExpressionEvaluator getExpressionEvaluator() {
-    return ((FhirPathProcessor) this.getConditionProcessor()).getExpressionEvaluator();
+  public ExpressionProcessor getExpressionProcessor() {
+    return ((FhirPathProcessor) this.getConditionProcessor()).getExpressionProcessor();
   }
 
-  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
-    ((FhirPathProcessor) this.getConditionProcessor()).setExpressionEvaluator(expressionEvaluator);
+  public void setExpressionProcessor(ExpressionProcessor expressionProcessor) {
+    ((FhirPathProcessor) this.getConditionProcessor()).setExpressionProcessor(expressionProcessor);
   }
 }

@@ -77,6 +77,7 @@ import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.fhir.cql.LibraryEngine;
+import org.opencds.cqf.fhir.cr.common.ExpressionProcessor;
 import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +151,8 @@ public class KarParserImpl implements KarParser {
   @Autowired R4MeasureProcessor measureProcessor;
 
   // Autowired to pass to CqlProcessors.
-  @Autowired ExpressionEvaluator expressionEvaluator;
+  @Autowired
+  ExpressionProcessor expressionProcessor;
 
   // Autowired to pass to FhirPathProcessors.
   @Autowired LibraryEngine libraryEngine;
@@ -896,7 +898,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(exp);
-          bc.setExpressionEvaluator(expressionEvaluator);
+          bc.setExpressionProcessor(expressionProcessor);
           action.addCondition(bc);
         } else if (con.getExpression() != null
             && (fromCode(con.getExpression().getLanguage())
@@ -909,7 +911,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(con.getExpression());
-          bc.setExpressionEvaluator(expressionEvaluator);
+          bc.setExpressionProcessor(expressionProcessor);
           action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
@@ -925,7 +927,7 @@ public class KarParserImpl implements KarParser {
           bc.setVariables(planVariableExpressions);
         }
         bc.setLogicExpression(con.getExpression());
-        bc.setExpressionEvaluator(expressionEvaluator);
+        bc.setExpressionProcessor(expressionProcessor);
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
