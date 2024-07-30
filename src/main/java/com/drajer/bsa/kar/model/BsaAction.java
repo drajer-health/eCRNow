@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
 import org.slf4j.Logger;

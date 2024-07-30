@@ -10,7 +10,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.MeasureReport;
-import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.opencds.cqf.fhir.utility.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class EvaluateMeasure extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(EvaluateMeasure.class);
 
-  private R4MeasureProcessor measureProcessor;
+  private R4MeasureService measureService;
 
   private String periodStart;
   private String periodEnd;
@@ -50,12 +50,12 @@ public class EvaluateMeasure extends BsaAction {
     this.measureReportId = measureReportId;
   }
 
-  public R4MeasureProcessor getMeasureProcessor() {
-    return measureProcessor;
+  public R4MeasureService getMeasureService() {
+    return measureService;
   }
 
-  public void setMeasureProcessor(R4MeasureProcessor measureProcessor) {
-    this.measureProcessor = measureProcessor;
+  public void setMeasureService(R4MeasureService measureService) {
+    this.measureService = measureService;
   }
 
   public EvaluateMeasure() {
@@ -105,8 +105,8 @@ public class EvaluateMeasure extends BsaAction {
       // Evaluate Measure by passing the required parameters
       // Set up and evaluate the measure.
       MeasureReport result =
-          measureProcessor.evaluateMeasure(
-              measureUri,
+          measureService.evaluate(
+              null, // measureUri,
               periodStart,
               periodEnd,
               "subject",
@@ -115,8 +115,10 @@ public class EvaluateMeasure extends BsaAction {
               null, // received on
               endpoint, // Library Bundle
               endpoint, // Terminology Bundle
-              null, // Endpoint for data
-              additionalData); // Data Bundle
+              additionalData, // Endpoint for data
+              null,
+              null,
+              null); // Data Bundle
 
       if (result != null) {
 

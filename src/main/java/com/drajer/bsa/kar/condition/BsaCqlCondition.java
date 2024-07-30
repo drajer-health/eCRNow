@@ -3,7 +3,7 @@ package com.drajer.bsa.kar.condition;
 import com.drajer.bsa.kar.model.BsaCondition;
 import org.hl7.fhir.r4.model.Duration;
 import org.hl7.fhir.r4.model.Endpoint;
-import org.opencds.cqf.fhir.cql.LibraryEngine;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 
 /**
  * This class is used to identify Conditions with Cql Expressions.
@@ -72,11 +72,11 @@ public class BsaCqlCondition extends BsaCondition {
     setConditionProcessor(new CqlProcessor());
   }
 
-  public LibraryEngine getLibraryProcessor() {
-    return ((CqlProcessor) this.getConditionProcessor()).getLibraryEngine();
+  public R4LibraryEvaluationService getLibraryEvaluationService() {
+    return ((CqlProcessor) this.getConditionProcessor()).getLibraryEvaluationService();
   }
 
-  public void setLibraryProcessor(LibraryEngine libraryProcessor) {
-    ((CqlProcessor) this.getConditionProcessor()).setLibraryEngine(libraryProcessor);
+  public void setLibraryEvaluationService(R4LibraryEvaluationService libraryProcessor) {
+    ((CqlProcessor) this.getConditionProcessor()).setLibraryEvaluationService(libraryProcessor);
   }
 }

@@ -76,9 +76,9 @@ import org.hl7.fhir.r4.model.TriggerDefinition.TriggerType;
 import org.hl7.fhir.r4.model.Type;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.opencds.cqf.fhir.cql.LibraryEngine;
-import org.opencds.cqf.fhir.cr.common.ExpressionProcessor;
-import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureProcessor;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4CqlExecutionService;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
+import org.opencds.cqf.fhir.cr.measure.r4.R4MeasureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -148,14 +148,13 @@ public class KarParserImpl implements KarParser {
   @Autowired KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
   // Autowired to pass to action processors.
-  @Autowired R4MeasureProcessor measureProcessor;
+  @Autowired R4MeasureService measureService;
 
   // Autowired to pass to CqlProcessors.
-  @Autowired
-  ExpressionProcessor expressionProcessor;
+  @Autowired R4CqlExecutionService executionService;
 
   // Autowired to pass to FhirPathProcessors.
-  @Autowired LibraryEngine libraryEngine;
+  @Autowired R4LibraryEvaluationService libraryEvaluationService;
 
   // Autowired to pass to Actions
   @Autowired PublicHealthMessagesDao phDao;
@@ -772,7 +771,7 @@ public class KarParserImpl implements KarParser {
           }
 
           // setup the Measure Processor
-          em.setMeasureProcessor(measureProcessor);
+          em.setMeasureService(measureService);
         }
       }
     }
@@ -847,7 +846,7 @@ public class KarParserImpl implements KarParser {
         // Necessary for Cql Evaluation because of CodeSystem Retrieve
         bc.setDataEndpoint(karEndpoint);
         bc.setLogicExpression(con.getExpression());
-        bc.setLibraryProcessor(libraryEngine);
+        bc.setLibraryEvaluationService(libraryEvaluationService);
         bc.setNormalReportingDuration(null);
         action.addCondition(bc);
       } else if (con.getExpression().hasExtension(BsaConstants.ALTERNATIVE_EXPRESSION_EXTENSION_URL)
@@ -886,7 +885,7 @@ public class KarParserImpl implements KarParser {
           // Necessary for Cql Evaluation because of CodeSystem Retrieve
           bc.setDataEndpoint(karEndpoint);
           bc.setLogicExpression(exp);
-          bc.setLibraryProcessor(libraryEngine);
+          bc.setLibraryEvaluationService(libraryEvaluationService);
           action.addCondition(bc);
         } else if (exp != null
             && (fromCode(exp.getLanguage()).equals(Expression.ExpressionLanguage.TEXT_FHIRPATH))
@@ -898,7 +897,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(exp);
-          bc.setExpressionProcessor(expressionProcessor);
+          bc.setExecutionService(executionService);
           action.addCondition(bc);
         } else if (con.getExpression() != null
             && (fromCode(con.getExpression().getLanguage())
@@ -911,7 +910,7 @@ public class KarParserImpl implements KarParser {
             bc.setVariables(planVariableExpressions);
           }
           bc.setLogicExpression(con.getExpression());
-          bc.setExpressionProcessor(expressionProcessor);
+          bc.setExecutionService(executionService);
           action.addCondition(bc);
         } else {
           logger.error(" Unknown type of Alternative Expression passed, cannot process ");
@@ -927,7 +926,7 @@ public class KarParserImpl implements KarParser {
           bc.setVariables(planVariableExpressions);
         }
         bc.setLogicExpression(con.getExpression());
-        bc.setExpressionProcessor(expressionProcessor);
+        bc.setExecutionService(executionService);
         action.addCondition(bc);
       } else {
         logger.error(" Unknown type of Expression passed, cannot process ");
