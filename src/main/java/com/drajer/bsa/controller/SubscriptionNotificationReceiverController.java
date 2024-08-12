@@ -39,7 +39,7 @@ public class SubscriptionNotificationReceiverController {
   /**
    * This method is used to receive event-notifications from subscriptions.
    *
-   * @param hsDetails The HealthcareSettings details passed as part of the Request Body.
+   * @param request The HealthcareSettings details passed as part of the Request Body.
    * @return This returns the HTTP Response Entity containing the JSON representation of the
    *     HealthcareSetting when successful, else returns appropriate error. Upon success a HTTP
    *     Status code of 200 is sent back. The following HTTP Errors will be sent back - 400 (BAD

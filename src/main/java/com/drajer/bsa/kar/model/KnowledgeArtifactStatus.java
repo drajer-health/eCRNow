@@ -5,17 +5,8 @@ import com.drajer.bsa.model.HealthcareSetting;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -78,7 +69,7 @@ public class KnowledgeArtifactStatus {
    * Knowledge Artifact should not be processed.
    */
   @Column(name = "is_activated", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   Boolean isActive;
 
   /** The last time the Knowledge Artifact became active. */
@@ -95,7 +86,7 @@ public class KnowledgeArtifactStatus {
    * KnowledgeArtifact becomes inactive, the subscriptions should be removed.
    */
   @Column(name = "is_subscriptions_enabled", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   Boolean subscriptionsEnabled;
 
   /**
@@ -107,7 +98,7 @@ public class KnowledgeArtifactStatus {
   Set<String> subscriptions;
 
   @Column(name = "is_only_covid", nullable = false)
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   Boolean covidOnly;
 
   /**
