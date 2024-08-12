@@ -3,13 +3,16 @@ package com.drajer.ecrapp.dao.impl;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.ecrapp.dao.SchedulerDao;
 import com.drajer.ecrapp.model.ScheduledTasks;
-import java.util.Collections;
-import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 @Transactional
@@ -17,29 +20,35 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   private static final String TASK_INSTANCE = "task_instance";
   private static final String TASK_NAME = "task_name";
+  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
-    Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
+    Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
 
     String queryString = actionType + "_" + launchId + "_";
 
-    criteria.add(Restrictions.eq(TASK_NAME, "EICRTask"));
-    criteria.add(Restrictions.like(TASK_INSTANCE, queryString, MatchMode.START));
+    Predicate criteria = cb.and(
+            cb.equal(root.get(TASK_NAME), "EICRTask"),
+            cb.like(root.get("launchPatientId"), queryString)
+    );
+    cq.where(criteria);
 
-    return criteria.list();
+    Query<ScheduledTasks> q = getSession().createQuery(cq);
+
+    return q.getResultList();
   }
 
   @Override
   public List<ScheduledTasks> getScheduledTasks() {
-    Criteria criteria = getSession().createCriteria(ScheduledTasks.class);
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
 
-    List<ScheduledTasks> scheduledTasks = criteria.list();
+    Query<ScheduledTasks> q = getSession().createQuery(cq);
 
-    if (scheduledTasks != null && scheduledTasks.isEmpty()) {
-      return scheduledTasks;
-    }
-    return Collections.EMPTY_LIST;
+    return q.getResultList();
   }
 
   @Override

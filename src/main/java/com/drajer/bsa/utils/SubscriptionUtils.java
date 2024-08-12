@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
@@ -115,15 +115,15 @@ public class SubscriptionUtils {
       Parameters p = (Parameters) bec.getResource();
 
       CodeType subsType =
-          ((p.getParameter(TYPE_PARAMETER).getValue() instanceof CodeType)
+          ((p.getParameterValue(TYPE_PARAMETER) instanceof CodeType)
               ? (CodeType) p.getParameter(TYPE_PARAMETER).getValue()
               : null);
       Reference subsRef =
-          ((p.getParameter(SUBSCRIPTION_PARAMETER).getValue() instanceof Reference)
+          ((p.getParameterValue(SUBSCRIPTION_PARAMETER) instanceof Reference)
               ? (Reference) p.getParameter(SUBSCRIPTION_PARAMETER).getValue()
               : null);
       CanonicalType subTopic =
-          ((p.getParameter(TOPIC_PARAMETER).getValue() instanceof CanonicalType)
+          ((p.getParameterValue(TOPIC_PARAMETER) instanceof CanonicalType)
               ? (CanonicalType) p.getParameter(TOPIC_PARAMETER).getValue()
               : null);
 

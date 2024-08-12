@@ -4,25 +4,18 @@ import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import com.google.common.base.Strings;
-import java.time.Instant;
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(
@@ -147,30 +140,30 @@ public class LaunchDetails {
   private String restAPIURL;
 
   @Column(name = "is_covid19", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @JdbcTypeCode(SqlTypes.NUMERIC)
   private Boolean isCovid = false;
 
   @Column(
       name = "is_emergent_reporting_enabled",
       nullable = false,
       columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isEmergentReportingEnabled = true;
 
   @Column(name = "is_full_ecr", nullable = false, columnDefinition = "int default 1")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isFullEcr = true;
 
   @Column(name = "rrprocessing_createdocRef", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isCreateDocRef = false;
 
   @Column(name = "rrprocessing_invokerestapi", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isInvokeRestAPI = false;
 
   @Column(name = "rrprocessing_both", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isBoth = false;
 
   @Column(name = "rr_rest_api_url", nullable = true)
@@ -192,33 +185,33 @@ public class LaunchDetails {
   private String authorizationCode;
 
   @Column(name = "is_system_launch", nullable = false, columnDefinition = "int default 1")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isSystem = true;
 
   @Column(
       name = "is_multi_tenant_system_launch",
       nullable = false,
       columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isMultiTenantSystemLaunch = false;
 
   @Column(name = "is_user_account_launch", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isUserAccountLaunch = false;
 
   @Column(name = "debug_fhir_query_and_eicr", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean debugFhirQueryAndEicr = false;
 
   @Column(name = "require_aud", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean requireAud = false;
 
   @Column(name = "x_request_id", nullable = true)
   private String xRequestId;
 
   @Column(name = "validation_mode", nullable = false, columnDefinition = "int default 0")
-  @Type(type = "org.hibernate.type.NumericBooleanType")
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean validationMode = false;
 
   @Column(name = "launch_type", nullable = true)

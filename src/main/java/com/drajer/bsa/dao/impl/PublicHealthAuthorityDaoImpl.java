@@ -1,19 +1,27 @@
 package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.PublicHealthAuthorityDao;
+import com.drajer.bsa.model.KnowledgeArtifactRepository;
+import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.ecrapp.dao.AbstractDao;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
 public class PublicHealthAuthorityDaoImpl extends AbstractDao implements PublicHealthAuthorityDao {
+
+  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+
   @Override
   public PublicHealthAuthority saveOrUpdate(PublicHealthAuthority pha) {
     getSession().saveOrUpdate(pha);
@@ -27,21 +35,25 @@ public class PublicHealthAuthorityDaoImpl extends AbstractDao implements PublicH
 
   @Override
   public PublicHealthAuthority getPublicHealthAuthorityByUrl(String url) {
-    Session session = getSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
-    CriteriaQuery<PublicHealthAuthority> criteria = cb.createQuery(PublicHealthAuthority.class);
-    Root<PublicHealthAuthority> root = criteria.from(PublicHealthAuthority.class);
-    criteria.select(root).where(cb.equal(root.get("fhirServerBaseURL"), url)).distinct(true);
-    return session.createQuery(criteria).uniqueResultOptional().orElse(null);
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthAuthority> cq = cb.createQuery(PublicHealthAuthority.class);
+    Root<PublicHealthAuthority> root = cq.from(PublicHealthAuthority.class);
+    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
+
+    Query<PublicHealthAuthority> q = getSession().createQuery(cq);
+
+    return q.uniqueResultOptional().orElse(null);
   }
 
   @Override
   public List<PublicHealthAuthority> getAllPublicHealthAuthority() {
-    Session session = getSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
-    CriteriaQuery<PublicHealthAuthority> criteria = cb.createQuery(PublicHealthAuthority.class);
-    Root<PublicHealthAuthority> root = criteria.from(PublicHealthAuthority.class);
-    criteria.orderBy(cb.desc(root.get("id")));
-    return session.createQuery(criteria).getResultList();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<PublicHealthAuthority> cq = cb.createQuery(PublicHealthAuthority.class);
+    Root<PublicHealthAuthority> root = cq.from(PublicHealthAuthority.class);
+
+    Query<PublicHealthAuthority> q = getSession().createQuery(cq);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    return q.getResultList();
   }
 }
