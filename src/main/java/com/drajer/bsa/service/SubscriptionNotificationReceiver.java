@@ -3,8 +3,8 @@ package com.drajer.bsa.service;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.model.PatientLaunchContext;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
 
 /**

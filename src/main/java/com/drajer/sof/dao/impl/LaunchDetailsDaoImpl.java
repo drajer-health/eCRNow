@@ -1,7 +1,6 @@
 package com.drajer.sof.dao.impl;
 
 import com.drajer.ecrapp.dao.AbstractDao;
-import com.drajer.ecrapp.model.Eicr;
 import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
 import jakarta.persistence.EntityManager;
@@ -9,8 +8,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
