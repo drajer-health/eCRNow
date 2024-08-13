@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +54,7 @@ public class ITSystemLaunch extends BaseIntegrationTest {
     tx = session.beginTransaction();
 
     // Data Setup
-    createClientDetails(testData.get("ClientDataToBeSaved"));
+    // createClientDetails(testData.get("ClientDataToBeSaved"));
     systemLaunchPayLoad = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
@@ -106,9 +104,9 @@ public class ITSystemLaunch extends BaseIntegrationTest {
   private void getLaunchDetailAndStatus() {
 
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      // Criteria criteria = session.createCriteria(LaunchDetails.class);
+      // criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      // = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);

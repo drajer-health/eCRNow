@@ -7,18 +7,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Repository
 @Transactional
 public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDao {
 
   private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
 
   public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
     getSession().saveOrUpdate(clientDetails);

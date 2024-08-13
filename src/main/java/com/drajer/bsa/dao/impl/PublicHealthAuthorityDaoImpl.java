@@ -1,17 +1,13 @@
 package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.PublicHealthAuthorityDao;
-import com.drajer.bsa.model.KnowledgeArtifactRepository;
-import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PublicHealthAuthority;
 import com.drajer.ecrapp.dao.AbstractDao;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.Session;
+import java.util.List;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

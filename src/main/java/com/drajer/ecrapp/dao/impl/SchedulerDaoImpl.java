@@ -8,11 +8,10 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Repository
 @Transactional
@@ -30,10 +29,10 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
     String queryString = actionType + "_" + launchId + "_";
 
-    Predicate criteria = cb.and(
+    Predicate criteria =
+        cb.and(
             cb.equal(root.get(TASK_NAME), "EICRTask"),
-            cb.like(root.get("launchPatientId"), queryString)
-    );
+            cb.like(root.get("launchPatientId"), queryString));
     cq.where(criteria);
 
     Query<ScheduledTasks> q = getSession().createQuery(cq);

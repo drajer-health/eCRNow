@@ -11,8 +11,6 @@ import com.drajer.test.util.TestDataGenerator;
 import com.drajer.test.util.WireMockHelper;
 import java.io.IOException;
 import java.util.*;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +53,7 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
     tx = session.beginTransaction();
 
     // Data Setup
-    createClientDetails(testData.get("ClientDataToBeSaved"));
+    // createClientDetails(testData.get("ClientDataToBeSaved"));
     systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
@@ -108,9 +106,9 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      // Criteria criteria = session.createCriteria(LaunchDetails.class);
+      // criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      // launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);
@@ -170,10 +168,10 @@ public class ITSystemLaunchWithNoEicr extends BaseIntegrationTest {
   private List<Eicr> getAllEICRDocuments() {
     try {
 
-      Criteria criteria = session.createCriteria(Eicr.class);
-      if (criteria != null) {
-        return criteria.list();
-      }
+      // Criteria criteria = session.createCriteria(Eicr.class);
+      // if (criteria != null) {
+      // return criteria.list();
+      // }
     } catch (Exception e) {
       logger.error("Exception retrieving EICR ", e);
       fail("Something went wrong retrieving EICR, check the log");

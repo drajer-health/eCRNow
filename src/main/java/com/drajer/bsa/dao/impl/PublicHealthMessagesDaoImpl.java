@@ -8,14 +8,13 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.query.Query;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -56,13 +55,13 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
 
-    Predicate criteria = cb.and(
+    Predicate criteria =
+        cb.and(
             cb.equal(root.get(FHIR_SERVER_URL), message.getFhirServerBaseUrl()),
             cb.equal(root.get(NOTIFIED_RESOURCE_ID), message.getNotifiedResourceId()),
             cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), message.getNotifiedResourceType()),
             cb.equal(root.get(PATIENT_ID), message.getPatientId()),
-            cb.equal(root.get(KAR_UNIQUE_ID), message.getKarUniqueId())
-    );
+            cb.equal(root.get(KAR_UNIQUE_ID), message.getKarUniqueId()));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get(SUBMITTED_VERSION_NUMBER)));
 
@@ -156,14 +155,16 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
     return q.uniqueResult();
   }
 
-  public static List<Predicate> preparePredicate(CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
+  public static List<Predicate> preparePredicate(
+      CriteriaBuilder cb, Root<PublicHealthMessage> root, Map<String, String> searchParams) {
     List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(SUBMITTED_DATA_ID) != null) {
       predicates.add(cb.equal(root.get(SUBMITTED_DATA_ID), searchParams.get(SUBMITTED_DATA_ID)));
     }
     if (searchParams.get(SUBMITTED_VERSION_NUMBER) != null) {
-      predicates.add(cb.equal(root.get(SUBMITTED_VERSION_NUMBER), searchParams.get(SUBMITTED_VERSION_NUMBER)));
+      predicates.add(
+          cb.equal(root.get(SUBMITTED_VERSION_NUMBER), searchParams.get(SUBMITTED_VERSION_NUMBER)));
     }
     if (searchParams.get(RESPONSE_DATA_ID) != null) {
       predicates.add(cb.equal(root.get(RESPONSE_DATA_ID), searchParams.get(RESPONSE_DATA_ID)));
@@ -178,16 +179,19 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
       predicates.add(cb.equal(root.get(ENCOUNTER_ID), searchParams.get(ENCOUNTER_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_ID) != null) {
-      predicates.add(cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
+      predicates.add(
+          cb.equal(root.get(NOTIFIED_RESOURCE_ID), searchParams.get(NOTIFIED_RESOURCE_ID)));
     }
     if (searchParams.get(NOTIFIED_RESOURCE_TYPE) != null) {
-      predicates.add(cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
+      predicates.add(
+          cb.equal(root.get(NOTIFIED_RESOURCE_TYPE), searchParams.get(NOTIFIED_RESOURCE_TYPE)));
     }
     if (searchParams.get(KAR_UNIQUE_ID) != null) {
       predicates.add(cb.equal(root.get(KAR_UNIQUE_ID), searchParams.get(KAR_UNIQUE_ID)));
     }
     if (searchParams.get(SUBMITTED_MESSAGE_ID) != null) {
-      predicates.add(cb.equal(root.get(SUBMITTED_MESSAGE_ID), searchParams.get(SUBMITTED_MESSAGE_ID)));
+      predicates.add(
+          cb.equal(root.get(SUBMITTED_MESSAGE_ID), searchParams.get(SUBMITTED_MESSAGE_ID)));
     }
     if (searchParams.get(X_REQUEST_ID) != null) {
       predicates.add(cb.equal(root.get(X_REQUEST_ID), searchParams.get(X_REQUEST_ID)));
@@ -196,13 +200,17 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
       predicates.add(cb.equal(root.get(X_CORRELATION_ID), searchParams.get(X_CORRELATION_ID)));
     }
     if (searchParams.get(RESPONSE_MESSAGE_ID) != null) {
-      predicates.add(cb.equal(root.get(RESPONSE_MESSAGE_ID), searchParams.get(RESPONSE_MESSAGE_ID)));
+      predicates.add(
+          cb.equal(root.get(RESPONSE_MESSAGE_ID), searchParams.get(RESPONSE_MESSAGE_ID)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_INS) != null) {
-      predicates.add(cb.equal(root.get(RESPONSE_PROCESSING_INS), searchParams.get(RESPONSE_PROCESSING_INS)));
+      predicates.add(
+          cb.equal(root.get(RESPONSE_PROCESSING_INS), searchParams.get(RESPONSE_PROCESSING_INS)));
     }
     if (searchParams.get(RESPONSE_PROCESSING_STATUS) != null) {
-      predicates.add(cb.equal(root.get(RESPONSE_PROCESSING_STATUS), searchParams.get(RESPONSE_PROCESSING_STATUS)));
+      predicates.add(
+          cb.equal(
+              root.get(RESPONSE_PROCESSING_STATUS), searchParams.get(RESPONSE_PROCESSING_STATUS)));
     }
 
     return predicates;

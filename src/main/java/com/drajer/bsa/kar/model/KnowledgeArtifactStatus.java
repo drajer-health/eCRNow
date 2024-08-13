@@ -2,14 +2,11 @@ package com.drajer.bsa.kar.model;
 
 import com.drajer.bsa.model.BsaTypes.OutputContentType;
 import com.drajer.bsa.model.HealthcareSetting;
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +21,6 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "hs_kar_status")
 @DynamicUpdate
-@TypeDef(name = "SetOfStringsUserType", typeClass = SetOfStringsUserType.class)
 public class KnowledgeArtifactStatus {
 
   @Transient private final Logger logger = LoggerFactory.getLogger(KnowledgeArtifactStatus.class);
@@ -94,7 +90,6 @@ public class KnowledgeArtifactStatus {
    * HealthcareSetting.
    */
   @Column(name = "subscriptions", columnDefinition = "TEXT")
-  @Type(type = "SetOfStringsUserType")
   Set<String> subscriptions;
 
   @Column(name = "is_only_covid", nullable = false)

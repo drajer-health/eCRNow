@@ -2,15 +2,13 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.KarExecutionStateDao;
 import com.drajer.bsa.model.KarExecutionState;
-import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
-import java.util.List;
-import java.util.UUID;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
+import java.util.UUID;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

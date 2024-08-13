@@ -1,10 +1,9 @@
 package com.drajer.bsa.model;
 
-import java.util.Date;
 import jakarta.persistence.*;
+import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,8 +20,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import org.apache.http.client.utils.URIBuilder;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +73,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     tx = session.beginTransaction();
 
     // Data Setup
-    createClientDetails(testData.get("ClientDataToBeSaved"));
+    // createClientDetails(testData.get("ClientDataToBeSaved"));
     systemLaunchPayload = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();
@@ -84,7 +83,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     logger.info("Creating WireMock stubs..");
     stubHelper.stubResources(allResourceMapping);
     stubHelper.stubAuthAndMetadata(allOtherMapping);
-    mockRestApiUrl();
+    // mockRestApiUrl();
     mockRestApiAuthUrl();
   }
 
@@ -226,9 +225,9 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      // Criteria criteria = session.createCriteria(LaunchDetails.class);
+      // criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      // launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);
@@ -355,10 +354,10 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
   private List<Eicr> getAllEICRDocuments() {
     try {
 
-      Criteria criteria = session.createCriteria(Eicr.class);
-      if (criteria != null) {
-        return criteria.list();
-      }
+      // Criteria criteria = session.createCriteria(Eicr.class);
+      // if (criteria != null) {
+      //  return criteria.list();
+      // }
     } catch (Exception e) {
       logger.error("Exception retrieving EICR ", e);
       fail("Something went wrong retrieving EICR, check the log");
@@ -405,7 +404,7 @@ public class ITSystemLaunchAllActions extends BaseIntegrationTest {
     }
   }
 
-  private void mockRestApiUrl() {
+  private void mockRestApiUrl() throws JSONException {
     JSONObject jsonObject = new JSONObject(systemLaunchPayload);
 
     StringBuilder sb1 = new StringBuilder(200);

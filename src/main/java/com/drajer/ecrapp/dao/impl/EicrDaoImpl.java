@@ -9,13 +9,12 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.query.Query;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -53,11 +52,11 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
 
-    Predicate criteria = cb.and(
+    Predicate criteria =
+        cb.and(
             cb.equal(root.get(FHIR_SERVER_URL), eicr.getFhirServerUrl()),
             cb.equal(root.get("launchPatientId"), eicr.getLaunchPatientId()),
-            cb.equal(root.get(ENCOUNTER_ID), eicr.getEncounterId())
-    );
+            cb.equal(root.get(ENCOUNTER_ID), eicr.getEncounterId()));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get("docVersion")));
 
@@ -103,7 +102,8 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
     List<Predicate> predicates = preparePredicate(cb, root, searchParams);
-    predicates.add(cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
+    predicates.add(
+        cb.equal(root.get(RESPONSE_DOC_ID), Integer.parseInt(searchParams.get(RESPONSE_DOC_ID))));
 
     Predicate[] predArr = new Predicate[predicates.size()];
     predArr = predicates.toArray(predArr);
@@ -140,7 +140,8 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
     return q.uniqueResult();
   }
 
-  public static List<Predicate> preparePredicate(CriteriaBuilder cb, Root<Eicr> root, Map<String, String> searchParams) {
+  public static List<Predicate> preparePredicate(
+      CriteriaBuilder cb, Root<Eicr> root, Map<String, String> searchParams) {
     List<Predicate> predicates = new ArrayList<Predicate>();
 
     if (searchParams.get(EICR_DOC_ID) != null) {

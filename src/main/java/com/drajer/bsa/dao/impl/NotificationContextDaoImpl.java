@@ -8,13 +8,12 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.query.Query;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -97,12 +96,12 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
     CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
     Root<NotificationContext> root = cq.from(NotificationContext.class);
 
-    Predicate criteria = cb.and(
+    Predicate criteria =
+        cb.and(
             cb.equal(root.get("fhirServerBaseURL"), url),
             cb.equal(root.get("patientId"), patientId),
             cb.equal(root.get("notificationResourceId"), notificationResourceId),
-            cb.equal(root.get("notificationResourceType"), notificationResourceType)
-    );
+            cb.equal(root.get("notificationResourceType"), notificationResourceType));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get("docVersion")));
 
@@ -113,7 +112,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
 
   @Override
   public List<NotificationContext> getNotificationContextData(
-    UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
+      UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
     List<Predicate> predicates = new ArrayList<Predicate>();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
@@ -126,8 +125,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
         predicates.add(cb.equal(root.get("fhirServerBaseURL"), fhirServerBaseUrl));
       if (notificationResourceId != null)
         predicates.add(cb.equal(root.get("notificationResourceId"), notificationResourceId));
-      if (patientId != null)
-        predicates.add(cb.equal(root.get("patientId"), patientId));
+      if (patientId != null) predicates.add(cb.equal(root.get("patientId"), patientId));
     }
     Predicate[] predArr = new Predicate[predicates.size()];
     predArr = predicates.toArray(predArr);

@@ -3,13 +3,11 @@ package com.drajer.bsa.model;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.ecrapp.security.AESEncryption;
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
-
-import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

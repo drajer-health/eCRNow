@@ -21,8 +21,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -162,9 +160,9 @@ public class ITValidateEicrDoc extends BaseIntegrationTest {
 
   private void getLaunchDetailAndStatus() {
     try {
-      Criteria criteria = session.createCriteria(LaunchDetails.class);
-      criteria.add(Restrictions.eq("xRequestId", testCaseId));
-      launchDetails = (LaunchDetails) criteria.uniqueResult();
+      // Criteria criteria = session.createCriteria(LaunchDetails.class);
+      // criteria.add(Restrictions.eq("xRequestId", testCaseId));
+      // launchDetails = (LaunchDetails) criteria.uniqueResult();
 
       state = mapper.readValue(launchDetails.getStatus(), PatientExecutionState.class);
       session.refresh(launchDetails);

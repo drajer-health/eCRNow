@@ -4,15 +4,12 @@ import com.drajer.bsa.dao.KarDao;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.KnowledgeArtifactRepository;
 import com.drajer.ecrapp.dao.AbstractDao;
-import java.util.List;
-
-import com.drajer.ecrapp.model.Eicr;
-import com.drajer.sof.model.ClientDetails;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +38,8 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   @Override
   public KnowledgeArtifactRepository getKARByUrl(String url) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<KnowledgeArtifactRepository> cq = cb.createQuery(KnowledgeArtifactRepository.class);
+    CriteriaQuery<KnowledgeArtifactRepository> cq =
+        cb.createQuery(KnowledgeArtifactRepository.class);
     Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
     cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
 
@@ -53,7 +51,8 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   @Override
   public List<KnowledgeArtifactRepository> getAllKARs() {
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<KnowledgeArtifactRepository> cq = cb.createQuery(KnowledgeArtifactRepository.class);
+    CriteriaQuery<KnowledgeArtifactRepository> cq =
+        cb.createQuery(KnowledgeArtifactRepository.class);
     Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
 
     Query<KnowledgeArtifactRepository> q = getSession().createQuery(cq);
@@ -84,15 +83,15 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
-    String karId, String karVersion, Integer hsId) {
+      String karId, String karVersion, Integer hsId) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
     Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
 
-    Predicate criteria = cb.and(
+    Predicate criteria =
+        cb.and(
             cb.equal(root.get("launchPatientId"), karId + "|" + karVersion),
-            cb.equal(root.get("hsId"), hsId)
-    );
+            cb.equal(root.get("hsId"), hsId));
     cq.where(criteria);
     cq.orderBy(cb.desc(root.get("docVersion")));
 

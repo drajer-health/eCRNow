@@ -6,16 +6,13 @@ import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
-import com.drajer.ecrapp.model.Eicr;
-import com.drajer.sof.model.ClientDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +40,6 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
 
   private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
 
   /**
    * Method to create or update a HealthcareSetting.
@@ -100,8 +96,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
     Query<HealthcareSetting> q = getSession().createQuery(cq);
 
-    HealthcareSetting hs =  q.uniqueResult();
-
+    HealthcareSetting hs = q.uniqueResult();
 
     if (hs != null) setKars(hs);
 

@@ -22,7 +22,6 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
   private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
 
-
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
     getSession().saveOrUpdate(authDetails);
     logger.info("Launch Details data successfully inserted in DB");
@@ -39,11 +38,11 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
     CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
     Root<LaunchDetails> root = cq.from(LaunchDetails.class);
 
-    Predicate criteria = cb.and(
+    Predicate criteria =
+        cb.and(
             cb.equal(root.get("ehrServerURL"), fhirServerUrl),
             cb.equal(root.get("launchPatientId"), patient),
-            cb.equal(root.get("encounterId"), encounter)
-    );
+            cb.equal(root.get("encounterId"), encounter));
     cq.where(criteria);
 
     Query<LaunchDetails> q = getSession().createQuery(cq);

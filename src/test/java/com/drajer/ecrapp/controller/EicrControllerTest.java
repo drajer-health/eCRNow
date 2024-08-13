@@ -7,12 +7,13 @@ import static org.mockito.Mockito.doThrow;
 import com.drajer.ecrapp.model.Eicr;
 import com.drajer.ecrapp.service.EicrRRService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -132,7 +133,7 @@ public class EicrControllerTest {
   }
 
   @Test
-  public void getEicrAndRRByRequestId() {
+  public void getEicrAndRRByRequestId() throws JSONException {
 
     JSONObject eicrData = new JSONObject();
     eicrData.put("xRequestId", "ecrunittest_id");

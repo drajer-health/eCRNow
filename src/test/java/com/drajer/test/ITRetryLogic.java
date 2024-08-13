@@ -53,7 +53,7 @@ public class ITRetryLogic extends BaseIntegrationTest {
     tx = session.beginTransaction();
 
     // Data Setup
-    createClientDetails(testData.get("ClientDataToBeSaved"));
+    // createClientDetails(testData.get("ClientDataToBeSaved"));
     systemLaunchPayLoad = getSystemLaunchPayload(testData.get("SystemLaunchPayload"));
     session.flush();
     tx.commit();

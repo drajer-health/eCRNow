@@ -5,6 +5,8 @@ import com.drajer.ecrapp.security.AESEncryption;
 import com.drajer.sof.utils.RefreshTokenScheduler;
 import com.google.common.base.Strings;
 import jakarta.persistence.*;
+import java.time.Instant;
+import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -13,9 +15,6 @@ import org.hibernate.type.SqlTypes;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Instant;
-import java.util.Date;
 
 @Entity
 @Table(
