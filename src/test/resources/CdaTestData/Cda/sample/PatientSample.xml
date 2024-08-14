@@ -466,7 +466,8 @@
 <templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
 <id root="2.16.840.1.113883.1.1.1.1" extension="a-11287.hospmedicationrequest-26903"/>
 <statusCode code="active"/>
-<effectiveTime xsi:type="TS" value="20220920061723-0400"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20220920061723-0400"/>
+</effectiveTime>
 <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
 <period value="1" unit="h"/>
 </effectiveTime>

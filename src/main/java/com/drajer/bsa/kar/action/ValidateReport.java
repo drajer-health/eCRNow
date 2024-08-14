@@ -105,9 +105,12 @@ public class ValidateReport extends BsaAction {
 
     String cda = data.getSubmittedCdaData();
 
-    logger.info(" Starting validating eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
-    		data.getNotificationContext().getPatientId(), data.getNotificationContext().getNotificationResourceId(),
-    		data.getNotificationContext().getxRequestId(), data.getNotificationContext().getxCorrelationId());
+    logger.info(
+        " Starting validating eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
+        data.getNotificationContext().getPatientId(),
+        data.getNotificationContext().getNotificationResourceId(),
+        data.getNotificationContext().getxRequestId(),
+        data.getNotificationContext().getxCorrelationId());
 
     if (!StringUtils.isEmpty(cda)) return CdaValidatorUtil.validateEicrXMLData(cda);
     else return false;
@@ -137,10 +140,12 @@ public class ValidateReport extends BsaAction {
 
         String request = jsonParser.encodeResourceToString(r);
 
-        logger.info(" Starting validating FHIR eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
-        		data.getNotificationContext().getPatientId(), data.getNotificationContext().getNotificationResourceId(),
-        		data.getNotificationContext().getxRequestId(), data.getNotificationContext().getxCorrelationId());
-
+        logger.info(
+            " Starting validating FHIR eICR for PatientId: {}, EncounterId: {}, RequestId: {}, CoorrelationId: {}",
+            data.getNotificationContext().getPatientId(),
+            data.getNotificationContext().getNotificationResourceId(),
+            data.getNotificationContext().getxRequestId(),
+            data.getNotificationContext().getxCorrelationId());
 
         /*       if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
           ResponseEntity<String> response =

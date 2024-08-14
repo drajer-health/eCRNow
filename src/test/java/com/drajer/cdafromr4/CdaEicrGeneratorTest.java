@@ -1,6 +1,7 @@
 package com.drajer.cdafromr4;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -62,6 +63,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     String actualXml =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, launchDetails, eicr);
 
+    //assertEquals(expectedXml, actualXml);
     assertXmlEquals(expectedXml, actualXml);
   }
 

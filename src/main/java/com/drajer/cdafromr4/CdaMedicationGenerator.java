@@ -335,14 +335,13 @@ public class CdaMedicationGenerator {
           CdaFhirUtilities.getXmlForType(
               effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
     } else if (startDate != null) {
-      String val = CdaGeneratorUtils.getStringForDateTime(startDate.getValue(), startDate.getTimeZone());
+      String val =
+          CdaGeneratorUtils.getStringForDateTime(startDate.getValue(), startDate.getTimeZone());
       sb.append(
           CdaGeneratorUtils.getXmlForPartialValueIVLWithTS(
-              CdaGeneratorConstants.EFF_TIME_EL_NAME,
-              val,
-              CdaGeneratorConstants.TIME_LOW_EL_NAME));
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, val, CdaGeneratorConstants.TIME_LOW_EL_NAME));
     } else {
-    	sb.append(
+      sb.append(
           CdaGeneratorUtils.getXmlForValueIVLWithTS(
               CdaGeneratorConstants.EFF_TIME_EL_NAME, "", ""));
     }
