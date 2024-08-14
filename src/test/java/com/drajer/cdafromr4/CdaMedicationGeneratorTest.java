@@ -42,7 +42,6 @@ public class CdaMedicationGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaMedicationGenerator.generateMedicationSection(medicationResourceData, launchDetails);
- 
 
     assertXmlEquals(expectedXml, actualXml);
   }
