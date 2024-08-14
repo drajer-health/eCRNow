@@ -23,8 +23,6 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   private static final Logger logger = LoggerFactory.getLogger(PhMessageDaoImpl.class);
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   public static final String ID = "id";
   public static final String FHIR_SERVER_BASE_URL = "fhirServerBaseUrl";
   public static final String PATIENT_ID = "patientId";
@@ -46,6 +44,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
 
   public List<PublicHealthMessage> getPhMessageData(
       Map<String, String> searchParams, boolean summaryFlag) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -66,6 +65,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   }
 
   public List<PublicHealthMessage> getPhMessageDataSummary(Map<String, String> searchParams) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -171,6 +171,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public List<PublicHealthMessage> getPhMessageByXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -187,6 +188,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   // @Override
   public List<PublicHealthMessage> getPhMessagesContainingXRequestIds(
       List<String> xRequestIds, boolean summaryFlag) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -217,6 +219,7 @@ public class PhMessageDaoImpl extends AbstractDao implements PhMessageDao {
   @Override
   public List<PublicHealthMessage> getPhMessageByParameters(
       PublicHealthMessageData publicHealthMessageData) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     UUID id = publicHealthMessageData.getId();
     List<Predicate> predicates = new ArrayList<Predicate>();
     CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -26,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutionStateDao {
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   /**
    * Method to create or update a KarExecutionState.
    *
@@ -58,6 +56,7 @@ public class KarExecutionStateDaoImpl extends AbstractDao implements KarExecutio
    */
   @Override
   public List<KarExecutionState> getAllKarExecutionStates() {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KarExecutionState> cq = cb.createQuery(KarExecutionState.class);
     Root<KarExecutionState> root = cq.from(KarExecutionState.class);

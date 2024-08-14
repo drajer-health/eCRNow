@@ -36,8 +36,6 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
   public static final String RESPONSE_PROCESSING_INS = "responseProcessingInstruction";
   public static final String RESPONSE_PROCESSING_STATUS = "responseProcessingStatus";
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   @Override
   public PublicHealthMessage saveOrUpdate(PublicHealthMessage message) {
     getSession().saveOrUpdate(message);
@@ -51,6 +49,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public Integer getMaxVersionId(PublicHealthMessage message) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -72,6 +71,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage getByCorrelationId(String coorelId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -84,6 +84,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public List<PublicHealthMessage> getPublicHealthMessage(Map<String, String> searchParams) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -103,6 +104,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public List<PublicHealthMessage> getByXRequestId(String xRequestId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -116,6 +118,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage getBySubmittedMessageId(String messageId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -128,6 +131,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage getByResponseMessageId(String id) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);
@@ -145,6 +149,7 @@ public class PublicHealthMessagesDaoImpl extends AbstractDao implements PublicHe
 
   @Override
   public PublicHealthMessage getBySubmittedDataId(String subId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthMessage> cq = cb.createQuery(PublicHealthMessage.class);
     Root<PublicHealthMessage> root = cq.from(PublicHealthMessage.class);

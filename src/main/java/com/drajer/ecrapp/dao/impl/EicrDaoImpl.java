@@ -27,8 +27,6 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   public static final String SET_ID = "setId";
   public static final String X_REQUEST_ID = "xRequestId";
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   public Eicr saveOrUpdate(Eicr eicr) {
     getSession().saveOrUpdate(eicr);
     return eicr;
@@ -48,6 +46,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public Integer getMaxVersionId(Eicr eicr) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
@@ -68,6 +67,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public Eicr getEicrByCorrelationId(String xcoorrId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
@@ -79,6 +79,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public List<Eicr> getEicrData(Map<String, String> searchParams) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
@@ -98,6 +99,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public List<Eicr> getRRData(Map<String, String> searchParams) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
@@ -118,6 +120,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
   }
 
   public List<Eicr> getEicrAndRRByXRequestId(String xRequestId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);
@@ -130,6 +133,7 @@ public class EicrDaoImpl extends AbstractDao implements EicrDao {
 
   @Override
   public Eicr getEicrByDocId(String docId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Eicr> cq = cb.createQuery(Eicr.class);
     Root<Eicr> root = cq.from(Eicr.class);

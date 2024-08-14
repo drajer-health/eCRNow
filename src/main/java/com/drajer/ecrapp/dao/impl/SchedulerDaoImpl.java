@@ -19,10 +19,10 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   private static final String TASK_INSTANCE = "task_instance";
   private static final String TASK_NAME = "task_name";
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
 
   @Override
   public List<ScheduledTasks> getScheduledTasks(String actionType, String launchId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
     Root<ScheduledTasks> root = cq.from(ScheduledTasks.class);
@@ -42,6 +42,7 @@ public class SchedulerDaoImpl extends AbstractDao implements SchedulerDao {
 
   @Override
   public List<ScheduledTasks> getScheduledTasks() {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<ScheduledTasks> cq = cb.createQuery(ScheduledTasks.class);
 

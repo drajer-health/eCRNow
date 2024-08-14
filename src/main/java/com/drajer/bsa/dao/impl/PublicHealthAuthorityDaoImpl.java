@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PublicHealthAuthorityDaoImpl extends AbstractDao implements PublicHealthAuthorityDao {
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   @Override
   public PublicHealthAuthority saveOrUpdate(PublicHealthAuthority pha) {
     getSession().saveOrUpdate(pha);
@@ -31,6 +29,7 @@ public class PublicHealthAuthorityDaoImpl extends AbstractDao implements PublicH
 
   @Override
   public PublicHealthAuthority getPublicHealthAuthorityByUrl(String url) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthAuthority> cq = cb.createQuery(PublicHealthAuthority.class);
     Root<PublicHealthAuthority> root = cq.from(PublicHealthAuthority.class);
@@ -43,6 +42,7 @@ public class PublicHealthAuthorityDaoImpl extends AbstractDao implements PublicH
 
   @Override
   public List<PublicHealthAuthority> getAllPublicHealthAuthority() {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<PublicHealthAuthority> cq = cb.createQuery(PublicHealthAuthority.class);
     Root<PublicHealthAuthority> root = cq.from(PublicHealthAuthority.class);

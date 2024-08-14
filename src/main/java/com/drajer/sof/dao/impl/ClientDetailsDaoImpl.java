@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDao {
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   public ClientDetails saveOrUpdate(ClientDetails clientDetails) {
     getSession().saveOrUpdate(clientDetails);
     return clientDetails;
@@ -28,6 +26,7 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
   }
 
   public ClientDetails getClientDetailsByUrl(String url) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<ClientDetails> cq = cb.createQuery(ClientDetails.class);
     Root<ClientDetails> root = cq.from(ClientDetails.class);
@@ -39,6 +38,7 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
   }
 
   public List<ClientDetails> getAllClientDetails() {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<ClientDetails> cq = cb.createQuery(ClientDetails.class);
     Root<ClientDetails> root = cq.from(ClientDetails.class);

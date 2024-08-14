@@ -30,8 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationContextDaoImpl extends AbstractDao implements NotificationContextDao {
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   /**
    * Method to create or update a NotificationContext.
    *
@@ -63,6 +61,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
    */
   @Override
   public NotificationContext getNotificationContextByUrl(String url) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
     Root<NotificationContext> root = cq.from(NotificationContext.class);
@@ -92,6 +91,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
       String notificationResourceId,
       String notificationResourceType) {
 
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);
     Root<NotificationContext> root = cq.from(NotificationContext.class);
@@ -113,6 +113,7 @@ public class NotificationContextDaoImpl extends AbstractDao implements Notificat
   @Override
   public List<NotificationContext> getNotificationContextData(
       UUID id, String fhirServerBaseUrl, String notificationResourceId, String patientId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     List<Predicate> predicates = new ArrayList<Predicate>();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<NotificationContext> cq = cb.createQuery(NotificationContext.class);

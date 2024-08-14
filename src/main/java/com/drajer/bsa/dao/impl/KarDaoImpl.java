@@ -22,8 +22,6 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   private final Logger logger = LoggerFactory.getLogger(KarDaoImpl.class);
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   @Override
   public KnowledgeArtifactRepository saveOrUpdate(KnowledgeArtifactRepository kar) {
     getSession().saveOrUpdate(kar);
@@ -37,11 +35,12 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public KnowledgeArtifactRepository getKARByUrl(String url) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactRepository> cq =
         cb.createQuery(KnowledgeArtifactRepository.class);
     Root<KnowledgeArtifactRepository> root = cq.from(KnowledgeArtifactRepository.class);
-    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
+    cq.where(cb.equal(root.get("fhirServerURL"), url));
 
     Query<KnowledgeArtifactRepository> q = getSession().createQuery(cq);
 
@@ -50,6 +49,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public List<KnowledgeArtifactRepository> getAllKARs() {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactRepository> cq =
         cb.createQuery(KnowledgeArtifactRepository.class);
@@ -69,6 +69,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
 
   @Override
   public List<KnowledgeArtifactStatus> getKARStatusByHsId(Integer hsId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
     Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);
@@ -84,6 +85,7 @@ public class KarDaoImpl extends AbstractDao implements KarDao {
   @Override
   public KnowledgeArtifactStatus getKarStausByKarIdAndKarVersion(
       String karId, String karVersion, Integer hsId) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
     Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);

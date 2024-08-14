@@ -39,8 +39,6 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
   private final Logger logger = LoggerFactory.getLogger(HealthcareSettingsDaoImpl.class);
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   /**
    * Method to create or update a HealthcareSetting.
    *
@@ -89,6 +87,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public HealthcareSetting getHealthcareSettingByUrl(String url) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<HealthcareSetting> cq = cb.createQuery(HealthcareSetting.class);
     Root<HealthcareSetting> root = cq.from(HealthcareSetting.class);
@@ -110,6 +109,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
    */
   @Override
   public List<HealthcareSetting> getAllHealthcareSettings() {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<HealthcareSetting> cq = cb.createQuery(HealthcareSetting.class);
     Root<HealthcareSetting> root = cq.from(HealthcareSetting.class);
@@ -141,6 +141,7 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
   @Override
   public List<KnowledgeArtifactStatus> getKarsActiveByHsId(Integer id) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<KnowledgeArtifactStatus> cq = cb.createQuery(KnowledgeArtifactStatus.class);
     Root<KnowledgeArtifactStatus> root = cq.from(KnowledgeArtifactStatus.class);

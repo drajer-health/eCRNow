@@ -20,8 +20,6 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
   private final Logger logger = LoggerFactory.getLogger(LaunchDetailsDaoImpl.class);
 
-  private final EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
-
   public LaunchDetails saveOrUpdate(LaunchDetails authDetails) {
     getSession().saveOrUpdate(authDetails);
     logger.info("Launch Details data successfully inserted in DB");
@@ -34,6 +32,7 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
   public LaunchDetails getLaunchDetailsByPatientAndEncounter(
       String patient, String encounter, String fhirServerUrl) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
     Root<LaunchDetails> root = cq.from(LaunchDetails.class);
@@ -51,6 +50,7 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
   }
 
   public LaunchDetails getLaunchDetailsByState(int state) {
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
     Root<LaunchDetails> root = cq.from(LaunchDetails.class);
