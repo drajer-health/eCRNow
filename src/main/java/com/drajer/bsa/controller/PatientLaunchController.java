@@ -7,6 +7,7 @@ import com.drajer.bsa.model.NotificationContext;
 import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.HealthcareSettingsService;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
+import com.drajer.bsa.utils.OperationOutcomeUtil;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,7 +76,7 @@ public class PatientLaunchController {
    */
   @CrossOrigin
   @PostMapping(value = "/api/launchPatient")
-  public String launchPatient(
+  public ResponseEntity<Object> launchPatient(
       @RequestBody PatientLaunchContext launchContext,
       HttpServletRequest request,
       HttpServletResponse response) {
@@ -90,36 +92,49 @@ public class PatientLaunchController {
 
     logger.info(FHIR_VERSION);
 
-    HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
+    try {
 
-    // If the healthcare setting exists
-    if (hs != null) {
+      HealthcareSetting hs = hsService.getHealthcareSettingByUrl(launchContext.getFhirServerURL());
 
-      String requestId = request.getHeader(X_REQUEST_ID);
+      // If the healthcare setting exists
+      if (hs != null) {
 
-      if (!StringUtils.isEmpty(requestId)) {
+        String requestId = request.getHeader(X_REQUEST_ID);
 
-        Bundle nb = getNotificationBundle(launchContext, hs, requestId, false);
+        if (!StringUtils.isEmpty(requestId)) {
 
-        notificationReceiver.processNotification(nb, request, response, launchContext);
+          Bundle nb = getNotificationBundle(launchContext, hs, requestId, false);
+
+          notificationReceiver.processNotification(nb, request, response, launchContext);
+
+        } else {
+          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+              .body(
+                  OperationOutcomeUtil.createErrorOperationOutcome(
+                      "No Request Id set in the header. Add X-Request-ID parameter for request tracking."));
+        }
 
       } else {
-        throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "No Request Id set in the header. Add X-Request-ID parameter for request tracking. ");
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                OperationOutcomeUtil.createErrorOperationOutcome(
+                    "Unrecognized healthcare setting FHIR URL"));
       }
+      logger.info(
+          " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
+          StringEscapeUtils.escapeJava(launchContext.getPatientId()),
+          StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
+          StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
 
-    } else {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Unrecognized healthcare setting FHIR URL ");
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(
+              OperationOutcomeUtil.createSuccessOperationOutcome(
+                  "Patient Instance launched for processing successfully"));
+    } catch (Exception e) {
+
+      return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+          .body(OperationOutcomeUtil.createErrorOperationOutcome(e.getMessage()));
     }
-    logger.info(
-        " Patient launch was successful for patientId: {}, encounterId: {}, requestId: {}",
-        StringEscapeUtils.escapeJava(launchContext.getPatientId()),
-        StringEscapeUtils.escapeJava(launchContext.getEncounterId()),
-        StringEscapeUtils.escapeJava(request.getHeader("X-Request-ID")));
-
-    return "Patient Instance launched for processing successfully";
   }
 
   /**
