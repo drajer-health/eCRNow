@@ -385,16 +385,17 @@ public class KarParserImpl implements KarParser {
             for (CanonicalType prof : profiles) {
 
               if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
-                  && lib.getMeta().hasVersionId() && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
+                  && lib.getMeta().hasVersionId()
+                  && lib.getMeta().getVersionId().startsWith(VERSION3_ERSD)) {
                 logger.info(" Adding Version {} to KAR", lib.getMeta().getVersionId());
                 art.setKarVersion(lib.getMeta().getVersionId());
                 break;
-              }
-              else if(prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
-            		  && lib.hasVersion() && lib.getVersion().startsWith(VERSION3_ERSD)) {
-            	  logger.info(" Adding Version {} to KAR", lib.getVersion());
-                  art.setKarVersion(lib.getVersion());
-                  break;
+              } else if (prof.getValue().contains(US_SPECIFICATION_LIBRARY_PROFILE)
+                  && lib.hasVersion()
+                  && lib.getVersion().startsWith(VERSION3_ERSD)) {
+                logger.info(" Adding Version {} to KAR", lib.getVersion());
+                art.setKarVersion(lib.getVersion());
+                break;
               }
             }
           }
