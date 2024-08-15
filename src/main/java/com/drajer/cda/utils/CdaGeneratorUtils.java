@@ -338,6 +338,39 @@ public class CdaGeneratorUtils {
         + CdaGeneratorConstants.END_XMLTAG_NEWLN;
   }
 
+  public static String getXmlForNFCDWithText(String cdName, String code, String text) {
+
+    String retVal = new String();
+
+    if (text != null && !text.isEmpty()) {
+
+      retVal =
+          CdaGeneratorConstants.START_XMLTAG
+              + cdName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.NF_OTH
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.RIGHT_ANGLE_BRACKET
+              + CdaGeneratorConstants.NEW_LINE
+              + CdaGeneratorUtils.getXmlForText(CdaGeneratorConstants.ORIGINAL_TEXT_EL_NAME, text)
+              + CdaGeneratorUtils.getXmlForEndElement(cdName);
+    } else {
+      retVal =
+          CdaGeneratorConstants.START_XMLTAG
+              + cdName
+              + CdaGeneratorConstants.SPACE
+              + CdaGeneratorConstants.NULLFLAVOR_WITH_EQUAL
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + code
+              + CdaGeneratorConstants.DOUBLE_QUOTE
+              + CdaGeneratorConstants.END_XMLTAG_NEWLN;
+    }
+
+    return retVal;
+  }
+
   public static String getXmlForCD(String cdName, String code) {
     return CdaGeneratorConstants.START_XMLTAG
         + cdName

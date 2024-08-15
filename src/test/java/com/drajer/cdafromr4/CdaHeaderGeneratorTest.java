@@ -87,7 +87,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     String expectedXml =
         "<sdtc:ethnicGroupCode code=\"2178-2\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Latin American\"/>\r\n";
     String actualXml =
-        CdaHeaderGenerator.generateXmlForDetailedRaceAndEthnicityCodes(
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
             extensions,
             CdaGeneratorConstants.FHIR_USCORE_ETHNICITY_EXT_URL,
             CdaGeneratorConstants.OMB_ETHNICITY_DETAILED_URL,
@@ -108,7 +108,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
     String expectedXml =
         "<sdtc:raceCode code=\"1072-8\" codeSystem=\"2.16.840.1.113883.6.238\" codeSystemName=\"Race &amp; Ethnicity - CDC\" displayName=\"Mexican American Indian\"/>\r\n";
     String actualXml =
-        CdaHeaderGenerator.generateXmlForDetailedRaceAndEthnicityCodes(
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
             extensions,
             CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_DETAILED_URL,
@@ -128,7 +128,7 @@ public class CdaHeaderGeneratorTest extends BaseGeneratorTest {
 
     String expectedXml = "<sdtc:raceCode nullFlavor=\"ASKU\"/>";
     String actualXml =
-        CdaHeaderGenerator.generateXmlForDetailedRaceAndEthnicityCodes(
+        CdaFhirUtilities.generateXmlForDetailedRaceAndEthnicityCodes(
             extensions,
             CdaGeneratorConstants.FHIR_USCORE_RACE_EXT_URL,
             CdaGeneratorConstants.OMB_RACE_DETAILED_URL,

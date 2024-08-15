@@ -205,6 +205,42 @@ public class CdaFhirUtilities {
     return null;
   }
 
+  public static String getStringExtension(List<Extension> exts, String extUrl, String subextUrl) {
+
+    if (exts != null && !exts.isEmpty()) {
+
+      for (Extension ext : exts) {
+
+        if (ext.getUrl() != null && ext.getUrl().contentEquals(extUrl)) {
+
+          // if the top level extension has Coding then we will use it.
+          if (ext.getValue() instanceof StringType) {
+
+            logger.debug("Found Extension at top level ");
+            return ((StringType) ext.getValue()).getValue();
+
+          } else if (ext.getValue() == null) {
+
+            // get child extensions.
+            List<Extension> subExts = ext.getExtensionsByUrl(subextUrl);
+
+            for (Extension subext : subExts) {
+
+              if (subext.getValue() instanceof StringType) {
+
+                logger.debug("Found Extension nested as children ");
+                return ((StringType) subext.getValue()).getValue();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    logger.debug("Did not find the Extension or sub extensions for the Url {}", extUrl);
+    return null;
+  }
+
   public static List<Coding> getAllCodingsFromExtension(
       List<Extension> exts, String extUrl, String subextUrl) {
     List<Coding> codings = new ArrayList<>();
@@ -2927,5 +2963,80 @@ public class CdaFhirUtilities {
     }
 
     return result;
+  }
+
+  public static String getRaceOrEthnicityXml(List<Extension> exts, String elName, String extUrl) {
+
+    StringBuffer str = new StringBuffer(200);
+    Coding re =
+        CdaFhirUtilities.getCodingExtension(
+            exts, extUrl, CdaGeneratorConstants.OMB_RACE_CATEGORY_URL);
+
+    if (re != null && re.hasCode()) {
+      if (!isCodingNullFlavor(re)) {
+        str.append(
+            CdaGeneratorUtils.getXmlForCD(
+                elName,
+                re.getCode(),
+                CdaGeneratorConstants.RACE_CODE_SYSTEM,
+                CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
+                re.getDisplay()));
+      } else {
+        str.append(CdaGeneratorUtils.getXmlForNullCD(elName, re.getCode()));
+      }
+    } else if (re != null && re.hasDisplay()) {
+
+      // Add display if it is present.
+      str.append(
+          CdaGeneratorUtils.getXmlForNFCDWithText(
+              elName, CdaGeneratorConstants.NF_NI, re.getDisplay()));
+    } else {
+
+      // Check for Text and use it if present.
+      String val =
+          CdaFhirUtilities.getStringExtension(exts, extUrl, CdaGeneratorConstants.OMB_TEXT_URL);
+
+      str.append(CdaGeneratorUtils.getXmlForNFCDWithText(elName, CdaGeneratorConstants.NF_NI, val));
+    }
+
+    return str.toString();
+  }
+
+  public static boolean isCodingNullFlavor(Coding coding) {
+
+    if (coding != null
+        && coding.hasCode()
+        && (coding.getCode().contentEquals("ASKU") || coding.getCode().contentEquals("UNK"))) {
+      return true;
+    } else return false;
+  }
+
+  public static String generateXmlForDetailedRaceAndEthnicityCodes(
+      List<Extension> extensions, String extensionUrl, String categoryUrl, String xmlElementName) {
+    StringBuilder sb = new StringBuilder();
+
+    List<Coding> detailedCodings =
+        CdaFhirUtilities.getAllCodingsFromExtension(extensions, extensionUrl, categoryUrl);
+
+    if (detailedCodings.isEmpty()) {
+      return "";
+    }
+    for (Coding detailedCoding : detailedCodings) {
+      if (detailedCoding.hasCode()) {
+        String code = detailedCoding.getCode();
+        if (isCodingNullFlavor(detailedCoding)) {
+          sb.append(CdaGeneratorUtils.getXmlForNullCD(xmlElementName, code));
+        } else {
+          sb.append(
+              CdaGeneratorUtils.getXmlForCD(
+                  xmlElementName,
+                  code,
+                  CdaGeneratorConstants.RACE_CODE_SYSTEM,
+                  CdaGeneratorConstants.RACE_CODE_SYSTEM_NAME,
+                  detailedCoding.getDisplay()));
+        }
+      }
+    }
+    return sb.toString();
   }
 }
