@@ -43,7 +43,7 @@ public class CdaHeaderGenerator {
   private static final Properties properties = new Properties();
   private static final Logger logger = LoggerFactory.getLogger(CdaHeaderGenerator.class);
 
-  private static String SW_APP_VERSION = "Version 3.1.X";
+  private static String SW_APP_VERSION = "Version 3.1.5";
   private static String SW_APP_NAME = "ecrNowApp";
   private static final String SPRING_ACTIVE_PROFILE = "spring.active.profile";
   private static final String DEFAULT_PROPERTIES_FILE = "application.properties";
