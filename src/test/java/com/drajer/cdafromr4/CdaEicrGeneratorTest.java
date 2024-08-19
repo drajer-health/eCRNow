@@ -5,8 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.drajer.bsa.utils.R3ToR2DataConverterUtils;
+import com.drajer.cda.utils.CdaGeneratorConstants;
 import com.drajer.cda.utils.CdaGeneratorUtils;
+import com.drajer.eca.model.ActionRepo;
 import com.drajer.ecrapp.model.Eicr;
+import com.drajer.ecrapp.service.impl.EicrServiceImpl;
 import com.drajer.ecrapp.util.ApplicationUtils;
 import com.drajer.sof.model.LaunchDetails;
 import com.drajer.sof.model.R4FhirData;
@@ -14,10 +18,18 @@ import com.drajer.test.util.TestUtils;
 import java.io.File;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.junit.Test;
@@ -28,13 +40,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CdaHeaderGenerator.class, CdaGeneratorUtils.class})
+@PrepareForTest({CdaHeaderGenerator.class, CdaGeneratorUtils.class, ActionRepo.class})
 public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
   // Constants
   private static final String R4_BUNDLE_FILE =
       "SampleTestData/r4-loading-query-bundle-sample1.json";
   private static final String PATIENT_SAMPLE_CDA_FILE = "CdaTestData/Cda/sample/PatientSample.xml";
+  private static final String EICR_CDA_FILE = "CdaTestData/Eicr/eicr.xml";
 
   @Test
   public void testConvertR4FhirBundleToCdaEicr() {
@@ -48,6 +61,7 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
     String expectedXml = TestUtils.getFileContentAsString(PATIENT_SAMPLE_CDA_FILE);
 
     // Mock static methods
+    PowerMockito.mockStatic(ActionRepo.class);
     PowerMockito.mockStatic(CdaHeaderGenerator.class);
     PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
 
@@ -61,6 +75,65 @@ public class CdaEicrGeneratorTest extends BaseGeneratorTest {
 
     String actualXml =
         CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(r4Data, launchDetails, eicr);
+
+    assertXmlEquals(expectedXml, actualXml);
+  }
+
+  @Test
+  public void testConvertR4FhirBundleToEicr() {
+    R4FhirData data = new R4FhirData();
+    Bundle b =
+        loadBundleFromFile(
+            "CdaTestData/LoadingQuery/LoadingQueryBundle_e9bd7100-48af-4c69-a557-c13235f72f74.json");
+    String expectedXml = TestUtils.getFileContentAsString(EICR_CDA_FILE);
+    List<BundleEntryComponent> entries = b.getEntry();
+    Bundle bundle = new Bundle();
+    Set<Resource> resourceSet = new HashSet<>(); // Initialize HashSet outside the loop
+
+    Map<String, List<String>> uniqueResourceIdsByType = new HashMap<>();
+    for (BundleEntryComponent ent : entries) {
+
+      resourceSet.add(ent.getResource());
+      ResourceType resourceType = ent.getResource().getResourceType();
+      R3ToR2DataConverterUtils.addResourcesToR4FhirData(
+          "1",
+          bundle,
+          data,
+          launchDetails,
+          resourceSet,
+          resourceType.toString(),
+          uniqueResourceIdsByType);
+      resourceSet.clear();
+    }
+    data.setData(bundle);
+
+    // PowerMockito.mockStatic(CdaHeaderGenerator.class);
+    PowerMockito.mockStatic(ActionRepo.class);
+
+    PowerMockito.mockStatic(CdaGeneratorUtils.class, Mockito.CALLS_REAL_METHODS);
+
+    ActionRepo actionRepoMock = PowerMockito.mock(ActionRepo.class);
+
+    PowerMockito.when(ActionRepo.getInstance()).thenReturn(actionRepoMock);
+
+    EicrServiceImpl eicrRRServiceMock = PowerMockito.mock(EicrServiceImpl.class);
+
+    PowerMockito.when(actionRepoMock.getEicrRRService()).thenReturn(eicrRRServiceMock);
+    PowerMockito.when(eicrRRServiceMock.getMaxVersionId(Mockito.any(Eicr.class))).thenReturn(0);
+
+    PowerMockito.when(CdaGeneratorUtils.getXmlForIIUsingGuid()).thenReturn(XML_FOR_II_USING_GUID);
+
+    PowerMockito.when(CdaGeneratorUtils.getGuid())
+        .thenReturn("b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9");
+
+    PowerMockito.when(CdaGeneratorUtils.getCurrentDateTime()).thenReturn("20240819101316");
+
+    PowerMockito.when(
+            CdaGeneratorUtils.getXmlForEffectiveTime(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorUtils.getCurrentDateTime()))
+        .thenReturn("<effectiveTime value=\"20240819101316\"/>");
+    String actualXml =
+        CdaEicrGeneratorFromR4.convertR4FhirBundletoCdaEicr(data, launchDetails, eicr);
 
     assertXmlEquals(expectedXml, actualXml);
   }

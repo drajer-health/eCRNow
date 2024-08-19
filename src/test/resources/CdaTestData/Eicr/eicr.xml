@@ -1,0 +1,1330 @@
+<?xml version="1.0"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="urn:hl7-org:v3"
+ xmlns:cda="urn:hl7-org:v3"
+ xmlns:sdtc="urn:hl7-org:sdtc">
+<realmCode code="US"/>
+<typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+<templateId root="2.16.840.1.113883.10.20.22.1.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+<templateId root="2.16.840.1.113883.10.20.15.2" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+<code code="55751-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Initial Public Health Case Report"/>
+<title>Initial Public Health Case Report</title>
+<effectiveTime value="20240819101316"/><confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+<languageCode code="en-US"/>
+<setId root="2.16.840.1.113883.1.1.1.1" extension="1"/>
+<versionNumber value="1"/>
+<recordTarget>
+<patientRole>
+<id root="2.16.840.1.113883.1.1.1.1" extension="34332234"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;2801 ROCK CREEK PKWY\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Northeast</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(573)923-4567" use="WP"/>
+<telecom value="tel:(816)234-5123" use="WP"/>
+<telecom value="tel:(913)222-1324" use="HP"/>
+<telecom value="tel:(212)555-5554" use="MC"/>
+<telecom value="mailto:Alice.Newman@gmail.com"/>
+<patient>
+<name use="L">
+<given qualifier="PR">Alice</given>
+<given qualifier="PR">C</given>
+<family>Newman</family>
+</name>
+<administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7AdministrativeGenderCode" displayName="female"/>
+<birthTime value="19801115"/>
+<sdtc:deceasedInd value="false"/>
+<raceCode code="2106-3" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="White"/>
+<ethnicGroupCode code="2135-2" codeSystem="2.16.840.1.113883.6.238" codeSystemName="Race &amp; Ethnicity - CDC" displayName="Hispanic or Latino"/>
+<guardian>
+<code nullFlavor="OTH"><translation code="N" codeSystem="2.16.840.1.113883.18.58" codeSystemName="v2-0131"/>
+</code>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;2801 ROCK CREEK PKWY\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Northeast</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(212)555-5553" use="MC"/>
+<telecom value="mailto:Jnewman@gmail.com"/>
+<guardianPerson>
+<name>
+<given>Newman</given>
+<family>Jacob</family>
+</name>
+</guardianPerson>
+</guardian>
+<languageCommunication>
+<languageCode code="en"/>
+</languageCommunication>
+</patient>
+</patientRole>
+</recordTarget>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;1234 Main St\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<state>NY</state>
+<postalCode>64113</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)674-2878" use="MC"/>
+<telecom value="mailto:Kristin.Carter@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Kristin</given>
+<given>Alice</given>
+<family>Carter</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+<author>
+<time value="20240819101316"/>
+<assignedAuthor>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<assignedAuthoringDevice>
+<manufacturerModelName displayName="Example-Ehr"/>
+<softwareName displayName="1.0.0"/>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<author>
+<time value="20240819101316"/>
+<assignedAuthor>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<assignedAuthoringDevice>
+<manufacturerModelName displayName="ecrNowApp"/>
+<softwareName displayName="Version 3.1.5"/>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<author>
+<time value="20240819101316"/>
+<assignedAuthor>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><addr>
+<streetAddressLine nullFlavor="NI"/>
+<city nullFlavor="NI"/>
+<state nullFlavor="NI"/>
+<postalCode nullFlavor="NI"/>
+<country nullFlavor="NI"/>
+</addr>
+<assignedAuthoringDevice>
+<manufacturerModelName displayName="System-Integrator"/>
+<softwareName displayName="1.0.0"/>
+</assignedAuthoringDevice>
+</assignedAuthor>
+</author>
+<custodian>
+<assignedCustodian>
+<representedCustodianOrganization>
+<id root="2.16.840.1.113883.1.1.1.1" extension="380dcfda-7b18-40ee-881d-190993359319"/>
+<name>Model Hospital</name>
+<telecom value="tel:(555)555-0013" use="WP"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;6276 Rockriver Drive\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>Kansas City</city>
+<state>MO</state>
+<postalCode>64117</postalCode>
+<country>US</country>
+</addr>
+</representedCustodianOrganization>
+</assignedCustodian>
+</custodian>
+<participant typeCode="IND">
+<associatedEntity classCode="NOK">
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;2801 ROCK CREEK PKWY\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Northeast</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(212)555-5553" use="MC"/>
+<telecom value="mailto:Jnewman@gmail.com"/>
+<associatedPerson>
+<name>
+<given>Newman</given>
+<family>Jacob</family>
+</name>
+</associatedPerson>
+</associatedEntity>
+</participant>
+<componentOf>
+<encompassingEncounter>
+<id root="2.16.840.1.113883.1.1.1.1" extension="1f43c338-0811-415a-b96b-3b5720e6a69a"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="539bad28-c13b-4807-96e2-33a16652c77f"/>
+<code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"></code>
+<effectiveTime>
+<low value="20231225000000+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<responsibleParty>
+<assignedEntity>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;1234 Main St\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<state>NY</state>
+<postalCode>64113</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)674-2878" use="MC"/>
+<telecom value="mailto:Kristin.Carter@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Kristin</given>
+<given>Alice</given>
+<family>Carter</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<id root="2.16.840.1.113883.1.1.1.1" extension="380dcfda-7b18-40ee-881d-190993359319"/>
+<name>Model Hospital</name>
+<telecom value="tel:(555)555-0013" use="WP"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;6276 Rockriver Drive\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>Kansas City</city>
+<state>MO</state>
+<postalCode>64117</postalCode>
+<country>US</country>
+</addr>
+</representedOrganization>
+</assignedEntity>
+</responsibleParty>
+<encounterParticipant typeCode="ATND">
+<assignedEntity>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;1234 Main St\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<state>NY</state>
+<postalCode>64113</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)674-2878" use="MC"/>
+<telecom value="mailto:Kristin.Carter@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Kristin</given>
+<given>Alice</given>
+<family>Carter</family>
+</name>
+</assignedPerson>
+</assignedEntity>
+</encounterParticipant>
+<location>
+<healthCareFacility>
+<id root="2.16.840.1.113883.1.1.1.1" extension="8614f9d9-af54-47b2-8da4-7bea05f8d032"/>
+<code code="HOSP" codeSystem="2.16.840.1.113883.5.111" codeSystemName="v3-RoleCode" displayName="Hospital"></code>
+<location>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+</location>
+<serviceProviderOrganization>
+<id root="2.16.840.1.113883.1.1.1.1" extension="380dcfda-7b18-40ee-881d-190993359319"/>
+<name>Model Hospital</name>
+<telecom value="tel:(555)555-0013" use="WP"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;6276 Rockriver Drive\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>Kansas City</city>
+<state>MO</state>
+<postalCode>64117</postalCode>
+<country>US</country>
+</addr>
+</serviceProviderOrganization>
+</healthCareFacility>
+</location>
+</encompassingEncounter>
+</componentOf>
+<component>
+<structuredBody>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+<code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="PROBLEM LIST"/>
+<title>PROBLEMS - DIAGNOSES</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Problem or Diagnosis</th>
+<th>Problem Status</th>
+<th>Problem Recorded Date|Onset Date|Resolved Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="problem1">Probable rabies (situation)</content>
+</td>
+<td>
+<content ID="problemStatus1">Active</content>
+</td>
+<td>
+<content ID="problemDate1">Wed Dec 27 00:00:00 UTC 2023|Wed Dec 27 00:00:00 UTC 2023|Unknown</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="problem2">Patient currently pregnant (finding)</content>
+</td>
+<td>
+<content ID="problemStatus2">Active</content>
+</td>
+<td>
+<content ID="problemDate2">Tue Jan 02 00:00:00 UTC 2024|Unknown|Fri Aug 30 00:00:00 UTC 2024</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="problem3">Chlamydia trachomatis infection in pregnancy (disorder)</content>
+</td>
+<td>
+<content ID="problemStatus3">Active</content>
+</td>
+<td>
+<content ID="problemDate3">Tue Jan 02 00:00:00 UTC 2024|Tue Jan 02 00:00:00 UTC 2024|Unknown</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20231227000000+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="e7a87935-d4e4-4ae0-b4b1-7b64901759fb"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20231227000000+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="722546002" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Probable rabies (situation)"></value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20240102000000+0000"/>
+<high value="20240830000000+0000"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="16a12ec8-085f-4bf5-87a7-4f5db6f3e535"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high value="20240830000000+0000"/>
+</effectiveTime>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+<entry typeCode="DRIV">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.3"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="CONC" codeSystem="2.16.840.1.113883.5.6" codeSystemName="HL7ActClass" displayName="Concern"/>
+<statusCode code="active"/>
+<effectiveTime>
+<low value="20240102000000+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="8c4ddf5f-3efb-4285-becc-6456f2b31048"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low value="20240102000000+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="1621000119101" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chlamydia trachomatis infection in pregnancy (disorder)"></value>
+</observation>
+</entryRelationship>
+</act>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.22.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.22.1" extension="2015-08-01"/>
+<code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Encounters"/>
+<title>ENCOUNTERS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Encounter Code</th>
+<th>Date of Encounter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="encounter1">inpatient encounter</content>
+</td>
+<td>
+<content ID="encounterDate1">20231225000000+0000</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<encounter classCode="ENC" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.49"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.49" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="1f43c338-0811-415a-b96b-3b5720e6a69a"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="539bad28-c13b-4807-96e2-33a16652c77f"/>
+<code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="v3-ActCode" displayName="inpatient encounter"><originalText>
+<reference value="#encounter1"/>
+</originalText>
+</code>
+<effectiveTime>
+<low value="20231225000000+0000"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<sdtc:dischargeDispositionCode nullFlavor="NI"/>
+<entryRelationship typeCode="RSON">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.80"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.80" extension="2015-08-01"/>
+<code code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="DIAGNOSIS"/>
+<statusCode code="active"/>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high value="20240830000000+0000"/>
+</effectiveTime>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+</observation>
+</entryRelationship>
+</act>
+</entryRelationship>
+<entryRelationship typeCode="RSON">
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.80"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.80" extension="2015-08-01"/>
+<code code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="DIAGNOSIS"/>
+<statusCode code="active"/>
+<entryRelationship typeCode="SUBJ">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.4"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/>
+<code code="282291009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Diagnosis"><translation code="29308-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diagnosis"/>
+</code>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high nullFlavor="NI"/>
+</effectiveTime>
+<value xsi:type="CD" code="282752000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Injury of eye region"></value>
+</observation>
+</entryRelationship>
+</act>
+</entryRelationship>
+</encounter>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.3.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.3.1" extension="2015-08-01"/>
+<code code="30954-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="RESULTS"/>
+<title>RESULTS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Lab Test Name</th>
+<th>Lab Test Result Value</th>
+<th>Lab Test Result Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="labTestName1">SARS coronavirus 2 Ag [Presence] in Respiratory specimen by</content>
+</td>
+<td>
+<content ID="labTestResultValue1">22.0|http://unitsofmeasure.org|mg</content>
+</td>
+<td>
+<content ID="labTestResultValueDate1">20240409000000+0000</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="labTestName2">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
+</td>
+<td>
+<content ID="labTestResultValue2">Result#1:Balamuthia mandrillaris</content>
+</td>
+<td>
+<content ID="labTestResultValueDate2">20240101000000+0000</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="labTestName3">CBC panel - Blood by Automated count</content>
+</td>
+<td>
+<content ID="labTestResultValue3">Result#1:4.6|http://unitsofmeasure.org|10*9/L | Result#2:20.0|http://unitsofmeasure.org|%</content>
+</td>
+<td>
+<content ID="labTestResultValueDate3">20240101000000+0000</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="labTestName4">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
+</td>
+<td>
+<content ID="labTestResultValue4">Result#1:postive | Result#2:postive</content>
+</td>
+<td>
+<content ID="labTestResultValueDate4">20240101000000+0000</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="labTestName5">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
+</td>
+<td>
+<content ID="labTestResultValue5">Result#1:Balamuthia mandrillaris</content>
+</td>
+<td>
+<content ID="labTestResultValueDate5">20240101000000+0000</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<organizer classCode="CLUSTER" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"></code>
+<statusCode code="completed"/>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="b9e0a76e-9b16-4f8e-8607-0ba69f8421eb"/>
+<code code="94558-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="SARS coronavirus 2 Ag [Presence] in Respiratory specimen by"><originalText>
+<reference value="#labTestName1"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240409000000+0000"/>
+<value xsi:type="PQ" value="22.0" unit="mg"/>
+<interpretationCode code="A" codeSystem="2.16.840.1.113883.5.83" codeSystemName="v3-ObservationInterpretation" displayName="Abnormal"></interpretationCode>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+</observation>
+</component>
+</organizer>
+</entry>
+<entry typeCode="DRIV">
+<organizer classCode="CLUSTER" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+<statusCode code="completed"/>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="36aa8224-2021-4ed2-8f2f-1f7227c57230"/>
+<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"><originalText>
+<reference value="#labTestName2"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240105000000+0000"/>
+<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris"><originalText>
+<reference value="#labTestName2"/>
+</originalText>
+</value>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+</observation>
+</component>
+</organizer>
+</entry>
+<entry typeCode="DRIV">
+<organizer classCode="CLUSTER" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="58410-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="CBC panel - Blood by Automated count"></code>
+<statusCode code="completed"/>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="d0aafda7-1eba-41be-8a0c-bdc9cfe9127a"/>
+<code code="6690-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukocytes [#/volume] in Blood by Automated count"><originalText>
+<reference value="#labTestName3"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240105000000+0000"/>
+<value xsi:type="PQ" value="4.6" unit="10*9/L"/>
+</observation>
+</component>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="3eb6aaa3-af28-4d33-842e-5ac496ea82b8"/>
+<code code="713-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Eosinophils/100 leukocytes in Blood by Automated count"><originalText>
+<reference value="#labTestName3"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240105000000+0000"/>
+<value xsi:type="PQ" value="20.0" unit="%"/>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+</observation>
+</component>
+</organizer>
+</entry>
+<entry typeCode="DRIV">
+<organizer classCode="CLUSTER" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+<statusCode code="completed"/>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="f7e55c9f-0612-42e3-8e52-67f4f3a25712"/>
+<code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"><originalText>
+<reference value="#labTestName4"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240105000000+0000"/>
+<value xsi:type="ST">postive</value>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+</observation>
+</component>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="535e7bf4-2ff6-40b4-89d3-dfff0ffdd622"/>
+<code code="87758-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Naegleria fowleri DNA [Presence] in Specimen by NAA with probe detection"><originalText>
+<reference value="#labTestName4"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240105000000+0000"/>
+<value xsi:type="ST">postive</value>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+</observation>
+</component>
+</organizer>
+</entry>
+<entry typeCode="DRIV">
+<organizer classCode="CLUSTER" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.1" extension="2015-08-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+<statusCode code="completed"/>
+<component>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.2"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.2" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="46e1fea4-ce38-4b0d-9514-f8518cf370b9"/>
+<code code="41432-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Balamuthia mandrillaris DNA [Presence] in Specimen by NAA with probe detection"><originalText>
+<reference value="#labTestName5"/>
+</originalText>
+</code>
+<statusCode code="completed"/>
+<effectiveTime value="20240105000000+0000"/>
+<value xsi:type="CD" code="115635005" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Balamuthia mandrillaris"><originalText>
+<reference value="#labTestName5"/>
+</originalText>
+</value>
+<author>
+<time value="20231225000000+0000"/>
+<assignedAuthor>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+<representedOrganization>
+<name>Model Hospital</name>
+</representedOrganization>
+</assignedAuthor>
+</author>
+</observation>
+</component>
+</organizer>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.38"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.38" extension="2014-06-09"/>
+<code code="29549-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Medications Administered"/>
+<title>Medications Administered</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Medication Name</th>
+<th>Medication Start Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="medication1">NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector</content>
+</td>
+<td>
+<content ID="medicationDate1">20231227000000+0000</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<substanceAdministration classCode="SBADM" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.16"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.16" extension="2014-06-09"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="ef5acb44-0146-427f-a399-f5b1427789da"/>
+<statusCode code="completed"/>
+<effectiveTime xsi:type="IVL_TS"><low value="20231227000000+0000"/>
+</effectiveTime>
+<doseQuantity value="1" unit="mL"/>
+<consumable>
+<manufacturedProduct classCode="MANU">
+<templateId root="2.16.840.1.113883.10.20.22.4.23"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.23" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+<code code="1870230" codeSystem="2.16.840.1.113883.6.88" codeSystemName="RXNORM" displayName="NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector"></code>
+</manufacturedMaterial>
+</manufacturedProduct>
+</consumable>
+</substanceAdministration>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.2.1" extension="2015-08-01"/>
+<code code="11369-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of immunizations"/>
+<title>IMMUNIZATIONS</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Vaccine Name</th>
+<th>Vaccination Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="vaccine1">Rabies vaccine</content>
+</td>
+<td>
+<content ID="vaccinationDate1">Wed Dec 27 00:00:00 UTC 2023</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry typeCode="DRIV">
+<substanceAdministration classCode="SBADM" moodCode="EVN" negationInd="false" >
+<templateId root="2.16.840.1.113883.10.20.22.4.52"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.52" extension="2015-08-01"/>
+<id root="2.16.840.1.113883.1.1.1.1" extension="7ae40495-f4bc-438c-85a7-ce18d8658293"/>
+<statusCode code="completed"/>
+<effectiveTime value="20231227000000+0000"/>
+<consumable>
+<manufacturedProduct classCode="MANU">
+<templateId root="2.16.840.1.113883.10.20.22.4.54"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.54" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><manufacturedMaterial>
+<code code="18" codeSystem="2.16.840.1.113883.12.292" codeSystemName="CVX" displayName="rabies vaccine, for intramuscular injection RETIRED CODE"></code>
+</manufacturedMaterial>
+</manufacturedProduct>
+</consumable>
+<performer typeCode="PRF">
+<assignedEntity>
+<id root="2.16.840.1.113883.4.6" extension="9999993519"/>
+<addr>
+<streetAddressLine>[&quot;[\&quot;[\\\&quot;[\\\\\\\&quot;5400 N Oak Trfy\\\\\\\&quot;]\\\&quot;]\&quot;]&quot;]</streetAddressLine>
+<city>New York City</city>
+<county>Manhattan</county>
+<state>NY</state>
+<postalCode>10001</postalCode>
+<country>US</country>
+</addr>
+<telecom value="tel:(816)673-2878" use="MC"/>
+<telecom value="mailto:arthur.james73@gmail.com"/>
+<assignedPerson>
+<name>
+<given>Arthur</given>
+<given>James</given>
+<family>Smith</family>
+</name>
+</assignedPerson>
+</assignedEntity>
+</performer>
+</substanceAdministration>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.17"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.17" extension="2015-08-01"/>
+<code code="29762-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Social History"/>
+<title>SOCIAL HISTORY</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Social History Observation</th>
+<th>Social History Observation Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="socContent0">Birth Sex</content>
+</td>
+<td>
+<content ID="socObservationResult0">F</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent1">Pregnancy Condition</content>
+</td>
+<td>
+<content ID="socObservationResult1">Patient currently pregnant (finding)</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent2">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult2">Smoking History |  Value : Every Day Component 1 : Type |  Value : Cigarettes Component 2 : Type |  Value : Chew Component 3 : Years Used |  Value : 12.4|http://unitsofmeasure.org|a Component 4 : Packs/Day |  Value : 0.3|http://snomed.info/sct|228963008</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent3">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult3">Travel Component 1 : Location |  Value : Travel Location: China</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent4">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult4">Travel History Component 1 : Location |  Value : Travelled abroad</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent5">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult5">Travel History Component 1 : Recent Travel Location |  Value : Italy</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent6">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult6">Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="socContent7">Travel History</content>
+</td>
+<td>
+<content ID="socObservationResult7">Travel Component 1 : Location |  Value : Travel to China in last 14 days</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.22.4.200" extension="2016-06-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="76689-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Birth Sex"/>
+<statusCode code="completed"/>
+<value xsi:type="CD" code="F" codeSystem="2.16.840.1.113883.5.1" codeSystemName="Administrative Gender" displayName="Female"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.8"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7ActCode" displayName="Assertion"/>
+<statusCode code="completed"/>
+<effectiveTime>
+<low nullFlavor="NI"/>
+<high value="20240830000000+0000"/>
+</effectiveTime>
+<value xsi:type="CD" code="77386006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Patient currently pregnant (finding)"></value>
+<entryRelationship typeCode="REFR">
+<observation classCode="OBS" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.3.1"/>
+<code code="11778-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Estimated date of delivery"/>
+<statusCode code="completed"/>
+<value xsi:type="TS" value="20240830"/>
+</observation>
+</entryRelationship>
+</observation>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Smoking History |  Value : Every Day Component 1 : Type |  Value : Cigarettes Component 2 : Type |  Value : Chew Component 3 : Years Used |  Value : 12.4|http://unitsofmeasure.org|a Component 4 : Packs/Day |  Value : 0.3|http://snomed.info/sct|228963008</text>
+<statusCode code="completed"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="65568007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Cigarette Smoker"/>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="81703003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Chews Tobacco"/>
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+</participantRole>
+</participant>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel Component 1 : Location |  Value : Travel Location: China</text>
+<statusCode code="completed"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code nullFlavor="OTH">
+<originalText>
+Travel Location: China</originalText>
+
+</code>
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel History Component 1 : Location |  Value : Travelled abroad</text>
+<statusCode code="completed"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code nullFlavor="OTH">
+<originalText>
+Travelled abroad</originalText>
+
+</code>
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel History Component 1 : Recent Travel Location |  Value : Italy</text>
+<statusCode code="completed"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code code="223668000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Italy (geographic location)"/>
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel History Component 1 : Location |  Value : 1170 N Rancho Robles Rd ,Oracle</text>
+<statusCode code="completed"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code nullFlavor="OTH">
+<originalText>
+1170 N Rancho Robles Rd ,Oracle</originalText>
+
+</code>
+<addr>
+<country>US</country>
+<city>Oracle</city>
+<state>AZ</state>
+</addr>
+</participantRole>
+</participant>
+</act>
+</entry>
+<entry>
+<act classCode="ACT" moodCode="EVN">
+<templateId root="2.16.840.1.113883.10.20.15.2.3.1" extension="2016-12-01"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="420008001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT" displayName="Travel"/>
+<text>Travel Component 1 : Location |  Value : Travel to China in last 14 days</text>
+<statusCode code="completed"/>
+<participant typeCode="LOC">
+<participantRole classCode="TERR">
+<code nullFlavor="OTH">
+<originalText>
+Travel to China in last 14 days</originalText>
+
+</code>
+</participantRole>
+</participant>
+</act>
+</entry>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.10"/>
+<templateId root="2.16.840.1.113883.10.20.22.2.10" extension="2014-06-09"/>
+<code code="18776-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Treatment Plan"/>
+<title>Plan of Treatment</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Planned Observation</th>
+<th>Planned Observation Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="potObsContent1">Chlamydia trachomatis [Presence] in Throat by Organism specific culture</content>
+</td>
+<td>
+<content ID="potObsDate1">20240107000000+0000</content>
+</td>
+</tr>
+<tr>
+<td>
+<content ID="potObsContent2">Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen</content>
+</td>
+<td>
+<content ID="potObsDate2">20240101000000+0000</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+<entry>
+<observation classCode="OBS" moodCode="RQO">
+<templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="89648-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Chlamydia trachomatis [Presence] in Throat by Organism specific culture"></code>
+<statusCode code="active"/>
+<effectiveTime value="20240107000000+0000"/>
+</observation>
+</entry>
+<entry>
+<observation classCode="OBS" moodCode="RQO">
+<templateId root="2.16.840.1.113883.10.20.22.4.44"/>
+<templateId root="2.16.840.1.113883.10.20.22.4.44" extension="2014-06-09"/>
+<id root="b56b6d6d-7d6e-4ff4-9e5c-f8625c7babe9"/><code code="96910-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Acanthamoeba sp and Naegleria fowleri and Balamuthia mandrillaris DNA panel - Specimen"></code>
+<statusCode code="active"/>
+<effectiveTime value="20240101000000+0000"/>
+</observation>
+</entry>
+</section>
+</component>
+<component>
+<section nullFlavor="NI">
+<templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.4"/>
+<code code="10164-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of Present Illness"/>
+<title>History of Present Illness</title>
+<text>No History of Present Illness Information</text>
+</section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.22.2.12"/>
+<code code="29299-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Reason For Visit"/>
+<title>Reason For Visit</title>
+<text>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<content ID="text1">eye injury</content>
+</td>
+</tr>
+</tbody>
+</table>
+</text>
+</section>
+</component>
+</structuredBody>
+</component>
+</ClinicalDocument>
