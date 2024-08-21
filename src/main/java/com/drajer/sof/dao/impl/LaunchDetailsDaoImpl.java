@@ -3,8 +3,12 @@ package com.drajer.sof.dao.impl;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.sof.dao.LaunchDetailsDao;
 import com.drajer.sof.model.LaunchDetails;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -28,18 +32,35 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
   public LaunchDetails getLaunchDetailsByPatientAndEncounter(
       String patient, String encounter, String fhirServerUrl) {
-    Criteria criteria = getSession().createCriteria(LaunchDetails.class);
-    criteria.add(Restrictions.eq("ehrServerURL", fhirServerUrl));
-    criteria.add(Restrictions.eq("launchPatientId", patient));
-    criteria.add(Restrictions.eq("encounterId", encounter));
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+    Root<LaunchDetails> root = cq.from(LaunchDetails.class);
 
-    return (LaunchDetails) criteria.uniqueResult();
+    Predicate criteria =
+        cb.and(
+            cb.equal(root.get("ehrServerURL"), fhirServerUrl),
+            cb.equal(root.get("launchPatientId"), patient),
+            cb.equal(root.get("encounterId"), encounter));
+    cq.where(criteria);
+
+    Query<LaunchDetails> q = getSession().createQuery(cq);
+
+    String str = q.unwrap(org.hibernate.query.Query.class).getQueryString();
+
+    return q.uniqueResult();
   }
 
   public LaunchDetails getLaunchDetailsByState(int state) {
-    Criteria criteria = getSession().createCriteria(LaunchDetails.class);
-    criteria.add(Restrictions.eq("launchState", state));
-    return (LaunchDetails) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<LaunchDetails> cq = cb.createQuery(LaunchDetails.class);
+    Root<LaunchDetails> root = cq.from(LaunchDetails.class);
+    cq.where(cb.equal(root.get("launchState"), state));
+
+    Query<LaunchDetails> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   public void delete(LaunchDetails launchDetails) {

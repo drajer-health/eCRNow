@@ -2,7 +2,6 @@ package com.drajer.ecrapp.dao.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.drajer.bsa.dao.impl.PhMessageDaoImpl;
@@ -14,10 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.ProjectionList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +33,6 @@ public class PhMessageDaoTest {
 
   @Mock private Session session;
 
-  @Mock private Criteria criteria;
-
   @InjectMocks private PhMessageDaoImpl phMessageDaoImpl;
 
   private List<PublicHealthMessage> expectedPublicHealthMessages;
@@ -52,10 +47,10 @@ public class PhMessageDaoTest {
         TestUtils.readFileContents(SEARCH_PARAM_FILE, new TypeReference<Map<String, String>>() {});
 
     Mockito.lenient().when(sessionFactory.getCurrentSession()).thenReturn(session);
-    Mockito.lenient().when(session.createCriteria(PublicHealthMessage.class)).thenReturn(criteria);
+    // Mockito.lenient().when(session.createCriteria(PublicHealthMessage.class)).thenReturn(criteria);
     mockProjectionAndCriteria();
 
-    Mockito.lenient().when(criteria.list()).thenReturn(expectedPublicHealthMessages);
+    // Mockito.lenient().when(criteria.list()).thenReturn(expectedPublicHealthMessages);
   }
 
   @Test
@@ -117,9 +112,9 @@ public class PhMessageDaoTest {
   }
 
   private void mockProjectionAndCriteria() {
-    Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
+    /*Mockito.lenient().when(criteria.setProjection(any(ProjectionList.class))).thenReturn(criteria);
     Mockito.lenient().when(criteria.setResultTransformer(any())).thenReturn(criteria);
     Mockito.lenient().when(criteria.add(any())).thenReturn(criteria);
-    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);
+    Mockito.lenient().when(criteria.addOrder(any())).thenReturn(criteria);*/
   }
 }

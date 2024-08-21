@@ -4,21 +4,23 @@ import com.drajer.bsa.ehr.service.EhrQueryService;
 import com.drajer.bsa.kar.model.BsaAction;
 import com.drajer.bsa.kar.model.BsaCondition;
 import com.drajer.bsa.model.KarProcessingData;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
+import org.opencds.cqf.fhir.cr.cpg.r4.R4LibraryEvaluationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CqlProcessor implements BsaConditionProcessor {
   private static final Logger logger = LoggerFactory.getLogger(CqlProcessor.class);
 
-  private LibraryProcessor libraryProcessor;
+  private R4LibraryEvaluationService libraryExecutionService;
 
   @Override
   public Boolean evaluateExpression(
@@ -42,28 +44,37 @@ public class CqlProcessor implements BsaConditionProcessor {
     }
     Parameters result =
         (Parameters)
-            this.libraryProcessor.evaluate(
-                cqlCondition.getUrl(),
+            this.libraryExecutionService.evaluate(
+                new IdType(),
                 cqlCondition.getPatientId(),
+                new ArrayList<>(expressions),
                 parameters,
-                cqlCondition.getLibraryEndpoint(),
-                cqlCondition.getTerminologyEndpoint(),
-                cqlCondition.getDataEndpoint(),
                 kd.getInputResourcesAsBundle(),
-                expressions);
+                null,
+                cqlCondition.getDataEndpoint(),
+                cqlCondition.getLibraryEndpoint(),
+                cqlCondition.getTerminologyEndpoint());
+    /*cqlCondition.getUrl(),
+
+    parameters,
+    cqlCondition.getLibraryEndpoint(),
+    cqlCondition.getTerminologyEndpoint(),
+    cqlCondition.getDataEndpoint(),
+    kd.getInputResourcesAsBundle(),
+    expressions);*/
 
     BooleanType value =
-        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression());
+        (BooleanType) result.getParameter(cond.getLogicExpression().getExpression()).getValue();
 
     return value.getValue();
   }
 
-  public LibraryProcessor getLibraryProcessor() {
-    return libraryProcessor;
+  public R4LibraryEvaluationService getLibraryEvaluationService() {
+    return libraryExecutionService;
   }
 
-  public void setLibraryProcessor(LibraryProcessor libraryProcessor) {
-    this.libraryProcessor = libraryProcessor;
+  public void setLibraryEvaluationService(R4LibraryEvaluationService libraryEvaluationService) {
+    this.libraryExecutionService = libraryExecutionService;
   }
 
   @Override

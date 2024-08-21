@@ -3,7 +3,6 @@ package com.drajer.test;
 import com.drajer.bsa.kar.action.BsaActionStatus;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Singleton;
 import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,7 @@ public class TestConfig {
   }
 
   @Bean
-  @Singleton
+  // @Singleton
   public Map<String, Bundle> eicrBundles() {
     return new HashMap<String, Bundle>();
   }

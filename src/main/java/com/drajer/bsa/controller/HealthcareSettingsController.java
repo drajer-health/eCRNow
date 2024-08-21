@@ -51,7 +51,7 @@ public class HealthcareSettingsController {
    * user interface for the BSA is expected to use this method when it already knows the id of the
    * HealthcareSetting.
    *
-   * @param hdsId The id to be used to retrieve the HealthcareSetting
+   * @param hsId The id to be used to retrieve the HealthcareSetting
    * @return The HealthcareSetting object for the id provided
    */
   @CrossOrigin
@@ -180,7 +180,6 @@ public class HealthcareSettingsController {
    * This method is used to retrieve all existing HealthcareSettings details. The user interface for
    * the BSA is expected to use this method during configuration of the HealthcareSetting.
    *
-   * @param none
    * @return The existing list of HealthcareSettings.
    */
   @CrossOrigin

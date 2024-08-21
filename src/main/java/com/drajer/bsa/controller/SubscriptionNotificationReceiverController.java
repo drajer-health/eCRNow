@@ -3,8 +3,8 @@ package com.drajer.bsa.controller;
 import ca.uhn.fhir.parser.IParser;
 import com.drajer.bsa.model.PatientLaunchContext;
 import com.drajer.bsa.service.SubscriptionNotificationReceiver;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class SubscriptionNotificationReceiverController {
   /**
    * This method is used to receive event-notifications from subscriptions.
    *
-   * @param hsDetails The HealthcareSettings details passed as part of the Request Body.
+   * @param request The HealthcareSettings details passed as part of the Request Body.
    * @return This returns the HTTP Response Entity containing the JSON representation of the
    *     HealthcareSetting when successful, else returns appropriate error. Upon success a HTTP
    *     Status code of 200 is sent back. The following HTTP Errors will be sent back - 400 (BAD

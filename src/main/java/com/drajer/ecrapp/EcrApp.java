@@ -1,5 +1,7 @@
 package com.drajer.ecrapp;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import com.drajer.ecrapp.security.AuthorizationService;
 import com.drajer.ecrapp.security.RequestMDCFilter;
 import com.drajer.ecrapp.security.SampleAuthorizationServiceImpl;
@@ -27,6 +29,8 @@ public class EcrApp extends SpringBootServletInitializer {
 
   @Value("${rest.template.read.timeout}")
   private Integer readTimeout;
+
+  private static final FhirContext fhirContext = FhirContext.forCached(FhirVersionEnum.R4);
 
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

@@ -3,10 +3,12 @@ package com.drajer.sof.dao.impl;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.drajer.sof.dao.ClientDetailsDao;
 import com.drajer.sof.model.ClientDetails;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +26,27 @@ public class ClientDetailsDaoImpl extends AbstractDao implements ClientDetailsDa
   }
 
   public ClientDetails getClientDetailsByUrl(String url) {
-    Criteria criteria = getSession().createCriteria(ClientDetails.class);
-    criteria.add(Restrictions.eq("fhirServerBaseURL", url));
-    return (ClientDetails) criteria.uniqueResult();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<ClientDetails> cq = cb.createQuery(ClientDetails.class);
+    Root<ClientDetails> root = cq.from(ClientDetails.class);
+    cq.where(cb.equal(root.get("fhirServerBaseURL"), url));
+
+    Query<ClientDetails> q = getSession().createQuery(cq);
+
+    return q.uniqueResult();
   }
 
   public List<ClientDetails> getAllClientDetails() {
-    Criteria criteria = getSession().createCriteria(ClientDetails.class);
-    return criteria.addOrder(Order.desc("id")).list();
+    EntityManager em = getSession().getEntityManagerFactory().createEntityManager();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<ClientDetails> cq = cb.createQuery(ClientDetails.class);
+    Root<ClientDetails> root = cq.from(ClientDetails.class);
+
+    Query<ClientDetails> q = getSession().createQuery(cq);
+    cq.orderBy(cb.desc(root.get("id")));
+
+    return q.getResultList();
   }
 
   public void delete(ClientDetails clientDetails) {

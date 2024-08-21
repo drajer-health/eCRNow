@@ -22,12 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import org.hl7.fhir.r4.model.DataRequirement;
-import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r5.model.Enumerations.QuantityComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -199,7 +195,7 @@ public abstract class BsaAction {
                         && ract.getDuration().hasComparator())
                 && Objects.equals(
                     ract.getDuration().getComparator().toString(),
-                    QuantityComparator.LESS_OR_EQUAL.toString())) {
+                    Quantity.QuantityComparator.LESS_OR_EQUAL.toString())) {
 
               logger.info(" Off hours is enabled, so the timers have to be shifted ");
 
