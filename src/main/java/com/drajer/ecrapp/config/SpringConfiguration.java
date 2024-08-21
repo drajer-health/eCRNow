@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
 
 @ComponentScan(
@@ -32,7 +33,7 @@ import org.springframework.retry.support.RetryTemplate;
       "com.drajer.bsa.interfaces",
       "com.drajer.bsa"
     })
-@Configuration
+@Import({HibernateConfiguration.class})
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class SpringConfiguration {
 

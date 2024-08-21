@@ -139,7 +139,7 @@ public class LaunchDetails {
   private String restAPIURL;
 
   @Column(name = "is_covid19", nullable = false, columnDefinition = "int default 0")
-  @JdbcTypeCode(SqlTypes.NUMERIC)
+  @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
   private Boolean isCovid = false;
 
   @Column(

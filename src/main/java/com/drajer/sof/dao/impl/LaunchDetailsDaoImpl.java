@@ -46,6 +46,8 @@ public class LaunchDetailsDaoImpl extends AbstractDao implements LaunchDetailsDa
 
     Query<LaunchDetails> q = getSession().createQuery(cq);
 
+    String str = q.unwrap(org.hibernate.query.Query.class).getQueryString();
+
     return q.uniqueResult();
   }
 
