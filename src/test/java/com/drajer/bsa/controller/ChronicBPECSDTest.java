@@ -30,7 +30,7 @@ public class ChronicBPECSDTest extends BaseKarsTest {
   @Parameters(name = "{0}")
   public static Collection<TestCaseInfo> data() {
     return Arrays.asList(
-        /*    new TestCaseInfo(
+            new TestCaseInfo(
             "ChronicDSControllingBloodPressure",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
             "bp-report-denom-exc-in",
@@ -79,7 +79,7 @@ public class ChronicBPECSDTest extends BaseKarsTest {
             "bp-trigger-condition-in",
             REPORTED,
             1,
-            1), */
+            1),
         new TestCaseInfo(
             "ChronicDSControllingBloodPressure",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSControllingBloodPressure",
