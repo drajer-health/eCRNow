@@ -2,8 +2,10 @@ package com.drajer.bsa.dao.impl;
 
 import com.drajer.bsa.dao.HealthcareSettingsDao;
 import com.drajer.bsa.kar.model.HealthcareSettingOperationalKnowledgeArtifacts;
+import com.drajer.bsa.kar.model.KnowledgeArtifact;
 import com.drajer.bsa.kar.model.KnowledgeArtifactRepositorySystem;
 import com.drajer.bsa.kar.model.KnowledgeArtifactStatus;
+import com.drajer.bsa.model.BsaTypes;
 import com.drajer.bsa.model.HealthcareSetting;
 import com.drajer.ecrapp.dao.AbstractDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +14,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -105,7 +110,6 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
   /**
    * Method to retrieve all existing HealthcareSettings.
    *
-   * @param none
    * @return Returns the list of existing HealthcareSettings.
    */
   @Override
@@ -123,20 +127,42 @@ public class HealthcareSettingsDaoImpl extends AbstractDao implements Healthcare
 
   private void setKars(HealthcareSetting hs) {
 
-    List<KnowledgeArtifactStatus> activeKars = getKarsActiveByHsId(hs.getId());
+    ObjectMapper mapper = new ObjectMapper();
+    HealthcareSettingOperationalKnowledgeArtifacts artifacts = null;
 
-    if (activeKars != null) {
+    try {
+
+      if (hs.getKarsActive() != null) {
+        artifacts =
+            mapper.readValue(
+                hs.getKarsActive(), HealthcareSettingOperationalKnowledgeArtifacts.class);
+        hs.setKars(artifacts);
+      }
+
+      // Setup using Knowledge Artifact Repository.
+      HashMap<String, KnowledgeArtifact> arts = knowledgeArtifactRepositorySystem.getArtifacts();
 
       HealthcareSettingOperationalKnowledgeArtifacts opkars =
           new HealthcareSettingOperationalKnowledgeArtifacts();
       opkars.setId(hs.getId());
+      for (HashMap.Entry<String, KnowledgeArtifact> entry : arts.entrySet()) {
 
-      for (KnowledgeArtifactStatus stat : activeKars) {
-        logger.info(" Adding Kar Id {} to active Kars", stat.getVersionUniqueKarId());
+        KnowledgeArtifactStatus stat = new KnowledgeArtifactStatus();
+        stat.setKarId(entry.getValue().getKarId());
+        stat.setKarVersion(entry.getValue().getKarVersion());
+        stat.setIsActive(true);
+        stat.setLastActivationDate(Date.from(Instant.now()));
+        stat.setVersionUniqueKarId(entry.getValue().getVersionUniqueId());
+        stat.setOutputFormat(BsaTypes.OutputContentType.CDA_R11);
+
         opkars.addArtifactStatus(stat);
       }
 
       hs.setKars(opkars);
+
+      logger.info(" Successfully set the KAR status ");
+    } catch (JsonProcessingException e) {
+      logger.info(" Error reading Kars Active status from the database. {}", e);
     }
   }
 

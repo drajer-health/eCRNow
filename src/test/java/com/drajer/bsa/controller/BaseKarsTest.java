@@ -82,6 +82,8 @@ public class BaseKarsTest extends BaseIntegrationTest {
 
   @Autowired ApplicationContext applicationContext;
 
+  protected Map<String, Bundle> eicrBundles;
+
   protected ClassLoader classLoader = getClass().getClassLoader();
 
   protected WireMockHelper stubHelper;
@@ -91,6 +93,7 @@ public class BaseKarsTest extends BaseIntegrationTest {
     this.notificationReceiver = applicationContext.getBean(SubscriptionNotificationReceiver.class);
     this.ap = applicationContext.getBean(ApplicationUtils.class);
     this.hsDao = applicationContext.getBean(HealthcareSettingsDao.class);
+    this.eicrBundles = (Map<String, Bundle>) applicationContext.getBean("eicrBundles");
     this.wireMockServer.resetAll();
     stubHelper = new WireMockHelper(wireMockServer, wireMockHttpPort);
     logger.info("Creating WireMock stubs..");
@@ -214,36 +217,43 @@ public class BaseKarsTest extends BaseIntegrationTest {
   }
 
   Bundle getEicrBundle(String planDef) {
-    String processMessageUrl = "/fhir/$process-message";
-    List<LoggedRequest> requests =
-        wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
 
-    if (requests.size() > 0) {
-      try {
-        IBaseResource resource =
-            FhirContext.forCached(FhirVersionEnum.R4)
-                .newJsonParser()
-                .parseResource(requests.get(0).getBodyAsString());
-        if (resource instanceof Parameters) {
-          Parameters params = (Parameters) resource;
-          for (ParametersParameterComponent parameter : params.getParameter()) {
-            if (parameter.getName().equals("content")) {
-              if (parameter.getResource() != null
-                  && parameter.getResource().fhirType().equals("Bundle")) {
-                return (Bundle) parameter.getResource();
+    Bundle eicrBundle = eicrBundles.get("eicr-report-" + planDef);
+
+    if (eicrBundle != null) {
+      return eicrBundle;
+    } else {
+      String processMessageUrl = "/fhir/$process-message-bundle";
+      List<LoggedRequest> requests =
+              wireMockServer.findAll(postRequestedFor(urlEqualTo(processMessageUrl)));
+
+      if (requests.size() > 0) {
+        try {
+          IBaseResource resource =
+                  FhirContext.forCached(FhirVersionEnum.R4)
+                          .newJsonParser()
+                          .parseResource(requests.get(0).getBodyAsString());
+          if (resource instanceof Parameters) {
+            Parameters params = (Parameters) resource;
+            for (ParametersParameterComponent parameter : params.getParameter()) {
+              if (parameter.getName().equals("content")) {
+                if (parameter.getResource() != null
+                        && parameter.getResource().fhirType().equals("Bundle")) {
+                  return (Bundle) parameter.getResource();
+                }
               }
             }
+          } else if (resource instanceof Bundle) {
+            return (Bundle) resource;
           }
-        } else if (resource instanceof Bundle) {
-          return (Bundle) resource;
-        }
 
-      } catch (Exception e) {
-        logger.error("Error parsing $process-message request body");
-        return null;
+        } catch (Exception e) {
+          logger.error("Error parsing $process-message request body");
+          return null;
+        }
+      } else {
+        logger.debug("No $process-message-bundle request found.");
       }
-    } else {
-      logger.debug("No $process-message request found.");
     }
 
     return null;
