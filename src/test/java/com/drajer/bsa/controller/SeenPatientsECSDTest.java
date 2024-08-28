@@ -42,7 +42,7 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
             "seen-patients-no-trigger-in",
             NOT_TRIGGERED),
-        /*   new TestCaseInfo(
+           new TestCaseInfo(
             "ChronicDSSeenPatients",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
             "seen-patients-reported-ip-mp-in-high",
@@ -95,7 +95,7 @@ public class SeenPatientsECSDTest extends BaseKarsTest {
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
             "seen-patients-sde-in",
             REPORTED,
-            1),*/
+            1),
         new TestCaseInfo(
             "ChronicDSSeenPatients",
             "http://hl7.org/fhir/us/chronic-ds/PlanDefinition/ChronicDSSeenPatients",
