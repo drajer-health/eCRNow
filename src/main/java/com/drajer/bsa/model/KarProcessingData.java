@@ -730,8 +730,12 @@ public class KarProcessingData {
   }
 
   public Set<Resource> getDataForId(String id, String relatedDataId) {
-
     Set<Resource> resources = null;
+
+    if (actionOutputDataById.containsKey(id)) {
+      resources = actionOutputDataById.get(id);
+    }
+
     if (relatedDataId != null && actionOutputDataById.containsKey(relatedDataId)) {
 
       resources = actionOutputDataById.get(relatedDataId);

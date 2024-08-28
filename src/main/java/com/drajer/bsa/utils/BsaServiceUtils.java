@@ -75,6 +75,9 @@ public class BsaServiceUtils {
   @Autowired(required = false)
   Map<String, BsaActionStatus> actions;
 
+  @Autowired
+  Map<String, Bundle> eicrBundles;
+
   private static String DEBUG_DIRECTORY;
   private static IParser FHIR_JSON_PARSER;
   private static boolean SAVE_DEBUG_TO_FILES;
@@ -567,6 +570,25 @@ public class BsaServiceUtils {
       String data = jsonParser.encodeResourceToString(res);
 
       saveDataToFile(data, fileName);
+    }
+  }
+
+  /**
+   * The method saves the EICR Bundle so that it can be used for test validation.
+   *
+   * @param key - the key by which the bundle can be accessed.
+   * @param res - the resource which will be saved if it is a bundle.
+   */
+  public void saveEicrState(String key, Resource res) {
+    if (eicrBundles != null) {
+      logger.info("Found actions map saving eicr bundle state...");
+      if (res instanceof Bundle) {
+        logger.info("Eicr Bundle found...");
+        Bundle eicrBundle = (Bundle) res;
+        eicrBundles.put(key, eicrBundle);
+      }
+    } else {
+      logger.info("No action map found skipping eicr bundle state save...");
     }
   }
 

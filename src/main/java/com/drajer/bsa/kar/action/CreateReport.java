@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.DocumentReference;
@@ -27,12 +28,16 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CreateReport extends BsaAction {
 
   private final Logger logger = LoggerFactory.getLogger(CreateReport.class);
 
   PublicHealthMessagesDao phDao;
+
+  @Autowired
+  BsaServiceUtils bsaServiceUtils;
 
   public PublicHealthMessagesDao getPhDao() {
     return phDao;
@@ -152,6 +157,21 @@ public class CreateReport extends BsaAction {
         // Execute Related Actions.
         executeRelatedActions(data, ehrService);
       }
+
+      // Save bundle for test purposes
+      List<DataRequirement> output = getOutputData();
+      if (output != null) {
+        for (DataRequirement req: output) {
+          Set<Resource> resourceSet = data.getOutputDataById(req.getId());
+          if (resourceSet != null && !resourceSet.isEmpty()) {
+            for (Resource r: resourceSet) {
+              Bundle eicrBundle = (Bundle) r;
+              bsaServiceUtils.saveEicrState(req.getId(), eicrBundle);
+            }
+          }
+        }
+      }
+
       actStatus.setActionStatus(BsaActionStatusType.COMPLETED);
 
     } else {
