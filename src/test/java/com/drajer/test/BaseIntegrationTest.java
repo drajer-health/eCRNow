@@ -70,7 +70,7 @@ public abstract class BaseIntegrationTest {
   protected static final String URL = "http://localhost:";
   protected static final String fhirBaseUrl = "/FHIR";
 
-  protected static final int wireMockHttpPort = 9011;
+  protected static final int wireMockHttpPort = 9010;
   protected WireMockServer wireMockServer;
   protected ClientDetails clientDetails;
   protected TestRestTemplate restTemplate;

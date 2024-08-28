@@ -60,7 +60,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(
     properties = {
       "ignore.timers=true",
-      "report-submission.endpoint=http://localhost:9011/fhir",
+      "report-submission.endpoint=http://localhost:9010/fhir",
       "report-validator.endpoint="
     })
 public class BaseKarsTest extends BaseIntegrationTest {
