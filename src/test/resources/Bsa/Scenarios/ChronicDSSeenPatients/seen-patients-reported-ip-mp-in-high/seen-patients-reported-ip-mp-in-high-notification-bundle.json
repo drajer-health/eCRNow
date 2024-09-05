@@ -25,7 +25,7 @@
             {
               "name" : "subscription",
               "valueReference" : {
-                "reference" : "http://localhost:9011/fhir/Subscription/encounter-end"
+                "reference" : "http://localhost:9010/fhir/Subscription/encounter-end"
               }
             },
             {
@@ -59,7 +59,7 @@
         }
       },
       {
-        "fullUrl" : "http://localhost:9011/fhir/Encounter/seen-patients-reported-ip-mp-in-high-enc",
+        "fullUrl" : "http://localhost:9010/fhir/Encounter/seen-patients-reported-ip-mp-in-high-enc",
         "resource" : {
           "resourceType": "Encounter",
           "id": "seen-patients-reported-ip-mp-in-high-enc",
