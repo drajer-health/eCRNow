@@ -260,6 +260,10 @@ public class CdaSocialHistoryGenerator {
             CdaGeneratorUtils.getXmlForEffectiveTime(
                 CdaGeneratorConstants.EFF_TIME_EL_NAME, effDate.getValue0(), effDate.getValue1()));
       }
+    } else {
+      sb.append(
+          CdaGeneratorUtils.getXmlForNullEffectiveTime(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, CdaGeneratorConstants.NF_NI));
     }
 
     // Add components

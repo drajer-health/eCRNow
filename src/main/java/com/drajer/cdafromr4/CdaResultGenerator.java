@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -26,6 +27,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -46,6 +48,577 @@ public class CdaResultGenerator {
   private static final Logger logger = LoggerFactory.getLogger(CdaResultGenerator.class);
 
   public static String generateResultsSection(R4FhirData data, LaunchDetails details) {
+
+    StringBuilder hsb = new StringBuilder(5000);
+    StringBuilder textEntries = new StringBuilder(2000);
+    StringBuilder resultEntries = new StringBuilder();
+
+    // Get all Lab Results
+    List<Observation> allResults = data.getLabResults();
+    Map<String, Observation> uniqueObservations = new HashMap<>();
+
+    // Get Diagnostic Reports with lab results and Observations without Diagnostic Reports
+    Map<DiagnosticReport, List<Observation>> reports =
+        getDiagnosticReportsWithObservations(data, allResults, uniqueObservations);
+
+    if ((uniqueObservations != null && !uniqueObservations.isEmpty())
+        || (reports != null && !reports.isEmpty())) {
+
+      // create section header
+      createSectionHeader(data, details, hsb);
+
+      // Used for creating the HTML Header in the text section.
+      int rowNum = 1;
+
+      // process lab results
+      rowNum =
+          processLabResults(uniqueObservations, details, rowNum, resultEntries, data, textEntries);
+
+      // process diagnostic reports
+      rowNum = processDiagnosticResults(reports, details, rowNum, resultEntries, data, textEntries);
+
+      // complete section
+      createSectionEnd(hsb, textEntries, resultEntries);
+
+    } else {
+      logger.info(
+          " No Lab Results or Diagnostic Reports to generate data , hence generating a null section.");
+      hsb.append(generateEmptyLabResults());
+    }
+
+    return hsb.toString();
+  }
+
+  public static int processLabResults(
+      Map<String, Observation> uniqueObservations,
+      LaunchDetails details,
+      int rowNum,
+      StringBuilder resultEntries,
+      R4FhirData data,
+      StringBuilder textEntries) {
+
+    logger.debug(" Starting to process lab observations ");
+    for (Map.Entry<String, Observation> entry : uniqueObservations.entrySet()) {
+
+      if (entry.getValue().hasComponent()) {
+        Observation obs = entry.getValue();
+
+        logger.info(
+            " Using Observation to create Organizer and Result entry for {}",
+            obs.getIdElement().getIdPart());
+        // create Table Values
+        getTableValuesForObservationWithComponents(obs, rowNum, textEntries);
+
+        // create one organizer and multiple result observations
+        processLabResultsWithComponents(
+            obs, obs.getCode(), details, rowNum, resultEntries, data, textEntries);
+
+      } else {
+
+        Observation obs = entry.getValue();
+
+        logger.info(
+            " Using Observation to create Organizer and Result entry for {}",
+            obs.getIdElement().getIdPart());
+        // create Table Values
+        getTableValues(obs, rowNum, textEntries);
+
+        // create Organizer + result observation entry
+        getXmlForLabObservation(obs, obs.getCode(), details, rowNum, resultEntries, data);
+      }
+
+      rowNum++;
+    }
+
+    return rowNum;
+  }
+
+  public static void processLabResultsWithComponents(
+      Observation obsWithComponents,
+      CodeableConcept cd,
+      LaunchDetails details,
+      int rowNum,
+      StringBuilder resultEntries,
+      R4FhirData data,
+      StringBuilder textEntries) {
+
+    logger.debug(" Generate XML for Lab Results with Components");
+    // Setup the Organizer and Entries
+    StringBuilder lrEntry = new StringBuilder(1000);
+
+    // Add static organizer data including start elements for entry and organizer
+    lrEntry.append(getOrganizerEntryStaticData());
+
+    // Add dynamic organizer data
+    lrEntry.append(
+        getOrganizerEntryDynamicData(
+            cd,
+            details,
+            data,
+            obsWithComponents.getIssuedElement(),
+            obsWithComponents.getPerformer()));
+
+    int i = 1;
+    for (ObservationComponentComponent obs : obsWithComponents.getComponent()) {
+
+      // Add result entry component
+      lrEntry.append(
+          getXmlForObservationComponent(
+              details,
+              obs.getCode(),
+              obs.getValue(),
+              (obs.hasId()
+                  ? obs.getIdElement().getId()
+                  : new String("Component" + Integer.toString(i))),
+              obsWithComponents.getEffective(),
+              obs.getInterpretation(),
+              rowNum,
+              obsWithComponents.getPerformer(),
+              data));
+
+      i++;
+    }
+
+    // End the Organizer and the entry.
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORGANIZER_EL_NAME));
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    resultEntries.append(lrEntry);
+  }
+
+  public static void getXmlForLabObservation(
+      Observation obs,
+      CodeableConcept cd,
+      LaunchDetails details,
+      int rowNum,
+      StringBuilder resultEntries,
+      R4FhirData data) {
+
+    logger.debug(" Generating Lab Result XML for Observation ");
+    // Setup the Organizer and Entries
+    StringBuilder lrEntry = new StringBuilder(1000);
+
+    // Add static organizer data including start elements for entry and organizer
+    lrEntry.append(getOrganizerEntryStaticData());
+
+    // Add dynamic organizer data
+    lrEntry.append(
+        getOrganizerEntryDynamicData(
+            obs.getCode(), details, data, obs.getIssuedElement(), obs.getPerformer()));
+
+    // Add result entry component
+    lrEntry.append(
+        getXmlForObservationComponent(
+            details,
+            obs.getCode(),
+            obs.getValue(),
+            obs.getIdElement().getIdPart(),
+            obs.getEffective(),
+            obs.getInterpretation(),
+            rowNum,
+            obs.getPerformer(),
+            data));
+
+    // End the Organizer and the entry.
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORGANIZER_EL_NAME));
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    resultEntries.append(lrEntry);
+  }
+
+  public static String getOrganizerEntryStaticData() {
+
+    StringBuilder lrEntry = new StringBuilder(200);
+
+    // Add the Entries.
+    lrEntry.append(CdaGeneratorUtils.getXmlForActEntry(CdaGeneratorConstants.TYPE_CODE_DEF));
+
+    // Add the Organizer Act
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.ORGANIZER_EL_NAME,
+            CdaGeneratorConstants.ORGANIZER_CLASS_CODE_CLUSTER,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID));
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID,
+            CdaGeneratorConstants.LAB_RESULTS_ORG_TEMPLATE_ID_EXT));
+
+    lrEntry.append(CdaGeneratorUtils.getXmlForIIUsingGuid());
+
+    return lrEntry.toString();
+  }
+
+  public static String getOrganizerEntryDynamicData(
+      CodeableConcept cd,
+      LaunchDetails details,
+      R4FhirData data,
+      InstantType issued,
+      List<Reference> performerReferences) {
+
+    logger.info("Generating Dynamic Data for Organizer ");
+
+    StringBuilder lrEntry = new StringBuilder(200);
+
+    if (cd != null && cd.hasCoding()) {
+
+      logger.debug("Find the Loinc Code as a priority first for Lab Results");
+      String codeXml =
+          CdaFhirUtilities.getCodingXmlForCodeSystem(
+              cd.getCoding(),
+              CdaGeneratorConstants.CODE_EL_NAME,
+              CdaGeneratorConstants.FHIR_LOINC_URL,
+              false,
+              "");
+
+      logger.debug("Code Xml = {}", codeXml);
+
+      if (!codeXml.isEmpty()) {
+        lrEntry.append(codeXml);
+      } else {
+        lrEntry.append(
+            CdaFhirUtilities.getCodingXml(cd.getCoding(), CdaGeneratorConstants.CODE_EL_NAME, ""));
+      }
+    } else if (cd != null && cd.hasText()) {
+
+      // Add text value for code in dynamic data
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForNullCDWithText(
+              CdaGeneratorConstants.CODE_EL_NAME, CdaGeneratorConstants.NF_OTH, cd.getText()));
+    } else {
+      // Add null flavor for code in dynamic data
+      lrEntry.append(CdaFhirUtilities.getCodingXml(null, CdaGeneratorConstants.CODE_EL_NAME, ""));
+    }
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    if (issued != null) {
+      Pair<Date, TimeZone> issuedDate = CdaFhirUtilities.getActualDate(issued);
+
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForIVLWithTS(
+              CdaGeneratorConstants.EFF_TIME_EL_NAME, issuedDate, issuedDate, true));
+    }
+
+    if (performerReferences != null && !performerReferences.isEmpty())
+      lrEntry.append(getXmlForAuthor(performerReferences, data));
+
+    return lrEntry.toString();
+  }
+
+  public static void getTableValuesForObservationWithComponents(
+      Observation obs, int rowNum, StringBuilder textEntries) {
+
+    // Add the Panel code name
+    String obsDisplayName =
+        "Panel Name: " + CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+
+    // Add information from Components.
+    String val = "";
+    if (obs.hasComponent()) {
+      for (ObservationComponentComponent o : obs.getComponent()) {
+        obsDisplayName +=
+            "| Component Name: " + CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
+
+        if (o.hasValue()) {
+          val += CdaFhirUtilities.getStringForType(o.getValue());
+        }
+      }
+    }
+
+    // Create the Test Name String
+    Map<String, String> bodyvals = new LinkedHashMap<>();
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
+
+    // Get Value String
+    if (val.isEmpty()) val = CdaGeneratorConstants.UNKNOWN_VALUE;
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
+
+    // Get the Date String
+    String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (obs.getEffective() != null) {
+      dt = CdaFhirUtilities.getStringForType(obs.getEffective());
+    }
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
+
+    textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+  }
+
+  public static void getTableValues(Observation obs, int rowNum, StringBuilder textEntries) {
+
+    String obsDisplayName = CdaFhirUtilities.getStringForCodeableConcept(obs.getCode());
+
+    // Create the Test Name String
+    Map<String, String> bodyvals = new LinkedHashMap<>();
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
+
+    // Get Value String
+    String val = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (obs.hasValue()) {
+      val = CdaFhirUtilities.getStringForType(obs.getValue());
+    }
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
+
+    // Get the Date String
+    String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (obs.getEffective() != null) {
+      dt = CdaFhirUtilities.getStringForType(obs.getEffective());
+    }
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
+
+    textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+  }
+
+  public static int processDiagnosticResults(
+      Map<DiagnosticReport, List<Observation>> reports,
+      LaunchDetails details,
+      int rowNum,
+      StringBuilder resultEntries,
+      R4FhirData data,
+      StringBuilder textEntries) {
+
+    logger.debug(" Starting to process Diagnostic Results ");
+
+    // Iterate through the diagnostic reports
+    for (Map.Entry<DiagnosticReport, List<Observation>> entry : reports.entrySet()) {
+
+      DiagnosticReport rep = entry.getKey();
+      List<Observation> observations = entry.getValue();
+
+      getTableValuesForDiagnosticReport(rep, observations, rowNum, textEntries);
+
+      logger.info(
+          " Using DiagnosticReport to create Organizer and Result entry for {}",
+          rep.getIdElement().getIdPart());
+
+      // create one organizer and multiple result observations
+      processDiagnosticReportWithObservations(
+          rep, observations, details, rowNum, resultEntries, data, textEntries);
+
+      rowNum++;
+    }
+
+    return rowNum;
+  }
+
+  public static void processDiagnosticReportWithObservations(
+      DiagnosticReport report,
+      List<Observation> observations,
+      LaunchDetails details,
+      int rowNum,
+      StringBuilder resultEntries,
+      R4FhirData data,
+      StringBuilder textEntries) {
+
+    logger.info(" Starting to create organizers and entries ");
+
+    StringBuilder lrEntry = new StringBuilder(1000);
+
+    // Add static organizer data including start elements for entry and organizer
+    lrEntry.append(getOrganizerEntryStaticData());
+
+    // Add dynamic organizer data
+    lrEntry.append(
+        getOrganizerEntryDynamicData(
+            report.getCode(), details, data, report.getIssuedElement(), report.getPerformer()));
+
+    int i = 1;
+    for (Observation obs : observations) {
+
+      // Add result entry component
+      lrEntry.append(
+          getXmlForObservationComponent(
+              details,
+              obs.getCode(),
+              obs.getValue(),
+              (obs.hasId()
+                  ? obs.getIdElement().toString()
+                  : new String("Component" + Integer.toString(i))),
+              obs.getEffective(),
+              obs.getInterpretation(),
+              rowNum,
+              obs.getPerformer(),
+              data));
+
+      i++;
+    }
+
+    // End the Organizer and the entry.
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ORGANIZER_EL_NAME));
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.ENTRY_EL_NAME));
+
+    resultEntries.append(lrEntry);
+  }
+
+  public static void getTableValuesForDiagnosticReport(
+      DiagnosticReport report, List<Observation> obs, int rowNum, StringBuilder textEntries) {
+
+    // Add the Panel code name
+    String obsDisplayName =
+        "Panel Name: " + CdaFhirUtilities.getStringForCodeableConcept(report.getCode());
+
+    // Add information from Components.
+    String val = "";
+    if (obs != null && !obs.isEmpty()) {
+      for (Observation o : obs) {
+        obsDisplayName +=
+            "| Component Name: " + CdaFhirUtilities.getStringForCodeableConcept(o.getCode());
+
+        if (o.hasValue()) {
+          val += CdaFhirUtilities.getStringForType(o.getValue());
+        }
+      }
+    }
+
+    // Create the Test Name String
+    Map<String, String> bodyvals = new LinkedHashMap<>();
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT, obsDisplayName);
+
+    // Get Value String
+    if (val.isEmpty()) val = CdaGeneratorConstants.UNKNOWN_VALUE;
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
+
+    // Get the Date String
+    String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
+    if (report.hasEffective()) {
+      dt = CdaFhirUtilities.getStringForType(report.getEffective());
+    }
+    bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_3_BODY_CONTENT, dt);
+
+    textEntries.append(CdaGeneratorUtils.addTableRow(bodyvals, rowNum));
+  }
+
+  public static Map<DiagnosticReport, List<Observation>> getDiagnosticReportsWithObservations(
+      R4FhirData data,
+      List<Observation> allObservations,
+      Map<String, Observation> uniqueObservations) {
+
+    Map<DiagnosticReport, List<Observation>> reports = new HashMap<>();
+    allObservations.forEach(e -> uniqueObservations.put(e.getIdElement().getIdPart(), e));
+
+    if (data.getDiagReports() != null && !data.getDiagReports().isEmpty()) {
+
+      logger.info(
+          "Total num of Diagnostic Reports available for Patient {}", data.getDiagReports().size());
+
+      for (DiagnosticReport dr : data.getDiagReports()) {
+
+        if (dr.hasResult()) {
+
+          List<Observation> obs = new ArrayList<>();
+          List<Reference> obsRefs = dr.getResult();
+
+          for (Reference r : obsRefs) {
+
+            if (r.hasReference()) {
+
+              // If we find the reference, add it to the overall list
+              obs.addAll(
+                  allObservations
+                      .stream()
+                      .filter(
+                          s ->
+                              s.getIdElement()
+                                  .getIdPart()
+                                  .contentEquals(r.getReferenceElement().getIdPart()))
+                      .collect(Collectors.toList()));
+            }
+          }
+
+          if (obs != null && !obs.isEmpty()) {
+
+            obs.forEach(e -> uniqueObservations.remove(e.getIdElement().getIdPart()));
+            reports.put(dr, obs);
+          } else {
+            logger.info(
+                " Ignoring Diagnostic Report with id {} as observations referenced cannot be found ",
+                dr.getIdElement().getIdPart());
+          }
+        } // if results are present
+        else {
+          logger.info(
+              " Ignoring Diagnostic Report with id {} as it has no results ",
+              dr.getIdElement().getIdPart());
+        }
+      } // for
+    } else {
+      logger.info("No Valid DiagnosticReport in the bundle to process");
+    }
+
+    logger.info(
+        " Total # of Diagnostic Reports being used for Results section : {}", reports.size());
+    return reports;
+  }
+
+  public static void createSectionHeader(
+      R4FhirData data, LaunchDetails details, StringBuilder hsb) {
+
+    hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
+    hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.SECTION_EL_NAME));
+
+    hsb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_SEC_TEMPLATE_ID));
+    hsb.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.LAB_RESULTS_SEC_TEMPLATE_ID,
+            CdaGeneratorConstants.LAB_RESULTS_SEC_TEMPLATE_ID_EXT));
+
+    hsb.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.CODE_EL_NAME,
+            CdaGeneratorConstants.LAB_RESULTS_SEC_CODE,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_OID,
+            CdaGeneratorConstants.LOINC_CODESYSTEM_NAME,
+            CdaGeneratorConstants.LAB_RESULTS_SEC_NAME));
+
+    // Add Title
+    hsb.append(
+        CdaGeneratorUtils.getXmlForText(
+            CdaGeneratorConstants.TITLE_EL_NAME, CdaGeneratorConstants.LAB_RESULTS_SEC_TITLE));
+
+    // Add Narrative Text
+    hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TEXT_EL_NAME));
+
+    // Create Table Header.
+    List<String> list = new ArrayList<>();
+    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_1_TITLE);
+    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_2_TITLE);
+    list.add(CdaGeneratorConstants.LABTEST_TABLE_COL_3_TITLE);
+    hsb.append(
+        CdaGeneratorUtils.getXmlForTableHeader(
+            list, CdaGeneratorConstants.TABLE_BORDER, CdaGeneratorConstants.TABLE_WIDTH));
+
+    // Add Table Body
+    hsb.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+  }
+
+  public static void createSectionEnd(
+      StringBuilder hsb, StringBuilder textEntries, StringBuilder resultEntries) {
+
+    // End the Sb string.
+    textEntries.append(
+        CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_BODY_EL_NAME));
+
+    // End Table.
+    textEntries.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TABLE_EL_NAME));
+    textEntries.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.TEXT_EL_NAME));
+
+    hsb.append(textEntries);
+
+    // Add lab results
+    hsb.append(resultEntries);
+
+    // Complete the section end tags.
+    hsb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.SECTION_EL_NAME));
+    hsb.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
+  }
+
+  public static String oldgenerateResultsSection(R4FhirData data, LaunchDetails details) {
 
     StringBuilder hsb = new StringBuilder(5000);
     StringBuilder sb = new StringBuilder(2000);
@@ -138,7 +711,7 @@ public class CdaResultGenerator {
         bodyvals.put(CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT, val);
 
         String dt = CdaGeneratorConstants.UNKNOWN_VALUE;
-        if (obs.getEffective() != null) {
+        if (obs.hasEffective()) {
 
           dt = CdaFhirUtilities.getStringForType(obs.getEffective());
         }
@@ -595,6 +1168,110 @@ public class CdaResultGenerator {
       String id,
       Type effective,
       List<CodeableConcept> interpretation,
+      int rowNum,
+      List<Reference> performerRefs,
+      R4FhirData data) {
+
+    StringBuilder lrEntry = new StringBuilder(2000);
+
+    // Add the actual Result Observation
+    lrEntry.append(CdaGeneratorUtils.getXmlForStartElement(CdaGeneratorConstants.COMP_EL_NAME));
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForAct(
+            CdaGeneratorConstants.OBS_ACT_EL_NAME,
+            CdaGeneratorConstants.OBS_CLASS_CODE,
+            CdaGeneratorConstants.MOOD_CODE_DEF));
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID));
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForTemplateId(
+            CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID,
+            CdaGeneratorConstants.LAB_RESULTS_ENTRY_TEMPLATE_ID_EXT));
+
+    List<String> paths = new ArrayList<>();
+    paths.add("Observation.code");
+    paths.add("DiagnosticReport.code");
+    paths.add("Observation.value");
+
+    String contentRef =
+        CdaGeneratorConstants.LABTEST_TABLE_COL_1_BODY_CONTENT + Integer.toString(rowNum);
+    Pair<Boolean, String> obsCodeXml = getObservationCodeXml(details, cd, false, contentRef, paths);
+
+    Pair<Boolean, String> obsValueXml = null;
+    contentRef = CdaGeneratorConstants.LABTEST_TABLE_COL_2_BODY_CONTENT + Integer.toString(rowNum);
+    if (val instanceof CodeableConcept) {
+      paths.clear();
+      paths.add("Observation.value");
+      CodeableConcept value = (CodeableConcept) val;
+      obsValueXml = getObservationCodeXml(details, value, true, contentRef, paths);
+    }
+
+    if ((obsCodeXml != null && obsCodeXml.getValue0())
+        || (obsValueXml != null && obsValueXml.getValue0())) {
+
+      lrEntry.append(
+          CdaGeneratorUtils.getXmlForTemplateId(
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE,
+              CdaGeneratorConstants.LAB_TEST_RESULT_OBSERVATION_TRIGGER_TEMPLATE_EXT));
+    }
+
+    lrEntry.append(CdaGeneratorUtils.getXmlForII(details.getAssigningAuthorityId(), id));
+
+    if (obsCodeXml != null) {
+      lrEntry.append(obsCodeXml.getValue1());
+    } else {
+      logger.warn("Unable to add code as the xml is null");
+    }
+
+    lrEntry.append(
+        CdaGeneratorUtils.getXmlForCD(
+            CdaGeneratorConstants.STATUS_CODE_EL_NAME, CdaGeneratorConstants.COMPLETED_STATUS));
+
+    lrEntry.append(
+        CdaFhirUtilities.getXmlForType(effective, CdaGeneratorConstants.EFF_TIME_EL_NAME, false));
+
+    if (obsValueXml == null) {
+      lrEntry.append(CdaFhirUtilities.getXmlForType(val, CdaGeneratorConstants.VAL_EL_NAME, true));
+    } else {
+      lrEntry.append(obsValueXml.getValue1());
+    }
+
+    // Add interpretation code.
+    if (interpretation != null) {
+
+      logger.debug("Adding Interpretation Code");
+
+      String interpretXml =
+          CdaFhirUtilities.getCodeableConceptXmlForMappedConceptDomain(
+              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+              interpretation,
+              CdaGeneratorConstants.INTERPRETATION_CODE_EL_NAME,
+              false,
+              false);
+
+      if (interpretXml != null && !interpretXml.isEmpty()) lrEntry.append(interpretXml);
+    }
+
+    // Add performer
+    lrEntry.append(getXmlForAuthor(performerRefs, data));
+
+    // End Tag for Entry Relationship
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.OBS_ACT_EL_NAME));
+    lrEntry.append(CdaGeneratorUtils.getXmlForEndElement(CdaGeneratorConstants.COMP_EL_NAME));
+
+    logger.debug("Lr Entry = {}", StringEscapeUtils.escapeXml11(lrEntry.toString()));
+
+    return lrEntry.toString();
+  }
+
+  public static String getXmlForObservationComponent(
+      LaunchDetails details,
+      CodeableConcept cd,
+      Type val,
+      String id,
+      Type effective,
+      List<CodeableConcept> interpretation,
       String contentRef,
       CodeableConcept altCode,
       List<Reference> performerRefs,
@@ -718,10 +1395,6 @@ public class CdaResultGenerator {
       String contentRef,
       List<String> paths) {
 
-    if (code == null || !code.hasCoding()) {
-      return null;
-    }
-
     String elementType =
         valElement ? CdaGeneratorConstants.VAL_EL_NAME : CdaGeneratorConstants.CODE_EL_NAME;
     PatientExecutionState state = ApplicationUtils.getDetailStatus(details);
@@ -759,8 +1432,8 @@ public class CdaResultGenerator {
 
     String xml =
         valElement
-            ? CdaFhirUtilities.getCodingXmlForValue(code.getCoding(), elementType, contentRef)
-            : CdaFhirUtilities.getCodingXml(code.getCoding(), elementType, contentRef);
+            ? CdaFhirUtilities.getCodeableConceptXmlForValue(code, elementType, contentRef)
+            : CdaFhirUtilities.getCodeableConceptXml(code, elementType, contentRef);
     return new Pair<>(false, xml);
   }
 

@@ -1099,6 +1099,22 @@ public class CdaFhirUtilities {
     }
   }
 
+  public static String getCodeableConceptXml(CodeableConcept cd, String cdName, String contentRef) {
+
+    String sb = "";
+    if (cd != null && cd.hasCoding()) {
+      sb += getCodingXml(cd.getCoding(), cdName, contentRef);
+    } else if (cd != null && cd.hasText()) {
+      sb +=
+          CdaGeneratorUtils.getXmlForNullCDWithText(
+              cdName, CdaGeneratorConstants.NF_OTH, cd.getText());
+    } else {
+      sb += CdaGeneratorUtils.getXmlForNullCD(cdName, CdaGeneratorConstants.NF_NI);
+    }
+
+    return sb;
+  }
+
   public static String getCodingXml(List<Coding> codes, String cdName, String contentRef) {
 
     StringBuilder sb = new StringBuilder(200);
@@ -1268,6 +1284,20 @@ public class CdaFhirUtilities {
     } else {
       return new StringBuilder("").toString();
     }
+  }
+
+  public static String getCodeableConceptXmlForValue(
+      CodeableConcept cd, String cdName, String contentRef) {
+    String sb = "";
+    if (cd != null && cd.hasCoding()) {
+      sb += getCodingXmlForValue(cd.getCoding(), cdName, contentRef);
+    } else if (cd != null && cd.hasText()) {
+      sb += CdaGeneratorUtils.getXmlForValueString(cd.getText());
+    } else {
+      sb += CdaGeneratorUtils.getXmlForNullValueCD(cdName, CdaGeneratorConstants.NF_NI);
+    }
+
+    return sb;
   }
 
   public static String getCodingXmlForValue(List<Coding> codes, String cdName, String contentRef) {
@@ -1790,6 +1820,8 @@ public class CdaFhirUtilities {
         val += getStringForCodings(cd.getCoding());
       }
     }
+
+    val = (val.isEmpty()) ? CdaGeneratorConstants.UNKNOWN_VALUE : val;
 
     return val;
   }

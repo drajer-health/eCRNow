@@ -331,9 +331,21 @@ public class CdaMedicationGenerator {
 
     // Set up Effective Time for start and End time.
     if (effectiveTime != null) {
-      sb.append(
-          CdaFhirUtilities.getXmlForType(
-              effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
+
+      if (effectiveTime instanceof DateTimeType) {
+        DateTimeType d = (DateTimeType) effectiveTime;
+        String val = CdaGeneratorUtils.getStringForDateTime(d.getValue(), d.getTimeZone());
+        sb.append(
+            CdaGeneratorUtils.getXmlForPartialValueIVLWithTS(
+                CdaGeneratorConstants.EFF_TIME_EL_NAME,
+                val,
+                CdaGeneratorConstants.TIME_LOW_EL_NAME));
+
+      } else {
+        sb.append(
+            CdaFhirUtilities.getXmlForType(
+                effectiveTime, CdaGeneratorConstants.EFF_TIME_EL_NAME, true));
+      }
     } else if (startDate != null) {
       String val =
           CdaGeneratorUtils.getStringForDateTime(startDate.getValue(), startDate.getTimeZone());

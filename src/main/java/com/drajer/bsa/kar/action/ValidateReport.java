@@ -18,6 +18,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -147,14 +148,14 @@ public class ValidateReport extends BsaAction {
             data.getNotificationContext().getxRequestId(),
             data.getNotificationContext().getxCorrelationId());
 
-        /*       if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
+        if (validatorEndpoint != null && !validatorEndpoint.isEmpty()) {
           ResponseEntity<String> response =
               restTemplate.postForEntity(validatorEndpoint, request, String.class);
           logger.debug(response.getBody());
           outcome = (OperationOutcome) jsonParser.parseResource(response.getBody());
         } else {
           logger.warn("No validation endpoint set. Skipping validation");
-        } */
+        }
 
         if (Boolean.TRUE.equals(ActionUtils.operationOutcomeHasErrors(outcome))) {
 
@@ -173,7 +174,7 @@ public class ValidateReport extends BsaAction {
           addValidatedOutputById(data, r);
           data.addActionOutput(actionId, r);
         }
-      } // for
+      } // for each resource to be validated
 
     } catch (Exception e) {
 
