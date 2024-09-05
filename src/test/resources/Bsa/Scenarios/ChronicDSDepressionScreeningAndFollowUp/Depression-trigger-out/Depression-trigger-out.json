@@ -1,0 +1,56 @@
+{
+  "resourceType": "Patient",
+  "id": "Depression-trigger-out",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/ecr/StructureDefinition/us-ph-patient"
+    ]
+  },
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR",
+            "display": "Medical Record Number"
+          }
+        ]
+      },
+      "system": "http://hospital.smarthealthit.org",
+      "value": "8675309"
+    }
+  ],
+  "name": [
+    {
+      "family": "Adams",
+      "given": [
+        "Jane"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "(210)222-1111",
+      "use": "mobile"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1976-06-13",
+  "address": [
+    {
+      "use": "home",
+      "type": "physical",
+      "text": "111 Maple Ct, San Antonio, TX 78212",
+      "line": [
+        "111 Maple Ct"
+      ],
+      "city": "San Antonio",
+      "district": "Bexar",
+      "state": "TX",
+      "postalCode": "78212"
+    }
+  ]
+}
