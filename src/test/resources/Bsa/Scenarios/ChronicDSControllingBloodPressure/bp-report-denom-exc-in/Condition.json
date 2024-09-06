@@ -1,6 +1,6 @@
 {
   "resourceType": "Condition",
-  "id": "bp-report-denom-exc-in",
+  "id": "bp-report-denom-exc-in-1-condition",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
@@ -45,8 +45,8 @@
     ]
   },
   "subject": {
-    "reference": "Patient/bp-report-denom-exc-in"
+    "reference": "Patient/bp-report-denom-exc-in-1"
   },
-  "onsetDateTime": "2019-03-23T11:01:33-06:00",
-  "recordedDate": "2019-03-23T11:01:33-06:00"
+  "onsetDateTime": "2024-03-23T11:01:33-06:00",
+  "recordedDate": "2024-03-23T11:01:33-06:00"
 }

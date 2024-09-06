@@ -1,6 +1,6 @@
 {
   "resourceType": "Encounter",
-  "id": "bp-report-ip-in",
+  "id": "bp-report-ip-in-encounter",
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-encounter"
@@ -26,8 +26,8 @@
   "subject": {
     "reference": "Patient/bp-report-ip-in"
   },
-  "period": {
-    "start": "2019-06-19T10:00:00.0-06:00",
-    "end": "2019-06-19T11:00:00.0-06:00"
+  "actualPeriod": {
+    "start": "2024-06-19T10:00:00.0-06:00",
+    "end": "2024-06-19T11:00:00.0-06:00"
   }
 }
