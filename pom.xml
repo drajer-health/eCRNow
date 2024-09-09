@@ -15,18 +15,18 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>eCR Now FHIR App</name>
 	<packaging>war</packaging>
-	<description>FHIR App to perform electronic case reporting (ecr) by
-		converting to CDA Format</description>
+	<description>FHIR App to perform electronic case reporting (ecr) by converting to CDA Format</description>
 
 	<properties>
-		<java.version>17</java.version>
-		<fhir.version>6.2.1</fhir.version>
-		<fhirpath.version>6.2.1</fhirpath.version>
+		<java.version>1.8</java.version>
+		<fhir.version>5.4.0</fhir.version>
+		<fhirpath.version>5.4.0</fhirpath.version>
 		<cql-evaluator.version>1.4.5</cql-evaluator.version>
 		<logback-contrib.version>0.1.5</logback-contrib.version>
 		<skip.integration.tests>false</skip.integration.tests>
-
+		
 	</properties>
+
 
 
 	<distributionManagement>
@@ -111,8 +111,7 @@
 			<version>11.6</version>
 		</dependency>
 
-		<!--
-		https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
+		<!-- https://mvnrepository.com/artifact/javax.interceptor/javax.interceptor-api -->
 		<dependency>
 			<groupId>javax.interceptor</groupId>
 			<artifactId>javax.interceptor-api</artifactId>
@@ -144,8 +143,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is
-			preferred -->
+			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
 			<version>0.11.2</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -155,6 +153,7 @@
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${fhir.version}</version>
 		</dependency>
+
 
 
 		<dependency>
@@ -455,8 +454,7 @@
 						</goals>
 						<configuration>
 							<dataFile>${project.build.directory}/jacoco-ut.exec</dataFile>
-							<outputDirectory>
-								${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 						</configuration>
 					</execution>
 					<!-- For Integration Test Coverage - jacoco-it.exec -->
@@ -479,12 +477,10 @@
 						</goals>
 						<configuration>
 							<dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
-							<outputDirectory>
-								${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
 						</configuration>
 					</execution>
-					<!-- Merge both Unit and Integration Test Coverage to one
-					report - jacoco.exec -->
+					<!-- Merge both Unit and Integration Test Coverage to one report - jacoco.exec -->
 					<execution>
 						<id>jacoco-merge-report-verify</id>
 						<phase>verify</phase>
@@ -503,8 +499,7 @@
 							</fileSets>
 							<destFile>${project.build.directory}/jacoco.exec</destFile>
 							<dataFile>${project.build.directory}/jacoco.exec</dataFile>
-							<outputDirectory>
-								${project.reporting.outputDirectory}/report</outputDirectory>
+							<outputDirectory>${project.reporting.outputDirectory}/report</outputDirectory>
 							<skip>${skip-jacoco-check}</skip>
 						</configuration>
 					</execution>
@@ -516,8 +511,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.21.0</version>
 				<configuration>
-					<!-- Activate the use of TCP to transmit events to the
-					plugin -->
+					<!-- Activate the use of TCP to transmit events to the plugin -->
 					<forkNode
 						implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
 				</configuration>
