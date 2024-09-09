@@ -6,6 +6,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -23,12 +25,15 @@ import com.drajer.bsa.model.BsaTypes.MessageType;
 import com.drajer.bsa.model.KarProcessingData;
 import com.drajer.bsa.service.KarParser;
 import com.drajer.eca.model.MatchedTriggerCodes;
+import com.drajer.ecrapp.config.QueryReaderConfig;
 import com.drajer.test.util.Utility;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +62,7 @@ import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -66,11 +72,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 @RunWith(MockitoJUnitRunner.class)
 public class BsaServiceUtilsTest {
 
-  @Autowired TimeZoneDao timeZoneDao;
-
   @Autowired KarParser parser;
 
-  BsaServiceUtils bsaServiceUtils;
+  @Mock QueryReaderConfig queryReaderConfig;
+
+  @InjectMocks BsaServiceUtils bsaServiceUtils;
 
   @Mock KnowledgeArtifactRepositorySystem knowledgeArtifactRepositorySystem;
 
@@ -82,11 +88,16 @@ public class BsaServiceUtilsTest {
 
   @Before
   public void initializeTestData() throws Exception {
-    bsaServiceUtils = new BsaServiceUtils();
 
     ReflectionTestUtils.setField(bsaServiceUtils, "SAVE_DEBUG_TO_FILES", true);
     ReflectionTestUtils.setField(bsaServiceUtils, "debugDirectory", "src/test/resources/bsa/");
     ReflectionTestUtils.setField(bsaServiceUtils, "DEBUG_DIRECTORY", "src/test/resources/bsa/");
+
+    ReflectionTestUtils.setField(
+        bsaServiceUtils, "TIMEZONE_QUERY", "SELECT current_setting('timezone')");
+    Mockito.lenient()
+        .when(queryReaderConfig.getQuery(any()))
+        .thenReturn("SELECT current_setting('timezone')");
 
     IParser iParser = mock(IParser.class);
     iParser.setOmitResourceId(true);
@@ -186,8 +197,8 @@ public class BsaServiceUtilsTest {
     Set<Resource> filterResource =
         BsaServiceUtils.filterResources(resources, dataRequirement, karProcessingData);
 
-    assertEquals(104, resources.size());
-    assertEquals(13, filterResource.size());
+    assertEquals(128, resources.size());
+    assertEquals(16, filterResource.size());
   }
 
   @Test
@@ -403,5 +414,42 @@ public class BsaServiceUtilsTest {
   }
 
   @Test
-  public void testConvertInstantToDBTimezoneInstant(Instant t, TimeZoneDao dao) {}
+  public void testConvertInstantToDBTimezoneInstant_NewYork() {
+    testConvertInstantToDBTimezoneInstant("America/New_York");
+  }
+
+  @Test
+  public void testConvertInstantToDBTimezoneInstant_London() {
+    testConvertInstantToDBTimezoneInstant("Europe/London");
+  }
+
+  @Test
+  public void testConvertInstantToDBTimezoneInstant_Tokyo() {
+    testConvertInstantToDBTimezoneInstant("Asia/Tokyo");
+  }
+
+  @Test
+  public void testConvertInstantToDBTimezoneInstant_Sydney() {
+    testConvertInstantToDBTimezoneInstant("Australia/Sydney");
+  }
+
+  private void testConvertInstantToDBTimezoneInstant(String dbTimeZone) {
+    // Arrange
+    Instant inputInstant = Instant.parse("2024-01-01T10:00:00Z");
+
+    TimeZoneDao timeZoneDao = Mockito.mock(TimeZoneDao.class);
+    Mockito.lenient().when(timeZoneDao.getDatabaseTimezone(anyString())).thenReturn(dbTimeZone);
+
+    // Expected Instant after conversion
+    ZoneId zoneId = ZoneId.of(dbTimeZone);
+    ZonedDateTime zdt = inputInstant.atZone(ZoneId.of("UTC")).withZoneSameInstant(zoneId);
+    Instant expectedInstant = zdt.toInstant();
+
+    // Act
+
+    Instant result = bsaServiceUtils.convertInstantToDBTimezoneInstant(inputInstant, timeZoneDao);
+
+    // Assert
+    assertEquals(expectedInstant, result);
+  }
 }
